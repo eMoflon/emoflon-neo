@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.emoflon.neo.emsl
+Bundle-ManifestVersion: 2
+Bundle-Name: org.emoflon.neo.emsl
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.emoflon.neo.emsl; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.eclipse.xtend.lib;bundle-version="2.14.0",
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-10
+Export-Package: org.emoflon.neo.emsl.eMSL.util,
+ org.emoflon.neo.emsl.services,
+ org.emoflon.neo.emsl.parser.antlr,
+ org.emoflon.neo.emsl.validation,
+ org.emoflon.neo.emsl.eMSL,
+ org.emoflon.neo.emsl.generator,
+ org.emoflon.neo.emsl.serializer,
+ org.emoflon.neo.emsl,
+ org.emoflon.neo.emsl.eMSL.impl,
+ org.emoflon.neo.emsl.parser.antlr.internal,
+ org.emoflon.neo.emsl.scoping
+Import-Package: org.apache.log4j

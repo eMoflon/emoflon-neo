@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.emoflon.neo.emsl.ide
+Bundle-ManifestVersion: 2
+Bundle-Name: org.emoflon.neo.emsl.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.emoflon.neo.emsl.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.emoflon.neo.emsl,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-10
+Export-Package: org.emoflon.neo.emsl.ide.contentassist.antlr.internal,
+ org.emoflon.neo.emsl.ide.contentassist.antlr

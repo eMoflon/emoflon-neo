@@ -1,0 +1,133 @@
+package org.emoflon.neo.neo4j.adapter
+
+import java.util.ArrayList
+import java.util.List
+
+class CypherBuilder {
+	var List<NodeCommand> nodes
+	var List<EdgeCommand> edges
+
+	new() {
+		nodes = new ArrayList
+		edges = new ArrayList
+	}
+
+	def createNode() {
+		val nc = new NodeCommand()
+		nodes.add(nc)
+		return nc
+	}
+
+	def createEdge() {
+		val ec = new EdgeCommand()
+		edges.add(ec)
+		return ec
+	}
+
+	def String buildCommand() {
+		''' 
+			«nodes.map[n| n.create()].join("\n")»
+			«edges.map[e| e.create()].join("\n")»
+		'''
+	}
+}
+
+abstract class ElementCommand {
+	protected val List<String> properties = new ArrayList
+
+	static int _id = 0
+	val int id = _id++
+
+	def id() {
+		"_" + id
+	}
+
+	protected def addProperty(String prop, String value) {
+		properties.add(prop + ":" + value)
+	}
+
+	protected def addStringProperty(String prop, String value) {
+		properties.add(prop + ":" + "\"" + value + "\"")
+	}
+}
+
+class EdgeCommand extends ElementCommand {
+	var String label
+	var NodeCommand from
+	var NodeCommand to
+
+	def from(NodeCommand nc) {
+		from = nc
+		return this
+	}
+
+	def to(NodeCommand nc) {
+		to = nc
+		return this
+	}
+
+	def withLabel(String label) {
+		this.label = label
+		return this
+	}
+
+	def withProperty(String prop, String value) {
+		addProperty(prop, value)
+		return this
+	}
+
+	def withStringProperty(String prop, String value) {
+		addStringProperty(prop, value)
+		return this
+	}
+
+	def create() {
+		'''
+			CREATE («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
+		'''
+	}
+}
+
+class NodeCommand extends ElementCommand {
+	val List<String> labels = new ArrayList
+
+	var EdgeCommand typeOf
+	
+	var EdgeCommand elOf
+
+	val String META_TYPE = "_type_"
+	val String META_EL_OF = "_elementOf_"
+
+	def withType(NodeCommand type) {
+		typeOf = new EdgeCommand().withLabel(META_TYPE).from(this).to(type)
+		return this
+	}
+	
+	def elementOf(NodeCommand model) {
+		elOf = new EdgeCommand().withLabel(META_EL_OF).from(this).to(model)
+		return this
+	}
+
+	def withLabel(String label) {
+		labels.add(label)
+		return this
+	}
+
+	def withProperty(String prop, String value) {
+		addProperty(prop, value)
+		return this
+	}
+
+	def withStringProperty(String prop, String value) {
+		addStringProperty(prop, value)
+		return this
+	}
+
+	def create() {
+		'''
+			CREATE («id()»:«labels.join(":")» {«properties.join(", ")»})
+			«typeOf?.create»
+			«elOf?.create»
+		'''
+	}
+}

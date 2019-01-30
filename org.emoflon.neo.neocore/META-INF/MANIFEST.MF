@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NeoCore
+Bundle-SymbolicName: org.emoflon.neo.neocore
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.emoflon.neo.neocore.Activator
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-10
+Automatic-Module-Name: org.emoflon.neo.neocore
+Bundle-ActivationPolicy: lazy

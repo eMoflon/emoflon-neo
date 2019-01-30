@@ -1,0 +1,62 @@
+grammar org.emoflon.neo.emsl.EMSL with org.eclipse.xtext.common.Terminals
+
+generate eMSL "http://www.emoflon.org/neo/emsl/EMSL"
+
+EMSL_Spec:
+	imports+=ImportStatement* entities+=Entity+;
+
+ImportStatement:
+	'import' value=STRING;
+
+Entity:
+	Metamodel | Model | Pattern | Rule | Constraint;
+
+Metamodel:
+	'metamodel' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+
+Model:
+	'model' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+
+Pattern:
+	'pattern' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+
+Rule:
+	'rule' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+
+Constraint:
+	'constraint' (NegativeConstraint | PositiveConstraint | Implication);
+
+NodeBlock:
+	(abstract?='abstract')? (action=Action)? name=ID ':' type=[NodeBlock|QualifiedName]
+	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName]*)?))?
+	('{'
+	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatements)*
+	'}')?;
+
+Implication:
+	name=QualifiedName '=' 'forbid' pattern=[Pattern|QualifiedName];
+
+PositiveConstraint:
+	name=QualifiedName '=' 'enforce' pattern=[Pattern|QualifiedName];
+
+NegativeConstraint:
+	name=QualifiedName '=' 'if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName];
+
+PropertyStatement:
+	'.' name=ID ':' value=PropertyValue;
+
+PropertyValue:
+	INT | ID;
+
+RelationStatements:
+	(action=Action)? '-' name=ID '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?;
+
+QualifiedName:
+	ID ('.' ID)*;
+
+Action:
+	op=Operator;
+
+enum Operator:
+	CREATE='++' | DELETE='--';
+	

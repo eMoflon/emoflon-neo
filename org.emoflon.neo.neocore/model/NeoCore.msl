@@ -1,0 +1,9 @@
+metamodel org.emoflon.neo.NeoCore {
+	EClass : EClass {
+		.name : EString
+	}
+	
+	EReference : EClass {
+	
+	}
+}
