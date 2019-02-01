@@ -18,7 +18,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	public NeoCoreBuilder() {
-		this("bolt://localhost:7687", "neo4j", "test");
+		this("bolt://localhost:11020", "neo4j", "password");
 	}
 
 	@Override
@@ -55,13 +55,91 @@ public class NeoCoreBuilder implements AutoCloseable {
 					.withLabel("EReference")//
 					.withStringProperty("name", "eReferenceType")//
 					.withType(eref)//
+					.elementOf(neocore);	
+			
+			NodeCommand eSupType = cb.createNode()
+					.withLabel("EClass")
+					.withStringProperty("name","eSuperTypes")
+					.withType(eclass)
 					.elementOf(neocore);
+			
+			NodeCommand eAttrEle = cb.createNode()
+					.withLabel("EAttribute")
+					.withStringProperty("name","EAttributedElements")
+					.elementOf(neocore);	
+			   eAttrEle.withType(eAttrEle);
+			   
+			   NodeCommand eAttr = cb.createNode()
+						.withLabel("EAttribute")
+						.withStringProperty("name","EAttribute")
+						.withType(eAttrEle)
+						.elementOf(neocore);
+			   
+			   NodeCommand eStructure = cb.createNode()
+						.withLabel("EReference")
+						.withStringProperty("name","EStructuralFeature")
+						.withType(eref)
+						.elementOf(neocore);
+			   
+			   NodeCommand eData = cb.createNode()
+						.withLabel("EAttribute")
+						.withStringProperty("name", "EDataType")
+						.elementOf(neocore);
+			          eData.withType(eData);
+			   
 
-			cb.createEdge().withLabel("eReferences").from(eclass).to(erefs);
+				NodeCommand eAttrType = cb.createNode()
+						.withLabel("EAttribute")
+						.withStringProperty("name", "eAttributeType")
+						.withType(eAttr)
+						.elementOf(neocore);
+			
+				NodeCommand eclassifier = cb.createNode()
+						.withLabel("EClass")
+						.withStringProperty("name", "EClassifier")
+						.elementOf(neocore);
+				eclassifier.withType(eclassifier);
+				
+
+				NodeCommand etypedele = cb.createNode()
+						.withLabel("EStructuralFeature")
+						.withStringProperty("name", "ETypedElement")
+						.elementOf(neocore);
+				etypedele.withType(etypedele);
+				
+				
+				NodeCommand etype = cb.createNode()
+						.withLabel("ETypedElement")
+						.withStringProperty("name", "eType")
+						.elementOf(neocore);
+				etype.withType(etype);
+				
+				NodeCommand enamedele = cb.createNode()
+						.withLabel("ENamedElement")
+						.withStringProperty("name", "ENamedElement")
+						.elementOf(neocore);
+				enamedele.withType(enamedele);
+			
+				
+            cb.createEdge().withLabel("eReferences").from(eclass).to(erefs);
 			cb.createEdge().withLabel("eReferenceType").from(erefs).to(eref);
 			cb.createEdge().withLabel("eReferences").from(eref).to(eRefType);
 			cb.createEdge().withLabel("eReferenceType").from(eRefType).to(eclass);
-		});
+			cb.createEdge().withLabel("eSuperTypes").from(eclass).to(eclass);
+			cb.createEdge().withLabel("eSuperTypes").from(eclass).to(eAttrEle);
+			cb.createEdge().withLabel("eSuperTypes").from(eref).to(eAttrEle);
+			cb.createEdge().withLabel("eAttributes").from(eAttrEle).to(eAttr);
+			cb.createEdge().withLabel("eSuperTypes").from(eref).to(eStructure);
+			cb.createEdge().withLabel("eSuperTypes").from(eAttr).to(eStructure);
+			cb.createEdge().withLabel("eAttributeType").from(eAttr).to(eAttrType);
+			cb.createEdge().withLabel("eDataType").from(eAttrType).to(eData);
+			cb.createEdge().withLabel("eSuperTypes").from(eclass).to(eclassifier);
+			cb.createEdge().withLabel("eSuperTypes").from(eData).to(eclassifier);
+			cb.createEdge().withLabel("eSuperTypes").from(eStructure).to(etypedele);
+			cb.createEdge().withLabel("eType").from(etypedele).to(eclassifier);
+			cb.createEdge().withLabel("eSuperTypes").from(etypedele).to(enamedele);
+			cb.createEdge().withLabel("eSuperTypes").from(eclassifier).to(enamedele);
+			});
 	}
 
 	public void executeActionAsTransaction(Consumer<CypherBuilder> action) {

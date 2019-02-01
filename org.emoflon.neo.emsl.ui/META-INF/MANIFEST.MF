@@ -19,7 +19,7 @@ Require-Bundle: org.emoflon.neo.emsl,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtend.lib;bundle-version="2.14.0";resolution:=optional
 Import-Package: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-10
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.emoflon.neo.emsl.ui.quickfix,
  org.emoflon.neo.emsl.ui.internal,
  org.emoflon.neo.emsl.ui.contentassist
