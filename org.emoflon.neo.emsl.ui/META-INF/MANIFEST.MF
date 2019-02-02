@@ -20,9 +20,8 @@ Require-Bundle: org.emoflon.neo.emsl,
  org.eclipse.xtend.lib;bundle-version="2.14.0";resolution:=optional,
  org.eclipse.e4.core.commands;bundle-version="0.12.400"
 Import-Package: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-10
-Export-Package: org.emoflon.neo.emsl.ui,
- org.emoflon.neo.emsl.ui.contentassist,
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.emoflon.neo.emsl.ui.quickfix,
  org.emoflon.neo.emsl.ui.internal,
  org.emoflon.neo.emsl.ui.quickfix
 Bundle-Activator: org.emoflon.neo.emsl.ui.internal.EmslActivator

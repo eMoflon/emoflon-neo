@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib;visibility:=reexport,
  org.eclipse.xtend.lib;visibility:=reexport,
  org.eclipse.xtend.lib.macro;visibility:=reexport
-Bundle-RequiredExecutionEnvironment: JavaSE-10
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.emoflon.neo.neo4j.adapter
 Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.neo.neo4j.adapter
