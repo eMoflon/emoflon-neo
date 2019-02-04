@@ -4,31 +4,64 @@ import java.util.ArrayList
 import java.util.List
 
 class CypherBuilder {
-	var List<NodeCommand> nodes
-	var List<EdgeCommand> edges
+	List<NodeCommand> nodesToMatch
+	List<EdgeCommand> edgesToMatch
+
+	List<NodeCommand> nodesToCreate
+	List<EdgeCommand> edgesToCreate
+
+	List<NodeCommand> nodesToReturn;
 
 	new() {
-		nodes = new ArrayList
-		edges = new ArrayList
+		nodesToMatch = new ArrayList
+		edgesToMatch = new ArrayList
+
+		nodesToCreate = new ArrayList
+		edgesToCreate = new ArrayList
+
+		nodesToReturn = new ArrayList
+	}
+
+	def matchNode() {
+		val nc = new NodeCommand()
+		nodesToMatch.add(nc)
+		return nc
+	}
+
+	def matchEdge() {
+		val ec = new EdgeCommand()
+		edgesToMatch.add(ec)
+		return ec
 	}
 
 	def createNode() {
 		val nc = new NodeCommand()
-		nodes.add(nc)
+		nodesToCreate.add(nc)
 		return nc
 	}
 
 	def createEdge() {
 		val ec = new EdgeCommand()
-		edges.add(ec)
+		edgesToCreate.add(ec)
 		return ec
 	}
 
 	def String buildCommand() {
 		''' 
-			«nodes.map[n| n.create()].join("\n")»
-			«edges.map[e| e.create()].join("\n")»
+			«nodesToMatch.map[n| n.match()].join("\n")»
+			«edgesToMatch.map[e| e.match()].join("\n")»
+			«nodesToCreate.map[n| n.create()].join("\n")»
+			«edgesToCreate.map[e| e.create()].join("\n")»
+			«IF nodesToReturn.size > 0»
+				RETURN «FOR nc : nodesToReturn SEPARATOR ","»
+						(«nc.id»)
+				«ENDFOR»
+			«ENDIF»
 		'''
+	}
+
+	def void returnWith(NodeCommand... ncs) {
+		nodesToReturn.addAll(ncs)
 	}
 }
 
@@ -81,6 +114,12 @@ class EdgeCommand extends ElementCommand {
 		return this
 	}
 
+	def match() {
+		'''
+			MATCH («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
+		'''
+	}
+
 	def create() {
 		'''
 			CREATE («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
@@ -92,7 +131,7 @@ class NodeCommand extends ElementCommand {
 	val List<String> labels = new ArrayList
 
 	var EdgeCommand typeOf
-	
+
 	var EdgeCommand elOf
 
 	val String META_TYPE = "_type_"
@@ -102,7 +141,7 @@ class NodeCommand extends ElementCommand {
 		typeOf = new EdgeCommand().withLabel(META_TYPE).from(this).to(type)
 		return this
 	}
-	
+
 	def elementOf(NodeCommand model) {
 		elOf = new EdgeCommand().withLabel(META_EL_OF).from(this).to(model)
 		return this
@@ -121,6 +160,14 @@ class NodeCommand extends ElementCommand {
 	def withStringProperty(String prop, String value) {
 		addStringProperty(prop, value)
 		return this
+	}
+
+	def match() {
+		'''
+			MATCH («id()»:«labels.join(":")» {«properties.join(", ")»})
+			«typeOf?.create»
+			«elOf?.create»
+		'''
 	}
 
 	def create() {
