@@ -15,7 +15,6 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
-import org.emoflon.neo.emsl.eMSL.EMSLPackage;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.ui.util.ConsoleUtil;
@@ -29,6 +28,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 	private static String password = "test";
 	private Optional<EObjectNode> eobNode = Optional.empty();
 	private IWorkbenchPage activePage;
+	private NeoCoreBuilder builder;
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -42,17 +42,17 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		ConsoleUtil.printInfo(activePage, "Password: " + password);
 
 		try {
-			NeoCoreBuilder builder = new NeoCoreBuilder(uri, userName, password);
-			
+			builder = new NeoCoreBuilder(uri, userName, password);
+
 			ConsoleUtil.printInfo(activePage, "Great!  Seems to have worked.");
 			ConsoleUtil.printDash(activePage);
-			
+
 			ConsoleUtil.printInfo(activePage, "Now performing export...");
 			bootstrapNeoCoreIfNecessary(activePage, builder);
 			ConsoleUtil.printDash(activePage);
 
-			exportSelectedEMSLEntity(event);
-			
+			exportSelectedEMSLEntity(event, builder);
+
 			builder.close();
 		} catch (Exception e) {
 			ConsoleUtil.printError(activePage, e.getMessage());
@@ -63,7 +63,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		return null;
 	}
 
-	private void exportSelectedEMSLEntity(ExecutionEvent event) throws ExecutionException {
+	private void exportSelectedEMSLEntity(ExecutionEvent event, NeoCoreBuilder builder) throws ExecutionException {
 		IEditorPart editorPart = HandlerUtil.getActiveEditorChecked(event);
 		if (editorPart instanceof XtextEditor) {
 			XtextEditor editor = (XtextEditor) editorPart;
@@ -79,22 +79,18 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 	}
 
 	private void exportEMSLEntityToNeo4j(EObject entity) {
-		if(entity instanceof Metamodel)
-			exportMetamodelToNeo4j((Metamodel) entity);
-		if(entity instanceof Model)
-			exportModelToNeo4j((Model) entity);
-	}
-
-	private void exportModelToNeo4j(Model model) {
-		ConsoleUtil.printInfo(activePage, "Trying to export " + model.getName() + " as a model...");
-
-		// TODO 
-	}
-
-	private void exportMetamodelToNeo4j(Metamodel metamodel) {
-		ConsoleUtil.printInfo(activePage, "Trying to export " + metamodel.getName() + " as a metamodel...");
-		
-		// TODO
+		if (entity instanceof Metamodel) {
+			var metamodel = (Metamodel) entity;
+			ConsoleUtil.printInfo(activePage, "Trying to export " + metamodel.getName() + " as a metamodel...");
+			builder.exportMetamodelToNeo4j(metamodel);
+			ConsoleUtil.printInfo(activePage, "Done.");
+		}
+		if (entity instanceof Model) {
+			var model = (Model) entity;
+			ConsoleUtil.printInfo(activePage, "Trying to export " + model.getName() + " as a model...");
+			builder.exportModelToNeo4j(model);
+			ConsoleUtil.printInfo(activePage, "Done.");
+		}
 	}
 
 	private void bootstrapNeoCoreIfNecessary(IWorkbenchPage activePage, NeoCoreBuilder builder) {
@@ -118,7 +114,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 					Object o = nodes.get(0);
 					if (o instanceof EObjectNode) {
 						eobNode = Optional.of((EObjectNode) o);
-						eobNode.ifPresent(n -> setBaseEnabled(canBeExported(n)));
+						eobNode.ifPresent(n -> setBaseEnabled(NeoCoreBuilder.canBeExported(n.getEClass())));
 						return;
 					}
 				}
@@ -126,10 +122,5 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		}
 
 		setBaseEnabled(false);
-	}
-
-	private boolean canBeExported(EObjectNode eobNode) {
-		return eobNode.getEClass().equals(EMSLPackage.eINSTANCE.getMetamodel())
-				|| eobNode.getEClass().equals(EMSLPackage.eINSTANCE.getModel());
 	}
 }

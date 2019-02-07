@@ -53,9 +53,7 @@ class CypherBuilder {
 			«nodesToCreate.map[n| n.create()].join("\n")»
 			«edgesToCreate.map[e| e.create()].join("\n")»
 			«IF nodesToReturn.size > 0»
-				RETURN «FOR nc : nodesToReturn SEPARATOR ","»
-						(«nc.id»)
-				«ENDFOR»
+				RETURN «FOR nc : nodesToReturn SEPARATOR ","»(«nc.id»)«ENDFOR»
 			«ENDIF»
 		'''
 	}
