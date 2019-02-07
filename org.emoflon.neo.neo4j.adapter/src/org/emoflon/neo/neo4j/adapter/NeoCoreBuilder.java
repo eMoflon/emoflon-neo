@@ -166,6 +166,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 					cb.createEdge().withLabel(EREFERENCE_TYPE).from(ref).to(typeOfRef);
 				});
 			});
+			
+			// TODO:  Handle inheritance
 		});
 	}
 }
