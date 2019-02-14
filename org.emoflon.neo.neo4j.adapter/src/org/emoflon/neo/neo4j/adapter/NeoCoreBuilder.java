@@ -37,6 +37,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String EBOOLEAN = "EBoolean";
 	private static final String ETYPE = "eType";
 	private static final String NAME_PROP = "name";
+	private static final String ABSTRACT_PROP = "abstract";
 	private static final String CONFORMS_TO_PROP = "_conformsTo_";
 	private static final String URI_PROP = "_uri_";
 	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
@@ -89,78 +90,77 @@ public class NeoCoreBuilder implements AutoCloseable {
 					.withType(eref)//
 					.elementOf(neocore);
 			
-			
-			var eattr = cb.createNode()
-					.withLabel(ECLASS)
-					.withStringProperty(NAME_PROP, EATTRIBUTE)
-					.withType(eclass)
+			var eattr = cb.createNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EATTRIBUTE)//
+					.withType(eclass)//
 					.elementOf(neocore);
 			
-			var name = cb.createNode()
-					.withLabel(EATTRIBUTE)
-					.withStringProperty(NAME_PROP,NAME)
-					.withType(eattr)
+			var name = cb.createNode()//
+					.withLabel(EATTRIBUTE)//
+					.withStringProperty(NAME_PROP,NAME)//
+					.withType(eattr)//
 					.elementOf(neocore);
 			
-			var eDataType = cb.createNode()
-					.withLabel(ECLASS)
-					.withStringProperty(NAME_PROP, EDATA_TYPE)
-					.withType(eclass)
+			var eDataType = cb.createNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EDATA_TYPE)//
+					.withType(eclass)//
 					.elementOf(neocore);
 			
-			var eAttrEle = cb.createNode()
-					.withLabel(ECLASS)
-					.withStringProperty(NAME_PROP, EATTRIBUTED_ELEMENTS)
-					.withType(eclass)
+			var eAttrEle = cb.createNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EATTRIBUTED_ELEMENTS)//
+					.withType(eclass)//
 					.elementOf(neocore);
 			
-			var eString = cb.createNode()
-					.withLabel(EDATA_TYPE)
-					.withStringProperty(NAME_PROP,ESTRING)
-					.withType(eDataType)
-					.elementOf(neocore);
-
-			var eAttrType = cb.createNode()
-					.withLabel(EREFERENCE)
-					.withStringProperty(NAME_PROP,EATTRIBUTE_TYPE)
-					.withType(eref)
-					.elementOf(neocore);
-			
-			var eSupType = cb.createNode()
-					.withLabel(EREFERENCE)
-					.withStringProperty(NAME_PROP, ESUPER_TYPE)
-					.withType(eref)
-					.elementOf(neocore);
-			
-			var eclassifier = cb.createNode()
-					.withLabel(ECLASS)
-					.withStringProperty(NAME_PROP, ECLASSIFIER)
-					.withType(eclass)
+			var eString = cb.createNode()//
+					.withLabel(EDATA_TYPE)//
+					.withStringProperty(NAME_PROP,ESTRING)//
+					.withType(eDataType)//
 					.elementOf(neocore);
 
-			var eTypedele = cb.createNode()
-					.withLabel(ECLASS)
-					.withStringProperty(NAME_PROP, ETYPED_ELEMENT)
-					.withType(eclass)
+			var eAttrType = cb.createNode()//
+					.withLabel(EREFERENCE)//
+					.withStringProperty(NAME_PROP,EATTRIBUTE_TYPE)//
+					.withType(eref)//
 					.elementOf(neocore);
 			
-			var enamedele = cb.createNode()
-					.withLabel(ECLASS)
-					.withStringProperty(NAME_PROP, ENAMED_ELEMENT)
-					.withType(eclass)
+			var eSupType = cb.createNode()//
+					.withLabel(EREFERENCE)//
+					.withStringProperty(NAME_PROP, ESUPER_TYPE)//
+					.withType(eref)//
+					.elementOf(neocore);
+			
+			var eclassifier = cb.createNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, ECLASSIFIER)//
+					.withType(eclass)//
+					.elementOf(neocore);
+
+			var eTypedele = cb.createNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, ETYPED_ELEMENT)//
+					.withType(eclass)//
+					.elementOf(neocore);
+			
+			var enamedele = cb.createNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, ENAMED_ELEMENT)//
+					.withType(eclass)//
 					.elementOf(neocore);
 			
 			
-			var eType = cb.createNode()
-					.withLabel(EREFERENCE)
-					.withStringProperty(NAME_PROP, ETYPE)
-					.withType(eref)
+			var eType = cb.createNode()//
+					.withLabel(EREFERENCE)//
+					.withStringProperty(NAME_PROP, ETYPE)//
+					.withType(eref)//
 					.elementOf(neocore);
 			
-			var eAttributes = cb.createNode()
-					.withLabel(EREFERENCE)
-					.withStringProperty(NAME_PROP, EATTRIBUTES)
-					.withType(eref)
+			var eAttributes = cb.createNode()//
+					.withLabel(EREFERENCE)//
+					.withStringProperty(NAME_PROP, EATTRIBUTES)//
+					.withType(eref)//
 					.elementOf(neocore);
 			
 			var eStruct = cb.createNode()//
@@ -169,27 +169,24 @@ public class NeoCoreBuilder implements AutoCloseable {
 					.withType(eclass)//
 					.elementOf(neocore);
 			
-			var abstractattr = cb.createNode()
-					.withLabel(EATTRIBUTE)
-					.withStringProperty(NAME_PROP,ABSTRACT_ATTRIBUTENAME)
-					.withType(eattr)
+			var abstractattr = cb.createNode()//
+					.withLabel(EATTRIBUTE)//
+					.withStringProperty(NAME_PROP,ABSTRACT_ATTRIBUTENAME)//
+					.withType(eattr)//
 					.elementOf(neocore);
 			
-			var eBoolean = cb.createNode()
-					.withLabel(EDATA_TYPE)
-					.withStringProperty(NAME_PROP,EBOOLEAN)
-					.withType(eDataType)
+			var eBoolean = cb.createNode()//
+					.withLabel(EDATA_TYPE)//
+					.withStringProperty(NAME_PROP,EBOOLEAN)//
+					.withType(eDataType)//
 					.elementOf(neocore);
-					
-			
 
             cb.createEdge().withLabel(EREFERENCES).from(eclass).to(erefs);
 			cb.createEdge().withLabel(EREFERENCE_TYPE).from(erefs).to(eref);
 			cb.createEdge().withLabel(EREFERENCES).from(eref).to(eRefType);
-			cb.createEdge().withLabel(EREFERENCE_TYPE).from(eRefType).to(eclass);
 			cb.createEdge().withLabel(EREFERENCES).from(eclass).to(eSupType);
 			cb.createEdge().withLabel(EREFERENCE_TYPE).from(eSupType).to(eclass);
-			cb.createEdge().withLabel(EATTRIBUTE).from(eclass).to(name);
+			cb.createEdge().withLabel(EATTRIBUTE).from(enamedele).to(name);
 			cb.createEdge().withLabel(EATTRIBUTE_TYPE).from(name).to(eString);
 			cb.createEdge().withLabel(EREFERENCES).from(eattr).to(eAttrType);
 			cb.createEdge().withLabel(EREFERENCE_TYPE).from(eAttrType).to(eDataType);
@@ -208,9 +205,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 			cb.createEdge().withLabel(ESUPER_TYPE).from(eclassifier).to(enamedele);
 			cb.createEdge().withLabel(EATTRIBUTE).from(eclass).to(abstractattr);
 			cb.createEdge().withLabel(EATTRIBUTE_TYPE).from(abstractattr).to(eBoolean);
-			
-			
-			
 		});
 	}
 
@@ -279,11 +273,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 				var nbNode = cb.createNode()//
 						.withLabel(ECLASS)//
 						.withStringProperty(NAME_PROP, nb.getName())//
+						.withProperty(ABSTRACT_PROP,String.valueOf(nb.isAbstract()))
 						.withType(eclass)//
 						.elementOf(mmNode);
 				blockToCommand.put(nb, nbNode);
-			});
-
+				
+				});
+			
+		
 			metamodel.getNodeBlocks().forEach(nb -> {
 				nb.getRelationStatements().forEach(rs -> {
 					var ref = cb.createNode()//
@@ -291,16 +288,33 @@ public class NeoCoreBuilder implements AutoCloseable {
 							.withStringProperty(NAME_PROP, rs.getName())//
 							.withType(eref)//
 							.elementOf(mmNode);
-
-					var refOwner = blockToCommand.get(nb);
+					
+				    var refOwner = blockToCommand.get(nb);
 					var typeOfRef = blockToCommand.get(rs.getValue());
 
 					cb.createEdge().withLabel(EREFERENCES).from(refOwner).to(ref);
 					cb.createEdge().withLabel(EREFERENCE_TYPE).from(ref).to(typeOfRef);
+					
+					});	
+				
+				
+				// handle inheritance
+				nb.getSuperTypes().forEach(st->{
+					
+					var nodeblock = blockToCommand.get(nb);
+					var sType = blockToCommand.get(st);
+					
+					cb.createEdge().withLabel(ESUPER_TYPE).from(nodeblock).to(sType);
+					
 				});
-			});
+				
 			
-			// TODO:  Handle inheritance
-		});
-	}
+				
+				});
+			
+			
+			
+			});
+	
+}
 }
