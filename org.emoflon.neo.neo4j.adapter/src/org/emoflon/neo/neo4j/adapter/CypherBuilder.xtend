@@ -163,8 +163,8 @@ class NodeCommand extends ElementCommand {
 	def match() {
 		'''
 			MATCH («id()»:«labels.join(":")» {«properties.join(", ")»})
-			«typeOf?.create»
-			«elOf?.create»
+			«typeOf?.match»
+			«elOf?.match»
 		'''
 	}
 
