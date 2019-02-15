@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="xtend-gen"/>
+	<classpathentry kind="src" path="xtend-gen">
+		<attributes>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/neo4j-java-driver-1.7.2.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/org.emoflon.neo.neo4j.adapter/lib/neo4j-java-driver-1.7.2-javadoc.jar!/"/>
