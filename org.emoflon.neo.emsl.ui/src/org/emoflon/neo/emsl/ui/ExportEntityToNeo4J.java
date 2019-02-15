@@ -97,8 +97,17 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 			});
 
 			var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
-			ConsoleUtil.printInfo(activePage, "As a consequence, now exporting metamodels: " + metamodelNames);
-			builder.exportMetamodelsToNeo4j(metamodels);
+			ConsoleUtil.printInfo(activePage, "As a consequence, now trying to export metamodels: " + metamodelNames);
+			var newMetamodels = builder.removeExisting(metamodels);
+
+			for (Metamodel mm : metamodels) {
+				if (!newMetamodels.contains(mm))
+					ConsoleUtil.printInfo(activePage,
+							"Skipping metamodel " + mm.getName() + " as it is already present.");
+			}
+
+			if (!newMetamodels.isEmpty())
+				builder.exportMetamodelsToNeo4j(metamodels);
 			ConsoleUtil.printInfo(activePage, "Done.");
 		}
 		if (entity instanceof Model) {

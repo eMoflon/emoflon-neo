@@ -259,17 +259,17 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	public void exportModelToNeo4j(Model model) {
 		// TODO
-		
+
 		// 1. Somehow determine all required metamodels
-		
+
 		// 2. Export all metamodels
-		
+
 		// 3. Somehow determine all requird models
-		
+
 		// 4. Export all models
 	}
 
-	public void exportMetamodelsToNeo4j(List<Metamodel> metamodels) {
+	public void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
 		executeActionAsTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode()//
@@ -296,17 +296,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 					.withStringProperty(NAME_PROP, EATTRIBUTE)//
 					.elementOf(neocore);
 
-			// FIXME: How about if the metamodel already exists?
-
 			// Create metamodel nodes and handle node blocks for all metamodels
 			var mmNodes = new HashMap<Metamodel, NodeCommand>();
 			var blockToCommand = new HashMap<NodeBlock, NodeCommand>();
-			for (var metamodel : metamodels) {
+			for (var metamodel : newMetamodels) {
 				handleNodeBlocks(cb, neocore, eclass, blockToCommand, mmNodes, metamodel);
 			}
 
 			// Handle all other features of node blocks
-			for (var metamodel : metamodels) {
+			for (var metamodel : newMetamodels) {
 				var mmNode = mmNodes.get(metamodel);
 				for (var nb : metamodel.getNodeBlocks()) {
 					handleRelationStatement(cb, neocore, eref, edatatype, eattribute, blockToCommand, mmNode, nb);
@@ -316,6 +314,17 @@ public class NeoCoreBuilder implements AutoCloseable {
 			}
 
 		});
+	}
+
+	public List<Metamodel> removeExisting(List<Metamodel> metamodels) {
+		var newMetamodels = new ArrayList<Metamodel>();
+		newMetamodels.addAll(metamodels);
+		StatementResult result = executeActionAsTransaction(cb -> {
+			var nc = cb.matchNode().withLabel(METAMODEL);
+			cb.returnWith(nc);
+		});
+		result.forEachRemaining(mmNode -> newMetamodels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(URI_PROP).asString())));
+		return newMetamodels;
 	}
 
 	private void handleAttributes(CypherBuilder cb, NodeCommand neocore, NodeCommand edatatype, NodeCommand eattribute,
