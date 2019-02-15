@@ -1,13 +1,17 @@
 package org.emoflon.neo.emsl.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.commands.ExpressionContext;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -81,8 +85,20 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 	private void exportEMSLEntityToNeo4j(EObject entity) {
 		if (entity instanceof Metamodel) {
 			var metamodel = (Metamodel) entity;
+			ResourceSet rs = metamodel.eResource().getResourceSet();
+			EcoreUtil.resolveAll(rs);
+
 			ConsoleUtil.printInfo(activePage, "Trying to export " + metamodel.getName() + " as a metamodel...");
-			builder.exportMetamodelToNeo4j(metamodel);
+
+			var metamodels = new ArrayList<Metamodel>();
+			rs.getAllContents().forEachRemaining(c -> {
+				if (c instanceof Metamodel)
+					metamodels.add((Metamodel) c);
+			});
+
+			var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
+			ConsoleUtil.printInfo(activePage, "As a consequence, now exporting metamodels: " + metamodelNames);
+			builder.exportMetamodelsToNeo4j(metamodels);
 			ConsoleUtil.printInfo(activePage, "Done.");
 		}
 		if (entity instanceof Model) {
