@@ -3,12 +3,19 @@
  */
 package org.emoflon.neo.emsl.scoping
 
+import java.util.HashMap
+import java.util.Map
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.resource.XtextResourceSet
+import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
+import org.eclipse.xtext.scoping.impl.FilteringScope
+import org.eclipse.xtext.scoping.impl.SimpleScope
+import org.eclipse.xtext.util.SimpleAttributeResolver
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
@@ -21,6 +28,7 @@ import org.emoflon.neo.emsl.eMSL.NodeBlock
  * on how and when to use it.
  */
 class EMSLScopeProvider extends AbstractEMSLScopeProvider {
+
 	override getScope(EObject context, EReference reference) {
 		if (typeOfNodeBlock(context, reference)) {
 			if (isInMetamodel(context as NodeBlock))
@@ -29,32 +37,61 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 				return handleNodeBlockTypesInModel(context as NodeBlock, reference)
 		}
 
+		if (superTypeOfNodeBlock(context, reference)) {
+			return handleSuperTypesOfNodeBlock(context as NodeBlock, reference)
+		}
+
 		return super.getScope(context, reference)
 	}
 
-	// For a metamodel, candidates are all node blocks in NeoCore
+	def <T extends EObject> determineScope(Map<EObject, String> aliases) {
+		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
+			aliases.keySet,
+			[ eob |
+				if (aliases.containsKey(eob) && aliases.get(eob) !== null)
+					QualifiedName.create(aliases.get(eob), SimpleAttributeResolver.NAME_RESOLVER.apply(eob))
+				else
+					QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob))
+			]
+		))
+	}
+
+	def handleSuperTypesOfNodeBlock(NodeBlock block, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(block)
+		determineScope(allNodeBlocksInAllImportedMetamodels(root))
+	}
+
+	def superTypeOfNodeBlock(EObject context, EReference reference) {
+		context instanceof NodeBlock && reference == EMSLPackage.Literals.NODE_BLOCK__SUPER_TYPES
+	}
+
+	// For a metamodel, candidates are only the EClass node block in NeoCore
 	def handleNodeBlockTypesInMetamodel(NodeBlock context, EReference reference) {
-		val neoCore = loadEMSL_Spec("platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl")
-		val allNodeBlocksInNeoCore = EcoreUtil2.getAllContentsOfType(neoCore, Metamodel).flatMap [ mm |
-			EcoreUtil2.getAllContentsOfType(mm, NodeBlock)
-		]
-		return Scopes.scopeFor(allNodeBlocksInNeoCore)
+		new FilteringScope(handleNodeBlockTypesInModel(context, reference), [ desc |
+			desc.name.lastSegment == "EClass"
+		])
 	}
 
 	// For all entities other than metamodels, candidates are all node blocks of all imported metamodels
 	def handleNodeBlockTypesInModel(NodeBlock context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
+		determineScope(allNodeBlocksInAllImportedMetamodels(root))
+	}
+
+	def allNodeBlocksInAllImportedMetamodels(EObject root) {
+		val aliases = new HashMap<EObject, String>()
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
+		for (st : importStatements) {
+			val sp = loadEMSL_Spec(st.value)
+			EcoreUtil2.getAllContentsOfType(sp, NodeBlock).forEach [ o |
+				aliases.put(o, if(st.alias == "") null else st.alias)
+			]
+		}
 
-		val allNodeBlocksInAllMetamodels = importStatements.map [ st |
-			loadEMSL_Spec(st.value)
-		].flatMap [ sp |
-			EcoreUtil2.getAllContentsOfType(sp, Metamodel)
-		].flatMap [ mm |
-			EcoreUtil2.getAllContentsOfType(mm, NodeBlock)
-		]
+		// Don't forget all node blocks in the same file
+		EcoreUtil2.getAllContentsOfType(root, NodeBlock).forEach[o|aliases.put(o, null)]
 
-		return Scopes.scopeFor(allNodeBlocksInAllMetamodels)
+		aliases
 	}
 
 	def loadEMSL_Spec(String uri) {

@@ -6,7 +6,7 @@ EMSL_Spec:
 	imports+=ImportStatement* entities+=Entity+;
 
 ImportStatement:
-	'import' value=STRING;
+	'import' value=STRING ('as' alias=ID)?;
 
 Entity:
 	Metamodel | Model | Pattern | Rule | Constraint;
