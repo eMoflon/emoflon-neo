@@ -81,7 +81,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	def String visualiseNodeBlockInModel(NodeBlock block) {
-		// TODO
+		// TODO [Vis of object]
 		'''
 			center footer
 				= Object: «block.name»
@@ -120,7 +120,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	def dispatch String visualiseEntity(Model entity) {
-		// TODO
+		// TODO [Vis of model]
 		'''
 			center footer
 				= Model: «entity.name»

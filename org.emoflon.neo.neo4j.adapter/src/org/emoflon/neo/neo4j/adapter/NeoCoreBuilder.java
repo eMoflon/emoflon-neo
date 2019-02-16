@@ -258,7 +258,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	public void exportModelToNeo4j(Model model) {
-		// TODO
+		// TODO [Export of model]
 
 		// 1. Somehow determine all required metamodels
 
