@@ -264,7 +264,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 		// 2. Export all metamodels
 
-		// 3. Somehow determine all requird models
+		// 3. Somehow determine all required models
 
 		// 4. Export all models
 	}
