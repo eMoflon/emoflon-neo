@@ -196,6 +196,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 					.withType(eDataType)//
 					.elementOf(neocore);
 
+			var mNode = cb.createNode()//
+					.withLabel(MODEL)//
+					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
+
 			cb.createEdge().withLabel(EREFERENCES).from(eclass).to(erefs);
 			cb.createEdge().withLabel(EREFERENCE_TYPE).from(erefs).to(eref);
 			cb.createEdge().withLabel(EREFERENCES).from(eref).to(eRefType);
@@ -259,6 +263,38 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	public void exportModelsToNeo4j(List<Model> newModels) {
 		// TODO [Export all models]
+		executeActionAsTransaction((cb) -> {
+			// Match required classes from NeoCore
+			var mNode = cb.matchNode()//
+					.withLabel(MODEL)//
+					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
+
+			var neocore = cb.matchNode()//
+					.withLabel(METAMODEL)//
+					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
+
+			var eclass = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, ECLASS)//
+					.elementOf(neocore);
+
+			var edatatype = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EDATA_TYPE)//
+					.elementOf(neocore);
+
+			var eattribute = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EATTRIBUTE)//
+					.elementOf(neocore);
+
+			var mNodes = new HashMap<Model, NodeCommand>();
+			var blockToCommand = new HashMap<NodeBlock, NodeCommand>();
+			for (var model : newModels) {
+				NodeBlocks(cb, neocore, eclass, blockToCommand, mNodes, model);
+			}
+
+		});
 	}
 
 	public void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
@@ -423,4 +459,28 @@ public class NeoCoreBuilder implements AutoCloseable {
 			blockToCommand.put(nb, nbNode);
 		});
 	}
+
+	private void NodeBlocks(CypherBuilder cb, NodeCommand neocore, NodeCommand eclass,
+			HashMap<NodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model) {
+		var mNode = cb.createNode()//
+				.withLabel(MODEL)//
+				.withStringProperty(URI_PROP, model.getName());
+		mNodes.put(model, mNode);
+
+		cb.createEdge()//
+				.withLabel(CONFORMS_TO_PROP)//
+				.from(mNode)//
+				.to(neocore);
+
+		model.getNodeBlocks().forEach(nb -> {
+			var nbNode = cb.createNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, nb.getName())//
+					.withProperty(ABSTRACT_PROP, String.valueOf(nb.isAbstract()))//
+					.withType(eclass)//
+					.elementOf(mNode);
+			blockToCommand.put(nb, nbNode);
+		});
+	}
+
 }
