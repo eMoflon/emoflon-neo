@@ -51,8 +51,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
 	private static final String CONFORMS_TO_PROP = "_conformsTo_";
 	private static final String URI_PROP = "_uri_";
-	private static final String METAMETAMODEL = "_Metametamodel_";
 	private static final String METAMODEL = "_Metamodel_";
+	private static final String MODEL = "_Model_";
 
 	private final Driver driver;
 
@@ -68,7 +68,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	public void bootstrapNeoCore() {
 		executeActionAsTransaction((cb) -> {
 			var neocore = cb.createNode()//
-					.withLabel(METAMETAMODEL)//
+					.withLabel(METAMODEL)//
 					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
 
 			cb.createEdge()//
@@ -246,7 +246,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	public boolean ecoreIsNotPresent() {
 		var result = executeActionAsTransaction(cb -> {
 			cb.returnWith(cb.matchNode()//
-					.withLabel(METAMETAMODEL)//
+					.withLabel(METAMODEL)//
 					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE));
 		});
 
@@ -257,23 +257,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return eclass.equals(EMSLPackage.eINSTANCE.getMetamodel()) || eclass.equals(EMSLPackage.eINSTANCE.getModel());
 	}
 
-	public void exportModelToNeo4j(Model model) {
-		// TODO [Export of model]
-
-		// 1. Somehow determine all required metamodels
-
-		// 2. Export all metamodels
-
-		// 3. Somehow determine all required models
-
-		// 4. Export all models
+	public void exportModelsToNeo4j(List<Model> newModels) {
+		// TODO [Export all models]
 	}
 
 	public void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
 		executeActionAsTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode()//
-					.withLabel(METAMETAMODEL)//
+					.withLabel(METAMODEL)//
 					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
 
 			var eclass = cb.matchNode()//
@@ -316,15 +308,28 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	public List<Metamodel> removeExisting(List<Metamodel> metamodels) {
+	public List<Metamodel> removeExistingMetamodels(List<Metamodel> metamodels) {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
 		StatementResult result = executeActionAsTransaction(cb -> {
 			var nc = cb.matchNode().withLabel(METAMODEL);
 			cb.returnWith(nc);
 		});
-		result.forEachRemaining(mmNode -> newMetamodels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(URI_PROP).asString())));
+		result.forEachRemaining(
+				mmNode -> newMetamodels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(URI_PROP).asString())));
 		return newMetamodels;
+	}
+
+	public List<Model> removeExistingModels(List<Model> models) {
+		var newModels = new ArrayList<Model>();
+		newModels.addAll(models);
+		StatementResult result = executeActionAsTransaction(cb -> {
+			var nc = cb.matchNode().withLabel(MODEL);
+			cb.returnWith(nc);
+		});
+		result.forEachRemaining(
+				mmNode -> newModels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(URI_PROP).asString())));
+		return newModels;
 	}
 
 	private void handleAttributes(CypherBuilder cb, NodeCommand neocore, NodeCommand edatatype, NodeCommand eattribute,

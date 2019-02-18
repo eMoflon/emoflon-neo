@@ -80,12 +80,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			visualiseNodeBlockInModel(nb)
 	}
 
-	def String visualiseNodeBlockInModel(NodeBlock block) {
-		// TODO [Vis of object]
+	def String visualiseNodeBlockInModel(NodeBlock nb) {
 		'''
-			center footer
-				= Object: «block.name»
-			end footer
+			class «labelForObject(nb)»
+			«FOR link : nb.relationStatements»
+				«labelForObject(nb)» --> «labelForObject(link.value)» : «link.name»
+			«ENDFOR»
+			«FOR attr : nb.propertyStatements»
+				«labelForObject(nb)» : «attr.name» = «attr.value»
+			«ENDFOR»
 		'''
 	}
 
@@ -93,12 +96,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			«FOR entity : root.entities»
 				«IF entity instanceof Metamodel»
-					package "«entity.name»" {
+					package "Metamodel: «entity.name»" <<Rectangle>>  {
 					  
 					}
 				«ENDIF»
 				«IF entity instanceof Model»
-					package "«entity.name»" <<Rectangle>> {
+					package "Model: «entity.name»" <<Rectangle>> {
 					  
 					}
 				«ENDIF»
@@ -118,13 +121,17 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val entity = nb.eContainer as Metamodel
 		'''"«entity.name».«nb.name»:«nb.type.name»"'''
 	}
+	
+	private def labelForObject(NodeBlock nb) {
+		val entity = nb.eContainer as Model
+		'''"«entity.name».«nb.name»:«nb.type.name»"'''
+	}
 
 	def dispatch String visualiseEntity(Model entity) {
-		// TODO [Vis of model]
 		'''
-			center footer
-				= Model: «entity.name»
-			end footer
+			«FOR nb : entity.nodeBlocks»
+				«visualiseNodeBlockInModel(nb)»
+			«ENDFOR»
 		'''
 	}
 
@@ -202,6 +209,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def plantUMLPreamble() {
 		'''
 			hide empty members
+			hide circle
 			
 			skinparam shadowing false
 			skinparam StereotypeABackgroundColor White

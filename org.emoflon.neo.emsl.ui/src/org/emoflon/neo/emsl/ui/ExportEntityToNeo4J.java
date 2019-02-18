@@ -83,39 +83,43 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 	}
 
 	private void exportEMSLEntityToNeo4j(EObject entity) {
-		if (entity instanceof Metamodel) {
-			var metamodel = (Metamodel) entity;
-			ResourceSet rs = metamodel.eResource().getResourceSet();
-			EcoreUtil.resolveAll(rs);
+		ResourceSet rs = entity.eResource().getResourceSet();
+		EcoreUtil.resolveAll(rs);
 
-			ConsoleUtil.printInfo(activePage, "Trying to export " + metamodel.getName() + " as a metamodel...");
+		var metamodels = new ArrayList<Metamodel>();
+		var models = new ArrayList<Model>();
+		rs.getAllContents().forEachRemaining(c -> {
+			if (c instanceof Metamodel)
+				metamodels.add((Metamodel) c);
+			if (c instanceof Model)
+				models.add((Model) c);
+		});
 
-			var metamodels = new ArrayList<Metamodel>();
-			rs.getAllContents().forEachRemaining(c -> {
-				if (c instanceof Metamodel)
-					metamodels.add((Metamodel) c);
-			});
+		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
+		ConsoleUtil.printInfo(activePage, "Trying to export metamodels: " + metamodelNames);
+		var newMetamodels = builder.removeExistingMetamodels(metamodels);
 
-			var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
-			ConsoleUtil.printInfo(activePage, "As a consequence, now trying to export metamodels: " + metamodelNames);
-			var newMetamodels = builder.removeExisting(metamodels);
-
-			for (Metamodel mm : metamodels) {
-				if (!newMetamodels.contains(mm))
-					ConsoleUtil.printInfo(activePage,
-							"Skipping metamodel " + mm.getName() + " as it is already present.");
-			}
-
-			if (!newMetamodels.isEmpty())
-				builder.exportMetamodelsToNeo4j(metamodels);
-			ConsoleUtil.printInfo(activePage, "Done.");
+		for (Metamodel mm : metamodels) {
+			if (!newMetamodels.contains(mm))
+				ConsoleUtil.printInfo(activePage, "Skipping metamodel " + mm.getName() + " as it is already present.");
 		}
-		if (entity instanceof Model) {
-			var model = (Model) entity;
-			ConsoleUtil.printInfo(activePage, "Trying to export " + model.getName() + " as a model...");
-			builder.exportModelToNeo4j(model);
-			ConsoleUtil.printInfo(activePage, "Done.");
+
+		if (!newMetamodels.isEmpty())
+			builder.exportMetamodelsToNeo4j(newMetamodels);
+		ConsoleUtil.printInfo(activePage, "Exported metamodels.");
+
+		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
+		ConsoleUtil.printInfo(activePage, "Trying to export models: " + modelNames);
+		var newModels = builder.removeExistingModels(models);
+
+		for (Model m : models) {
+			if (!newModels.contains(m))
+				ConsoleUtil.printInfo(activePage, "Skipping model " + m.getName() + " as it is already present.");
 		}
+
+		if (!newModels.isEmpty())
+			builder.exportModelsToNeo4j(newModels);
+		ConsoleUtil.printInfo(activePage, "Exported models.");
 	}
 
 	private void bootstrapNeoCoreIfNecessary(IWorkbenchPage activePage, NeoCoreBuilder builder) {

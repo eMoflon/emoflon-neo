@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.naming.QualifiedName
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.FilteringScope
@@ -82,7 +81,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val aliases = new HashMap<EObject, String>()
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
 		for (st : importStatements) {
-			val sp = loadEMSL_Spec(st.value)
+			val sp = loadEMSL_Spec(st.value, root)
 			EcoreUtil2.getAllContentsOfType(sp, NodeBlock).forEach [ o |
 				aliases.put(o, if(st.alias == "") null else st.alias)
 			]
@@ -94,10 +93,9 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		aliases
 	}
 
-	def loadEMSL_Spec(String uri) {
-		val rs = new XtextResourceSet()
-		val resource = rs.createResource(URI.createURI(uri))
-		resource.load(null)
+	def loadEMSL_Spec(String uri, EObject root) {
+		val rs = root.eResource.resourceSet
+		val resource = rs.getResource(URI.createURI(uri), true)
 		resource.contents.get(0)
 	}
 
