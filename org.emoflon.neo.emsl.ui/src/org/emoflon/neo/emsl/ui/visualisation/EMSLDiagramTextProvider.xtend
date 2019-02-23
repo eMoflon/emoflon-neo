@@ -70,26 +70,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		if (!selectedNodeBlock.isPresent)
 			return visualiseEntity(selectedEntity.get)
 
-		visualiseNodeBlock(selectedNodeBlock.get)
+		visualiseNodeBlock(selectedNodeBlock.get, true)
 	}
 
-	def visualiseNodeBlock(NodeBlock nb) {
+	def visualiseNodeBlock(NodeBlock nb, boolean showIncoming) {
 		if (nb.eContainer instanceof Metamodel)
-			visualiseNodeBlockInMetamodel(nb)
+			visualiseNodeBlockInMetamodel(nb, showIncoming)
 		else
-			visualiseNodeBlockInModel(nb)
-	}
-
-	def String visualiseNodeBlockInModel(NodeBlock nb) {
-		'''
-			class «labelForObject(nb)»
-			«FOR link : nb.relationStatements»
-				«labelForObject(nb)» --> «labelForObject(link.value)» : «link.name»
-			«ENDFOR»
-			«FOR attr : nb.propertyStatements»
-				«labelForObject(nb)» : «attr.name» = «attr.value»
-			«ENDFOR»
-		'''
+			visualiseNodeBlockInModel(nb, showIncoming)
 	}
 
 	def String visualiseOverview(EMSL_Spec root) {
@@ -112,7 +100,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Metamodel entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
-				«visualiseNodeBlockInMetamodel(nb)»
+				«visualiseNodeBlockInMetamodel(nb, false)»
 			«ENDFOR»
 		'''
 	}
@@ -121,7 +109,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val entity = nb.eContainer as Metamodel
 		'''"«entity.name».«nb.name»:«nb.type.name»"'''
 	}
-	
+
 	private def labelForObject(NodeBlock nb) {
 		val entity = nb.eContainer as Model
 		'''"«entity.name».«nb.name»:«nb.type.name»"'''
@@ -130,12 +118,31 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Model entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
-				«visualiseNodeBlockInModel(nb)»
+				«visualiseNodeBlockInModel(nb, false)»
+			«ENDFOR»
+		'''
+	}
+	
+	def String visualiseNodeBlockInModel(NodeBlock nb, boolean showIncoming) {
+		'''
+			class «labelForObject(nb)»
+			«FOR link : nb.relationStatements»
+				«labelForObject(nb)» --> «labelForObject(link.value)» : «link.name»
+			«ENDFOR»
+			«FOR attr : nb.propertyStatements»
+				«labelForObject(nb)» : «attr.name» = «attr.value»
+			«ENDFOR»
+			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
+				«FOR incomingRef : incoming.relationStatements»
+					«IF incomingRef.value == nb && showIncoming»
+						«labelForObject(incoming)» --> «labelForObject(nb)» : «incomingRef.name»
+					«ENDIF»
+				«ENDFOR»
 			«ENDFOR»
 		'''
 	}
 
-	def String visualiseNodeBlockInMetamodel(NodeBlock nb) {
+	def String visualiseNodeBlockInMetamodel(NodeBlock nb, boolean showIncoming) {
 		'''
 			«IF nb.abstract»abstract«ENDIF» class «labelForClass(nb)»
 			«FOR sup : nb.superTypes»
@@ -143,6 +150,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 			«FOR ref : nb.relationStatements»
 				«labelForClass(nb)» --> «labelForClass(ref.value)» : «ref.name»
+			«ENDFOR»
+			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
+				«FOR incomingRef : incoming.relationStatements»
+					«IF incomingRef.value == nb && showIncoming»
+						«labelForClass(incoming)» --> «labelForClass(nb)» : «incomingRef.name»
+					«ENDIF»
+				«ENDFOR»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
 				«labelForClass(nb)» : «attr.name» : «attr.value»
