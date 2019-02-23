@@ -73,11 +73,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		visualiseNodeBlock(selectedNodeBlock.get, true)
 	}
 
-	def visualiseNodeBlock(NodeBlock nb, boolean showIncoming) {
+	def visualiseNodeBlock(NodeBlock nb, boolean mainSelection) {
 		if (nb.eContainer instanceof Metamodel)
-			visualiseNodeBlockInMetamodel(nb, showIncoming)
+			visualiseNodeBlockInMetamodel(nb, mainSelection)
 		else
-			visualiseNodeBlockInModel(nb, showIncoming)
+			visualiseNodeBlockInModel(nb, mainSelection)
 	}
 
 	def String visualiseOverview(EMSL_Spec root) {
@@ -123,9 +123,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
-	def String visualiseNodeBlockInModel(NodeBlock nb, boolean showIncoming) {
+	def String visualiseNodeBlockInModel(NodeBlock nb, boolean mainSelection) {
 		'''
-			class «labelForObject(nb)»
+			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«labelForObject(nb)» --> «labelForObject(link.value)» : «link.name»
 			«ENDFOR»
@@ -134,7 +134,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
-					«IF incomingRef.value == nb && showIncoming»
+					«IF incomingRef.value == nb && mainSelection»
 						«labelForObject(incoming)» --> «labelForObject(nb)» : «incomingRef.name»
 					«ENDIF»
 				«ENDFOR»
@@ -142,9 +142,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 
-	def String visualiseNodeBlockInMetamodel(NodeBlock nb, boolean showIncoming) {
+	def String visualiseNodeBlockInMetamodel(NodeBlock nb, boolean mainSelection) {
 		'''
-			«IF nb.abstract»abstract«ENDIF» class «labelForClass(nb)»
+			«IF nb.abstract»abstract«ENDIF» class «labelForClass(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR sup : nb.superTypes»
 				«labelForClass(sup)» <|-- «labelForClass(nb)»
 			«ENDFOR»
@@ -153,7 +153,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
-					«IF incomingRef.value == nb && showIncoming»
+					«IF incomingRef.value == nb && mainSelection»
 						«labelForClass(incoming)» --> «labelForClass(nb)» : «incomingRef.name»
 					«ENDIF»
 				«ENDFOR»
@@ -224,17 +224,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			hide empty members
 			hide circle
+			hide stereotypes
 			
 			skinparam shadowing false
-			skinparam StereotypeABackgroundColor White
-			skinparam StereotypeCBackgroundColor White
 			
 			skinparam class {
 				BorderColor Black
 				BackgroundColor White
 				ArrowColor Black
-				StereotypeABackgroundColor White
-				StereotypeCBackgroundColor White
+				BackgroundColor<<Selection>> PapayaWhip
 			}
 			
 			skinparam package {
