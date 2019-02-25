@@ -46,6 +46,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	// Attributes
 	private static final String NAME_PROP = "name";
 	private static final String ABSTRACT_PROP = "abstract";
+	private static final String ATTRIBUTE_PROP = "attribute";
 
 	// Meta attributes and relations
 	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
@@ -290,13 +291,13 @@ public class NeoCoreBuilder implements AutoCloseable {
 			var mNodes = new HashMap<Model, NodeCommand>();
 			var blockToCommand = new HashMap<NodeBlock, NodeCommand>();
 			for (var model : newModels) {
-				NodeBlocks(cb, neocore, eclass, blockToCommand, mNodes, model);
+				nodeBlocks(cb, neocore, eclass, blockToCommand, mNodes, model);
 			}
-
 			for (var model : newModels) {
 				var mNode = mNodes.get(model);
 				for (var nb : model.getNodeBlocks()) {
 					modelRelationStatement(cb, neocore, eref, edatatype, eattribute, blockToCommand, mNode, nb);
+
 				}
 			}
 		});
@@ -444,52 +445,27 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private void modelRelationStatement(CypherBuilder cb, NodeCommand neocore, NodeCommand eref, NodeCommand edatatype,
 			NodeCommand eattribute, HashMap<NodeBlock, NodeCommand> blockToCommand, NodeCommand mNode, NodeBlock nb) {
 		for (var rs : nb.getRelationStatements()) {
-			var ref = cb.createNode()//
-					.withLabel(rs.getName())//
-					.withStringProperty(NAME_PROP, rs.getName())//
-					.withType(eref)//
-					.elementOf(mNode);
 
 			var refOwner = blockToCommand.get(nb);
 			var typeOfRef = blockToCommand.get(rs.getValue());
 
-			// cb.createEdge().withLabel(EREFERENCES).from(refOwner).to(ref);
-			// cb.createEdge().withLabel(EREFERENCE_TYPE).from(ref).to(typeOfRef);
-
 			cb.createEdge()//
-					.from(refOwner).to(ref)//
+					.from(refOwner).to(typeOfRef)//
 					.withLabel(rs.getName());
 
-			cb.createEdge()//
-					.from(ref).to(typeOfRef)//
-					.withLabel(rs.getName());
+		}
 
-			// Handle attributes of the relation
+		for (var rs : nb.getRelationStatements()) {
+
+			var refOwner = blockToCommand.get(nb);
+			var typeOfRef = blockToCommand.get(rs.getValue());
+
 			rs.getPropertyStatements().forEach(ps -> {
-				var attr = cb.createNode()//
-						.withLabel(ps.getName())//
-						.withStringProperty(NAME_PROP, ps.getName())//
-						.withType(eattribute)//
-						.elementOf(mNode);
-
-				var nameOfTypeofAttr = ps.getValue();
-
-				var typeofattr = cb.matchNode()//
-						.withLabel(EDATA_TYPE)//
-						.withStringProperty(NAME_PROP, nameOfTypeofAttr)//
-						.withType(edatatype)//
-						.elementOf(neocore);
-
-				// cb.createEdge().withLabel(EATTRIBUTES).from(ref).to(attr);
-				// cb.createEdge().withLabel(EATTRIBUTE_TYPE).from(attr).to(typeofattr);
 
 				cb.createEdge()//
-						.from(ref).to(attr)//
-						.withLabel(ps.getName());
-
-				cb.createEdge()//
-						.from(attr).to(typeofattr)//
-						.withLabel(ps.getName());
+						.from(refOwner).to(typeOfRef)//
+						.withLabel(rs.getName())//
+						.withStringProperty(NAME_PROP, ps.getName());
 
 			});
 		}
@@ -519,12 +495,13 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	private void NodeBlocks(CypherBuilder cb, NodeCommand neocore, NodeCommand eclass,
+	private void nodeBlocks(CypherBuilder cb, NodeCommand neocore, NodeCommand eclass,
 			HashMap<NodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model) {
 
 		var mNode = cb.createNode()//
 				.withLabel(MODEL)//
 				.withStringProperty(URI_PROP, model.getName());
+
 		mNodes.put(model, mNode);
 
 		cb.createEdge()//
@@ -533,13 +510,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 				.to(neocore);
 
 		model.getNodeBlocks().forEach(nb -> {
+			for (var ps : nb.getPropertyStatements()) {
 			var nbNode = cb.createNode()//
 					.withLabel(ECLASS)//
 					.withStringProperty(NAME_PROP, nb.getName())//
-					.withProperty(ABSTRACT_PROP, String.valueOf(nb.isAbstract()))//
-					.withType(eclass)//
+					.withStringProperty(ATTRIBUTE_PROP, ps.getName())//
 					.elementOf(mNode);
 			blockToCommand.put(nb, nbNode);
+			}
+
 		});
 	}
 
