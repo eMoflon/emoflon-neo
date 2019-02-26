@@ -88,11 +88,15 @@ class EdgeCommand extends ElementCommand {
 	var NodeCommand to
 
 	def from(NodeCommand nc) {
+		if (nc === null)
+			throw new IllegalArgumentException("Source node command cannot be null!")
 		from = nc
 		return this
 	}
 
 	def to(NodeCommand nc) {
+		if (nc === null)
+			throw new IllegalArgumentException("Target node command cannot be null!")
 		to = nc
 		return this
 	}
