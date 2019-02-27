@@ -10,6 +10,9 @@ class CypherBuilder {
 	List<NodeCommand> nodesToCreate
 	List<EdgeCommand> edgesToCreate
 
+	List<NodeCommand> nodesToMerge
+	List<EdgeCommand> edgesToMerge
+
 	List<NodeCommand> nodesToReturn;
 
 	new() {
@@ -18,6 +21,9 @@ class CypherBuilder {
 
 		nodesToCreate = new ArrayList
 		edgesToCreate = new ArrayList
+
+		nodesToMerge = new ArrayList
+		edgesToMerge = new ArrayList
 
 		nodesToReturn = new ArrayList
 	}
@@ -46,12 +52,26 @@ class CypherBuilder {
 		return ec
 	}
 
+	def mergeNode() {
+		val nc = new NodeCommand()
+		nodesToMerge.add(nc)
+		return nc
+	}
+
+	def mergeEdge() {
+		val ec = new EdgeCommand()
+		edgesToMerge.add(ec)
+		return ec
+	}
+
 	def String buildCommand() {
 		''' 
 			«nodesToMatch.map[n| n.match()].join("\n")»
 			«edgesToMatch.map[e| e.match()].join("\n")»
 			«nodesToCreate.map[n| n.create()].join("\n")»
 			«edgesToCreate.map[e| e.create()].join("\n")»
+			«nodesToMerge.map[n| n.merge()].join("\n")»
+			«edgesToMerge.map[e| e.merge()].join("\n")»
 			«IF nodesToReturn.size > 0»
 				RETURN «FOR nc : nodesToReturn SEPARATOR ","»(«nc.id»)«ENDFOR»
 			«ENDIF»
@@ -88,11 +108,15 @@ class EdgeCommand extends ElementCommand {
 	var NodeCommand to
 
 	def from(NodeCommand nc) {
+		if (nc === null)
+			throw new IllegalArgumentException("Source node command cannot be null!")
 		from = nc
 		return this
 	}
 
 	def to(NodeCommand nc) {
+		if (nc === null)
+			throw new IllegalArgumentException("Target node command cannot be null!")
 		to = nc
 		return this
 	}
@@ -121,6 +145,12 @@ class EdgeCommand extends ElementCommand {
 	def create() {
 		'''
 			CREATE («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
+		'''
+	}
+
+	def merge() {
+		'''
+			MERGE («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
 		'''
 	}
 }
@@ -173,6 +203,14 @@ class NodeCommand extends ElementCommand {
 			CREATE («id()»:«labels.join(":")» {«properties.join(", ")»})
 			«typeOf?.create»
 			«elOf?.create»
+		'''
+	}
+
+	def merge() {
+		'''
+			MERGE («id()»:«labels.join(":")» {«properties.join(", ")»})
+			«typeOf?.merge»
+			«elOf?.merge»
 		'''
 	}
 }

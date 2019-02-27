@@ -46,6 +46,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	// Attributes
 	private static final String NAME_PROP = "name";
 	private static final String ABSTRACT_PROP = "abstract";
+	private static final String ATTRIBUTE_PROP = "attribute";
 
 	// Meta attributes and relations
 	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
@@ -53,6 +54,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String URI_PROP = "_uri_";
 	private static final String METAMODEL = "_Metamodel_";
 	private static final String MODEL = "_Model_";
+	private static final String ORG_EMOFLON_EXAMPLES_SOKOBANLANGUAGE = "org.emoflon.examples.SokobanLanguage";
 
 	private final Driver driver;
 
@@ -233,6 +235,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 					action.accept(cb);
 					String cypherCommand = cb.buildCommand();
 
+					System.out.println(cypherCommand);
+
 					StatementResult result = tx.run(cypherCommand);
 					resultContainer.add(result);
 					return result;
@@ -259,6 +263,46 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	public void exportModelsToNeo4j(List<Model> newModels) {
 		// TODO [Export all models]
+		executeActionAsTransaction((cb) -> {
+			// Match required classes from NeoCore
+
+			var neocore = cb.matchNode()//
+					.withLabel(METAMODEL)//
+					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
+
+			var eclass = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, ECLASS)//
+					.elementOf(neocore);
+
+			var eref = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EREFERENCE)//
+					.withType(eclass)//
+					.elementOf(neocore);
+
+			var edatatype = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EDATA_TYPE)//
+					.elementOf(neocore);
+
+			var eattribute = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, EATTRIBUTE)//
+					.elementOf(neocore);
+
+			var mNodes = new HashMap<Model, NodeCommand>();
+			var blockToCommand = new HashMap<NodeBlock, NodeCommand>();
+			for (var model : newModels) {
+				handleNodeBlocksInModel(cb, neocore, eclass, blockToCommand, mNodes, model);
+			}
+			for (var model : newModels) {
+				var mNode = mNodes.get(model);
+				for (var nb : model.getNodeBlocks()) {
+					handleRelationStatementInModel(cb, neocore, eref, edatatype, eattribute, blockToCommand, mNode, nb);
+				}
+			}
+		});
 	}
 
 	public void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
@@ -400,6 +444,29 @@ public class NeoCoreBuilder implements AutoCloseable {
 		}
 	}
 
+	private void handleRelationStatementInModel(CypherBuilder cb, NodeCommand neocore, NodeCommand eref,
+			NodeCommand edatatype, NodeCommand eattribute, HashMap<NodeBlock, NodeCommand> blockToCommand,
+			NodeCommand mNode, NodeBlock nb) {
+
+		for (var rs : nb.getRelationStatements()) {
+
+			var refOwner = blockToCommand.get(nb);
+			var typeOfRef = blockToCommand.get(rs.getValue());
+
+			var attr = cb.createEdge()//
+					.from(refOwner).to(typeOfRef)//
+					.withLabel(rs.getName());
+
+			// Handle attributes of relation in model
+
+			rs.getPropertyStatements().forEach(ps -> {
+				attr.withStringProperty(ps.getName(), ps.getValue());
+
+			});
+
+		}
+	}
+
 	private void handleNodeBlocks(CypherBuilder cb, NodeCommand neocore, NodeCommand eclass,
 			HashMap<NodeBlock, NodeCommand> blockToCommand, HashMap<Metamodel, NodeCommand> mmNodes,
 			Metamodel metamodel) {
@@ -421,6 +488,44 @@ public class NeoCoreBuilder implements AutoCloseable {
 					.withType(eclass)//
 					.elementOf(mmNode);
 			blockToCommand.put(nb, nbNode);
+		});
+	}
+
+	private void handleNodeBlocksInModel(CypherBuilder cb, NodeCommand neocore, NodeCommand eclass,
+			HashMap<NodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model) {
+
+		var mNode = cb.createNode()//
+				.withLabel(MODEL)//
+				.withStringProperty(URI_PROP, model.getName());
+
+		mNodes.put(model, mNode);
+
+		model.getNodeBlocks().forEach(nb -> {
+			Metamodel mm = (Metamodel) nb.getType().eContainer();
+			var mmNode = cb.matchNode()//
+					.withLabel(METAMODEL)//
+					.withStringProperty(URI_PROP, mm.getName());
+
+			var typeOfNode = cb.matchNode()//
+					.withLabel(ECLASS)//
+					.withStringProperty(NAME_PROP, nb.getType().getName())//
+					.elementOf(mmNode);
+
+			var nbNode = cb.createNode()//
+					.withLabel(nb.getName())//
+					.withLabel(nb.getType().getName())//
+					.elementOf(mNode)//
+					.withType(typeOfNode);
+			blockToCommand.put(nb, nbNode);
+
+			// Handle attributes of model
+			nb.getPropertyStatements().forEach(ps -> {
+				nbNode.withStringProperty(ps.getName(), ps.getValue());
+			});
+
+			cb.mergeEdge()//
+					.from(mNode).to(mmNode)//
+					.withLabel(CONFORMS_TO_PROP);
 		});
 	}
 }
