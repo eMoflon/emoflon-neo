@@ -523,7 +523,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 				nbNode.withStringProperty(ps.getName(), ps.getValue());
 			});
 
-			cb.createEdge()//
+			cb.mergeEdge()//
 					.from(mNode).to(mmNode)//
 					.withLabel(CONFORMS_TO_PROP);
 		});
