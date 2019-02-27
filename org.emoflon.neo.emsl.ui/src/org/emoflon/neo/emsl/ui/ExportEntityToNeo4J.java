@@ -1,17 +1,13 @@
 package org.emoflon.neo.emsl.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.commands.ExpressionContext;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -19,8 +15,6 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
-import org.emoflon.neo.emsl.eMSL.Metamodel;
-import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.ui.util.ConsoleUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
@@ -52,7 +46,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 			ConsoleUtil.printDash(activePage);
 
 			ConsoleUtil.printInfo(activePage, "Now performing export...");
-			bootstrapNeoCoreIfNecessary(activePage, builder);
+			builder.bootstrapNeoCoreIfNecessary(s -> ConsoleUtil.printInfo(activePage, s));
 			ConsoleUtil.printDash(activePage);
 
 			exportSelectedEMSLEntity(event, builder);
@@ -83,53 +77,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 	}
 
 	private void exportEMSLEntityToNeo4j(EObject entity) {
-		ResourceSet rs = entity.eResource().getResourceSet();
-		EcoreUtil.resolveAll(rs);
-
-		var metamodels = new ArrayList<Metamodel>();
-		var models = new ArrayList<Model>();
-		rs.getAllContents().forEachRemaining(c -> {
-			if (c instanceof Metamodel)
-				metamodels.add((Metamodel) c);
-			if (c instanceof Model)
-				models.add((Model) c);
-		});
-
-		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
-		ConsoleUtil.printInfo(activePage, "Trying to export metamodels: " + metamodelNames);
-		var newMetamodels = builder.removeExistingMetamodels(metamodels);
-
-		for (Metamodel mm : metamodels) {
-			if (!newMetamodels.contains(mm))
-				ConsoleUtil.printInfo(activePage, "Skipping metamodel " + mm.getName() + " as it is already present.");
-		}
-
-		if (!newMetamodels.isEmpty())
-			builder.exportMetamodelsToNeo4j(newMetamodels);
-		ConsoleUtil.printInfo(activePage, "Exported metamodels.");
-
-		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
-		ConsoleUtil.printInfo(activePage, "Trying to export models: " + modelNames);
-		var newModels = builder.removeExistingModels(models);
-
-		for (Model m : models) {
-			if (!newModels.contains(m))
-				ConsoleUtil.printInfo(activePage, "Skipping model " + m.getName() + " as it is already present.");
-		}
-
-		if (!newModels.isEmpty())
-			builder.exportModelsToNeo4j(newModels);
-		ConsoleUtil.printInfo(activePage, "Exported models.");
-	}
-
-	private void bootstrapNeoCoreIfNecessary(IWorkbenchPage activePage, NeoCoreBuilder builder) {
-		if (builder.ecoreIsNotPresent()) {
-			ConsoleUtil.printInfo(activePage, "Trying to bootstrap NeoCore...");
-			builder.bootstrapNeoCore();
-			ConsoleUtil.printInfo(activePage, "Done.");
-		} else {
-			ConsoleUtil.printInfo(activePage, "NeoCore is already present.");
-		}
+		builder.exportEMSLEntityToNeo4j(entity, s -> ConsoleUtil.printInfo(activePage, s));
 	}
 
 	@Override

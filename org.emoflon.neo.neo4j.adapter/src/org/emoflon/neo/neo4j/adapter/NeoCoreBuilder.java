@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
@@ -46,7 +50,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 	// Attributes
 	private static final String NAME_PROP = "name";
 	private static final String ABSTRACT_PROP = "abstract";
-	private static final String ATTRIBUTE_PROP = "attribute";
 
 	// Meta attributes and relations
 	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
@@ -54,7 +57,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String URI_PROP = "_uri_";
 	private static final String METAMODEL = "_Metamodel_";
 	private static final String MODEL = "_Model_";
-	private static final String ORG_EMOFLON_EXAMPLES_SOKOBANLANGUAGE = "org.emoflon.examples.SokobanLanguage";
 
 	private final Driver driver;
 
@@ -67,6 +69,46 @@ public class NeoCoreBuilder implements AutoCloseable {
 		driver.close();
 	}
 
+	public void exportEMSLEntityToNeo4j(EObject entity, Consumer<String> logger) {
+		ResourceSet rs = entity.eResource().getResourceSet();
+		EcoreUtil.resolveAll(rs);
+
+		var metamodels = new ArrayList<Metamodel>();
+		var models = new ArrayList<Model>();
+		rs.getAllContents().forEachRemaining(c -> {
+			if (c instanceof Metamodel)
+				metamodels.add((Metamodel) c);
+			if (c instanceof Model)
+				models.add((Model) c);
+		});
+
+		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
+		logger.accept("Trying to export metamodels: " + metamodelNames);
+		var newMetamodels = removeExistingMetamodels(metamodels);
+
+		for (Metamodel mm : metamodels) {
+			if (!newMetamodels.contains(mm))
+				logger.accept( "Skipping metamodel " + mm.getName() + " as it is already present.");
+		}
+
+		if (!newMetamodels.isEmpty())
+			exportMetamodelsToNeo4j(newMetamodels);
+		logger.accept( "Exported metamodels.");
+
+		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
+		logger.accept( "Trying to export models: " + modelNames);
+		var newModels = removeExistingModels(models);
+
+		for (Model m : models) {
+			if (!newModels.contains(m))
+				logger.accept( "Skipping model " + m.getName() + " as it is already present.");
+		}
+
+		if (!newModels.isEmpty())
+			exportModelsToNeo4j(newModels);
+		logger.accept( "Exported models.");
+	}
+	
 	public void bootstrapNeoCore() {
 		executeActionAsTransaction((cb) -> {
 			var neocore = cb.createNode()//
@@ -235,7 +277,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 					action.accept(cb);
 					String cypherCommand = cb.buildCommand();
 
-					System.out.println(cypherCommand);
+					//System.out.println(cypherCommand);
 
 					StatementResult result = tx.run(cypherCommand);
 					resultContainer.add(result);
@@ -261,8 +303,17 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return eclass.equals(EMSLPackage.eINSTANCE.getMetamodel()) || eclass.equals(EMSLPackage.eINSTANCE.getModel());
 	}
 
+	public void bootstrapNeoCoreIfNecessary(Consumer<String> logger) {
+		if (ecoreIsNotPresent()) {
+			logger.accept("Trying to bootstrap NeoCore...");
+			bootstrapNeoCore();
+			logger.accept("Done.");
+		} else {
+			logger.accept("NeoCore is already present.");
+		}
+	}
+	
 	public void exportModelsToNeo4j(List<Model> newModels) {
-		// TODO [Export all models]
 		executeActionAsTransaction((cb) -> {
 			// Match required classes from NeoCore
 

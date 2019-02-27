@@ -30,7 +30,7 @@ NodeBlock:
 	(abstract?='abstract')? (action=Action)? name=ID ':' type=[NodeBlock|QualifiedName]
 	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName]*)?))?
 	('{'
-	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatements)*
+	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatement)*
 	'}')?;
 
 Implication:
@@ -48,7 +48,7 @@ PropertyStatement:
 PropertyValue:
 	INT | ID;
 
-RelationStatements:
+RelationStatement:
 	(action=Action)? '-' name=ID '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?;
 
 QualifiedName:
