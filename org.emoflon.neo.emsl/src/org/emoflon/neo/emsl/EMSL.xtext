@@ -9,7 +9,7 @@ ImportStatement:
 	'import' value=STRING ('as' alias=ID)?;
 
 Entity:
-	Metamodel | Model | Pattern | Rule | Constraint;
+	Metamodel | Model | Pattern | Rule | Constraint | TripleRule;
 
 Metamodel:
 	'metamodel' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
@@ -18,37 +18,72 @@ Model:
 	'model' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
 
 Pattern:
-	'pattern' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+	'pattern' name=QualifiedName 
+	('->' (superTypes+=[SuperTypes|QualifiedName] ('['  ']')? (',' superTypes+=[SuperTypes|QualifiedName] ('['  ']')?)*))? // TODO: fill relabeling brackets
+	'{'
+	 	nodeBlocks+=NodeBlock* 
+	 '}' ('when' conditions+=TypeReference 
+	 	(('&&' | '||') conditions+=(TypeReference))*
+	 )?;
 
 Rule:
-	'rule' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+	(abstract?='abstract')? 'rule' name=QualifiedName 
+	('->' (superTypes+=[SuperTypes|QualifiedName] ('['  ']')? (',' superTypes+=[SuperTypes|QualifiedName] ('[' ']')? )*))? // TODO: fill relabeling brackets
+	'{' nodeBlocks+=NodeBlock* '}' ('when' conditions+=(TypeReference) 
+	 	(('&&' | '||') conditions+=(TypeReference))*
+	 )?;
 
-Constraint:
-	'constraint' (NegativeConstraint | PositiveConstraint | Implication);
+TripleRule:
+	(abstract?='abstract')? 'tripleRule' name=QualifiedName 
+	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName]*)?))?
+	'{' 
+		'source' '{' nodeBlocks+=NodeBlock* '}'
+		'target' '{' nodeBlocks+=NodeBlock* '}'
+		'correspondence' '{' (action+=Action corrName+=QualifiedName '{' (src+=QualifiedName '<->' trg+=QualifiedName) '}')+ '}'
+		'attributeCondition' '{'  '}' //TODO: fill attr condi block
+	 '}'
+;
 
 NodeBlock:
 	(abstract?='abstract')? (action=Action)? name=ID ':' type=[NodeBlock|QualifiedName]
-	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName]*)?))?
+	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName])*))?
 	('{'
-	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatements)*
+	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatement)*
 	'}')?;
 
-Implication:
-	name=QualifiedName '=' 'forbid' pattern=[Pattern|QualifiedName];
+Constraint:
+	 'constraint' name=QualifiedName '=' constraints+=TypeReference (('&&' | '||') constraints+=TypeReference)*;
 
-PositiveConstraint:
-	name=QualifiedName '=' 'enforce' pattern=[Pattern|QualifiedName];
+// types a Pattern/Rule can refine; maybe add NodeBlock?
+SuperTypes:
+	Metamodel | Model | Pattern | Rule
+;
 
-NegativeConstraint:
-	name=QualifiedName '=' 'if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName];
+// split between atomic condition and constraint (needed to fix syntax)
+TypeReference:
+	ConditionTypes | (operator?='!')? constraints+=[Constraint|QualifiedName]
+;
+
+ConditionTypes:
+	NegativeConstraintBody | PositiveConstraintBody | ImplicationBody
+;
+	
+NegativeConstraintBody:
+	'forbid' pattern=[Pattern|QualifiedName];
+	
+PositiveConstraintBody:
+	'enforce' pattern=[Pattern|QualifiedName];
+	
+ImplicationBody:
+	'if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName];
 
 PropertyStatement:
-	'.' name=ID ':' value=PropertyValue;
+	'.' name=ID ':' value=PropertyValue; 
 
 PropertyValue:
 	INT | ID;
 
-RelationStatements:
+RelationStatement:
 	(action=Action)? '-' name=ID '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?;
 
 QualifiedName:
