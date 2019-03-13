@@ -23,6 +23,9 @@ import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.TransactionWork;
 
 public class NeoCoreBuilder implements AutoCloseable {
+	public static final String META_TYPE = "_type_";
+	public static final String META_EL_OF = "_elementOf_";
+
 	// EClasses
 	private static final String ECLASSIFIER = "EClassifier";
 	private static final String ECLASS = "EClass";
@@ -88,37 +91,33 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.accept( "Skipping metamodel " + mm.getName() + " as it is already present.");
+				logger.accept("Skipping metamodel " + mm.getName() + " as it is already present.");
 		}
 
 		if (!newMetamodels.isEmpty())
 			exportMetamodelsToNeo4j(newMetamodels);
-		logger.accept( "Exported metamodels.");
+		logger.accept("Exported metamodels.");
 
 		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
-		logger.accept( "Trying to export models: " + modelNames);
+		logger.accept("Trying to export models: " + modelNames);
 		var newModels = removeExistingModels(models);
 
 		for (Model m : models) {
 			if (!newModels.contains(m))
-				logger.accept( "Skipping model " + m.getName() + " as it is already present.");
+				logger.accept("Skipping model " + m.getName() + " as it is already present.");
 		}
 
 		if (!newModels.isEmpty())
 			exportModelsToNeo4j(newModels);
-		logger.accept( "Exported models.");
+		logger.accept("Exported models.");
 	}
-	
+
 	public void bootstrapNeoCore() {
 		executeActionAsTransaction((cb) -> {
-			var neocore = cb.createNode()//
-					.withLabel(METAMODEL)//
-					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
+			var neocore = cb.createNode(List.of(new NeoStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE)),
+					List.of(METAMODEL), null, null);
 
-			cb.createEdge()//
-					.withLabel(CONFORMS_TO_PROP)//
-					.from(neocore)//
-					.to(neocore);
+			cb.createEdge(List.of(), CONFORMS_TO_PROP, neocore, neocore);
 
 			var eclass = cb.createNode()//
 					.withLabel(ECLASS)//
@@ -312,11 +311,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 			logger.accept("NeoCore is already present.");
 		}
 	}
-	
+
 	public void exportModelsToNeo4j(List<Model> newModels) {
 		executeActionAsTransaction((cb) -> {
 			// Match required classes from NeoCore
-
 			var neocore = cb.matchNode()//
 					.withLabel(METAMODEL)//
 					.withStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE);
