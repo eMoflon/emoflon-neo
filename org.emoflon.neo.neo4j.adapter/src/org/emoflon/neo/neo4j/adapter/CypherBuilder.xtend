@@ -65,15 +65,18 @@ class CypherBuilder {
 	}
 
 	def String buildCommand() {
+		println(nodesToMatch.size)
+		println(nodesToMatch.toSet.size)
+
 		''' 
-			«nodesToMatch.map[n| n.match()].join("\n")»
-			«edgesToMatch.map[e| e.match()].join("\n")»
+			«nodesToMatch.toSet.map[n| n.match()].join("\n")»
+			«edgesToMatch.toSet.map[e| e.match()].join("\n")»
 			«nodesToCreate.map[n| n.create()].join("\n")»
 			«edgesToCreate.map[e| e.create()].join("\n")»
 			«nodesToMerge.map[n| n.merge()].join("\n")»
 			«edgesToMerge.map[e| e.merge()].join("\n")»
 			«IF nodesToReturn.size > 0»
-				RETURN «FOR nc : nodesToReturn SEPARATOR ","»(«nc.id»)«ENDFOR»
+				RETURN «FOR nc : nodesToReturn SEPARATOR ","»(«nc.matchId»)«ENDFOR»
 			«ENDIF»
 		'''
 	}
@@ -89,8 +92,12 @@ abstract class ElementCommand {
 	static int _id = 0
 	val int id = _id++
 
-	def id() {
+	def createId() {
 		"_" + id
+	}
+	
+	def matchId() {
+		("_" + hashCode).replace("-", "_")
 	}
 
 	protected def addProperty(String prop, String value) {
@@ -106,6 +113,14 @@ class EdgeCommand extends ElementCommand {
 	var String label
 	var NodeCommand from
 	var NodeCommand to
+
+	def getTo() {
+		to
+	}
+
+	def getFrom() {
+		from
+	}
 
 	def from(NodeCommand nc) {
 		if (nc === null)
@@ -138,21 +153,34 @@ class EdgeCommand extends ElementCommand {
 
 	def match() {
 		'''
-			MATCH («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
+			MATCH («from.matchId»)-[«matchId()»:«label» {«properties.join(", ")»}]->(«to.matchId»)
 		'''
 	}
 
 	def create() {
 		'''
-			CREATE («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
+			CREATE («from.createId»)-[«createId()»:«label» {«properties.join(", ")»}]->(«to.createId»)
 		'''
 	}
 
 	def merge() {
 		'''
-			MERGE («from.id»)-[«id()»:«label» {«properties.join(", ")»}]->(«to.id»)
+			MERGE («from.createId»)-[«createId()»:«label» {«properties.join(", ")»}]->(«to.createId»)
 		'''
 	}
+
+	override equals(Object other) {
+		if (other instanceof EdgeCommand) {
+			return label.equals(other.label) && from.equals(other.from) && to.equals(other.to) &&
+				properties.equals(other.properties)
+		} else
+			return false
+	}
+
+	override hashCode() {
+		return 13 * label?.hashCode + 17 * from?.hashCode + 23 * to?.hashCode + 29 * properties?.hashCode
+	}
+
 }
 
 class NodeCommand extends ElementCommand {
@@ -192,7 +220,7 @@ class NodeCommand extends ElementCommand {
 
 	def match() {
 		'''
-			MATCH («id()»:«labels.join(":")» {«properties.join(", ")»})
+			MATCH («matchId()»:«labels.join(":")» {«properties.join(", ")»})
 			«typeOf?.match»
 			«elOf?.match»
 		'''
@@ -200,7 +228,7 @@ class NodeCommand extends ElementCommand {
 
 	def create() {
 		'''
-			CREATE («id()»:«labels.join(":")» {«properties.join(", ")»})
+			CREATE («createId()»:«labels.join(":")» {«properties.join(", ")»})
 			«typeOf?.create»
 			«elOf?.create»
 		'''
@@ -208,9 +236,45 @@ class NodeCommand extends ElementCommand {
 
 	def merge() {
 		'''
-			MERGE («id()»:«labels.join(":")» {«properties.join(", ")»})
+			MERGE («createId()»:«labels.join(":")» {«properties.join(", ")»})
 			«typeOf?.merge»
 			«elOf?.merge»
 		'''
+	}
+
+	override equals(Object other) {
+		if (other === this)
+			return true;
+
+		if (other instanceof NodeCommand) {
+			var type = typeOf?.to
+			val model = elOf?.to
+
+			if (this === type) {
+				type = null
+			}
+
+			var areEqual = labels.equals(other.labels) && properties.equals(other.properties)
+
+			if (type !== null)
+				areEqual = areEqual && type.equals(other.typeOf?.to)
+
+			if(model !== null)
+				areEqual = areEqual && model.equals(other.elOf?.to)
+
+			return areEqual
+		} else
+			return false
+	}
+
+	override hashCode() {
+		var type = typeOf?.to
+		val model = elOf?.to
+
+		if (this === type) {
+			type = null
+		}
+
+		return 13 * labels?.hashCode + 17 * type?.hashCode + 23 * model?.hashCode + 29 * properties?.hashCode
 	}
 }

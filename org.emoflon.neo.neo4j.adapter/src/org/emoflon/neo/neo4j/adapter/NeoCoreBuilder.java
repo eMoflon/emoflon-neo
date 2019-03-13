@@ -277,7 +277,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 					action.accept(cb);
 					String cypherCommand = cb.buildCommand();
 
-					//System.out.println(cypherCommand);
+					System.out.println(cypherCommand);
 
 					StatementResult result = tx.run(cypherCommand);
 					resultContainer.add(result);
