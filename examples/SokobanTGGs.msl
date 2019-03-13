@@ -1,0 +1,203 @@
+import "platform:/resource/Test/SokobanLanguage.msl"
+
+tripleGrammar SokobanImportExport {
+	source {
+		sokobanExchangeFormat
+	}
+	
+	target {
+		SokobanLanguage
+	}
+	
+	correspondence {
+		++ EntryToField {
+			sokobanExchangeFormat.Entry <--> SokobanLanguage.Field
+		}
+		
+		++ BoardToBoard {
+			sokobanExchangeFormat.Board <--> SokobanLanguage.Board
+		}
+	}
+	
+	attributeConditions {
+		
+	}
+}
+
+
+abstract tripleRule BoardToBoardRule: SokobanImportExport {
+	source {
+		++ sokBoard:sokobanExchangeFormat.Board {
+			++ -firstRow-> row
+		}
+		++ row:sokobanExchangeFormat.Row {
+			++ -firstEntry->ne
+		}
+		++ne:sokobanExchangeFormat.Entry
+	}
+	
+	target {
+		++ board:SokobanLanguage.Board {
+			++ -fields->nf
+		}
+		++nf:SokobanLanguage.Field {
+			.row : 0
+			.col : 0
+		}
+	}
+	
+	correspondence {
+
+		++ sokBoard <-:SokobanImportExport.BoardToBoard-> board
+		
+		++ ne <-:SokobanImportExport.EntryToField-> nf
+	}
+	
+	attributeConditions {
+		
+	}
+	
+}
+
+tripleRule BoardEndEntryRule:SokobanImportExport -> BoardToBoardRule, EndRule
+
+tripleRule BoardNormalEntryRule:SokobanImportExport -> BoardToBoardRule, NormalRule
+
+
+
+abstract tripleRule EndRule {
+	source {
+		++ ne: sokobanExchangeFormat.End
+	}
+	
+	target {
+		++ nf: SokobanLanguage.Field {
+			.endPos : true
+		}
+	}
+}
+
+abstract tripleRule NormalRule {
+	source {
+		++ ne: sokobanExchangeFormat.Normal
+	}
+	
+	target {
+		++ nf: SokobanLanguage.Field {
+			.endPos : false
+		}
+	}
+}
+
+abstract tripleRule AllOtherFields {
+	source {
+		ble: sokobanExchangeFormat.Entry {
+			++ -next->ne
+		}
+		
+		++ ne: sokobanExchangeFormat.Entry
+	}
+	
+	target {
+		b: SokobanLanguage.Board {
+			-fields->ul
+			++ -fields->nf
+		}
+		
+		ul: SokobanLanguage.Field {
+			-right->ur
+			-bottom->bl
+		}
+		
+		ur: SokobanLanguage.Field {
+			++ -bottom->nf
+		}
+		
+		bl: SokobanLanguage.Field {
+			.row > 0
+			++ -right->nf
+		}
+		
+		++ nf: SokobanLanguage.Field
+	}
+	
+	correspondence {
+		++ ble <-:SokobanImportExport.EntryToField-> bl
+		
+		++ ne <-:SokobanImportExport.EntryToField-> nf
+	}
+	
+	attributeConditions {
+		eq_int(bl.row, nf.row)
+		eq_int(ur.col, nf.col)
+	}
+}
+
+tripleRule AllOtherFieldsEnd -> AllOtherFields, EndRule { }
+
+tripleRule AllOtherFieldsNormal -> AllOtherFields, NormalRule { }
+
+
+abstract tripleRule FirstRowAllCols {
+	source {
+		e: Entry { }
+		
+		++ ne: Entry { }
+	}
+	
+	target {
+		b: SokobanLanguage.Board {
+			-fields->f
+			++ -fields->nf
+		}
+		
+		f: Field {
+			.row == 0
+			++ -bottom->nf
+		}
+		
+		++ nf: Field {
+			.row : 0
+		}
+	}
+	
+	correspondence {
+		e<-:EntryToField->f
+		
+		++ ne<-:EntryToField->nf
+	}
+	
+	attributeConditions {
+		add(f.row, 1, nf.row)
+	}
+}
+
+tripleRule FirstColAllRows -> FirstRowAllCols {
+	source {
+		r: Row {
+			-firstEntry->e
+			++ -next->nr
+		}
+		
+		++ nr:Row {
+			++ -firstEntry->ne
+		}
+	}
+	target {
+		f: Field {
+			.col == 0
+			++ -bottom->nf
+		}
+		
+		++ nf: Field {
+			.col : 0
+		}
+	}
+}
+
+tripleRule FirstColAllRowsEnd -> FirstColAllRows, EndRule
+
+tripleRule FirstColAllRowsNormal -> FirstColAllRows, NormalRule
+
+
+

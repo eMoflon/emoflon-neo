@@ -1,0 +1,117 @@
+import "platform:/resource/Test/SokobanLanguage.msl"
+
+// BoardPattern.gt
+
+pattern oneSokoban {
+	sokoban : Sokoban
+}
+
+pattern oneBlock {
+	block : Block
+}
+
+pattern oneEndField {
+	field : Field {
+		.endPos == true
+	}
+}
+
+pattern anOccupiedField {
+	fig : Figure
+	
+	field : Field {
+		-figure-> fig
+	}
+}
+
+pattern boulderOnEndField -> oneEndField, anOccupiedField {
+	fig : Boulder
+} when forbid block
+
+pattern block {
+	fig: Block
+}
+
+pattern blockNotOnEndFieldInCorner -> anOccupiedField {
+	field: Field {
+		.endPos == false
+	}
+	fig: Block
+} when forbid hasLeft && forbid hasTop || forbid hasRight && forbid hasTop 
+	|| forbid hasLeft && forbid hasBottom || forbid hasRight && forbid hasBottom
+
+
+pattern hasLeft {
+	field: Field {
+		-left->leftFig
+	}
+	leftFig: Field
+}
+
+// parameterised refinements for Right, Top, Bottom
+
+
+// RulesForMovingSokoban.gt
+
+pattern occupiedField {
+	fig : Figure
+	to : Field {
+		-figure-> fig
+	}
+}
+
+pattern occupiedNext -> occupiedField[fig -> fig, to -> next] { }
+
+abstract rule moveSokoban {
+	from : Field
+	
+	to : Field
+	
+	sok : Sokoban {
+		-- -field-> from
+		++ -field-> to
+	}
+}
+
+abstract rule pushBlock {
+	to : Field
+	
+	next : Field
+	
+	block : Block {
+		-- -field-> to
+		++ -field-> next
+	}
+}
+
+
+rule moveSokobanUp -> moveSokoban {
+	from : Field {
+		-top-> to
+	}
+} when forbid occupiedField
+
+rule pushBlockUp -> pushBlock, moveSokobanUp {
+	to : Field {
+		-top-> next
+	}
+} when forbid occupiedNext
+
+rule moveSokobanDown -> moveSokoban {
+	from : Field {
+		-bottom-> next
+	}
+} when forbid occupiedNext
+
+rule pushBlockDown -> pushBlock, moveSokobanDown {
+	to : Field {
+		-bottom-> next
+	}
+} when forbid occupiedNext
+	
+
+
+
+
+
+
