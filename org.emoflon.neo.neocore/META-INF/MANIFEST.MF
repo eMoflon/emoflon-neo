@@ -5,6 +5,5 @@ Bundle-SymbolicName: org.emoflon.neo.neocore
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.emoflon.neo.neocore.Activator
 Require-Bundle: org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.emoflon.neo.neocore
 Bundle-ActivationPolicy: lazy
