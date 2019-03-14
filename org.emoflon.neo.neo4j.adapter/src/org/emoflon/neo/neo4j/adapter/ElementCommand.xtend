@@ -6,6 +6,13 @@ import org.eclipse.xtend.lib.annotations.Data
 @Data abstract class ElementCommand {
 	val List<NeoProperty> properties
 
+	new(List<NeoProperty> props) {
+		if(props === null)
+			throw new IllegalArgumentException("Properties should never be null!")
+		
+		properties = props
+	}
+
 	static int _id = 0
 	val String id = "_" + _id++
 }

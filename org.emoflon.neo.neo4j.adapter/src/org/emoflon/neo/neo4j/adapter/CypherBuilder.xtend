@@ -32,6 +32,9 @@ class CypherBuilder {
 
 	def handleNode(Map<String, NodeCommand> map, List<NeoProperty> props, List<String> labels, NodeCommand type,
 		NodeCommand container) {
+		if(props === null)
+			throw new IllegalArgumentException("Property list should not be null")
+		
 		val key = createKey(props, labels, type, container)
 		if (map.containsKey(key))
 			return map.get(key)
@@ -52,6 +55,9 @@ class CypherBuilder {
 
 	def handleEdge(Map<String, EdgeCommand> map, List<NeoProperty> props, String label, NodeCommand from,
 		NodeCommand to) {
+		if(props === null)
+			throw new IllegalArgumentException("Property list should not be null")
+		
 		val key = createKey(props, List.of(label), from, to)
 		if (map.containsKey(key))
 			return map.get(key)

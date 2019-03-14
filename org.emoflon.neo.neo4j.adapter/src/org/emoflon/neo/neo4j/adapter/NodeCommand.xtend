@@ -11,10 +11,15 @@ import org.eclipse.xtend.lib.annotations.Data
 	new(List<NeoProperty> properties, List<String> labels, NodeCommand type, NodeCommand container) {
 		super(properties)
 		this.labels = labels
-		typeOf = new EdgeCommand({
-		}, NeoCoreBuilder.META_TYPE, this, type)
-		elOf = new EdgeCommand({
-		}, NeoCoreBuilder.META_EL_OF, this, container)
+		if (type !== null)
+			typeOf = new EdgeCommand(List.of, NeoCoreBuilder.META_TYPE, this, type)
+		else
+			typeOf = null
+
+		if (container !== null)
+			elOf = new EdgeCommand(List.of, NeoCoreBuilder.META_EL_OF, this, container)
+		else
+			elOf = null
 	}
 
 	def match() {
