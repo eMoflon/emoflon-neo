@@ -463,18 +463,16 @@ public class NeoCoreBuilder implements AutoCloseable {
 			var typeOfNode = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, nb.getType().getName())),
 					List.of(ECLASS), null, mmNode);
 
-			var nbNode = cb.createNode(List.of(), List.of(nb.getName(), nb.getType().getName()), typeOfNode, mNode);
-
-			blockToCommand.put(nb, nbNode);
+			cb.mergeEdge(List.of(), CONFORMS_TO_PROP, mNode, mmNode);
 
 			// Handle attributes of model
 			List<NeoProperty> props = new ArrayList<>();
 			nb.getPropertyStatements().forEach(ps -> {
 				props.add(new NeoStringProperty(ps.getName(), ps.getValue()));
 			});
-
-			cb.mergeEdge(props, CONFORMS_TO_PROP, mNode, mmNode);
-
+			
+			var nbNode = cb.createNode(props, List.of(nb.getName(), nb.getType().getName()), typeOfNode, mNode);
+			blockToCommand.put(nb, nbNode);
 		});
 	}
 }
