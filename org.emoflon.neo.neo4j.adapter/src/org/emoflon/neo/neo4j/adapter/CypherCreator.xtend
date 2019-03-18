@@ -9,9 +9,6 @@ import org.neo4j.driver.v1.Driver
 import org.neo4j.driver.v1.Session
 
 class CypherCreator extends CypherBuilder {
-	public static final String PENDING_LABEL = "PENDING"
-	public static final String TEMP_ID_PROP = "_id"
-
 	// Use to split into chunks
 	int maxTransactionSize
 
@@ -66,7 +63,7 @@ class CypherCreator extends CypherBuilder {
 	}
 
 	def String createKeyForNodeWithContainer(List<NeoProp> props, List<String> labels, NodeCommand container) {
-		'''«props.join("-")»-«labels.join("-")»-«container.id»'''
+		'''«props.join("-")»-«labels.join("-")»-«container.name»'''
 	}
 
 	def matchEdge(List<NeoProp> props, String label, NodeCommand from, NodeCommand to) {
@@ -84,7 +81,7 @@ class CypherCreator extends CypherBuilder {
 	}
 
 	def String createKeyForEdge(List<NeoProp> props, String label, NodeCommand from, NodeCommand to) {
-		'''«props.join("-")»-«label»-«from.id»-«to.id»'''
+		'''«props.join("-")»-«label»-«from.name»-«to.name»'''
 	}
 
 	def createEdge(List<NeoProp> props, String label, NodeCommand from, NodeCommand to) {
@@ -100,39 +97,74 @@ class CypherCreator extends CypherBuilder {
 
 	def void run(Driver driver) {
 		val session = driver.session
-		createIndex(session)
-		createGreenNodesInBatches(session)
-		createGreenEdgesInBatches(session)
-		deleteIds(session)
-		dropIndex(session)
+		val nodesToIds = new HashMap<NodeCommand, Number>
+		createGreenNodesInBatches(session, nodesToIds)
+		createGreenEdgesInBatches(session, nodesToIds)
 		session.close
 	}
 
-	def createIndex(Session session) {
-		runCypherCommand(session, '''CREATE INDEX ON :«PENDING_LABEL»(«TEMP_ID_PROP»)''')
-	}
-
-	def waitForIndex(Session session) {
-		runCypherCommand(session, '''CALL db.awaitIndexes''')
-	}
-
-	def createGreenNodesInBatches(Session session) {
+	def createGreenNodesInBatches(Session session, HashMap<NodeCommand, Number> nodesToIds) {
 		val itr = nodesToCreate.iterator
-		while (itr.hasNext)
-			runCypherCommand(session, '''CREATE «itr.take(maxTransactionSize).map[n| n.node()].join(",")»''')
-	}
-
-	def createGreenEdgesInBatches(Session session) {
-		val itr = edgesToCreate.values.iterator
 		while (itr.hasNext) {
-			val edges = itr.take(maxTransactionSize).toList
-			runCypherCommand(session, '''
-			«matchRequiredNodes(edges)»
-			CREATE «edges.map[e| e.edge].join(",")»''')
+			val chosenNodes = itr.take(maxTransactionSize).toList
+			val result = runCypherCommand(session, //
+			'''
+				CREATE 
+				  «chosenNodes.map[n| n.node()].join(",\n")»
+				RETURN 
+				  «FOR n : chosenNodes SEPARATOR ",\n"»id(«n.name»)«ENDFOR»
+			''')
+
+			val record = result.next
+			chosenNodes.forEach[n|nodesToIds.put(n, record.get('''id(«n.name»)''').asNumber)]
 		}
 	}
 
-	def matchRequiredNodes(List<EdgeCommand> edges) {
+	def createGreenEdgesInBatches(Session session, HashMap<NodeCommand, Number> nodesToIds) {
+		val itr = edgesToCreate.values.iterator
+		while (itr.hasNext) {
+			val edges = itr.take(maxTransactionSize).toList
+			runCypherCommand(session, //
+			'''
+				«matchRequiredExistingNodes(edges)»
+				«matchRequiredCreatedNodes(edges, nodesToIds)»
+				CREATE 
+				  «edges.map[e| e.edge].join(",\n")»
+			''')
+		}
+	}
+
+	def matchRequiredCreatedNodes(List<EdgeCommand> edges, HashMap<NodeCommand, Number> nodesToIds) {
+		val requiredNodes = new ArrayList
+		edges.forEach [ e |
+			requiredNodes.add(e.from)
+			requiredNodes.add(e.to)
+		]
+
+		val commands = new HashSet<String>
+		val where = new HashSet<String>
+		for (rn : requiredNodes) {
+			if (nodesToCreate.contains(rn)) {
+				commands.add('''(«rn.name»)''')
+				if (!nodesToIds.containsKey(rn))
+					throw new IllegalArgumentException("Found no id for :" + rn.name)
+
+				where.add('''id(«rn.name») = «nodesToIds.get(rn)»''')
+			}
+		}
+
+		if (commands.size > 0)
+			'''
+				MATCH 
+				  «commands.join(",\n")»
+				WHERE 
+				  «where.join(" AND\n")»
+			'''
+		else
+			""
+	}
+
+	def matchRequiredExistingNodes(List<EdgeCommand> edges) {
 		val requiredNodes = new ArrayList
 		edges.forEach [ e |
 			requiredNodes.add(e.from)
@@ -143,27 +175,15 @@ class CypherCreator extends CypherBuilder {
 		for (rn : requiredNodes) {
 			if (nodesToMatch.values.contains(rn))
 				commands.add(rn.node)
-			else
-				commands.add('''(«rn.id»:«CypherCreator.PENDING_LABEL» {«CypherCreator.TEMP_ID_PROP»:"«rn.id»"})''')
 		}
 
 		if (commands.size > 0)
-			'''MATCH «commands.join(", ")»'''
+			'''
+				MATCH 
+				  «commands.join(",\n")»
+			'''
 		else
 			""
 	}
 
-	def deleteIds(Session session) {
-		runCypherCommand(
-			session,
-			'''
-			MATCH (n:«PENDING_LABEL»)
-			REMOVE n.«TEMP_ID_PROP»
-			REMOVE n:«PENDING_LABEL»'''
-		)
-	}
-
-	def dropIndex(Session session) {
-		runCypherCommand(session, '''DROP INDEX ON :«PENDING_LABEL»(«TEMP_ID_PROP»)''')
-	}
 }

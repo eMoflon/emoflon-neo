@@ -7,16 +7,16 @@ import org.neo4j.driver.v1.Session
 import org.neo4j.driver.v1.StatementResult
 
 abstract class CypherBuilder {
-	static long ID;
+	static long COUNTER;
 
-	static def final long nextId() {
-		return ID++;
+	static def final String nextName() {
+		return "_" + COUNTER++;
 	}
 	
 	protected Map<String, NodeCommand> nodesToMatch
 
 	new() {
-		ID = 0
+		CypherBuilder.COUNTER = 0
 		nodesToMatch = new HashMap
 	}
 

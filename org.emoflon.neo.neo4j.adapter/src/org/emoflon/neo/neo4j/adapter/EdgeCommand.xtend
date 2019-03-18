@@ -7,12 +7,12 @@ import org.eclipse.xtend.lib.annotations.Data
 	val NodeCommand from
 	val NodeCommand to
 
-	def match() {
-		'''MATCH («from.id»)-[:«label» {«properties.join(", ")»}]->(«to.id»)'''
+	def edge() {
+		'''(«from.name»)-[:«label» {«properties.join(", ")»}]->(«to.name»)'''
 	}
 
-	def edge(){
-		'''(«from.id»)-[:«label» {«properties.join(", ")»}]->(«to.id»)'''
+	def match() {
+		'''MATCH («from.name»)-[:«label» {«properties.join(", ")»}]->(«to.name»)'''
 	}
 
 	def create() {

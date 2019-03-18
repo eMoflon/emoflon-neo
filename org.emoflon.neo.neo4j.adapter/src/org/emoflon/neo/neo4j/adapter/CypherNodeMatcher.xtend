@@ -18,7 +18,7 @@ class CypherNodeMatcher extends CypherBuilder {
 
 		''' 
 			«nodesToMatch.values.map[n| n.match()].join("\n")»
-			RETURN «FOR nc : nodesToReturn SEPARATOR ","»(«nc.id»)«ENDFOR»
+			RETURN «FOR nc : nodesToReturn SEPARATOR ","»(«nc.name»)«ENDFOR»
 		'''
 	}
 
