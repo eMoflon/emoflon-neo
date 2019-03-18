@@ -46,9 +46,6 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 			ConsoleUtil.printDash(activePage);
 
 			ConsoleUtil.printInfo(activePage, "Now performing export...");
-			builder.bootstrapNeoCoreIfNecessary(s -> ConsoleUtil.printInfo(activePage, s));
-			ConsoleUtil.printDash(activePage);
-
 			exportSelectedEMSLEntity(event, builder);
 
 			builder.close();

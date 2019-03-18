@@ -4,30 +4,23 @@ import java.util.List
 import org.eclipse.xtend.lib.annotations.Data
 
 @Data abstract class ElementCommand {
-	val List<NeoProperty> properties
+	val List<NeoProp> properties
 
-	new(List<NeoProperty> props) {
-		if(props === null)
+	new(List<NeoProp> props) {
+		if (props === null)
 			throw new IllegalArgumentException("Properties should never be null!")
-		
+
 		properties = props
 	}
-
-	static int _id = 0
-	val String id = "_" + _id++
 }
 
-@Data class NeoProperty {
+@Data class NeoProp {
 	val String key
 	val String value
 
-	override toString() '''
-		«key» : «value»
-	'''
+	override toString() '''«key» : «value»'''
 }
 
-@Data class NeoStringProperty extends NeoProperty {
-	override toString() '''
-		«key» : "«value»"
-	'''
+@Data class NeoStrProp extends NeoProp {
+	override toString() '''«key» : "«value»"'''
 }
