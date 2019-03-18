@@ -10,15 +10,17 @@ import org.neo4j.driver.v1.Session
 
 class CypherCreator extends CypherBuilder {
 	// Use to split into chunks
-	int maxTransactionSize
+	int maxTransactionSizeNodes
+	int maxTransactionSizeEdges
 
 	Map<String, EdgeCommand> edgesToMatch
 
 	List<NodeCommand> nodesToCreate
 	Map<String, EdgeCommand> edgesToCreate
 
-	new(int maxTransactionSize) {
-		this.maxTransactionSize = maxTransactionSize
+	new(int maxTransactionSizeNodes, int maxTransactionSizeEdges) {
+		this.maxTransactionSizeNodes = maxTransactionSizeNodes
+		this.maxTransactionSizeEdges = maxTransactionSizeEdges
 
 		edgesToMatch = new HashMap
 
@@ -106,7 +108,7 @@ class CypherCreator extends CypherBuilder {
 	def createGreenNodesInBatches(Session session, HashMap<NodeCommand, Number> nodesToIds) {
 		val itr = nodesToCreate.iterator
 		while (itr.hasNext) {
-			val chosenNodes = itr.take(maxTransactionSize).toList
+			val chosenNodes = itr.take(maxTransactionSizeNodes).toList
 			val result = runCypherCommand(session, //
 			'''
 				CREATE 
@@ -123,7 +125,7 @@ class CypherCreator extends CypherBuilder {
 	def createGreenEdgesInBatches(Session session, HashMap<NodeCommand, Number> nodesToIds) {
 		val itr = edgesToCreate.values.iterator
 		while (itr.hasNext) {
-			val edges = itr.take(maxTransactionSize).toList
+			val edges = itr.take(maxTransactionSizeEdges).toList
 			runCypherCommand(session, //
 			'''
 				«matchRequiredExistingNodes(edges)»

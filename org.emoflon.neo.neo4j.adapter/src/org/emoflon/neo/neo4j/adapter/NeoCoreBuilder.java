@@ -58,10 +58,12 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String METAMODEL = "_Metamodel_";
 	private static final String MODEL = "_Model_";
 
-	private int maxTransactionSize = 1000;
+	private int maxTransactionSizeEdges = 10;
+	private int maxTransactionSizeNodes = 100;
 
-	public void setMaxTransactionSize(int maxTransactionSize) {
-		this.maxTransactionSize = maxTransactionSize;
+	public void setMaxTransactionSize(int nodes, int edges) {
+		maxTransactionSizeNodes = nodes;
+		maxTransactionSizeEdges = edges;
 	}
 
 	private final Driver driver;
@@ -196,7 +198,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
-		var creator = new CypherCreator(maxTransactionSize);
+		var creator = new CypherCreator(maxTransactionSizeNodes, maxTransactionSizeEdges);
 		action.accept(creator);
 		creator.run(driver);
 	}
