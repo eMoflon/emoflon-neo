@@ -12,7 +12,7 @@ import org.eclipse.xtend.lib.annotations.Data
 	}
 
 	def edge(){
-		'''(from)-[:«label» {«properties.join(", ")»}]->(to)'''
+		'''(«from.id»)-[:«label» {«properties.join(", ")»}]->(«to.id»)'''
 	}
 
 	def create() {
