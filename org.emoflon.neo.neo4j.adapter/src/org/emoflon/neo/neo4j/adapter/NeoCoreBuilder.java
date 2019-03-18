@@ -17,10 +17,7 @@ import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.Transaction;
-import org.neo4j.driver.v1.TransactionWork;
 
 public class NeoCoreBuilder implements AutoCloseable {
 	public static final String META_TYPE = "_type_";
@@ -61,6 +58,12 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String METAMODEL = "_Metamodel_";
 	private static final String MODEL = "_Model_";
 
+	private int maxTransactionSize = 1000;
+
+	public void setMaxTransactionSize(int maxTransactionSize) {
+		this.maxTransactionSize = maxTransactionSize;
+	}
+
 	private final Driver driver;
 
 	public NeoCoreBuilder(String uri, String user, String password) {
@@ -73,6 +76,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	public void exportEMSLEntityToNeo4j(EObject entity, Consumer<String> logger) {
+		bootstrapNeoCoreIfNecessary(logger);
+
 		ResourceSet rs = entity.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
 
@@ -112,69 +117,54 @@ public class NeoCoreBuilder implements AutoCloseable {
 		logger.accept("Exported models.");
 	}
 
-	public void bootstrapNeoCore() {
-		executeActionAsTransaction((cb) -> {
-			var neocore = cb.createNode(List.of(new NeoStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE)),
-					List.of(METAMODEL), null, null);
+	public static boolean canBeExported(EClass eclass) {
+		return eclass.equals(EMSLPackage.eINSTANCE.getMetamodel()) || eclass.equals(EMSLPackage.eINSTANCE.getModel());
+	}
 
-			var eclass = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ECLASS)), List.of(ECLASS), null,
-					neocore);
-
-			var eref = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EREFERENCE)), List.of(ECLASS), eclass,
-					neocore);
-
-			var erefs = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EREFERENCES)), List.of(EREFERENCE), eref,
-					neocore);
-
-			var eRefType = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EREFERENCE_TYPE)),
-					List.of(EREFERENCE), eref, neocore);
-
-			var eattr = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EATTRIBUTE)), List.of(ECLASS), eclass,
-					neocore);
-
-			var name = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, NAME_PROP)), List.of(EATTRIBUTE), eattr,
-					neocore);
-
-			var eDataType = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EDATA_TYPE)), List.of(ECLASS),
-					eclass, neocore);
-
-			var eAttrEle = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EATTRIBUTED_ELEMENTS)),
-					List.of(ECLASS), eclass, neocore);
-
-			var eString = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ESTRING)), List.of(EDATA_TYPE),
-					eDataType, neocore);
-
-			cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EINT)), List.of(EDATA_TYPE), eDataType, neocore);
-
-			var eAttrType = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EATTRIBUTE_TYPE)),
-					List.of(EREFERENCE), eref, neocore);
-
-			var eSupType = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ESUPER_TYPE)), List.of(EREFERENCE),
-					eref, neocore);
-
-			var eclassifier = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ECLASSIFIER)), List.of(ECLASS),
-					eclass, neocore);
-
-			var eTypedele = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ETYPED_ELEMENT)), List.of(ECLASS),
-					eclass, neocore);
-
-			var enamedele = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ENAMED_ELEMENT)), List.of(ECLASS),
-					eclass, neocore);
-
-			var eType = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ETYPE)), List.of(EREFERENCE), eref,
-					neocore);
-
-			var eAttributes = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EATTRIBUTES)), List.of(EREFERENCE),
-					eref, neocore);
-
-			var eStruct = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ESTRUCTURAL_FEATURE)), List.of(ECLASS),
-					eclass, neocore);
-
-			var abstractattr = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ABSTRACT_PROP)),
-					List.of(EATTRIBUTE), eattr, neocore);
-
-			var eBoolean = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, EBOOLEAN)), List.of(EDATA_TYPE),
-					eDataType, neocore);
+	private void bootstrapNeoCore() {
+		executeActionAsCreateTransaction((cb) -> {
+			var neocore = cb.createNode(//
+					List.of(new NeoStrProp(URI_PROP, ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL));
+			var eclass = cb.createNodeWithCont(//
+					List.of(new NeoStrProp(NAME_PROP, ECLASS)), List.of(ECLASS), neocore);
+			var eref = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EREFERENCE)), List.of(ECLASS), eclass, neocore);
+			var erefs = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EREFERENCES)), List.of(EREFERENCE), eref, neocore);
+			var eRefType = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EREFERENCE_TYPE)), List.of(EREFERENCE), eref, neocore);
+			var eattr = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EATTRIBUTE)), List.of(ECLASS), eclass, neocore);
+			var name = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, NAME_PROP)), List.of(EATTRIBUTE), eattr, neocore);
+			var eDataType = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EDATA_TYPE)), List.of(ECLASS), eclass, neocore);
+			var eAttrEle = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EATTRIBUTED_ELEMENTS)), List.of(ECLASS), eclass, neocore);
+			var eString = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ESTRING)), List.of(EDATA_TYPE), eDataType, neocore);
+			cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EINT)), List.of(EDATA_TYPE), eDataType, neocore);
+			var eAttrType = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EATTRIBUTE_TYPE)), List.of(EREFERENCE), eref, neocore);
+			var eSupType = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ESUPER_TYPE)), List.of(EREFERENCE), eref, neocore);
+			var eclassifier = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ECLASSIFIER)), List.of(ECLASS), eclass, neocore);
+			var eTypedele = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ETYPED_ELEMENT)), List.of(ECLASS), eclass, neocore);
+			var enamedele = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ENAMED_ELEMENT)), List.of(ECLASS), eclass, neocore);
+			var eType = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ETYPE)), List.of(EREFERENCE), eref, neocore);
+			var eAttributes = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EATTRIBUTES)), List.of(EREFERENCE), eref, neocore);
+			var eStruct = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ESTRUCTURAL_FEATURE)), List.of(ECLASS), eclass, neocore);
+			var abstractattr = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ABSTRACT_PROP)), List.of(EATTRIBUTE), eattr, neocore);
+			var eBoolean = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, EBOOLEAN)), List.of(EDATA_TYPE), eDataType, neocore);
 
 			cb.createEdge(List.of(), CONFORMS_TO_PROP, neocore, neocore);
 			cb.createEdge(List.of(), NAME_PROP, eclass, eclass);
@@ -202,48 +192,30 @@ public class NeoCoreBuilder implements AutoCloseable {
 			cb.createEdge(List.of(), ESUPER_TYPE, eclassifier, enamedele);
 			cb.createEdge(List.of(), EATTRIBUTE, eclass, abstractattr);
 			cb.createEdge(List.of(), EATTRIBUTE_TYPE, abstractattr, eBoolean);
-
 		});
 	}
 
-	public StatementResult executeActionAsTransaction(Consumer<CypherBuilder> action) {
-		final var resultContainer = new ArrayList<StatementResult>();
-		try (Session session = driver.session()) {
-			session.writeTransaction(new TransactionWork<StatementResult>() {
-				@Override
-				public StatementResult execute(Transaction tx) {
-					CypherBuilder cb = new CypherBuilder();
-					action.accept(cb);
-					String cypherCommand = cb.buildCommand();
-
-					System.out.println(cypherCommand);
-
-					StatementResult result = tx.run(cypherCommand);
-					resultContainer.add(result);
-					return result;
-				}
-			});
-		}
-
-		return resultContainer.get(0);
+	private void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
+		var creator = new CypherCreator(maxTransactionSize);
+		action.accept(creator);
+		creator.run(driver);
 	}
 
-	public boolean ecoreIsNotPresent() {
-		var result = executeActionAsTransaction(cb -> {
+	private StatementResult executeActionAsMatchTransaction(Consumer<CypherNodeMatcher> action) {
+		var matcher = new CypherNodeMatcher();
+		action.accept(matcher);
+		return matcher.run(driver);
+	}
 
-			cb.returnWith(cb.matchNode(List.of(new NeoStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE)),
-					List.of(METAMODEL), null, null));
-
+	private boolean ecoreIsNotPresent() {
+		var result = executeActionAsMatchTransaction(cb -> {
+			cb.returnWith(cb.matchNode(List.of(new NeoStrProp(URI_PROP, ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
 		});
 
 		return result.stream().count() == 0;
 	}
 
-	public static boolean canBeExported(EClass eclass) {
-		return eclass.equals(EMSLPackage.eINSTANCE.getMetamodel()) || eclass.equals(EMSLPackage.eINSTANCE.getModel());
-	}
-
-	public void bootstrapNeoCoreIfNecessary(Consumer<String> logger) {
+	private void bootstrapNeoCoreIfNecessary(Consumer<String> logger) {
 		if (ecoreIsNotPresent()) {
 			logger.accept("Trying to bootstrap NeoCore...");
 			bootstrapNeoCore();
@@ -253,25 +225,26 @@ public class NeoCoreBuilder implements AutoCloseable {
 		}
 	}
 
-	public void exportModelsToNeo4j(List<Model> newModels) {
-		executeActionAsTransaction((cb) -> {
+	private void exportModelsToNeo4j(List<Model> newModels) {
+		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
+			var neocore = cb.matchNode(//
+					List.of(new NeoStrProp(URI_PROP, ORG_EMOFLON_NEO_CORE)), //
+					List.of(METAMODEL));
+			var eclass = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, ECLASS)), //
+					List.of(ECLASS), neocore);
+			var eref = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, EREFERENCE)), //
+					List.of(ECLASS), neocore);
+			var edatatype = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, EDATA_TYPE)), //
+					List.of(ECLASS), neocore);
+			var eattribute = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, EATTRIBUTE)), //
+					List.of(ECLASS), neocore);
 
-			var neocore = cb.matchNode(List.of(new NeoStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE)),
-					List.of(METAMODEL), null, null);
-
-			var eclass = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, ECLASS)), List.of(ECLASS), null,
-					neocore);
-
-			var eref = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, EREFERENCE)), List.of(ECLASS), eclass,
-					neocore);
-
-			var edatatype = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, EDATA_TYPE)), List.of(ECLASS), null,
-					neocore);
-
-			var eattribute = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, EATTRIBUTE)), List.of(ECLASS), null,
-					neocore);
-
+			// Create nodes and edges in models
 			var mNodes = new HashMap<Model, NodeCommand>();
 			var blockToCommand = new HashMap<NodeBlock, NodeCommand>();
 			for (var model : newModels) {
@@ -286,23 +259,24 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	public void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
-		executeActionAsTransaction((cb) -> {
+	private void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
+		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
-			var neocore = cb.matchNode(List.of(new NeoStringProperty(URI_PROP, ORG_EMOFLON_NEO_CORE)),
-					List.of(METAMODEL), null, null);
-
-			var eclass = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, ECLASS)), List.of(ECLASS), null,
-					neocore);
-
-			var eref = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, EREFERENCE)), List.of(ECLASS), eclass,
-					neocore);
-
-			var edatatype = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, EDATA_TYPE)), List.of(ECLASS), null,
-					neocore);
-
-			var eattribute = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, EATTRIBUTE)), List.of(ECLASS), null,
-					neocore);
+			var neocore = cb.matchNode(//
+					List.of(new NeoStrProp(URI_PROP, ORG_EMOFLON_NEO_CORE)), //
+					List.of(METAMODEL));
+			var eclass = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, ECLASS)), //
+					List.of(ECLASS), neocore);
+			var eref = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, EREFERENCE)), //
+					List.of(ECLASS), neocore);
+			var edatatype = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, EDATA_TYPE)), //
+					List.of(ECLASS), neocore);
+			var eattribute = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, EATTRIBUTE)), //
+					List.of(ECLASS), neocore);
 
 			// Create metamodel nodes and handle node blocks for all metamodels
 			var mmNodes = new HashMap<Metamodel, NodeCommand>();
@@ -320,15 +294,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 					handleAttributes(cb, neocore, edatatype, eattribute, blockToCommand, mmNode, nb);
 				}
 			}
-
 		});
 	}
 
-	public List<Metamodel> removeExistingMetamodels(List<Metamodel> metamodels) {
+	private List<Metamodel> removeExistingMetamodels(List<Metamodel> metamodels) {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
-		StatementResult result = executeActionAsTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(METAMODEL), null, null);
+		StatementResult result = executeActionAsMatchTransaction(cb -> {
+			var nc = cb.matchNode(List.of(), List.of(METAMODEL));
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
@@ -336,12 +309,11 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return newMetamodels;
 	}
 
-	public List<Model> removeExistingModels(List<Model> models) {
+	private List<Model> removeExistingModels(List<Model> models) {
 		var newModels = new ArrayList<Model>();
 		newModels.addAll(models);
-		StatementResult result = executeActionAsTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(MODEL), null, null);
-
+		StatementResult result = executeActionAsMatchTransaction(cb -> {
+			var nc = cb.matchNode(List.of(), List.of(MODEL));
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
@@ -349,39 +321,36 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return newModels;
 	}
 
-	private void handleAttributes(CypherBuilder cb, NodeCommand neocore, NodeCommand edatatype, NodeCommand eattribute,
+	private void handleAttributes(CypherCreator cb, NodeCommand neocore, NodeCommand edatatype, NodeCommand eattribute,
 			HashMap<NodeBlock, NodeCommand> blockToCommand, NodeCommand mmNode, NodeBlock nb) {
 		for (var ps : nb.getPropertyStatements()) {
-			var attr = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ps.getName())), List.of(EATTRIBUTE),
-					eattribute, mmNode);
-
+			var attr = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, ps.getName())), //
+					List.of(EATTRIBUTE), eattribute, mmNode);
 			var attrOwner = blockToCommand.get(nb);
 			var nameOfTypeofAttr = ps.getValue();
-
-			var typeofattr = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, nameOfTypeofAttr)),
-					List.of(EDATA_TYPE), edatatype, neocore);
-
+			var typeofattr = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, nameOfTypeofAttr)), //
+					List.of(EDATA_TYPE), neocore);
 			cb.createEdge(List.of(), EATTRIBUTES, attrOwner, attr);
 			cb.createEdge(List.of(), EATTRIBUTE_TYPE, attr, typeofattr);
-
 		}
 	}
 
-	private void handleInheritance(CypherBuilder cb, HashMap<NodeBlock, NodeCommand> blockToCommand, NodeBlock nb) {
+	private void handleInheritance(CypherCreator cb, HashMap<NodeBlock, NodeCommand> blockToCommand, NodeBlock nb) {
 		for (var st : nb.getSuperTypes()) {
 			var nodeblock = blockToCommand.get(nb);
 			var sType = blockToCommand.get(st);
-
 			cb.createEdge(List.of(), ESUPER_TYPE, nodeblock, sType);
-
 		}
 	}
 
-	private void handleRelationStatement(CypherBuilder cb, NodeCommand neocore, NodeCommand eref, NodeCommand edatatype,
+	private void handleRelationStatement(CypherCreator cb, NodeCommand neocore, NodeCommand eref, NodeCommand edatatype,
 			NodeCommand eattribute, HashMap<NodeBlock, NodeCommand> blockToCommand, NodeCommand mmNode, NodeBlock nb) {
 		for (var rs : nb.getRelationStatements()) {
-			var ref = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, rs.getName())), List.of(EREFERENCE), eref,
-					mmNode);
+			var ref = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, rs.getName())), //
+					List.of(EREFERENCE), eref, mmNode);
 
 			var refOwner = blockToCommand.get(nb);
 			var typeOfRef = blockToCommand.get(rs.getValue());
@@ -391,22 +360,23 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 			// Handle attributes of the relation
 			rs.getPropertyStatements().forEach(ps -> {
-				var attr = cb.createNode(List.of(new NeoStringProperty(NAME_PROP, ps.getName())), List.of(EATTRIBUTE),
-						eattribute, mmNode);
+				var attr = cb.createNodeWithContAndType(//
+						List.of(new NeoStrProp(NAME_PROP, ps.getName())), //
+						List.of(EATTRIBUTE), eattribute, mmNode);
 
 				var nameOfTypeofAttr = ps.getValue();
 
-				var typeofattr = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, nameOfTypeofAttr)),
-						List.of(EDATA_TYPE), edatatype, neocore);
+				var typeofattr = cb.matchNodeWithContainer(//
+						List.of(new NeoStrProp(NAME_PROP, nameOfTypeofAttr)), //
+						List.of(EDATA_TYPE), neocore);
 
 				cb.createEdge(List.of(), EATTRIBUTES, ref, attr);
 				cb.createEdge(List.of(), EATTRIBUTE_TYPE, attr, typeofattr);
-
 			});
 		}
 	}
 
-	private void handleRelationStatementInModel(CypherBuilder cb, NodeCommand neocore, NodeCommand eref,
+	private void handleRelationStatementInModel(CypherCreator cb, NodeCommand neocore, NodeCommand eref,
 			NodeCommand edatatype, NodeCommand eattribute, HashMap<NodeBlock, NodeCommand> blockToCommand,
 			NodeCommand mNode, NodeBlock nb) {
 
@@ -416,62 +386,61 @@ public class NeoCoreBuilder implements AutoCloseable {
 			var typeOfRef = blockToCommand.get(rs.getValue());
 
 			// Handle attributes of relation in model
-			List<NeoProperty> props = new ArrayList<>();
+			List<NeoProp> props = new ArrayList<>();
 			rs.getPropertyStatements().forEach(ps -> {
-				props.add(new NeoStringProperty(ps.getName(), ps.getValue()));
+				props.add(new NeoStrProp(ps.getName(), ps.getValue()));
 			});
 
 			cb.createEdge(props, rs.getName(), refOwner, typeOfRef);
 		}
 	}
 
-	private void handleNodeBlocks(CypherBuilder cb, NodeCommand neocore, NodeCommand eclass,
+	private void handleNodeBlocks(CypherCreator cb, NodeCommand neocore, NodeCommand eclass,
 			HashMap<NodeBlock, NodeCommand> blockToCommand, HashMap<Metamodel, NodeCommand> mmNodes,
 			Metamodel metamodel) {
 
-		var mmNode = cb.createNode(List.of(new NeoStringProperty(URI_PROP, metamodel.getName())), List.of(METAMODEL),
-				null, null);
+		var mmNode = cb.createNode(List.of(new NeoStrProp(URI_PROP, metamodel.getName())), List.of(METAMODEL));
 
 		mmNodes.put(metamodel, mmNode);
 
 		cb.createEdge(List.of(), CONFORMS_TO_PROP, mmNode, neocore);
 
 		metamodel.getNodeBlocks().forEach(nb -> {
-			var nbNode = cb.createNode(
-					List.of(new NeoStringProperty(NAME_PROP, nb.getName()),
-							new NeoProperty(ABSTRACT_PROP, String.valueOf(nb.isAbstract()))),
+			var nbNode = cb.createNodeWithContAndType(//
+					List.of(new NeoStrProp(NAME_PROP, nb.getName()),
+							new NeoProp(ABSTRACT_PROP, String.valueOf(nb.isAbstract()))),
 					List.of(ECLASS), eclass, mmNode);
 
 			blockToCommand.put(nb, nbNode);
 		});
 	}
 
-	private void handleNodeBlocksInModel(CypherBuilder cb, NodeCommand neocore, NodeCommand eclass,
+	private void handleNodeBlocksInModel(CypherCreator cb, NodeCommand neocore, NodeCommand eclass,
 			HashMap<NodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model) {
 
-		var mNode = cb.createNode(List.of(new NeoStringProperty(URI_PROP, model.getName())), List.of(MODEL), null,
-				null);
+		var mNode = cb.createNode(List.of(new NeoStrProp(URI_PROP, model.getName())), List.of(MODEL));
 
 		mNodes.put(model, mNode);
 
 		model.getNodeBlocks().forEach(nb -> {
 			Metamodel mm = (Metamodel) nb.getType().eContainer();
 
-			var mmNode = cb.matchNode(List.of(new NeoStringProperty(URI_PROP, mm.getName())), List.of(METAMODEL), null,
-					null);
+			var mmNode = cb.matchNode(List.of(new NeoStrProp(URI_PROP, mm.getName())), List.of(METAMODEL));
 
-			var typeOfNode = cb.matchNode(List.of(new NeoStringProperty(NAME_PROP, nb.getType().getName())),
-					List.of(ECLASS), null, mmNode);
+			var typeOfNode = cb.matchNodeWithContainer(//
+					List.of(new NeoStrProp(NAME_PROP, nb.getType().getName())), //
+					List.of(ECLASS), mmNode);
 
-			cb.mergeEdge(List.of(), CONFORMS_TO_PROP, mNode, mmNode);
+			cb.createEdge(List.of(), CONFORMS_TO_PROP, mNode, mmNode);
 
 			// Handle attributes of model
-			List<NeoProperty> props = new ArrayList<>();
+			List<NeoProp> props = new ArrayList<>();
 			nb.getPropertyStatements().forEach(ps -> {
-				props.add(new NeoStringProperty(ps.getName(), ps.getValue()));
+				props.add(new NeoStrProp(ps.getName(), ps.getValue()));
 			});
-			
-			var nbNode = cb.createNode(props, List.of(nb.getName(), nb.getType().getName()), typeOfNode, mNode);
+
+			var nbNode = cb.createNodeWithContAndType(//
+					props, List.of(nb.getName(), nb.getType().getName()), typeOfNode, mNode);
 			blockToCommand.put(nb, nbNode);
 		});
 	}
