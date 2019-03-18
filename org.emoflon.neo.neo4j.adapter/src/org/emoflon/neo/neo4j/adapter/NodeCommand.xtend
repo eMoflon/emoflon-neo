@@ -19,8 +19,4 @@ import org.eclipse.xtend.lib.annotations.Data
 	def String match() {
 		'''MATCH «node»'''
 	}
-
-	def create() {
-		'''CREATE («name»:«labels.join(":")» {«properties.join(", ")»})'''
-	}
 }

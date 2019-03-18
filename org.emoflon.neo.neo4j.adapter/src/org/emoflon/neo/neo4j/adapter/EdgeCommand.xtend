@@ -14,8 +14,4 @@ import org.eclipse.xtend.lib.annotations.Data
 	def match() {
 		'''MATCH («from.name»)-[:«label» {«properties.join(", ")»}]->(«to.name»)'''
 	}
-
-	def create() {
-		'''CREATE «edge»'''
-	}
 }

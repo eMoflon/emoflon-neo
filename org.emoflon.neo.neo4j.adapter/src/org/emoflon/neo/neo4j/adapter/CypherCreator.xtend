@@ -2,7 +2,6 @@ package org.emoflon.neo.neo4j.adapter
 
 import java.util.ArrayList
 import java.util.HashMap
-import java.util.HashSet
 import java.util.List
 import java.util.Map
 import org.neo4j.driver.v1.Driver
@@ -100,92 +99,99 @@ class CypherCreator extends CypherBuilder {
 	def void run(Driver driver) {
 		val session = driver.session
 		val nodesToIds = new HashMap<NodeCommand, Number>
-		createGreenNodesInBatches(session, nodesToIds)
-		createGreenEdgesInBatches(session, nodesToIds)
+		matchNodesAndEdges(session, nodesToIds)
+		createGreenNodesAccordingToLabels(session, nodesToIds)
+		createGreenEdgesAccordingToLabels(session, nodesToIds)
 		session.close
 	}
 
-	def createGreenNodesInBatches(Session session, HashMap<NodeCommand, Number> nodesToIds) {
-		val itr = nodesToCreate.iterator
+	def createGreenNodesAccordingToLabels(Session session, HashMap<NodeCommand, Number> nodesToIds) {
+		val nodesGroupedByLabel = nodesToCreate.groupBy[n|n.labels.join(":")]
+		for (nodesWithSameLabel : nodesGroupedByLabel.entrySet)
+			createGreenNodesInBatches(session, nodesWithSameLabel.key, nodesWithSameLabel.value, nodesToIds)
+	}
+
+	def createGreenEdgesAccordingToLabels(Session session, HashMap<NodeCommand, Number> nodesToIds) {
+		val edgesGroupedByLabel = edgesToCreate.values.groupBy[e|e.label]
+		for (edgesWithSameLabel : edgesGroupedByLabel.entrySet)
+			createGreenEdgesInBatches(session, edgesWithSameLabel.key, edgesWithSameLabel.value, nodesToIds)
+	}
+
+	def matchNodesAndEdges(Session session, HashMap<NodeCommand, Number> nodesToIds) {
+		if (nodesToMatch.empty && edgesToMatch.empty)
+			return
+
+		val result = runCypherCommand(session, //
+		''' 
+			MATCH
+			  «nodesToMatch.values.map[n| n.node()].join(",\n")»,
+			  «edgesToMatch.values.map[e| e.edge()].join(",\n")»
+			RETURN 
+			  «FOR n : nodesToMatch.values SEPARATOR ",\n"»id(«n.name»)«ENDFOR»
+		''')
+		val record = result.next
+		nodesToMatch.values.forEach[n|nodesToIds.put(n, record.get('''id(«n.name»)''').asNumber)]
+	}
+
+	def createGreenNodesInBatches(Session session, String labels, List<NodeCommand> nodesWithSameLabel,
+		HashMap<NodeCommand, Number> nodesToIds) {
+		val itr = nodesWithSameLabel.iterator
 		while (itr.hasNext) {
 			val chosenNodes = itr.take(maxTransactionSizeNodes).toList
+			val params = new HashMap<String, Object>
+			val nodeParams = new ArrayList<HashMap<String, Object>>
+			chosenNodes.forEach [ n |
+				val nodeParam = new HashMap<String, Object>
+				nodeParam.put("props", n.properties.toMap([p|p.key], [p|p.value]))
+				nodeParam.put("name", n.name)
+				nodeParams.add(nodeParam)
+			]
+			params.put("nodes", nodeParams)
 			val result = runCypherCommand(session, //
 			'''
+				UNWIND $nodes AS node
 				CREATE 
-				  «chosenNodes.map[n| n.node()].join(",\n")»
+				  (n:«labels»)
+				  SET n = node.props
 				RETURN 
-				  «FOR n : chosenNodes SEPARATOR ",\n"»id(«n.name»)«ENDFOR»
-			''')
-
-			val record = result.next
-			chosenNodes.forEach[n|nodesToIds.put(n, record.get('''id(«n.name»)''').asNumber)]
+				  id(n)
+			''', params)
+			
+			chosenNodes.forEach[n|nodesToIds.put(n, result.next.get("id(n)").asNumber)]
 		}
 	}
 
-	def createGreenEdgesInBatches(Session session, HashMap<NodeCommand, Number> nodesToIds) {
-		val itr = edgesToCreate.values.iterator
+	def createGreenEdgesInBatches(Session session, String label, List<EdgeCommand> edgesWithSameLabel,
+		HashMap<NodeCommand, Number> nodesToIds) {
+		val itr = edgesWithSameLabel.iterator
 		while (itr.hasNext) {
 			val edges = itr.take(maxTransactionSizeEdges).toList
+			val params = new HashMap<String, Object>
+			val edgeParams = new ArrayList<HashMap<String, Object>>
+			edges.forEach [ e |
+				if (!nodesToIds.containsKey(e.from) || !nodesToIds.containsKey(e.to))
+					throw new IllegalStateException('''Found no ids for: " + «e.from» and «e.to»''')
+
+				val edgeParam = new HashMap<String, Object>
+				edgeParam.put("srcId", nodesToIds.get(e.from))
+				edgeParam.put("trgId", nodesToIds.get(e.to))
+				edgeParam.put("props", e.properties.toMap([p|p.key], [p|p.value]))
+				edgeParams.add(edgeParam)
+			]
+			params.put("edges", edgeParams)
 			runCypherCommand(session, //
 			'''
-				«matchRequiredExistingNodes(edges)»
-				«matchRequiredCreatedNodes(edges, nodesToIds)»
+				UNWIND $edges AS edge
+				MATCH
+				  (src),
+				  (trg)
+				WHERE
+				  id(src) = edge.srcId AND
+				  id(trg) = edge.trgId
 				CREATE 
-				  «edges.map[e| e.edge].join(",\n")»
-			''')
+				  (src)-[e:«label»]->(trg)
+				  SET e = edge.props
+			''', params)
 		}
 	}
-
-	def matchRequiredCreatedNodes(List<EdgeCommand> edges, HashMap<NodeCommand, Number> nodesToIds) {
-		val requiredNodes = new ArrayList
-		edges.forEach [ e |
-			requiredNodes.add(e.from)
-			requiredNodes.add(e.to)
-		]
-
-		val commands = new HashSet<String>
-		val where = new HashSet<String>
-		for (rn : requiredNodes) {
-			if (nodesToCreate.contains(rn)) {
-				commands.add('''(«rn.name»)''')
-				if (!nodesToIds.containsKey(rn))
-					throw new IllegalArgumentException("Found no id for :" + rn.name)
-
-				where.add('''id(«rn.name») = «nodesToIds.get(rn)»''')
-			}
-		}
-
-		if (commands.size > 0)
-			'''
-				MATCH 
-				  «commands.join(",\n")»
-				WHERE 
-				  «where.join(" AND\n")»
-			'''
-		else
-			""
-	}
-
-	def matchRequiredExistingNodes(List<EdgeCommand> edges) {
-		val requiredNodes = new ArrayList
-		edges.forEach [ e |
-			requiredNodes.add(e.from)
-			requiredNodes.add(e.to)
-		]
-
-		val commands = new HashSet<String>
-		for (rn : requiredNodes) {
-			if (nodesToMatch.values.contains(rn))
-				commands.add(rn.node)
-		}
-
-		if (commands.size > 0)
-			'''
-				MATCH 
-				  «commands.join(",\n")»
-			'''
-		else
-			""
-	}
-
 }

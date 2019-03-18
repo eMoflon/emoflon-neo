@@ -169,13 +169,13 @@ public class NeoCoreBuilder implements AutoCloseable {
 					List.of(new NeoStrProp(NAME_PROP, EBOOLEAN)), List.of(EDATA_TYPE), eDataType, neocore);
 
 			cb.createEdge(List.of(), CONFORMS_TO_PROP, neocore, neocore);
-			cb.createEdge(List.of(), NAME_PROP, eclass, eclass);
+			cb.createEdge(List.of(), ETYPE, eclass, eclass);
 			cb.createEdge(List.of(), EREFERENCES, eclass, erefs);
 			cb.createEdge(List.of(), EREFERENCE_TYPE, erefs, eref);
 			cb.createEdge(List.of(), EREFERENCES, eref, eRefType);
 			cb.createEdge(List.of(), EREFERENCES, eclass, eSupType);
 			cb.createEdge(List.of(), EREFERENCE_TYPE, eSupType, eclass);
-			cb.createEdge(List.of(), EATTRIBUTE, enamedele, name);
+			cb.createEdge(List.of(), EATTRIBUTES, enamedele, name);
 			cb.createEdge(List.of(), EATTRIBUTE_TYPE, name, eString);
 			cb.createEdge(List.of(), EREFERENCES, eattr, eAttrType);
 			cb.createEdge(List.of(), EREFERENCE_TYPE, eAttrType, eDataType);
@@ -192,7 +192,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			cb.createEdge(List.of(), ESUPER_TYPE, eStruct, eTypedele);
 			cb.createEdge(List.of(), ESUPER_TYPE, eTypedele, enamedele);
 			cb.createEdge(List.of(), ESUPER_TYPE, eclassifier, enamedele);
-			cb.createEdge(List.of(), EATTRIBUTE, eclass, abstractattr);
+			cb.createEdge(List.of(), EATTRIBUTES, eclass, abstractattr);
 			cb.createEdge(List.of(), EATTRIBUTE_TYPE, abstractattr, eBoolean);
 		});
 	}

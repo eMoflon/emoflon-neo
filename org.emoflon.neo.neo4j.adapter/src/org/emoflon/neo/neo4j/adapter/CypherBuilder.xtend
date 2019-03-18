@@ -28,6 +28,14 @@ abstract class CypherBuilder {
 		return session.run(cmd)
 	}
 	
+	def StatementResult runCypherCommand(Session session, String cmd, Map<String, Object> params) {
+		println("\n-------- Begin command ----")
+		println(cmd)
+		println("-------- End -------\n")
+		
+		return session.run(cmd, params)
+	}
+	
 	def matchNode(List<NeoProp> props, List<String> labels) {
 		val key = createKeyForNode(props, labels)
 		if (nodesToMatch.containsKey(key))
