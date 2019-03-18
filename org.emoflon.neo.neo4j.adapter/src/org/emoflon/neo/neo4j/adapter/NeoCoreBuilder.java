@@ -58,8 +58,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String METAMODEL = "_Metamodel_";
 	private static final String MODEL = "_Model_";
 
-	private int maxTransactionSizeEdges = 10;
-	private int maxTransactionSizeNodes = 100;
+	private int maxTransactionSizeEdges = 10000;
+	private int maxTransactionSizeNodes = 10000;
 
 	public void setMaxTransactionSize(int nodes, int edges) {
 		maxTransactionSizeNodes = nodes;
