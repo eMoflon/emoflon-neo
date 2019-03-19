@@ -24,28 +24,28 @@ Model:
 
 Pattern:
 	'pattern' name=QualifiedName 
-	('->' (superTypes+=[SuperTypes|QualifiedName] ('['  ']')? (',' superTypes+=[SuperTypes|QualifiedName] ('['  ']')?)*))? // TODO: fill relabeling brackets
+	('->' (superTypes+=[SuperType|QualifiedName] ('['  ']')? (',' superTypes+=[SuperType|QualifiedName] ('['  ']')?)*))? // TODO: fill relabeling brackets
 	'{'
 	 	nodeBlocks+=NodeBlock* 
-	'}' ('when' conditions+=TypeReference 
-		(('&&' | '||') conditions+=(TypeReference))*
+	'}' ('when' conditions+=TypeReference (('&&' | '||') conditions+=(TypeReference))*
 	)?
 ;
 
 Rule:
 	(abstract?='abstract')? 'rule' name=QualifiedName 
-	('->' (superTypes+=[SuperTypes|QualifiedName] ('['  ']')? (',' superTypes+=[SuperTypes|QualifiedName] ('[' ']')? )*))? // TODO: fill relabeling brackets
-	'{' nodeBlocks+=NodeBlock* '}' ('when' conditions+=(TypeReference) 
-	 	(('&&' | '||') conditions+=(TypeReference))*
+	('->' (superTypes+=[SuperType|QualifiedName] ('['  ']')? (',' superTypes+=[SuperType|QualifiedName] ('[' ']')? )*))? // TODO: fill relabeling brackets
+	'{' 
+		nodeBlocks+=NodeBlock* 
+	'}' ('when' conditions+=(TypeReference) (('&&' | '||') conditions+=(TypeReference))*
 	)?
 ;
 
 TripleRule:
 	(abstract?='abstract')? 'tripleRule' name=QualifiedName 
-	(':' grammarType=[TripleGrammar|QualifiedName])? ('->' superTypes+=[SuperTypes|QualifiedName] (',' superTypes+=[SuperTypes|QualifiedName])*)?
+	(':' grammarType=[TripleGrammar|QualifiedName])? ('->' superTypes+=[SuperType|QualifiedName] (',' superTypes+=[SuperType|QualifiedName])*)?
 	('{' 
-		('source' '{' nodeBlocks+=NodeBlock* '}')?
-		('target' '{' nodeBlocks+=NodeBlock* '}')?
+		('source' '{' srcNodeBlocks+=NodeBlock* '}')?
+		('target' '{' trgNodeBlocks+=NodeBlock* '}')?
 		('correspondence' '{' ((action+=Action)? source+=QualifiedName '<-' ':' type+=[Correspondence|QualifiedName] '->' trg+=QualifiedName)* '}')?
 		('attributeConditions' '{' 
 			(attributeConditions+=AttributeCondition)*
@@ -54,7 +54,7 @@ TripleRule:
 ;
 
 AttributeCondition:
-	operator+=AttributeConditionAction '(' operands+=[PropertyStatement|QualifiedName] ((',') operands+=[PropertyStatement|QualifiedName])* ')'
+	operator+=AttributeConditionAction '(' (operands+=[PropertyStatement|QualifiedName]|constant+=INT) ((',') (operands+=[PropertyStatement|QualifiedName]|constant+=INT))* ')'
 ;
 
 AttributeConditionAction:
@@ -80,7 +80,7 @@ TripleGrammar:
 
 GraphGrammar:
 	'graphGrammar' name=QualifiedName '{'
-		
+		'rules' '{' rules+=[Rule|QualifiedName] '}'
 	'}'
 ;
 
@@ -97,7 +97,7 @@ Constraint:
 ;
 
 // types a Pattern/Rule can refine; maybe add NodeBlock and TripleRule?
-SuperTypes:
+SuperType:
 	Metamodel | Model | Pattern | Rule | TripleRule
 ;
 

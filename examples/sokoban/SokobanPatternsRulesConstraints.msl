@@ -1,4 +1,4 @@
-import "platform:/resource/Test/SokobanLanguage.msl"
+import "platform:/resource/Test/SokobanLanguage.msl"  
 
 // BoardPattern.gt
 
@@ -48,7 +48,26 @@ pattern hasLeft {
 	leftFig: Field
 }
 
-// parameterised refinements for Right, Top, Bottom
+pattern hasTop {
+	field: Field {
+		-top->topFig
+	}
+	topFig: Field
+}
+
+pattern hasRight {
+	field: Field {
+		-right->rightFig
+	}
+	rightFig: Field
+}
+
+pattern hasBottom {
+	field: Field {
+		-bottom->bottomFig
+	}
+	bottomFig: Field
+}
 
 
 // RulesForMovingSokoban.gt
@@ -60,7 +79,7 @@ pattern occupiedField {
 	}
 }
 
-pattern occupiedNext -> occupiedField[fig -> fig, to -> next] { }
+pattern occupiedNext -> occupiedField {} //[fig -> fig, to -> next] { }
 
 abstract rule moveSokoban {
 	from : Field
@@ -87,25 +106,25 @@ abstract rule pushBlock {
 
 rule moveSokobanUp -> moveSokoban {
 	from : Field {
-		-top-> to
+		-top-> pushBlock.next
 	}
 } when forbid occupiedField
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
 	to : Field {
-		-top-> next
+		-top-> pushBlock.next
 	}
 } when forbid occupiedNext
 
-rule moveSokobanDown -> moveSokoban {
+rule moveSokobanDown -> moveSokoban, pushBlock {
 	from : Field {
-		-bottom-> next
+		-bottom-> pushBlock.next
 	}
 } when forbid occupiedNext
 
 rule pushBlockDown -> pushBlock, moveSokobanDown {
 	to : Field {
-		-bottom-> next
+		-bottom-> pushBlock.next
 	}
 } when forbid occupiedNext
 	

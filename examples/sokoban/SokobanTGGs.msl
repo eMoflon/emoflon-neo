@@ -128,8 +128,7 @@ abstract tripleRule AllOtherFields {
 	}
 	
 	attributeConditions {
-		eq_int(bl.row, nf.row)
-		eq_int(ur.col, nf.col)
+		
 	}
 }
 
@@ -140,9 +139,9 @@ tripleRule AllOtherFieldsNormal -> AllOtherFields, NormalRule { }
 
 abstract tripleRule FirstRowAllCols {
 	source {
-		e: Entry { }
+		e: sokobanExchangeFormat.Entry { }
 		
-		++ ne: Entry { }
+		++ ne: sokobanExchangeFormat.Entry { }
 	}
 	
 	target {
@@ -151,45 +150,45 @@ abstract tripleRule FirstRowAllCols {
 			++ -fields->nf
 		}
 		
-		f: Field {
+		f: SokobanLanguage.Field {
 			.row == 0
 			++ -bottom->nf
 		}
 		
-		++ nf: Field {
+		++ nf: SokobanLanguage.Field {
 			.row : 0
 		}
 	}
 	
 	correspondence {
-		e<-:EntryToField->f
+		e<-:SokobanImportExport.EntryToField->f
 		
-		++ ne<-:EntryToField->nf
+		++ ne<-:SokobanImportExport.EntryToField->nf
 	}
 	
 	attributeConditions {
-		add(f.row, 1, nf.row)
+		
 	}
 }
 
 tripleRule FirstColAllRows -> FirstRowAllCols {
 	source {
-		r: Row {
-			-firstEntry->e
+		r: sokobanExchangeFormat.Row {
+			-firstEntry->FirstRowAllCols.e
 			++ -next->nr
 		}
 		
-		++ nr:Row {
-			++ -firstEntry->ne
+		++ nr:sokobanExchangeFormat.Row {
+			++ -firstEntry->FirstRowAllCols.ne
 		}
 	}
 	target {
-		f: Field {
+		f: SokobanLanguage.Field {
 			.col == 0
 			++ -bottom->nf
 		}
 		
-		++ nf: Field {
+		++ nf: SokobanLanguage.Field {
 			.col : 0
 		}
 	}

@@ -14,6 +14,7 @@ import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.NodeBlock
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -62,7 +63,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	def String getDiagramBody(IEditorPart editor, ISelection selection) {
 		val EMSL_Spec root = getRoot(editor) as EMSL_Spec
-
 		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
 		val Optional<NodeBlock> selectedNodeBlock = selectedEntity.flatMap([e|determineSelectedNodeBlock(selection, e)])
 
@@ -83,7 +83,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		else if (nb.eContainer instanceof Pattern)
 			visualiseNodeBlockInPattern(nb, mainSelection)
 		else if (nb.eContainer instanceof Rule)
-			visualiseNodeBlockInRule(nb, mainSelection)
+			visualiseNodeBlockInRule(nb.eContainer as Rule, nb, mainSelection)
+		else if (nb.eContainer instanceof TripleRule)
+			visualiseNodeBlockInTripleRule(nb.eContainer as TripleRule, nb, mainSelection)
 	}
 
 	def String visualiseOverview(EMSL_Spec root) {
@@ -109,6 +111,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						
 					}
 				«ENDIF»
+				«IF entity instanceof TripleRule»
+					package "TripleRule: «entity.name»" <<Rectangle>> {
+						
+					}
+				«ENDIF»
 			«ENDFOR»
 		'''
 	}
@@ -120,27 +127,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-
-	private def labelForClass(NodeBlock nb) {
-		val entity = nb.eContainer as Metamodel
-		'''"«entity.name».«nb.name»:«nb.type.name»"'''
-	}
-
-	private def labelForObject(NodeBlock nb) {
-		val entity = nb.eContainer as Model
-		'''"«entity.name».«nb.name»:«nb.type.name»"'''
-	}
 	
-	private def labelForPatternComponent(NodeBlock nb) {
-		val entity = nb.eContainer as Pattern
-		'''"«entity.name».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
-	}
-	
-	private def labelForRuleComponent(NodeBlock nb) {
-		val entity = nb.eContainer as Rule
-		'''"«entity.name».«nb.name» : «IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
-	}
-
 	def dispatch String visualiseEntity(Model entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
@@ -160,10 +147,67 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Rule entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
-				«visualiseNodeBlockInRule(nb, false)»
+				«visualiseNodeBlockInRule(entity, nb, false)»
 			«ENDFOR»
 		'''
 	}
+	
+	def dispatch String visualiseEntity(TripleRule entity) {
+		'''
+				«FOR nb : entity.nodeBlocks»
+					«visualiseNodeBlockInTripleRule(entity, nb, false)»
+				«ENDFOR»
+		'''
+	}
+
+	private def labelForClass(NodeBlock nb) {
+		val entity = nb.eContainer as Metamodel
+		'''"«entity.name».«nb.name»:«nb.type.name»"'''
+	}
+
+	private def labelForObject(NodeBlock nb) {
+		val entity = nb.eContainer as Model
+		'''"«entity.name».«nb.name»:«nb.type.name»"'''
+	}
+	
+	private def labelForPatternComponent(NodeBlock nb) {
+		val entity = nb.eContainer as Pattern
+		if (entity !== null) {
+			if (entity.name === null)
+				entity.name = "?"
+			if (nb.name === null)
+				nb.name = "?"
+			if (nb.type.name === null)
+				nb.type.name = "?"
+				
+			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
+		}
+		else
+			'''"?"'''
+	}
+	
+	private def labelForRuleComponent(NodeBlock nb) {
+		val entity = nb.eContainer as Rule
+		if (entity !== null) {
+			if (entity.name === null)
+				entity.name = "?"
+			if (nb.name === null)
+				nb.name = "?"
+			if (nb.type.name === null)
+				nb.type.name = "?"
+				
+			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
+		}
+		else
+			'''"?"'''
+	}
+	
+	private def labelForTripleRuleComponent(NodeBlock nb) {
+		val entity = nb.eContainer as TripleRule
+		'''"«entity.name».«nb.name» : «IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
+	}
+
+	
 	
 	def String visualiseNodeBlockInModel(NodeBlock nb, boolean mainSelection) {
 		'''
@@ -225,13 +269,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
-	def String visualiseNodeBlockInRule(NodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInRule(Rule rule, NodeBlock nb, boolean mainSelection) {
 		'''
 			«IF nb.abstract»abstract«ENDIF»class «labelForRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«IF link.action !== null»
 					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#green]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.value)» : «IF link.action.op.toString === '++'»<color:green>++«ELSE»<color:red>--«ENDIF» «link.name»
-				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.value)» : «link.name»
+				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.value)» : «IF (link.name !== null)»«link.name»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
@@ -241,6 +285,28 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
 						«labelForRuleComponent(incoming)» --> «labelForRuleComponent(nb)» : «incomingRef.name»
+					«ENDIF»
+				«ENDFOR»
+			«ENDFOR»
+		'''
+	}
+	
+	def String visualiseNodeBlockInTripleRule(TripleRule rule, NodeBlock nb, boolean mainSelection) {
+		'''
+			class «labelForTripleRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			«FOR link : nb.relationStatements»
+				«IF link.action !== null»
+					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#green]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.value)» : «IF link.action.op.toString === '++'»<color:green>++«ELSE»<color:red>--«ENDIF» «link.name»
+				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.value)» : «IF (link.name !== null)»«link.name»«ELSE»?«ENDIF»
+				«ENDIF»
+			«ENDFOR»
+			«FOR attr : nb.propertyStatements»
+				«labelForTripleRuleComponent(nb)» : «attr.name» = «attr.value»
+			«ENDFOR»
+			«FOR incoming : (nb.eContainer as TripleRule).nodeBlocks.filter[n|n != nb]»
+				«FOR incomingRef : incoming.relationStatements»
+					«IF incomingRef.value == nb && mainSelection»
+						«labelForTripleRuleComponent(incoming)» --> «labelForTripleRuleComponent(nb)» : «incomingRef.name»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -279,7 +345,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch getNodeBlocks(Rule entity) {
 		entity.nodeBlocks
 	}
-
+	
+	def dispatch getNodeBlocks(TripleRule entity) {
+		val nodeBlocks = entity.srcNodeBlocks
+		nodeBlocks.addAll(entity.trgNodeBlocks)
+		return nodeBlocks
+	}
+	
 	def Optional<Entity> determineSelectedEntity(ISelection selection, EMSL_Spec root) {
 		if (selection instanceof TextSelection) {
 			// For the TextSelection documents start with line 0.
