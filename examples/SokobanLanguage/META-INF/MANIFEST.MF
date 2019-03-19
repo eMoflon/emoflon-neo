@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SokobanLanguage
+Bundle-SymbolicName: SokobanLanguage
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.emoflon.neo.example.sokoban.scalability
+Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
+ org.eclipse.emf.ecore;bundle-version="2.16.0",
+ org.eclipse.xtext;bundle-version="2.16.0",
+ org.emoflon.neo.emsl;bundle-version="1.0.0",
+ org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
+ org.apache.log4j;bundle-version="1.2.15",
+ org.apache.commons.logging;bundle-version="1.2.0"

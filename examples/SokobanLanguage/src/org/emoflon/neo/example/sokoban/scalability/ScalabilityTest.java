@@ -46,7 +46,7 @@ public class ScalabilityTest {
 			Injector injector = new EMSLStandaloneSetup().createInjectorAndDoEMFRegistration();
 			XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
 			resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE);
-			Resource resource = resourceSet.getResource(URI.createURI("platform:/resource/Test/src/SokobanBasis.msl"),
+			Resource resource = resourceSet.getResource(URI.createURI("platform:/resource/SokobanLanguage/models/SokobanBasis.msl"),
 					true);
 			EMSL_Spec spec = (EMSL_Spec) resource.getContents().get(0);
 
@@ -67,7 +67,6 @@ public class ScalabilityTest {
 	}
 
 	private void generateContents(Model model, int size) {
-
 		NodeBlock boardNb = model.getNodeBlocks().get(0);
 		NodeBlock field0 = model.getNodeBlocks().get(1);
 
