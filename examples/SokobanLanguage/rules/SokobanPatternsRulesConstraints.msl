@@ -1,4 +1,4 @@
-import "platform:/resource/Test/SokobanLanguage.msl"  
+import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
 
 // BoardPattern.gt
 
