@@ -18,7 +18,10 @@ import org.eclipse.xtext.util.SimpleAttributeResolver
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.NodeBlock
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.Rule
 
 /**
  * This class contains custom scoping description.
@@ -32,8 +35,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (typeOfNodeBlock(context, reference)) {
 			if (isInMetamodel(context as NodeBlock))
 				return handleNodeBlockTypesInMetamodel(context as NodeBlock, reference)
-			else
+			else if (isInModel(context as NodeBlock))
 				return handleNodeBlockTypesInModel(context as NodeBlock, reference)
+			else if (isInPattern(context as NodeBlock))
+				return handleNodeBlockTypesInPattern(context as NodeBlock, reference)
+			else if (isInRule(context as NodeBlock))
+				return handleNodeBlockTypesInRule(context as NodeBlock, reference)
 		}
 
 		if (superTypeOfNodeBlock(context, reference)) {
@@ -76,7 +83,22 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val root = EcoreUtil2.getRootContainer(context)
 		determineScope(allNodeBlocksInAllImportedMetamodels(root))
 	}
-
+	
+	def handleNodeBlockTypesInPattern(NodeBlock context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		// For a Pattern, first check all metamodels for classes
+		determineScope(allNodeBlocksInAllImportedMetamodels(root))
+	}
+	
+	def handleNodeBlockTypesInRule(NodeBlock context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		val possibilities = new HashMap<EObject, String>()
+		
+		possibilities.putAll(allNodeBlocksInAllImportedMetamodels(root))
+		
+		determineScope(possibilities)
+	}
+	
 	def allNodeBlocksInAllImportedMetamodels(EObject root) {
 		val aliases = new HashMap<EObject, String>()
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
@@ -101,6 +123,18 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 	def isInMetamodel(NodeBlock context) {
 		context.eContainer instanceof Metamodel
+	}
+	
+	def isInModel(NodeBlock context) {
+		context.eContainer instanceof Model
+	}
+	
+	def isInPattern(NodeBlock context) {
+		context.eContainer instanceof Pattern
+	}
+	
+	def isInRule(NodeBlock context) {
+		context.eContainer instanceof Rule
 	}
 
 	def typeOfNodeBlock(EObject context, EReference reference) {
