@@ -4,15 +4,14 @@ Bundle-Name: Neo4JAdapter
 Bundle-SymbolicName: org.emoflon.neo.neo4j.adapter
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.emoflon.neo.neo4j.adapter.Activator
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  com.google.guava;visibility:=reexport,
  org.eclipse.xtext.xbase.lib;visibility:=reexport,
  org.eclipse.xtend.lib;visibility:=reexport,
  org.eclipse.xtend.lib.macro;visibility:=reexport,
- org.emoflon.neo.emsl;bundle-version="1.0.0",
- org.eclipse.emf.common,
- org.eclipse.emf.ecore
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+ org.emoflon.neo.emsl;bundle-version="1.0.0";visibility:=reexport,
+ org.eclipse.emf.common;visibility:=reexport,
+ org.eclipse.emf.ecore;visibility:=reexport
 Automatic-Module-Name: org.emoflon.neo.neo4j.adapter
 Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.neo.neo4j.adapter
