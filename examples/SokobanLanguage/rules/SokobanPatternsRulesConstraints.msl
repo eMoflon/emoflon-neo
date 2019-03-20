@@ -106,25 +106,25 @@ abstract rule pushBlock {
 
 rule moveSokobanUp -> moveSokoban {
 	from : Field {
-		-top-> pushBlock.next
+		-top->from
 	}
 } when forbid occupiedField
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
 	to : Field {
-		-top-> pushBlock.next
+		-top-> next
 	}
 } when forbid occupiedNext
 
 rule moveSokobanDown -> moveSokoban, pushBlock {
 	from : Field {
-		-bottom-> pushBlock.next
+		-bottom-> next
 	}
 } when forbid occupiedNext
 
 rule pushBlockDown -> pushBlock, moveSokobanDown {
 	to : Field {
-		-bottom-> pushBlock.next
+		-bottom-> next
 	}
 } when forbid occupiedNext
 	
