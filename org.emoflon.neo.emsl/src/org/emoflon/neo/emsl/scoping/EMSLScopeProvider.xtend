@@ -4,6 +4,7 @@
 package org.emoflon.neo.emsl.scoping
 
 import java.util.HashMap
+import java.util.HashSet
 import java.util.Map
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.EObject
@@ -21,6 +22,7 @@ import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.NodeBlock
 import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.RelationStatement
 import org.emoflon.neo.emsl.eMSL.Rule
 
 /**
@@ -47,7 +49,24 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			return handleSuperTypesOfNodeBlock(context as NodeBlock, reference)
 		}
 
+		if (valueOfRelationStatementInRule(context, reference))
+			return handleValueOfRelationStatementInRule(context as RelationStatement, reference)
+
 		return super.getScope(context, reference)
+	}
+
+	def valueOfRelationStatementInRule(EObject context, EReference reference) {
+		context instanceof RelationStatement && reference == EMSLPackage.Literals.RELATION_STATEMENT__VALUE &&
+			context.eContainer?.eContainer instanceof Rule
+	}
+
+	def handleValueOfRelationStatementInRule(RelationStatement statement, EReference reference) {
+		val rule = statement.eContainer.eContainer as Rule
+		val allNodeBlocks = new HashSet()
+		val nodeBlocksInSuperTypes = rule.superTypes.filter[st|st instanceof Rule].flatMap[r|(r as Rule).nodeBlocks]
+		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+		allNodeBlocks.addAll(rule.nodeBlocks)
+		return Scopes.scopeFor(allNodeBlocks)
 	}
 
 	def <T extends EObject> determineScope(Map<EObject, String> aliases) {
@@ -83,34 +102,42 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val root = EcoreUtil2.getRootContainer(context)
 		determineScope(allNodeBlocksInAllImportedMetamodels(root))
 	}
-	
+
 	def handleNodeBlockTypesInPattern(NodeBlock context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
 		// For a Pattern, first check all metamodels for classes
 		determineScope(allNodeBlocksInAllImportedMetamodels(root))
 	}
-	
+
 	def handleNodeBlockTypesInRule(NodeBlock context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
 		val possibilities = new HashMap<EObject, String>()
-		
+
 		possibilities.putAll(allNodeBlocksInAllImportedMetamodels(root))
-		
+
 		determineScope(possibilities)
 	}
-	
+
 	def allNodeBlocksInAllImportedMetamodels(EObject root) {
+		allTypesInAllImportedMetamodels(root, NodeBlock)
+	}
+
+	def <T extends EObject> allTypesInAllImportedMetamodels(EObject root, Class<T> type) {
 		val aliases = new HashMap<EObject, String>()
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
 		for (st : importStatements) {
-			val sp = loadEMSL_Spec(st.value, root)
-			EcoreUtil2.getAllContentsOfType(sp, NodeBlock).forEach [ o |
-				aliases.put(o, if(st.alias == "") null else st.alias)
-			]
+			try {
+				val sp = loadEMSL_Spec(st.value, root)
+				EcoreUtil2.getAllContentsOfType(sp, type).forEach [ o |
+					aliases.put(o, if(st.alias == "") null else st.alias)
+				]
+			} catch (Exception e) {
+				println(e)
+			}
 		}
 
 		// Don't forget all node blocks in the same file
-		EcoreUtil2.getAllContentsOfType(root, NodeBlock).forEach[o|aliases.put(o, null)]
+		EcoreUtil2.getAllContentsOfType(root, type).forEach[o|aliases.put(o, null)]
 
 		aliases
 	}
@@ -124,15 +151,15 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def isInMetamodel(NodeBlock context) {
 		context.eContainer instanceof Metamodel
 	}
-	
+
 	def isInModel(NodeBlock context) {
 		context.eContainer instanceof Model
 	}
-	
+
 	def isInPattern(NodeBlock context) {
 		context.eContainer instanceof Pattern
 	}
-	
+
 	def isInRule(NodeBlock context) {
 		context.eContainer instanceof Rule
 	}
