@@ -24,6 +24,7 @@ import org.emoflon.neo.emsl.eMSL.NodeBlock
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RelationStatement
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 /**
  * This class contains custom scoping description.
@@ -51,6 +52,14 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		if (valueOfRelationStatementInRule(context, reference))
 			return handleValueOfRelationStatementInRule(context as RelationStatement, reference)
+		
+		if (valueOfRelationStatementInPattern(context, reference))
+			return handleValueOfRelationStatementInPattern(context as RelationStatement, reference)
+		
+		if (valueOfRelationStatementInTripleRule(context, reference)) {
+			return handleValueOfRelationStatementInTripleRule(context as RelationStatement, reference)
+		}
+			
 
 		return super.getScope(context, reference)
 	}
@@ -66,6 +75,42 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val nodeBlocksInSuperTypes = rule.superTypes.filter[st|st instanceof Rule].flatMap[r|(r as Rule).nodeBlocks]
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(rule.nodeBlocks)
+		return Scopes.scopeFor(allNodeBlocks)
+	}
+	
+	def valueOfRelationStatementInTripleRule(EObject context, EReference reference) {
+		context instanceof RelationStatement && reference == EMSLPackage.Literals.RELATION_STATEMENT__VALUE &&
+			context.eContainer?.eContainer instanceof TripleRule
+	}
+
+	def handleValueOfRelationStatementInTripleRule(RelationStatement statement, EReference reference) {
+		val tripleRule = statement.eContainer.eContainer as TripleRule
+		val allNodeBlocks = new HashSet()
+		// only source
+		if (tripleRule.srcNodeBlocks.contains(statement.eContainer as NodeBlock)) {
+			val nodeBlocksInSuperTypes = tripleRule.superTypes.filter[st|st instanceof TripleRule].flatMap[r|(r as TripleRule).srcNodeBlocks]
+			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+			allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
+		}
+		else if (tripleRule.trgNodeBlocks.contains(statement.eContainer as NodeBlock)){
+			val nodeBlocksInSuperTypes = tripleRule.superTypes.filter[st|st instanceof TripleRule].flatMap[r|(r as TripleRule).trgNodeBlocks]
+			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+			allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
+		}
+		return Scopes.scopeFor(allNodeBlocks)
+	}
+	
+	def valueOfRelationStatementInPattern(EObject context, EReference reference) {
+		context instanceof RelationStatement && reference == EMSLPackage.Literals.RELATION_STATEMENT__VALUE &&
+			context.eContainer?.eContainer instanceof Pattern
+	}
+
+	def handleValueOfRelationStatementInPattern(RelationStatement statement, EReference reference) {
+		val pattern = statement.eContainer.eContainer as Pattern
+		val allNodeBlocks = new HashSet()
+		val nodeBlocksInSuperTypes = pattern.superTypes.filter[st|st instanceof Pattern].flatMap[r|(r as Pattern).nodeBlocks]
+		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+		allNodeBlocks.addAll(pattern.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
 	}
 

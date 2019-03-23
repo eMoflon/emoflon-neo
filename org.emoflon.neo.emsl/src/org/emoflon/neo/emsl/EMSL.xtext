@@ -46,11 +46,15 @@ TripleRule:
 	('{' 
 		('source' '{' srcNodeBlocks+=NodeBlock* '}')?
 		('target' '{' trgNodeBlocks+=NodeBlock* '}')?
-		('correspondence' '{' ((action+=Action)? source+=QualifiedName '<-' ':' type+=[Correspondence|QualifiedName] '->' trg+=QualifiedName)* '}')?
+		('correspondence' '{' correspondences+=TripleRuleCorrespondence+ '}')?
 		('attributeConditions' '{' 
 			(attributeConditions+=AttributeCondition)*
 		'}')?
 	 '}')? ('when' conditionOperator='forbid' nacs+=TripleRuleNACs (',' nacs+=TripleRuleNACs)*)?
+;
+
+TripleRuleCorrespondence:
+	((action=Action)? source=[NodeBlock|QualifiedName] '<-' ':' type=[Correspondence|QualifiedName] '->' target=[NodeBlock|QualifiedName])
 ;
 
 AttributeCondition:
@@ -66,13 +70,13 @@ TripleRuleNACs:
 ;
 
 Correspondence:
-	action+=Action name=QualifiedName '{' source+=[NodeBlock|QualifiedName] '<-->' target+=[NodeBlock|QualifiedName] '}'
+	source+=[NodeBlock|QualifiedName] '<-' name=QualifiedName '->' target+=[NodeBlock|QualifiedName]
 ;
 
 TripleGrammar:
 	'tripleGrammar' name=QualifiedName '{'
-		'source' '{' metamodels+=[Metamodel|QualifiedName]* '}'
-		'target' '{' metamodels+=[Metamodel|QualifiedName]* '}'
+		'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
+		'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
 		'correspondence' '{' correspondences+=Correspondence* '}'
 		'attributeConditions' '{'  '}' // TODO: fill
 	'}'
@@ -80,7 +84,7 @@ TripleGrammar:
 
 GraphGrammar:
 	'graphGrammar' name=QualifiedName '{'
-		'rules' '{' rules+=[Rule|QualifiedName] '}'
+		rules+=[Rule|QualifiedName]*
 	'}'
 ;
 

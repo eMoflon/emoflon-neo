@@ -15,6 +15,8 @@ import org.emoflon.neo.emsl.eMSL.NodeBlock
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -83,9 +85,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		else if (nb.eContainer instanceof Pattern)
 			visualiseNodeBlockInPattern(nb, mainSelection)
 		else if (nb.eContainer instanceof Rule)
-			visualiseNodeBlockInRule(nb.eContainer as Rule, nb, mainSelection)
+			visualiseNodeBlockInRule(nb, mainSelection)
 		else if (nb.eContainer instanceof TripleRule)
 			visualiseNodeBlockInTripleRule(nb.eContainer as TripleRule, nb, mainSelection)
+		else if (nb.eContainer instanceof TripleGrammar) {
+			// TODO
+		}
+		else if (nb.eContainer instanceof GraphGrammar)
+			visualiseNodeBlockInRule(nb, mainSelection)
 	}
 
 	def String visualiseOverview(EMSL_Spec root) {
@@ -113,6 +120,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 				«IF entity instanceof TripleRule»
 					package "TripleRule: «entity.name»" <<Rectangle>> {
+						
+					}
+				«ENDIF»
+				«IF entity instanceof TripleGrammar»
+					package "TripleGrammar: «entity.name»" <<Rectangle>> {
+						
+					}
+				«ENDIF»
+				«IF entity instanceof GraphGrammar»
+					package "GraphGrammar: «entity.name»" <<Rectangle>> {
 						
 					}
 				«ENDIF»
@@ -147,16 +164,58 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Rule entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
-				«visualiseNodeBlockInRule(entity, nb, false)»
+				«visualiseNodeBlockInRule(nb, false)»
 			«ENDFOR»
 		'''
 	}
 	
 	def dispatch String visualiseEntity(TripleRule entity) {
 		'''
-				«FOR nb : entity.nodeBlocks»
-					«visualiseNodeBlockInTripleRule(entity, nb, false)»
+			together {
+				«FOR snb : entity.srcNodeBlocks»
+					«visualiseTripleRuleNodeBlocks(entity, snb, "SRC")»
 				«ENDFOR»
+				
+				«FOR tnb : entity.trgNodeBlocks»
+					«visualiseTripleRuleNodeBlocks(entity, tnb, "TRG")»
+				«ENDFOR»
+
+				«FOR corr : entity.correspondences»
+					"«entity.name».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«entity.name».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
+				«ENDFOR»
+			}
+		'''
+	}
+	
+	def dispatch String visualiseEntity(TripleGrammar entity) {
+		'''
+			together Source {
+				«FOR mm : entity.srcMetamodels»
+					class "«entity.name».«mm.name»"
+				«ENDFOR»
+			}
+			
+			together Target {
+				«FOR mm : entity.trgMetamodels»
+					class "«entity.name».«mm.name»"
+				«ENDFOR»
+			}
+		'''
+	}
+	
+	def dispatch String visualiseEntity(GraphGrammar entity) {
+		'''
+			«FOR r : entity.rules»
+				class "«entity.name».«r.name»"
+			«ENDFOR»
+		'''
+	}
+	
+	def String visualiseTripleRuleNodeBlocks(TripleRule entity, NodeBlock nb, String type) {
+		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
+			«FOR link : nb.relationStatements»
+				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.value.name»:«link.value.type.name»":"«link.name»"
+			«ENDFOR»
 		'''
 	}
 
@@ -205,9 +264,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	private def labelForTripleRuleComponent(NodeBlock nb) {
 		val entity = nb.eContainer as TripleRule
 		'''"«entity.name».«nb.name» : «IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
-	}
-
-	
+	}	
 	
 	def String visualiseNodeBlockInModel(NodeBlock nb, boolean mainSelection) {
 		'''
@@ -269,12 +326,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
-	def String visualiseNodeBlockInRule(Rule rule, NodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInRule(NodeBlock nb, boolean mainSelection) {
 		'''
 			«IF nb.abstract»abstract«ENDIF»class «labelForRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#green]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.value)» : «IF link.action.op.toString === '++'»<color:green>++«ELSE»<color:red>--«ENDIF» «link.name»
+					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.value)» : «link.name»
 				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.value)» : «IF (link.name !== null)»«link.name»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
@@ -296,7 +353,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			class «labelForTripleRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«IF link.action !== null»
-					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#green]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.value)» : «IF link.action.op.toString === '++'»<color:green>++«ELSE»<color:red>--«ENDIF» «link.name»
+					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.value)» : «link.name»
 				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.value)» : «IF (link.name !== null)»«link.name»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
@@ -312,13 +369,21 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
+	
+	def String visualiseMetamodelsOfTripleGrammar(TripleGrammar tg, boolean mainSelection) {
+		
+	}
+	
+	def String visualiseRulesOfGraphGrammar(GraphGrammar gg, boolean mainSelection) {
+		// TODO
+	}
 
 	def Optional<NodeBlock> determineSelectedNodeBlock(ISelection selection, Entity entity) {
 		if (selection instanceof TextSelection) {
 			// For the TextSelection documents start with line 0.
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
-
+			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar))
 			for (nodeBlock : entity.nodeBlocks) {
 				val object = NodeModelUtils.getNode(nodeBlock);
 				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
@@ -393,6 +458,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			
 			skinparam class {
 				BorderColor Black
+				BorderColor<<GREEN>> SpringGreen
 				BackgroundColor White
 				ArrowColor Black
 				BackgroundColor<<Selection>> PapayaWhip
