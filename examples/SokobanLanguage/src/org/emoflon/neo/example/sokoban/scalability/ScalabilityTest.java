@@ -3,20 +3,14 @@ package org.emoflon.neo.example.sokoban.scalability;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.xtext.resource.XtextResource;
-import org.eclipse.xtext.resource.XtextResourceSet;
-import org.emoflon.neo.emsl.EMSLStandaloneSetup;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.RelationStatement;
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl;
+import org.emoflon.neo.emsl.util.EMSUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
-
-import com.google.inject.Injector;
 
 public class ScalabilityTest {
 
@@ -35,26 +29,20 @@ public class ScalabilityTest {
 	}
 
 	public String runTests(int modelSize, int nodes, int edges) throws Exception {
-		EMSLPackageImpl.init();
-
 		String time = "";
-
 		NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:7687", "neo4j", "test");
-		builder.setMaxTransactionSize(nodes, edges);
+
 		try {
-			new org.eclipse.emf.mwe.utils.StandaloneSetup().setPlatformUri("../");
-			Injector injector = new EMSLStandaloneSetup().createInjectorAndDoEMFRegistration();
-			XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
-			resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE);
-			Resource resource = resourceSet.getResource(URI.createURI("platform:/resource/SokobanLanguage/models/SokobanBasis.msl"),
-					true);
-			EMSL_Spec spec = (EMSL_Spec) resource.getContents().get(0);
+			EMSL_Spec spec = EMSUtil.loadSpecification(//
+					"platform:/resource/SokobanLanguage/models/SokobanBasis.msl", //
+					"../");
 
 			Model model = (Model) spec.getEntities().get(0);
 			model.setName(model.getName() + "_" + modelSize);
 			generateContents(model, modelSize);
 
 			long tic = System.currentTimeMillis();
+			builder.setMaxTransactionSize(nodes, edges);
 			builder.exportEMSLEntityToNeo4j(spec.getEntities().get(0), s -> System.out.println(s));
 			long toc = System.currentTimeMillis();
 			System.out.println("Export took: " + (toc - tic) / 1000.0 + "s");
