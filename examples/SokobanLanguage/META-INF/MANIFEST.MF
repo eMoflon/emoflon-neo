@@ -11,3 +11,4 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.log4j;bundle-version="1.2.15",
  org.apache.commons.logging;bundle-version="1.2.0"
+Automatic-Module-Name: SokobanLanguage
