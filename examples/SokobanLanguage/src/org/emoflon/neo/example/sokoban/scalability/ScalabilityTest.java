@@ -3,6 +3,7 @@ package org.emoflon.neo.example.sokoban.scalability;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 import org.emoflon.neo.emsl.eMSL.Model;
@@ -13,19 +14,21 @@ import org.emoflon.neo.emsl.util.EMSUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 public class ScalabilityTest {
+	
+	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
 
 	public static void main(String[] args) throws Exception {
 		ScalabilityTest t = new ScalabilityTest();
 		EMSLPackageImpl.init();
 
-		int n = 500;
+		int n = 5;
 
 		String log = "";
 		for (int size = 0; size <= n; size += 50) {
 			log += t.runTests(size, 10000, 10000);
 		}
 
-		System.out.println(log);
+		logger.info(log);
 	}
 
 	public String runTests(int modelSize, int nodes, int edges) throws Exception {
@@ -43,9 +46,9 @@ public class ScalabilityTest {
 
 			long tic = System.currentTimeMillis();
 			builder.setMaxTransactionSize(nodes, edges);
-			builder.exportEMSLEntityToNeo4j(spec.getEntities().get(0), s -> System.out.println(s));
+			builder.exportEMSLEntityToNeo4j(spec.getEntities().get(0));
 			long toc = System.currentTimeMillis();
-			System.out.println("Export took: " + (toc - tic) / 1000.0 + "s");
+			logger.info("Export took: " + (toc - tic) / 1000.0 + "s");
 			time += (toc - tic) / 1000.0 + "\n";
 		} finally {
 			builder.close();
