@@ -5,8 +5,10 @@ import java.util.List
 import java.util.Map
 import org.neo4j.driver.v1.Session
 import org.neo4j.driver.v1.StatementResult
+import org.apache.log4j.Logger
 
 abstract class CypherBuilder {
+	static Logger logger = Logger.getLogger(CypherBuilder)
 	static long COUNTER;
 
 	static def final String nextName() {
@@ -21,17 +23,17 @@ abstract class CypherBuilder {
 	}
 
 	def StatementResult runCypherCommand(Session session, String cmd) {
-		println("\n-------- Begin command ----")
-		println(cmd)
-		println("-------- End -------\n")
+		logger.debug("-------- Begin Cypher ----")
+		logger.debug(cmd)
+		logger.debug("-------- End -------")
 		
 		return session.run(cmd)
 	}
 	
 	def StatementResult runCypherCommand(Session session, String cmd, Map<String, Object> params) {
-		println("\n-------- Begin command ----")
-		println(cmd)
-		println("-------- End -------\n")
+		logger.debug("-------- Begin Cypher ----")
+		logger.debug(cmd)
+		logger.debug("-------- End -------")
 		
 		return session.run(cmd, params)
 	}

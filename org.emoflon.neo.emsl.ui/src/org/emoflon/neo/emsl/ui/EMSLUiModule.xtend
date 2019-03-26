@@ -3,11 +3,19 @@
  */
 package org.emoflon.neo.emsl.ui
 
-import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.apache.log4j.Logger
+import org.eclipse.ui.plugin.AbstractUIPlugin
+import org.emoflon.neo.emsl.ui.util.ENeoConsole
+import org.apache.log4j.Level
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
  */
-@FinalFieldsConstructor
 class EMSLUiModule extends AbstractEMSLUiModule {
+	new(AbstractUIPlugin plugin) {
+		super(plugin);
+		
+		Logger.rootLogger.level = Level.DEBUG
+		Logger.rootLogger.addAppender(new ENeoConsole);
+	}
 }
