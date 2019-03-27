@@ -162,12 +162,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	private def labelForClass(NodeBlock nb) {
 		val entity = nb.eContainer as Metamodel
-		'''"«entity.name».«nb.name»:«nb.type.name»"'''
+		'''"«entity?.name».«nb?.name»:«nb?.type?.name»"'''
 	}
 
 	private def labelForObject(NodeBlock nb) {
 		val entity = nb.eContainer as Model
-		'''"«entity.name».«nb.name»:«nb.type.name»"'''
+		'''"«entity?.name».«nb?.name»:«nb?.type?.name»"'''
 	}
 	
 	private def labelForPatternComponent(NodeBlock nb) {
