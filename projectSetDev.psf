@@ -4,6 +4,7 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.emsl"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.emsl.ide"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.emsl.ui"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.engine"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.neo4j.adapter"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.neocore"/>
 </provider>
