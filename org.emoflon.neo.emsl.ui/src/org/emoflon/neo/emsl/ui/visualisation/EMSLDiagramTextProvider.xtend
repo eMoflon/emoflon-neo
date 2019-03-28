@@ -100,28 +100,31 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR entity : root.entities»
 				«IF entity instanceof Metamodel»
 					package "Metamodel: «entity.name»" <<Rectangle>>  {
-					  
+						
 					}
 				«ENDIF»
 				«IF entity instanceof Model»
 					package "Model: «entity.name»" <<Rectangle>> {
-					  
+						
 					}
 				«ENDIF»
 				«IF entity instanceof Pattern»
 					package "Pattern: «entity.name»" <<Rectangle>> {
 						
 					}
+					«visualiseSuperTypesInPattern(entity)»
 				«ENDIF»
 				«IF entity instanceof Rule»
 					package "Rule: «entity.name»" <<Rectangle>> {
 						
 					}
+					«visualiseSuperTypesInRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleRule»
 					package "TripleRule: «entity.name»" <<Rectangle>> {
 						
 					}
+					«visualiseSuperTypesInTripleRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
 					package "TripleGrammar: «entity.name»" <<Rectangle>> {
@@ -133,6 +136,75 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						
 					}
 				«ENDIF»
+			«ENDFOR»
+		'''
+	}
+	
+	def String visualiseSuperTypesInPattern(Pattern entity) {
+		'''
+			«FOR st : entity.superTypes»
+				«IF (st instanceof Pattern)»
+					"Pattern: «entity.name»"--|>"Pattern: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Rule)»
+					"Pattern: "«entity.name»"--|>"Rule: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Model)»
+					"Pattern: «entity.name»"--|>"Model: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Metamodel)»
+					"Pattern: «entity.name»"--|>"Metamodel: «st.name»"
+				«ENDIF»
+				«IF (st instanceof TripleRule)»
+					"Pattern: «entity.name»"--|>"TripleRule: «st.name»"
+				«ENDIF»
+				««« Maybe add more types
+			«ENDFOR»
+		'''
+	}
+
+	def String visualiseSuperTypesInRule(Rule entity) {
+		'''
+			«FOR st : entity.superTypes»
+				«IF (st instanceof Pattern)»
+					"Rule: «entity.name»"--|>"Pattern: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Rule)»
+					"Rule: «entity.name»"--|>"Rule: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Model)»
+					"Rule: «entity.name»"--|>"Model: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Metamodel)»
+					"Rule: «entity.name»"--|>"Metamodel: «st.name»"
+				«ENDIF»
+				«IF (st instanceof TripleRule)»
+					"Rule: «entity.name»"--|>"TripleRule: «st.name»"
+				«ENDIF»
+				««« Maybe add more types
+			«ENDFOR»
+		'''
+	}
+	
+	def String visualiseSuperTypesInTripleRule(TripleRule entity) {
+		'''
+			«FOR st : entity.superTypes»
+				«IF (st instanceof Pattern)»
+					"TripleRule: «entity.name»"--|>"Pattern: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Rule)»
+					"TripleRule: "«entity.name»"--|>"Rule: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Model)»
+					"TripleRule: «entity.name»"--|>"Model: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Metamodel)»
+					"TripleRule: «entity.name»"--|>"Metamodel: «st.name»"
+				«ENDIF»
+				«IF (st instanceof TripleRule)»
+					"TripleRule: «entity.name»"--|>"TripleRule: «st.name»"
+				«ENDIF»
+				««« Maybe add more types
 			«ENDFOR»
 		'''
 	}
