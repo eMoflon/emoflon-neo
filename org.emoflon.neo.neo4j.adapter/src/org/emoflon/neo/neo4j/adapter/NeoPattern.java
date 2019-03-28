@@ -9,12 +9,12 @@ import org.emoflon.neo.engine.api.rules.IPattern;
 public class NeoPattern implements IPattern {
 
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
-		// TODO[Jannik] extract all necessary infos
+		// TODO [Jannik] extract all necessary infos
 	}
 
 	@Override
 	public String getName() {
-		// TODO[Jannik]
+		// TODO [Jannik]
 		return null;
 	}
 

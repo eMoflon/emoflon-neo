@@ -21,7 +21,7 @@ public class PatternTest {
 				"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 				"../");
 
-		// Get a pattern
+		// Get an EMSL pattern
 		Pattern p = (Pattern) spec.getEntities().get(0);
 
 		// Create a pattern and pass EMSL pattern
