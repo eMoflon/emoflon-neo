@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Emf
+Bundle-SymbolicName: org.emoflon.neo.emf
+Bundle-Version: 1.0.0.qualifier
+Export-Package: .,
+ org.emoflon.neo.emf
+Require-Bundle: org.eclipse.emf.ecore;bundle-version="2.16.0";visibility:=reexport,
+ org.apache.commons.io;bundle-version="2.2.0";visibility:=reexport,
+ com.google.guava;visibility:=reexport,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro
