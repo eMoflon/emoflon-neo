@@ -22,5 +22,4 @@ public class EMSUtil {
 		EMSL_Spec spec = (EMSL_Spec) resource.getContents().get(0);
 		return spec;
 	}
-
 }
