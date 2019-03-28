@@ -118,14 +118,33 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
 			aliases.keySet,
 			[ eob |
-				if (aliases.containsKey(eob) && aliases.get(eob) !== null)
-					QualifiedName.create(aliases.get(eob), SimpleAttributeResolver.NAME_RESOLVER.apply(eob))
-				else
-					QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob))
+				// find duplicates in names of NodeBlocks (works)
+				val nameList = newArrayList
+				val duplicateNames = newArrayList
+				aliases.keySet.forEach[e | 
+					if(!nameList.contains(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString))
+						nameList.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+					else
+						duplicateNames.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+				]
+				// create QualifiedNames for NodeBlocks
+				val eobName = SimpleAttributeResolver.NAME_RESOLVER.apply(eob)				
+				if (duplicateNames.contains(eobName)) {
+					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
+						QualifiedName.create(aliases.get(eob), SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+					else
+						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+				}
+				else {
+					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
+						QualifiedName.create(aliases.get(eob), eobName)
+					else
+						QualifiedName.create(eobName)
+				}
 			]
 		))
 	}
-
+	
 	def handleSuperTypesOfNodeBlock(NodeBlock block, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(block)
 		determineScope(allNodeBlocksInAllImportedMetamodels(root))

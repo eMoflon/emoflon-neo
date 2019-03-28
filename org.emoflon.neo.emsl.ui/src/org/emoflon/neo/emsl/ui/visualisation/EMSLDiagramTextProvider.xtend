@@ -89,7 +89,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		else if (nb.eContainer instanceof TripleRule)
 			visualiseNodeBlockInTripleRule(nb.eContainer as TripleRule, nb, mainSelection)
 		else if (nb.eContainer instanceof TripleGrammar) {
-			// TODO
+			// TODO [Maximilian]
 		}
 		else if (nb.eContainer instanceof GraphGrammar)
 			visualiseNodeBlockInRule(nb, mainSelection)
@@ -375,7 +375,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 	
 	def String visualiseRulesOfGraphGrammar(GraphGrammar gg, boolean mainSelection) {
-		// TODO
+		// TODO [Maximilian]
 	}
 
 	def Optional<NodeBlock> determineSelectedNodeBlock(ISelection selection, Entity entity) {
