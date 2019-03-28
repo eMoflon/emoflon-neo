@@ -11,3 +11,4 @@ Require-Bundle: org.eclipse.emf.ecore;bundle-version="2.16.0";visibility:=reexpo
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro
+Automatic-Module-Name: org.emoflon.neo.emf

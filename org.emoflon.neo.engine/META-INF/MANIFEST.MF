@@ -7,3 +7,4 @@ Export-Package: .,
  org.emoflon.neo.engine.api.constraints,
  org.emoflon.neo.engine.api.rules,
  org.emoflon.neo.engine.api.transformation
+Automatic-Module-Name: org.emoflon.neo.engine

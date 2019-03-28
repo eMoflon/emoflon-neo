@@ -1,0 +1,15 @@
+import "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
+
+metamodel SimpleFamilies {
+	FamilyRegister:EClass {
+		
+	}
+	
+	Family:EClass {
+		
+	}
+	
+	FamilyMember:EClass {
+		
+	}
+}
