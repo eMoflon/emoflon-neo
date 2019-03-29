@@ -22,7 +22,7 @@ public class PatternTest {
 				"../");
 
 		// Get an EMSL pattern
-		Pattern p = (Pattern) spec.getEntities().get(3);
+		Pattern p = (Pattern) spec.getEntities().get(0);
 
 		// Create a pattern and pass EMSL pattern
 		IPattern ip = new NeoPattern(p, builder);

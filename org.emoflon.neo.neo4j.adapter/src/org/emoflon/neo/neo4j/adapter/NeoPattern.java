@@ -11,6 +11,7 @@ import org.emoflon.neo.emsl.eMSL.TypeReference;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 import org.apache.log4j.Logger;
 
@@ -47,8 +48,26 @@ public class NeoPattern implements IPattern {
 		Driver driver = builder.getDriver();
 		logger.info("Searching matches for Pattern: " + getName());
 		
-		StatementResult result = driver.session().run("match (n:Sokoban) return n");	
-		logger.warn(result);
-		return null;
+		String statement = "MATCH (sokoban:Sokoban) RETURN sokoban";
+		logger.info(statement);
+		
+		StatementResult result = driver.session().run(statement);
+		Collection<IMatch> matches = new ArrayList<>();
+		
+		while(result.hasNext()) {
+			Record res = result.next();
+			matches.add(new NeoMatch(getName(), p, res.values()));
+			logger.info(res.values().toString());
+		}
+		return matches;
+	}
+	
+	public String returnNodes() {
+		
+		String statement = "";
+		for(String s: nodes) {
+			statement += "(" + s + ")"; 
+		}
+		return statement;
 	}
 }
