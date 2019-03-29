@@ -109,7 +109,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					}
 				«ENDIF»
 				«IF entity instanceof Pattern»
-					package "Pattern: «entity.name»" <<Rectangle>> {
+					package "Pattern: «entity.name»" <<Rectangle>> «link(entity)»  {
 						
 					}
 					«visualiseSuperTypesInPattern(entity)»
@@ -487,6 +487,24 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val nodeBlocks = entity.srcNodeBlocks
 		nodeBlocks.addAll(entity.trgNodeBlocks)
 		return nodeBlocks
+	}
+	
+	/**
+	 * Prints the link to the pattern.
+	 */
+	private static def dispatch link(Pattern pattern) {
+		val resource = pattern.eResource
+		val uri = resource.URI + '#' + resource.getURIFragment(pattern)
+		'''[[«uri»]]'''
+	}
+	
+	/**
+	 * Prints the link to the pattern.
+	 */
+	private static def dispatch link(Rule entity) {
+		val resource = entity.eResource
+		val uri = resource.URI + '#' + resource.getURIFragment(entity)
+		'''[[«uri»]]'''
 	}
 	
 	def Optional<Entity> determineSelectedEntity(ISelection selection, EMSL_Spec root) {
