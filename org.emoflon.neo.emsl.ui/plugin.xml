@@ -480,7 +480,6 @@
           providerClass="org.emoflon.neo.emsl.ui.visualisation.EMSLDiagramTextProvider">
     </diagramTextProvider>
  </extension>
- <extension-point id="linkOpener" name="Link Opener" schema="schema/linkOpener.exsd"/>
  <extension
        point="net.sourceforge.plantuml.eclipse.linkOpener">
     <linkOpener

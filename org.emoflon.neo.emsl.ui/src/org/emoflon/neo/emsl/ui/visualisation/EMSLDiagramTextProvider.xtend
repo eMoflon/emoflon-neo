@@ -97,42 +97,43 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	def String visualiseOverview(EMSL_Spec root) {
 		'''
+			left to right direction
 			«FOR entity : root.entities»
 				«IF entity instanceof Metamodel»
-					package "Metamodel: «entity.name»" <<Rectangle>>  {
+					package "Metamodel: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Model»
-					package "Model: «entity.name»" <<Rectangle>> {
+					package "Model: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Pattern»
-					package "Pattern: «entity.name»" <<Rectangle>> «link(entity)»  {
+					package "Pattern: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 					«visualiseSuperTypesInPattern(entity)»
 				«ENDIF»
 				«IF entity instanceof Rule»
-					package "Rule: «entity.name»" <<Rectangle>> {
+					package "Rule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 					«visualiseSuperTypesInRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleRule»
-					package "TripleRule: «entity.name»" <<Rectangle>> {
+					package "TripleRule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 					«visualiseSuperTypesInTripleRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
-					package "TripleGrammar: «entity.name»" <<Rectangle>> {
+					package "TripleGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof GraphGrammar»
-					package "GraphGrammar: «entity.name»" <<Rectangle>> {
+					package "GraphGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
@@ -489,21 +490,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		return nodeBlocks
 	}
 	
-	/**
-	 * Prints the link to the pattern.
-	 */
-	private static def dispatch link(Pattern pattern) {
+	private static def link(Entity pattern) {
 		val resource = pattern.eResource
 		val uri = resource.URI + '#' + resource.getURIFragment(pattern)
-		'''[[«uri»]]'''
-	}
-	
-	/**
-	 * Prints the link to the pattern.
-	 */
-	private static def dispatch link(Rule entity) {
-		val resource = entity.eResource
-		val uri = resource.URI + '#' + resource.getURIFragment(entity)
 		'''[[«uri»]]'''
 	}
 	
@@ -570,7 +559,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				BorderColor Black
 				BackgroundColor White
 				ArrowColor Black
-			}
+			}			
 		'''
 	}
 }

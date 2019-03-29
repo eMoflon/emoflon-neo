@@ -30,7 +30,7 @@ public class PlatformFragmentLinkOpener implements ILinkOpener {
 	@Override
 	public int supportsLink(final LinkData link) {
 		URI uri = URI.createURI(link.href);
-		if (uri.fileExtension().equals("gt") && uri.isPlatformResource() && uri.hasFragment()) {
+		if (uri.fileExtension().equals("msl") && uri.isPlatformResource() && uri.hasFragment()) {
 			return CUSTOM_SUPPORT;
 		}
 		return NO_SUPPORT;
