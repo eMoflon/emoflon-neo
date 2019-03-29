@@ -73,6 +73,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 	public NeoCoreBuilder(String uri, String user, String password) {
 		driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
 	}
+	
+	public Driver getDriver() {
+		return driver;
+	}
 
 	@Override
 	public void close() throws Exception {

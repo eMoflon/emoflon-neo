@@ -22,7 +22,7 @@ public class PatternTest {
 				"../");
 
 		// Get an EMSL pattern
-		Pattern p = (Pattern) spec.getEntities().get(0);
+		Pattern p = (Pattern) spec.getEntities().get(3);
 
 		// Create a pattern and pass EMSL pattern
 		IPattern ip = new NeoPattern(p, builder);
@@ -31,6 +31,6 @@ public class PatternTest {
 		var matches = ip.getMatches();
 
 		// Check expected count
-		assertThat(matches.size(), is(5));
+		assertThat(matches.size(), is(1));
 	}
 }
