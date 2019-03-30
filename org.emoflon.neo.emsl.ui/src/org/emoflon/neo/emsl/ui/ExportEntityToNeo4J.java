@@ -22,7 +22,7 @@ import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 @SuppressWarnings("restriction")
 public class ExportEntityToNeo4J extends AbstractHandler {
 
-	private static String uri = "bolt://localhost:7687";
+	private static String uri = "bolt://localhost:11007";
 	private static String userName = "neo4j";
 	private static String password = "test";
 	private Optional<EObjectNode> eobNode = Optional.empty();
