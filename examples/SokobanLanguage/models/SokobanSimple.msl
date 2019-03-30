@@ -1,0 +1,63 @@
+import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
+
+model SokobanSimple {
+	b : Board {
+		.width : 4 
+		.height : 4
+		
+		-fields-> f1 {
+			.row : 5
+			.col : 4
+		}
+		-fields-> f2
+		-fields-> f3
+		-fields-> f4
+		
+		-selectedFigure-> f1
+	}
+	
+	f1 : Field {
+		.row : 0
+		.col : 0
+		.endPos : false
+		
+		-figure-> sok
+		-right-> f2
+		-bottom-> f3
+		-board-> b
+	}
+	
+	f2 : Field {
+		.row : 0
+		.col : 1
+		.endPos : false
+		
+		-left-> f1
+		-bottom-> f4
+		-board-> b
+	}
+	
+	f3 : Field {
+		.row : 1
+		.col : 0
+		.endPos : true
+		
+		-right-> f4
+		-top-> f1
+		-board-> b
+	}
+	
+	f4 : Field {
+		.row : 1
+		.col : 1
+		.endPos : false
+		
+		-left-> f3
+		-top-> f2
+		-board-> b
+	}
+	
+	sok : Sokoban {
+		-field->f1
+	}
+}

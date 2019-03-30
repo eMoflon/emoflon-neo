@@ -11,7 +11,9 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.eclipse.xtend.lib.macro;visibility:=reexport,
  org.emoflon.neo.emsl;bundle-version="1.0.0";visibility:=reexport,
  org.eclipse.emf.common;visibility:=reexport,
- org.eclipse.emf.ecore;visibility:=reexport
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.apache.log4j,
+ org.emoflon.neo.engine
 Automatic-Module-Name: org.emoflon.neo.neo4j.adapter
 Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.neo.neo4j.adapter

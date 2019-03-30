@@ -1,0 +1,15 @@
+import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
+
+model SokobanBoard {
+	b : Board {
+		-fields-> f1 {
+			.row : 0
+			.col : 0
+		}		
+	}
+	
+	f1 : Field {
+		.endPos : false		
+	}
+	
+}

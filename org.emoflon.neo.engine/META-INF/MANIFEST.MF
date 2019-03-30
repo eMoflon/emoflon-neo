@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Engine
+Bundle-SymbolicName: org.emoflon.neo.engine
+Bundle-Version: 1.0.0.qualifier
+Export-Package: .,
+ org.emoflon.neo.engine.api.constraints,
+ org.emoflon.neo.engine.api.rules,
+ org.emoflon.neo.engine.api.transformation
+Automatic-Module-Name: org.emoflon.neo.engine

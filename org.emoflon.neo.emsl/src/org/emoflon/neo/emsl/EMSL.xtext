@@ -3,60 +3,160 @@ grammar org.emoflon.neo.emsl.EMSL with org.eclipse.xtext.common.Terminals
 generate eMSL "http://www.emoflon.org/neo/emsl/EMSL"
 
 EMSL_Spec:
-	imports+=ImportStatement* entities+=Entity+;
+	imports+=ImportStatement* entities+=Entity+
+;
 
 ImportStatement:
-	'import' value=STRING ('as' alias=ID)?;
+	'import' value=STRING ('as' alias=ID)?
+;
 
 Entity:
-	Metamodel | Model | Pattern | Rule | Constraint;
+	Metamodel | Model | Pattern | Rule | Constraint | TripleRule | TripleGrammar | GraphGrammar
+;
 
 Metamodel:
-	'metamodel' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+	'metamodel' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}'
+;
 
 Model:
-	'model' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+	'model' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}'
+;
 
 Pattern:
-	'pattern' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+	'pattern' name=QualifiedName 
+	('->' (superTypes+=[SuperType|QualifiedName] ('['  ']')? (',' superTypes+=[SuperType|QualifiedName] ('['  ']')?)*))? // TODO: fill relabeling brackets
+	'{'
+	 	nodeBlocks+=NodeBlock* 
+	'}' ('when' conditions+=TypeReference (('&&' | '||') conditions+=(TypeReference))*
+	)?
+;
 
 Rule:
-	'rule' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}';
+	(abstract?='abstract')? 'rule' name=QualifiedName 
+	('->' (superTypes+=[SuperType|QualifiedName] ('['  ']')? (',' superTypes+=[SuperType|QualifiedName] ('[' ']')? )*))? // TODO: fill relabeling brackets
+	'{' 
+		nodeBlocks+=NodeBlock* 
+	'}' ('when' conditions+=(TypeReference) (('&&' | '||') conditions+=(TypeReference))*
+	)?
+;
 
-Constraint:
-	'constraint' (NegativeConstraint | PositiveConstraint | Implication);
+TripleRule:
+	(abstract?='abstract')? 'tripleRule' name=QualifiedName 
+	(':' grammarType=[TripleGrammar|QualifiedName])? ('->' superTypes+=[SuperType|QualifiedName] (',' superTypes+=[SuperType|QualifiedName])*)?
+	('{' 
+		('source' '{' srcNodeBlocks+=NodeBlock* '}')?
+		('target' '{' trgNodeBlocks+=NodeBlock* '}')?
+		('correspondence' '{' ((action+=Action)? source+=QualifiedName '<-' ':' type+=[Correspondence|QualifiedName] '->' trg+=QualifiedName)* '}')?
+		('attributeConditions' '{' 
+			(attributeConditions+=AttributeCondition)*
+		'}')?
+	 '}')? ('when' conditionOperator='forbid' nacs+=TripleRuleNACs (',' nacs+=TripleRuleNACs)*)?
+;
+
+AttributeCondition:
+	operator+=AttributeConditionAction '(' (operands+=[PropertyStatement|QualifiedName]|constant+=INT) ((',') (operands+=[PropertyStatement|QualifiedName]|constant+=INT))* ')'
+;
+
+AttributeConditionAction:
+	op=AttributeConditionOperator
+;
+
+TripleRuleNACs:
+	pattern=[TypeReference|QualifiedName] | (location=('source'|'target') '(' pattern=[TypeReference|QualifiedName] ')' )
+;
+
+Correspondence:
+	action+=Action name=QualifiedName '{' source+=[NodeBlock|QualifiedName] '<-->' target+=[NodeBlock|QualifiedName] '}'
+;
+
+TripleGrammar:
+	'tripleGrammar' name=QualifiedName '{'
+		'source' '{' metamodels+=[Metamodel|QualifiedName]* '}'
+		'target' '{' metamodels+=[Metamodel|QualifiedName]* '}'
+		'correspondence' '{' correspondences+=Correspondence* '}'
+		'attributeConditions' '{'  '}' // TODO: fill
+	'}'
+;
+
+GraphGrammar:
+	'graphGrammar' name=QualifiedName '{'
+		'rules' '{' rules+=[Rule|QualifiedName] '}'
+	'}'
+;
 
 NodeBlock:
 	(abstract?='abstract')? (action=Action)? name=ID ':' type=[NodeBlock|QualifiedName]
-	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName]*)?))?
+	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName])*))?
 	('{'
-	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatement)*
-	'}')?;
+	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatement | conditionStatements+=ConditionStatement)*
+	'}')?
+;
 
-Implication:
-	name=QualifiedName '=' 'forbid' pattern=[Pattern|QualifiedName];
+Constraint:
+	'constraint' name=QualifiedName '=' constraints+=TypeReference (('&&' | '||') constraints+=TypeReference)*
+;
 
-PositiveConstraint:
-	name=QualifiedName '=' 'enforce' pattern=[Pattern|QualifiedName];
+// types a Pattern/Rule can refine; maybe add NodeBlock and TripleRule?
+SuperType:
+	Metamodel | Model | Pattern | Rule | TripleRule
+;
 
-NegativeConstraint:
-	name=QualifiedName '=' 'if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName];
+// split between atomic condition and constraint (needed to fix syntax)
+TypeReference:
+	ConditionTypes | (operator?='!')? constraints+=[Constraint|QualifiedName]
+;
+
+ConditionTypes:
+	NegativeConstraintBody | PositiveConstraintBody | ImplicationBody
+;
+	
+NegativeConstraintBody:
+	conditionOperator='forbid' pattern=[Pattern|QualifiedName]
+;
+	
+PositiveConstraintBody:
+	conditionOperator='enforce' pattern=[Pattern|QualifiedName]
+;
+	
+ImplicationBody:
+	conditionOperator='if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName]
+;
+
 
 PropertyStatement:
-	'.' name=ID ':' value=PropertyValue;
+	'.' name=ID ':' value=PropertyValue
+; 
 
 PropertyValue:
-	INT | ID;
+	INT | ID
+;
 
 RelationStatement:
-	(action=Action)? '-' name=ID '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?;
+	(action=Action)? '-' name=ID '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?
+;
+
+ConditionStatement:
+	'.' name=ID op=NodeBlockConditionOperator value=PropertyValue
+;
 
 QualifiedName:
-	ID ('.' ID)*;
+	ID ('.' ID)*
+;
 
 Action:
-	op=Operator;
+	op=Operator
+;
 
 enum Operator:
 	CREATE='++' | DELETE='--';
+
+enum NodeBlockConditionOperator:
+	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ='==' | GREATER='>' | GREATEREQ='>='
+;
 	
+enum AttributeConditionOperator:
+	ADD='add' | ADDPREFIX='addPrefix' | ADDSUFFIX='addSuffix' | CONCAT='concat' | DIVIDE='divide' | EQBOOLEAN='eq_boolean' | EQCHAR='eq_char' |
+	EQDOUBLE='eq_double' | EQFLOAT='eq_float' | EQINT='eq_int' | EQLONG='eq_long' | EQSTRING='eq_string' | MAX='max' | MULTIPLY='multiply' |
+	SETDEFAULTNumber='setDefaultNumber' | SETDEFAULTSTRING='setDefaultString' | SETRANDOMSTRING='setRandomString' | SMALLEROREQUAL='smallerOrEqual' |
+	STRINGTODOUBLE='stringToDouble' | STRINGTOINT='stringToInt' | SUB='sub'
+;

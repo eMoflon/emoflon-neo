@@ -1,0 +1,67 @@
+//import "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
+
+// Using this import instead so ScalabilityTest.java works
+import "platform:/resource/SokobanLanguage/metamodels/NeoCore.msl"
+
+metamodel SokobanLanguage {
+	Block : EClass -> Boulder
+	
+	Board : EClass {
+		.width : EInt
+		.height : EInt
+		
+		-fields-> Field {
+			.row : EInt
+			.col : EInt
+		}
+		-selectedFigure-> Figure
+	}
+	
+	Boulder : EClass -> Figure
+	
+	Field : EClass {
+		.endPos : EBoolean
+	
+		-right-> Field
+		-bottom-> Field
+	}
+	
+	abstract Figure : EClass
+	
+	Sokoban : EClass -> Figure
+}
+
+metamodel sokobanExchangeFormat {
+	Board : EClass {
+		-firstRow-> Row
+	}
+	
+	Row : EClass {
+		-next-> Row
+		-firstEntry-> Entry
+	}
+	
+	Entry : EClass {
+		-next-> Entry
+	}
+	
+	Normal : EClass -> Entry {
+		-symbol-> NormalSymbol
+	}
+	
+	End : EClass -> Entry {
+		-symbol-> EndSymbol
+	}
+	
+	Symbol : EClass {
+		
+	}
+	
+	NormalSymbol : EClass -> Symbol {
+		
+	}
+	
+	EndSymbol : EClass -> Symbol {
+		
+	}
+}

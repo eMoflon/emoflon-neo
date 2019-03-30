@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -20,9 +20,11 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.StatementResult;
 
 public class NeoCoreBuilder implements AutoCloseable {
-	public static final String META_TYPE = "eType";
+	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+  
+  public static final String META_TYPE = "eType";
 	public static final String META_EL_OF = "elementOf";
-
+	
 	// EClasses
 	private static final String ECLASSIFIER = "EClassifier";
 	private static final String ECLASS = "EClass";
@@ -79,8 +81,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 		driver.close();
 	}
 
-	public void exportEMSLEntityToNeo4j(EObject entity, Consumer<String> logger) {
-		bootstrapNeoCoreIfNecessary(logger);
+	public void exportEMSLEntityToNeo4j(EObject entity) {
+		bootstrapNeoCoreIfNecessary();
 
 		ResourceSet rs = entity.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
@@ -95,30 +97,30 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
-		logger.accept("Trying to export metamodels: " + metamodelNames);
+		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
 
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.accept("Skipping metamodel " + mm.getName() + " as it is already present.");
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present.");
 		}
 
 		if (!newMetamodels.isEmpty())
 			exportMetamodelsToNeo4j(newMetamodels);
-		logger.accept("Exported metamodels.");
+		logger.info("Exported metamodels.");
 
 		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
-		logger.accept("Trying to export models: " + modelNames);
+		logger.info("Trying to export models: " + modelNames);
 		var newModels = removeExistingModels(models);
 
 		for (Model m : models) {
 			if (!newModels.contains(m))
-				logger.accept("Skipping model " + m.getName() + " as it is already present.");
+				logger.info("Skipping model " + m.getName() + " as it is already present.");
 		}
 
 		if (!newModels.isEmpty())
 			exportModelsToNeo4j(newModels);
-		logger.accept("Exported models.");
+		logger.info("Exported models.");
 	}
 
 	public static boolean canBeExported(EClass eclass) {
@@ -248,13 +250,13 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return result.stream().count() == 0;
 	}
 
-	private void bootstrapNeoCoreIfNecessary(Consumer<String> logger) {
+	private void bootstrapNeoCoreIfNecessary() {
 		if (ecoreIsNotPresent()) {
-			logger.accept("Trying to bootstrap NeoCore...");
+			logger.info("Trying to bootstrap NeoCore...");
 			bootstrapNeoCore();
-			logger.accept("Done.");
+			logger.info("Done.");
 		} else {
-			logger.accept("NeoCore is already present.");
+			logger.info("NeoCore is already present.");
 		}
 	}
 
