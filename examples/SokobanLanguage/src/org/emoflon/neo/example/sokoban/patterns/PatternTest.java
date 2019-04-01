@@ -64,4 +64,17 @@ public class PatternTest {
 		assertThat(matches.size(), is(2));
 	}
 	
+	@Test
+	public void testBlocksIsEqualToEndFields() {
+
+		Pattern p1 = (Pattern) spec.getEntities().get(3);
+		IPattern ip1 = new NeoPattern(p1, builder);
+		var matches1 = ip1.getMatches();
+		Pattern p2 = (Pattern) spec.getEntities().get(3);
+		IPattern ip2 = new NeoPattern(p2, builder);
+		var matches2 = ip2.getMatches();
+		
+		assertThat(matches1 == matches2, is(true));
+	}
+	
 }

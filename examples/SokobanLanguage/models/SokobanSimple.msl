@@ -1,7 +1,7 @@
 import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
 
 model SokobanSimple {
-	b : Board {
+	b : SokobanLanguage.Board {
 		.width : 4 
 		.height : 4
 		

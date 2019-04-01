@@ -24,6 +24,7 @@ import org.emoflon.neo.emsl.eMSL.NodeBlock
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RelationStatement
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 /**
  * This class contains custom scoping description.
@@ -51,6 +52,14 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		if (valueOfRelationStatementInRule(context, reference))
 			return handleValueOfRelationStatementInRule(context as RelationStatement, reference)
+		
+		if (valueOfRelationStatementInPattern(context, reference))
+			return handleValueOfRelationStatementInPattern(context as RelationStatement, reference)
+		
+		if (valueOfRelationStatementInTripleRule(context, reference)) {
+			return handleValueOfRelationStatementInTripleRule(context as RelationStatement, reference)
+		}
+			
 
 		return super.getScope(context, reference)
 	}
@@ -68,19 +77,74 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		allNodeBlocks.addAll(rule.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
 	}
+	
+	def valueOfRelationStatementInTripleRule(EObject context, EReference reference) {
+		context instanceof RelationStatement && reference == EMSLPackage.Literals.RELATION_STATEMENT__VALUE &&
+			context.eContainer?.eContainer instanceof TripleRule
+	}
+
+	def handleValueOfRelationStatementInTripleRule(RelationStatement statement, EReference reference) {
+		val tripleRule = statement.eContainer.eContainer as TripleRule
+		val allNodeBlocks = new HashSet()
+		// only source
+		if (tripleRule.srcNodeBlocks.contains(statement.eContainer as NodeBlock)) {
+			val nodeBlocksInSuperTypes = tripleRule.superTypes.filter[st|st instanceof TripleRule].flatMap[r|(r as TripleRule).srcNodeBlocks]
+			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+			allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
+		}
+		else if (tripleRule.trgNodeBlocks.contains(statement.eContainer as NodeBlock)){
+			val nodeBlocksInSuperTypes = tripleRule.superTypes.filter[st|st instanceof TripleRule].flatMap[r|(r as TripleRule).trgNodeBlocks]
+			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+			allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
+		}
+		return Scopes.scopeFor(allNodeBlocks)
+	}
+	
+	def valueOfRelationStatementInPattern(EObject context, EReference reference) {
+		context instanceof RelationStatement && reference == EMSLPackage.Literals.RELATION_STATEMENT__VALUE &&
+			context.eContainer?.eContainer instanceof Pattern
+	}
+
+	def handleValueOfRelationStatementInPattern(RelationStatement statement, EReference reference) {
+		val pattern = statement.eContainer.eContainer as Pattern
+		val allNodeBlocks = new HashSet()
+		val nodeBlocksInSuperTypes = pattern.superTypes.filter[st|st instanceof Pattern].flatMap[r|(r as Pattern).nodeBlocks]
+		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+		allNodeBlocks.addAll(pattern.nodeBlocks)
+		return Scopes.scopeFor(allNodeBlocks)
+	}
 
 	def <T extends EObject> determineScope(Map<EObject, String> aliases) {
 		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
 			aliases.keySet,
 			[ eob |
-				if (aliases.containsKey(eob) && aliases.get(eob) !== null)
-					QualifiedName.create(aliases.get(eob), SimpleAttributeResolver.NAME_RESOLVER.apply(eob))
-				else
-					QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob))
+				// find duplicates in names of NodeBlocks (works)
+				val nameList = newArrayList
+				val duplicateNames = newArrayList
+				aliases.keySet.forEach[e | 
+					if(!nameList.contains(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString))
+						nameList.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+					else
+						duplicateNames.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+				]
+				// create QualifiedNames for NodeBlocks
+				val eobName = SimpleAttributeResolver.NAME_RESOLVER.apply(eob)				
+				if (duplicateNames.contains(eobName)) {
+					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
+						QualifiedName.create(aliases.get(eob), SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+					else
+						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+				}
+				else {
+					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
+						QualifiedName.create(aliases.get(eob), eobName)
+					else
+						QualifiedName.create(eobName)
+				}
 			]
 		))
 	}
-
+	
 	def handleSuperTypesOfNodeBlock(NodeBlock block, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(block)
 		determineScope(allNodeBlocksInAllImportedMetamodels(root))

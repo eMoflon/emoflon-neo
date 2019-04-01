@@ -1,7 +1,7 @@
 import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
 
 model SokobanBoard {
-	b : Board {
+	b : SokobanLanguage.Board {
 		-fields-> f1 {
 			.row : 0
 			.col : 0
