@@ -21,17 +21,17 @@ public class NeoPattern implements IPattern {
 	private NeoCoreBuilder builder;
 	private Pattern p;
 	
-	private Collection<String> nodes;
+	private Collection<NeoNode> nodes;
+	private Collection<String> variables;
 	
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		this.builder = builder;
 		this.p = p;
 		
-		System.out.println(p.getNodeBlocks().size());
-		
 		for (NodeBlock n: p.getNodeBlocks()) {
-			nodes.add(n.getName() + ":" + n.getType().getName());
+						
+			nodes.add(new NeoNode(n.getType().getName(),n.getName()));
 			logger.info(n.getName() + ":" + n.getType().getName());
 		}
 		
@@ -48,10 +48,10 @@ public class NeoPattern implements IPattern {
 		Driver driver = builder.getDriver();
 		logger.info("Searching matches for Pattern: " + getName());
 		
-		String statement = "MATCH (sokoban:Sokoban) RETURN sokoban";
-		logger.info(statement);
+		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes);
+		logger.info(cypherQuery);
 		
-		StatementResult result = driver.session().run(statement);
+		StatementResult result = driver.session().run(cypherQuery);
 		Collection<IMatch> matches = new ArrayList<>();
 		
 		while(result.hasNext()) {
@@ -60,14 +60,7 @@ public class NeoPattern implements IPattern {
 			logger.info(res.values().toString());
 		}
 		return matches;
+		
 	}
 	
-	public String returnNodes() {
-		
-		String statement = "";
-		for(String s: nodes) {
-			statement += "(" + s + ")"; 
-		}
-		return statement;
-	}
 }
