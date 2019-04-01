@@ -5,8 +5,10 @@ import java.util.Collection;
 import java.util.UUID;
 
 import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.emsl.eMSL.ConditionStatement;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.PropertyStatement;
 import org.emoflon.neo.emsl.eMSL.RelationStatement;
 import org.emoflon.neo.emsl.eMSL.TypeReference;
 import org.emoflon.neo.engine.api.rules.IMatch;
@@ -36,9 +38,22 @@ public class NeoPattern implements IPattern {
 						
 			NeoNode tempN = new NeoNode(n.getType().getName(),n.getName());
 			logger.info("(" + n.getName() + ":" + n.getType().getName() + ")");
-			for(RelationStatement r:n.getRelationStatements()) {	
+			
+			// Get all relationships
+			for(RelationStatement r:n.getRelationStatements()) {				
 				tempN.addRelation(r.getName(), "", r.getValue().getType().getName(), r.getValue().getName());
 				logger.info("        -[:" + r.getName() + "]->(" + r.getValue().getName() + ":" + r.getValue().getType().getName() + ")");
+			}
+			
+			// Get all properties
+			for(PropertyStatement prop:n.getPropertyStatements()) {
+				tempN.addProperty(prop.getName(), prop.getValue());
+				logger.info("{" + prop.getName() + prop.getValue() + "}");
+			}
+			// Get all properties
+			for(ConditionStatement cond:n.getConditionStatements()) {
+				tempN.addCondition(cond.getName(), cond.getOp(), cond.getValue());
+				logger.info("{" + cond.getName() + cond.getOp() + cond.getValue() + "}");
 			}
 			nodes.add(tempN);
 			

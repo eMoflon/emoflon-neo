@@ -8,6 +8,7 @@ class CypherPatternBuilder {
 	def static String createCypherQuery(Collection<NeoNode> nodes) {
 		'''
 		MATCH «FOR n:nodes SEPARATOR ', '»«n.toString»«IF !n.relations.isEmpty», «ENDIF»«FOR r:n.relations SEPARATOR ', '»«n.toStringWithoutClassType +r.toString»«ENDFOR»«ENDFOR»
+		WHERE  «FOR n:nodes SEPARATOR 'AND '»«IF !n.conditions.isEmpty»«ENDIF»«FOR r:n.conditions SEPARATOR 'AND '»«r.toString»«ENDFOR»«ENDFOR»
 		RETURN «FOR n:nodes SEPARATOR ', '»«n.varName»«ENDFOR»
 		'''
 	}
