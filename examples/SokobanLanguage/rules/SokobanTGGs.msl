@@ -10,13 +10,9 @@ tripleGrammar SokobanImportExport {
 	}
 	
 	correspondence {
-		++ EntryToField {
-			sokobanExchangeFormat.Entry <--> SokobanLanguage.Field
-		}
-		
-		++ BoardToBoard {
-			sokobanExchangeFormat.Board <--> SokobanLanguage.Board
-		}
+		sokobanExchangeFormat.Entry <-EntryToField-> SokobanLanguage.Field
+	
+		sokobanExchangeFormat.Board <-BoardToBoard-> SokobanLanguage.Board
 	}
 	
 	attributeConditions {
@@ -33,14 +29,14 @@ abstract tripleRule BoardToBoardRule: SokobanImportExport {
 		++ row:sokobanExchangeFormat.Row {
 			++ -firstEntry->ne
 		}
-		++ne:sokobanExchangeFormat.Entry
+		++ ne:sokobanExchangeFormat.Entry
 	}
 	
 	target {
 		++ board:SokobanLanguage.Board {
 			++ -fields->nf
 		}
-		++nf:SokobanLanguage.Field {
+		++ nf:SokobanLanguage.Field {
 			.row : 0
 			.col : 0
 		}
@@ -174,12 +170,12 @@ abstract tripleRule FirstRowAllCols {
 tripleRule FirstColAllRows -> FirstRowAllCols {
 	source {
 		r: sokobanExchangeFormat.Row {
-			-firstEntry->FirstRowAllCols.e
+			-firstEntry->e
 			++ -next->nr
 		}
 		
 		++ nr:sokobanExchangeFormat.Row {
-			++ -firstEntry->FirstRowAllCols.ne
+			++ -firstEntry->ne
 		}
 	}
 	target {
