@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.RelationStatement;
 import org.emoflon.neo.emsl.eMSL.TypeReference;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
@@ -24,6 +25,8 @@ public class NeoPattern implements IPattern {
 	private Collection<NeoNode> nodes;
 	private Collection<String> variables;
 	
+	// TODO: @jannik add properties of nodes and relationships
+	// TODO: @jannik add parameter of relationships
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		this.builder = builder;
@@ -31,8 +34,14 @@ public class NeoPattern implements IPattern {
 		
 		for (NodeBlock n: p.getNodeBlocks()) {
 						
-			nodes.add(new NeoNode(n.getType().getName(),n.getName()));
-			logger.info(n.getName() + ":" + n.getType().getName());
+			NeoNode tempN = new NeoNode(n.getType().getName(),n.getName());
+			logger.info("(" + n.getName() + ":" + n.getType().getName() + ")");
+			for(RelationStatement r:n.getRelationStatements()) {	
+				tempN.addRelation(r.getName(), "", r.getValue().getType().getName(), r.getValue().getName());
+				logger.info("        -[:" + r.getName() + "]->(" + r.getValue().getName() + ":" + r.getValue().getType().getName() + ")");
+			}
+			nodes.add(tempN);
+			
 		}
 		
 	}

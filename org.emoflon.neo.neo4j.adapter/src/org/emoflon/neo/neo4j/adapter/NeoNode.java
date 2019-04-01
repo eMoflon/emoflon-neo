@@ -28,13 +28,17 @@ public class NeoNode {
 		return relations;
 	}
 	
-	public void addRelation (NeoRelation rel) {
-		this.relations.add(rel);
+	public void addRelation (String relType, String relName, String toNodeType, String toVarName) {
+		this.relations.add(new NeoRelation(relType, relName, toNodeType, toVarName));
 	}
 	
 	@Override
 	public String toString() {
-		return varName + ":" + classType;
+		return "(" + varName + ":" + classType + ")";
+	}
+	
+	public String toStringWithoutClassType() {
+		return "(" + varName + ")";
 	}
 
 }
