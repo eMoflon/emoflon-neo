@@ -16,11 +16,9 @@ import org.eclipse.xtend.lib.annotations.Data
 
 @Data class NeoProp {
 	val String key
-	val String value
+	val Object value
 
-	override toString() '''«key» : «value»'''
-}
-
-@Data class NeoStrProp extends NeoProp {
-	override toString() '''«key» : "«value»"'''
+	override toString() '''
+		«key» : «IF value instanceof String»"«value»"«ELSE»«value»«ENDIF»
+	'''
 }
