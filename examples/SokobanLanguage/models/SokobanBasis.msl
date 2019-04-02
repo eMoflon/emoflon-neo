@@ -12,4 +12,7 @@ model SokobanBoard {
 		.endPos : false		
 	}
 	
+	sok:Sokoban {
+		-field->f1
+	}
 }
