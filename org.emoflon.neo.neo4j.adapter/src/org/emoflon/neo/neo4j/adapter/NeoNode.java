@@ -78,5 +78,9 @@ public class NeoNode {
 	public String toStringWithoutClassType() {
 		return "(" + varName + ")";
 	}
+	
+	public String toStringWithProperties() {
+		return "(" + varName + ":" + classType + ")";
+	}
 
 }

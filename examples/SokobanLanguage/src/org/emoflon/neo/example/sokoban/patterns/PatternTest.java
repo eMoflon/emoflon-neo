@@ -24,7 +24,7 @@ public class PatternTest {
 	public void testOneSokoban() {
 		
 		// Get an EMSL pattern
-		Pattern p = (Pattern) spec.getEntities().get(1);
+		Pattern p = (Pattern) spec.getEntities().get(0);
 
 		// Create a pattern and pass EMSL pattern
 		IPattern ip = new NeoPattern(p, builder);
@@ -42,7 +42,7 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(1);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		assertThat(matches.size(), is(1));
+		assertThat(matches.size(), is(2));
 	}
 	
 	@Test
@@ -51,7 +51,7 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(2);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		assertThat(matches.size(), is(1));
+		assertThat(matches.size(), is(2));
 	}
 	
 	@Test
@@ -104,19 +104,6 @@ public class PatternTest {
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(1));
-	}
-	
-	@Test
-	public void testBlocksIsEqualToEndFields() {
-
-		Pattern p1 = (Pattern) spec.getEntities().get(0);
-		Pattern p2 = (Pattern) spec.getEntities().get(0);
-		IPattern ip1 = new NeoPattern(p1, builder);
-		IPattern ip2 = new NeoPattern(p2, builder);
-		var matches1 = ip1.getMatches();
-		var matches2 = ip2.getMatches();
-		
-		assertThat(matches1 == matches2, is(true));
 	}
 	
 }
