@@ -29,6 +29,11 @@ public class NeoCondition {
 			result += "NOT";
 		}
 		return result + " " + classVarName + "." + name + " " + op + " \"" + value + "\"";
+		//return result + " " + classVarName + "." + name + " " + op + " " + value;
+	}
+	
+	public String toStringProperty() {
+		return  name + ": \"" + value + "\"";
 	}
 	
 	private void convertOp(NodeBlockConditionOperator opcode) {

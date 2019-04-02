@@ -35,25 +35,25 @@ public class NeoPattern implements IPattern {
 		for (NodeBlock n: p.getNodeBlocks()) {
 						
 			NeoNode tempN = new NeoNode(n.getType().getName(),n.getName());
-			logger.info("(" + n.getName() + ":" + n.getType().getName() + ")");
+			//logger.info("(" + n.getName() + ":" + n.getType().getName() + ")");
 			
 			// Get all relationships
 			for(RelationStatement r:n.getRelationStatements()) {				
 				tempN.addRelation(r.getName(), "", r.getValue().getType().getName(), r.getValue().getName());
-				logger.info("        -[:" + r.getName() + "]->(" + r.getValue().getName() + ":" + r.getValue().getType().getName() + ")");
+				//logger.info("        -[:" + r.getName() + "]->(" + r.getValue().getName() + ":" + r.getValue().getType().getName() + ")");
 				//countRel++;
 			}
 			
 			// Get all properties
 			for(PropertyStatement prop:n.getPropertyStatements()) {
 				tempN.addProperty(prop.getName(), prop.getValue());
-				logger.info("{" + prop.getName() + prop.getValue() + "}");
+				//logger.info("{" + prop.getName() + prop.getValue() + "}");
 				//countProp++;
 			}
 			// Get all properties
 			for(ConditionStatement cond:n.getConditionStatements()) {
 				tempN.addCondition(cond.getName(), cond.getOp(), cond.getValue());
-				logger.info("{" + cond.getName() + cond.getOp() + cond.getValue() + "}");
+				//logger.info("{" + cond.getName() + cond.getOp() + cond.getValue() + "}");
 				countCond++;
 			}
 			nodes.add(tempN);

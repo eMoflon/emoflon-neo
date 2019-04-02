@@ -64,13 +64,56 @@ public class PatternTest {
 	}
 	
 	@Test
+	public void testOccupiedSokobanFields() {
+
+		Pattern p = (Pattern) spec.getEntities().get(4);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		assertThat(matches.size(), is(1));
+	}
+	@Test
+	public void testOccupiedBlockFields() {
+
+		Pattern p = (Pattern) spec.getEntities().get(5);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		assertThat(matches.size(), is(1));
+	}
+	@Test
+	public void testOccupiedBoulderFields() {
+
+		Pattern p = (Pattern) spec.getEntities().get(6);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		assertThat(matches.size(), is(3));
+	}
+	
+	@Test
+	public void testAllFieldsInARow() {
+
+		Pattern p = (Pattern) spec.getEntities().get(7);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		assertThat(matches.size(), is(3));
+	}
+	
+	@Test
+	public void testAllNotBorderFieldsInARow() {
+
+		Pattern p = (Pattern) spec.getEntities().get(8);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		assertThat(matches.size(), is(1));
+	}
+	
+	@Test
 	public void testBlocksIsEqualToEndFields() {
 
-		Pattern p1 = (Pattern) spec.getEntities().get(3);
+		Pattern p1 = (Pattern) spec.getEntities().get(0);
+		Pattern p2 = (Pattern) spec.getEntities().get(0);
 		IPattern ip1 = new NeoPattern(p1, builder);
-		var matches1 = ip1.getMatches();
-		Pattern p2 = (Pattern) spec.getEntities().get(3);
 		IPattern ip2 = new NeoPattern(p2, builder);
+		var matches1 = ip1.getMatches();
 		var matches2 = ip2.getMatches();
 		
 		assertThat(matches1 == matches2, is(true));

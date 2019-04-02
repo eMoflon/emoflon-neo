@@ -25,6 +25,72 @@ pattern anOccupiedField {
 	fig : Figure	
 }
 
+pattern anOccupiedSokobanField {
+	
+	field : Field {
+		-figure-> fig
+	}
+	
+	fig : Sokoban	
+}
+pattern anOccupiedBlockField {
+	
+	field : Field {
+		-figure-> fig
+	}
+	
+	fig : Block	
+}
+pattern anOccupiedBoulderField {
+	
+	field : Field {
+		-figure-> fig
+	}
+	
+	fig : Boulder	
+}
+
+
+pattern allFieldsInARow {
+	field : Field {
+		.row == 1
+	}
+}
+
+pattern allNotBorderFieldsInARow {
+	field : Field {
+		.row >= 1
+		-right -> fieldM
+		-bottom -> fieldB1
+	}
+	
+	fieldM : Field {
+		.row >= 1
+		-right -> fieldR
+		-bottom -> fieldB2
+	}
+	
+	fieldR : Field {
+		.row >= 1
+		-bottom -> fieldB3
+	}
+	
+	fieldB1 : Field {
+		.row >= 2
+		-right -> fieldB2
+	}
+	
+	fieldB2 : Field {
+		.row >= 2 
+		-right -> fieldB3
+	}
+	
+	fieldB3 : Field {
+		.row >= 2
+	}
+}
+
+
 pattern boulderOnEndField -> oneEndField, anOccupiedField {
 	fig : Boulder
 } when forbid block
