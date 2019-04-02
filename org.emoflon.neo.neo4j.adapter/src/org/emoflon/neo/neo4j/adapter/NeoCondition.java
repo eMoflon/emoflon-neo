@@ -28,7 +28,7 @@ public class NeoCondition {
 		if(opNeg) {
 			result += "NOT";
 		}
-		return result + " " + classVarName + "." + name + " " + op + " " + value;
+		return result + " " + classVarName + "." + name + " " + op + " \"" + value + "\"";
 	}
 	
 	private void convertOp(NodeBlockConditionOperator opcode) {

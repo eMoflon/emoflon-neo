@@ -17,11 +17,12 @@ pattern oneEndField {
 }
 
 pattern anOccupiedField {
-	fig : Figure
 	
 	field : Field {
 		-figure-> fig
 	}
+	
+	fig : Figure	
 }
 
 pattern boulderOnEndField -> oneEndField, anOccupiedField {

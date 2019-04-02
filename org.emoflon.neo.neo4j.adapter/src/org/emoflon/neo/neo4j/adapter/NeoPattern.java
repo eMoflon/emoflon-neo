@@ -2,9 +2,7 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
-import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.ConditionStatement;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
@@ -25,7 +23,7 @@ public class NeoPattern implements IPattern {
 	private Pattern p;
 	
 	private Collection<NeoNode> nodes;
-	private Collection<String> variables;
+	private int countCond = 0;
 	
 	// TODO: @jannik add properties of nodes and relationships
 	// TODO: @jannik add parameter of relationships
@@ -43,17 +41,20 @@ public class NeoPattern implements IPattern {
 			for(RelationStatement r:n.getRelationStatements()) {				
 				tempN.addRelation(r.getName(), "", r.getValue().getType().getName(), r.getValue().getName());
 				logger.info("        -[:" + r.getName() + "]->(" + r.getValue().getName() + ":" + r.getValue().getType().getName() + ")");
+				//countRel++;
 			}
 			
 			// Get all properties
 			for(PropertyStatement prop:n.getPropertyStatements()) {
 				tempN.addProperty(prop.getName(), prop.getValue());
 				logger.info("{" + prop.getName() + prop.getValue() + "}");
+				//countProp++;
 			}
 			// Get all properties
 			for(ConditionStatement cond:n.getConditionStatements()) {
 				tempN.addCondition(cond.getName(), cond.getOp(), cond.getValue());
 				logger.info("{" + cond.getName() + cond.getOp() + cond.getValue() + "}");
+				countCond++;
 			}
 			nodes.add(tempN);
 			
@@ -72,7 +73,7 @@ public class NeoPattern implements IPattern {
 		Driver driver = builder.getDriver();
 		logger.info("Searching matches for Pattern: " + getName());
 		
-		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes);
+		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes,countCond);
 		logger.info(cypherQuery);
 		
 		StatementResult result = driver.session().run(cypherQuery);
