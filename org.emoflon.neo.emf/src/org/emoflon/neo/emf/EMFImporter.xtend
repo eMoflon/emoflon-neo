@@ -17,7 +17,13 @@ class EMFImporter {
 					metamodel «p.name» {
 						«FOR c : p.EClassifiers.filter[c | c instanceof EClass] SEPARATOR "\n"»
 							«c.name»:EClass {
-								
+								«var eclass = c as EClass»
+								«FOR attr : eclass.EAttributes»
+									«attr.name»
+								«ENDFOR»
+								«FOR ref : eclass.EReferences»
+								«ref.name»
+								«ENDFOR»
 							}
 						«ENDFOR»
 					}
