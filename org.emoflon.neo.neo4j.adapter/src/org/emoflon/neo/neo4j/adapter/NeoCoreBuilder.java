@@ -267,7 +267,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 					List.of(new NeoProp(NAME_PROP, MODEL)), //
 					List.of(ECLASS), neocore);
 			var eobject = cb.matchNodeWithContainer(//
-					List.of(new NeoStrProp(NAME_PROP, EOBJECT)), //
+					List.of(new NeoProp(NAME_PROP, EOBJECT)), //
 					List.of(ECLASS), neocore);
 
 			// Create nodes and edges in models
@@ -307,7 +307,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 					List.of(new NeoProp(NAME_PROP, METAMODEL)), //
 					List.of(ECLASS), neocore);
 			var eobject = cb.matchNodeWithContainer(//
-					List.of(new NeoStrProp(NAME_PROP, EOBJECT)), //
+					List.of(new NeoProp(NAME_PROP, EOBJECT)), //
 					List.of(ECLASS), neocore);
 
 			// Create metamodel nodes and handle node blocks for all metamodels
