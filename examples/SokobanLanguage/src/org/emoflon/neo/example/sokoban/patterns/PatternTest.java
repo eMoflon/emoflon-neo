@@ -60,7 +60,7 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(3);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		assertThat(matches.size(), is(2));
+		assertThat(matches.size(), is(9));
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(5);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		assertThat(matches.size(), is(1));
+		assertThat(matches.size(), is(2));
 	}
 	@Test
 	public void testOccupiedBoulderFields() {
@@ -85,7 +85,7 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(6);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		assertThat(matches.size(), is(3));
+		assertThat(matches.size(), is(6));
 	}
 	
 	@Test

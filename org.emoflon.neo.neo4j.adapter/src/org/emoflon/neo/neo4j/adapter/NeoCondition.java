@@ -19,21 +19,11 @@ public class NeoCondition {
 		this.value = value;
 		this.opNeg = false;
 		convertOp(op);
-		
 	}
 	
 	@Override
 	public String toString() {
-		String result = "";
-		if(opNeg) {
-			result += "NOT";
-		}
-		//return result + " " + classVarName + "." + name + " " + op + " \"" + value + "\"";
-		return result + " " + classVarName + "." + name + " " + op + " " + value;
-	}
-	
-	public String toStringProperty() {
-		return  name + ": \"" + value + "\"";
+		return CypherPatternBuilder.cypherCondition(name, op, opNeg, value, classVarName);
 	}
 	
 	private void convertOp(NodeBlockConditionOperator opcode) {

@@ -4,13 +4,15 @@ public class NeoRelation {
 	
 	private String relType;
 	private String relName;
-	private String toNodeType;
+	private NeoNode fromNode;
+	private String toNode;
 	private String toVarName;
 	
-	public NeoRelation(String relType, String relName, String toNodeType, String toVarName) {
+	public NeoRelation(String relType, String relName, NeoNode fromNode, String toNode, String toVarName) {
 		this.relType = relType;
 		this.relName = relName;
-		this.toNodeType = toNodeType;
+		this.fromNode = fromNode;
+		this.toNode = toNode;
 		this.toVarName = toVarName;
 	}
 
@@ -18,8 +20,8 @@ public class NeoRelation {
 		return relType;
 	}
 
-	public String getToNodeType() {
-		return toNodeType;
+	public String getToNode() {
+		return toNode;
 	}
 
 	public String getToVarName() {
@@ -32,11 +34,7 @@ public class NeoRelation {
 	
 	@Override
 	public String toString() {
-		// complete
-		// return "-[" + relName + ":" + relType + "]->(" + toVarName + ":" + toNodeType + ")";
-		
-		// without class types for use in WHERE clause
-		return "-[" + relName + ":" + relType + "]->(" + toVarName + ")";
+		return CypherPatternBuilder.cypherRelation(fromNode, this);
 	}
 
 }

@@ -23,40 +23,40 @@ public class NeoPattern implements IPattern {
 	private Pattern p;
 	
 	private Collection<NeoNode> nodes;
-	private int countCond = 0;
+	private Collection<NeoRelation> relations;
+	private Collection<NeoCondition> conditions;
 	
 	// TODO: @jannik add properties of nodes and relationships
 	// TODO: @jannik add parameter of relationships
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
+		relations = new ArrayList<>();
+		conditions = new ArrayList<>();
 		this.builder = builder;
 		this.p = p;
 		
 		for (NodeBlock n: p.getNodeBlocks()) {
 						
-			NeoNode tempN = new NeoNode(n.getType().getName(),n.getName());
-			//logger.info("(" + n.getName() + ":" + n.getType().getName() + ")");
+			NeoNode node = new NeoNode(n.getType().getName(), n.getName());
 			
 			// Get all relationships
-			for(RelationStatement r:n.getRelationStatements()) {				
-				tempN.addRelation(r.getName(), "", r.getValue().getType().getName(), r.getValue().getName());
-				//logger.info("        -[:" + r.getName() + "]->(" + r.getValue().getName() + ":" + r.getValue().getType().getName() + ")");
-				//countRel++;
+			for(RelationStatement r:n.getRelationStatements()) {
+				NeoRelation rel = new NeoRelation(r.getName(), "", node, r.getValue().getType().getName(), r.getValue().getName());				
+				relations.add(rel);
 			}
 			
-			// Get all properties
-			for(PropertyStatement prop:n.getPropertyStatements()) {
-				tempN.addProperty(prop.getName(), prop.getValue());
-				//logger.info("{" + prop.getName() + prop.getValue() + "}");
-				//countProp++;
+			// Get all properties or conditions
+			for(ConditionStatement c:n.getConditionStatements()) {
+				
+				if(c.getOp().toString() == "==") {
+					node.addProperty(c.getName(), c.getValue());
+					
+				} else {
+					NeoCondition cond = new NeoCondition(c.getName(), c.getOp(), c.getValue(), node.getVarName());
+					conditions.add(cond);
+				}
 			}
-			// Get all properties
-			for(ConditionStatement cond:n.getConditionStatements()) {
-				tempN.addCondition(cond.getName(), cond.getOp(), cond.getValue());
-				//logger.info("{" + cond.getName() + cond.getOp() + cond.getValue() + "}");
-				countCond++;
-			}
-			nodes.add(tempN);
+			nodes.add(node);
 			
 		}
 		
@@ -73,7 +73,7 @@ public class NeoPattern implements IPattern {
 		Driver driver = builder.getDriver();
 		logger.info("Searching matches for Pattern: " + getName());
 		
-		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes,countCond);
+		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes,conditions,relations);
 		logger.info(cypherQuery);
 		
 		StatementResult result = driver.session().run(cypherQuery);
@@ -83,6 +83,9 @@ public class NeoPattern implements IPattern {
 			Record res = result.next();
 			matches.add(new NeoMatch(getName(), p, res.values()));
 			logger.info(res.values().toString());
+		}
+		if(matches.isEmpty()) {
+			logger.info("NO MATCHES!");
 		}
 		return matches;
 		

@@ -12,16 +12,26 @@ public class NeoProperty {
 	public NeoProperty(String name, String value, String classVarName) {
 		
 		this.classVarName = classVarName;
-		
 		this.name = name;
 		this.value = value;
 		
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public String getClassVarName() {
+		return classVarName;
+	}
+
 	@Override
 	public String toString() {
-		String result = "";
-		return result + " " + classVarName + "." + name + ":" + value;
+		return CypherPatternBuilder.cypherProperty(name, value, classVarName);
 	}
 
 }
