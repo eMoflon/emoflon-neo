@@ -203,9 +203,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 			cb.createEdge(List.of(), ESUPER_TYPE, eref, eAttrEle);
 			cb.createEdge(List.of(), ESUPER_TYPE, eref, eStruct);
 			cb.createEdge(List.of(), ESUPER_TYPE, eattr, eStruct);
-			cb.createEdge(List.of(), ESUPER_TYPE, eclass, eclassifier);
-			cb.createEdge(List.of(), ESUPER_TYPE, eDataType, eclassifier);
-			cb.createEdge(List.of(), ESUPER_TYPE, eStruct, eTypedele);
 			cb.createEdge(List.of(), ESUPER_TYPE, eTypedele, enamedele);
 			cb.createEdge(List.of(), ESUPER_TYPE, eclassifier, enamedele);
 			cb.createEdge(List.of(), EATTRIBUTES, eclass, abstractattr);
