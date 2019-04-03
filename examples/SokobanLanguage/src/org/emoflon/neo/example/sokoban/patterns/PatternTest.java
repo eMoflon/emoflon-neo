@@ -3,6 +3,8 @@ package org.emoflon.neo.example.sokoban.patterns;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Scanner;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 import org.emoflon.neo.emsl.eMSL.Pattern;
@@ -18,6 +20,7 @@ import org.neo4j.driver.v1.StatementResult;
 
 public class PatternTest {
 
+	private static Scanner reader; 
 	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
 	private static NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
 
@@ -32,17 +35,31 @@ public class PatternTest {
 	private static Driver driver = builder.getDriver();
 
 	@BeforeAll
-	private static void startDBConnection() {
+	private static void startDBConnection() throws Exception {
+		
 		logger.info("Database Connection established.");
 		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
+		
 		if (result.hasNext()) {
-			if (result.next().get(0).asInt() > 0)
-				logger.info("Database not empty. All data will be removed!");
-			else
+			
+			if (result.next().get(0).asInt() > 0) {
+				logger.info("Database not empty. All data will be removed! \nDo you want to continue (Y=yes / N=no)?");
+				reader = new Scanner(System.in);
+				String input = reader.next();
+				
+				if (input.toLowerCase().equals("n")) {
+					logger.info("Tests have been cancled. No changes in the database executed.");
+					closeDBConnection();
+					System.exit(0);
+				}
+			} else {
 				logger.info("Database empty.");
+			}
+			
 		} else {
 			logger.info("Database empty.");
 		}
+		
 	}
 
 	@BeforeEach
