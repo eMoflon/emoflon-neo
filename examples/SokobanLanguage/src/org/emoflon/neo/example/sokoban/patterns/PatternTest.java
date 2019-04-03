@@ -59,8 +59,6 @@ public class PatternTest {
 	
 	@AfterAll
 	public static void closeDBConnection() throws Exception{
-		driver.session().close();
-		driver.close();
 		builder.close();
 		logger.info("Database Connection closed.");
 	}
