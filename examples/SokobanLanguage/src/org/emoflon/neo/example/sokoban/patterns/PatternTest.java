@@ -17,10 +17,10 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.StatementResult;
 
 public class PatternTest {
-	
+
 	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
 	private static NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
-	
+
 	private EMSL_Spec model = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/models/SokobanSimpleTestField.msl", //
 			"../");
@@ -28,14 +28,14 @@ public class PatternTest {
 	private EMSL_Spec spec = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 			"../");
-	
+
 	private static Driver driver = builder.getDriver();
-	
+
 	@BeforeAll
 	private static void startDBConnection() {
 		logger.info("Database Connection established.");
 		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
-		if(result.hasNext()) {
+		if (result.hasNext()) {
 			if (result.next().get(0).asInt() > 0)
 				logger.info("Database not empty. All data will be removed!");
 			else
@@ -44,28 +44,28 @@ public class PatternTest {
 			logger.info("Database empty.");
 		}
 	}
-	
+
 	@BeforeEach
 	private void initDB() {
 		builder.exportEMSLEntityToNeo4j(model);
 		logger.info("Database initialised.");
 	}
-	
+
 	@AfterEach
 	private void clearDB() {
 		driver.session().run("MATCH (n) DETACH DELETE n");
 		logger.info("Database cleared.");
 	}
-	
+
 	@AfterAll
-	public static void closeDBConnection() throws Exception{
+	public static void closeDBConnection() throws Exception {
 		builder.close();
 		logger.info("Database Connection closed.");
 	}
 
 	@Test
 	public void testOneSokoban() {
-		
+
 		// Get an EMSL pattern
 		Pattern p = (Pattern) spec.getEntities().get(0);
 
@@ -78,7 +78,7 @@ public class PatternTest {
 		// Check expected count
 		assertThat(matches.size(), is(1));
 	}
-	
+
 	@Test
 	public void testOneBlock() {
 
@@ -87,7 +87,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
-	
+
 	@Test
 	public void testOneEndField() {
 
@@ -96,7 +96,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
-	
+
 	@Test
 	public void testOccupiedFields() {
 
@@ -105,7 +105,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(9));
 	}
-	
+
 	@Test
 	public void testOccupiedSokobanFields() {
 
@@ -114,6 +114,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(1));
 	}
+
 	@Test
 	public void testOccupiedBlockFields() {
 
@@ -122,6 +123,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
+
 	@Test
 	public void testOccupiedBoulderFields() {
 
@@ -130,7 +132,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(8));
 	}
-	
+
 	@Test
 	public void testAllFieldsInARow() {
 
@@ -139,7 +141,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(4));
 	}
-	
+
 	@Test
 	public void testAllNotBorderFieldsInARow() {
 		Pattern p = (Pattern) spec.getEntities().get(8);
@@ -147,7 +149,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
-	
+
 	@Test
 	public void testAllNotBorderFieldsInARowAndCol() {
 		Pattern p = (Pattern) spec.getEntities().get(9);
@@ -155,7 +157,7 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(1));
 	}
-	
+
 	@Test
 	public void testAllNotBorderFieldsInDiffRows() {
 		Pattern p = (Pattern) spec.getEntities().get(10);
@@ -163,5 +165,5 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(0));
 	}
-	
+
 }
