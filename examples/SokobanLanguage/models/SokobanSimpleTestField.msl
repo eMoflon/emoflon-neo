@@ -23,33 +23,79 @@ model SokobanSimpleTestField {
 		.width : 4 
 		.height : 4
 		
-		-fields-> f00
-		-fields-> f01
-		-fields-> f02
-		-fields-> f03
+		-fields-> f00 {
+			.row : 0
+			.col : 0
+		}
+		-fields-> f01 {
+			.row : 0
+			.col : 1
+		}
+		-fields-> f02 {
+			.row : 0
+			.col : 2
+		}
+		-fields-> f03 {
+			.row : 0
+			.col : 3
+		}
 		
-		-fields-> f10
-		-fields-> f11
-		-fields-> f12
-		-fields-> f13
+		-fields-> f10 {
+			.row : 1
+			.col : 0
+		}
+		-fields-> f11 {
+			.row : 1
+			.col : 1
+		}
+		-fields-> f12 {
+			.row : 1
+			.col : 2
+		}
+		-fields-> f13 {
+			.row : 1
+			.col : 3
+		}
 		
-		-fields-> f20
-		-fields-> f21
-		-fields-> f22
-		-fields-> f23
+		-fields-> f20 {
+			.row : 2
+			.col : 0
+		}
+		-fields-> f21 {
+			.row : 2
+			.col : 1
+		}
+		-fields-> f22 {
+			.row : 2
+			.col : 2
+		}
+		-fields-> f23 {
+			.row : 2
+			.col : 3
+		}
 		
-		-fields-> f30
-		-fields-> f31
-		-fields-> f32
-		-fields-> f33
+		-fields-> f30 {
+			.row : 3
+			.col : 0
+		}
+		-fields-> f31 {
+			.row : 3
+			.col : 1
+		}
+		-fields-> f32 {
+			.row : 3
+			.col : 2
+		}
+		-fields-> f33 {
+			.row : 3
+			.col : 3
+		}
 		
 		
 		-selectedFigure-> f00
 	}
 	
 	f00 : Field {
-		.row : 0
-		.col : 0
 		.endPos : false
 		
 		-right-> f01
@@ -60,8 +106,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f01 : Field {
-		.row : 0
-		.col : 1
 		.endPos : false
 		
 		-left-> f00
@@ -71,8 +115,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f02 : Field {
-		.row : 0
-		.col : 2
 		.endPos : false
 		
 		-left-> f01
@@ -82,8 +124,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f03 : Field {
-		.row : 0
-		.col : 3
 		.endPos : false
 		
 		-left-> f02
@@ -94,8 +134,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f10 : Field {
-		.row : 1
-		.col : 0
 		.endPos : false
 		
 		-right-> f11
@@ -105,8 +143,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f11 : Field {
-		.row : 1
-		.col : 1
 		.endPos : false
 		
 		-left-> f10
@@ -117,8 +153,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f12 : Field {
-		.row : 1
-		.col : 2
 		.endPos : false
 		
 		-left-> f11
@@ -131,8 +165,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f13 : Field {
-		.row : 1
-		.col : 3
 		.endPos : false
 		
 		-left-> f12
@@ -144,8 +176,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f20 : Field {
-		.row : 2
-		.col : 0
 		.endPos : false
 		
 		-right-> f21
@@ -155,8 +185,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f21 : Field {
-		.row : 2
-		.col : 1
 		.endPos : false
 		
 		-left-> f20
@@ -169,8 +197,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f22 : Field {
-		.row : 2
-		.col : 2
 		.endPos : true
 		
 		-left-> f21
@@ -181,8 +207,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f23 : Field {
-		.row : 2
-		.col : 3
 		.endPos : false
 		
 		-left-> f22
@@ -194,8 +218,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f30 : Field {
-		.row : 3
-		.col : 0
 		.endPos : false
 		
 		-right-> f31
@@ -206,8 +228,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f31 : Field {
-		.row : 3
-		.col : 1
 		.endPos : false
 		
 		-left-> f30
@@ -219,8 +239,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f32 : Field {
-		.row : 3
-		.col : 2
 		.endPos : true
 		
 		-left-> f31
@@ -230,8 +248,6 @@ model SokobanSimpleTestField {
 	}
 	
 	f33 : Field {
-		.row : 3
-		.col : 3
 		.endPos : false
 		
 		-left-> f32

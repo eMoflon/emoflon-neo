@@ -58,35 +58,31 @@ pattern allFieldsInARow {
 }
 
 pattern allNotBorderFieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+			.col : 2
+		}
+		-fields -> fieldL {
+			.row : 1
+			.col : 3
+		}
+		-fields -> fieldR {
+			.row : 1
+			.col : 1
+		}
+	}
 	field : Field {
-		.row >= 1
-		-right -> fieldM
-		-bottom -> fieldB1
+		-left -> fieldL
+		-right -> fieldR
 	}
 	
-	fieldM : Field {
-		.row >= 1
-		-right -> fieldR
-		-bottom -> fieldB2
+	fieldL : Field {
+		-right -> field
 	}
 	
 	fieldR : Field {
-		.row >= 1
-		-bottom -> fieldB3
-	}
-	
-	fieldB1 : Field {
-		.row >= 2
-		-right -> fieldB2
-	}
-	
-	fieldB2 : Field {
-		.row >= 2 
-		-right -> fieldB3
-	}
-	
-	fieldB3 : Field {
-		.row >= 2
+		-left -> field
 	}
 }
 

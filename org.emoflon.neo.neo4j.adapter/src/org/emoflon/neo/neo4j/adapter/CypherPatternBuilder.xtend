@@ -11,7 +11,8 @@ class CypherPatternBuilder {
 	
 	def static String cypherMatch(Collection<NeoNode> nodes, Collection<NeoRelation> relations) {
 
-		'''MATCH  «cypherNodes(nodes)»«IF relations.size > 0 », «ENDIF»«cypherRelations(relations)»''' 
+		'''MATCH  «cypherNodes(nodes)»«IF relations.size > 0 », «ENDIF»«cypherRelations(relations)»
+		''' 
 	}
 	
 	
@@ -29,13 +30,14 @@ class CypherPatternBuilder {
 		«ENDIF»'''
 	}
 	
-	def static String cypherRelation(NeoNode node, NeoRelation relation) {
-		'''(«node.varName»)-[«relation.relName»:«relation.relType»]->(«relation.toVarName»)'''
+	def static String cypherRelation(NeoNode node, NeoRelation relation, Collection<NeoProperty> properties) {
+		'''(«node.varName»)-[«relation.relName»:«relation.relType»«IF properties.size > 0» «cypherProperties(properties)»«ENDIF»]->(«relation.toVarName»)'''
 	}
 
 	
 	def static String cypherConditions(Collection<NeoCondition> conditions) {
-		'''«IF conditions.size > 0» WHERE «FOR c:conditions SEPARATOR ' AND '»«c.toString»«ENDFOR»«ENDIF»'''
+		'''«IF conditions.size > 0»
+		WHERE «FOR c:conditions SEPARATOR ' AND '»«c.toString»«ENDFOR»«ENDIF»'''
 	}
 	
 	def static String cypherCondition(String name, String op, Boolean opNeg, String value, String classVarName) {
@@ -55,7 +57,8 @@ class CypherPatternBuilder {
 	}
 	
 	def static String cypherReturn(Collection<NeoNode> nodes) {
-		''' RETURN «FOR n:nodes SEPARATOR ', '»«n.varName»«ENDFOR»'''
+		'''
+		RETURN «FOR n:nodes SEPARATOR ', '»«n.varName»«ENDFOR»'''
 	}
 	
 }

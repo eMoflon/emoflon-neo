@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 public class PatternTest {
 	
-	NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:7687", "neo4j", "test");
+	NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
 	
 	// Load EMSL spec
 	EMSL_Spec spec = EMSUtil.loadSpecification(//
@@ -99,7 +99,6 @@ public class PatternTest {
 	
 	@Test
 	public void testAllNotBorderFieldsInARow() {
-
 		Pattern p = (Pattern) spec.getEntities().get(8);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();

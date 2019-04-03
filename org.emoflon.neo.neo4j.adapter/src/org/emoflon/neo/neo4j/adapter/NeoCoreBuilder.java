@@ -494,11 +494,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 				.map(psType -> psType.getValue())//
 				.map(t -> parseStringWithType(stringVal, t))//
 				.findAny();
+		
+		logger.info("Attempt to infer type for " + ps.getName() + ":" + stringVal);
 
 		return typedValue.orElse(stringVal);
 	}
 
 	private Object parseStringWithType(String stringVal, String type) {
+		
 		switch (type) {
 		case "EInt":
 			return Integer.parseInt(stringVal);

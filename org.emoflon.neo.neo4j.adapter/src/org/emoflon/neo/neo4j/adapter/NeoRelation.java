@@ -1,5 +1,11 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.emsl.eMSL.PropertyStatement;
+
 public class NeoRelation {
 	
 	private String relType;
@@ -8,12 +14,19 @@ public class NeoRelation {
 	private String toNode;
 	private String toVarName;
 	
-	public NeoRelation(String relType, String relName, NeoNode fromNode, String toNode, String toVarName) {
+	private Collection<NeoProperty> propteries;
+	
+	public NeoRelation(String relType, Collection<PropertyStatement> props, NeoNode fromNode, String toNode, String toVarName) {
+		
+		this.propteries = new ArrayList<>();
+		
 		this.relType = relType;
-		this.relName = relName;
+		this.relName = "";
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.toVarName = toVarName;
+		
+		props.forEach(prop -> addProperty(prop.getName(), prop.getValue()));
 	}
 
 	public String getRelType() {
@@ -32,9 +45,17 @@ public class NeoRelation {
 		return relName;
 	}
 	
+	public Collection<NeoProperty> getProperties() {
+		return propteries;
+	}
+	
+	public void addProperty(String name, String value) {
+		this.propteries.add(new NeoProperty(name, value, toVarName));
+	}
+	
 	@Override
 	public String toString() {
-		return CypherPatternBuilder.cypherRelation(fromNode, this);
+		return CypherPatternBuilder.cypherRelation(fromNode, this, propteries);
 	}
 
 }

@@ -24,7 +24,7 @@ public class ScalabilityTest {
 		int n = 5;
 
 		String log = "";
-		for (int size = 0; size <= n; size += 50) {
+		for (int size = 0; size <= n; size += 5) {
 			log += t.runTests(size, 10000, 10000);
 		}
 

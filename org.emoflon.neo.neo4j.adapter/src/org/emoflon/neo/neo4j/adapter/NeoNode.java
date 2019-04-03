@@ -29,10 +29,6 @@ public class NeoNode {
 		return varName;
 	}
 	
-	public int getCountProperties() {
-		return countProp;
-	}
-
 	public Collection<NeoProperty> getProperties() {
 		return propteries;
 	}
