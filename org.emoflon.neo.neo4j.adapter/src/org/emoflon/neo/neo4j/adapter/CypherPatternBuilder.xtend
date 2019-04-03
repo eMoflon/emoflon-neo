@@ -1,7 +1,6 @@
 package org.emoflon.neo.neo4j.adapter
 
 import java.util.Collection
-import org.emoflon.neo.emsl.eMSL.NodeBlockConditionOperator
 
 class CypherPatternBuilder {
 	
