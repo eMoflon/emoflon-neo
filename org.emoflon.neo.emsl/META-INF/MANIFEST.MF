@@ -26,5 +26,6 @@ Export-Package: org.emoflon.neo.emsl,
  org.emoflon.neo.emsl.serializer,
  org.emoflon.neo.emsl.services,
  org.emoflon.neo.emsl.util,
- org.emoflon.neo.emsl.validation
+ org.emoflon.neo.emsl.validation,
+ org.emoflon.neo.emsl.formatting2
 Import-Package: org.apache.log4j

@@ -6,7 +6,7 @@ import org.eclipse.xtext.xtext.generator.model.project.*
 var rootPath = ".."
 
 Workflow {
-	
+
 	component = XtextGenerator {
 		configuration = {
 			project = StandardProjectConfig {
@@ -26,17 +26,19 @@ Workflow {
 		language = StandardLanguage {
 			name = "org.emoflon.neo.emsl.EMSL"
 			fileExtensions = "msl"
-
 			serializer = {
 				generateStub = false
 			}
 			validator = {
-				// composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
-				// Generates checks for @Deprecated grammar annotations, an IssueProvider and a corresponding PropertyPage
+			// composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
+			// Generates checks for @Deprecated grammar annotations, an IssueProvider and a corresponding PropertyPage
 				generateDeprecationValidation = true
 			}
 			junitSupport = {
 				junitVersion = "5"
+			}
+			formatter = {
+				generateStub = true
 			}
 		}
 	}

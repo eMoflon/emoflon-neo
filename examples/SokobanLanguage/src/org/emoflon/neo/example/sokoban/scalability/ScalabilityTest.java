@@ -3,6 +3,7 @@ package org.emoflon.neo.example.sokoban.scalability;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
@@ -18,13 +19,17 @@ public class ScalabilityTest {
 	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
 
 	public static void main(String[] args) throws Exception {
+		Logger.getRootLogger().setLevel(Level.DEBUG);
+		
 		ScalabilityTest t = new ScalabilityTest();
 		EMSLPackageImpl.init();
 
-		int n = 5;
+		int start = 0;
+		int step = 50;
+		int stop = 5;
 
 		String log = "";
-		for (int size = 0; size <= n; size += 5) {
+		for (int size = start; size <= stop; size += step) {
 			log += t.runTests(size, 10000, 10000);
 		}
 
