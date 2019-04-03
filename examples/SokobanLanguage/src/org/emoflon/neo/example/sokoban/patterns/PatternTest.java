@@ -3,52 +3,66 @@ package org.emoflon.neo.example.sokoban.patterns;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.util.EMSUtil;
 import org.emoflon.neo.engine.api.rules.IPattern;
+import org.emoflon.neo.example.sokoban.scalability.ScalabilityTest;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoPattern;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.StatementResult;
 
 public class PatternTest {
 	
-	NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
-	EMSL_Spec spec = EMSUtil.loadSpecification(//
+	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
+	private static NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
+	
+	private EMSL_Spec model = EMSUtil.loadSpecification(//
+			"platform:/resource/SokobanLanguage/models/SokobanSimpleTestField.msl", //
+			"../");
+
+	private EMSL_Spec spec = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 			"../");
 	
-	Driver driver = builder.getDriver();
+	private static Driver driver = builder.getDriver();
 	
-	@BeforeClass
-	public void startDBConnection() {
-		
-	}
-	
-	@Before
-	public void initDB() {
-		
-	}
-	
-	@After
-	public void clearDB() {
-		
+	@BeforeAll
+	private static void startDBConnection() {
+		logger.info("Database Connection established.");
+		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
+		if(result.hasNext()) {
+			if (result.next().get(0).asInt() > 0)
+				logger.info("Database not empty. All data will be removed!");
+			else
+				logger.info("Database empty.");
+		} else {
+			logger.info("Database empty.");
+		}
 	}
 	
 	@BeforeEach
-	public void resetDBtoInit() {
-		
+	private void initDB() {
+		builder.exportEMSLEntityToNeo4j(model);
+		logger.info("Database initialised.");
 	}
 	
-	@AfterClass 
-	public void closeDBConnection(){
-		
+	@AfterEach
+	private void clearDB() {
+		driver.session().run("MATCH (n) DETACH DELETE n");
+		logger.info("Database cleared.");
+	}
+	
+	@AfterAll
+	public static void closeDBConnection() throws Exception{
+		driver.session().close();
+		driver.close();
+		builder.close();
+		logger.info("Database Connection closed.");
 	}
 
 	@Test
