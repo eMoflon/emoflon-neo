@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.v1.Driver;
 
 public class PatternTest {
 	
@@ -22,6 +23,8 @@ public class PatternTest {
 	EMSL_Spec spec = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 			"../");
+	
+	Driver driver = builder.getDriver();
 	
 	@BeforeClass
 	public void startDBConnection() {

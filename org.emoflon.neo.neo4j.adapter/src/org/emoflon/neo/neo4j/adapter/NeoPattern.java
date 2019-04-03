@@ -26,8 +26,6 @@ public class NeoPattern implements IPattern {
 	private Collection<NeoRelation> relations;
 	private Collection<NeoCondition> conditions;
 	
-	// TODO: @jannik add properties of nodes and relationships
-	// TODO: @jannik add parameter of relationships
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		relations = new ArrayList<>();
