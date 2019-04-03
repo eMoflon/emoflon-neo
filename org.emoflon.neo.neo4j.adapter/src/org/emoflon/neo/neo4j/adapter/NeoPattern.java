@@ -41,26 +41,18 @@ public class NeoPattern implements IPattern {
 			
 			// Get all relationships
 			n.getRelationStatements().forEach(r -> 
-					relations.add(new NeoRelation(r.getName(), r.getPropertyStatements(), node, r.getValue().getType().getName(), r.getValue().getName())));
-			
-			/*for(RelationStatement r:n.getRelationStatements()) {
-				NeoRelation rel = new NeoRelation(r.getName(), r.getPropertyStatements(), node, r.getValue().getType().getName(), r.getValue().getName());				
-				relations.add(rel);
-			}*/
+					relations.add(new NeoRelation(r.getName(), r.getPropertyStatements(), node, r.getValue().getType().getName(), r.getValue().getName()))
+			);
 			
 			// Get all properties or conditions
-			for(ConditionStatement c:n.getConditionStatements()) {
-				
-				if(c.getOp().toString() == "==") {
+			n.getConditionStatements().forEach(c -> {
+				if(c.getOp().toString() == "==") 
 					node.addProperty(c.getName(), c.getValue());
-					
-				} else {
-					NeoCondition cond = new NeoCondition(c.getName(), c.getOp(), c.getValue(), node.getVarName());
-					conditions.add(cond);
-				}
-			}
-			nodes.add(node);
+				else
+					conditions.add(new NeoCondition(c.getName(), c.getOp(), c.getValue(), node.getVarName()));
+			});
 			
+			nodes.add(node);
 		}
 		
 	}
@@ -88,7 +80,7 @@ public class NeoPattern implements IPattern {
 			logger.info(res.values().toString());
 		}
 		if(matches.isEmpty()) {
-			logger.info("NO MATCHES!");
+			logger.error("NO MATCHES FOUND!");
 		}
 		return matches;
 		

@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Test;
 public class PatternTest {
 	
 	NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
-	
-	// Load EMSL spec
 	EMSL_Spec spec = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 			"../");
@@ -115,7 +113,7 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(6);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		assertThat(matches.size(), is(6));
+		assertThat(matches.size(), is(8));
 	}
 	
 	@Test
@@ -124,7 +122,7 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(7);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		assertThat(matches.size(), is(3));
+		assertThat(matches.size(), is(4));
 	}
 	
 	@Test
@@ -132,7 +130,23 @@ public class PatternTest {
 		Pattern p = (Pattern) spec.getEntities().get(8);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
+		assertThat(matches.size(), is(2));
+	}
+	
+	@Test
+	public void testAllNotBorderFieldsInARowAndCol() {
+		Pattern p = (Pattern) spec.getEntities().get(9);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
 		assertThat(matches.size(), is(1));
+	}
+	
+	@Test
+	public void testAllNotBorderFieldsInDiffRows() {
+		Pattern p = (Pattern) spec.getEntities().get(10);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		assertThat(matches.size(), is(0));
 	}
 	
 }

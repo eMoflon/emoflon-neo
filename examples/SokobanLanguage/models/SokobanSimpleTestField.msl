@@ -2,8 +2,8 @@ import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
 
 /* 
  * S: Sokoban
- * O: Boulder
- * #: Block
+ * O: Block
+ * #: Boulder
  * ?: EndField
 =================
 | S |   |   | # |
@@ -90,7 +90,6 @@ model SokobanSimpleTestField {
 			.row : 3
 			.col : 3
 		}
-		
 		
 		-selectedFigure-> f00
 	}

@@ -52,12 +52,39 @@ pattern anOccupiedBoulderField {
 
 
 pattern allFieldsInARow {
-	field : Field {
-		.row == 1
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+		}
 	}
+	field : Field
 }
 
 pattern allNotBorderFieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+		}
+		-fields -> fieldL {
+			.row : 1
+		}
+		-fields -> fieldR {
+			.row : 1
+		}
+	}
+	field : Field {
+		-right -> fieldR
+	}
+	
+	fieldL : Field {
+		-right -> field
+	}
+	
+	fieldR : Field {
+	}
+}
+
+pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
 	b : SokobanLanguage.Board {
 		-fields -> field {
 			.row : 1
@@ -72,15 +99,14 @@ pattern allNotBorderFieldsInARow {
 			.col : 3
 		}
 	}
-	field : Field {
-		-right -> fieldR
-	}
-	
-	fieldL : Field {
-		-right -> field
-	}
-	
-	fieldR : Field {
+}
+
+pattern allNotBorderFieldsInDiffRows -> allNotBorderFieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 4
+			.col : 2
+		}
 	}
 }
 
