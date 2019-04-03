@@ -65,15 +65,14 @@ pattern allNotBorderFieldsInARow {
 		}
 		-fields -> fieldL {
 			.row : 1
-			.col : 3
+			.col : 1
 		}
 		-fields -> fieldR {
 			.row : 1
-			.col : 1
+			.col : 3
 		}
 	}
 	field : Field {
-		-left -> fieldL
 		-right -> fieldR
 	}
 	
@@ -82,7 +81,6 @@ pattern allNotBorderFieldsInARow {
 	}
 	
 	fieldR : Field {
-		-left -> field
 	}
 }
 

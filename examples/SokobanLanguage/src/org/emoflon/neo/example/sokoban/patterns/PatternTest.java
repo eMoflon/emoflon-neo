@@ -9,6 +9,11 @@ import org.emoflon.neo.emsl.util.EMSUtil;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoPattern;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PatternTest {
@@ -19,6 +24,31 @@ public class PatternTest {
 	EMSL_Spec spec = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 			"../");
+	
+	@BeforeClass
+	public void startDBConnection() {
+		
+	}
+	
+	@Before
+	public void initDB() {
+		
+	}
+	
+	@After
+	public void clearDB() {
+		
+	}
+	
+	@BeforeEach
+	public void resetDBtoInit() {
+		
+	}
+	
+	@AfterClass 
+	public void closeDBConnection(){
+		
+	}
 
 	@Test
 	public void testOneSokoban() {

@@ -16,6 +16,7 @@ import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.PropertyStatement;
+import org.emoflon.neo.emsl.eMSL.RelationStatement;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -75,7 +76,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	public NeoCoreBuilder(String uri, String user, String password) {
 		driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
 	}
-	
+
 	public Driver getDriver() {
 		return driver;
 	}
@@ -487,6 +488,30 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private Object inferType(PropertyStatement ps, NodeBlock nb) {
+		if (ps.eContainer().equals(nb))
+			return inferTypeForNodeAttribute(ps, nb);
+		else
+			return inferTypeForEdgeAttribute(ps, nb);
+	}
+
+	private Object inferTypeForEdgeAttribute(PropertyStatement ps, NodeBlock nb) {
+		String stringVal = ps.getValue();
+
+		RelationStatement rs = (RelationStatement) ps.eContainer();
+		NodeBlock nodeType = nb.getType();
+
+		var typedValue = nodeType.getRelationStatements().stream()//
+				.filter(et -> et.getName().equals(rs.getName()))//
+				.flatMap(et -> et.getPropertyStatements().stream())//
+				.filter(etPs -> etPs.getName().equals(ps.getName()))//
+				.map(etPs -> etPs.getValue())//
+				.map(t -> parseStringWithType(stringVal, t))//
+				.findAny();
+
+		return typedValue.orElse(stringVal);
+	}
+
+	private Object inferTypeForNodeAttribute(PropertyStatement ps, NodeBlock nb) {
 		String stringVal = ps.getValue();
 
 		var typedValue = nb.getType().getPropertyStatements().stream()//
@@ -494,14 +519,13 @@ public class NeoCoreBuilder implements AutoCloseable {
 				.map(psType -> psType.getValue())//
 				.map(t -> parseStringWithType(stringVal, t))//
 				.findAny();
-		
+
 		logger.info("Attempt to infer type for " + ps.getName() + ":" + stringVal);
 
 		return typedValue.orElse(stringVal);
 	}
 
 	private Object parseStringWithType(String stringVal, String type) {
-		
 		switch (type) {
 		case "EInt":
 			return Integer.parseInt(stringVal);
