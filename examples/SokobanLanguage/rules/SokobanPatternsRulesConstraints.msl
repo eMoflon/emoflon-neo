@@ -17,12 +17,99 @@ pattern oneEndField {
 }
 
 pattern anOccupiedField {
-	fig : Figure
 	
 	field : Field {
 		-figure-> fig
 	}
+	
+	fig : Figure	
 }
+
+pattern anOccupiedSokobanField {
+	
+	field : Field {
+		-figure-> fig
+	}
+	
+	fig : Sokoban	
+}
+pattern anOccupiedBlockField {
+	
+	field : Field {
+		-figure-> fig
+	}
+	
+	fig : Block	
+}
+pattern anOccupiedBoulderField {
+	
+	field : Field {
+		-figure-> fig
+	}
+	
+	fig : Boulder	
+}
+
+
+pattern allFieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+		}
+	}
+	field : Field
+}
+
+pattern allNotBorderFieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+		}
+		-fields -> fieldL {
+			.row : 1
+		}
+		-fields -> fieldR {
+			.row : 1
+		}
+	}
+	field : Field {
+		-right -> fieldR
+	}
+	
+	fieldL : Field {
+		-right -> field
+	}
+	
+	fieldR : Field {
+	}
+}
+
+pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+			.col : 2
+		}
+		-fields -> fieldL {
+			.row : 1
+			.col : 1
+		}
+		-fields -> fieldR {
+			.row : 1
+			.col : 3
+		}
+	}
+}
+
+pattern allNotBorderFieldsInDiffRows -> allNotBorderFieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 4
+			.col : 2
+		}
+	}
+}
+
 
 pattern boulderOnEndField -> oneEndField, anOccupiedField {
 	fig : Boulder

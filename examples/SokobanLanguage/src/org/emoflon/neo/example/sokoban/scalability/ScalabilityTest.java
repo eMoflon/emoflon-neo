@@ -38,7 +38,7 @@ public class ScalabilityTest {
 
 	public String runTests(int modelSize, int nodes, int edges) throws Exception {
 		String time = "";
-		NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:7687", "neo4j", "test");
+		NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
 
 		try {
 			EMSL_Spec spec = EMSUtil.loadSpecification(//
