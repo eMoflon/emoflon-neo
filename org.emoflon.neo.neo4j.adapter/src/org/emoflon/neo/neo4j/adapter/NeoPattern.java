@@ -23,6 +23,7 @@ public class NeoPattern implements IPattern {
 	private Collection<NeoNode> nodes;
 	private Collection<NeoRelation> relations;
 	private Collection<NeoCondition> conditions;
+	private Collection<IMatch> matches;
 
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
@@ -67,12 +68,14 @@ public class NeoPattern implements IPattern {
 		logger.info(cypherQuery);
 
 		StatementResult result = driver.session().run(cypherQuery);
-		Collection<IMatch> matches = new ArrayList<>();
+		matches = new ArrayList<>();
 
 		while (result.hasNext()) {
 			Record res = result.next();
-			matches.add(new NeoMatch(getName(), p, res.values(), UUID.randomUUID(), driver));
-			logger.info(res.values().toString());
+			UUID tempUuid = UUID.randomUUID();
+			
+			matches.add(new NeoMatch(getName(), p, res.values(), tempUuid, driver));
+			logger.info(res.values() + "{uuid: \""+ tempUuid + "\"}");
 		}
 		if (matches.isEmpty()) {
 			logger.error("NO MATCHES FOUND!");

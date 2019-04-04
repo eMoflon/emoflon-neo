@@ -9,6 +9,7 @@ import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Value;
 
 public class NeoMatch implements IMatch {
@@ -47,8 +48,10 @@ public class NeoMatch implements IMatch {
 
 	@Override
 	public boolean isStillValid() {
-		// TODO Auto-generated method stub
-		return false;
+		String statement = "MATCH (n:Match {uuid: \""+ uuid +"\"}) RETURN n.valid AS valid";
+		StatementResult result = driver.session().run(statement);
+		
+		return result.next().get("valid").asBoolean();
 	}
 
 	@Override

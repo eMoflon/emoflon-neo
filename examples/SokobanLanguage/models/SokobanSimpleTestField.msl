@@ -107,7 +107,6 @@ model SokobanSimpleTestField {
 	f01 : Field {
 		.endPos : false
 		
-		-left-> f00
 		-right-> f02
 		-bottom-> f11
 		-board-> b
@@ -116,7 +115,6 @@ model SokobanSimpleTestField {
 	f02 : Field {
 		.endPos : false
 		
-		-left-> f01
 		-right-> f03
 		-bottom-> f12
 		-board-> b
@@ -125,7 +123,6 @@ model SokobanSimpleTestField {
 	f03 : Field {
 		.endPos : false
 		
-		-left-> f02
 		-bottom-> f13
 		-board-> b
 		
@@ -136,7 +133,6 @@ model SokobanSimpleTestField {
 		.endPos : false
 		
 		-right-> f11
-		-top-> f00
 		-bottom-> f20
 		-board-> b
 	}
@@ -144,9 +140,7 @@ model SokobanSimpleTestField {
 	f11 : Field {
 		.endPos : false
 		
-		-left-> f10
 		-right-> f12
-		-top-> f01
 		-bottom-> f21
 		-board-> b
 	}
@@ -154,9 +148,7 @@ model SokobanSimpleTestField {
 	f12 : Field {
 		.endPos : false
 		
-		-left-> f11
 		-right-> f13
-		-top-> f02
 		-bottom-> f22
 		-board-> b
 		
@@ -166,8 +158,6 @@ model SokobanSimpleTestField {
 	f13 : Field {
 		.endPos : false
 		
-		-left-> f12
-		-top-> f03
 		-bottom-> f23
 		-board-> b
 		
@@ -178,7 +168,6 @@ model SokobanSimpleTestField {
 		.endPos : false
 		
 		-right-> f21
-		-top-> f10
 		-bottom-> f30
 		-board-> b
 	}
@@ -186,9 +175,7 @@ model SokobanSimpleTestField {
 	f21 : Field {
 		.endPos : false
 		
-		-left-> f20
 		-right-> f22
-		-top-> f11
 		-bottom-> f31
 		-board-> b
 		
@@ -198,9 +185,7 @@ model SokobanSimpleTestField {
 	f22 : Field {
 		.endPos : true
 		
-		-left-> f21
 		-right-> f23
-		-top-> f12
 		-bottom-> f32
 		-board-> b
 	}
@@ -208,8 +193,6 @@ model SokobanSimpleTestField {
 	f23 : Field {
 		.endPos : false
 		
-		-left-> f22
-		-top-> f13
 		-bottom-> f33
 		-board-> b
 		
@@ -220,7 +203,6 @@ model SokobanSimpleTestField {
 		.endPos : false
 		
 		-right-> f31
-		-top-> f20
 		-board-> b
 		
 		-figure-> boulder4
@@ -229,9 +211,7 @@ model SokobanSimpleTestField {
 	f31 : Field {
 		.endPos : false
 		
-		-left-> f30
 		-right-> f32
-		-top-> f21
 		-board-> b
 		
 		-figure-> boulder5
@@ -240,17 +220,13 @@ model SokobanSimpleTestField {
 	f32 : Field {
 		.endPos : true
 		
-		-left-> f31
 		-right-> f33
-		-top-> f22
 		-board-> b
 	}
 	
 	f33 : Field {
 		.endPos : false
 		
-		-left-> f32
-		-top-> f23
 		-board-> b
 		
 		-figure-> boulder6
