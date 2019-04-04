@@ -44,11 +44,11 @@ metamodel org.emoflon.neo.NeoCore {
 	}
 
 	EObject : EClass {
-
+	-elementOf-> Model
 	}
 	
 	Model : EClass-> EObject {
-		-eReferences-> EReference 
+		-conformsTo-> MetaModel 
 		
 		
 	}
