@@ -68,7 +68,8 @@ public class PatternTest {
 	@BeforeEach
 	private void initDB() {
 		builder.exportEMSLEntityToNeo4j(model);
-		logger.info("Database initialised.");
+		logger.info("-----------------------------\n"
+				+ "Database initialised.");
 	}
 
 	@AfterEach

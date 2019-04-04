@@ -1,26 +1,43 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Value;
 
 public class NeoMatch implements IMatch {
+	
+	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	Driver driver;
 
-	private UUID id;
+	private UUID uuid;
 	private String patternName;
-	private Pattern p;
-	private List<Value> result;
+	private Pattern pattern;
+	private Collection<Value> nodes;
 
-	public NeoMatch(String name, Pattern p2, List<Value> values) {
-		this.id = UUID.randomUUID();
+	public NeoMatch(String name, Pattern pattern, List<Value> nodes, UUID uuid, Driver driver) {
+		this.driver = driver;
+		
+		this.uuid = uuid;
 		this.patternName = name;
-		this.p = p2;
-		this.result = values;// TODO Auto-generated constructor stub
+		this.pattern = pattern;
+		this.nodes = nodes;// TODO Auto-generated constructor stub
+		
+		String nodeID = nodes.get(0).toString();
+		nodeID = nodeID.split("<")[1].split(">")[0];
+		
+		String statement = "MATCH (n:Match) WHERE id(n)=" + nodeID + " SET n.uuid = \"" + uuid + "\", n.valid = true, n.pattern = \"" + patternName + "\"";
+		logger.info(statement);
+		driver.session().run(statement);
+
 	}
+
 
 	@Override
 	public IRule getRule() {

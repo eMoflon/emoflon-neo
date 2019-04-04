@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
@@ -16,6 +17,7 @@ public class NeoPattern implements IPattern {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private NeoCoreBuilder builder;
+	Driver driver;
 	private Pattern p;
 
 	private Collection<NeoNode> nodes;
@@ -27,6 +29,7 @@ public class NeoPattern implements IPattern {
 		relations = new ArrayList<>();
 		conditions = new ArrayList<>();
 		this.builder = builder;
+		this.driver = builder.getDriver();
 		this.p = p;
 
 		for (NodeBlock n : p.getNodeBlocks()) {
@@ -58,7 +61,6 @@ public class NeoPattern implements IPattern {
 	@Override
 	public Collection<IMatch> getMatches() {
 
-		Driver driver = builder.getDriver();
 		logger.info("Searching matches for Pattern: " + getName());
 
 		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes, conditions, relations);
@@ -69,7 +71,7 @@ public class NeoPattern implements IPattern {
 
 		while (result.hasNext()) {
 			Record res = result.next();
-			matches.add(new NeoMatch(getName(), p, res.values()));
+			matches.add(new NeoMatch(getName(), p, res.values(), UUID.randomUUID(), driver));
 			logger.info(res.values().toString());
 		}
 		if (matches.isEmpty()) {

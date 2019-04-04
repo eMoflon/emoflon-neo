@@ -1,12 +1,16 @@
 package org.emoflon.neo.neo4j.adapter
 
 import java.util.Collection
+import java.util.UUID
 
 class CypherPatternBuilder {
 	
 	def static String createCypherQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations) {
-		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherReturn(nodes);
+		val mnName = "matchingNode"
+		val relName = "matches"
+		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherCreate(nodes,mnName,relName) + cypherReturn(mnName);
 	}
+	
 	
 	def static String cypherMatch(Collection<NeoNode> nodes, Collection<NeoRelation> relations) {
 
@@ -55,9 +59,21 @@ class CypherPatternBuilder {
 		'''«classVarName».«name»: «value»'''
 	}
 	
-	def static String cypherReturn(Collection<NeoNode> nodes) {
+	def static cypherCreate(Collection<NeoNode> nodes, String mnName, String relName) {
+		'''CREATE («mnName»:Match), «cypherMatchNodeRelations(nodes, mnName, relName)» '''
+	}
+	
+	def static cypherMatchNodeRelations(Collection<NeoNode> nodes, String mnName, String relName) {
+		'''«FOR n:nodes SEPARATOR ', '»«cypherMatchNodeRelation(n,mnName,relName)»«ENDFOR»'''
+	}
+	
+	def static cypherMatchNodeRelation(NeoNode node, String mnName, String relName) {
+		'''(«mnName»)-[:«relName»]->(«node.varName»)'''
+	}
+	
+	def static String cypherReturn(String mnName) {
 		'''
-		RETURN «FOR n:nodes SEPARATOR ', '»«n.varName»«ENDFOR»'''
+		RETURN «mnName»'''
 	}
 	
 }
