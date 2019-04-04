@@ -23,16 +23,18 @@ public class PatternTest {
 	private static Scanner reader; 
 	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
 	private static NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
+	private static Driver driver = builder.getDriver();
 
+	// Select model 
 	private EMSL_Spec model = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/models/SokobanSimpleTestField.msl", //
 			"../");
 
-	private EMSL_Spec spec = EMSUtil.loadSpecification(//
+	// Select pattern
+	private EMSL_Spec pattern = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 			"../");
 
-	private static Driver driver = builder.getDriver();
 
 	@BeforeAll
 	private static void startDBConnection() throws Exception {
@@ -43,7 +45,8 @@ public class PatternTest {
 		if (result.hasNext()) {
 			
 			if (result.next().get(0).asInt() > 0) {
-				logger.info("Database not empty. All data will be removed! \nDo you want to continue (Y=yes / N=no)?");
+				logger.info("Database not empty. All data will be removed! \n"
+						+ "Do you want to continue (Y=Yes / N=No)?");
 				reader = new Scanner(System.in);
 				String input = reader.next();
 				
@@ -84,7 +87,7 @@ public class PatternTest {
 	public void testOneSokoban() {
 
 		// Get an EMSL pattern
-		Pattern p = (Pattern) spec.getEntities().get(0);
+		Pattern p = (Pattern) pattern.getEntities().get(0);
 
 		// Create a pattern and pass EMSL pattern
 		IPattern ip = new NeoPattern(p, builder);
@@ -99,7 +102,7 @@ public class PatternTest {
 	@Test
 	public void testOneBlock() {
 
-		Pattern p = (Pattern) spec.getEntities().get(1);
+		Pattern p = (Pattern) pattern.getEntities().get(1);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
@@ -108,7 +111,7 @@ public class PatternTest {
 	@Test
 	public void testOneEndField() {
 
-		Pattern p = (Pattern) spec.getEntities().get(2);
+		Pattern p = (Pattern) pattern.getEntities().get(2);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
@@ -117,7 +120,7 @@ public class PatternTest {
 	@Test
 	public void testOccupiedFields() {
 
-		Pattern p = (Pattern) spec.getEntities().get(3);
+		Pattern p = (Pattern) pattern.getEntities().get(3);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(9));
@@ -126,7 +129,7 @@ public class PatternTest {
 	@Test
 	public void testOccupiedSokobanFields() {
 
-		Pattern p = (Pattern) spec.getEntities().get(4);
+		Pattern p = (Pattern) pattern.getEntities().get(4);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(1));
@@ -135,7 +138,7 @@ public class PatternTest {
 	@Test
 	public void testOccupiedBlockFields() {
 
-		Pattern p = (Pattern) spec.getEntities().get(5);
+		Pattern p = (Pattern) pattern.getEntities().get(5);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
@@ -144,7 +147,7 @@ public class PatternTest {
 	@Test
 	public void testOccupiedBoulderFields() {
 
-		Pattern p = (Pattern) spec.getEntities().get(6);
+		Pattern p = (Pattern) pattern.getEntities().get(6);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(8));
@@ -153,7 +156,7 @@ public class PatternTest {
 	@Test
 	public void testAllFieldsInARow() {
 
-		Pattern p = (Pattern) spec.getEntities().get(7);
+		Pattern p = (Pattern) pattern.getEntities().get(7);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(4));
@@ -161,7 +164,7 @@ public class PatternTest {
 
 	@Test
 	public void testAllNotBorderFieldsInARow() {
-		Pattern p = (Pattern) spec.getEntities().get(8);
+		Pattern p = (Pattern) pattern.getEntities().get(8);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
@@ -169,7 +172,7 @@ public class PatternTest {
 
 	@Test
 	public void testAllNotBorderFieldsInARowAndCol() {
-		Pattern p = (Pattern) spec.getEntities().get(9);
+		Pattern p = (Pattern) pattern.getEntities().get(9);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(1));
@@ -177,7 +180,7 @@ public class PatternTest {
 
 	@Test
 	public void testAllNotBorderFieldsInDiffRows() {
-		Pattern p = (Pattern) spec.getEntities().get(10);
+		Pattern p = (Pattern) pattern.getEntities().get(10);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(0));
