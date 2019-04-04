@@ -76,4 +76,16 @@ class CypherPatternBuilder {
 		RETURN «mnName»'''
 	}
 	
+	def static String createUUIDAttributes(String nid, UUID uuid, String pn) {
+		'''MATCH (n:Match) WHERE id(n) = «nid» SET n.uuid = "«uuid»", n.valid = true, n.pattern = "«pn»"'''
+	}
+	
+	def static String createIsValidQuery(UUID uuid) {
+		'''MATCH (n:Match {uuid: "«uuid»"}) RETURN n.valid AS valid'''
+	}
+	
+	def static String createDestroyQuery(UUID uuid) {
+		'''MATCH (n:Match {uuid: "«uuid»"}) DETACH DELETE n'''
+	}
+	
 }

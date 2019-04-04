@@ -33,11 +33,10 @@ public class NeoMatch implements IMatch {
 		String nodeID = nodes.get(0).toString();
 		nodeID = nodeID.split("<")[1].split(">")[0];
 
-		String statement = "MATCH (n:Match) WHERE id(n)=" + nodeID + " SET n.uuid = \"" + uuid
-				+ "\", n.valid = true, n.pattern = \"" + patternName + "\"";
+		String statement = CypherPatternBuilder.createUUIDAttributes(nodeID, uuid, patternName);
+
 		logger.info(statement);
 		driver.session().run(statement);
-
 	}
 
 	@Override
@@ -48,14 +47,14 @@ public class NeoMatch implements IMatch {
 
 	@Override
 	public boolean isStillValid() {
-		String statement = "MATCH (n:Match {uuid: \"" + uuid + "\"}) RETURN n.valid AS valid";
+		String statement = CypherPatternBuilder.createIsValidQuery(uuid);
 		StatementResult result = driver.session().run(statement);
 		return result.next().get("valid").asBoolean();
 	}
 
 	@Override
 	public void destroy() {
-		String statement = "MATCH (n:Match {uuid: \"" + uuid + "\"}) DETACH DELETE n";
+		String statement = CypherPatternBuilder.createDestroyQuery(uuid);
 		logger.info(statement);
 		driver.session().run(statement);
 	}
