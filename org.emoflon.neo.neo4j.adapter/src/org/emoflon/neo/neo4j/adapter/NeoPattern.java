@@ -64,7 +64,7 @@ public class NeoPattern implements IPattern {
 
 		logger.info("Searching matches for Pattern: " + getName());
 
-		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes, conditions, relations);
+		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes, conditions, relations, getName());
 		logger.info(cypherQuery);
 
 		StatementResult result = driver.session().run(cypherQuery);
@@ -72,10 +72,8 @@ public class NeoPattern implements IPattern {
 
 		while (result.hasNext()) {
 			Record res = result.next();
-			UUID tempUuid = UUID.randomUUID();
-			
-			matches.add(new NeoMatch(getName(), p, res.values(), tempUuid, driver));
-			logger.info(res.values() + "{uuid: \""+ tempUuid + "\"}");
+			matches.add(new NeoMatch(getName(), this, res.get("uuid").toString(), driver));
+			logger.info(res.get("uuid").toString());
 		}
 		if (matches.isEmpty()) {
 			logger.error("NO MATCHES FOUND!");

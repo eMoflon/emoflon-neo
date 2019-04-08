@@ -5,10 +5,10 @@ import java.util.UUID
 
 class CypherPatternBuilder {
 	
-	def static String createCypherQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations) {
+	def static String createCypherQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations, String pName) {
 		val mnName = "matchingNode"
 		val relName = "matches"
-		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherCreate(nodes,mnName,relName) + cypherReturn(mnName);
+		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherCreate(nodes,mnName,relName,pName) + cypherReturn(mnName);
 	}
 	
 	
@@ -59,8 +59,8 @@ class CypherPatternBuilder {
 		'''«classVarName».«name»: «value»'''
 	}
 	
-	def static cypherCreate(Collection<NeoNode> nodes, String mnName, String relName) {
-		'''CREATE («mnName»:Match), «cypherMatchNodeRelations(nodes, mnName, relName)» '''
+	def static cypherCreate(Collection<NeoNode> nodes, String mnName, String relName, String pName) {
+		'''CREATE(«mnName»:Match {uuid: randomUUID(), pattern: "«pName»"}), «cypherMatchNodeRelations(nodes, mnName, relName)» '''
 	}
 	
 	def static cypherMatchNodeRelations(Collection<NeoNode> nodes, String mnName, String relName) {
@@ -73,7 +73,7 @@ class CypherPatternBuilder {
 	
 	def static String cypherReturn(String mnName) {
 		'''
-		RETURN «mnName»'''
+		RETURN «mnName».uuid as uuid'''
 	}
 	
 	def static String createUUIDAttributes(String nid, UUID uuid, String pn) {
