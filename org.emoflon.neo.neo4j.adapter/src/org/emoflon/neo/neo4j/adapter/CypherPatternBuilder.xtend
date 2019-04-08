@@ -68,7 +68,7 @@ class CypherPatternBuilder {
 	}
 	
 	def static cypherMatchNodeRelation(NeoNode node, String mnName, String relName) {
-		'''(«mnName»)-[:«relName»]->(«node.varName»)'''
+		'''(«mnName»)-[:«relName» {varName: "«node.varName»"}]->(«node.varName»)'''
 	}
 	
 	def static String cypherReturn(String mnName) {
