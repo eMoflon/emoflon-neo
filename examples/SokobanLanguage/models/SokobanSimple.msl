@@ -1,5 +1,11 @@
 import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
 
+
+/**
+ * ATTENTION
+ * : +++++++ Deprecated Model ++++++++
+ */
+
 model SokobanSimple {
 	b : SokobanLanguage.Board {
 		.width : 4 
