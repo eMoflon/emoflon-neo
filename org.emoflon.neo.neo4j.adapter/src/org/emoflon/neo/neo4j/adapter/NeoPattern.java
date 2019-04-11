@@ -2,8 +2,6 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
@@ -16,7 +14,6 @@ import org.neo4j.driver.v1.StatementResult;
 public class NeoPattern implements IPattern {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private NeoCoreBuilder builder;
 	Driver driver;
 	private Pattern p;
 
@@ -29,7 +26,6 @@ public class NeoPattern implements IPattern {
 		nodes = new ArrayList<>();
 		relations = new ArrayList<>();
 		conditions = new ArrayList<>();
-		this.builder = builder;
 		this.driver = builder.getDriver();
 		this.p = p;
 

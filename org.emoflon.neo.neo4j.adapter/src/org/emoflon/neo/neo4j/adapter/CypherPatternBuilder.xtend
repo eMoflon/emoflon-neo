@@ -1,7 +1,6 @@
 package org.emoflon.neo.neo4j.adapter
 
 import java.util.Collection
-import java.util.UUID
 
 class CypherPatternBuilder {
 	
@@ -68,7 +67,7 @@ class CypherPatternBuilder {
 	}
 	
 	def static cypherMatchNodeRelation(NeoNode node, String mnName, String relName) {
-		'''(«mnName»)-[:«relName» {varName: "«node.varName»"}]->(«node.varName»)'''
+		'''(«mnName»)-[:«relName» {name: "«node.varName»"}]->(«node.varName»)'''
 	}
 	
 	def static String cypherReturn(String mnName) {
@@ -76,15 +75,11 @@ class CypherPatternBuilder {
 		RETURN «mnName».uuid as uuid'''
 	}
 	
-	def static String createUUIDAttributes(String nid, UUID uuid, String pn) {
-		'''MATCH (n:Match) WHERE id(n) = «nid» SET n.uuid = "«uuid»", n.valid = true, n.pattern = "«pn»"'''
+	def static String createIsValidQuery(String uuid) {
+		'''MATCH (n:Match {uuid: "«uuid»"}) RETURN count(n)'''
 	}
 	
-	def static String createIsValidQuery(UUID uuid) {
-		'''MATCH (n:Match {uuid: "«uuid»"}) RETURN n.valid AS valid'''
-	}
-	
-	def static String createDestroyQuery(UUID uuid) {
+	def static String createDestroyQuery(String uuid) {
 		'''MATCH (n:Match {uuid: "«uuid»"}) DETACH DELETE n'''
 	}
 	
