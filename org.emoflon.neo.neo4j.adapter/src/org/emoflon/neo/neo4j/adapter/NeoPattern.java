@@ -2,9 +2,11 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.PropertyStatement;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Driver;
@@ -29,6 +31,16 @@ public class NeoPattern implements IPattern {
 		this.driver = builder.getDriver();
 		this.p = p;
 
+		generateNodesAndRelations();
+
+	}
+	
+	private void generateNodesAndRelations() {
+		
+		nodes.clear();
+		relations.clear();
+		conditions.clear();
+		
 		for (NodeBlock n : p.getNodeBlocks()) {
 
 			NeoNode node = new NeoNode(n.getType().getName(), n.getName());
@@ -47,6 +59,41 @@ public class NeoPattern implements IPattern {
 
 			nodes.add(node);
 		}
+		
+	}
+	
+	
+	@Override
+	public Collection<IMatch> getValidMatches(String uuid) {
+		
+		generateNodesAndRelations();
+		
+		NeoNode matchnode = new NeoNode("Match", "matchingNode");
+		matchnode.addProperty("uuid", uuid);
+		
+		for(NeoNode node :nodes) {
+			relations.add(new NeoRelation("matches", new ArrayList<PropertyStatement>(), matchnode, node.getClassType(), node.getVarName()));
+		}
+		
+		nodes.add(matchnode);
+
+		logger.info("Searching matches for Pattern: " + getName());
+
+		String cypherQuery = CypherPatternBuilder.createCypherValidQuery(nodes, conditions, relations, getName());
+		logger.info(cypherQuery);
+
+		StatementResult result = driver.session().run(cypherQuery);
+		matches = new ArrayList<>();
+
+		while (result.hasNext()) {
+			Record res = result.next();
+			matches.add(new NeoMatchValid());
+			logger.info(res.get("uuid").toString());
+		}
+		if (matches.isEmpty()) {
+			logger.error("NO MATCHES FOUND!");
+		}
+		return matches;
 
 	}
 

@@ -10,6 +10,11 @@ class CypherPatternBuilder {
 		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherCreate(nodes,mnName,relName,pName) + cypherReturn(mnName);
 	}
 	
+	def static String createCypherValidQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations, String pName) {
+		val mnName = "matchingNode"
+		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherReturn(mnName);
+	}
+	
 	
 	def static String cypherMatch(Collection<NeoNode> nodes, Collection<NeoRelation> relations) {
 

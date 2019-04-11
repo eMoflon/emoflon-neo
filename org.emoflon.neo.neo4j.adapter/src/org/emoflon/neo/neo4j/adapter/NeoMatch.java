@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.StatementResult;
 
 public class NeoMatch implements IMatch {
 
@@ -19,7 +18,7 @@ public class NeoMatch implements IMatch {
 		this.driver = driver;
 		this.patternName = name;
 		this.pattern = pattern;
-		this.uuid = uuid;// TODO Auto-generated constructor stub
+		this.uuid = uuid;
 
 	}
 
@@ -32,11 +31,8 @@ public class NeoMatch implements IMatch {
 	@Override
 	public boolean isStillValid() {
 		// TODO
-		logger.info("Check if pattern" + patternName + "is still valid" + pattern.toString());
-		
-		String statement = CypherPatternBuilder.createIsValidQuery(uuid);
-		StatementResult result = driver.session().run(statement);
-		return result.next().get("valid").asBoolean();
+		logger.info("Check if pattern" + patternName + "is still valid");
+		return(pattern.getValidMatches(uuid).size() == 1);
 	}
 
 	@Override
