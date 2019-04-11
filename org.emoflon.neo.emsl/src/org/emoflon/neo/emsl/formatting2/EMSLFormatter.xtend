@@ -3,16 +3,16 @@
  */
 package org.emoflon.neo.emsl.formatting2
 
-import com.google.inject.Inject
+//import com.google.inject.Inject
 import org.eclipse.xtext.formatting2.AbstractFormatter2
 import org.eclipse.xtext.formatting2.IFormattableDocument
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.Metamodel
-import org.emoflon.neo.emsl.services.EMSLGrammarAccess
+//import org.emoflon.neo.emsl.services.EMSLGrammarAccess
 
 class EMSLFormatter extends AbstractFormatter2 {
 	
-	@Inject extension EMSLGrammarAccess
+	//@Inject extension EMSLGrammarAccess
 
 	def dispatch void format(EMSL_Spec eMSL_Spec, extension IFormattableDocument document) {
 		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
