@@ -16,21 +16,15 @@ import org.junit.jupiter.api.Test;
 class TestEMFImport {
 
 	@Test
-
 	void testSimpleFamilies() throws IOException {
-
 		var importer = new EMFImporter();
-
+		
 		var rs = new ResourceSetImpl();
-
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());
+		rs.getResource(URI.createFileURI("./resources/in/SimpleFamilies.ecore"), true);
 
-		rs.getResource(URI.createFileURI("./resources/in/SimpleDoc.ecore"), true);
-
-		String expected = FileUtils.readFileToString(new File("./resources/expected/SimpleDoc.msl"));
-
+		String expected = FileUtils.readFileToString(new File("./resources/expected/SimpleFamilies.msl"));
 		assertEquals(expected, importer.generateEMSLSpecification(rs));
-
 	}
 
 }
