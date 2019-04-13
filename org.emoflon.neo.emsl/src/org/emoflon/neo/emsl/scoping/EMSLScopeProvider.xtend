@@ -25,6 +25,9 @@ import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RelationStatement
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import org.emoflon.neo.emsl.eMSL.PropertyStatement
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 
 /**
  * This class contains custom scoping description.
@@ -36,16 +39,14 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 	override getScope(EObject context, EReference reference) {
 		if (typeOfNodeBlock(context, reference)) {
-			if (isInMetamodel(context as NodeBlock))
-				return handleNodeBlockTypesInMetamodel(context as NodeBlock, reference)
-			else if (isInModel(context as NodeBlock))
+			if (isInModel(context as NodeBlock))
 				return handleNodeBlockTypesInModel(context as NodeBlock, reference)
 			else if (isInPattern(context as NodeBlock))
 				return handleNodeBlockTypesInPattern(context as NodeBlock, reference)
 			else if (isInRule(context as NodeBlock))
 				return handleNodeBlockTypesInRule(context as NodeBlock, reference)
 		}
-
+		
 		if (superTypeOfNodeBlock(context, reference)) {
 			return handleSuperTypesOfNodeBlock(context as NodeBlock, reference)
 		}
@@ -59,9 +60,87 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (valueOfRelationStatementInTripleRule(context, reference)) {
 			return handleValueOfRelationStatementInTripleRule(context as RelationStatement, reference)
 		}
-			
+		
+		if (nameOfRelationStatementInModel(context, reference)) {
+			return handleNameOfRelationStatement(context as RelationStatement, reference)
+		}
+		
+		if (nameOfPropertyStatement(context, reference)) {
+			return handleNameOfPropertyStatement(context as PropertyStatement, reference)
+		}
+		
+		if (nameOfPropertyStatementInRelationStatement(context, reference))
+			return handleNameOfPropertyStatementInRelationStatement(context as PropertyStatement, reference)
+		
+		if (isNodeBlockInMetamodel(context, reference))
+			return handleNodeBlockTypesInMetamodel(context as MetamodelNodeBlock, reference)
 
 		return super.getScope(context, reference)
+	}
+	
+	def isNodeBlockInMetamodel(EObject context, EReference reference) {
+		context instanceof MetamodelNodeBlock && reference == EMSLPackage.Literals.METAMODEL_NODE_BLOCK__TYPE &&
+			context.eContainer instanceof Metamodel
+	}
+	
+	def nameOfPropertyStatement(EObject context, EReference reference) {
+		context instanceof PropertyStatement && reference == EMSLPackage.Literals.PROPERTY_STATEMENT__PROPERTY_NAME &&
+			!(context.eContainer instanceof RelationStatement)
+	}
+	
+	def handleNameOfPropertyStatement(EObject context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		var nodeBlocks = new HashMap<EObject, String>()
+
+		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
+		
+		val possibilities = new HashMap
+		for (nb : nodeBlocks.keySet) {
+			(nb as MetamodelNodeBlock).metamodelPropertyStatements.forEach[r | possibilities.put(r, null)]
+		}
+
+		determineScope(possibilities)
+	}
+	
+	def nameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
+		context instanceof PropertyStatement && reference == EMSLPackage.Literals.PROPERTY_STATEMENT__PROPERTY_NAME //&&
+			//context.eContainer?.eContainer?.eContainer instanceof Model
+	}
+	
+	def handleNameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		var nodeBlocks = new HashMap<EObject, String>()
+
+		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
+		
+		val possibilities = new HashMap
+		for (nb : nodeBlocks.keySet) {
+			(nb as MetamodelNodeBlock).metamodelRelationStatements.forEach[r | 
+				(r as MetamodelRelationStatement).propertyStatements.forEach[p |
+					possibilities.put(p, null)
+				]
+			]
+		}
+
+		determineScope(possibilities)
+	}
+	
+	def nameOfRelationStatementInModel(EObject context, EReference reference) {
+		context instanceof RelationStatement && reference == EMSLPackage.Literals.RELATION_STATEMENT__RELATION_NAME
+	}
+	
+	def handleNameOfRelationStatement(EObject context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		var nodeBlocks = new HashMap<EObject, String>()
+
+		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
+		
+		val possibilities = new HashMap
+		for (nb : nodeBlocks.keySet) {
+			(nb as MetamodelNodeBlock).metamodelRelationStatements.forEach[r | possibilities.put(r, null)]
+		}
+
+		determineScope(possibilities)
 	}
 
 	def valueOfRelationStatementInRule(EObject context, EReference reference) {
@@ -155,8 +234,9 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	// For a metamodel, candidates are only the EClass node block in NeoCore
-	def handleNodeBlockTypesInMetamodel(NodeBlock context, EReference reference) {
-		new FilteringScope(handleNodeBlockTypesInModel(context, reference), [ desc |
+	def handleNodeBlockTypesInMetamodel(MetamodelNodeBlock context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		new FilteringScope(determineScope(allNodeBlocksInAllImportedMetamodels(root)), [ desc |
 			desc.name.lastSegment == "EClass"
 		])
 	}
@@ -183,7 +263,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	def allNodeBlocksInAllImportedMetamodels(EObject root) {
-		allTypesInAllImportedMetamodels(root, NodeBlock)
+		allTypesInAllImportedMetamodels(root, MetamodelNodeBlock)
 	}
 
 	def <T extends EObject> allTypesInAllImportedMetamodels(EObject root, Class<T> type) {

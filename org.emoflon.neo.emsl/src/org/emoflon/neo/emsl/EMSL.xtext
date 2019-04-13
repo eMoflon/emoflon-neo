@@ -15,7 +15,7 @@ Entity:
 ;
 
 Metamodel:
-	'metamodel' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}'
+	'metamodel' name=QualifiedName '{' nodeBlocks+=MetamodelNodeBlock* '}'
 ;
 
 Model:
@@ -70,7 +70,7 @@ TripleRuleNACs:
 ;
 
 Correspondence:
-	source+=[NodeBlock|QualifiedName] '<-' name=QualifiedName '->' target+=[NodeBlock|QualifiedName]
+	source+=[MetamodelNodeBlock|QualifiedName] '<-' name=QualifiedName '->' target+=[MetamodelNodeBlock|QualifiedName]
 ;
 
 TripleGrammar:
@@ -89,11 +89,39 @@ GraphGrammar:
 ;
 
 NodeBlock:
-	(abstract?='abstract')? (action=Action)? name=ID ':' type=[NodeBlock|QualifiedName]
+	(abstract?='abstract')? (action=Action)? name=ID ':' type=[MetamodelNodeBlock|QualifiedName]
 	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName])*))?
 	('{'
-	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatement | conditionStatements+=ConditionStatement)*
+		(propertyStatements+=PropertyStatement | relationStatements+=RelationStatement | conditionStatements+=ConditionStatement)*
 	'}')?
+;
+
+PropertyStatement:
+	'.' propertyName=[MetamodelPropertyStatement|ID] ':' value=PropertyValue
+;
+
+RelationStatement:
+	(action=Action)? relationType=RelationType relationName=[MetamodelRelationStatement|QualifiedName] '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?
+;
+
+MetamodelNodeBlock:
+	(abstract?='abstract')? name=ID ':' type=[MetamodelNodeBlock|QualifiedName]
+	('->' (superTypes+=[MetamodelNodeBlock|QualifiedName] (',' superTypes+=[MetamodelNodeBlock|QualifiedName])*))?
+	('{'
+		(metamodelPropertyStatements+=MetamodelPropertyStatement | metamodelRelationStatements+=MetamodelRelationStatement)*
+	'}')?
+;
+
+MetamodelPropertyStatement:
+	'.' name=ID ':' value=PropertyValue
+;
+
+MetamodelRelationStatement:
+	(action=Action)? relationType=RelationType name=ID '->' value=[MetamodelNodeBlock|QualifiedName] ('{' propertyStatements+=MetamodelPropertyStatement* '}')?
+;
+
+ConditionStatement:
+	'.' name=ID op=NodeBlockConditionOperator value=PropertyValue
 ;
 
 Constraint:
@@ -124,23 +152,10 @@ PositiveConstraintBody:
 	
 ImplicationBody:
 	conditionOperator='if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName]
-;
-
-
-PropertyStatement:
-	'.' name=ID ':' value=PropertyValue
 ; 
 
 PropertyValue:
 	INT | ID
-;
-
-RelationStatement:
-	(action=Action)? '-' name=ID '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?
-;
-
-ConditionStatement:
-	'.' name=ID op=NodeBlockConditionOperator value=PropertyValue
 ;
 
 QualifiedName:
@@ -152,7 +167,12 @@ Action:
 ;
 
 enum Operator:
-	CREATE='++' | DELETE='--';
+	CREATE='++' | DELETE='--'
+;
+	
+enum RelationType:
+	REFERENCE='-' | AGGREGATION='<>' | KOMPOSITION='<+>'
+;	
 
 enum NodeBlockConditionOperator:
 	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ='==' | GREATER='>' | GREATEREQ='>='
