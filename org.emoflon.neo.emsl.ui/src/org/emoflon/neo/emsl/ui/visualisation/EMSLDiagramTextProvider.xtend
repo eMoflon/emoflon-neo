@@ -17,6 +17,7 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -67,7 +68,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val EMSL_Spec root = getRoot(editor) as EMSL_Spec
 		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
 		val Optional<NodeBlock> selectedNodeBlock = selectedEntity.flatMap([e|determineSelectedNodeBlock(selection, e)])
+		val Optional<MetamodelNodeBlock> selectedMetamodelNodeBlock = selectedEntity.flatMap([e|determineSelectedMetamodelNodeBlock(selection, e)])
 
+		if (selectedMetamodelNodeBlock.isPresent)
+			return visualiseNodeBlockInMetamodel(selectedMetamodelNodeBlock.get, true)
+			
 		if (!selectedEntity.isPresent)
 			return visualiseOverview(root)
 
@@ -78,9 +83,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	def visualiseNodeBlock(NodeBlock nb, boolean mainSelection) {
-		if (nb.eContainer instanceof Metamodel)
-			visualiseNodeBlockInMetamodel(nb, mainSelection)
-		else if (nb.eContainer instanceof Model)
+		if (nb.eContainer instanceof Model)
 			visualiseNodeBlockInModel(nb, mainSelection)
 		else if (nb.eContainer instanceof Pattern)
 			visualiseNodeBlockInPattern(nb, mainSelection)
@@ -287,12 +290,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def String visualiseTripleRuleNodeBlocks(TripleRule entity, NodeBlock nb, String type) {
 		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
 			«FOR link : nb.relationStatements»
-				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.value.name»:«link.value.type.name»":"«link.name»"
+				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.value.name»:«link.value.type.name»":"«link.relationName.name»"
 			«ENDFOR»
 		'''
 	}
-
-	private def labelForClass(NodeBlock nb) {
+	
+	private def labelForClass(MetamodelNodeBlock nb) {
 		val entity = nb.eContainer as Metamodel
 		'''"«entity?.name».«nb?.name»:«nb?.type?.name»"'''
 	}
@@ -343,38 +346,38 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
-				«labelForObject(nb)» --> «labelForObject(link.value)» : «link.name»
+				«labelForObject(nb)» --> «labelForObject(link.value)» : «link.relationName.name»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
-				«labelForObject(nb)» : «attr.name» = «attr.value»
+				«labelForObject(nb)» : «attr.propertyName.name» = «attr.value»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForObject(incoming)» --> «labelForObject(nb)» : «incomingRef.name»
+						«labelForObject(incoming)» --> «labelForObject(nb)» : «incomingRef.relationName.name»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
 		'''
 	}
 
-	def String visualiseNodeBlockInMetamodel(NodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInMetamodel(MetamodelNodeBlock nb, boolean mainSelection) {
 		'''
 			«IF nb.abstract»abstract«ENDIF» class «labelForClass(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR sup : nb.superTypes»
 				«labelForClass(sup)» <|-- «labelForClass(nb)»
 			«ENDFOR»
-			«FOR ref : nb.relationStatements»
+			«FOR ref : nb.metamodelRelationStatements»
 				«labelForClass(nb)» --> «labelForClass(ref.value)» : «ref.name»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
-				«FOR incomingRef : incoming.relationStatements»
+				«FOR incomingRef : incoming.metamodelRelationStatements»
 					«IF incomingRef.value == nb && mainSelection»
 						«labelForClass(incoming)» --> «labelForClass(nb)» : «incomingRef.name»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
-			«FOR attr : nb.propertyStatements»
+			«FOR attr : nb.metamodelPropertyStatements»
 				«labelForClass(nb)» : «attr.name» : «attr.value»
 			«ENDFOR»
 		'''
@@ -384,15 +387,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
-				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.value)» : «link.name»
+				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.value)» : «link.relationName.name»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
-				«labelForPatternComponent(nb)» : «attr.name» = «attr.value»
+				«labelForPatternComponent(nb)» : «attr.propertyName.name» = «attr.value»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Pattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : «incomingRef.name»
+						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : «incomingRef.relationName.name»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -404,17 +407,17 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«IF nb.abstract»abstract«ENDIF»class «labelForRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.value)» : «link.name»
-				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.value)» : «IF (link.name !== null)»«link.name»«ELSE»?«ENDIF»
+					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.value)» : «link.relationName.name»
+				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.value)» : «IF (link.relationName !== null)»«link.relationName.name»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
-				«labelForRuleComponent(nb)» : «attr.name» = «attr.value»
+				«labelForRuleComponent(nb)» : «attr.propertyName.name» = «attr.value»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForRuleComponent(incoming)» --> «labelForRuleComponent(nb)» : «incomingRef.name»
+						«labelForRuleComponent(incoming)» --> «labelForRuleComponent(nb)» : «incomingRef.relationName.name»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -426,17 +429,17 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			class «labelForTripleRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«IF link.action !== null»
-					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.value)» : «link.name»
-				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.value)» : «IF (link.name !== null)»«link.name»«ELSE»?«ENDIF»
+					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.value)» : «link.relationName.name»
+				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.value)» : «IF (link.relationName !== null)»«link.relationName»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
-				«labelForTripleRuleComponent(nb)» : «attr.name» = «attr.value»
+				«labelForTripleRuleComponent(nb)» : «attr.propertyName.name» = «attr.value»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as TripleRule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForTripleRuleComponent(incoming)» --> «labelForTripleRuleComponent(nb)» : «incomingRef.name»
+						«labelForTripleRuleComponent(incoming)» --> «labelForTripleRuleComponent(nb)» : «incomingRef.relationName.name»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -456,7 +459,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			// For the TextSelection documents start with line 0.
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
-			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar))
+			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel))
 			for (nodeBlock : entity.nodeBlocks) {
 				val object = NodeModelUtils.getNode(nodeBlock);
 				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
@@ -467,9 +470,22 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 		Optional.empty()
 	}
+	
+	def Optional<MetamodelNodeBlock> determineSelectedMetamodelNodeBlock(ISelection selection, Entity entity) {
+		if (selection instanceof TextSelection) {
+			// For the TextSelection documents start with line 0.
+			val selectionStart = selection.getStartLine() + 1;
+			val selectionEnd = selection.getEndLine() + 1;
+			if (entity instanceof Metamodel)
+			for (nodeBlock : entity.nodeBlocks) {
+				val object = NodeModelUtils.getNode(nodeBlock);
+				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
+					return Optional.of(nodeBlock)
+				}
+			}
+		}
 
-	def dispatch getNodeBlocks(Metamodel entity) {
-		entity.nodeBlocks
+		Optional.empty()
 	}
 
 	def dispatch getNodeBlocks(Model entity) {
