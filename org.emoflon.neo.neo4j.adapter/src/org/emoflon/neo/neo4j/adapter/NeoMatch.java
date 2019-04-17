@@ -30,7 +30,6 @@ public class NeoMatch implements IMatch {
 
 	@Override
 	public boolean isStillValid() {
-		// TODO
 		logger.info("Check if pattern" + patternName + "is still valid");
 		return(pattern.getValidMatches(uuid).size() == 1);
 	}

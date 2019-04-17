@@ -55,7 +55,7 @@ class CypherPatternBuilder {
 		'''«IF properties.size > 0»«FOR p:properties BEFORE'{' SEPARATOR', ' AFTER '}'»«p.toString»«ENDFOR»«ENDIF»'''
 	}
 	
-	def static String cypherProperty(String name, String value, String classVarName) {
+	def static String cypherProperty(String name, String value) {
 		'''«name»: «value»'''
 	}
 	

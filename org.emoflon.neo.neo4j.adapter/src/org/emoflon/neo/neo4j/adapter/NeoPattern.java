@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.emsl.eMSL.PropertyStatement;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Driver;
@@ -72,7 +71,7 @@ public class NeoPattern implements IPattern {
 		matchnode.addProperty("uuid", uuid);
 		
 		for(NeoNode node :nodes) {
-			relations.add(new NeoRelation("matches", new ArrayList<PropertyStatement>(), matchnode, node.getClassType(), node.getVarName()));
+			relations.add(new NeoRelation("matches", "\""+node.getVarName()+"\"", matchnode, node.getClassType(), node.getVarName()));
 		}
 		
 		nodes.add(matchnode);
