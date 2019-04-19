@@ -101,7 +101,7 @@ PropertyStatement:
 ;
 
 RelationStatement:
-	(action=Action)? relationType=RelationType relationName=[MetamodelRelationStatement|QualifiedName] '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?
+	(action=Action)? '-' relationName=[MetamodelRelationStatement|QualifiedName] '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?
 ;
 
 MetamodelNodeBlock:
@@ -117,7 +117,7 @@ MetamodelPropertyStatement:
 ;
 
 MetamodelRelationStatement:
-	(action=Action)? relationType=RelationType name=ID '->' value=[MetamodelNodeBlock|QualifiedName] ('{' propertyStatements+=MetamodelPropertyStatement* '}')?
+	(action=Action)? relationType=RelationType name=ID '->' ('[' constantLowerBound=MultiplicityValue ('..' upperBound=MultiplicityValue)? ']')? value=[MetamodelNodeBlock|QualifiedName] ('{' propertyStatements+=MetamodelPropertyStatement* '}')?
 ;
 
 ConditionStatement:
@@ -156,6 +156,10 @@ ImplicationBody:
 
 PropertyValue:
 	INT | ID
+;
+
+MultiplicityValue:
+	INT | ID | "*"
 ;
 
 QualifiedName:

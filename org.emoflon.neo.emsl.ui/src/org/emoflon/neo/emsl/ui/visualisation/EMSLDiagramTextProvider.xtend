@@ -18,6 +18,8 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import org.emoflon.neo.emsl.eMSL.RelationStatement
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -290,7 +292,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def String visualiseTripleRuleNodeBlocks(TripleRule entity, NodeBlock nb, String type) {
 		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
 			«FOR link : nb.relationStatements»
-				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.value.name»:«link.value.type.name»":"«link.relationName.name»"
+				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.value.name»:«link.value.type.name»":"«IF link.relationName.name !== null»«link.relationName.name»«ELSE»?«ENDIF»"
 			«ENDFOR»
 		'''
 	}
@@ -346,7 +348,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
-				«labelForObject(nb)» --> «labelForObject(link.value)» : «link.relationName.name»
+				«labelForObject(nb)» --> «IF link.value !== null»«labelForObject(link.value)»«ELSE»"?"«ENDIF» : «link.relationName.name»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
 				«labelForObject(nb)» : «attr.propertyName.name» = «attr.value»
@@ -368,7 +370,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForClass(sup)» <|-- «labelForClass(nb)»
 			«ENDFOR»
 			«FOR ref : nb.metamodelRelationStatements»
-				«labelForClass(nb)» --> «labelForClass(ref.value)» : «ref.name»
+				«labelForClass(nb)» «IF ref.relationType == '<+>'»*«ENDIF»«IF ref.relationType == '<>'»o«ENDIF»--> «IF ref.const !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.value !== null»«labelForClass(ref.value)»«ELSE»"?"«ENDIF» : «ref.name»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.metamodelRelationStatements»
@@ -452,6 +454,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	
 	def String visualiseRulesOfGraphGrammar(GraphGrammar gg, boolean mainSelection) {
 		// TODO [Maximilian]
+	}
+	
+	def visualiseMultiplicity(MetamodelRelationStatement link) {
+		'''"«link.const»«IF link.upperBound !== null»..«link.upperBound»«ENDIF»"'''
 	}
 
 	def Optional<NodeBlock> determineSelectedNodeBlock(ISelection selection, Entity entity) {
