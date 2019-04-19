@@ -370,7 +370,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForClass(sup)» <|-- «labelForClass(nb)»
 			«ENDFOR»
 			«FOR ref : nb.metamodelRelationStatements»
-				«labelForClass(nb)» «IF ref.relationType == '<+>'»*«ENDIF»«IF ref.relationType == '<>'»o«ENDIF»--> «IF ref.const !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.value !== null»«labelForClass(ref.value)»«ELSE»"?"«ENDIF» : «ref.name»
+				«labelForClass(nb)» «IF ref.relationType == '<+>'»*«ENDIF»«IF ref.relationType == '<>'»o«ENDIF»--> «IF ref.constantLowerBound !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.value !== null»«labelForClass(ref.value)»«ELSE»"?"«ENDIF» : «ref.name»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.metamodelRelationStatements»
@@ -457,7 +457,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 	
 	def visualiseMultiplicity(MetamodelRelationStatement link) {
-		'''"«link.const»«IF link.upperBound !== null»..«link.upperBound»«ENDIF»"'''
+		'''"«link.constantLowerBound»«IF link.upperBound !== null»..«link.upperBound»«ENDIF»"'''
 	}
 
 	def Optional<NodeBlock> determineSelectedNodeBlock(ISelection selection, Entity entity) {
