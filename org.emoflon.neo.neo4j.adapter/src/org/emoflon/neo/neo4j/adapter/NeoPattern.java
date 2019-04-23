@@ -34,8 +34,8 @@ public class NeoPattern implements IPattern {
 			NeoNode node = new NeoNode(n.getType().getName(), n.getName());
 
 			// Get all relationships
-			n.getRelationStatements().forEach(r -> relations.add(new NeoRelation(r.getName(), r.getPropertyStatements(),
-					node, r.getValue().getType().getName(), r.getValue().getName())));
+			n.getRelationStatements().forEach(r -> relations.add(new NeoRelation(r.getRelationName().getName(),
+					r.getPropertyStatements(), node, r.getValue().getType().getName(), r.getValue().getName())));
 
 			// Get all properties or conditions
 			n.getConditionStatements().forEach(c -> {

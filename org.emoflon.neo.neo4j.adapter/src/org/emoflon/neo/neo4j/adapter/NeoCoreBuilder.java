@@ -14,6 +14,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.NodeBlock;
 import org.emoflon.neo.emsl.eMSL.PropertyStatement;
@@ -348,7 +350,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 			// Create metamodel nodes and handle node blocks for all metamodels
 			var mmNodes = new HashMap<Metamodel, NodeCommand>();
-			var blockToCommand = new HashMap<NodeBlock, NodeCommand>();
+			var blockToCommand = new HashMap<Object, NodeCommand>();
 			for (var metamodel : newMetamodels) {
 				handleNodeBlocksInMetaModel(cb, neocore, eclass, blockToCommand, mmNodes, metamodel, mmodel, eobject);
 			}
@@ -391,8 +393,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private void handleAttributes(CypherCreator cb, NodeCommand neocore, NodeCommand edatatype, NodeCommand eattribute,
-			HashMap<NodeBlock, NodeCommand> blockToCommand, NodeCommand mmNode, NodeBlock nb) {
-		for (var ps : nb.getPropertyStatements()) {
+			HashMap<Object, NodeCommand> blockToCommand, NodeCommand mmNode, MetamodelNodeBlock nb) {
+		for (var ps : nb.getMetamodelPropertyStatements()) {
 			var attr = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, ps.getName())), //
 					List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT), eattribute, mmNode);
@@ -406,7 +408,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 		}
 	}
 
-	private void handleInheritance(CypherCreator cb, HashMap<NodeBlock, NodeCommand> blockToCommand, NodeBlock nb) {
+	private void handleInheritance(CypherCreator cb, HashMap<Object, NodeCommand> blockToCommand,
+			MetamodelNodeBlock nb) {
 		for (var st : nb.getSuperTypes()) {
 			var nodeblock = blockToCommand.get(nb);
 			var sType = blockToCommand.get(st);
@@ -415,9 +418,9 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private void handleRelationStatementInMetaModel(CypherCreator cb, NodeCommand neocore, NodeCommand eref,
-			NodeCommand edatatype, NodeCommand eattribute, HashMap<NodeBlock, NodeCommand> blockToCommand,
-			NodeCommand mmNode, NodeBlock nb) {
-		for (var rs : nb.getRelationStatements()) {
+			NodeCommand edatatype, NodeCommand eattribute, HashMap<Object, NodeCommand> blockToCommand,
+			NodeCommand mmNode, MetamodelNodeBlock nb) {
+		for (var rs : nb.getMetamodelRelationStatements()) {
 			var ref = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, rs.getName())), //
 					List.of(EREFERENCE, EOBJECT, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT), eref,
@@ -459,16 +462,16 @@ public class NeoCoreBuilder implements AutoCloseable {
 			// Handle attributes of relation in model
 			List<NeoProp> props = new ArrayList<>();
 			rs.getPropertyStatements().forEach(ps -> {
-				props.add(new NeoProp(ps.getName(), inferType(ps, nb)));
+				props.add(new NeoProp(ps.getPropertyName().getName(), inferType(ps, nb)));
 			});
 
-			cb.createEdgeWithProps(props, rs.getName(), refOwner, typeOfRef);
+			cb.createEdgeWithProps(props, rs.getRelationName().getName(), refOwner, typeOfRef);
 		}
 	}
 
 	private void handleNodeBlocksInMetaModel(CypherCreator cb, NodeCommand neocore, NodeCommand eclass,
-			HashMap<NodeBlock, NodeCommand> blockToCommand, HashMap<Metamodel, NodeCommand> mmNodes,
-			Metamodel metamodel, NodeCommand mmodel, NodeCommand eobject) {
+			HashMap<Object, NodeCommand> blockToCommand, HashMap<Metamodel, NodeCommand> mmNodes, Metamodel metamodel,
+			NodeCommand mmodel, NodeCommand eobject) {
 
 		var mmNode = cb.createNode(List.of(new NeoProp(URI_PROP, metamodel.getName())), List.of(METAMODEL));
 
@@ -489,7 +492,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 			}
 
 			blockToCommand.put(nb, nbNode);
-
 		});
 	}
 
@@ -516,7 +518,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			// Handle attributes of model
 			List<NeoProp> props = new ArrayList<>();
 			nb.getPropertyStatements().forEach(ps -> {
-				props.add(new NeoProp(ps.getName(), inferType(ps, nb)));
+				props.add(new NeoProp(ps.getPropertyName().getName(), inferType(ps, nb)));
 			});
 
 			props.add(new NeoProp(NAME_PROP, nb.getName()));
@@ -533,10 +535,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	}
 
-	private List<String> computeLabelsFromType(NodeBlock type) {
+	private List<String> computeLabelsFromType(MetamodelNodeBlock type) {
 		var labels = new LinkedHashSet<String>();
 		labels.add(type.getName());
-		for (NodeBlock st : type.getSuperTypes()) {
+		for (MetamodelNodeBlock st : type.getSuperTypes()) {
 			labels.addAll(computeLabelsFromType(st));
 		}
 
@@ -546,22 +548,37 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private Object inferType(PropertyStatement ps, NodeBlock nb) {
+		String stringVal = ps.getValue();
+		RelationStatement rs = (RelationStatement) ps.eContainer();
+		String relName = rs.getRelationName().getName();
+		String propName = ps.getPropertyName().getName();
+		MetamodelNodeBlock nodeType = nb.getType();
+
 		if (ps.eContainer().equals(nb))
-			return inferTypeForNodeAttribute(ps, nb);
+			return inferTypeForNodeAttribute(stringVal, propName, nodeType);
 		else
-			return inferTypeForEdgeAttribute(ps, nb);
+			return inferTypeForEdgeAttribute(stringVal, relName, propName, nodeType);
 	}
 
-	private Object inferTypeForEdgeAttribute(PropertyStatement ps, NodeBlock nb) {
+	private Object inferType(MetamodelPropertyStatement ps, MetamodelNodeBlock nb) {
 		String stringVal = ps.getValue();
-
 		RelationStatement rs = (RelationStatement) ps.eContainer();
-		NodeBlock nodeType = nb.getType();
+		String relName = rs.getRelationName().getName();
+		String propName = ps.getName();
+		MetamodelNodeBlock nodeType = nb.getType();
 
-		var typedValue = nodeType.getRelationStatements().stream()//
-				.filter(et -> et.getName().equals(rs.getName()))//
+		if (ps.eContainer().equals(nb))
+			return inferTypeForNodeAttribute(stringVal, propName, nodeType);
+		else
+			return inferTypeForEdgeAttribute(stringVal, relName, propName, nodeType);
+	}
+
+	private Object inferTypeForEdgeAttribute(String stringVal, String relName, String propName,
+			MetamodelNodeBlock nodeType) {
+		var typedValue = nodeType.getMetamodelRelationStatements().stream()//
+				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getPropertyStatements().stream())//
-				.filter(etPs -> etPs.getName().equals(ps.getName()))//
+				.filter(etPs -> etPs.getName().equals(propName))//
 				.map(etPs -> etPs.getValue())//
 				.map(t -> parseStringWithType(stringVal, t))//
 				.findAny();
@@ -569,16 +586,12 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return typedValue.orElse(stringVal);
 	}
 
-	private Object inferTypeForNodeAttribute(PropertyStatement ps, NodeBlock nb) {
-		String stringVal = ps.getValue();
-
-		var typedValue = nb.getType().getPropertyStatements().stream()//
-				.filter(t -> t.getName().equals(ps.getName()))//
+	private Object inferTypeForNodeAttribute(String stringVal, String propName, MetamodelNodeBlock nodeType) {
+		var typedValue = nodeType.getMetamodelPropertyStatements().stream()//
+				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getValue())//
 				.map(t -> parseStringWithType(stringVal, t))//
 				.findAny();
-
-		// logger.info("Attempt to infer type for " + ps.getName() + ":" + stringVal);
 
 		return typedValue.orElse(stringVal);
 	}

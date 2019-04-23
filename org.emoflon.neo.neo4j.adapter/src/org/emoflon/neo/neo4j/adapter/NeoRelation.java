@@ -26,7 +26,7 @@ public class NeoRelation {
 		this.toNode = toNode;
 		this.toVarName = toVarName;
 
-		props.forEach(prop -> addProperty(prop.getName(), prop.getValue()));
+		props.forEach(prop -> addProperty(prop.getPropertyName().getName(), prop.getValue()));
 	}
 
 	public String getRelType() {
