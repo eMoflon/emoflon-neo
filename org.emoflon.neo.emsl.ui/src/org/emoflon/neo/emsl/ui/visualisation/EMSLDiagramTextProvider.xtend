@@ -18,7 +18,6 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
-import org.emoflon.neo.emsl.eMSL.RelationStatement
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
@@ -71,7 +70,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
 		val Optional<NodeBlock> selectedNodeBlock = selectedEntity.flatMap([e|determineSelectedNodeBlock(selection, e)])
 		val Optional<MetamodelNodeBlock> selectedMetamodelNodeBlock = selectedEntity.flatMap([e|determineSelectedMetamodelNodeBlock(selection, e)])
-
+		
+		if (selectedEntity.isPresent && selectedEntity.get instanceof org.emoflon.neo.emsl.eMSL.Enum)
+			return visualiseEnumItems(selectedEntity.get as org.emoflon.neo.emsl.eMSL.Enum)
+		
 		if (selectedMetamodelNodeBlock.isPresent)
 			return visualiseNodeBlockInMetamodel(selectedMetamodelNodeBlock.get, true)
 			
@@ -139,6 +141,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 				«IF entity instanceof GraphGrammar»
 					package "GraphGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+						
+					}
+				«ENDIF»
+				«IF entity instanceof org.emoflon.neo.emsl.eMSL.Enum»
+					package "Enum: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
@@ -289,6 +296,22 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
+	def dispatch String visualiseEntity(org.emoflon.neo.emsl.eMSL.Enum entity) {
+		'''
+			«FOR item : entity.enumItems»
+				class "«entity.name»"
+			«ENDFOR»
+		'''
+	}
+	
+	def String visualiseEnumItems(org.emoflon.neo.emsl.eMSL.Enum entity) {
+		'''
+			«FOR item : entity.enumItems»
+				class "«entity.name».«item.name»"
+			«ENDFOR»
+		'''
+	}
+	
 	def String visualiseTripleRuleNodeBlocks(TripleRule entity, NodeBlock nb, String type) {
 		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
 			«FOR link : nb.relationStatements»
@@ -348,7 +371,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
-				«labelForObject(nb)» --> «IF link.value !== null»«labelForObject(link.value)»«ELSE»"?"«ENDIF» : «link.relationName.name»
+				«labelForObject(nb)» --> «IF link.value !== null»«labelForObject(link.value)»«ELSE»"?"«ENDIF» : «IF link.relationName.name !== null»«link.relationName.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
 				«labelForObject(nb)» : «attr.propertyName.name» = «attr.value»
@@ -465,7 +488,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			// For the TextSelection documents start with line 0.
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
-			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel))
+			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel || entity instanceof org.emoflon.neo.emsl.eMSL.Enum))
 			for (nodeBlock : entity.nodeBlocks) {
 				val object = NodeModelUtils.getNode(nodeBlock);
 				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {

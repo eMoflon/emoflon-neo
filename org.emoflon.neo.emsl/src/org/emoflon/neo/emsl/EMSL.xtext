@@ -11,7 +11,7 @@ ImportStatement:
 ;
 
 Entity:
-	Metamodel | Model | Pattern | Rule | Constraint | TripleRule | TripleGrammar | GraphGrammar
+	Metamodel | Model | Pattern | Rule | Constraint | TripleRule | TripleGrammar | GraphGrammar | Enum
 ;
 
 Metamodel:
@@ -86,6 +86,16 @@ GraphGrammar:
 	'graphGrammar' name=QualifiedName '{'
 		rules+=[Rule|QualifiedName]*
 	'}'
+;
+
+Enum:
+	'enum' name=QualifiedName '{'
+		enumItems+=EnumElement*
+	'}'
+;
+
+EnumElement:
+	name = ID
 ;
 
 NodeBlock:
