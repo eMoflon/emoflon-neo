@@ -371,7 +371,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
-				«labelForObject(nb)» --> «IF link.value !== null»«labelForObject(link.value)»«ELSE»"?"«ENDIF» : «IF link.relationName.name !== null»«link.relationName.name»«ELSE»?«ENDIF»
+				«labelForObject(nb)» --> «IF link.value !== null»«labelForObject(link.value)»«ELSE»"?"«ENDIF» : «IF (link.relationName.name !== null && link.relationName !== null)»«link.relationName.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
 				«labelForObject(nb)» : «attr.propertyName.name» = «attr.value»
@@ -393,7 +393,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForClass(sup)» <|-- «labelForClass(nb)»
 			«ENDFOR»
 			«FOR ref : nb.metamodelRelationStatements»
-				«labelForClass(nb)» «IF ref.relationType == '<+>'»*«ENDIF»«IF ref.relationType == '<>'»o«ENDIF»--> «IF ref.constantLowerBound !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.value !== null»«labelForClass(ref.value)»«ELSE»"?"«ENDIF» : «ref.name»
+				«labelForClass(nb)» «IF ref.relationType == '<+>'»*«ENDIF»«IF ref.relationType == '<>'»o«ENDIF»--> «IF ref.constantLowerBound !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.value !== null»«labelForClass(ref.value)»«ELSE»"?"«ENDIF» : «IF ref.name !== null»«ref.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.metamodelRelationStatements»
@@ -403,7 +403,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDFOR»
 			«FOR attr : nb.metamodelPropertyStatements»
-				«labelForClass(nb)» : «attr.name» : «attr.value»
+				«labelForClass(nb)» : «attr.name» : «attr.value.name»
 			«ENDFOR»
 		'''
 	}

@@ -28,6 +28,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.PropertyStatement
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
 
 /**
  * This class contains custom scoping description.
@@ -72,9 +73,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (nameOfPropertyStatementInRelationStatement(context, reference))
 			return handleNameOfPropertyStatementInRelationStatement(context as PropertyStatement, reference)
 		
+		if (valueOfPropertyStatementInMetamodel(context, reference))
+			return handleValueOfPropertyStatementInMetamodel(context as MetamodelPropertyStatement, reference)
+		
 		if (isNodeBlockInMetamodel(context, reference))
 			return handleNodeBlockTypesInMetamodel(context as MetamodelNodeBlock, reference)
-
+		
 		return super.getScope(context, reference)
 	}
 	
@@ -102,9 +106,25 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		determineScope(possibilities)
 	}
 	
+	def valueOfPropertyStatementInMetamodel(EObject context, EReference reference) {
+		context instanceof MetamodelPropertyStatement && reference == EMSLPackage.Literals.METAMODEL_PROPERTY_STATEMENT__VALUE &&
+			(context.eContainer instanceof MetamodelNodeBlock || context.eContainer instanceof MetamodelRelationStatement)
+	}
+	
+	def handleValueOfPropertyStatementInMetamodel(MetamodelPropertyStatement context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		var enums = allTypesInAllImportedMetamodels(root, org.emoflon.neo.emsl.eMSL.Enum)
+		
+		val enumElements = new HashMap
+		enums.forEach[p1, p2|
+			(p1 as org.emoflon.neo.emsl.eMSL.Enum).enumItems.forEach[e | enumElements.put(e, null)]
+		]
+		
+		determineScope(enumElements)
+	}
+	
 	def nameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
-		context instanceof PropertyStatement && reference == EMSLPackage.Literals.PROPERTY_STATEMENT__PROPERTY_NAME //&&
-			//context.eContainer?.eContainer?.eContainer instanceof Model
+		context instanceof PropertyStatement && reference == EMSLPackage.Literals.PROPERTY_STATEMENT__PROPERTY_NAME
 	}
 	
 	def handleNameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
