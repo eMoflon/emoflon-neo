@@ -19,6 +19,8 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.UserDefinedTypes
+import org.emoflon.neo.emsl.eMSL.BuiltInTypes
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -379,7 +381,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForObject(incoming)» --> «labelForObject(nb)» : «incomingRef.relationName.name»
+						«labelForObject(incoming)» --> «labelForObject(nb)» : «IF (incomingRef.relationName.name !== null && incomingRef.relationName !== null)»«incomingRef.relationName.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -398,12 +400,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.metamodelRelationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForClass(incoming)» --> «labelForClass(nb)» : «incomingRef.name»
+						«labelForClass(incoming)» --> «labelForClass(nb)» : «IF (incomingRef.name !== null)»«incomingRef.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
 			«FOR attr : nb.metamodelPropertyStatements»
-				«labelForClass(nb)» : «attr.name» : «attr.value.name»
+				«labelForClass(nb)» : «attr.name» : «IF (attr.type.dataType instanceof UserDefinedTypes)»«((attr.type.dataType as UserDefinedTypes).explicitType.eContainer as org.emoflon.neo.emsl.eMSL.Enum).name».«(attr.type.dataType as UserDefinedTypes).explicitType.name»«ELSE»«(attr.type.dataType as BuiltInTypes).explicitType.toString»«ENDIF»
 			«ENDFOR»
 		'''
 	}
@@ -412,7 +414,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
-				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.value)» : «link.relationName.name»
+				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.value)» : «IF (link.relationName.name !== null && link.relationName !== null)»«link.relationName.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.propertyStatements»
 				«labelForPatternComponent(nb)» : «attr.propertyName.name» = «attr.value»
@@ -420,7 +422,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR incoming : (nb.eContainer as Pattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : «incomingRef.relationName.name»
+						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : «IF (incomingRef.relationName.name !== null && incomingRef.relationName !== null)»«incomingRef.relationName.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -432,7 +434,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«IF nb.abstract»abstract«ENDIF»class «labelForRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.value)» : «link.relationName.name»
+					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.value)» : «IF (link.relationName.name !== null && link.relationName !== null)»«link.relationName.name»«ELSE»?«ENDIF»
 				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.value)» : «IF (link.relationName !== null)»«link.relationName.name»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
@@ -442,7 +444,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForRuleComponent(incoming)» --> «labelForRuleComponent(nb)» : «incomingRef.relationName.name»
+						«labelForRuleComponent(incoming)» --> «labelForRuleComponent(nb)» : «IF (incomingRef.relationName.name !== null && incomingRef.relationName !== null)»«incomingRef.relationName.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -454,7 +456,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			class «labelForTripleRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relationStatements»
 				«IF link.action !== null»
-					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.value)» : «link.relationName.name»
+					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.value)» : «IF (link.relationName.name !== null && link.relationName !== null)»«link.relationName.name»«ELSE»?«ENDIF»
 				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.value)» : «IF (link.relationName !== null)»«link.relationName»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
@@ -464,7 +466,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR incoming : (nb.eContainer as TripleRule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relationStatements»
 					«IF incomingRef.value == nb && mainSelection»
-						«labelForTripleRuleComponent(incoming)» --> «labelForTripleRuleComponent(nb)» : «incomingRef.relationName.name»
+						«labelForTripleRuleComponent(incoming)» --> «labelForTripleRuleComponent(nb)» : «IF (incomingRef.relationName.name !== null && incomingRef.relationName !== null)»«incomingRef.relationName.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»

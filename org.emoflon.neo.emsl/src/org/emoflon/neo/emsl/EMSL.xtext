@@ -123,7 +123,19 @@ MetamodelNodeBlock:
 ;
 
 MetamodelPropertyStatement:
-	'.' name=ID ':' value=[EnumElement|QualifiedName]
+	'.' name=ID ':' type=DataType
+;
+
+DataType:
+	dataType = (BuiltInTypes | UserDefinedTypes)
+;
+
+BuiltInTypes:
+	explicitType=DataTypes
+;
+
+UserDefinedTypes:
+	explicitType=[EnumElement|QualifiedName]
 ;
 
 MetamodelRelationStatement:
@@ -197,4 +209,10 @@ enum AttributeConditionOperator:
 	EQDOUBLE='eq_double' | EQFLOAT='eq_float' | EQINT='eq_int' | EQLONG='eq_long' | EQSTRING='eq_string' | MAX='max' | MULTIPLY='multiply' |
 	SETDEFAULTNumber='setDefaultNumber' | SETDEFAULTSTRING='setDefaultString' | SETRANDOMSTRING='setRandomString' | SMALLEROREQUAL='smallerOrEqual' |
 	STRINGTODOUBLE='stringToDouble' | STRINGTOINT='stringToInt' | SUB='sub'
+;
+
+enum DataTypes:
+	EBOOLEAN='EBoolean' | EBOOLEANOBJECT='EBooleanObject' | EBYTE='EByte' | EBYTEOBJECT='EByteObject' | ECHAR='EChar' | ECHARACTEROBJECT='ECharacterObject' |
+	EDOUBLE='EDouble' | EDOUBLEOBJECT='EDoubleObject' | EFLOAT='EFloat' | EINT='EInt' | EINTEGEROBJECT='EIntegerObject' | ELONG='ELong' | ELONGOBJECT='ELongObject' |
+	ESHORT='EShort' | ESHORTOBJECT='EShortObject' | EDATE='EDate' | ESTRING='EString'	
 ;
