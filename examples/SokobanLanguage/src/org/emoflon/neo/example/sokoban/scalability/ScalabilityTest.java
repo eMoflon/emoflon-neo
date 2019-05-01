@@ -25,8 +25,8 @@ public class ScalabilityTest {
 		EMSLPackageImpl.init();
 
 		int start = 0;
-		int step = 50;
-		int stop = 5;
+		int step = 20;
+		int stop = 100;
 
 		String log = "";
 		for (int size = start; size <= stop; size += step) {

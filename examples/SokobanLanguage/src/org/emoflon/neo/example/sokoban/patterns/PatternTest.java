@@ -293,7 +293,7 @@ public class PatternTest {
 		assertThat(matches.size(), is(2));
 	}
 	@Test
-	public void ttestAllNotBorderFieldsInARowStillValidDeletedEdges() {
+	public void testAllNotBorderFieldsInARowStillValidDeletedEdges() {
 		
 		Pattern p = (Pattern) patterns.getEntities().get(8);
 		IPattern ip = new NeoPattern(p, builder);
@@ -326,5 +326,31 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(0));
 	}
+	
+	/*
+	 * ATTENTION: Run following test on small databases only, due to their large number of matches
+	 * 
+	@Test
+	public void testAll3x3Fields() {
+		Pattern p = (Pattern) patterns.getEntities().get(11);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		assertThat(matches.size(), is(0));
+	}
+	@Test
+	public void testAll3x3FieldsIsStillValid() {
+		
+		Pattern p = (Pattern) patterns.getEntities().get(11);
+		IPattern ip = new NeoPattern(p, builder);
+		var matches = ip.getMatches();
+		var matchesCount = 0;
+		
+		for(IMatch m : matches) {
+			if(m.isStillValid())
+				matchesCount++;
+		}
+		assertThat(matchesCount, is(matches.size()));
+	}
+	*/
 
 }
