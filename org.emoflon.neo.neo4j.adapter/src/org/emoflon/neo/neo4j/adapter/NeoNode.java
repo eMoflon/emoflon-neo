@@ -10,8 +10,6 @@ public class NeoNode {
 
 	private Collection<NeoProperty> propteries;
 
-	private int countProp = 0;
-
 	public NeoNode(String classType, String varName) {
 		this.classType = classType;
 		this.varName = varName;

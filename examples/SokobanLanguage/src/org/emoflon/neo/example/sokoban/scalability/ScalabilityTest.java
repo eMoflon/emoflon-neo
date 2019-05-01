@@ -20,13 +20,13 @@ public class ScalabilityTest {
 
 	public static void main(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-
+		
 		ScalabilityTest t = new ScalabilityTest();
 		EMSLPackageImpl.init();
 
 		int start = 0;
-		int step = 50;
-		int stop = 5;
+		int step = 20;
+		int stop = 100;
 
 		String log = "";
 		for (int size = start; size <= stop; size += step) {
@@ -39,7 +39,7 @@ public class ScalabilityTest {
 	public String runTests(int modelSize, int nodes, int edges) throws Exception {
 		String time = "";
 		NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
-    
+
 		try {
 			EMSL_Spec spec = EMSUtil.loadSpecification(//
 					"platform:/resource/SokobanLanguage/models/SokobanBasis.msl", //

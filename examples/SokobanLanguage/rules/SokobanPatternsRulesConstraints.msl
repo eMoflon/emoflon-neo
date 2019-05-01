@@ -110,6 +110,49 @@ pattern allNotBorderFieldsInDiffRows -> allNotBorderFieldsInARow {
 	}
 }
 
+pattern all3x3Fields {
+	b: SokobanLanguage.Board {
+		-fields -> field11
+		-fields -> field12
+		-fields -> field13
+		-fields -> field21
+		-fields -> field22
+		-fields -> field23
+		-fields -> field31
+		-fields -> field32
+		-fields -> field33
+	}
+	field11 : Field {
+		-right -> field12
+		-bottom -> field21
+	}
+	field12 : Field {
+		-right -> field13
+		-bottom -> field22
+	}
+	field13 : Field {
+		-bottom -> field23
+	}
+	field21 : Field {
+		-right -> field22
+		-bottom -> field31
+	}
+	field22 : Field {
+		-right -> field23
+		-bottom -> field32
+	}
+	field23 : Field {
+		-bottom -> field33
+	}
+	field31 : Field {
+		-right -> field32
+	}
+	field32 : Field {
+		-right -> field33
+	}
+	field33 : Field 
+}
+
 
 pattern boulderOnEndField -> oneEndField, anOccupiedField {
 	fig : Boulder

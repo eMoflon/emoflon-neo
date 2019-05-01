@@ -1,25 +1,25 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
-import org.neo4j.driver.v1.Value;
+import org.neo4j.driver.v1.Driver;
 
 public class NeoMatch implements IMatch {
 
-	private UUID id;
-	private String patternName;
-	private Pattern p;
-	private List<Value> result;
+	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	Driver driver;
 
-	public NeoMatch(String name, Pattern p2, List<Value> values) {
-		this.id = UUID.randomUUID();
+	private String uuid;
+	private String patternName;
+	private NeoPattern pattern;
+
+	public NeoMatch(String name, NeoPattern pattern, String uuid, Driver driver) {
+		this.driver = driver;
 		this.patternName = name;
-		this.p = p2;
-		this.result = values;// TODO Auto-generated constructor stub
+		this.pattern = pattern;
+		this.uuid = uuid;
+
 	}
 
 	@Override
@@ -30,13 +30,15 @@ public class NeoMatch implements IMatch {
 
 	@Override
 	public boolean isStillValid() {
-		// TODO Auto-generated method stub
-		return false;
+		logger.info("Check if pattern" + patternName + "is still valid");
+		return(pattern.getValidMatches(uuid).size() == 1);
 	}
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
+		String statement = CypherPatternBuilder.createDestroyQuery(uuid);
+		logger.info(statement);
+		driver.session().run(statement);
 	}
 
 }

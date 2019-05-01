@@ -29,7 +29,7 @@ public class NeoProperty {
 
 	@Override
 	public String toString() {
-		return CypherPatternBuilder.cypherProperty(name, value, classVarName);
+		return CypherPatternBuilder.cypherProperty(name, value);
 	}
 
 }
