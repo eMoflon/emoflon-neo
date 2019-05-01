@@ -4,66 +4,60 @@
 import "platform:/resource/SokobanLanguage/metamodels/NeoCore.msl"
 
 metamodel SokobanLanguage {
-	Block : EClass -> Boulder
+	Boulder : Figure
 	
-	Board : EClass {
+	Block : Boulder
+
+	Board {
 		.width : EInt
 		.height : EInt
 		
-		-fields-> Field {
+		<+>-fields(0..*)-> Field {
 			.row : EInt
 			.col : EInt
 		}
-		-selectedFigure-> Figure
+		-selectedFigure(0..12)-> Figure
 	}
 	
-	Boulder : EClass -> Figure
-	
-	Field : EClass {
+	Field {
 		.endPos : EBoolean
 	
-		-right-> Field
-		-bottom-> Field
+		-right(0..1)-> Field
+		-bottom(0..1)-> Field
 	}
 	
-	abstract Figure : EClass {
-		-field-> Field
+	abstract Figure {
+		-field(1..1)-> Field
 	}
 	
-	Sokoban : EClass -> Figure
+	Sokoban : Figure
 }
 
 metamodel sokobanExchangeFormat {
-	Board : EClass {
-		-firstRow-> Row
+	Board {
+		<>-firstRow(1..1)-> Row
 	}
 	
-	Row : EClass {
-		-next-> Row
-		-firstEntry-> Entry
+	Row {
+		<>-firstEntry(1..1)-> Entry
+		<>-next(0..1)-> Row
 	}
 	
-	Entry : EClass {
-		-next-> Entry
+	Entry {
+		<>-next(0..1)-> Entry
 	}
 	
-	Normal : EClass -> Entry {
-		-symbol-> NormalSymbol
+	Normal : Entry {
+		<>-symbol(1..1)-> NormalSymbol
 	}
 	
-	End : EClass -> Entry {
-		-symbol-> EndSymbol
+	End : Entry {
+		<>-symbol(1..1)-> EndSymbol
 	}
 	
-	Symbol : EClass {
-		
-	}
+	Symbol
 	
-	NormalSymbol : EClass -> Symbol {
-		
-	}
+	NormalSymbol : Symbol
 	
-	EndSymbol : EClass -> Symbol {
-		
-	}
+	EndSymbol : Symbol
 }

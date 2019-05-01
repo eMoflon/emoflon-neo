@@ -43,7 +43,7 @@ PropertyValue:
 /*----------------- Metamodels --------------------*/
 /*-------------------------------------------------*/
 Metamodel:
-	'metamodel' name=QualifiedName '{' (nodeBlocks+=MetamodelNodeBlock enums+=Enum)* '}'
+	'metamodel' name=QualifiedName '{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}'
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?;
 
 MetamodelNodeBlock:
