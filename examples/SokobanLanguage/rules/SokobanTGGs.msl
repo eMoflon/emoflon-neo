@@ -21,7 +21,7 @@ tripleGrammar SokobanImportExport {
 }
 
 
-abstract tripleRule BoardToBoardRule: SokobanImportExport {
+abstract tripleRule BoardToBoardRule : SokobanImportExport {
 	source {
 		++ sokBoard:sokobanExchangeFormat.Board {
 			++ -firstRow-> row

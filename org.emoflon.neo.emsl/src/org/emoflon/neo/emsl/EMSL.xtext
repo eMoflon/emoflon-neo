@@ -158,7 +158,7 @@ GraphGrammar:
 /*---------------- Triple Rules -------------------*/
 /*-------------------------------------------------*/
 TripleRule:
-	(abstract?='abstract')? 'tripleRule' name=QualifiedName
+	(abstract?='abstract')? 'tripleRule' name=QualifiedName ':' type=[TripleGrammar|QualifiedName]
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
 	('source' '{' srcNodeBlocks+=ModelNodeBlock* '}')?

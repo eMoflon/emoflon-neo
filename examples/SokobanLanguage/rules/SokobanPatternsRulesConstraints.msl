@@ -12,7 +12,7 @@ pattern oneBlock {
 
 pattern oneEndField {
 	field : Field {
-		.endPos == true
+		.endPos : true
 	}
 }
 
@@ -121,7 +121,7 @@ pattern block {
 
 pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 	field: Field {
-		.endPos == false
+		.endPos : false
 	}
 	fig: Block
 } when forbid hasLeft && forbid hasTop || forbid hasRight && forbid hasTop 

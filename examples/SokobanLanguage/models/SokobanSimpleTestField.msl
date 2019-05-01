@@ -5,6 +5,7 @@ import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
  * O: Block
  * #: Boulder
  * ?: EndField
+
 =================
 | S |   |   | # |
 -----------------
@@ -99,164 +100,103 @@ model SokobanSimpleTestField {
 		
 		-right-> f01
 		-bottom-> f10
-		-board-> b
-		
-		-figure-> sok
 	}
 	
 	f01 : Field {
 		.endPos : false
 		
-		-left-> f00
 		-right-> f02
 		-bottom-> f11
-		-board-> b
 	}
 	
 	f02 : Field {
 		.endPos : false
 		
-		-left-> f01
 		-right-> f03
 		-bottom-> f12
-		-board-> b
 	}
 	
 	f03 : Field {
 		.endPos : false
 		
-		-left-> f02
 		-bottom-> f13
-		-board-> b
-		
-		-figure-> boulder1
 	}
 	
 	f10 : Field {
 		.endPos : false
 		
 		-right-> f11
-		-top-> f00
 		-bottom-> f20
-		-board-> b
 	}
 	
 	f11 : Field {
 		.endPos : false
 		
-		-left-> f10
 		-right-> f12
-		-top-> f01
 		-bottom-> f21
-		-board-> b
 	}
 	
 	f12 : Field {
 		.endPos : false
 		
-		-left-> f11
 		-right-> f13
-		-top-> f02
 		-bottom-> f22
-		-board-> b
-		
-		-figure-> block1
 	}
 	
 	f13 : Field {
 		.endPos : false
 		
-		-left-> f12
-		-top-> f03
 		-bottom-> f23
-		-board-> b
-		
-		-figure-> boulder2
 	}
 	
 	f20 : Field {
 		.endPos : false
 		
 		-right-> f21
-		-top-> f10
 		-bottom-> f30
-		-board-> b
 	}
 	
 	f21 : Field {
 		.endPos : false
 		
-		-left-> f20
 		-right-> f22
-		-top-> f11
 		-bottom-> f31
-		-board-> b
-		
-		-figure-> block2
 	}
 	
 	f22 : Field {
 		.endPos : true
 		
-		-left-> f21
 		-right-> f23
-		-top-> f12
 		-bottom-> f32
-		-board-> b
 	}
 	
 	f23 : Field {
 		.endPos : false
 		
-		-left-> f22
-		-top-> f13
 		-bottom-> f33
-		-board-> b
-		
-		-figure-> boulder3
 	}
 	
 	f30 : Field {
 		.endPos : false
 		
 		-right-> f31
-		-top-> f20
-		-board-> b
-		
-		-figure-> boulder4
 	}
 	
 	f31 : Field {
 		.endPos : false
 		
-		-left-> f30
 		-right-> f32
-		-top-> f21
-		-board-> b
-		
-		-figure-> boulder5
 	}
 	
 	f32 : Field {
 		.endPos : true
 		
-		-left-> f31
 		-right-> f33
-		-top-> f22
-		-board-> b
 	}
 	
 	f33 : Field {
 		.endPos : false
-		
-		-left-> f32
-		-top-> f23
-		-board-> b
-		
-		-figure-> boulder6
 	}
-	
-	
 	
 	sok : Sokoban {
 		-field->f00
