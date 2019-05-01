@@ -4,9 +4,17 @@ import java.util.Collection
 
 class CypherPatternBuilder {
 	
-	def static String createCypherQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations) {
-		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherReturn(nodes);
+	def static String createCypherQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations, String pName) {
+		val mnName = "matchingNode"
+		val relName = "matches"
+		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherCreate(nodes,mnName,relName,pName) + cypherReturn(mnName);
 	}
+	
+	def static String createCypherValidQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations, String pName) {
+		val mnName = "matchingNode"
+		cypherMatch(nodes, relations) + cypherConditions(conditions) + cypherReturn(mnName);
+	}
+	
 	
 	def static String cypherMatch(Collection<NeoNode> nodes, Collection<NeoRelation> relations) {
 
@@ -47,7 +55,7 @@ class CypherPatternBuilder {
 		'''«IF properties.size > 0»«FOR p:properties BEFORE'{' SEPARATOR', ' AFTER '}'»«p.toString»«ENDFOR»«ENDIF»'''
 	}
 	
-	def static String cypherProperty(String name, String value, String classVarName) {
+	def static String cypherProperty(String name, String value) {
 		'''«name»: «value»'''
 	}
 	
@@ -55,9 +63,29 @@ class CypherPatternBuilder {
 		'''«classVarName».«name»: «value»'''
 	}
 	
-	def static String cypherReturn(Collection<NeoNode> nodes) {
+	def static cypherCreate(Collection<NeoNode> nodes, String mnName, String relName, String pName) {
+		'''CREATE(«mnName»:Match {uuid: randomUUID(), pattern: "«pName»"}), «cypherMatchNodeRelations(nodes, mnName, relName)» '''
+	}
+	
+	def static cypherMatchNodeRelations(Collection<NeoNode> nodes, String mnName, String relName) {
+		'''«FOR n:nodes SEPARATOR ', '»«cypherMatchNodeRelation(n,mnName,relName)»«ENDFOR»'''
+	}
+	
+	def static cypherMatchNodeRelation(NeoNode node, String mnName, String relName) {
+		'''(«mnName»)-[:«relName» {name: "«node.varName»"}]->(«node.varName»)'''
+	}
+	
+	def static String cypherReturn(String mnName) {
 		'''
-		RETURN «FOR n:nodes SEPARATOR ', '»«n.varName»«ENDFOR»'''
+		RETURN «mnName».uuid as uuid'''
+	}
+	
+	def static String createIsValidQuery(String uuid) {
+		'''MATCH (n:Match {uuid: "«uuid»"}) RETURN count(n)'''
+	}
+	
+	def static String createDestroyQuery(String uuid) {
+		'''MATCH (n:Match {uuid: "«uuid»"}) DETACH DELETE n'''
 	}
 	
 }
