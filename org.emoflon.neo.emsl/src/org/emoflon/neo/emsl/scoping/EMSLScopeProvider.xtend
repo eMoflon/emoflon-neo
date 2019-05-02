@@ -51,69 +51,69 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		if (valueOfRelationStatementInRule(context, reference))
 			return handleValueOfRelationStatementInRule(context as ModelRelationStatement, reference)
-		
+
 		if (valueOfRelationStatementInPattern(context, reference))
 			return handleValueOfRelationStatementInPattern(context as ModelRelationStatement, reference)
-		
+
 		if (valueOfRelationStatementInTripleRule(context, reference)) {
 			return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
 		}
-		
+
 		if (nameOfRelationStatement(context, reference)) {
 			return handleNameOfRelationStatement(context as ModelRelationStatement, reference)
 		}
-		
+
 		if (nameOfPropertyStatement(context, reference)) {
 			return handleNameOfPropertyStatement(context as ModelPropertyStatement, reference)
 		}
-		
+
 		if (nameOfPropertyStatementInRelationStatement(context, reference))
 			return handleNameOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
-		
+
 		if (isNodeBlockInMetamodel(context, reference))
 			return handleNodeBlockTypesInMetamodel(context as MetamodelNodeBlock, reference)
-		
+
 		return super.getScope(context, reference)
 	}
-	
+
 	def isNodeBlockInMetamodel(EObject context, EReference reference) {
 		context instanceof MetamodelNodeBlock && reference == EMSLPackage.Literals.METAMODEL__NODE_BLOCKS &&
 			context.eContainer instanceof Metamodel
 	}
-	
+
 	def nameOfPropertyStatement(EObject context, EReference reference) {
 		context instanceof ModelPropertyStatement && reference == EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE &&
 			!(context.eContainer instanceof ModelRelationStatement)
 	}
-	
+
 	def handleNameOfPropertyStatement(EObject context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
 		var nodeBlocks = new HashMap<EObject, String>()
 
 		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
-		
+
 		val possibilities = new HashMap
 		for (nb : nodeBlocks.keySet) {
-			(nb as MetamodelNodeBlock).properties.forEach[r | possibilities.put(r, null)]
+			(nb as MetamodelNodeBlock).properties.forEach[r|possibilities.put(r, null)]
 		}
 
 		determineScope(possibilities)
 	}
-	
+
 	def nameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
 		context instanceof ModelPropertyStatement && reference == EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE
 	}
-	
+
 	def handleNameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
 		var nodeBlocks = new HashMap<EObject, String>()
 
 		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
-		
+
 		val possibilities = new HashMap
 		for (nb : nodeBlocks.keySet) {
-			(nb as MetamodelNodeBlock).relations.forEach[r | 
-				(r as MetamodelRelationStatement).properties.forEach[p |
+			(nb as MetamodelNodeBlock).relations.forEach [ r |
+				(r as MetamodelRelationStatement).properties.forEach [ p |
 					possibilities.put(p, null)
 				]
 			]
@@ -121,70 +121,81 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		determineScope(possibilities)
 	}
-	
+
 	def nameOfRelationStatement(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE
 	}
-	
+
 	def handleNameOfRelationStatement(EObject context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
 		var nodeBlocks = new HashMap<EObject, String>()
 
 		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
-		
+
 		val possibilities = new HashMap
 		for (nb : nodeBlocks.keySet) {
-			(nb as MetamodelNodeBlock).relations.forEach[r | possibilities.put(r, null)]
+			(nb as MetamodelNodeBlock).relations.forEach[r|possibilities.put(r, null)]
 		}
 
 		determineScope(possibilities)
 	}
 
 	def valueOfRelationStatementInRule(EObject context, EReference reference) {
-		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
+		context instanceof ModelRelationStatement &&
+			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof Rule
 	}
 
 	def handleValueOfRelationStatementInRule(ModelRelationStatement statement, EReference reference) {
 		val rule = statement.eContainer.eContainer as Rule
 		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = rule.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof Rule].flatMap[r|((r as RefinementCommand).referencedType as Rule).nodeBlocks]
+		val nodeBlocksInSuperTypes = rule.superRefinementTypes.filter [ st |
+			(st as RefinementCommand).referencedType instanceof Rule
+		].flatMap[r|((r as RefinementCommand).referencedType as Rule).nodeBlocks]
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(rule.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
 	}
-	
+
 	def valueOfRelationStatementInTripleRule(EObject context, EReference reference) {
-		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
+		context instanceof ModelRelationStatement &&
+			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof TripleRule
 	}
 
 	def handleValueOfRelationStatementInTripleRule(ModelRelationStatement statement, EReference reference) {
 		val tripleRule = statement.eContainer.eContainer as TripleRule
 		val allNodeBlocks = new HashSet()
-		// only source
-		if (tripleRule.srcNodeBlocks.contains(statement.eContainer as ModelNodeBlock)) {
-			var nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof TripleRule].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).trgNodeBlocks]
-			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-			nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof TripleRule].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).srcNodeBlocks]
-			allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
-			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-			allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
-		}
+
+		var nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter [ st |
+			(st as RefinementCommand).referencedType instanceof TripleRule
+		].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).trgNodeBlocks]
+		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+		nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter [ st |
+			(st as RefinementCommand).referencedType instanceof TripleRule
+		].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).srcNodeBlocks]
+		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+
+		allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
+		allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
+
 		return Scopes.scopeFor(allNodeBlocks)
 	}
-	
+
 	def valueOfRelationStatementInPattern(EObject context, EReference reference) {
-		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
+		context instanceof ModelRelationStatement &&
+			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof AtomicPattern
 	}
 
-	//TODO [Maximilian]: copy for models, metamodels, fix other types
+	// TODO [Maximilian]: copy for models, metamodels, fix other types
 	def handleValueOfRelationStatementInPattern(ModelRelationStatement statement, EReference reference) {
 		val pattern = statement.eContainer.eContainer.eContainer as Pattern
 		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = pattern.body.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof AtomicPattern].flatMap[r | ((r as RefinementCommand).referencedType as AtomicPattern).nodeBlocks]
-		
+		val nodeBlocksInSuperTypes = pattern.body.superRefinementTypes.filter [ st |
+			(st as RefinementCommand).referencedType instanceof AtomicPattern
+		].flatMap[r|((r as RefinementCommand).referencedType as AtomicPattern).nodeBlocks]
+
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(pattern.body.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
@@ -197,21 +208,23 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 				// find duplicates in names of NodeBlocks (works)
 				val nameList = newArrayList
 				val duplicateNames = newArrayList
-				aliases.keySet.forEach[e | 
-					if(!nameList.contains(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString))
+				aliases.keySet.forEach [ e |
+					if (!nameList.contains(
+						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString))
 						nameList.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
 					else
-						duplicateNames.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+						duplicateNames.add(
+							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
 				]
 				// create QualifiedNames for NodeBlocks
-				val eobName = SimpleAttributeResolver.NAME_RESOLVER.apply(eob)				
+				val eobName = SimpleAttributeResolver.NAME_RESOLVER.apply(eob)
 				if (duplicateNames.contains(eobName)) {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
-						QualifiedName.create(aliases.get(eob), SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+						QualifiedName.create(aliases.get(eob),
+							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 					else
 						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
-				}
-				else {
+				} else {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
 						QualifiedName.create(aliases.get(eob), eobName)
 					else
@@ -220,7 +233,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			]
 		))
 	}
-	
+
 	def handleSuperTypesOfNodeBlock(ModelNodeBlock block, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(block)
 		determineScope(allNodeBlocksInAllImportedMetamodels(root))

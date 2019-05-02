@@ -43,7 +43,6 @@ abstract tripleRule BoardToBoardRule : SokobanImportExport {
 	}
 	
 	correspondence {
-
 		++ sokBoard <-:SokobanImportExport.BoardToBoard-> board
 		
 		++ ne <-:SokobanImportExport.EntryToField-> nf
