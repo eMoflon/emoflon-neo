@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.NodeBlock;
+import org.emoflon.neo.emsl.eMSL.ConditionOperator;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
@@ -33,47 +33,47 @@ public class NeoPattern implements IPattern {
 		generateNodesAndRelations();
 
 	}
-	
+
 	private void generateNodesAndRelations() {
-		
+
 		nodes.clear();
 		relations.clear();
 		conditions.clear();
-		
-		for (NodeBlock n : p.getNodeBlocks()) {
+
+		for (var n : p.getBody().getNodeBlocks()) {
 
 			NeoNode node = new NeoNode(n.getType().getName(), n.getName());
 
 			// Get all relationships
-			n.getRelationStatements().forEach(r -> relations.add(new NeoRelation(r.getName(), r.getPropertyStatements(),
-					node, r.getValue().getType().getName(), r.getValue().getName())));
+			n.getRelations().forEach(r -> relations.add(new NeoRelation(r.getType().getName(), r.getProperties(), node,
+					r.getTarget().getType().getName(), r.getTarget().getName())));
 
 			// Get all properties or conditions
-			n.getConditionStatements().forEach(c -> {
-				if (c.getOp().toString() == "==")
-					node.addProperty(c.getName(), c.getValue());
+			n.getProperties().forEach(p -> {
+				if (p.getOp().equals(ConditionOperator.EQ))
+					node.addProperty(p.getType().getName(), p.getValue());
 				else
-					conditions.add(new NeoCondition(c.getName(), c.getOp(), c.getValue(), node.getVarName()));
+					conditions.add(new NeoCondition(p.getType().getName(), p.getOp(), p.getValue(), node.getVarName()));
 			});
 
 			nodes.add(node);
 		}
-		
+
 	}
-	
-	
+
 	@Override
 	public Collection<IMatch> getValidMatches(String uuid) {
-		
+
 		generateNodesAndRelations();
-		
+
 		NeoNode matchnode = new NeoNode("Match", "matchingNode");
 		matchnode.addProperty("uuid", uuid);
-		
-		for(NeoNode node :nodes) {
-			relations.add(new NeoRelation("matches", "\""+node.getVarName()+"\"", matchnode, node.getClassType(), node.getVarName()));
+
+		for (NeoNode node : nodes) {
+			relations.add(new NeoRelation("matches", "\"" + node.getVarName() + "\"", matchnode, node.getClassType(),
+					node.getVarName()));
 		}
-		
+
 		nodes.add(matchnode);
 
 		logger.info("Searching matches for Pattern: " + getName());
@@ -98,7 +98,7 @@ public class NeoPattern implements IPattern {
 
 	@Override
 	public String getName() {
-		return p.getName();
+		return p.getBody().getName();
 	}
 
 	@Override

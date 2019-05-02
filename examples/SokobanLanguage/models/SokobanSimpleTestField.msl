@@ -5,6 +5,7 @@ import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
  * O: Block
  * #: Boulder
  * ?: EndField
+
 =================
 | S |   |   | # |
 -----------------
@@ -99,9 +100,6 @@ model SokobanSimpleTestField {
 		
 		-right-> f01
 		-bottom-> f10
-		-board-> b
-		
-		-figure-> sok
 	}
 	
 	f01 : Field {
@@ -109,7 +107,6 @@ model SokobanSimpleTestField {
 		
 		-right-> f02
 		-bottom-> f11
-		-board-> b
 	}
 	
 	f02 : Field {
@@ -117,16 +114,12 @@ model SokobanSimpleTestField {
 		
 		-right-> f03
 		-bottom-> f12
-		-board-> b
 	}
 	
 	f03 : Field {
 		.endPos : false
 		
 		-bottom-> f13
-		-board-> b
-		
-		-figure-> boulder1
 	}
 	
 	f10 : Field {
@@ -134,7 +127,6 @@ model SokobanSimpleTestField {
 		
 		-right-> f11
 		-bottom-> f20
-		-board-> b
 	}
 	
 	f11 : Field {
@@ -142,7 +134,6 @@ model SokobanSimpleTestField {
 		
 		-right-> f12
 		-bottom-> f21
-		-board-> b
 	}
 	
 	f12 : Field {
@@ -150,18 +141,12 @@ model SokobanSimpleTestField {
 		
 		-right-> f13
 		-bottom-> f22
-		-board-> b
-		
-		-figure-> block1
 	}
 	
 	f13 : Field {
 		.endPos : false
 		
 		-bottom-> f23
-		-board-> b
-		
-		-figure-> boulder2
 	}
 	
 	f20 : Field {
@@ -169,7 +154,6 @@ model SokobanSimpleTestField {
 		
 		-right-> f21
 		-bottom-> f30
-		-board-> b
 	}
 	
 	f21 : Field {
@@ -177,9 +161,6 @@ model SokobanSimpleTestField {
 		
 		-right-> f22
 		-bottom-> f31
-		-board-> b
-		
-		-figure-> block2
 	}
 	
 	f22 : Field {
@@ -187,52 +168,35 @@ model SokobanSimpleTestField {
 		
 		-right-> f23
 		-bottom-> f32
-		-board-> b
 	}
 	
 	f23 : Field {
 		.endPos : false
 		
 		-bottom-> f33
-		-board-> b
-		
-		-figure-> boulder3
 	}
 	
 	f30 : Field {
 		.endPos : false
 		
 		-right-> f31
-		-board-> b
-		
-		-figure-> boulder4
 	}
 	
 	f31 : Field {
 		.endPos : false
 		
 		-right-> f32
-		-board-> b
-		
-		-figure-> boulder5
 	}
 	
 	f32 : Field {
 		.endPos : true
 		
 		-right-> f33
-		-board-> b
 	}
 	
 	f33 : Field {
 		.endPos : false
-		
-		-board-> b
-		
-		-figure-> boulder6
 	}
-	
-	
 	
 	sok : Sokoban {
 		-field->f00

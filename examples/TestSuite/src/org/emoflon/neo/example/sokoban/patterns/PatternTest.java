@@ -21,12 +21,12 @@ import org.neo4j.driver.v1.StatementResult;
 
 public class PatternTest {
 
-	private static Scanner reader; 
+	private static Scanner reader;
 	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
 	private static NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
 	private static Driver driver = builder.getDriver();
 
-	// Select model 
+	// Select model
 	private EMSL_Spec model = EMSUtil.loadSpecification(//
 			"platform:/resource/SokobanLanguage/models/SokobanSimpleTestField.msl", //
 			"../");
@@ -36,21 +36,20 @@ public class PatternTest {
 			"platform:/resource/SokobanLanguage/rules/SokobanPatternsRulesConstraints.msl", //
 			"../");
 
-	
 	@BeforeAll
 	private static void startDBConnection() throws Exception {
-		
+
 		logger.info("Database Connection established.");
 		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
-		
+
 		if (result.hasNext()) {
-			
+
 			if (result.next().get(0).asInt() > 0) {
-				logger.info("Database not empty. All data will be removed! \n"
-						+ "Do you want to continue (Y=Yes / N=No)?");
+				logger.info(
+						"Database not empty. All data will be removed! \n" + "Do you want to continue (Y=Yes / N=No)?");
 				reader = new Scanner(System.in);
 				String input = reader.next();
-				
+
 				if (input.toLowerCase().equals("n")) {
 					logger.info("Tests have been cancled. No changes in the database executed.");
 					closeDBConnection();
@@ -59,18 +58,17 @@ public class PatternTest {
 			} else {
 				logger.info("Database empty.");
 			}
-			
+
 		} else {
 			logger.info("Database empty.");
 		}
-		
+
 	}
 
 	@BeforeEach
 	private void initDB() {
 		builder.exportEMSLEntityToNeo4j(model);
-		logger.info("-----------------------------\n"
-				+ "Database initialised.");
+		logger.info("-----------------------------\n" + "Database initialised.");
 	}
 
 	@AfterEach
@@ -87,7 +85,7 @@ public class PatternTest {
 
 	@Test
 	public void testOneSokoban() {
-		
+
 		// Get an EMSL pattern
 		Pattern p = (Pattern) patterns.getEntities().get(0);
 
@@ -100,17 +98,17 @@ public class PatternTest {
 		// Check expected count
 		assertThat(matches.size(), is(1));
 	}
-	
+
 	@Test
 	public void testOneSokobanStillValid() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(0);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(matches.size()));
@@ -124,17 +122,17 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
-	
+
 	@Test
 	public void testOneBlockStillValid() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(1);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(matches.size()));
@@ -148,17 +146,17 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
-	
+
 	@Test
 	public void testOneEndFieldStillValid() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(2);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(matches.size()));
@@ -172,39 +170,39 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(9));
 	}
-	
+
 	@Test
 	public void testOccupiedFieldsStillValid() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(3);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(matches.size()));
 	}
-	
+
 	@Test
 	public void testOccupiedFieldsStillValidDeletedBlocks() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(3);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		
+
 		// removing 2 blocks, valid matches should be 2 less
 		driver.session().run("MATCH (b:Block) DETACH DELETE b");
-		
+
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
-		assertThat(matchesCount, is(matches.size()-2));
+		assertThat(matchesCount, is(matches.size() - 2));
 	}
 
 	@Test
@@ -215,16 +213,17 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(1));
 	}
+
 	@Test
 	public void testOccupiedSokobanFieldsStillValid() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(4);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(matches.size()));
@@ -238,16 +237,17 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
+
 	@Test
 	public void testOccupiedBlockFieldsStillValid() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(5);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(matches.size()));
@@ -261,16 +261,17 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(8));
 	}
+
 	@Test
-	public void  testOccupiedBoulderFieldsStillValid() {
-		
+	public void testOccupiedBoulderFieldsStillValid() {
+
 		Pattern p = (Pattern) patterns.getEntities().get(6);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(matches.size()));
@@ -292,20 +293,21 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(2));
 	}
+
 	@Test
 	public void testAllNotBorderFieldsInARowStillValidDeletedEdges() {
-		
+
 		Pattern p = (Pattern) patterns.getEntities().get(8);
 		IPattern ip = new NeoPattern(p, builder);
 		var matches = ip.getMatches();
-		
+
 		// removing all right edges
 		driver.session().run("MATCH (f:Field)-[r:right]->(g:Field) DETACH DELETE r");
-		
+
 		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
 				matchesCount++;
 		}
 		assertThat(matchesCount, is(0));
@@ -326,31 +328,22 @@ public class PatternTest {
 		var matches = ip.getMatches();
 		assertThat(matches.size(), is(0));
 	}
-	
+
 	/*
-	 * ATTENTION: Run following test on small databases only, due to their large number of matches
+	 * ATTENTION: Run following test on small databases only, due to their large
+	 * number of matches
 	 * 
-	@Test
-	public void testAll3x3Fields() {
-		Pattern p = (Pattern) patterns.getEntities().get(11);
-		IPattern ip = new NeoPattern(p, builder);
-		var matches = ip.getMatches();
-		assertThat(matches.size(), is(0));
-	}
-	@Test
-	public void testAll3x3FieldsIsStillValid() {
-		
-		Pattern p = (Pattern) patterns.getEntities().get(11);
-		IPattern ip = new NeoPattern(p, builder);
-		var matches = ip.getMatches();
-		var matchesCount = 0;
-		
-		for(IMatch m : matches) {
-			if(m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
-	}
-	*/
+	 * @Test public void testAll3x3Fields() { Pattern p = (Pattern)
+	 * patterns.getEntities().get(11); IPattern ip = new NeoPattern(p, builder); var
+	 * matches = ip.getMatches(); assertThat(matches.size(), is(0)); }
+	 * 
+	 * @Test public void testAll3x3FieldsIsStillValid() {
+	 * 
+	 * Pattern p = (Pattern) patterns.getEntities().get(11); IPattern ip = new
+	 * NeoPattern(p, builder); var matches = ip.getMatches(); var matchesCount = 0;
+	 * 
+	 * for(IMatch m : matches) { if(m.isStillValid()) matchesCount++; }
+	 * assertThat(matchesCount, is(matches.size())); }
+	 */
 
 }

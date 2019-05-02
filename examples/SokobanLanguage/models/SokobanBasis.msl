@@ -5,7 +5,7 @@ model SokobanBoard {
 		-fields-> f1 {
 			.row : 0
 			.col : 0
-		}		
+		}
 	}
 	
 	f1 : Field {

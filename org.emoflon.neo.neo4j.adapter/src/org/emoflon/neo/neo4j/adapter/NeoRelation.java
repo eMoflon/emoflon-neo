@@ -3,7 +3,7 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.emoflon.neo.emsl.eMSL.PropertyStatement;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
 public class NeoRelation {
 
@@ -15,7 +15,7 @@ public class NeoRelation {
 
 	private Collection<NeoProperty> propteries;
 
-	public NeoRelation(String relType, Collection<PropertyStatement> props, NeoNode fromNode, String toNode,
+	public NeoRelation(String relType, Collection<ModelPropertyStatement> props, NeoNode fromNode, String toNode,
 			String toVarName) {
 
 		this.propteries = new ArrayList<>();
@@ -26,11 +26,10 @@ public class NeoRelation {
 		this.toNode = toNode;
 		this.toVarName = toVarName;
 
-		props.forEach(prop -> addProperty(prop.getName(), prop.getValue()));
+		props.forEach(prop -> addProperty(prop.getType().getName(), prop.getValue()));
 	}
-	
-	public NeoRelation(String relType, String varName, NeoNode fromNode, String toNode,
-			String toVarName) {
+
+	public NeoRelation(String relType, String varName, NeoNode fromNode, String toNode, String toVarName) {
 
 		this.propteries = new ArrayList<>();
 
@@ -42,7 +41,6 @@ public class NeoRelation {
 
 		addProperty("name", varName);
 	}
-
 
 	public String getRelType() {
 		return relType;

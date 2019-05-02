@@ -1,9 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SokobanLanguage
-Bundle-SymbolicName: SokobanLanguage
+Bundle-Name: TestSuite
+Bundle-SymbolicName: TestSuite
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
+Export-Package: org.emoflon.neo.example.sokoban.emf,
+ org.emoflon.neo.example.sokoban.patterns,
+ org.emoflon.neo.example.sokoban.scalability
+Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
+ org.eclipse.emf.common;bundle-version="2.15.0",
  org.eclipse.xtext;bundle-version="2.16.0",
  org.emoflon.neo.emsl;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
@@ -25,4 +29,4 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.apiguardian,
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.emf;bundle-version="1.0.0"
-Automatic-Module-Name: SokobanLanguage
+Automatic-Module-Name: TestSuite

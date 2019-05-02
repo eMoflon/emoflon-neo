@@ -2,165 +2,242 @@ grammar org.emoflon.neo.emsl.EMSL with org.eclipse.xtext.common.Terminals
 
 generate eMSL "http://www.emoflon.org/neo/emsl/EMSL"
 
+/* An EMSL consists of a set of imports and entities */
 EMSL_Spec:
-	imports+=ImportStatement* entities+=Entity+
-;
+	imports+=ImportStatement* entities+=Entity+;
 
+/* Other EMSL files can be imported, optionally via an alias to resolve name clashes of entities in the imported files */
 ImportStatement:
-	'import' value=STRING ('as' alias=ID)?
-;
+	'import' value=STRING ('as' alias=ID)?;
 
+/* EMSL entities cover metamodelling and graph transformation */
 Entity:
-	Metamodel | Model | Pattern | Rule | Constraint | TripleRule | TripleGrammar | GraphGrammar
-;
+	Model | Metamodel | Pattern | Constraint | Rule | GraphGrammar | TripleRule | TripleGrammar;
 
-Metamodel:
-	'metamodel' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}'
-;
-
+/*-------------------------------------------------*/
+/*------------------- Models ----------------------*/
+/*-------------------------------------------------*/
 Model:
-	'model' name=QualifiedName '{' nodeBlocks+=NodeBlock* '}'
-;
+	'model' name=QualifiedName '{' nodeBlocks+=ModelNodeBlock* '}'
+	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?;
+
+ModelNodeBlock:
+	(action=Action)? name=ID ':' type=[MetamodelNodeBlock|QualifiedName]
+	('{'
+	(properties+=ModelPropertyStatement | relations+=ModelRelationStatement)*
+	'}')?;
+
+ModelPropertyStatement:
+	'.' type=[MetamodelPropertyStatement|ID] op=ConditionOperator value=PropertyValue;
+
+ModelRelationStatement:
+	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' target=[ModelNodeBlock|QualifiedName]
+	('{'
+	properties+=ModelPropertyStatement*
+	'}')?;
+
+PropertyValue:
+	INT | STRING | ID;
+
+/*-------------------------------------------------*/
+/*----------------- Metamodels --------------------*/
+/*-------------------------------------------------*/
+Metamodel:
+	'metamodel' name=QualifiedName '{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}'
+	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?;
+
+MetamodelNodeBlock:
+	(abstract?='abstract')? name=ID
+	(':' superTypes+=[MetamodelNodeBlock|QualifiedName] (',' superTypes+=[MetamodelNodeBlock|QualifiedName])*)?
+	('{'
+	(properties+=MetamodelPropertyStatement | relations+=MetamodelRelationStatement)*
+	'}')?;
+
+MetamodelPropertyStatement:
+	'.' name=ID ':' type=DataType;
+
+MetamodelRelationStatement:
+	kind=RelationKind name=ID
+	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' target=[MetamodelNodeBlock|QualifiedName]
+	('{'
+	properties+=MetamodelPropertyStatement*
+	'}')?;
+
+MultiplicityValue:
+	INT | "*";
+
+enum RelationKind:
+	REFERENCE='-' | AGGREGATION='<>-' | KOMPOSITION='<+>-';
+
+Enum:
+	'enum' name=QualifiedName '{'
+	literals+=EnumLiteral+
+	'}';
+
+EnumLiteral:
+	name=ID;
+
+DataType:
+	BuiltInType | UserDefinedType;
+
+BuiltInType:
+	reference=BuiltInDataTypes;
+
+UserDefinedType:
+	reference=[EnumLiteral|QualifiedName];
+
+enum BuiltInDataTypes:
+	EBOOLEAN='EBoolean'
+	| ESTRING='EString'
+	| ECHAR='EChar'
+	| EINT='EInt'
+	| EDOUBLE='EDouble'
+	| ELONG='ELong'
+	| EFLOAT='EFloat'
+	| EDATE='EDate';
+
+/*-------------------------------------------------*/
+/*------------------ Patterns ---------------------*/
+/*-------------------------------------------------*/
+AtomicPattern:
+	'pattern' name=QualifiedName
+	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
+	'{'
+	nodeBlocks+=ModelNodeBlock*
+	'}';
 
 Pattern:
-	'pattern' name=QualifiedName 
-	('->' (superTypes+=[SuperType|QualifiedName] ('['  ']')? (',' superTypes+=[SuperType|QualifiedName] ('['  ']')?)*))? // TODO [Maximilian]: fill relabeling brackets
-	'{'
-	 	nodeBlocks+=NodeBlock* 
-	'}' ('when' conditions+=TypeReference (('&&' | '||') conditions+=(TypeReference))*
-	)?
-;
+	body=AtomicPattern ('when' condition=Condition)?;
 
+Condition:
+	AtomicConstraint | ConstraintReference;
+
+AtomicConstraint returns ConstraintBody:
+	NegativeConstraint | PositiveConstraint | Implication;
+
+NegativeConstraint:
+	'forbid' pattern=[AtomicPattern|QualifiedName];
+
+PositiveConstraint:
+	'enforce' pattern=[AtomicPattern|QualifiedName];
+
+Implication:
+	'if' premise=[AtomicPattern|QualifiedName] 'then' conclusion=[AtomicPattern|QualifiedName];
+
+ConstraintReference:
+	(negated?='!')? reference=[Constraint|QualifiedName];
+
+Constraint:
+	'constraint' name=QualifiedName '=' body=(AtomicConstraint | OrBody);
+
+OrBody returns ConstraintBody:
+	children+=AndBody ('||' children+=AndBody)*;
+
+AndBody returns ConstraintBody:
+	children+=Primary ('&&' children+=Primary)*;
+
+Primary returns ConstraintBody:
+	ConstraintReference | '(' OrBody ')';
+
+/*-------------------------------------------------*/
+/*------------------- Rules -----------------------*/
+/*-------------------------------------------------*/
 Rule:
-	(abstract?='abstract')? 'rule' name=QualifiedName 
-	('->' (superTypes+=[SuperType|QualifiedName] ('['  ']')? (',' superTypes+=[SuperType|QualifiedName] ('[' ']')? )*))? // TODO [Maximilian]: fill relabeling brackets
-	'{' 
-		nodeBlocks+=NodeBlock* 
-	'}' ('when' conditions+=(TypeReference) (('&&' | '||') conditions+=(TypeReference))*
-	)?
-;
+	(abstract?='abstract')? 'rule' name=QualifiedName
+	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
+	'{'
+	nodeBlocks+=ModelNodeBlock*
+	'}' ('when' condition=Condition)?;
 
+GraphGrammar:
+	'grammar' name=QualifiedName '{'
+	rules+=[Rule|QualifiedName]+
+	'}';
+
+/*-------------------------------------------------*/
+/*---------------- Triple Rules -------------------*/
+/*-------------------------------------------------*/
 TripleRule:
-	(abstract?='abstract')? 'tripleRule' name=QualifiedName 
-	(':' grammarType=[TripleGrammar|QualifiedName])? ('->' superTypes+=[SuperType|QualifiedName] (',' superTypes+=[SuperType|QualifiedName])*)?
-	('{' 
-		('source' '{' srcNodeBlocks+=NodeBlock* '}')?
-		('target' '{' trgNodeBlocks+=NodeBlock* '}')?
-		('correspondence' '{' correspondences+=TripleRuleCorrespondence+ '}')?
-		('attributeConditions' '{' 
-			(attributeConditions+=AttributeCondition)*
-		'}')?
-	 '}')? ('when' conditionOperator='forbid' nacs+=TripleRuleNACs (',' nacs+=TripleRuleNACs)*)?
-;
-
-TripleRuleCorrespondence:
-	((action=Action)? source=[NodeBlock|QualifiedName] '<-' ':' type=[Correspondence|QualifiedName] '->' target=[NodeBlock|QualifiedName])
-;
-
-AttributeCondition:
-	operator+=AttributeConditionAction '(' (operands+=[PropertyStatement|QualifiedName]|constant+=INT) ((',') (operands+=[PropertyStatement|QualifiedName]|constant+=INT))* ')'
-;
-
-AttributeConditionAction:
-	op=AttributeConditionOperator
-;
-
-TripleRuleNACs:
-	pattern=[TypeReference|QualifiedName] | (location=('source'|'target') '(' pattern=[TypeReference|QualifiedName] ')' )
-;
+	(abstract?='abstract')? 'tripleRule' name=QualifiedName ':' type=[TripleGrammar|QualifiedName]
+	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
+	('{'
+	('source' '{' srcNodeBlocks+=ModelNodeBlock* '}')?
+	('target' '{' trgNodeBlocks+=ModelNodeBlock* '}')?
+	('correspondence' '{' correspondences+=Correspondence* '}')?
+	('attributeConditions' '{' attributeConditions+=AttributeCondition* '}')?
+	'}')? ('forbid' nacs+=TripleRuleNAC ('&&' nacs+=TripleRuleNAC)*)?;
 
 Correspondence:
-	source+=[NodeBlock|QualifiedName] '<-' name=QualifiedName '->' target+=[NodeBlock|QualifiedName]
-;
+	((action=Action)?
+	source=[ModelNodeBlock|QualifiedName]
+	'<-' ':' type=[CorrespondenceType|QualifiedName] '->'
+	target=[ModelNodeBlock|QualifiedName]);
+
+CorrespondenceType:
+	source=[MetamodelNodeBlock|QualifiedName] '<-' name=QualifiedName '->' target=[MetamodelNodeBlock|QualifiedName];
+
+AttributeCondition:
+	operator=LibraryAttributeCondition '(' /* TODO [Tony]: How will this look like? Consider properties of links! */ ')';
+
+TripleRuleNAC:
+	SourceNAC | TargetNAC;
+
+SourceNAC:
+	'src(' pattern=[AtomicPattern|QualifiedName] ')';
+
+TargetNAC:
+	'trg(' pattern=[AtomicPattern|QualifiedName] ')';
 
 TripleGrammar:
 	'tripleGrammar' name=QualifiedName '{'
-		'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
-		'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
-		'correspondence' '{' correspondences+=Correspondence* '}'
-		'attributeConditions' '{'  '}' // TODO [Maximilian]: fill
-	'}'
-;
+	'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
+	'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
+	'correspondence' '{' correspondences+=CorrespondenceType* '}'
+	'attributeConditions' '{' /* TODO [Tony]: Unclear how to define attribute conditions?  Can we support this? */ '}'
+	'}';
 
-GraphGrammar:
-	'graphGrammar' name=QualifiedName '{'
-		rules+=[Rule|QualifiedName]*
-	'}'
-;
+enum LibraryAttributeCondition:
+	ADD='add' |
+	ADDPREFIX='addPrefix' |
+	ADDSUFFIX='addSuffix' |
+	CONCAT='concat' |
+	DIVIDE='divide' |
+	EQBOOLEAN='eq_boolean' |
+	EQCHAR='eq_char' |
+	EQDOUBLE='eq_double' |
+	EQFLOAT='eq_float' |
+	EQINT='eq_int' |
+	EQLONG='eq_long' |
+	EQSTRING='eq_string' |
+	MAX='max' |
+	MULTIPLY='multiply' |
+	SETDEFAULTNumber='setDefaultNumber' |
+	SETDEFAULTSTRING='setDefaultString' |
+	SETRANDOMSTRING='setRandomString' |
+	SMALLEROREQUAL='smallerOrEqual' |
+	STRINGTODOUBLE='stringToDouble' |
+	STRINGTOINT='stringToInt' |
+	SUB='sub';
 
-NodeBlock:
-	(abstract?='abstract')? (action=Action)? name=ID ':' type=[NodeBlock|QualifiedName]
-	('->' (superTypes+=[NodeBlock|QualifiedName] (',' superTypes+=[NodeBlock|QualifiedName])*))?
-	('{'
-	(propertyStatements+=PropertyStatement | relationStatements+=RelationStatement | conditionStatements+=ConditionStatement)*
-	'}')?
-;
+/*-------------------------------------------------*/
+/*------------------- Common ----------------------*/
+/*-------------------------------------------------*/
+RefinementCommand:
+	referencedType=[SuperType|QualifiedName] (relabling='[' /* TODO [Maximilian]: fill relabeling brackets */ ']')?;
 
-Constraint:
-	'constraint' name=QualifiedName '=' constraints+=TypeReference (('&&' | '||') constraints+=TypeReference)*
-;
-
-// types a Pattern/Rule can refine; maybe add NodeBlock and TripleRule?
 SuperType:
-	Metamodel | Model | Pattern | Rule | TripleRule
-;
-
-// split between atomic condition and constraint (needed to fix syntax)
-TypeReference:
-	ConditionTypes | (operator?='!')? constraints+=[Constraint|QualifiedName]
-;
-
-ConditionTypes:
-	NegativeConstraintBody | PositiveConstraintBody | ImplicationBody
-;
-	
-NegativeConstraintBody:
-	conditionOperator='forbid' pattern=[Pattern|QualifiedName]
-;
-	
-PositiveConstraintBody:
-	conditionOperator='enforce' pattern=[Pattern|QualifiedName]
-;
-	
-ImplicationBody:
-	conditionOperator='if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName]
-;
-
-
-PropertyStatement:
-	'.' name=ID ':' value=PropertyValue
-; 
-
-PropertyValue:
-	INT | ID
-;
-
-RelationStatement:
-	(action=Action)? '-' name=ID '->' value=[NodeBlock|QualifiedName] ('{' propertyStatements+=PropertyStatement* '}')?
-;
-
-ConditionStatement:
-	'.' name=ID op=NodeBlockConditionOperator value=PropertyValue
-;
+	Metamodel | Model | AtomicPattern | Rule | TripleRule;
 
 QualifiedName:
-	ID ('.' ID)*
-;
+	ID ('.' ID)*;
 
 Action:
-	op=Operator
-;
+	op=ActionOperator;
 
-enum Operator:
+enum ActionOperator:
 	CREATE='++' | DELETE='--';
 
-enum NodeBlockConditionOperator:
-	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ='==' | GREATER='>' | GREATEREQ='>='
-;
-	
-enum AttributeConditionOperator:
-	ADD='add' | ADDPREFIX='addPrefix' | ADDSUFFIX='addSuffix' | CONCAT='concat' | DIVIDE='divide' | EQBOOLEAN='eq_boolean' | EQCHAR='eq_char' |
-	EQDOUBLE='eq_double' | EQFLOAT='eq_float' | EQINT='eq_int' | EQLONG='eq_long' | EQSTRING='eq_string' | MAX='max' | MULTIPLY='multiply' |
-	SETDEFAULTNumber='setDefaultNumber' | SETDEFAULTSTRING='setDefaultString' | SETRANDOMSTRING='setRandomString' | SMALLEROREQUAL='smallerOrEqual' |
-	STRINGTODOUBLE='stringToDouble' | STRINGTOINT='stringToInt' | SUB='sub'
-;
+enum ConditionOperator:
+	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ=':' | GREATER='>' | GREATEREQ='>=';
+
+

@@ -21,7 +21,7 @@ tripleGrammar SokobanImportExport {
 }
 
 
-abstract tripleRule BoardToBoardRule: SokobanImportExport {
+abstract tripleRule BoardToBoardRule : SokobanImportExport {
 	source {
 		++ sokBoard:sokobanExchangeFormat.Board {
 			++ -firstRow-> row
@@ -34,12 +34,12 @@ abstract tripleRule BoardToBoardRule: SokobanImportExport {
 	
 	target {
 		++ board:SokobanLanguage.Board {
-			++ -fields->nf
+			++ -fields->nf {
+				.row : 0
+				.col : 0
+			}
 		}
-		++ nf:SokobanLanguage.Field {
-			.row : 0
-			.col : 0
-		}
+		++ nf:SokobanLanguage.Field
 	}
 	
 	correspondence {
@@ -61,7 +61,7 @@ tripleRule BoardNormalEntryRule:SokobanImportExport -> BoardToBoardRule, NormalR
 
 
 
-abstract tripleRule EndRule {
+abstract tripleRule EndRule:SokobanImportExport {
 	source {
 		++ ne: sokobanExchangeFormat.End
 	}
@@ -73,7 +73,7 @@ abstract tripleRule EndRule {
 	}
 }
 
-abstract tripleRule NormalRule {
+abstract tripleRule NormalRule:SokobanImportExport {
 	source {
 		++ ne: sokobanExchangeFormat.Normal
 	}
@@ -85,10 +85,10 @@ abstract tripleRule NormalRule {
 	}
 }
 
-abstract tripleRule AllOtherFields {
+abstract tripleRule AllOtherFields:SokobanImportExport {
 	source {
 		ble: sokobanExchangeFormat.Entry {
-			++ -next->ne
+			++ -Entry.next->ne
 		}
 		
 		++ ne: sokobanExchangeFormat.Entry
@@ -102,7 +102,9 @@ abstract tripleRule AllOtherFields {
 		
 		ul: SokobanLanguage.Field {
 			-right->ur
-			-bottom->bl
+			-bottom->bl {
+				.row > 0				
+			}
 		}
 		
 		ur: SokobanLanguage.Field {
@@ -110,7 +112,6 @@ abstract tripleRule AllOtherFields {
 		}
 		
 		bl: SokobanLanguage.Field {
-			.row > 0
 			++ -right->nf
 		}
 		
@@ -128,12 +129,12 @@ abstract tripleRule AllOtherFields {
 	}
 }
 
-tripleRule AllOtherFieldsEnd -> AllOtherFields, EndRule { }
+tripleRule AllOtherFieldsEnd:SokobanImportExport -> AllOtherFields, EndRule { }
 
-tripleRule AllOtherFieldsNormal -> AllOtherFields, NormalRule { }
+tripleRule AllOtherFieldsNormal:SokobanImportExport -> AllOtherFields, NormalRule { }
 
 
-abstract tripleRule FirstRowAllCols {
+abstract tripleRule FirstRowAllCols:SokobanImportExport {
 	source {
 		e: sokobanExchangeFormat.Entry { }
 		
@@ -142,18 +143,19 @@ abstract tripleRule FirstRowAllCols {
 	
 	target {
 		b: SokobanLanguage.Board {
-			-fields->f
-			++ -fields->nf
+			-fields->f {				
+				.row : 0
+			}
+			++ -fields->nf {
+				.row : 0
+			}
 		}
 		
 		f: SokobanLanguage.Field {
-			.row == 0
 			++ -bottom->nf
 		}
 		
-		++ nf: SokobanLanguage.Field {
-			.row : 0
-		}
+		++ nf: SokobanLanguage.Field
 	}
 	
 	correspondence {
@@ -167,11 +169,11 @@ abstract tripleRule FirstRowAllCols {
 	}
 }
 
-tripleRule FirstColAllRows -> FirstRowAllCols {
+tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {
 	source {
 		r: sokobanExchangeFormat.Row {
 			-firstEntry->e
-			++ -next->nr
+			++ -Row.next->nr
 		}
 		
 		++ nr:sokobanExchangeFormat.Row {
@@ -180,19 +182,18 @@ tripleRule FirstColAllRows -> FirstRowAllCols {
 	}
 	target {
 		f: SokobanLanguage.Field {
-			.col == 0
-			++ -bottom->nf
+			++ -bottom->nf {
+				.col : 0	
+			}
 		}
 		
-		++ nf: SokobanLanguage.Field {
-			.col : 0
-		}
+		++ nf: SokobanLanguage.Field
 	}
 }
 
-tripleRule FirstColAllRowsEnd -> FirstColAllRows, EndRule
+tripleRule FirstColAllRowsEnd:SokobanImportExport -> FirstColAllRows, EndRule
 
-tripleRule FirstColAllRowsNormal -> FirstColAllRows, NormalRule
+tripleRule FirstColAllRowsNormal:SokobanImportExport -> FirstColAllRows, NormalRule
 
 
 
