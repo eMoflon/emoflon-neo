@@ -18,8 +18,9 @@ Entity:
 /*------------------- Models ----------------------*/
 /*-------------------------------------------------*/
 Model:
-	'model' name=QualifiedName '{' nodeBlocks+=ModelNodeBlock* '}'
-	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?;
+	'model' name=QualifiedName 
+	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))? 
+	'{' nodeBlocks+=ModelNodeBlock* '}';
 
 ModelNodeBlock:
 	(action=Action)? name=ID ':' type=[MetamodelNodeBlock|QualifiedName]
@@ -43,8 +44,9 @@ PropertyValue:
 /*----------------- Metamodels --------------------*/
 /*-------------------------------------------------*/
 Metamodel:
-	'metamodel' name=QualifiedName '{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}'
-	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?;
+	'metamodel' name=QualifiedName 
+	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
+	'{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}';
 
 MetamodelNodeBlock:
 	(abstract?='abstract')? name=ID
