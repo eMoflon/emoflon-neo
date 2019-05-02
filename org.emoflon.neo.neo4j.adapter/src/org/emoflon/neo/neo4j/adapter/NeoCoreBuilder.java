@@ -556,15 +556,18 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	private Object inferType(ModelPropertyStatement ps, ModelNodeBlock nb) {
 		String stringVal = ps.getValue();
-		ModelRelationStatement rs = (ModelRelationStatement) ps.eContainer();
-		String relName = rs.getType().getName();
 		String propName = ps.getType().getName();
 		MetamodelNodeBlock nodeType = nb.getType();
 
-		if (ps.eContainer().equals(nb))
+		if (ps.eContainer().equals(nb)) {
 			return inferTypeForNodeAttribute(stringVal, propName, nodeType);
-		else
+		} else if (ps.eContainer() instanceof ModelRelationStatement) {
+			ModelRelationStatement rs = (ModelRelationStatement) ps.eContainer();
+			String relName = rs.getType().getName();
 			return inferTypeForEdgeAttribute(stringVal, relName, propName, nodeType);
+		} else {
+			throw new IllegalArgumentException("Unable to handle: " + ps);
+		}
 	}
 
 	private Object inferTypeForEdgeAttribute(String stringVal, String relName, String propName,
