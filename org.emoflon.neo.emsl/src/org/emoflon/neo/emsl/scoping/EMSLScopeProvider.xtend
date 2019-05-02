@@ -28,6 +28,10 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.SuperType
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint
 
 /**
  * This class contains custom scoping description.
@@ -57,7 +61,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
 		}
 		
-		if (nameOfRelationStatementInModel(context, reference)) {
+		if (nameOfRelationStatement(context, reference)) {
 			return handleNameOfRelationStatement(context as ModelRelationStatement, reference)
 		}
 		
@@ -120,7 +124,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		determineScope(possibilities)
 	}
 	
-	def nameOfRelationStatementInModel(EObject context, EReference reference) {
+	def nameOfRelationStatement(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE
 	}
 	
@@ -146,7 +150,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def handleValueOfRelationStatementInRule(ModelRelationStatement statement, EReference reference) {
 		val rule = statement.eContainer.eContainer as Rule
 		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = rule.superRefinementTypes.filter[st|st instanceof Rule].flatMap[r|(r as Rule).nodeBlocks]
+		val nodeBlocksInSuperTypes = rule.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof Rule].flatMap[r|((r as RefinementCommand).referencedType as Rule).nodeBlocks]
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(rule.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
@@ -162,27 +166,27 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val allNodeBlocks = new HashSet()
 		// only source
 		if (tripleRule.srcNodeBlocks.contains(statement.eContainer as ModelNodeBlock)) {
-			val nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter[st|st instanceof TripleRule].flatMap[r|(r as TripleRule).srcNodeBlocks]
+			var nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof TripleRule].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).trgNodeBlocks]
+			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
+			nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof TripleRule].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).srcNodeBlocks]
+			allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
 			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 			allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
-		}
-		else if (tripleRule.trgNodeBlocks.contains(statement.eContainer as ModelNodeBlock)){
-			val nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter[st|st instanceof TripleRule].flatMap[r|(r as TripleRule).trgNodeBlocks]
-			allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-			allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
 		}
 		return Scopes.scopeFor(allNodeBlocks)
 	}
 	
 	def valueOfRelationStatementInPattern(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
-			context.eContainer?.eContainer instanceof Pattern
+			context.eContainer?.eContainer instanceof AtomicPattern
 	}
 
+	//TODO [Maximilian]: copy for models, metamodels, fix other types
 	def handleValueOfRelationStatementInPattern(ModelRelationStatement statement, EReference reference) {
-		val pattern = statement.eContainer.eContainer as Pattern
+		val pattern = statement.eContainer.eContainer.eContainer as Pattern
 		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = pattern.body.superRefinementTypes.filter[st|st instanceof Pattern].flatMap[r|(r as Pattern).body.nodeBlocks]
+		val nodeBlocksInSuperTypes = pattern.body.superRefinementTypes.filter[st|(st as RefinementCommand).referencedType instanceof AtomicPattern].flatMap[r | ((r as RefinementCommand).referencedType as AtomicPattern).nodeBlocks]
+		
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(pattern.body.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
@@ -292,7 +296,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	def isInPattern(ModelNodeBlock context) {
-		context.eContainer instanceof Pattern
+		context.eContainer instanceof AtomicPattern
 	}
 
 	def isInRule(ModelNodeBlock context) {

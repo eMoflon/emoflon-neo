@@ -18,36 +18,36 @@ pattern oneEndField {
 
 pattern anOccupiedField {
 	
-	field : Field {
-		-figure-> fig
-	}
+	field : Field
 	
-	fig : Figure	
+	fig : Figure {
+		-field-> field
+	}
 }
 
 pattern anOccupiedSokobanField {
 	
-	field : Field {
-		-figure-> fig
-	}
+	field : Field
 	
-	fig : Sokoban	
+	fig : Sokoban {
+		-field-> field
+	}
 }
 pattern anOccupiedBlockField {
 	
-	field : Field {
-		-figure-> fig
-	}
+	field : Field
 	
-	fig : Block	
+	fig : Block	{
+		-field-> field
+	}
 }
 pattern anOccupiedBoulderField {
 	
-	field : Field {
-		-figure-> fig
-	}
+	field : Field
 	
-	fig : Boulder	
+	fig : Boulder {
+		-field-> field
+	}	
 }
 
 
@@ -86,7 +86,7 @@ pattern allNotBorderFieldsInARow {
 
 pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
 	b : SokobanLanguage.Board {
-		-fields -> field {
+		-fields -> field{
 			.row : 1
 			.col : 2
 		}
@@ -167,22 +167,34 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 		.endPos : false
 	}
 	fig: Block
-} when forbid hasLeft && forbid hasTop || forbid hasRight && forbid hasTop 
-	|| forbid hasLeft && forbid hasBottom || forbid hasRight && forbid hasBottom
+} when noCorner
 
+constraint forbidLeftSide = forbid hasLeft
+constraint forbidTopSide = forbid hasTop
+constraint forbidRightSide = forbid hasRight
+constraint forbidBottomSide = forbid hasBottom
+
+constraint topLeftCorner = forbidLeftSide && forbidTopSide
+constraint topRightCorner = forbidRightSide && forbidTopSide
+constraint bottomLeftCorner = forbidLeftSide && forbidBottomSide
+constraint bottomRightCorner = forbidRightSide && forbidBottomSide
+
+constraint noCorner = topLeftCorner || topRightCorner || bottomLeftCorner || bottomRightCorner
 
 pattern hasLeft {
-	field: Field {
-		-left->leftFig
+	field: Field
+	
+	leftFig: Field {
+		-right-> field
 	}
-	leftFig: Field
 }
 
 pattern hasTop {
-	field: Field {
-		-top->topFig
+	field: Field
+	
+	topFig: Field {
+		-bottom-> field
 	}
-	topFig: Field
 }
 
 pattern hasRight {
@@ -203,10 +215,10 @@ pattern hasBottom {
 // RulesForMovingSokoban.gt
 
 pattern occupiedField {
-	fig : Figure
-	to : Field {
-		-figure-> fig
+	fig : Figure {
+		-field-> to
 	}
+	to : Field
 }
 
 pattern occupiedNext -> occupiedField {} //[fig -> fig, to -> next] { }
@@ -235,14 +247,14 @@ abstract rule pushBlock {
 
 
 rule moveSokobanUp -> moveSokoban {
-	from : Field {
-		-top->from
+	to : Field {
+		-bottom-> from
 	}
 } when forbid occupiedField
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
-	to : Field {
-		-top-> next
+	from : Field {
+		-bottom-> next
 	}
 } when forbid occupiedNext
 

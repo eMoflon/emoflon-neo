@@ -116,13 +116,13 @@ AtomicConstraint returns ConstraintBody:
 	NegativeConstraint | PositiveConstraint | Implication;
 
 NegativeConstraint:
-	'forbid' pattern=[Pattern|QualifiedName];
+	'forbid' pattern=[AtomicPattern|QualifiedName];
 
 PositiveConstraint:
-	'enforce' pattern=[Pattern|QualifiedName];
+	'enforce' pattern=[AtomicPattern|QualifiedName];
 
 Implication:
-	'if' premise=[Pattern|QualifiedName] 'then' conclusion=[Pattern|QualifiedName];
+	'if' premise=[AtomicPattern|QualifiedName] 'then' conclusion=[AtomicPattern|QualifiedName];
 
 ConstraintReference:
 	(negated?='!')? reference=[Constraint|QualifiedName];
@@ -226,7 +226,7 @@ RefinementCommand:
 	referencedType=[SuperType|QualifiedName] (relabling='[' /* TODO [Maximilian]: fill relabeling brackets */ ']')?;
 
 SuperType:
-	Metamodel | Model | Pattern | Rule | TripleRule;
+	Metamodel | Model | AtomicPattern | Rule | TripleRule;
 
 QualifiedName:
 	ID ('.' ID)*;
