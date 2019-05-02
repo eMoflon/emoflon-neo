@@ -16,22 +16,20 @@ import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.FilteringScope
 import org.eclipse.xtext.scoping.impl.SimpleScope
 import org.eclipse.xtext.util.SimpleAttributeResolver
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
-import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
-import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
-import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.RefinementCommand
-import org.emoflon.neo.emsl.eMSL.SuperType
-import org.emoflon.neo.emsl.eMSL.NegativeConstraint
 
 /**
  * This class contains custom scoping description.
