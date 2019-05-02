@@ -1,67 +1,57 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import org.emoflon.neo.emsl.eMSL.NodeBlockConditionOperator;
+import org.emoflon.neo.emsl.eMSL.ConditionOperator;
 
 public class NeoCondition {
-	
+
 	private String name;
 	private String op;
 	private boolean opNeg;
 	private String value;
-	
+
 	private String classVarName;
 
-	public NeoCondition(String name, NodeBlockConditionOperator op, String value, String classVarName) {
-		
+	public NeoCondition(String name, ConditionOperator op, String value, String classVarName) {
+
 		this.classVarName = classVarName;
-		
+
 		this.name = name;
 		this.value = value;
 		this.opNeg = false;
 		convertOp(op);
 	}
-	
+
 	@Override
 	public String toString() {
 		return CypherPatternBuilder.cypherCondition(name, op, opNeg, value, classVarName);
 	}
-	
-	private void convertOp(NodeBlockConditionOperator opcode) {
-		
-		switch(opcode.toString()) {
-		case "EQ_VALUE":
-		case "EQ":
-		case "==":
+
+	private void convertOp(ConditionOperator opcode) {
+
+		switch (opcode) {
+		case EQ:
 			this.op = "=";
 			break;
-		case "GREATER_VALUE":
-		case "GREATER":
-		case ">":
+		case GREATER:
 			this.op = ">";
 			break;
-		case "GREATEREQ_VALUE":
-		case "GREATEREQ":
-		case ">=":
+		case GREATEREQ:
 			this.op = ">=";
 			break;
-		case "LESS_VALUE":
-		case "LESS":
-		case "<":
+		case LESS:
 			this.op = "<";
 			break;
-		case "LESSEQ_VALUE":
-		case "LESSEQ":
-		case "<=":
+		case LESSEQ:
 			this.op = "<=";
 			break;
-		case "NOTEQ":
-		case "NOTEQ_VALUE":
-		case "!=":
-		default:
-			this.op = "<=";
+		case NOTEQ:
+			this.op = "=";
 			this.opNeg = true;
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown condition operator: " + opcode);
 		}
-		
+
 	}
 
 }
