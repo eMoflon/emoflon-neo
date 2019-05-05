@@ -21,6 +21,14 @@ import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.BuiltInType
+import org.emoflon.neo.emsl.eMSL.RelationKind
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.ConstraintBody
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint
+import org.emoflon.neo.emsl.eMSL.Implication
+import org.emoflon.neo.emsl.eMSL.ConstraintReference
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -84,14 +92,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 		if (!selectedNodeBlock.isPresent)
 			return visualiseEntity(selectedEntity.get)
-
+		
 		visualiseNodeBlock(selectedNodeBlock.get, true)
 	}
 
 	def visualiseNodeBlock(ModelNodeBlock nb, boolean mainSelection) {
 		if (nb.eContainer instanceof Model)
 			visualiseNodeBlockInModel(nb, mainSelection)
-		else if (nb.eContainer instanceof Pattern)
+		else if (nb.eContainer instanceof AtomicPattern)
 			visualiseNodeBlockInPattern(nb, mainSelection)
 		else if (nb.eContainer instanceof Rule)
 			visualiseNodeBlockInRule(nb, mainSelection)
@@ -245,9 +253,107 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR nb : entity.body.nodeBlocks»
 				«visualiseNodeBlockInPattern(nb, false)»
 			«ENDFOR»
+			«IF entity.condition !== null »
+				legend bottom
+					«getConditionString(entity)»
+				endlegend
+			«ENDIF»
 		'''
 	}
 	
+	def String getConditionString(Pattern entity) {
+		var text = ""
+		
+		// return the String for simple Constraints
+		if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
+			text += getSimpleConstraintString(entity.condition as ConstraintBody)
+			
+		// return the String for ConstraintReference
+		if (entity.condition instanceof ConstraintReference)
+			text += getConstraintReferenceString((entity.condition as ConstraintReference))
+		
+		
+		return text
+	}
+	
+	def String getConstraintReferenceString(ConstraintReference constraint) {
+		var text = ""
+		if (constraint.reference.body instanceof NegativeConstraint || constraint.reference.body instanceof PositiveConstraint || constraint.reference.body instanceof Implication)
+			text += getSimpleConstraintString(constraint.reference.body)
+		// OrBody
+		else  {
+			if (constraint.reference.body !== null) {
+				var count = constraint.reference.body.children.size - 1
+				for (c : constraint.reference.body.children) {
+					text += getOrBodyString(c)
+					if (count > 0)
+						text += " **||** "
+					count--
+				}
+			}
+		}
+		return text
+	}
+	
+	def String getOrBodyString(ConstraintBody constraintBody) {
+		var text = ""
+		
+		var count = constraintBody.children.size - 1
+		for (c : constraintBody.children) {
+			text += getAndBodyString(c)
+			if (count > 0)
+				text += " **&&** "
+			count--
+		}
+		
+		return text
+	}
+	
+	def String getAndBodyString(ConstraintBody constraintBody) {
+		var text = ""
+		
+		if ((constraintBody instanceof ConstraintReference))
+			text += getConstraintReferenceString(constraintBody)
+		
+		var count = constraintBody.children.size - 1
+		if (constraintBody.children.size > 1)
+			text += " ( "
+		for (c : constraintBody.children) {
+			text += getPrimaryString(c)
+			if (count > 0)
+				text += " **||** "
+			count--
+		}
+		if (constraintBody.children.size > 1)
+			text += " ) "
+		
+		return text
+	}
+	
+	def String getPrimaryString(ConstraintBody constraintBody) {
+		var text = ""
+		
+		if (constraintBody.children.get(0) instanceof ConstraintReference) {
+			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
+		}
+		else {
+			text += " ( "
+			text += getOrBodyString(constraintBody)
+			text += " ) "
+		}
+		
+		return text
+	}
+	
+	def String getSimpleConstraintString(ConstraintBody constraintBody) {
+		if (constraintBody instanceof NegativeConstraint)
+			return '''**forbid** «(constraintBody as NegativeConstraint).pattern.name»'''
+		else if (constraintBody instanceof PositiveConstraint)
+			return '''**enforce** «(constraintBody as PositiveConstraint).pattern.name»'''
+		else if (constraintBody instanceof Implication)
+			return '''***if*** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
+	}
+		
 	def dispatch String visualiseEntity(Rule entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
@@ -298,6 +404,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
+	def dispatch String visualiseEntity(Constraint entity) {
+		''''''
+	}
+	
 	def dispatch String visualiseEntity(org.emoflon.neo.emsl.eMSL.Enum entity) {
 		'''
 			«FOR item : entity.literals»
@@ -333,16 +443,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 	
 	private def labelForPatternComponent(ModelNodeBlock nb) {
-		val entity = nb.eContainer as Pattern
+		val entity = nb.eContainer as AtomicPattern
 		if (entity !== null) {
-			if (entity.body.name === null)
-				entity.body.name = "?"
+			if (entity.name === null)
+				entity.name = "?"
 			if (nb.name === null)
 				nb.name = "?"
 			if (nb.type.name === null)
 				nb.type.name = "?"
 				
-			'''"«entity.body.name».«nb.name» : «nb.type.name»"'''	
+			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
 		}
 		else
 			'''"?"'''
@@ -395,12 +505,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForClass(sup)» <|-- «labelForClass(nb)»
 			«ENDFOR»
 			«FOR ref : nb.relations»
-				«labelForClass(nb)» «IF ref.kind == '<+>'»*«ENDIF»«IF ref.kind == '<>'»o«ENDIF»--> «IF ref.lower !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.target !== null»«labelForClass(ref.target)»«ELSE»"?"«ENDIF» : «IF ref.name !== null»«ref.name»«ELSE»?«ENDIF»
+				«labelForClass(nb)» «IF ref.kind == RelationKind.KOMPOSITION»*«ENDIF»«IF ref.kind == RelationKind.AGGREGATION»o«ENDIF»--> «IF ref.lower !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.target !== null»«labelForClass(ref.target)»«ELSE»"?"«ENDIF» : «IF ref.name !== null»«ref.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForClass(incoming)» --> «labelForClass(nb)» : «IF (incomingRef.name !== null)»«incomingRef.name»«ELSE»?«ENDIF»
+						«labelForClass(incoming)» «IF incomingRef.kind == RelationKind.KOMPOSITION»*«ENDIF»«IF incomingRef.kind == RelationKind.AGGREGATION»o«ENDIF»--> «IF incomingRef.lower !== null»«visualiseMultiplicity(incomingRef)»«ENDIF» «labelForClass(nb)» : «IF (incomingRef.name !== null)»«incomingRef.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -419,13 +529,18 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR attr : nb.properties»
 				«labelForPatternComponent(nb)» : «attr.type.name» = «attr.value»
 			«ENDFOR»
-			«FOR incoming : (nb.eContainer as Pattern).body.nodeBlocks.filter[n|n != nb]»
+			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
 					«IF incomingRef.target == nb && mainSelection»
 						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : «IF (incomingRef.type.name !== null && incomingRef.type !== null)»«incomingRef.type.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
+			«IF (nb.eContainer.eContainer as Pattern).condition !== null »
+				legend bottom
+					«getConditionString((nb.eContainer.eContainer as Pattern))»
+				endlegend
+			«ENDIF»
 		'''
 	}
 	
@@ -457,7 +572,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR link : nb.relations»
 				«IF link.action !== null»
 					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target)» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
-				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.target)» : «IF (link.type !== null)»«link.type»«ELSE»?«ENDIF»
+				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.target)» : «IF (link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
@@ -490,7 +605,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			// For the TextSelection documents start with line 0.
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
-			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel || entity instanceof org.emoflon.neo.emsl.eMSL.Enum))
+			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel || entity instanceof org.emoflon.neo.emsl.eMSL.Enum || entity instanceof Constraint))
 			for (nodeBlock : entity.nodeBlocks) {
 				val object = NodeModelUtils.getNode(nodeBlock);
 				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
