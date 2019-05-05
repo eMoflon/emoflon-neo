@@ -29,6 +29,7 @@ import org.emoflon.neo.emsl.eMSL.NegativeConstraint
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint
 import org.emoflon.neo.emsl.eMSL.Implication
 import org.emoflon.neo.emsl.eMSL.ConstraintReference
+import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -100,9 +101,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		if (nb.eContainer instanceof Model)
 			visualiseNodeBlockInModel(nb, mainSelection)
 		else if (nb.eContainer instanceof AtomicPattern)
-			visualiseNodeBlockInPattern(nb, mainSelection)
+			return visualiseNodeBlockInPattern(nb, mainSelection) + visualiseCondition(nb.eContainer.eContainer as Pattern)
 		else if (nb.eContainer instanceof Rule)
-			visualiseNodeBlockInRule(nb, mainSelection)
+			return visualiseNodeBlockInRule(nb, mainSelection) + visualiseCondition(nb.eContainer as Rule)
 		else if (nb.eContainer instanceof TripleRule)
 			visualiseNodeBlockInTripleRule(nb.eContainer as TripleRule, nb, mainSelection)
 		else if (nb.eContainer instanceof TripleGrammar) {
@@ -257,22 +258,31 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				legend bottom
 					«getConditionString(entity)»
 				endlegend
+				«visualiseCondition(entity)»
 			«ENDIF»
 		'''
 	}
 	
-	def String getConditionString(Pattern entity) {
+	def String getConditionString(Entity entity) {
 		var text = ""
-		
-		// return the String for simple Constraints
-		if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
-			text += getSimpleConstraintString(entity.condition as ConstraintBody)
-			
-		// return the String for ConstraintReference
-		if (entity.condition instanceof ConstraintReference)
-			text += getConstraintReferenceString((entity.condition as ConstraintReference))
-		
-		
+		if (entity instanceof Rule) {
+			// return the String for simple Constraints
+			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
+				text += getSimpleConstraintString(entity.condition as ConstraintBody)
+				
+			// return the String for ConstraintReference
+			if (entity.condition instanceof ConstraintReference)
+				text += getConstraintReferenceString((entity.condition as ConstraintReference))
+		}
+		else if (entity instanceof Pattern) {
+			// return the String for simple Constraints
+			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
+				text += getSimpleConstraintString(entity.condition as ConstraintBody)
+				
+			// return the String for ConstraintReference
+			if (entity.condition instanceof ConstraintReference)
+				text += getConstraintReferenceString((entity.condition as ConstraintReference))
+		}
 		return text
 	}
 	
@@ -351,13 +361,33 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		else if (constraintBody instanceof PositiveConstraint)
 			return '''**enforce** «(constraintBody as PositiveConstraint).pattern.name»'''
 		else if (constraintBody instanceof Implication)
-			return '''***if*** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
+			return '''**if** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
 	}
-		
+	
 	def dispatch String visualiseEntity(Rule entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInRule(nb, false)»
+			«ENDFOR»
+			legend bottom
+				«getConditionString(entity)»
+			endlegend
+			«visualiseCondition(entity)»
+		'''
+	}
+	
+	def String visualiseCondition(Entity entity) {
+		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
+		'''
+			«FOR c : conditionPattern»
+				«visualiseEntity((c as AtomicPattern).eContainer as Pattern)»
+			«ENDFOR»
+			«FOR nb : entity.nodeBlocks»
+				«FOR p : conditionPattern»
+					«FOR otherNB : (p as AtomicPattern).nodeBlocks»
+						«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
+					«ENDFOR»
+				«ENDFOR»
 			«ENDFOR»
 		'''
 	}
@@ -563,6 +593,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
+			«IF (nb.eContainer as Rule).condition !== null »
+				legend bottom
+					«getConditionString((nb.eContainer as Rule))»
+				endlegend
+			«ENDIF»
 		'''
 	}
 	
