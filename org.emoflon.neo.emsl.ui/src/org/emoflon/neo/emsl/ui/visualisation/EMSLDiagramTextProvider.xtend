@@ -30,6 +30,7 @@ import org.emoflon.neo.emsl.eMSL.PositiveConstraint
 import org.emoflon.neo.emsl.eMSL.Implication
 import org.emoflon.neo.emsl.eMSL.ConstraintReference
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
+import org.emoflon.neo.emsl.eMSL.SourceNAC
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -673,6 +674,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					"«entity.name».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«entity.name».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
 				«ENDFOR»
 			}
+			«IF entity.nacs.size > 0»
+				«visualiseTripleRuleNACs(entity)»
+			«ENDIF»
 		'''
 	}
 	
@@ -743,6 +747,24 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 				««« Maybe add more types
 			«ENDFOR»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for the NACs of a given TripleRule.
+	 */
+	def String visualiseTripleRuleNACs(TripleRule entity) {
+		var count = entity.nacs.size
+		'''
+			«FOR c : entity.nacs»
+				«IF c.pattern.eContainer !== null»
+					«visualiseEntity(c.pattern.eContainer as Pattern)»
+				«ENDIF»
+			«ENDFOR»
+			
+			legend bottom
+				**forbid** «FOR c : entity.nacs»«IF c instanceof SourceNAC»src(«ELSE»trg(«ENDIF»«c.pattern.name»)«{count--; ""}»«IF count > 0» && «ENDIF»«ENDFOR»
+			endlegend
 		'''
 	}
 	
