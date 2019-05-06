@@ -83,7 +83,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val Optional<MetamodelNodeBlock> selectedMetamodelNodeBlock = selectedEntity.flatMap([e|determineSelectedMetamodelNodeBlock(selection, e)])
 		
 		if (selectedEntity.isPresent && selectedEntity.get instanceof org.emoflon.neo.emsl.eMSL.Enum)
-			return visualiseEnumItems(selectedEntity.get as org.emoflon.neo.emsl.eMSL.Enum)
+			return visualiseEnumLiterals(selectedEntity.get as org.emoflon.neo.emsl.eMSL.Enum)
 		
 		if (selectedMetamodelNodeBlock.isPresent)
 			return visualiseNodeBlockInMetamodel(selectedMetamodelNodeBlock.get, true)
@@ -97,6 +97,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		visualiseNodeBlock(selectedNodeBlock.get, true)
 	}
 
+	/**
+	 * Returns the diagram text for the different cases of NodeBlocks appearing.
+	 */
 	def visualiseNodeBlock(ModelNodeBlock nb, boolean mainSelection) {
 		if (nb.eContainer instanceof Model)
 			visualiseNodeBlockInModel(nb, mainSelection)
@@ -106,13 +109,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			return visualiseNodeBlockInRule(nb, mainSelection) + visualiseCondition(nb.eContainer as Rule)
 		else if (nb.eContainer instanceof TripleRule)
 			visualiseNodeBlockInTripleRule(nb.eContainer as TripleRule, nb, mainSelection)
-		else if (nb.eContainer instanceof TripleGrammar) {
-			// TODO [Maximilian]
-		}
 		else if (nb.eContainer instanceof GraphGrammar)
 			visualiseNodeBlockInRule(nb, mainSelection)
 	}
 
+	/**
+	 * Returns the diagram text for the overview of the current file, i.e. when no entity is selected.
+	 */
 	def String visualiseOverview(EMSL_Spec root) {
 		'''
 			left to right direction
@@ -164,83 +167,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
-	def String visualiseSuperTypesInPattern(Pattern entity) {
-		'''
-			«FOR st : entity.body.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"Pattern: «entity.body.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"Pattern: "«entity.body.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"Pattern: «entity.body.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"Pattern: «entity.body.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"Pattern: «entity.body.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
-
-	def String visualiseSuperTypesInRule(Rule entity) {
-		'''
-			«FOR st : entity.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"Rule: «entity.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"Rule: «entity.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"Rule: «entity.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"Rule: «entity.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"Rule: «entity.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
 	
-	def String visualiseSuperTypesInTripleRule(TripleRule entity) {
-		'''
-			«FOR st : entity.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"TripleRule: «entity.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"TripleRule: "«entity.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"TripleRule: «entity.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"TripleRule: «entity.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"TripleRule: «entity.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
+	/*-------------------------------------------------*/
+	/*------------------- Models ----------------------*/
+	/*-------------------------------------------------*/
 
-	def dispatch String visualiseEntity(Metamodel entity) {
-		'''
-			«FOR nb : entity.nodeBlocks»
-				«visualiseNodeBlockInMetamodel(nb, false)»
-			«ENDFOR»
-		'''
-	}
-	
+	/**
+	 * Returns the diagram text for a Model.
+	 */
 	def dispatch String visualiseEntity(Model entity) {
 		'''
 			«FOR nb : entity.nodeBlocks»
@@ -249,266 +183,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
-	def dispatch String visualiseEntity(Pattern entity) {
-		'''
-			«FOR nb : entity.body.nodeBlocks»
-				«visualiseNodeBlockInPattern(nb, false)»
-			«ENDFOR»
-			«IF entity.condition !== null »
-				legend bottom
-					«getConditionString(entity)»
-				endlegend
-				«visualiseCondition(entity)»
-			«ENDIF»
-		'''
-	}
-	
-	def String getConditionString(Entity entity) {
-		var text = ""
-		if (entity instanceof Rule) {
-			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
-				text += getSimpleConstraintString(entity.condition as ConstraintBody)
-				
-			// return the String for ConstraintReference
-			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference))
-		}
-		else if (entity instanceof Pattern) {
-			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
-				text += getSimpleConstraintString(entity.condition as ConstraintBody)
-				
-			// return the String for ConstraintReference
-			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference))
-		}
-		return text
-	}
-	
-	def String getConstraintReferenceString(ConstraintReference constraint) {
-		var text = ""
-		if (constraint.reference.body instanceof NegativeConstraint || constraint.reference.body instanceof PositiveConstraint || constraint.reference.body instanceof Implication)
-			text += getSimpleConstraintString(constraint.reference.body)
-		// OrBody
-		else  {
-			if (constraint.reference.body !== null) {
-				var count = constraint.reference.body.children.size - 1
-				for (c : constraint.reference.body.children) {
-					text += getOrBodyString(c)
-					if (count > 0)
-						text += " **||** "
-					count--
-				}
-			}
-		}
-		return text
-	}
-	
-	def String getOrBodyString(ConstraintBody constraintBody) {
-		var text = ""
-		
-		var count = constraintBody.children.size - 1
-		for (c : constraintBody.children) {
-			text += getAndBodyString(c)
-			if (count > 0)
-				text += " **&&** "
-			count--
-		}
-		
-		return text
-	}
-	
-	def String getAndBodyString(ConstraintBody constraintBody) {
-		var text = ""
-		
-		if ((constraintBody instanceof ConstraintReference))
-			text += getConstraintReferenceString(constraintBody)
-		
-		var count = constraintBody.children.size - 1
-		if (constraintBody.children.size > 1)
-			text += " ( "
-		for (c : constraintBody.children) {
-			text += getPrimaryString(c)
-			if (count > 0)
-				text += " **||** "
-			count--
-		}
-		if (constraintBody.children.size > 1)
-			text += " ) "
-		
-		return text
-	}
-	
-	def String getPrimaryString(ConstraintBody constraintBody) {
-		var text = ""
-		
-		if (constraintBody.children.get(0) instanceof ConstraintReference) {
-			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
-		}
-		else {
-			text += " ( "
-			text += getOrBodyString(constraintBody)
-			text += " ) "
-		}
-		
-		return text
-	}
-	
-	def String getSimpleConstraintString(ConstraintBody constraintBody) {
-		if (constraintBody instanceof NegativeConstraint)
-			return '''**forbid** «(constraintBody as NegativeConstraint).pattern.name»'''
-		else if (constraintBody instanceof PositiveConstraint)
-			return '''**enforce** «(constraintBody as PositiveConstraint).pattern.name»'''
-		else if (constraintBody instanceof Implication)
-			return '''**if** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
-	}
-	
-	def dispatch String visualiseEntity(Rule entity) {
-		'''
-			«FOR nb : entity.nodeBlocks»
-				«visualiseNodeBlockInRule(nb, false)»
-			«ENDFOR»
-			legend bottom
-				«getConditionString(entity)»
-			endlegend
-			«visualiseCondition(entity)»
-		'''
-	}
-	
-	def String visualiseCondition(Entity entity) {
-		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
-		'''
-			«FOR c : conditionPattern»
-				«visualiseEntity((c as AtomicPattern).eContainer as Pattern)»
-			«ENDFOR»
-			«FOR nb : entity.nodeBlocks»
-				«FOR p : conditionPattern»
-					«FOR otherNB : (p as AtomicPattern).nodeBlocks»
-						«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
-					«ENDFOR»
-				«ENDFOR»
-			«ENDFOR»
-		'''
-	}
-	
-	def dispatch String visualiseEntity(TripleRule entity) {
-		'''
-			together {
-				«FOR snb : entity.srcNodeBlocks»
-					«visualiseTripleRuleNodeBlocks(entity, snb, "SRC")»
-				«ENDFOR»
-				
-				«FOR tnb : entity.trgNodeBlocks»
-					«visualiseTripleRuleNodeBlocks(entity, tnb, "TRG")»
-				«ENDFOR»
-
-				«FOR corr : entity.correspondences»
-					"«entity.name».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«entity.name».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
-				«ENDFOR»
-			}
-		'''
-	}
-	
-	def dispatch String visualiseEntity(TripleGrammar entity) {
-		'''
-			together Source {
-				«FOR mm : entity.srcMetamodels»
-					class "«entity.name».«mm.name»"
-				«ENDFOR»
-			}
-			
-			together Target {
-				«FOR mm : entity.trgMetamodels»
-					class "«entity.name».«mm.name»"
-				«ENDFOR»
-			}
-		'''
-	}
-	
-	def dispatch String visualiseEntity(GraphGrammar entity) {
-		'''
-			«FOR r : entity.rules»
-				class "«entity.name».«r.name»"
-			«ENDFOR»
-		'''
-	}
-	
-	def dispatch String visualiseEntity(Constraint entity) {
-		''''''
-	}
-	
-	def dispatch String visualiseEntity(org.emoflon.neo.emsl.eMSL.Enum entity) {
-		'''
-			«FOR item : entity.literals»
-				class "«entity.name»"
-			«ENDFOR»
-		'''
-	}
-	
-	def String visualiseEnumItems(org.emoflon.neo.emsl.eMSL.Enum entity) {
-		'''
-			«FOR item : entity.literals»
-				class "«entity.name».«item.name»"
-			«ENDFOR»
-		'''
-	}
-	
-	def String visualiseTripleRuleNodeBlocks(TripleRule entity, ModelNodeBlock nb, String type) {
-		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
-			«FOR link : nb.relations»
-				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.target.name»:«link.target.type.name»":"«IF link.type.name !== null»«link.type.name»«ELSE»?«ENDIF»"
-			«ENDFOR»
-		'''
-	}
-	
-	private def labelForClass(MetamodelNodeBlock nb) {
-		val entity = nb.eContainer as Metamodel
-		'''"«entity?.name».«nb?.name»"'''
-	}
-
-	private def labelForObject(ModelNodeBlock nb) {
-		val entity = nb.eContainer as Model
-		'''"«entity?.name».«nb?.name»:«nb?.type?.name»"'''
-	}
-	
-	private def labelForPatternComponent(ModelNodeBlock nb) {
-		val entity = nb.eContainer as AtomicPattern
-		if (entity !== null) {
-			if (entity.name === null)
-				entity.name = "?"
-			if (nb.name === null)
-				nb.name = "?"
-			if (nb.type.name === null)
-				nb.type.name = "?"
-				
-			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
-		}
-		else
-			'''"?"'''
-	}
-	
-	private def labelForRuleComponent(ModelNodeBlock nb) {
-		val entity = nb?.eContainer as Rule
-		if (entity !== null) {
-			if (entity.name === null)
-				entity.name = "?"
-			if (nb.name === null)
-				nb.name = "?"
-			if (nb.type.name === null)
-				nb.type.name = "?"
-				
-			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
-		}
-		else
-			'''"?"'''
-	}
-	
-	private def labelForTripleRuleComponent(ModelNodeBlock nb) {
-		val entity = nb.eContainer as TripleRule
-		'''"«entity.name».«nb.name» : «IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
-	}	
-	
+	/**
+	 * Returns the diagram text for a NodeBlock in a Model.
+	 */
 	def String visualiseNodeBlockInModel(ModelNodeBlock nb, boolean mainSelection) {
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
@@ -527,7 +204,33 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-
+	
+	/**
+	 * Returns the diagram text for the name of an object in a Model.
+	 */
+	private def labelForObject(ModelNodeBlock nb) {
+		val entity = nb.eContainer as Model
+		'''"«entity?.name».«nb?.name»:«nb?.type?.name»"'''
+	}
+	
+	/*-------------------------------------------------*/
+	/*----------------- Metamodels --------------------*/
+	/*-------------------------------------------------*/
+	
+	/**
+	 * Returns the diagram text for a Metamodel.
+	 */
+	def dispatch String visualiseEntity(Metamodel entity) {
+		'''
+			«FOR nb : entity.nodeBlocks»
+				«visualiseNodeBlockInMetamodel(nb, false)»
+			«ENDFOR»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for a NodeBlock in a Metamodel.
+	 */
 	def String visualiseNodeBlockInMetamodel(MetamodelNodeBlock nb, boolean mainSelection) {
 		'''
 			«IF nb.abstract»abstract«ENDIF» class «labelForClass(nb)» «IF mainSelection»<<Selection>>«ENDIF»
@@ -550,6 +253,69 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
+	/**
+	 * Returns the diagram text for the name of a class in a Metamodel.
+	 */
+	private def labelForClass(MetamodelNodeBlock nb) {
+		val entity = nb.eContainer as Metamodel
+		'''"«entity?.name».«nb?.name»"'''
+	}
+	
+	/**
+	 * Returns the diagram text for Mulitplicities in a Metamodel.
+	 */
+	def visualiseMultiplicity(MetamodelRelationStatement link) {
+		'''"«link.lower»«IF link.upper !== null»..«link.upper»«ENDIF»"'''
+	}
+	
+	
+	/**
+	 * Returns the diagram text for an Enum.
+	 */
+	def dispatch String visualiseEntity(org.emoflon.neo.emsl.eMSL.Enum entity) {
+		'''
+			«FOR item : entity.literals»
+				class "«entity.name»"
+			«ENDFOR»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for the EnumLiterals.
+	 */
+	def String visualiseEnumLiterals(org.emoflon.neo.emsl.eMSL.Enum entity) {
+		'''
+			«FOR item : entity.literals»
+				class "«entity.name».«item.name»"
+			«ENDFOR»
+		'''
+	}
+	
+	
+	/*-------------------------------------------------*/
+	/*------------------ Patterns ---------------------*/
+	/*-------------------------------------------------*/
+	
+	/**
+	 * Returns the diagram text for a Pattern.
+	 */
+	def dispatch String visualiseEntity(Pattern entity) {
+		'''
+			«FOR nb : entity.body.nodeBlocks»
+				«visualiseNodeBlockInPattern(nb, false)»
+			«ENDFOR»
+			«IF entity.condition !== null »
+				legend bottom
+					«getConditionString(entity)»
+				endlegend
+				«visualiseCondition(entity)»
+			«ENDIF»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for a NodeBlock in a Pattern.
+	 */
 	def String visualiseNodeBlockInPattern(ModelNodeBlock nb, boolean mainSelection) {
 		'''
 			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
@@ -574,6 +340,74 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
+	/**
+	 * Returns the diagram text for the name of an object in a Pattern.
+	 */
+	private def labelForPatternComponent(ModelNodeBlock nb) {
+		val entity = nb.eContainer as AtomicPattern
+		if (entity !== null) {
+			if (entity.name === null)
+				entity.name = "?"
+			if (nb.name === null)
+				nb.name = "?"
+			if (nb.type.name === null)
+				nb.type.name = "?"
+				
+			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
+		}
+		else
+			'''"?"'''
+	}
+	
+	/**
+	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
+	 */
+	def String visualiseSuperTypesInPattern(Pattern entity) {
+		'''
+			«FOR st : entity.body.superRefinementTypes»
+				«IF (st instanceof Pattern)»
+					"Pattern: «entity.body.name»"--|>"Pattern: «st.body.name»"
+				«ENDIF»
+				«IF (st instanceof Rule)»
+					"Pattern: "«entity.body.name»"--|>"Rule: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Model)»
+					"Pattern: «entity.body.name»"--|>"Model: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Metamodel)»
+					"Pattern: «entity.body.name»"--|>"Metamodel: «st.name»"
+				«ENDIF»
+				«IF (st instanceof TripleRule)»
+					"Pattern: «entity.body.name»"--|>"TripleRule: «st.name»"
+				«ENDIF»
+				««« Maybe add more types
+			«ENDFOR»
+		'''
+	}
+	
+	
+	/*-------------------------------------------------*/
+	/*------------------- Rules -----------------------*/
+	/*-------------------------------------------------*/
+	
+	/**
+	 * Returns the diagram text for a Rule.
+	 */
+	def dispatch String visualiseEntity(Rule entity) {
+		'''
+			«FOR nb : entity.nodeBlocks»
+				«visualiseNodeBlockInRule(nb, false)»
+			«ENDFOR»
+			legend bottom
+				«getConditionString(entity)»
+			endlegend
+			«visualiseCondition(entity)»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for a NodeBlock in a Rule.
+	 */
 	def String visualiseNodeBlockInRule(ModelNodeBlock nb, boolean mainSelection) {
 		'''
 			class «labelForRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
@@ -601,6 +435,261 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 	
+	/**
+	 * Returns the diagram text for the name of an object in a Rule.
+	 */
+	private def labelForRuleComponent(ModelNodeBlock nb) {
+		val entity = nb?.eContainer as Rule
+		if (entity !== null) {
+			if (entity.name === null)
+				entity.name = "?"
+			if (nb.name === null)
+				nb.name = "?"
+			if (nb.type.name === null)
+				nb.type.name = "?"
+				
+			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
+		}
+		else
+			'''"?"'''
+	}
+	
+	/**
+	 * Returns the diagram text for all SuperTypes of a Rule with inheritance arrows.
+	 */
+	def String visualiseSuperTypesInRule(Rule entity) {
+		'''
+			«FOR st : entity.superRefinementTypes»
+				«IF (st instanceof Pattern)»
+					"Rule: «entity.name»"--|>"Pattern: «st.body.name»"
+				«ENDIF»
+				«IF (st instanceof Rule)»
+					"Rule: «entity.name»"--|>"Rule: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Model)»
+					"Rule: «entity.name»"--|>"Model: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Metamodel)»
+					"Rule: «entity.name»"--|>"Metamodel: «st.name»"
+				«ENDIF»
+				«IF (st instanceof TripleRule)»
+					"Rule: «entity.name»"--|>"TripleRule: «st.name»"
+				«ENDIF»
+				««« Maybe add more types
+			«ENDFOR»
+		'''
+	}
+	
+	
+	/**
+	 * Returns the diagram text for a GraphGrammar.
+	 */
+	def dispatch String visualiseEntity(GraphGrammar entity) {
+		'''
+			«FOR r : entity.rules»
+				class "«entity.name».«r.name»"
+			«ENDFOR»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for the Rules in a GraphGrammar.
+	 */
+	def String visualiseRulesOfGraphGrammar(GraphGrammar gg, boolean mainSelection) {
+		// TODO [Maximilian]
+	}
+	
+	
+	/*------------------------------------------*/
+	/*-------- Constraints & Conditions --------*/
+	/*------------------------------------------*/
+	
+	/**
+	 * Returns the diagram text for a Constraint.
+	 */
+	def dispatch String visualiseEntity(Constraint entity) {
+		// TODO [Maximilian]
+		''''''
+	}	
+	
+	/**
+	 * Returns the diagram text for a condition of a Rule or Pattern.
+	 */
+	def String visualiseCondition(Entity entity) {
+		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
+		'''
+			«FOR c : conditionPattern»
+				«visualiseEntity((c as AtomicPattern).eContainer as Pattern)»
+			«ENDFOR»
+			«FOR nb : entity.nodeBlocks»
+				«FOR p : conditionPattern»
+					«FOR otherNB : (p as AtomicPattern).nodeBlocks»
+						«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
+					«ENDFOR»
+				«ENDFOR»
+			«ENDFOR»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for the condition of a Rule or Pattern.
+	 */
+	def String getConditionString(Entity entity) {
+		var text = ""
+		if (entity instanceof Rule) {
+			// return the String for simple Constraints
+			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
+				text += getAtomicConstraintString(entity.condition as ConstraintBody)
+				
+			// return the String for ConstraintReference
+			if (entity.condition instanceof ConstraintReference)
+				text += getConstraintReferenceString((entity.condition as ConstraintReference))
+		}
+		else if (entity instanceof Pattern) {
+			// return the String for simple Constraints
+			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
+				text += getAtomicConstraintString(entity.condition as ConstraintBody)
+				
+			// return the String for ConstraintReference
+			if (entity.condition instanceof ConstraintReference)
+				text += getConstraintReferenceString((entity.condition as ConstraintReference))
+		}
+		return text
+	}
+	
+	/**
+	 * Returns the diagram text for a ConstraintReference (referencing an AtomicConstraint or another Constraint).
+	 */
+	def String getConstraintReferenceString(ConstraintReference constraint) {
+		var text = ""
+		if (constraint.reference.body instanceof NegativeConstraint || constraint.reference.body instanceof PositiveConstraint || constraint.reference.body instanceof Implication)
+			text += getAtomicConstraintString(constraint.reference.body)
+		// OrBody
+		else  {
+			if (constraint.reference.body !== null) {
+				var count = constraint.reference.body.children.size - 1
+				for (c : constraint.reference.body.children) {
+					text += getOrBodyString(c)
+					if (count > 0)
+						text += " **||** "
+					count--
+				}
+			}
+		}
+		return text
+	}
+	
+	/**
+	 * Returns the diagram text for an OrBody in a recursive Constraint definition.
+	 */
+	def String getOrBodyString(ConstraintBody constraintBody) {
+		var text = ""
+		
+		var count = constraintBody.children.size - 1
+		for (c : constraintBody.children) {
+			text += getAndBodyString(c)
+			if (count > 0)
+				text += " **&&** "
+			count--
+		}
+		
+		return text
+	}
+	
+	/**
+	 * Returns the diagram text for an AndBody in a recursive Constraint definition.
+	 */
+	def String getAndBodyString(ConstraintBody constraintBody) {
+		var text = ""
+		
+		if ((constraintBody instanceof ConstraintReference))
+			text += getConstraintReferenceString(constraintBody)
+		
+		var count = constraintBody.children.size - 1
+		if (constraintBody.children.size > 1)
+			text += " ( "
+		for (c : constraintBody.children) {
+			text += getPrimaryString(c)
+			if (count > 0)
+				text += " **||** "
+			count--
+		}
+		if (constraintBody.children.size > 1)
+			text += " ) "
+		
+		return text
+	}
+	
+	/**
+	 * Returns the diagram text for a Primary in a recursive Constraint definition.
+	 */
+	def String getPrimaryString(ConstraintBody constraintBody) {
+		var text = ""
+		
+		if (constraintBody.children.get(0) instanceof ConstraintReference) {
+			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
+		}
+		else {
+			text += " ( "
+			text += getOrBodyString(constraintBody)
+			text += " ) "
+		}
+		
+		return text
+	}
+	
+	/**
+	 * Returns the diagram text for an AtomicConstraint.
+	 */
+	def String getAtomicConstraintString(ConstraintBody constraintBody) {
+		if (constraintBody instanceof NegativeConstraint)
+			return '''**forbid** «(constraintBody as NegativeConstraint).pattern.name»'''
+		else if (constraintBody instanceof PositiveConstraint)
+			return '''**enforce** «(constraintBody as PositiveConstraint).pattern.name»'''
+		else if (constraintBody instanceof Implication)
+			return '''**if** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
+	}
+	
+	
+	/*-------------------------------------------------*/
+	/*---------------- Triple Rules -------------------*/
+	/*-------------------------------------------------*/
+	
+	/**
+	 * Returns the diagram text for a TripleRule.
+	 */
+	def dispatch String visualiseEntity(TripleRule entity) {
+		'''
+			together {
+				«FOR snb : entity.srcNodeBlocks»
+					«visualiseTripleRuleNodeBlocks(entity, snb, "SRC")»
+				«ENDFOR»
+				
+				«FOR tnb : entity.trgNodeBlocks»
+					«visualiseTripleRuleNodeBlocks(entity, tnb, "TRG")»
+				«ENDFOR»
+
+				«FOR corr : entity.correspondences»
+					"«entity.name».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«entity.name».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
+				«ENDFOR»
+			}
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for the NodeBlocks of a TripleRule.
+	 */
+	def String visualiseTripleRuleNodeBlocks(TripleRule entity, ModelNodeBlock nb, String type) {
+		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
+			«FOR link : nb.relations»
+				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.target.name»:«link.target.type.name»":"«IF link.type.name !== null»«link.type.name»«ELSE»?«ENDIF»"
+			«ENDFOR»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for a NodeBlock in a TripleRule.
+	 */
 	def String visualiseNodeBlockInTripleRule(TripleRule rule, ModelNodeBlock nb, boolean mainSelection) {
 		'''
 			class «labelForTripleRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
@@ -621,20 +710,121 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDFOR»
 		'''
+	}	
+	
+	/**
+	 * Returns the diagram text for the name of an object in a TripleRule.
+	 */
+	private def labelForTripleRuleComponent(ModelNodeBlock nb) {
+		val entity = nb.eContainer as TripleRule
+		'''"«entity.name».«nb.name» : «IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
 	}
 	
+	/**
+	 * Returns the diagram text for all SuperTypes of a TripleRule with inheritance arrows.
+	 */
+	def String visualiseSuperTypesInTripleRule(TripleRule entity) {
+		'''
+			«FOR st : entity.superRefinementTypes»
+				«IF (st instanceof Pattern)»
+					"TripleRule: «entity.name»"--|>"Pattern: «st.body.name»"
+				«ENDIF»
+				«IF (st instanceof Rule)»
+					"TripleRule: "«entity.name»"--|>"Rule: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Model)»
+					"TripleRule: «entity.name»"--|>"Model: «st.name»"
+				«ENDIF»
+				«IF (st instanceof Metamodel)»
+					"TripleRule: «entity.name»"--|>"Metamodel: «st.name»"
+				«ENDIF»
+				«IF (st instanceof TripleRule)»
+					"TripleRule: «entity.name»"--|>"TripleRule: «st.name»"
+				«ENDIF»
+				««« Maybe add more types
+			«ENDFOR»
+		'''
+	}
+	
+	
+	/**
+	 * Returns the diagram text for a TripleGrammar.
+	 */
+	def dispatch String visualiseEntity(TripleGrammar entity) {
+		'''
+			together Source {
+				«FOR mm : entity.srcMetamodels»
+					class "«entity.name».«mm.name»"
+				«ENDFOR»
+			}
+			
+			together Target {
+				«FOR mm : entity.trgMetamodels»
+					class "«entity.name».«mm.name»"
+				«ENDFOR»
+			}
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for the Metamodels in the source and target parts of a TripleGrammar.
+	 */
 	def String visualiseMetamodelsOfTripleGrammar(TripleGrammar tg, boolean mainSelection) {
-		
-	}
-	
-	def String visualiseRulesOfGraphGrammar(GraphGrammar gg, boolean mainSelection) {
 		// TODO [Maximilian]
 	}
 	
-	def visualiseMultiplicity(MetamodelRelationStatement link) {
-		'''"«link.lower»«IF link.upper !== null»..«link.upper»«ENDIF»"'''
+	
+	/*----------------------------------*/
+	/*--------- Get NodeBlocks ---------*/
+	/*----------------------------------*/
+	
+	/**
+	 * Returns all NodeBlocks of a Model.
+	 */
+	def dispatch getNodeBlocks(Model entity) {
+		entity.nodeBlocks
+	}
+	
+	/**
+	 * Returns all NodeBlocks of a Pattern.
+	 */
+	def dispatch getNodeBlocks(Pattern entity) {
+		entity.body.nodeBlocks
+	}
+	
+	/**
+	 * Returns all NodeBlocks of a Rule.
+	 */
+	def dispatch getNodeBlocks(Rule entity) {
+		entity.nodeBlocks
+	}
+	
+	/**
+	 * Returns all NodeBlocks of a TripleRule.
+	 */
+	def dispatch getNodeBlocks(TripleRule entity) {
+		val nodeBlocks = entity.srcNodeBlocks
+		nodeBlocks.addAll(entity.trgNodeBlocks)
+		return nodeBlocks
+	}
+	
+	
+	/*------------------------------*/
+	/*------------ Misc ------------*/
+	/*------------------------------*/
+
+	/**
+	 * Returns the diagram text for a link to the given entity to make it clickable.
+	 */
+	private static def link(Entity pattern) {
+		val resource = pattern.eResource
+		val uri = resource.URI + '#' + resource.getURIFragment(pattern)
+		'''[[«uri»]]'''
 	}
 
+	/**
+	 * Returns the ModelNodeBlock that is currently selected in the editor.
+	 */
 	def Optional<ModelNodeBlock> determineSelectedNodeBlock(ISelection selection, Entity entity) {
 		if (selection instanceof TextSelection) {
 			// For the TextSelection documents start with line 0.
@@ -652,6 +842,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		Optional.empty()
 	}
 	
+	/**
+	 * Returns the MetamodelNodeBlock that is currently selected in the editor.
+	 */
 	def Optional<MetamodelNodeBlock> determineSelectedMetamodelNodeBlock(ISelection selection, Entity entity) {
 		if (selection instanceof TextSelection) {
 			// For the TextSelection documents start with line 0.
@@ -668,31 +861,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 		Optional.empty()
 	}
-
-	def dispatch getNodeBlocks(Model entity) {
-		entity.nodeBlocks
-	}
 	
-	def dispatch getNodeBlocks(Pattern entity) {
-		entity.body.nodeBlocks
-	}
-	
-	def dispatch getNodeBlocks(Rule entity) {
-		entity.nodeBlocks
-	}
-	
-	def dispatch getNodeBlocks(TripleRule entity) {
-		val nodeBlocks = entity.srcNodeBlocks
-		nodeBlocks.addAll(entity.trgNodeBlocks)
-		return nodeBlocks
-	}
-	
-	private static def link(Entity pattern) {
-		val resource = pattern.eResource
-		val uri = resource.URI + '#' + resource.getURIFragment(pattern)
-		'''[[«uri»]]'''
-	}
-	
+	/**
+	 * Returns the Entity that is currently selected in the editor.
+	 */
 	def Optional<Entity> determineSelectedEntity(ISelection selection, EMSL_Spec root) {
 		if (selection instanceof TextSelection) {
 			// For the TextSelection documents start with line 0.
