@@ -16,7 +16,7 @@ metamodel SokobanLanguage {
 			.row : EInt
 			.col : EInt
 		}
-		-selectedFigure(0..12)-> Figure
+		-selectedFigure(0..1)-> Figure
 	}
 	
 	Field {
