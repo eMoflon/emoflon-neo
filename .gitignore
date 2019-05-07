@@ -22,3 +22,10 @@
 hs_err_pid*
 examples/.DS_Store
 .DS_Store
+examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Metamodels_NeoCore.java
+examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Metamodels_SokobanLanguage.java
+examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Models_SokobanBasis.java
+examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Models_SokobanSimple.java
+examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Models_SokobanSimpleTestField.java
+examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Rules_SokobanPatternsRulesConstraints.java
+examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Rules_SokobanTGGs.java

@@ -549,8 +549,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 			labels.addAll(computeLabelsFromType(st));
 		}
 
-		logger.debug("Computed labels: " + labels);
-
 		return Lists.newArrayList(labels);
 	}
 
