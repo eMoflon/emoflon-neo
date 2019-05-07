@@ -26,3 +26,4 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.emf;bundle-version="1.0.0"
 Automatic-Module-Name: SokobanLanguage
+Export-Package: org.emoflon.neo.api

@@ -16,15 +16,13 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
+import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
+import org.emoflon.neo.emsl.util.EMSUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 @SuppressWarnings("restriction")
 public class ExportEntityToNeo4J extends AbstractHandler {
-
-	private static String uri = "bolt://localhost:11002";
-	private static String userName = "neo4j";
-	private static String password = "test";
 	private Optional<EObjectNode> eobNode = Optional.empty();
 	private NeoCoreBuilder builder;
 
@@ -36,6 +34,10 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		ENeoConsole.setActivePage(activePage);
 
 		logger.info("Trying to connect to your Neo4j database...");
+
+		String uri = EmslActivator.getInstance().getPreferenceStore().getString(EMSUtil.P_URI);
+		String userName = EmslActivator.getInstance().getPreferenceStore().getString(EMSUtil.P_USER);
+		String password = EmslActivator.getInstance().getPreferenceStore().getString(EMSUtil.P_PASSWORD);
 
 		logger.info("Connection URI: " + uri);
 		logger.info("User: " + userName);

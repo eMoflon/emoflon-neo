@@ -12,6 +12,10 @@ import com.google.inject.Injector;
 
 public class EMSUtil {
 
+	public static final String P_URI = "ConnectionURIPreference";
+	public static final String P_USER = "UserPreference";
+	public static final String P_PASSWORD = "PasswordPreference";
+
 	public static EMSL_Spec loadSpecification(String modelURI, String platformURIRoot) {
 		EMSLPackageImpl.init();
 		new org.eclipse.emf.mwe.utils.StandaloneSetup().setPlatformUri(platformURIRoot);

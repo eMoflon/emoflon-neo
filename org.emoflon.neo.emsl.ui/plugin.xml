@@ -96,7 +96,7 @@
 		<page
 			class="org.emoflon.neo.emsl.ui.EMSLExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
 			id="org.emoflon.neo.emsl.EMSL"
-			name="EMSL">
+			name="eMoflon::Neo">
 			<keywordReference id="org.emoflon.neo.emsl.ui.keyword_EMSL"/>
 		</page>
 		<page
@@ -113,6 +113,12 @@
 			name="Templates">
 			<keywordReference id="org.emoflon.neo.emsl.ui.keyword_EMSL"/>
 		</page>
+  <page
+        category="org.emoflon.neo.emsl.EMSL"
+        class="org.emoflon.neo.emsl.ui.preferences.Neo4JPreferencePage"
+        id="org.emoflon.neo.emsl.EMSL.neo4j"
+        name="Neo4J Preferences">
+  </page>
 	</extension>
 	<extension
 			point="org.eclipse.ui.propertyPages">
@@ -485,5 +491,11 @@
     <linkOpener
           linkOpenerClass="org.emoflon.neo.emsl.ui.visualisation.PlatformFragmentLinkOpener">
     </linkOpener>
+ </extension>
+ <extension
+       point="org.eclipse.core.runtime.preferences">
+    <initializer
+          class="org.emoflon.neo.emsl.ui.preferences.PreferenceInitializer">
+    </initializer>
  </extension>
 </plugin>

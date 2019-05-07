@@ -22,7 +22,8 @@ Require-Bundle: org.emoflon.neo.emsl,
  org.eclipse.ui.console;bundle-version="3.8.300",
  org.emoflon.neo.neo4j.adapter,
  net.sourceforge.plantuml.eclipse,
- org.apache.log4j
+ org.apache.log4j,
+ org.eclipse.core.runtime
 Import-Package: org.apache.log4j
 Export-Package: org.emoflon.neo.emsl.ui.quickfix,
  org.emoflon.neo.emsl.ui.internal,

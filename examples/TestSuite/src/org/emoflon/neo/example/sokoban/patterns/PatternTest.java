@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.util.EMSUtil;
@@ -24,7 +25,7 @@ public class PatternTest {
 
 	private static Scanner reader;
 	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
-	private static NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:7687", "neo4j", "test");
+	private static NeoCoreBuilder builder = API_Common.createBuilder();
 	private static Driver driver = builder.getDriver();
 
 	// Select model
@@ -51,7 +52,7 @@ public class PatternTest {
 				String input = reader.next();
 
 				if (input.toLowerCase().equals("n")) {
-					logger.info("Tests have been cancled. No changes in the database executed.");
+					logger.info("Tests have been canceled. No changes in the database executed.");
 					closeDBConnection();
 					fail();
 				} else {
