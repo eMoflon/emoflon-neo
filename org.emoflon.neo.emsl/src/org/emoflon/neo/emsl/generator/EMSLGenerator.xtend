@@ -71,7 +71,7 @@ class EMSLGenerator extends AbstractGenerator {
 
 	dispatch def generateAccess(Pattern p, int index) {
 		'''
-			public NeoPattern getPattern«p.body.name.toFirstUpper»(){
+			public NeoPattern getPattern_«p.body.name.toFirstUpper»(){
 				var p = (Pattern) spec.getEntities().get(«index»);
 				return new NeoPattern(p, builder);
 			}
@@ -80,7 +80,7 @@ class EMSLGenerator extends AbstractGenerator {
 
 	dispatch def generateAccess(Model m, int index) {
 		'''
-			public Model getModel«m.name.toFirstUpper»(){
+			public Model getModel_«m.name.toFirstUpper»(){
 				return (Model) spec.getEntities().get(«index»);
 			}
 		'''
