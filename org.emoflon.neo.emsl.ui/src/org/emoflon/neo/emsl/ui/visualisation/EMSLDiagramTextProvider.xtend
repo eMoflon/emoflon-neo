@@ -354,7 +354,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nb.type.name === null)
 				nb.type.name = "?"
 				
-			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
+			'''"«entity.name».«nb.name»:«nb.type.name»"'''	
 		}
 		else
 			'''"?"'''
@@ -399,10 +399,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInRule(nb, false)»
 			«ENDFOR»
+			«IF entity.condition !== null»
 			legend bottom
 				«getConditionString(entity)»
 			endlegend
 			«visualiseCondition(entity)»
+			«ENDIF»
 		'''
 	}
 	
@@ -449,7 +451,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nb.type.name === null)
 				nb.type.name = "?"
 				
-			'''"«entity.name».«nb.name» : «nb.type.name»"'''	
+			'''"«entity.name».«nb.name»:«nb.type.name»"'''	
 		}
 		else
 			'''"?"'''
@@ -721,7 +723,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForTripleRuleComponent(ModelNodeBlock nb) {
 		val entity = nb.eContainer as TripleRule
-		'''"«entity.name».«nb.name» : «IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
+		'''"«entity.name».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
 	}
 	
 	/**
