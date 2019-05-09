@@ -69,7 +69,7 @@ public class PatternTest {
 	
 	@AfterEach
 	private void clearDB() {
-		//driver.session().run("MATCH (n) DETACH DELETE n");
+		driver.session().run("MATCH (n) DETACH DELETE n");
 		logger.info("Database cleared.");
 	}
 

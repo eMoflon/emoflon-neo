@@ -70,7 +70,7 @@ public class NeoPattern implements IPattern {
 		matchnode.addProperty("uuid", uuid);
 
 		for (NeoNode node : nodes) {
-			relations.add(new NeoRelation("matches", "\"" + node.getVarName() + "\"", matchnode, node.getClassType(),
+			relations.add(new NeoRelation("matches_" + node.getVarName(), matchnode, node.getClassType(),
 					node.getVarName()));
 		}
 

@@ -29,7 +29,7 @@ public class NeoRelation {
 		props.forEach(prop -> addProperty(prop.getType().getName(), prop.getValue()));
 	}
 
-	public NeoRelation(String relType, String varName, NeoNode fromNode, String toNode, String toVarName) {
+	public NeoRelation(String relType, NeoNode fromNode, String toNode, String toVarName) {
 
 		this.propteries = new ArrayList<>();
 
@@ -38,8 +38,6 @@ public class NeoRelation {
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.toVarName = toVarName;
-
-		addProperty("name", varName);
 	}
 
 	public String getRelType() {
