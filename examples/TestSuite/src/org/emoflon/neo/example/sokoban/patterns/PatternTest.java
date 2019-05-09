@@ -8,9 +8,9 @@ import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.API_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Rules_SokobanPatternsRulesConstraints;
-import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
-import org.emoflon.neo.emsl.util.EMSUtil;
+import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.example.sokoban.scalability.ScalabilityTest;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
@@ -28,11 +28,7 @@ public class PatternTest {
 	private static Driver driver = builder.getDriver();
 	
 	private API_Rules_SokobanPatternsRulesConstraints rules = new API_Rules_SokobanPatternsRulesConstraints(builder);
-
-	// Select model
-	private EMSL_Spec model = EMSUtil.loadSpecification(//
-			"platform:/resource/SokobanLanguage/models/SokobanSimpleTestField.msl", //
-			"../");
+	private Model model = (new API_Models_SokobanSimpleTestField(builder)).getModel_SokobanSimpleTestField();
 
 	@BeforeAll
 	private static void startDBConnection() throws Exception {
@@ -307,17 +303,17 @@ public class PatternTest {
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		NeoPattern p = rules.getPattern_All3x3Fields();
 		var matches = p.getMatches();
-		var matchesCount = 1;
+		var matchesCount = 0;
 		
 		// removing all right and bottom edges of endPos fields
-		driver.session().run("MATCH (f:Field {endPos: true})-[r:right]->(g:Field) DETACH DELETE r");
-		driver.session().run("MATCH (f:Field {endPos: true})-[b:bottom]->(g:Field) DETACH DELETE b");
+		driver.session().run("MATCH (f:Field {endPos: true, name: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
 		
 		for (IMatch m : matches) {
-			if (m.isStillValid())
+			if (m.isStillValid()) {
 				matchesCount++;
+			}
 		}
-		assertThat(matchesCount, is(matches.size() - 1));
+		assertThat(matchesCount, is(matches.size()-2));
 	}
 
 }
