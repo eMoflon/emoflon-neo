@@ -34,7 +34,9 @@ public class PatternTest {
 	private static void startDBConnection() throws Exception {
 		logger.info("Database Connection established.");
 		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
-
+		
+		//create Index on Matching Nodes
+		
 		if (result.hasNext()) {
 
 			if (result.next().get(0).asInt() > 0) {
@@ -64,6 +66,7 @@ public class PatternTest {
 	@BeforeEach
 	private void initDB() {
 		builder.exportEMSLEntityToNeo4j(model);
+		driver.session().run("CREATE INDEX ON :Match(uuid)");
 		logger.info("-----------------------------\n" + "Database initialised.");
 	}
 	
@@ -290,7 +293,7 @@ public class PatternTest {
 	public void test_All3x3Fields_StillValid() {
 		NeoPattern p = rules.getPattern_All3x3Fields();
 		var matches = p.getMatches();
-		var matchesCount = 4;
+		var matchesCount = 0;
 
 		for (IMatch m : matches) {
 			if (m.isStillValid())
@@ -314,6 +317,13 @@ public class PatternTest {
 			}
 		}
 		assertThat(matchesCount, is(matches.size()-2));
+	}
+	
+	// Only for test purposes
+	@Test
+	public void test_empty() {
+		
+		assertThat(0, is(0));
 	}
 
 }
