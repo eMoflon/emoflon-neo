@@ -45,7 +45,7 @@ PropertyValue:
 /*-------------------------------------------------*/
 Metamodel:
 	'metamodel' name=QualifiedName 
-	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
+	('->' (superRefinementTypes+=MetamodelRefinementCommand (',' superRefinementTypes+=MetamodelRefinementCommand)*))?
 	'{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}';
 
 MetamodelNodeBlock:
@@ -225,7 +225,10 @@ enum LibraryAttributeCondition:
 /*------------------- Common ----------------------*/
 /*-------------------------------------------------*/
 RefinementCommand:
-	referencedType=[SuperType|QualifiedName] (relabling='[' /* TODO [Maximilian]: fill relabeling brackets */ ']')?;
+	referencedType=[SuperType|QualifiedName] (relabling='[' oldLabel=[ModelNodeBlock|QualifiedName] '->' newLabel=[ModelNodeBlock|QualifiedName] ']')?;
+
+MetamodelRefinementCommand:
+	referencedType=[SuperType|QualifiedName] (relabling='[' oldLabel=[MetamodelNodeBlock|QualifiedName] '->' newLabel=[MetamodelNodeBlock|QualifiedName] ']')?;
 
 SuperType:
 	Metamodel | Model | AtomicPattern | Rule | TripleRule;

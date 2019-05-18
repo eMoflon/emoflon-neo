@@ -31,6 +31,7 @@ import org.emoflon.neo.emsl.eMSL.Implication
 import org.emoflon.neo.emsl.eMSL.ConstraintReference
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.eMSL.SourceNAC
+import org.emoflon.neo.emsl.EMSLFlattener
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -301,6 +302,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Pattern.
 	 */
 	def dispatch String visualiseEntity(Pattern entity) {
+		new EMSLFlattener().flattenPattern(entity.body, newArrayList)
 		'''
 			«FOR nb : entity.body.nodeBlocks»
 				«visualiseNodeBlockInPattern(nb, false)»
@@ -857,7 +859,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel || entity instanceof org.emoflon.neo.emsl.eMSL.Enum || entity instanceof Constraint))
 			for (nodeBlock : entity.nodeBlocks) {
 				val object = NodeModelUtils.getNode(nodeBlock);
-				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
+				if (object !== null && selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
 					return Optional.of(nodeBlock)
 				}
 			}

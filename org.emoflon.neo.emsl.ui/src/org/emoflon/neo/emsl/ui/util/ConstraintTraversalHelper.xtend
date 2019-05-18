@@ -21,18 +21,18 @@ class ConstraintTraversalHelper {
 	
 	def getConditionString(Entity entity) {
 		if (entity instanceof Rule) {
-			// return the String for simple Constraints
+			
 			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
 				getSimpleConstraintString(entity.condition as ConstraintBody)
-			// return the String for ConstraintReference
+			
 			if (entity.condition instanceof ConstraintReference)
 				getConstraintReferenceString((entity.condition as ConstraintReference))
 		}
 		else if (entity instanceof Pattern) {
-			// return the String for simple Constraints
+			
 			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
 				getSimpleConstraintString(entity.condition as ConstraintBody)
-			// return the String for ConstraintReference
+			
 			if (entity.condition instanceof ConstraintReference)
 				getConstraintReferenceString((entity.condition as ConstraintReference))
 		}
