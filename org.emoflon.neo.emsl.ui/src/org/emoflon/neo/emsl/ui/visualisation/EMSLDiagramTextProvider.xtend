@@ -415,10 +415,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInRule(ModelNodeBlock nb, boolean mainSelection) {
 		'''
-			class «labelForRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			class «labelForRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target)» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
+					«labelForRuleComponent(nb)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target)» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
 				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.target)» : «IF (link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
 				«ENDIF»
 			«ENDFOR»
@@ -933,6 +933,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			skinparam class {
 				BorderColor Black
 				BorderColor<<GREEN>> SpringGreen
+				BorderColor<<RED>> Red
 				BackgroundColor White
 				ArrowColor Black
 				BackgroundColor<<Selection>> PapayaWhip
