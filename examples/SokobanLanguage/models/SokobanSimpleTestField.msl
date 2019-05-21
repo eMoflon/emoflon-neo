@@ -92,7 +92,7 @@ model SokobanSimpleTestField {
 			.col : 3
 		}
 		
-		-selectedFigure-> f00
+		-selectedFigure-> sok
 	}
 	
 	f00 : Field {

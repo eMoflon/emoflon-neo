@@ -60,13 +60,17 @@ public class PatternTest {
 		} else {
 			logger.info("Database empty.");
 		}
+		
+		//driver.session().run("DROP CONSTRAINT ON (m:Match) ASSERT m.uuid IS UNIQUE");
+		//driver.session().run("CREATE INDEX ON :Match(uuid)");
+		//driver.session().run("DROP INDEX ON :Match(uuid)");
+		//driver.session().run("CREATE CONSTRAINT ON (m:Match) ASSERT m.uuid IS UNIQUE");
 
 	}
 
 	@BeforeEach
 	private void initDB() {
 		builder.exportEMSLEntityToNeo4j(model);
-		driver.session().run("CREATE INDEX ON :Match(uuid)");
 		logger.info("-----------------------------\n" + "Database initialised.");
 	}
 	
@@ -87,6 +91,13 @@ public class PatternTest {
 		NeoPattern p = rules.getPattern_OneSokoban();
 		var matches = p.getMatches();
 		assertThat(matches.size(), is(1));
+	}
+	
+	@Test
+	public void test_TwoSokoban() {
+		NeoPattern p = rules.getPattern_TwoSokoban();
+		var matches = p.getMatches();
+		assertThat(matches.size(), is(0));
 	}
 
 	@Test
