@@ -1,0 +1,41 @@
+metamodel SheRememberedCaterpillars {
+	Character {
+		.colour : COLOUR
+		
+		-on(0..1)->Platform
+	}
+	
+	Platform
+	
+	Bridge {
+		.colour : COLOUR
+		
+		-from(1..1)->Platform
+		-to(1..1)->Platform
+ 	}
+	
+	enum COLOUR {
+		RED
+		BLUE
+		PURPLE
+	}
+}
+
+model SimpleGame {
+	a:Character {
+		.colour : BLUE
+		
+		-on->p1
+	}
+	
+	b:Bridge {
+		.colour : RED
+		
+		-from->p1
+		-to->p2
+	}
+	
+	p1:Platform
+	p2:Platform
+}
+
