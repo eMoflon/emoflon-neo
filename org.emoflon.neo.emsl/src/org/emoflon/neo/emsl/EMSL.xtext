@@ -225,10 +225,16 @@ enum LibraryAttributeCondition:
 /*------------------- Common ----------------------*/
 /*-------------------------------------------------*/
 RefinementCommand:
-	referencedType=[SuperType|QualifiedName] (relabling='[' oldLabel=[ModelNodeBlock|QualifiedName] '->' newLabel=[ModelNodeBlock|QualifiedName] ']')?;
+	referencedType=[SuperType|QualifiedName] ('[' relabeling+=ModelRelabelingCommand (',' relabeling+=ModelRelabelingCommand)* ']')?;
 
 MetamodelRefinementCommand:
-	referencedType=[SuperType|QualifiedName] (relabling='[' oldLabel=[MetamodelNodeBlock|QualifiedName] '->' newLabel=[MetamodelNodeBlock|QualifiedName] ']')?;
+	referencedType=[SuperType|QualifiedName] ('[' relabeling+=MetamodelRelabelingCommand (',' relabeling+=MetamodelRelabelingCommand)* ']')?;
+
+ModelRelabelingCommand returns RelabelingCommand:
+	oldLabel=[ModelNodeBlock|QualifiedName] '->' newLabel=ID;
+	
+MetamodelRelabelingCommand returns RelabelingCommand:
+	oldLabel=[MetamodelNodeBlock|QualifiedName] '->' newLabel=ID;
 
 SuperType:
 	Metamodel | Model | AtomicPattern | Rule | TripleRule;
