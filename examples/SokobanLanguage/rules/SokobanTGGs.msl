@@ -87,7 +87,7 @@ abstract tripleRule NormalRule:SokobanImportExport {
 abstract tripleRule AllOtherFields:SokobanImportExport {
 	source {
 		ble: sokobanExchangeFormat.Entry {
-			++ -Entry.next->ne
+			++ -next->ne
 		}
 		
 		++ ne: sokobanExchangeFormat.Entry
@@ -172,7 +172,7 @@ tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {
 	source {
 		r: sokobanExchangeFormat.Row {
 			-firstEntry->e
-			++ -Row.next->nr
+			++ -next->nr
 		}
 		
 		++ nr:sokobanExchangeFormat.Row {
