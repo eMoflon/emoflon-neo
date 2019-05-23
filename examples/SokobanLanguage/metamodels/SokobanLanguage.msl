@@ -1,8 +1,3 @@
-//import "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
-
-// Using this import instead so ScalabilityTest.java works
-import "platform:/resource/SokobanLanguage/metamodels/NeoCore.msl"
-
 metamodel SokobanLanguage {
 	Boulder : Figure
 	

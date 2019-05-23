@@ -278,7 +278,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForClass(nb)» : «attr.name» : «IF (attr.type instanceof UserDefinedType)»«((attr.type as UserDefinedType).reference.eContainer as org.emoflon.neo.emsl.eMSL.Enum).name».«(attr.type as UserDefinedType).reference.name»«ELSE»«(attr.type as BuiltInType).reference.toString»«ENDIF»
+				«labelForClass(nb)» : «attr.name» : «IF (attr.type instanceof UserDefinedType)»«((attr.type as UserDefinedType).reference as org.emoflon.neo.emsl.eMSL.Enum).name».«(attr.type as UserDefinedType).reference.name»«ELSE»«(attr.type as BuiltInType).reference.toString»«ENDIF»
 			«ENDFOR»
 		'''
 	}

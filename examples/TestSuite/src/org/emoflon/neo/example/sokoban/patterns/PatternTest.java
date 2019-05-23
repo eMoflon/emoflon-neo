@@ -39,7 +39,7 @@ public class PatternTest {
 			"../");
 
 	@BeforeAll
-	private static void startDBConnection() throws Exception {
+	public static void startDBConnection() throws Exception {
 		logger.info("Database Connection established.");
 		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
 
@@ -66,17 +66,16 @@ public class PatternTest {
 		} else {
 			logger.info("Database empty.");
 		}
-
 	}
 
 	@BeforeEach
-	private void initDB() {
+	public void initDB() {
 		builder.exportEMSLEntityToNeo4j(model);
 		logger.info("-----------------------------\n" + "Database initialised.");
 	}
 	
 	@AfterEach
-	private void clearDB() {
+	public void clearDB() {
 		driver.session().run("MATCH (n) DETACH DELETE n");
 		logger.info("Database cleared.");
 	}

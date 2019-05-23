@@ -86,7 +86,7 @@ BuiltInType:
 	reference=BuiltInDataTypes;
 
 UserDefinedType:
-	reference=[EnumLiteral|QualifiedName];
+	reference=[Enum|QualifiedName];
 
 enum BuiltInDataTypes:
 	EBOOLEAN='EBoolean'

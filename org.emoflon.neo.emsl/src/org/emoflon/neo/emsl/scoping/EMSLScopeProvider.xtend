@@ -30,6 +30,8 @@ import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import java.util.ArrayList
+import java.util.List
 
 /**
  * This class contains custom scoping description.
@@ -48,10 +50,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			else if (isInRule(context as ModelNodeBlock))
 				return handleNodeBlockTypesInRule(context as ModelNodeBlock, reference)
 		}
-		
+
 		if (valueOfRelationStatementInModel(context, reference))
 			return handleValueOfRelationStatementInModel(context as ModelRelationStatement, reference)
-			
+
 		if (valueOfRelationStatementInMetamodel(context, reference))
 			return handleValueOfRelationStatementInMetamodel(context as MetamodelRelationStatement, reference)
 
@@ -61,17 +63,16 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (valueOfRelationStatementInPattern(context, reference))
 			return handleValueOfRelationStatementInPattern(context as ModelRelationStatement, reference)
 
-		if (valueOfRelationStatementInTripleRule(context, reference)) {
+		if (valueOfRelationStatementInTripleRule(context, reference))
 			return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
-		}
 
-		if (nameOfRelationStatement(context, reference)) {
-			return handleNameOfRelationStatement(context as ModelRelationStatement, reference)
-		}
+		if (typeOfRelationStatement(context, reference))
+			return handleTypeOfRelationStatementInModelNodeBlock(context as ModelRelationStatement,
+				context.eContainer as ModelNodeBlock)
 
-		if (nameOfPropertyStatement(context, reference)) {
-			return handleNameOfPropertyStatement(context as ModelPropertyStatement, reference)
-		}
+		if (typeOfPropertyStatementInModelNodeBlock(context, reference))
+			return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement,
+				context.eContainer as ModelNodeBlock)
 
 		if (nameOfPropertyStatementInRelationStatement(context, reference))
 			return handleNameOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
@@ -81,39 +82,33 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		return super.getScope(context, reference)
 	}
-	
+
 	/**
 	 * Returns whether to build a scope for the Type of a ModelNodeBlock.
 	 */
 	def typeOfNodeBlock(EObject context, EReference reference) {
 		context instanceof ModelNodeBlock && reference == EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE
 	}
-	
 
 	/*----------------------------------------*/
 	/*----------- PropertyStatement ----------*/
 	/*----------------------------------------*/
-
 	/**
 	 * Returns whether to build a scope for the name of a PropertyStatement.
 	 */
-	def nameOfPropertyStatement(EObject context, EReference reference) {
+	def typeOfPropertyStatementInModelNodeBlock(EObject context, EReference reference) {
 		context instanceof ModelPropertyStatement && reference == EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE &&
 			!(context.eContainer instanceof ModelRelationStatement)
 	}
 
 	/**
-	 * Returns the scope for the name of a PropertyStatement.
+	 * Returns the scope for the type of a PropertyStatement.
 	 */
-	def handleNameOfPropertyStatement(EObject context, EReference reference) {
-		val root = EcoreUtil2.getRootContainer(context)
-		var nodeBlocks = new HashMap<EObject, String>()
-
-		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
-
+	def handleTypeOfPropertyStatementInModelNodeBlock(ModelPropertyStatement prop, ModelNodeBlock container) {
+		val nodeBlocks = thisAndAllSuperTypes(container.type)
 		val possibilities = new HashMap
-		for (nb : nodeBlocks.keySet) {
-			(nb as MetamodelNodeBlock).properties.forEach[r|possibilities.put(r, null)]
+		for (nb : nodeBlocks) {
+			nb.properties.forEach[r|possibilities.put(r, null)]
 		}
 
 		determineScope(possibilities)
@@ -131,9 +126,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	def handleNameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
-		var nodeBlocks = new HashMap<EObject, String>()
-
-		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
+		val nodeBlocks = allNodeBlocksInAllImportedMetamodels(root)
 
 		val possibilities = new HashMap
 		for (nb : nodeBlocks.keySet) {
@@ -147,33 +140,33 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		determineScope(possibilities)
 	}
 
-
 	/*----------------------------------------*/
 	/*----------- RelationStatement ----------*/
 	/*----------------------------------------*/
-	
 	/**
 	 * Returns whether to build a scope for the name of a RelationStatement.
 	 */
-	def nameOfRelationStatement(EObject context, EReference reference) {
+	def typeOfRelationStatement(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE
 	}
 
 	/**
 	 * Returns the scope for the name of a RelationStatement.
 	 */
-	def handleNameOfRelationStatement(EObject context, EReference reference) {
-		val root = EcoreUtil2.getRootContainer(context)
-		var nodeBlocks = new HashMap<EObject, String>()
-
-		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
-
+	def handleTypeOfRelationStatementInModelNodeBlock(ModelRelationStatement context, ModelNodeBlock container) {
+		val nodeBlocks = thisAndAllSuperTypes(container.type)
 		val possibilities = new HashMap
-		for (nb : nodeBlocks.keySet) {
-			(nb as MetamodelNodeBlock).relations.forEach[r|possibilities.put(r, null)]
-		}
+		for (nb : nodeBlocks)
+			nb.relations.forEach[r|possibilities.put(r, null)]
 
 		determineScope(possibilities)
+	}
+		
+	def List<MetamodelNodeBlock> thisAndAllSuperTypes(MetamodelNodeBlock block) {
+		val blocks = new ArrayList
+		blocks.add(block)
+		block.superTypes.forEach[blocks.addAll(thisAndAllSuperTypes(it))]
+		return blocks
 	}
 
 	/**
@@ -229,7 +222,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		return Scopes.scopeFor(allNodeBlocks)
 	}
-	
+
 	/**
 	 * Returns whether to build a scope for the value of a RelationStatement in a Pattern.
 	 */
@@ -253,7 +246,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		allNodeBlocks.addAll(pattern.body.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
 	}
-		
+
 	/**
 	 * Returns whether to build a scope for the value of a RelationStatement in a Model.
 	 */
@@ -262,7 +255,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof Model
 	}
-	
+
 	/**
 	 * Returns a scope for the value of a RelationStatement in a Model.
 	 */
@@ -277,7 +270,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		allNodeBlocks.addAll(model.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
 	}
-	
+
 	/**
 	 * Returns whether to build a scope for the value of a RelationStatement in a Model.
 	 */
@@ -286,7 +279,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			reference == EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof Metamodel
 	}
-	
+
 	/**
 	 * Returns a scope for the value of a RelationStatement in a Model.
 	 */
@@ -305,7 +298,6 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/*--------------------------------*/
 	/*---------- NodeBlocks ----------*/
 	/*--------------------------------*/
-	
 	/**
 	 * Returns the scope for the SuperTypes of a NodeBlock.
 	 */
@@ -333,7 +325,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val root = EcoreUtil2.getRootContainer(context)
 		determineScope(allNodeBlocksInAllImportedMetamodels(root))
 	}
-	
+
 	/**
 	 * Returns the scope for a NodeBlock in a Pattern.
 	 */
@@ -366,7 +358,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns all objects of the given Type from all imported Metamodels.
 	 */
 	def <T extends EObject> allTypesInAllImportedMetamodels(EObject root, Class<T> type) {
-		val aliases = new HashMap<EObject, String>()
+		val aliases = new HashMap<T, String>()
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
 		for (st : importStatements) {
 			try {
@@ -385,11 +377,9 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		aliases
 	}
 
-
 	/*----------------------------------------*/
 	/*---------- NodeBlock Location ----------*/
 	/*----------------------------------------*/
-	
 	/**
 	 * Returns whether the ModelNodeBlock is part of a Model.
 	 */
@@ -410,7 +400,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def isInRule(ModelNodeBlock context) {
 		context.eContainer instanceof Rule
 	}
-	
+
 	/**
 	 * Returns whether the given context is a MetamodelNodeBlock and therefore part of a Metamodel.
 	 */
@@ -419,18 +409,16 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			context.eContainer instanceof Metamodel
 	}
 
-	
 	/*--------------------------*/
 	/*---------- Misc ----------*/
 	/*--------------------------*/
-	
 	def loadEMSL_Spec(String uri, EObject root) {
 		val rs = root.eResource.resourceSet
 		val resource = rs.getResource(URI.createURI(uri), true)
 		resource.contents.get(0)
 	}
-	
-	def <T extends EObject> determineScope(Map<EObject, String> aliases) {
+
+	def <T extends EObject> determineScope(Map<T, String> aliases) {
 		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
 			aliases.keySet,
 			[ eob |
