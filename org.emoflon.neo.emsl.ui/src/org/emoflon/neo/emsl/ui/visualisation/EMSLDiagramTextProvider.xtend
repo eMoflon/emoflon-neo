@@ -32,6 +32,11 @@ import org.emoflon.neo.emsl.eMSL.ConstraintReference
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.eMSL.SourceNAC
 import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.eMSL.EMSLFactory
+import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.common.util.URI
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -131,6 +136,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					package "Model: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
+					«referenceInstantiatedMetamodel(entity as Model)»
 				«ENDIF»
 				«IF entity instanceof Pattern»
 					package "Pattern: «entity.body.name»" <<Rectangle>> «link(entity as Entity)» {
@@ -213,6 +219,28 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	private def labelForObject(ModelNodeBlock nb) {
 		val entity = nb.eContainer as Model
 		'''"«entity?.name».«nb?.name»:«nb?.type?.name»"'''
+	}
+	
+	/**
+	 * Returns the diagram text for the reference of a Model to the Metamodel it instantiates, i.e. which types the NodeBlocks of the Model use.
+	 */
+	private def referenceInstantiatedMetamodel(Model model) {
+		var root = EcoreUtil2.getRootContainer(model)
+		var allMetamodels = EcoreUtil2.getAllContentsOfType(root, Metamodel)
+		if (!model.nodeBlocks.isEmpty) {
+			'''
+			«FOR nb : model.nodeBlocks»
+				«FOR i : allMetamodels»
+					«IF i.nodeBlocks.contains(nb.type)»
+						"Model: «model.name»" --> "Metamodel: «i.name»"
+						
+					«ENDIF»
+				«ENDFOR»
+			«ENDFOR»'''
+		}
+		else {
+			''''''
+		}
 	}
 	
 	/*-------------------------------------------------*/
@@ -445,16 +473,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForRuleComponent(ModelNodeBlock nb) {
 		val entity = nb?.eContainer as Rule
-		if (entity !== null) {
-			if (entity.name === null)
-				entity.name = "?"
-			if (nb.name === null)
-				nb.name = "?"
-			if (nb.type.name === null)
-				nb.type.name = "?"
-				
-			'''"«entity.name».«nb.name»:«nb.type.name»"'''	
-		}
+		if (entity !== null)
+			'''"«IF entity.name !== null»«entity.name»«ELSE»?«ENDIF».«IF nb.name !== null»«nb.name»«ELSE»?«ENDIF»:«IF nb.type.name !== null»«nb.type.name»«ELSE»?«ENDIF»"'''
 		else
 			'''"?"'''
 	}
