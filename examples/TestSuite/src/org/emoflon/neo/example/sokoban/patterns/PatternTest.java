@@ -12,6 +12,7 @@ import org.emoflon.neo.api.API_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Rules_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
+import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.example.sokoban.scalability.ScalabilityTest;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoPattern;

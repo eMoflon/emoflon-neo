@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
@@ -40,7 +41,7 @@ public class ScalabilityTest {
 
 	public String runTests(int modelSize, int nodes, int edges) throws Exception {
 		String time = "";
-		NeoCoreBuilder builder = new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "test");
+		NeoCoreBuilder builder = API_Common.createBuilder();
 
 		try {
 			EMSL_Spec spec = EMSUtil.loadSpecification(//
