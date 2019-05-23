@@ -6,6 +6,31 @@ pattern oneSokoban {
 	sokoban : Sokoban
 }
 
+pattern oneSokobanSelectedFigureRequired {
+	sokoban : Sokoban
+} when enforce selectedFigureRequired
+
+
+constraint noSokobanAllowed = enforce oneSokoban
+
+pattern noSokoban {} when forbid oneSokoban
+
+pattern sokobanMustBeSelectedFigure {
+	sokoban:Sokoban
+} 
+
+pattern selectedFigureRequired {
+	b:SokobanLanguage.Board {
+		-selectedFigure->sokoban
+	}
+	sokoban:Sokoban
+}
+
+pattern twoSokoban {
+	sok1: Sokoban
+	sok2: Sokoban
+}
+
 pattern oneBlock {
 	block : Block
 }
@@ -14,6 +39,10 @@ pattern oneEndField {
 	field : Field {
 		.endPos : true
 	}
+}
+
+pattern anSelectedFigure {
+	
 }
 
 pattern anOccupiedField {
@@ -165,8 +194,12 @@ pattern block {
 pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 	field: Field {
 		.endPos : false
+		
 	}
-	fig: Block
+	fig: Block {
+		-field->field
+	}
+
 } when noCorner
 
 constraint forbidLeftSide = forbid hasLeft
@@ -232,7 +265,7 @@ abstract rule moveSokoban {
 		-- -field-> from
 		++ -field-> to
 	}
-}
+} when forbid occupiedField
 
 abstract rule pushBlock {
 	to : Field

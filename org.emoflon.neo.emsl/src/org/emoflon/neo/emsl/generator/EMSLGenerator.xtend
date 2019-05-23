@@ -78,12 +78,12 @@ class EMSLGenerator extends AbstractGenerator {
 				private EMSL_Spec spec;
 				private NeoCoreBuilder builder;
 			
-				«apiName»(NeoCoreBuilder builder, String platformURIRoot){
+				public «apiName»(NeoCoreBuilder builder, String platformURIRoot){
 					spec = (EMSL_Spec) EMSUtil.loadSpecification("«uri»", platformURIRoot);
 					this.builder = builder;
 				}
 				
-				«apiName»(NeoCoreBuilder builder){
+				public «apiName»(NeoCoreBuilder builder){
 					this(builder, "../");
 				}
 			
