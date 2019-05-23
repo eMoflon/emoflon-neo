@@ -1,9 +1,9 @@
 package org.emoflon.neo.emsl;
 
-import java.rmi.dgc.Lease;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Optional;
+import java.util.PriorityQueue;
 
 import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
@@ -27,9 +27,9 @@ public class EMSLFlattener {
 	 * @return the flattened pattern.
 	 */
 	public AtomicPattern flattenPattern(AtomicPattern pattern, ArrayList<String> alreadyRefinedPatternNames) {
-		var refinements = pattern.getSuperRefinementTypes();
+		var<RefinementCommand> refinements = pattern.getSuperRefinementTypes();
 		
-		// IDEA: recursively collect all pattern that should be refined
+		// TODO [Maximilian]: find out why NodeBlocks are not deleted if removed from the file; implement their removal; find out why Types are lost (e.g. sokoban:?)
 		
 		// check if anything has to be done, if not return
 		if (refinements.isEmpty())
@@ -38,20 +38,19 @@ public class EMSLFlattener {
 		// IDEA: collect NodeBlocks of the to-be-refined pattern
 		//collectNodes(refinements, alreadyRefinedPatternNames).values().forEach(n -> pattern.getNodeBlocks().addAll(n));
 		
-		var createdNodeBlocks = collectNodes(refinements, alreadyRefinedPatternNames);
+		var<String, ArrayList<ModelNodeBlock>> createdNodeBlocks = collectNodes(refinements, alreadyRefinedPatternNames);
 		
 		pattern.getNodeBlocks().forEach(nb -> {
 			if (createdNodeBlocks.keySet().contains(nb.getName())) {
 				createdNodeBlocks.get(nb.getName()).add(nb);
 			}
 			else {
-				var foo = new ArrayList<ModelNodeBlock>();
+				var<ModelNodeBlock> foo = new ArrayList<ModelNodeBlock>();
 				foo.add(nb);
 				createdNodeBlocks.put(nb.getName(), foo);
 			}
 		});
-		
-		//pattern.getNodeBlocks().clear();
+
 		var mergedNodes = mergeAllNodes(createdNodeBlocks);
 		pattern.getNodeBlocks().clear();
 		pattern.getNodeBlocks().addAll((mergedNodes));
@@ -69,7 +68,7 @@ public class EMSLFlattener {
 	 * @return HashMap of NodeBlocks mapped to their name that have to be added to the refining Pattern.
 	 */
 	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedPatternNames) {
-		var nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
+		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 		
 		for (var r : refinementList) {			
 			if (r.getReferencedType() instanceof AtomicPattern) {				
@@ -78,7 +77,7 @@ public class EMSLFlattener {
 					throw new RuntimeException();
 				}
 				else {
-					var alreadyRefined = alreadyRefinedPatternNames;
+					var<String> alreadyRefined = alreadyRefinedPatternNames;
 					alreadyRefined.add(((AtomicPattern) r.getReferencedType()).getName());
 					for (var nb : ((AtomicPattern) r.getReferencedType()).getNodeBlocks()) {
 						
@@ -87,7 +86,7 @@ public class EMSLFlattener {
 						
 						// add nodeBlock to list according to its name
 						if (!nodeBlocks.containsKey(newNb.getName())) {
-							var newList = new ArrayList<ModelNodeBlock>();
+							var<ModelNodeBlock> newList = new ArrayList<ModelNodeBlock>();
 							newList.add(newNb);
 							nodeBlocks.put(newNb.getName(), newList);
 						}
@@ -122,7 +121,7 @@ public class EMSLFlattener {
 	 * @return List of RelationStatements that appear in the NodeBlocks of the Pattern listed in the RefinementCommands.
 	 */
 	private ArrayList<ModelRelationStatement> collectEdges(EList<RefinementCommand> refinementList) {
-		var relationStatements = new ArrayList<ModelRelationStatement>();
+		var<ModelRelationStatement> relationStatements = new ArrayList<ModelRelationStatement>();
 		
 		// get edges, maybe call this function from the collectNodes to connect there already instead of later;
 		// might contradict the idea to first collect everything and the construct the union
@@ -130,8 +129,15 @@ public class EMSLFlattener {
 		return relationStatements;
 	}
 	
+	/**
+	 * This method takes a HashMap of lists of NodeBlocks mapped to the names of the contained NodeBlocks.
+	 * All of those NodeBlocks with the same name (mapping) are then merged into one that is added to the model. During
+	 * the merging the least common subtype of all NodeBlocks with the same name is searched for.
+	 * @param nodeBlocks HashMap of Lists of ModelNodeBlocks that are mapped to the names of the NodeBlocks contained in such a list.
+	 * @return ArrayList of ModelNodeBlocks that only contains the ModelNodeBlocks that were created during merging.
+	 */
 	private ArrayList<ModelNodeBlock> mergeAllNodes(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) {
-		var mergedNodes = new ArrayList<ModelNodeBlock>();
+		var<ModelNodeBlock> mergedNodes = new ArrayList<ModelNodeBlock>();
 		
 		// take all nodeBlocks with the same name/key out of the HashMap and merge
 		for (var name : nodeBlocks.keySet()) {
@@ -140,60 +146,32 @@ public class EMSLFlattener {
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 			mergedNodes.add(newNb);
 			newNb.setName(name);
-				
+			
+			Comparator<MetamodelNodeBlock> comparator = new Comparator<MetamodelNodeBlock>() {
+				@Override
+				public int compare(MetamodelNodeBlock o1, MetamodelNodeBlock o2) {
+					if (o1.getSuperTypes().contains(o2)) {
+						return 1;
+					} else if (o2.getSuperTypes().contains(o1)) {
+						return -1;
+					} else {
+						return 0;
+					}
+				}
+			};
+			
+			// store/sort types in this PriorityQueue
+			PriorityQueue<MetamodelNodeBlock> queue = new PriorityQueue<MetamodelNodeBlock>(comparator);
+			
 			// collect types
-			var types = new ArrayList<MetamodelNodeBlock>();
 			for (var nb : blocksWithKey) {
-				if (!types.contains(nb.getType())) {
-					types.add(nb.getType());
+				if (nb.getType() != null) {
+					queue.add(nb.getType());
 				}
-			}
-			
-			// choose least common subtype
-			// take first entry
-			if (!types.isEmpty()) {
-				MetamodelNodeBlock leastCommonSubtype = types.remove(0);
-				// go over all other types to check if equal or common sub/supertype
-				for (var nb : types) {
-					if (!leastCommonSubtype.getName().equals(nb.getName())) {
-						// name not equal, check if sub-/supertype
-						if (nb.getSuperTypes().contains(leastCommonSubtype)) {
-							// leastCommonSubtype is superType of nb, hence, new leastType found, check if common
-							if (validateSuperType(types, nb)) {
-								leastCommonSubtype = nb;
-							}
-						}
-						else if (leastCommonSubtype.getSuperTypes().contains(nb.getSuperTypes())) {
-							// is subType, hence, if leastCommonSubtype already accepted, nothing more to do
-						}
-					}
-					else {
-						// name is equal, so already least common subtype -> nothing more to do
-					}
-				}
-				newNb.setType(leastCommonSubtype);
-			}
-			
+			}			
+			newNb.setType(queue.peek());			
 		}
 		return mergedNodes;
-	}
-	
-	/**
-	 * This method validates if the given MetamodelNodeBlock is a common subtype of the types given in the parameters.
-	 * @param types List of MetamodelNodeBlocks that are to be checked if the applicant is a common subtype.
-	 * @param applicant MetamodelNodeBlock that is a candidate for the new leastCommonSubtype.
-	 * @return true if the given applicant is a common subtype.
-	 */
-	private boolean validateSuperType(ArrayList<MetamodelNodeBlock> types, MetamodelNodeBlock applicant) {
-		boolean val = true;
-		
-		for (var t : types) {
-			if (t.getName() != applicant.getName() && !t.getSuperTypes().contains(applicant)) {
-				val = false;
-			}
-		}
-		
-		return val;
 	}
 	
 	/**
@@ -211,7 +189,8 @@ public class EMSLFlattener {
 		if (refinement.getRelabeling() != null) {
 			for (var r : refinement.getRelabeling()) {
 				if (r.getOldLabel() != null 
-						&& r.getOldLabel().eContainer() != null 
+						&& r.getOldLabel().eContainer() != null
+						&& r.getOldLabel().eContainer() instanceof AtomicPattern
 						&& ((AtomicPattern) r.getOldLabel().eContainer()).getName() != null 
 						&& nb.getName().equals(((ModelNodeBlock) r.getOldLabel()).getName())) {
 					newNb.setName(r.getNewLabel());
@@ -227,6 +206,4 @@ public class EMSLFlattener {
 		
 		return newNb;
 	}
-	
-	// TODO[Maximilian] clone(ModelNodeBlock nb) recursively create instances
 }

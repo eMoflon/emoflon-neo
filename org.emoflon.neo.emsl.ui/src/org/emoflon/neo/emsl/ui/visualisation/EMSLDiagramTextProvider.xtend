@@ -376,16 +376,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForPatternComponent(ModelNodeBlock nb) {
 		val entity = nb.eContainer as AtomicPattern
-		if (entity !== null) {
-			if (entity.name === null)
-				entity.name = "?"
-			if (nb.name === null)
-				nb.name = "?"
-			if (nb.type.name === null)
-				nb.type.name = "?"
-				
-			'''"«entity.name».«nb.name»:«nb.type.name»"'''	
-		}
+		if (entity !== null) 
+			'''"«IF entity.name !== null»«entity.name»«ELSE»?«ENDIF».«IF nb.name !== null»«nb.name»«ELSE»?«ENDIF»:«IF nb.type.name !== null»«nb.type.name»«ELSE»?«ENDIF»"'''	
 		else
 			'''"?"'''
 	}
