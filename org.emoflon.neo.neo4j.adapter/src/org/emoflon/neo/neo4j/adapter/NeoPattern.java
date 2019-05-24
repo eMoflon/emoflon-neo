@@ -51,9 +51,10 @@ public class NeoPattern implements IPattern {
 			// Get all properties or conditions
 			n.getProperties().forEach(p -> {
 				if (p.getOp().equals(ConditionOperator.EQ))
-					node.addProperty(p.getType().getName(), p.getValue());
+					node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
 				else
-					conditions.add(new NeoCondition(p.getType().getName(), p.getOp(), p.getValue(), node.getVarName()));
+					conditions.add(new NeoCondition(p.getType().getName(), p.getOp(), NeoUtil.handleValue(p.getValue()),
+							node.getVarName()));
 			});
 
 			nodes.add(node);
@@ -70,8 +71,8 @@ public class NeoPattern implements IPattern {
 		matchnode.addProperty("uuid", uuid);
 
 		for (NeoNode node : nodes) {
-			relations.add(new NeoRelation("matches_" + node.getVarName(), matchnode, node.getClassType(),
-					node.getVarName()));
+			relations.add(
+					new NeoRelation("matches_" + node.getVarName(), matchnode, node.getClassType(), node.getVarName()));
 		}
 
 		nodes.add(matchnode);

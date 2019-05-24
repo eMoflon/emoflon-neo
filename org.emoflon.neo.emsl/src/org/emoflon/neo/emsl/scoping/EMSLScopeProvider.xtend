@@ -32,6 +32,10 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import java.util.ArrayList
 import java.util.List
+import org.emoflon.neo.emsl.eMSL.UserDefinedType
+import org.emoflon.neo.emsl.eMSL.EnumValue
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.AttributeExpression
 
 /**
  * This class contains custom scoping description.
@@ -74,11 +78,18 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement,
 				context.eContainer as ModelNodeBlock)
 
-		if (nameOfPropertyStatementInRelationStatement(context, reference))
-			return handleNameOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
+		if (typeOfPropertyStatementInRelationStatement(context, reference))
+			return handleTypeOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
 
 		if (isNodeBlockInMetamodel(context, reference))
 			return handleNodeBlockTypesInMetamodel(context as MetamodelNodeBlock, reference)
+
+		if(valueOfEnumInPropertyStatementInModel(context, reference))
+			return handleValueOfEnumInPropertyStatementInModel((context as EnumValue), reference)
+
+		if(valueOfNodeAttributeExpression(context, reference)){
+			return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
+		}
 
 		return super.getScope(context, reference)
 	}
@@ -117,14 +128,14 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/**
 	 * Returns whether to build a scope for the name of a PropertyStatements that is nested in a RelationStatement.
 	 */
-	def nameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
+	def typeOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
 		context instanceof ModelPropertyStatement && reference == EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE
 	}
 
 	/**
 	 * Returns the scope for the name of a PropertyStatement that is nested in a RelationStatement.
 	 */
-	def handleNameOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
+	def handleTypeOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
 		val nodeBlocks = allNodeBlocksInAllImportedMetamodels(root)
 
@@ -138,6 +149,29 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		}
 
 		determineScope(possibilities)
+	}
+	
+	def handleValueOfEnumInPropertyStatementInModel(EnumValue property, EReference reference) {
+		val type = (property.eContainer() as ModelPropertyStatement).type.type
+		if(type instanceof UserDefinedType){
+			val enum = type.reference
+			return Scopes.scopeFor(enum.literals)
+		}
+		
+		return super.getScope(property, reference)
+	}
+
+	def valueOfEnumInPropertyStatementInModel(EObject context, EReference reference) {
+		context instanceof EnumValue && reference == EMSLPackage.Literals.ENUM_VALUE__LITERAL
+	}
+	
+	def handleNodeAttributeExpression(NodeAttributeExpTarget expression) {
+		var exp = expression.eContainer as AttributeExpression
+		return Scopes.scopeFor(exp.node.type.properties)
+	}
+		
+	def valueOfNodeAttributeExpression(EObject context, EReference reference) {
+		context instanceof NodeAttributeExpTarget && reference == EMSLPackage.Literals.NODE_ATTRIBUTE_EXP_TARGET__ATTRIBUTE
 	}
 
 	/*----------------------------------------*/

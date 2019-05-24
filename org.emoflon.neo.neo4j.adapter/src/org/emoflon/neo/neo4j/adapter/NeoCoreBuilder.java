@@ -16,6 +16,7 @@ import org.emoflon.neo.emsl.eMSL.BuiltInType;
 import org.emoflon.neo.emsl.eMSL.DataType;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
 import org.emoflon.neo.emsl.eMSL.EnumLiteral;
+import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
@@ -23,7 +24,11 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
+import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
+import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
+import org.emoflon.neo.emsl.eMSL.Value;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -618,67 +623,70 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private Object inferType(ModelPropertyStatement ps, ModelNodeBlock nb) {
-		String stringVal = ps.getValue();
 		String propName = ps.getType().getName();
 		MetamodelNodeBlock nodeType = nb.getType();
 
 		if (ps.eContainer().equals(nb)) {
-			return inferTypeForNodeAttribute(stringVal, propName, nodeType);
+			return inferTypeForNodeAttribute(ps.getValue(), propName, nodeType);
 		} else if (ps.eContainer() instanceof ModelRelationStatement) {
 			ModelRelationStatement rs = (ModelRelationStatement) ps.eContainer();
 			String relName = rs.getType().getName();
-			return inferTypeForEdgeAttribute(stringVal, relName, propName, nodeType);
+			return inferTypeForEdgeAttribute(ps.getValue(), relName, propName, nodeType);
 		} else {
 			throw new IllegalArgumentException("Unable to handle: " + ps);
 		}
 	}
 
-	private Object inferTypeForEdgeAttribute(String stringVal, String relName, String propName,
+	private Object inferTypeForEdgeAttribute(Value value, String relName, String propName,
 			MetamodelNodeBlock nodeType) {
 		var typedValue = nodeType.getRelations().stream()//
 				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getProperties().stream())//
 				.filter(etPs -> etPs.getName().equals(propName))//
 				.map(etPs -> etPs.getType())//
-				.map(t -> parseStringWithType(stringVal, t))//
+				.map(t -> parseStringWithType(value, t))//
 				.findAny();
 
-		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + stringVal));
+		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
-	private Object inferTypeForNodeAttribute(String stringVal, String propName, MetamodelNodeBlock nodeType) {
+	private Object inferTypeForNodeAttribute(Value value, String propName, MetamodelNodeBlock nodeType) {
 		var typedValue = nodeType.getProperties().stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//
-				.map(t -> parseStringWithType(stringVal, t))//
+				.map(t -> parseStringWithType(value, t))//
 				.findAny();
 
-		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + stringVal));
+		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
-	private Object parseStringWithType(String stringVal, DataType type) {
+	private Object parseStringWithType(Value value, DataType type) {
 		if (type instanceof BuiltInType) {
 			var builtInType = ((BuiltInType) type).getReference();
 
 			switch (builtInType) {
+			case ESTRING:
+				return PrimitiveString.class.cast(value).getLiteral();
 			case EINT:
-				return Integer.parseInt(stringVal);
+				return PrimitiveInt.class.cast(value).getLiteral();
 			case EBOOLEAN:
-				return Boolean.parseBoolean(stringVal);
+				return PrimitiveBoolean.class.cast(value).isTrue();
 			default:
-				throw new IllegalStateException("This literal has to be handled: " + stringVal);
+				throw new IllegalStateException("This literal has to be handled: " + value);
 			}
 		} else if (type instanceof UserDefinedType) {
 			var userDefinedType = (UserDefinedType) type;
 
+			EnumLiteral enumLiteral = EnumValue.class.cast(value).getLiteral();
+
 			if (userDefinedType.getReference().getLiterals().stream()//
-					.anyMatch(literal -> literal.getName().equals(stringVal)))
-				return stringVal;
+					.anyMatch(literal -> literal.equals(enumLiteral)))
+				return enumLiteral.getName();
 			else {
-				throw new IllegalArgumentException(stringVal + " is not a legal literal of " + type);
+				throw new IllegalArgumentException(value + " is not a legal literal of " + type);
 			}
 		} else {
-			throw new IllegalArgumentException("Unable to parse: " + stringVal + " as a " + type);
+			throw new IllegalArgumentException("Unable to parse: " + value + " as a " + type);
 		}
 	}
 }
