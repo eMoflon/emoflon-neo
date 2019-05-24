@@ -2,93 +2,27 @@ package org.emoflon.neo.example.sokoban.patterns;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
-import java.util.Scanner;
-
-import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Rules_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.example.sokoban.scalability.ScalabilityTest;
-import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
+import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.NeoPattern;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.StatementResult;
 
-public class PatternTest {
+public class PatternTest extends ENeoTest {
 
-	private static Scanner reader;
-	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
-	private static NeoCoreBuilder builder = API_Common.createBuilder();
-	private static Driver driver = builder.getDriver();
-	
 	private API_Rules_SokobanPatternsRulesConstraints rules = new API_Rules_SokobanPatternsRulesConstraints(builder);
 	private Model model = (new API_Models_SokobanSimpleTestField(builder)).getModel_SokobanSimpleTestField();
-
-	@BeforeAll
-	private static void startDBConnection() throws Exception {
-		logger.info("Database Connection established.");
-		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
-		
-		//create Index on Matching Nodes
-		
-		if (result.hasNext()) {
-
-			if (result.next().get(0).asInt() > 0) {
-				logger.info(
-						"Database not empty. All data will be removed! \n" + "Do you want to continue (Y=Yes / N=No)?");
-				reader = new Scanner(System.in);
-				String input = reader.next();
-
-				if (input.toLowerCase().equals("n")) {
-					logger.info("Tests have been canceled. No changes in the database executed.");
-					closeDBConnection();
-					fail();
-				} else {
-					driver.session().run("MATCH (n) DETACH DELETE n");
-					logger.info("Database cleared.");
-				}
-			} else {
-				logger.info("Database empty.");
-			}
-
-		} else {
-			logger.info("Database empty.");
-		}
-		
-		//driver.session().run("DROP CONSTRAINT ON (m:Match) ASSERT m.uuid IS UNIQUE");
-		//driver.session().run("CREATE INDEX ON :Match(uuid)");
-		//driver.session().run("DROP INDEX ON :Match(uuid)");
-		//driver.session().run("CREATE CONSTRAINT ON (m:Match) ASSERT m.uuid IS UNIQUE");
-
-	}
-
+	
 	@BeforeEach
 	private void initDB() {
 		builder.exportEMSLEntityToNeo4j(model);
 		logger.info("-----------------------------\n" + "Database initialised.");
 	}
 	
-	@AfterEach
-	private void clearDB() {
-		driver.session().run("MATCH (n) DETACH DELETE n");
-		logger.info("Database cleared.");
-	}
-
-	@AfterAll
-	public static void closeDBConnection() throws Exception {
-		builder.close();
-		logger.info("Database Connection closed.");
-	}
-
 	@Test
 	public void test_OneSokoban() {
 		NeoPattern p = rules.getPattern_OneSokoban();
@@ -332,12 +266,4 @@ public class PatternTest {
 		}
 		assertThat(matchesCount, is(matches.size()-2));
 	}
-	
-	// Only for test purposes
-	@Test
-	public void test_empty() {
-		
-		assertThat(0, is(0));
-	}
-
 }
