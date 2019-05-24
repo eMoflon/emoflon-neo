@@ -28,5 +28,6 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  org.opentest4j,
  org.apiguardian,
  org.emoflon.neo.engine;bundle-version="1.0.0",
- org.emoflon.neo.emf;bundle-version="1.0.0"
+ org.emoflon.neo.emf;bundle-version="1.0.0",
+ SheRememberedCaterpillars;bundle-version="1.0.0"
 Automatic-Module-Name: TestSuite

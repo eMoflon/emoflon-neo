@@ -10,6 +10,7 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.NeoPattern;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PatternTest extends ENeoTest {
@@ -31,6 +32,7 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
+	@Disabled("TODO[Jannik] Implement solution for injectivity checks")
 	public void test_TwoSokoban() {
 		NeoPattern p = rules.getPattern_TwoSokoban();
 		var matches = p.getMatches();
@@ -238,6 +240,7 @@ public class PatternTest extends ENeoTest {
 	}
 
 	@Test
+	@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_All3x3Fields_StillValid() {
 		NeoPattern p = rules.getPattern_All3x3Fields();
 		var matches = p.getMatches();
@@ -251,6 +254,7 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
+	@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		NeoPattern p = rules.getPattern_All3x3Fields();
 		var matches = p.getMatches();
