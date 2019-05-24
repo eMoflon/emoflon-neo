@@ -7,30 +7,38 @@ import org.eclipse.jface.viewers.ISelection
 import org.eclipse.ui.IEditorPart
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.ui.editor.XtextEditor
-import org.emoflon.neo.emsl.eMSL.EMSL_Spec
-import org.emoflon.neo.emsl.eMSL.Entity
-import org.emoflon.neo.emsl.eMSL.Metamodel
-import org.emoflon.neo.emsl.eMSL.Model
-import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
-import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.eMSL.Rule
-import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.eMSL.GraphGrammar
-import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
-import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
-import org.emoflon.neo.emsl.eMSL.UserDefinedType
-import org.emoflon.neo.emsl.eMSL.BuiltInType
-import org.emoflon.neo.emsl.eMSL.RelationKind
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.ConstraintBody
-import org.emoflon.neo.emsl.eMSL.NegativeConstraint
-import org.emoflon.neo.emsl.eMSL.PositiveConstraint
-import org.emoflon.neo.emsl.eMSL.Implication
 import org.emoflon.neo.emsl.eMSL.ConstraintReference
-import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Entity
+import org.emoflon.neo.emsl.eMSL.Enum
+import org.emoflon.neo.emsl.eMSL.EnumValue
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.emoflon.neo.emsl.eMSL.Implication
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
+import org.emoflon.neo.emsl.eMSL.PrimitiveInt
+import org.emoflon.neo.emsl.eMSL.PrimitiveString
+import org.emoflon.neo.emsl.eMSL.RelationKind
+import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.SourceNAC
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.UserDefinedType
+import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -83,8 +91,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val Optional<ModelNodeBlock> selectedNodeBlock = selectedEntity.flatMap([e|determineSelectedNodeBlock(selection, e)])
 		val Optional<MetamodelNodeBlock> selectedMetamodelNodeBlock = selectedEntity.flatMap([e|determineSelectedMetamodelNodeBlock(selection, e)])
 		
-		if (selectedEntity.isPresent && selectedEntity.get instanceof org.emoflon.neo.emsl.eMSL.Enum)
-			return visualiseEnumLiterals(selectedEntity.get as org.emoflon.neo.emsl.eMSL.Enum)
+		if (selectedEntity.isPresent && selectedEntity.get instanceof Enum)
+			return visualiseEnumLiterals(selectedEntity.get as Enum)
 		
 		if (selectedMetamodelNodeBlock.isPresent)
 			return visualiseNodeBlockInMetamodel(selectedMetamodelNodeBlock.get, true)
@@ -159,7 +167,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						
 					}
 				«ENDIF»
-				«IF entity instanceof org.emoflon.neo.emsl.eMSL.Enum»
+				«IF entity instanceof Enum»
 					package "Enum: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
@@ -194,7 +202,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForObject(nb)» --> «IF link.target !== null»«labelForObject(link.target)»«ELSE»"?"«ENDIF» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForObject(nb)» : «attr.type.name» = «attr.value»
+				«labelForObject(nb)» : «attr.type.name» = «IF attr.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -204,6 +212,34 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDFOR»
 		'''
+	}
+	
+	dispatch def printValue(AttributeExpression value){
+		'''«value.node.name».«printTarget(value.target)»'''
+	}
+	
+	dispatch def printTarget(NodeAttributeExpTarget target) {
+		'''«target.attribute.name»'''
+	}
+	
+	dispatch def printTarget(LinkAttributeExpTarget target) {
+		'''-«target.link.type»->.«target.attribute.name»'''
+	}
+	
+	dispatch def printValue(EnumValue value) {
+		'''«value.literal.name»'''
+	}
+	
+	dispatch def printValue(PrimitiveInt value){
+		'''«value.literal»'''
+	}
+	
+	dispatch def printValue(PrimitiveString value){
+		'''«value.literal»'''
+	}
+	
+	dispatch def printValue(PrimitiveBoolean value){
+		'''«value.^true»'''
 	}
 	
 	/**
@@ -249,7 +285,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForClass(nb)» : «attr.name» : «IF (attr.type instanceof UserDefinedType)»«((attr.type as UserDefinedType).reference as org.emoflon.neo.emsl.eMSL.Enum).name».«(attr.type as UserDefinedType).reference.name»«ELSE»«(attr.type as BuiltInType).reference.toString»«ENDIF»
+				«labelForClass(nb)» : «attr.name» : «IF (attr.type instanceof UserDefinedType)»«((attr.type as UserDefinedType).reference).name»«ELSE»«(attr.type as BuiltInType).reference.toString»«ENDIF»
 			«ENDFOR»
 		'''
 	}
@@ -273,7 +309,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for an Enum.
 	 */
-	def dispatch String visualiseEntity(org.emoflon.neo.emsl.eMSL.Enum entity) {
+	def dispatch String visualiseEntity(Enum entity) {
 		'''
 			«FOR item : entity.literals»
 				class "«entity.name»"
@@ -284,7 +320,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for the EnumLiterals.
 	 */
-	def String visualiseEnumLiterals(org.emoflon.neo.emsl.eMSL.Enum entity) {
+	def String visualiseEnumLiterals(Enum entity) {
 		'''
 			«FOR item : entity.literals»
 				class "«entity.name».«item.name»"
@@ -324,7 +360,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForPatternComponent(nb)» : «attr.type.name» = «attr.value»
+				«labelForPatternComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -854,7 +890,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			// For the TextSelection documents start with line 0.
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
-			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel || entity instanceof org.emoflon.neo.emsl.eMSL.Enum || entity instanceof Constraint))
+			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel || entity instanceof Enum || entity instanceof Constraint))
 			for (nodeBlock : entity.nodeBlocks) {
 				val object = NodeModelUtils.getNode(nodeBlock);
 				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
