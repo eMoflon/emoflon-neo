@@ -98,7 +98,7 @@ public class EMSLFlattener {
 			}
 			
 			// recursively collect nodes
-			if (((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes() != null) {
+			if (r.getReferencedType() instanceof AtomicPattern && ((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes() != null) {
 				var tmp = collectNodes(((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes(), alreadyRefinedPatternNames);
 				tmp.forEach((key, value) -> {
 					if (nodeBlocks.containsKey(key)) {
@@ -150,13 +150,26 @@ public class EMSLFlattener {
 			Comparator<MetamodelNodeBlock> comparator = new Comparator<MetamodelNodeBlock>() {
 				@Override
 				public int compare(MetamodelNodeBlock o1, MetamodelNodeBlock o2) {
-					if (o1.getSuperTypes().contains(o2)) {
+					if (o1.getSuperTypes().contains(o2) || recursiveContainment(o1, o2, false)) {
 						return 1;
-					} else if (o2.getSuperTypes().contains(o1)) {
+					} else if (o2.getSuperTypes().contains(o1) || recursiveContainment(o2, o1, false)) {
 						return -1;
 					} else {
 						return 0;
 					}
+				}
+				
+				private boolean recursiveContainment(MetamodelNodeBlock o1, MetamodelNodeBlock o2, boolean containment) {
+					var wrapper = new Object() { boolean contains = false; };
+					
+					if (o1.getSuperTypes().contains(o2)) {
+						return true;
+					}
+					
+					o1.getSuperTypes().forEach(st -> {
+						wrapper.contains = (recursiveContainment(st, o2, containment));
+					});
+					return wrapper.contains;
 				}
 			};
 			

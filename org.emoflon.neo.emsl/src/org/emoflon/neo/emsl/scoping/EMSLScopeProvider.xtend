@@ -30,6 +30,7 @@ import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.RelabelingCommand
 
 /**
  * This class contains custom scoping description.
@@ -80,8 +81,11 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (isNodeBlockInMetamodel(context, reference))
 			return handleNodeBlockTypesInMetamodel(context as MetamodelNodeBlock, reference)
 		
-		//if (isOldLabelInRefinementCommandInPattern(context, reference))
-		//	return handleOldLabelInRefinementCommand(context, reference)
+		if (isOldLabelInRefinementCommandInPattern(context, reference))
+			return handleOldLabelInRefinementCommandInPattern(context as RefinementCommand, reference)
+			
+		if (isOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference))
+			return handleOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference)
 			
 		return super.getScope(context, reference)
 	}
@@ -393,16 +397,41 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns whether to build a scope for the old label of the RefinementCommand in a Pattern.
 	 */
 	def isOldLabelInRefinementCommandInPattern(EObject context, EReference reference) {
-		reference == EMSLPackage.Literals.RELABELING_COMMAND__OLD_LABEL &&
-		context.eContainer instanceof AtomicPattern
+		context instanceof RefinementCommand
+			&& context.eContainer instanceof AtomicPattern
+			&& reference == EMSLPackage.Literals.RELABELING_COMMAND__OLD_LABEL
 	}
 	
 	/**
 	 * Returns a scope for the old label in a RefinementCommand.
 	 */
-	def handleOldLabelInRefinementCommand(EObject context, EReference reference) {
-		
-		return Scopes.scopeFor(((context as RefinementCommand).referencedType as AtomicPattern).nodeBlocks)
+	def handleOldLabelInRefinementCommandInPattern(EObject context, EReference reference) {	
+		var nodeBlocks = new HashMap
+		for (nb : ((context as RefinementCommand).referencedType as AtomicPattern).nodeBlocks) {
+			nodeBlocks.put(nb, null)
+		}	
+		determineScope(nodeBlocks)
+	}
+	
+	/**
+	 * Returns whether to build a scope for the old label of the RefinementCommand in a Pattern.
+	 */
+	def isOldLabelInRefinementCommandInRelabelingCommandInPattern(EObject context, EReference reference) {
+		context instanceof RelabelingCommand
+			&& context.eContainer instanceof RefinementCommand
+			&& context.eContainer.eContainer instanceof AtomicPattern
+			&& reference == EMSLPackage.Literals.RELABELING_COMMAND__OLD_LABEL
+	}
+	
+	/**
+	 * Returns a scope for the old label in a RefinementCommand.
+	 */
+	def handleOldLabelInRefinementCommandInRelabelingCommandInPattern(EObject context, EReference reference) {	
+		var nodeBlocks = new HashMap
+		for (nb : ((context.eContainer as RefinementCommand).referencedType as AtomicPattern).nodeBlocks) {
+			nodeBlocks.put(nb, null)
+		}	
+		determineScope(nodeBlocks)
 	}
 
 
@@ -454,23 +483,20 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
 			aliases.keySet,
 			[ eob |
-				// find duplicates in names of NodeBlocks (works)
+				// find duplicates in names of NodeBlocks
 				val nameList = newArrayList
 				val duplicateNames = newArrayList
 				aliases.keySet.forEach [ e |
-					if (!nameList.contains(
-						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString))
+					if (!nameList.contains(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString))
 						nameList.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
 					else
-						duplicateNames.add(
-							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+						duplicateNames.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
 				]
 				// create QualifiedNames for NodeBlocks
 				val eobName = SimpleAttributeResolver.NAME_RESOLVER.apply(eob)
 				if (duplicateNames.contains(eobName)) {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
-						QualifiedName.create(aliases.get(eob),
-							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+						QualifiedName.create(aliases.get(eob), SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 					else
 						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 				} else {
