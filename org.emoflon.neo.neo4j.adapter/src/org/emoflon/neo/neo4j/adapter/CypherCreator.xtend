@@ -50,7 +50,7 @@ class CypherCreator extends CypherBuilder {
 
 	def matchNodeWithContainer(List<NeoProp> props, List<String> labels, NodeCommand container) {
 		if (!nodesToMatch.values.contains(container))
-			throw new IllegalArgumentException("A node's container must be matched!")
+			throw new IllegalArgumentException("A node's container must be matched: " + container)
 
 		val key = createKeyForNodeWithContainer(props, labels, container)
 		if (nodesToMatch.containsKey(key))
