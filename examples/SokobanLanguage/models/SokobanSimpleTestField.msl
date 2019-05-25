@@ -18,7 +18,6 @@ import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
 
 */
 
-
 model SokobanSimpleTestField {
 	b : SokobanLanguage.Board {
 		.width : 4 

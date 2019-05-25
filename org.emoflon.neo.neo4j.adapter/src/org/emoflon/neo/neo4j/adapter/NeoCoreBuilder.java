@@ -651,7 +651,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private Object inferTypeForNodeAttribute(Value value, String propName, MetamodelNodeBlock nodeType) {
-		var typedValue = nodeType.getProperties().stream()//
+		var typedValue = NeoUtil.allPropertiesOf(nodeType).stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//
 				.map(t -> parseStringWithType(value, t))//

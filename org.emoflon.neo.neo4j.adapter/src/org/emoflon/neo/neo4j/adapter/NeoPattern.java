@@ -124,5 +124,4 @@ public class NeoPattern implements IPattern {
 		return matches;
 
 	}
-
 }
