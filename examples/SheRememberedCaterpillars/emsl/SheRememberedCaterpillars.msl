@@ -1,24 +1,23 @@
 metamodel SheRememberedCaterpillars {
-	Character {
-		.colour : COLOUR
-		
-		-on(0..1)->Platform
-	}
+	Character : ColouredThingOnPlatform
 	
 	Platform
 	
-	Bridge {
-		.colour : COLOUR
-		
-		-from(1..1)->Platform
-		-to(1..1)->Platform
+	Bridge : ColouredThing {		
+		-feet(2..2)->Platform
  	}
 	
-	Wall {
+	Wall : ColouredThingOnPlatform
+	
+	abstract ColouredThing {
 		.colour : COLOUR
-		
+	}
+	
+	abstract IsOnAPlatform {
 		-on(1..1)->Platform
 	}
+	
+	abstract ColouredThingOnPlatform : ColouredThing, IsOnAPlatform
 	
 	enum COLOUR {
 		RED
@@ -34,11 +33,17 @@ model SimpleGame {
 		-on->p1
 	}
 	
+	w:Wall {
+		.colour : enum::RED
+		
+		-on->p2
+	}
+	
 	b:Bridge {
 		.colour : enum::BLUE
 		
-		-from->p1
-		-to->p2
+		-feet->p1
+		-feet->p2
 	}
 	
 	p1:Platform
@@ -51,10 +56,10 @@ pattern canCrossBridge {
 	}
 	
 	b:Bridge {
-		.colour : a::colour
+		.colour : a::colour  
 		
-		-from->p1
-		-to->p2
+		-feet->p1
+		-feet->p2
 	}
 	
 	p1:Platform
@@ -70,10 +75,39 @@ pattern everythingBlue {
 	b:Bridge {
 		.colour : enum::BLUE
 		
-		-from->p1
-		-to->p2
+		-feet->p1
+		-feet->p2
 	}
 	
 	p1:Platform
 	p2:Platform
+}
+
+pattern strangeBridge {
+	b:Bridge {
+		-feet->p
+		-feet->p
+	}
+	
+	p:Platform
+}
+
+pattern standingInFrontOfBridge {
+	a:Character {
+		-on->p
+	}
+	
+	b:Bridge {
+		-feet->p
+	}
+	
+	p:Platform
+}
+
+pattern colouredThingOnPlatform {
+	c:ColouredThingOnPlatform {
+		-on->p
+	}
+	
+	p:Platform
 }
