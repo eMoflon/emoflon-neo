@@ -18,7 +18,7 @@ import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
-import org.emoflon.neo.emsl.util.EMSUtil;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 @SuppressWarnings("restriction")
@@ -35,9 +35,9 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 
 		logger.info("Trying to connect to your Neo4j database...");
 
-		String uri = EmslActivator.getInstance().getPreferenceStore().getString(EMSUtil.P_URI);
-		String userName = EmslActivator.getInstance().getPreferenceStore().getString(EMSUtil.P_USER);
-		String password = EmslActivator.getInstance().getPreferenceStore().getString(EMSUtil.P_PASSWORD);
+		String uri = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_URI);
+		String userName = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_USER);
+		String password = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_PASSWORD);
 
 		logger.info("Connection URI: " + uri);
 		logger.info("User: " + userName);

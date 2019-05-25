@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import org.emoflon.neo.api.API_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Rules_SokobanPatternsRulesConstraints;
-import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.NeoPattern;
@@ -15,33 +14,27 @@ import org.junit.jupiter.api.Test;
 
 public class PatternTest extends ENeoTest {
 
-	private API_Rules_SokobanPatternsRulesConstraints rules = new API_Rules_SokobanPatternsRulesConstraints(builder);
-	private Model model = (new API_Models_SokobanSimpleTestField(builder)).getModel_SokobanSimpleTestField();
-	
+	private API_Rules_SokobanPatternsRulesConstraints entities = new API_Rules_SokobanPatternsRulesConstraints(builder);
+
 	@BeforeEach
 	private void initDB() {
-		builder.exportEMSLEntityToNeo4j(model);
-		logger.info("-----------------------------\n" + "Database initialised.");
+		initDB(new API_Models_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
 	}
-	
+
 	@Test
 	public void test_OneSokoban() {
-		NeoPattern p = rules.getPattern_OneSokoban();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(1));
+		expectSingleMatch(entities.getPattern_OneSokoban());
 	}
-	
+
 	@Test
 	@Disabled("TODO[Jannik] Implement solution for injectivity checks")
 	public void test_TwoSokoban() {
-		NeoPattern p = rules.getPattern_TwoSokoban();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(0));
+		expectNoMatch(entities.getPattern_TwoSokoban());
 	}
 
 	@Test
 	public void test_OneSokoban_StillValid() {
-		NeoPattern p = rules.getPattern_OneSokoban();
+		NeoPattern p = entities.getPattern_OneSokoban();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -54,14 +47,14 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OneBlock() {
-		NeoPattern p = rules.getPattern_OneBlock();
+		NeoPattern p = entities.getPattern_OneBlock();
 		var matches = p.getMatches();
 		assertThat(matches.size(), is(2));
 	}
 
 	@Test
 	public void test_OneBlock_StillValid() {
-		NeoPattern p = rules.getPattern_OneBlock();
+		NeoPattern p = entities.getPattern_OneBlock();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -74,14 +67,12 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OneEndField() {
-		NeoPattern p = rules.getPattern_OneEndField();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(2));
+		assertThat(entities.getPattern_OneEndField().countMatches(), is(2));
 	}
 
 	@Test
 	public void test_OneEndField_StillValid() {
-		NeoPattern p = rules.getPattern_OneEndField();
+		NeoPattern p = entities.getPattern_OneEndField();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -94,14 +85,12 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OccupiedField() {
-		NeoPattern p = rules.getPattern_OccupiedField();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(9));
+		assertThat(entities.getPattern_OccupiedField().countMatches(), is(9));
 	}
 
 	@Test
 	public void test_OccupiedField_StillValid() {
-		NeoPattern p = rules.getPattern_OccupiedField();
+		NeoPattern p = entities.getPattern_OccupiedField();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -114,7 +103,7 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OccupiedField_StillValid_AfterDeletingBlocks() {
-		NeoPattern p = rules.getPattern_OccupiedField();
+		NeoPattern p = entities.getPattern_OccupiedField();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -130,14 +119,12 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AnOccupiedSokobanField() {
-		NeoPattern p = rules.getPattern_AnOccupiedSokobanField();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(1));
+		expectSingleMatch(entities.getPattern_AnOccupiedSokobanField());
 	}
 
 	@Test
 	public void test_AnOccupiedSokobanField_StillValid() {
-		NeoPattern p = rules.getPattern_AnOccupiedSokobanField();
+		NeoPattern p = entities.getPattern_AnOccupiedSokobanField();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -150,14 +137,12 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AnOccupiedBlockField() {
-		NeoPattern p = rules.getPattern_AnOccupiedBlockField();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(2));
+		assertThat(entities.getPattern_AnOccupiedBlockField().countMatches(), is(2));
 	}
 
 	@Test
 	public void test_AnOccupiedBlockField_StillValid() {
-		NeoPattern p = rules.getPattern_AnOccupiedBlockField();
+		NeoPattern p = entities.getPattern_AnOccupiedBlockField();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -170,14 +155,12 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AnOccupiedBoulderField() {
-		NeoPattern p = rules.getPattern_AnOccupiedBoulderField();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(8));
+		assertThat(entities.getPattern_AnOccupiedBoulderField().countMatches(), is(8));
 	}
 
 	@Test
 	public void test_AnOccupiedBoulderField_StillValid() {
-		NeoPattern p = rules.getPattern_AnOccupiedBoulderField();
+		NeoPattern p = entities.getPattern_AnOccupiedBoulderField();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -190,21 +173,17 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AllFieldsInARow() {
-		NeoPattern p = rules.getPattern_AllFieldsInARow();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(4));
+		assertThat(entities.getPattern_AllFieldsInARow().countMatches(), is(4));
 	}
 
 	@Test
 	public void test_AllNotBorderFieldsInARow() {
-		NeoPattern p = rules.getPattern_AllNotBorderFieldsInARow();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(2));
+		assertThat(entities.getPattern_AllNotBorderFieldsInARow().countMatches(), is(2));
 	}
 
 	@Test
 	public void test_AllNotBorderFieldsInARow_StillValid_AfterDeletingEdges() {
-		NeoPattern p = rules.getPattern_AllFieldsInARow();
+		NeoPattern p = entities.getPattern_AllFieldsInARow();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -220,29 +199,23 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AllNotBorderFieldsInARowAndCol() {
-		NeoPattern p = rules.getPattern_AllNotBorderFieldsInARowAndCol();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(1));
+		expectSingleMatch(entities.getPattern_AllNotBorderFieldsInARowAndCol());
 	}
 
 	@Test
 	public void test_AllNotBorderFieldsInDiffRows() {
-		NeoPattern p = rules.getPattern_AllNotBorderFieldsInDiffRows();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(0));
+		expectNoMatch(entities.getPattern_AllNotBorderFieldsInDiffRows());
 	}
 
 	@Test
 	public void test_All3x3Fields() {
-		NeoPattern p = rules.getPattern_All3x3Fields();
-		var matches = p.getMatches();
-		assertThat(matches.size(), is(4));
+		assertThat(entities.getPattern_All3x3Fields().countMatches(), is(4));
 	}
 
 	@Test
 	@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_All3x3Fields_StillValid() {
-		NeoPattern p = rules.getPattern_All3x3Fields();
+		NeoPattern p = entities.getPattern_All3x3Fields();
 		var matches = p.getMatches();
 		var matchesCount = 0;
 
@@ -252,22 +225,22 @@ public class PatternTest extends ENeoTest {
 		}
 		assertThat(matchesCount, is(matches.size()));
 	}
-	
+
 	@Test
 	@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
-		NeoPattern p = rules.getPattern_All3x3Fields();
+		NeoPattern p = entities.getPattern_All3x3Fields();
 		var matches = p.getMatches();
 		var matchesCount = 0;
-		
+
 		// removing all right and bottom edges of endPos fields
 		driver.session().run("MATCH (f:Field {endPos: true, name: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
-		
+
 		for (IMatch m : matches) {
 			if (m.isStillValid()) {
 				matchesCount++;
 			}
 		}
-		assertThat(matchesCount, is(matches.size()-2));
+		assertThat(matchesCount, is(matches.size() - 2));
 	}
 }
