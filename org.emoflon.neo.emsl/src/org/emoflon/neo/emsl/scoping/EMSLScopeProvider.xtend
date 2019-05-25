@@ -17,7 +17,9 @@ import org.eclipse.xtext.scoping.impl.FilteringScope
 import org.eclipse.xtext.scoping.impl.SimpleScope
 import org.eclipse.xtext.util.SimpleAttributeResolver
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
+import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
@@ -26,16 +28,13 @@ import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
-import java.util.ArrayList
-import java.util.List
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
-import org.emoflon.neo.emsl.eMSL.EnumValue
-import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
-import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.util.EMSLUtil
 
 /**
  * This class contains custom scoping description.
@@ -84,10 +83,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (isNodeBlockInMetamodel(context, reference))
 			return handleNodeBlockTypesInMetamodel(context as MetamodelNodeBlock, reference)
 
-		if(valueOfEnumInPropertyStatementInModel(context, reference))
+		if (valueOfEnumInPropertyStatementInModel(context, reference))
 			return handleValueOfEnumInPropertyStatementInModel((context as EnumValue), reference)
 
-		if(valueOfNodeAttributeExpression(context, reference)){
+		if (valueOfNodeAttributeExpression(context, reference)) {
 			return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
 		}
 
@@ -116,7 +115,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns the scope for the type of a PropertyStatement.
 	 */
 	def handleTypeOfPropertyStatementInModelNodeBlock(ModelPropertyStatement prop, ModelNodeBlock container) {
-		val nodeBlocks = thisAndAllSuperTypes(container.type)
+		val nodeBlocks = EMSLUtil.thisAndAllSuperTypes(container.type)
 		val possibilities = new HashMap
 		for (nb : nodeBlocks) {
 			nb.properties.forEach[r|possibilities.put(r, null)]
@@ -150,28 +149,30 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		determineScope(possibilities)
 	}
-	
+
 	def handleValueOfEnumInPropertyStatementInModel(EnumValue property, EReference reference) {
 		val type = (property.eContainer() as ModelPropertyStatement).type.type
-		if(type instanceof UserDefinedType){
+		if (type instanceof UserDefinedType) {
 			val enum = type.reference
 			return Scopes.scopeFor(enum.literals)
 		}
-		
+
 		return super.getScope(property, reference)
 	}
 
 	def valueOfEnumInPropertyStatementInModel(EObject context, EReference reference) {
 		context instanceof EnumValue && reference == EMSLPackage.Literals.ENUM_VALUE__LITERAL
 	}
-	
+
 	def handleNodeAttributeExpression(NodeAttributeExpTarget expression) {
 		var exp = expression.eContainer as AttributeExpression
-		return Scopes.scopeFor(exp.node.type.properties)
+		var types = EMSLUtil.thisAndAllSuperTypes(exp.node.type)
+		return Scopes.scopeFor(types.flatMap[t|t.properties])
 	}
-		
+
 	def valueOfNodeAttributeExpression(EObject context, EReference reference) {
-		context instanceof NodeAttributeExpTarget && reference == EMSLPackage.Literals.NODE_ATTRIBUTE_EXP_TARGET__ATTRIBUTE
+		context instanceof NodeAttributeExpTarget &&
+			reference == EMSLPackage.Literals.NODE_ATTRIBUTE_EXP_TARGET__ATTRIBUTE
 	}
 
 	/*----------------------------------------*/
@@ -188,19 +189,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns the scope for the name of a RelationStatement.
 	 */
 	def handleTypeOfRelationStatementInModelNodeBlock(ModelRelationStatement context, ModelNodeBlock container) {
-		val nodeBlocks = thisAndAllSuperTypes(container.type)
+		val nodeBlocks = EMSLUtil.thisAndAllSuperTypes(container.type)
 		val possibilities = new HashMap
 		for (nb : nodeBlocks)
 			nb.relations.forEach[r|possibilities.put(r, null)]
 
 		determineScope(possibilities)
-	}
-		
-	def List<MetamodelNodeBlock> thisAndAllSuperTypes(MetamodelNodeBlock block) {
-		val blocks = new ArrayList
-		blocks.add(block)
-		block.superTypes.forEach[blocks.addAll(thisAndAllSuperTypes(it))]
-		return blocks
 	}
 
 	/**
@@ -223,7 +217,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		].flatMap[r|((r as RefinementCommand).referencedType as Rule).nodeBlocks]
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(rule.nodeBlocks)
-		return Scopes.scopeFor(allNodeBlocks)
+		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
 	}
 
 	/**
@@ -254,7 +248,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
 		allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
 
-		return Scopes.scopeFor(allNodeBlocks)
+		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
 	}
 
 	/**
@@ -278,7 +272,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(pattern.body.nodeBlocks)
-		return Scopes.scopeFor(allNodeBlocks)
+		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
 	}
 
 	/**
@@ -302,7 +296,13 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
 		allNodeBlocks.addAll(model.nodeBlocks)
-		return Scopes.scopeFor(allNodeBlocks)
+
+		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
+	}
+
+	protected def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(HashSet<ModelNodeBlock> allNodeBlocks,
+		ModelRelationStatement statement) {
+		allNodeBlocks.filter[nb|EMSLUtil.thisAndAllSuperTypes(nb.type).contains(statement.type.target)]
 	}
 
 	/**
