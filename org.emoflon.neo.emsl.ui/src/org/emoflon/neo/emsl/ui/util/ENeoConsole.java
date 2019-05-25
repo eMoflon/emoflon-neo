@@ -1,6 +1,5 @@
 package org.emoflon.neo.emsl.ui.util;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 import org.apache.log4j.AppenderSkeleton;
@@ -27,18 +26,18 @@ public class ENeoConsole extends AppenderSkeleton {
 	private static IWorkbenchPage activePage;
 
 	private void printMessage(String message, int color) {
-		MessageConsole console = findConsole(CONSOLE_NAME);
-		MessageConsoleStream out = console.newMessageStream();
-		out.setColor(Display.getCurrent().getSystemColor(color));
-		out.println("[" //
-				+ Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":"//
-				+ Calendar.getInstance().get(Calendar.MINUTE) + ":"//
-				+ Calendar.getInstance().get(Calendar.SECOND) + "] "//
-				+ message);
 		try {
+			MessageConsole console = findConsole(CONSOLE_NAME);
+			MessageConsoleStream out = console.newMessageStream();
+			out.setColor(Display.getCurrent().getSystemColor(color));
+			out.println("[" //
+					+ Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":"//
+					+ Calendar.getInstance().get(Calendar.MINUTE) + ":"//
+					+ Calendar.getInstance().get(Calendar.SECOND) + "] "//
+					+ message);
 			out.close();
 			revealConsole(console);
-		} catch (IOException | PartInitException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -79,11 +78,11 @@ public class ENeoConsole extends AppenderSkeleton {
 	public void printInfo(String message) {
 		printMessage(message, SWT.COLOR_BLUE);
 	}
-	
+
 	public void printWarn(String message) {
 		printMessage(message, SWT.COLOR_YELLOW);
 	}
-	
+
 	public void printDebug(String message) {
 		printMessage(message, SWT.COLOR_GRAY);
 	}

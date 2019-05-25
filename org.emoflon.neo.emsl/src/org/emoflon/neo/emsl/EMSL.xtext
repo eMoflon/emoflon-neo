@@ -29,16 +29,45 @@ ModelNodeBlock:
 	'}')?;
 
 ModelPropertyStatement:
-	'.' type=[MetamodelPropertyStatement|ID] op=ConditionOperator value=PropertyValue;
+	'.' type=[MetamodelPropertyStatement|ID] op=ConditionOperator value=Value;
+
+Value:
+	AttributeExpression | EnumValue | PrimitiveInt | PrimitiveBoolean | PrimitiveString
+;
+
+AttributeExpression:
+	node=[ModelNodeBlock|ID] target=(LinkAttributeExpTarget | NodeAttributeExpTarget)
+;
+
+LinkAttributeExpTarget:
+	'-' link=[ModelRelationStatement|ID] '->::' attribute=[MetamodelPropertyStatement|ID]
+;
+
+NodeAttributeExpTarget:
+	 '::' attribute=[MetamodelPropertyStatement|ID]
+;
+
+EnumValue:
+	'enum::' literal=[EnumLiteral|ID]
+;
+
+PrimitiveInt:
+	literal=INT
+;
+
+PrimitiveString:
+	literal=STRING
+;
+
+PrimitiveBoolean:
+	True?='true' | {PrimitiveBoolean} 'false'
+;
 
 ModelRelationStatement:
 	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' target=[ModelNodeBlock|QualifiedName]
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
-
-PropertyValue:
-	INT | STRING | ID;
 
 /*-------------------------------------------------*/
 /*----------------- Metamodels --------------------*/

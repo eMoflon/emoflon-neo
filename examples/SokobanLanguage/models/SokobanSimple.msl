@@ -6,14 +6,23 @@ model SokobanSimple {
 		.height : 4
 		
 		-fields-> f1 {
-			.row : 5
-			.col : 4
+			.row : 0
+			.col: 0
 		}
-		-fields-> f2
-		-fields-> f3
-		-fields-> f4
+		-fields-> f2 {
+			.row : 0
+			.col: 1
+		}
+		-fields-> f3 {
+			.row : 1
+			.col: 0
+		}
+		-fields-> f4 {
+			.row : 1
+			.col: 1
+		}
 		
-		-selectedFigure-> f1
+		-selectedFigure-> sok
 	}
 	
 	f1 : Field {
@@ -38,5 +47,11 @@ model SokobanSimple {
 	
 	sok : Sokoban {
 		-field->f1
+	}
+	block: Block {
+		-field->f2
+	}
+	boulder: Boulder {
+		-field->f4
 	}
 }

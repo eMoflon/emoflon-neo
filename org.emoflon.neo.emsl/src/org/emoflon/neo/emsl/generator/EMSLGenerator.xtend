@@ -12,9 +12,9 @@ import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.util.EMSUtil
 import org.eclipse.core.runtime.preferences.InstanceScope
 import org.eclipse.ui.preferences.ScopedPreferenceStore
+import org.emoflon.neo.emsl.util.EMSLUtil
 
 /**
  * Generates code from your model files on save.
@@ -39,9 +39,9 @@ class EMSLGenerator extends AbstractGenerator {
 	def generateCommon() {
 		val store = new ScopedPreferenceStore(InstanceScope.INSTANCE, UI_PLUGIN_ID)
 
-		val uri = store.getString(EMSUtil.P_URI);
-		val userName = store.getString(EMSUtil.P_USER);
-		val password = store.getString(EMSUtil.P_PASSWORD);
+		val uri = store.getString(EMSLUtil.P_URI);
+		val userName = store.getString(EMSLUtil.P_USER);
+		val password = store.getString(EMSLUtil.P_PASSWORD);
 
 		'''
 			/** 
@@ -69,7 +69,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 			import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 			import org.emoflon.neo.emsl.eMSL.Model;
-			import org.emoflon.neo.emsl.util.EMSUtil;
+			import org.emoflon.neo.emsl.util.EMSLUtil;
 			import org.emoflon.neo.neo4j.adapter.NeoPattern;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			
@@ -78,12 +78,12 @@ class EMSLGenerator extends AbstractGenerator {
 				private EMSL_Spec spec;
 				private NeoCoreBuilder builder;
 			
-				«apiName»(NeoCoreBuilder builder, String platformURIRoot){
-					spec = (EMSL_Spec) EMSUtil.loadSpecification("«uri»", platformURIRoot);
+				public «apiName»(NeoCoreBuilder builder, String platformURIRoot){
+					spec = (EMSL_Spec) EMSLUtil.loadSpecification("«uri»", platformURIRoot);
 					this.builder = builder;
 				}
 				
-				«apiName»(NeoCoreBuilder builder){
+				public «apiName»(NeoCoreBuilder builder){
 					this(builder, "../");
 				}
 			

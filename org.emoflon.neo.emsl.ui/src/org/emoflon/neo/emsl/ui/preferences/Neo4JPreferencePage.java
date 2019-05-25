@@ -5,7 +5,7 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.emoflon.neo.emsl.ui.internal.EmslActivator;
-import org.emoflon.neo.emsl.util.EMSUtil;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 
 public class Neo4JPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -22,9 +22,9 @@ public class Neo4JPreferencePage extends FieldEditorPreferencePage implements IW
 	 */
 	@Override
 	public void createFieldEditors() {
-		addField(new StringFieldEditor(EMSUtil.P_URI, "&Connection URI:", getFieldEditorParent()));
-		addField(new StringFieldEditor(EMSUtil.P_USER, "&User:", getFieldEditorParent()));
-		addField(new StringFieldEditor(EMSUtil.P_PASSWORD, "&Password:", getFieldEditorParent()));
+		addField(new StringFieldEditor(EMSLUtil.P_URI, "&Connection URI:", getFieldEditorParent()));
+		addField(new StringFieldEditor(EMSLUtil.P_USER, "&User:", getFieldEditorParent()));
+		addField(new StringFieldEditor(EMSLUtil.P_PASSWORD, "&Password:", getFieldEditorParent()));
 	}
 
 	/*

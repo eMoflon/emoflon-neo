@@ -18,7 +18,6 @@ import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
 
 */
 
-
 model SokobanSimpleTestField {
 	b : SokobanLanguage.Board {
 		.width : 4 
@@ -92,7 +91,7 @@ model SokobanSimpleTestField {
 			.col : 3
 		}
 		
-		-selectedFigure-> f00
+		-selectedFigure-> sok
 	}
 	
 	f00 : Field {

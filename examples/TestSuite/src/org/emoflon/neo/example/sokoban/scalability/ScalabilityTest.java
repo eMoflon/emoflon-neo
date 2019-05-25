@@ -6,15 +6,14 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.API_Models_SokobanSimple;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
-import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl;
-import org.emoflon.neo.emsl.util.EMSUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 public class ScalabilityTest {
@@ -44,11 +43,8 @@ public class ScalabilityTest {
 		NeoCoreBuilder builder = API_Common.createBuilder();
 
 		try {
-			EMSL_Spec spec = EMSUtil.loadSpecification(//
-					"platform:/resource/SokobanLanguage/models/SokobanBasis.msl", //
-					"../");
-
-			Model model = (Model) spec.getEntities().get(0);
+			Model model = new API_Models_SokobanSimple(builder).getModel_SokobanSimple();
+			
 			model.setName(model.getName() + "_" + modelSize);
 			generateContents(model, modelSize);
 

@@ -13,12 +13,12 @@ public class NeoRelation {
 	private String toNode;
 	private String toVarName;
 
-	private Collection<NeoProperty> propteries;
+	private Collection<NeoProperty> properties;
 
 	public NeoRelation(String relType, Collection<ModelPropertyStatement> props, NeoNode fromNode, String toNode,
 			String toVarName) {
 
-		this.propteries = new ArrayList<>();
+		this.properties = new ArrayList<>();
 
 		this.relType = relType;
 		this.relName = "";
@@ -26,20 +26,18 @@ public class NeoRelation {
 		this.toNode = toNode;
 		this.toVarName = toVarName;
 
-		props.forEach(prop -> addProperty(prop.getType().getName(), prop.getValue()));
+		props.forEach(prop -> addProperty(prop.getType().getName(), NeoUtil.handleValue(prop.getValue())));
 	}
 
-	public NeoRelation(String relType, String varName, NeoNode fromNode, String toNode, String toVarName) {
+	public NeoRelation(String relType, NeoNode fromNode, String toNode, String toVarName) {
 
-		this.propteries = new ArrayList<>();
+		this.properties = new ArrayList<>();
 
 		this.relType = relType;
 		this.relName = "";
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.toVarName = toVarName;
-
-		addProperty("name", varName);
 	}
 
 	public String getRelType() {
@@ -59,16 +57,16 @@ public class NeoRelation {
 	}
 
 	public Collection<NeoProperty> getProperties() {
-		return propteries;
+		return properties;
 	}
 
 	public void addProperty(String name, String value) {
-		this.propteries.add(new NeoProperty(name, value, toVarName));
+		this.properties.add(new NeoProperty(name, value, toVarName));
 	}
 
 	@Override
 	public String toString() {
-		return CypherPatternBuilder.cypherRelation(fromNode, this, propteries);
+		return CypherPatternBuilder.cypherRelation(fromNode, this, properties);
 	}
 
 }
