@@ -111,3 +111,29 @@ pattern colouredThingOnPlatform {
 	
 	p:Platform
 }
+
+pattern noWayForward {
+	a:Character {
+		-on->p
+	}
+	
+	p:Platform
+} when forbid standingInFrontOfBridge
+
+pattern noDeadEnd {
+	a:Character {
+		-on->p1
+	}
+	
+	p1:Platform
+} when enforce bridge
+
+pattern bridge {
+	p1:Platform
+	p2:Platform
+	
+	b:Bridge {
+		-feet->p1
+		-feet->p2
+	}
+}
