@@ -95,21 +95,25 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def String getDiagramBody(IEditorPart editor, ISelection selection) {
 		val EMSL_Spec root = getRoot(editor) as EMSL_Spec
 		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
-		val Optional<ModelNodeBlock> selectedNodeBlock = selectedEntity.flatMap([e|determineSelectedNodeBlock(selection, e)])
-		val Optional<MetamodelNodeBlock> selectedMetamodelNodeBlock = selectedEntity.flatMap([e|determineSelectedMetamodelNodeBlock(selection, e)])
-		
+		val Optional<ModelNodeBlock> selectedNodeBlock = selectedEntity.flatMap([ e |
+			determineSelectedNodeBlock(selection, e)
+		])
+		val Optional<MetamodelNodeBlock> selectedMetamodelNodeBlock = selectedEntity.flatMap([ e |
+			determineSelectedMetamodelNodeBlock(selection, e)
+		])
+
 		if (selectedEntity.isPresent && selectedEntity.get instanceof Enum)
 			return visualiseEnumLiterals(selectedEntity.get as Enum)
-		
+
 		if (selectedMetamodelNodeBlock.isPresent)
 			return visualiseNodeBlockInMetamodel(selectedMetamodelNodeBlock.get, true)
-			
+
 		if (!selectedEntity.isPresent)
 			return visualiseOverview(root)
 
 		if (!selectedNodeBlock.isPresent)
 			return visualiseEntity(selectedEntity.get)
-		
+
 		visualiseNodeBlock(selectedNodeBlock.get, true)
 	}
 
@@ -120,7 +124,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		if (nb.eContainer instanceof Model)
 			visualiseNodeBlockInModel(nb, mainSelection)
 		else if (nb.eContainer instanceof AtomicPattern)
-			return visualiseNodeBlockInPattern(nb, mainSelection) + visualiseCondition(nb.eContainer.eContainer as Pattern)
+			return visualiseNodeBlockInPattern(nb, mainSelection) +
+				visualiseCondition(nb.eContainer.eContainer as Pattern)
 		else if (nb.eContainer instanceof Rule)
 			return visualiseNodeBlockInRule(nb, mainSelection) + visualiseCondition(nb.eContainer as Rule)
 		else if (nb.eContainer instanceof TripleRule)
@@ -183,12 +188,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
-	
+
 	/*-------------------------------------------------*/
 	/*------------------- Models ----------------------*/
 	/*-------------------------------------------------*/
-
 	/**
 	 * Returns the diagram text for a Model.
 	 */
@@ -199,7 +202,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for a NodeBlock in a Model.
 	 */
@@ -221,35 +224,35 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
-	dispatch def printValue(AttributeExpression value){
+
+	dispatch def printValue(AttributeExpression value) {
 		'''«value.node.name».«printTarget(value.target)»'''
 	}
-	
+
 	dispatch def printTarget(NodeAttributeExpTarget target) {
 		'''«target.attribute.name»'''
 	}
-	
+
 	dispatch def printTarget(LinkAttributeExpTarget target) {
 		'''-«target.link.type»->.«target.attribute.name»'''
 	}
-	
+
 	dispatch def printValue(EnumValue value) {
 		'''«value.literal.name»'''
 	}
-	
-	dispatch def printValue(PrimitiveInt value){
+
+	dispatch def printValue(PrimitiveInt value) {
 		'''«value.literal»'''
 	}
-	
-	dispatch def printValue(PrimitiveString value){
+
+	dispatch def printValue(PrimitiveString value) {
 		'''«value.literal»'''
 	}
-	
-	dispatch def printValue(PrimitiveBoolean value){
+
+	dispatch def printValue(PrimitiveBoolean value) {
 		'''«value.^true»'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the name of an object in a Model.
 	 */
@@ -283,7 +286,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/*-------------------------------------------------*/
 	/*----------------- Metamodels --------------------*/
 	/*-------------------------------------------------*/
-	
 	/**
 	 * Returns the diagram text for a Metamodel.
 	 */
@@ -294,7 +296,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for a NodeBlock in a Metamodel.
 	 */
@@ -319,7 +321,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the name of a class in a Metamodel.
 	 */
@@ -327,15 +329,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val entity = nb.eContainer as Metamodel
 		'''"«entity?.name».«nb?.name»"'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for Mulitplicities in a Metamodel.
 	 */
 	def visualiseMultiplicity(MetamodelRelationStatement link) {
 		'''"«link.lower»«IF link.upper !== null»..«link.upper»«ENDIF»"'''
 	}
-	
-	
+
 	/**
 	 * Returns the diagram text for an Enum.
 	 */
@@ -346,7 +347,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the EnumLiterals.
 	 */
@@ -357,12 +358,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
-	
+
 	/*-------------------------------------------------*/
 	/*------------------ Patterns ---------------------*/
 	/*-------------------------------------------------*/
-	
 	/**
 	 * Returns the diagram text for a Pattern.
 	 */
@@ -380,7 +379,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDIF»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for a NodeBlock in a Pattern.
 	 */
@@ -407,18 +406,28 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDIF»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the name of an object in a Pattern.
 	 */
 	private def labelForPatternComponent(ModelNodeBlock nb) {
-		val entity = nb.eContainer as AtomicPattern
-		if (entity !== null) 
-			'''"«IF entity.name !== null»«entity.name»«ELSE»?«ENDIF».«IF nb.name !== null»«nb.name»«ELSE»?«ENDIF»:«IF nb.type !== null»«nb.type.name»«ELSE»?«ENDIF»"'''	
-		else
+		var entityName = "?"
+		var nbName = "?"
+		var nbTypeName = "?"
+		if (nb !== null && nb.eContainer !== null) {
+			val entity = nb.eContainer as AtomicPattern
+			if (entity.name !== null)
+				entityName = entity.name
+			if (nb.name !== null)
+				nbName = nb.name
+			if (nb.type !== null && nb.type.name !== null)
+				nbTypeName = nb.type.name
+
+			'''"«entityName».«nbName»:«nbTypeName»"'''
+		} else
 			'''"?"'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
 	 */
@@ -444,12 +453,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
-	
+
 	/*-------------------------------------------------*/
 	/*------------------- Rules -----------------------*/
 	/*-------------------------------------------------*/
-	
 	/**
 	 * Returns the diagram text for a Rule.
 	 */
@@ -459,14 +466,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«visualiseNodeBlockInRule(nb, false)»
 			«ENDFOR»
 			«IF entity.condition !== null»
-			legend bottom
-				«getConditionString(entity)»
-			endlegend
-			«visualiseCondition(entity)»
+				legend bottom
+					«getConditionString(entity)»
+				endlegend
+				«visualiseCondition(entity)»
 			«ENDIF»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for a NodeBlock in a Rule.
 	 */
@@ -496,18 +503,25 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDIF»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the name of an object in a Rule.
 	 */
 	private def labelForRuleComponent(ModelNodeBlock nb) {
 		val entity = nb?.eContainer as Rule
-		if (entity !== null)
-			'''"«IF entity.name !== null»«entity.name»«ELSE»?«ENDIF».«IF nb.name !== null»«nb.name»«ELSE»?«ENDIF»:«IF nb.type.name !== null»«nb.type.name»«ELSE»?«ENDIF»"'''
-		else
+		if (entity !== null) {
+			if (entity.name === null)
+				entity.name = "?"
+			if (nb.name === null)
+				nb.name = "?"
+			if (nb.type.name === null)
+				nb.type.name = "?"
+
+			'''"«entity.name».«nb.name»:«nb.type.name»"'''
+		} else
 			'''"?"'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for all SuperTypes of a Rule with inheritance arrows.
 	 */
@@ -533,8 +547,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
-	
+
 	/**
 	 * Returns the diagram text for a GraphGrammar.
 	 */
@@ -545,27 +558,25 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the Rules in a GraphGrammar.
 	 */
 	def String visualiseRulesOfGraphGrammar(GraphGrammar gg, boolean mainSelection) {
 		// TODO [Maximilian]
 	}
-	
-	
+
 	/*------------------------------------------*/
 	/*-------- Constraints & Conditions --------*/
 	/*------------------------------------------*/
-	
 	/**
 	 * Returns the diagram text for a Constraint.
 	 */
 	def dispatch String visualiseEntity(Constraint entity) {
 		// TODO [Maximilian]
 		''''''
-	}	
-	
+	}
+
 	/**
 	 * Returns the diagram text for a condition of a Rule or Pattern.
 	 */
@@ -578,13 +589,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR nb : entity.nodeBlocks»
 				«FOR p : conditionPattern»
 					«FOR otherNB : (p as AtomicPattern).nodeBlocks»
-						«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
-					«ENDFOR»
+					«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
+				«ENDFOR»
 				«ENDFOR»
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the condition of a Rule or Pattern.
 	 */
@@ -592,34 +603,36 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var text = ""
 		if (entity instanceof Rule) {
 			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
+			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint ||
+				entity.condition instanceof Implication)
 				text += getAtomicConstraintString(entity.condition as ConstraintBody)
-				
+
 			// return the String for ConstraintReference
 			if (entity.condition instanceof ConstraintReference)
 				text += getConstraintReferenceString((entity.condition as ConstraintReference))
-		}
-		else if (entity instanceof Pattern) {
+		} else if (entity instanceof Pattern) {
 			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
+			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint ||
+				entity.condition instanceof Implication)
 				text += getAtomicConstraintString(entity.condition as ConstraintBody)
-				
+
 			// return the String for ConstraintReference
 			if (entity.condition instanceof ConstraintReference)
 				text += getConstraintReferenceString((entity.condition as ConstraintReference))
 		}
 		return text
 	}
-	
+
 	/**
 	 * Returns the diagram text for a ConstraintReference (referencing an AtomicConstraint or another Constraint).
 	 */
 	def String getConstraintReferenceString(ConstraintReference constraint) {
 		var text = ""
-		if (constraint.reference.body instanceof NegativeConstraint || constraint.reference.body instanceof PositiveConstraint || constraint.reference.body instanceof Implication)
+		if (constraint.reference.body instanceof NegativeConstraint ||
+			constraint.reference.body instanceof PositiveConstraint || constraint.reference.body instanceof Implication)
 			text += getAtomicConstraintString(constraint.reference.body)
 		// OrBody
-		else  {
+		else {
 			if (constraint.reference.body !== null) {
 				var count = constraint.reference.body.children.size - 1
 				for (c : constraint.reference.body.children) {
@@ -632,13 +645,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		}
 		return text
 	}
-	
+
 	/**
 	 * Returns the diagram text for an OrBody in a recursive Constraint definition.
 	 */
 	def String getOrBodyString(ConstraintBody constraintBody) {
 		var text = ""
-		
+
 		var count = constraintBody.children.size - 1
 		for (c : constraintBody.children) {
 			text += getAndBodyString(c)
@@ -646,19 +659,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				text += " **&&** "
 			count--
 		}
-		
+
 		return text
 	}
-	
+
 	/**
 	 * Returns the diagram text for an AndBody in a recursive Constraint definition.
 	 */
 	def String getAndBodyString(ConstraintBody constraintBody) {
 		var text = ""
-		
+
 		if ((constraintBody instanceof ConstraintReference))
 			text += getConstraintReferenceString(constraintBody)
-		
+
 		var count = constraintBody.children.size - 1
 		if (constraintBody.children.size > 1)
 			text += " ( "
@@ -670,28 +683,27 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		}
 		if (constraintBody.children.size > 1)
 			text += " ) "
-		
+
 		return text
 	}
-	
+
 	/**
 	 * Returns the diagram text for a Primary in a recursive Constraint definition.
 	 */
 	def String getPrimaryString(ConstraintBody constraintBody) {
 		var text = ""
-		
+
 		if (constraintBody.children.get(0) instanceof ConstraintReference) {
 			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
-		}
-		else {
+		} else {
 			text += " ( "
 			text += getOrBodyString(constraintBody)
 			text += " ) "
 		}
-		
+
 		return text
 	}
-	
+
 	/**
 	 * Returns the diagram text for an AtomicConstraint.
 	 */
@@ -703,12 +715,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		else if (constraintBody instanceof Implication)
 			return '''**if** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
 	}
-	
-	
+
 	/*-------------------------------------------------*/
 	/*---------------- Triple Rules -------------------*/
 	/*-------------------------------------------------*/
-	
 	/**
 	 * Returns the diagram text for a TripleRule.
 	 */
@@ -722,9 +732,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«FOR tnb : entity.trgNodeBlocks»
 					«visualiseTripleRuleNodeBlocks(entity, tnb, "TRG")»
 				«ENDFOR»
-
+			
 				«FOR corr : entity.correspondences»
-					"«entity.name».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«entity.name».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
+				"«entity.name».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«entity.name».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
 				«ENDFOR»
 			}
 			«IF entity.nacs.size > 0»
@@ -732,7 +742,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDIF»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the NodeBlocks of a TripleRule.
 	 */
@@ -743,7 +753,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for a NodeBlock in a TripleRule.
 	 */
@@ -767,8 +777,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDFOR»
 		'''
-	}	
-	
+	}
+
 	/**
 	 * Returns the diagram text for the name of an object in a TripleRule.
 	 */
@@ -776,7 +786,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val entity = nb.eContainer as TripleRule
 		'''"«entity.name».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for all SuperTypes of a TripleRule with inheritance arrows.
 	 */
@@ -802,7 +812,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the NACs of a given TripleRule.
 	 */
@@ -820,8 +830,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			endlegend
 		'''
 	}
-	
-	
+
 	/**
 	 * Returns the diagram text for a TripleGrammar.
 	 */
@@ -840,40 +849,38 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			}
 		'''
 	}
-	
+
 	/**
 	 * Returns the diagram text for the Metamodels in the source and target parts of a TripleGrammar.
 	 */
 	def String visualiseMetamodelsOfTripleGrammar(TripleGrammar tg, boolean mainSelection) {
 		// TODO [Maximilian]
 	}
-	
-	
+
 	/*----------------------------------*/
 	/*--------- Get NodeBlocks ---------*/
 	/*----------------------------------*/
-	
 	/**
 	 * Returns all NodeBlocks of a Model.
 	 */
 	def dispatch getNodeBlocks(Model entity) {
 		entity.nodeBlocks
 	}
-	
+
 	/**
 	 * Returns all NodeBlocks of a Pattern.
 	 */
 	def dispatch getNodeBlocks(Pattern entity) {
 		entity.body.nodeBlocks
 	}
-	
+
 	/**
 	 * Returns all NodeBlocks of a Rule.
 	 */
 	def dispatch getNodeBlocks(Rule entity) {
 		entity.nodeBlocks
 	}
-	
+
 	/**
 	 * Returns all NodeBlocks of a TripleRule.
 	 */
@@ -882,12 +889,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		nodeBlocks.addAll(entity.trgNodeBlocks)
 		return nodeBlocks
 	}
-	
-	
+
 	/*------------------------------*/
 	/*------------ Misc ------------*/
 	/*------------------------------*/
-
 	/**
 	 * Returns the diagram text for a link to the given entity to make it clickable.
 	 */
@@ -905,18 +910,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			// For the TextSelection documents start with line 0.
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
-			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel || entity instanceof Enum || entity instanceof Constraint))
-			for (nodeBlock : entity.nodeBlocks) {
-				val object = NodeModelUtils.getNode(nodeBlock);
-				if (object !== null && selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
-					return Optional.of(nodeBlock)
+			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel ||
+				entity instanceof Enum || entity instanceof Constraint))
+				for (nodeBlock : entity.nodeBlocks) {
+					val object = NodeModelUtils.getNode(nodeBlock);
+					if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
+						return Optional.of(nodeBlock)
+					}
 				}
-			}
 		}
 
 		Optional.empty()
 	}
-	
+
 	/**
 	 * Returns the MetamodelNodeBlock that is currently selected in the editor.
 	 */
@@ -926,17 +932,17 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
 			if (entity instanceof Metamodel)
-			for (nodeBlock : entity.nodeBlocks) {
-				val object = NodeModelUtils.getNode(nodeBlock);
-				if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
-					return Optional.of(nodeBlock)
+				for (nodeBlock : entity.nodeBlocks) {
+					val object = NodeModelUtils.getNode(nodeBlock);
+					if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
+						return Optional.of(nodeBlock)
+					}
 				}
-			}
 		}
 
 		Optional.empty()
 	}
-	
+
 	/**
 	 * Returns the Entity that is currently selected in the editor.
 	 */

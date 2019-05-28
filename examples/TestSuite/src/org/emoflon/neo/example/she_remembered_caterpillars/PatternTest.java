@@ -30,17 +30,28 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
-	public void noStrangeBridge() {
+	public void testNoStrangeBridge() {
 		expectNoMatch(entities.getPattern_StrangeBridge());
 	}
 	
 	@Test
-	public void inFrontOfBridge() {
+	public void testInFrontOfBridge() {
 		expectSingleMatch(entities.getPattern_StandingInFrontOfBridge());
 	}
 	
 	@Test
-	public void colouredThingsOnPlatforms() {
+	public void testColouredThingsOnPlatforms() {
 		assertThat(entities.getPattern_ColouredThingOnPlatform().countMatches(), is(2));
+	}
+	
+	@Test
+	@Disabled("TODO[Jannik] Handle when conditions")
+	public void testNoWayForward() {
+		expectNoMatch(entities.getPattern_NoWayForward());
+	}
+	
+	@Test
+	public void testNoDeadEnd() {
+		expectSingleMatch(entities.getPattern_NoDeadEnd());
 	}
 }
