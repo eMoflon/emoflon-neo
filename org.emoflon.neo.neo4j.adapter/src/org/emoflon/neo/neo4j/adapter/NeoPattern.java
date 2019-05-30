@@ -17,6 +17,8 @@ public class NeoPattern implements IPattern {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	Driver driver;
 	private Pattern p;
+	
+	private boolean injective;
 
 	private Collection<NeoNode> nodes;
 	private Collection<NeoRelation> relations;
@@ -30,10 +32,12 @@ public class NeoPattern implements IPattern {
 		this.driver = builder.getDriver();
 		this.p = p;
 
+		this.injective = true;
+		
 		generateNodesAndRelations();
 
 	}
-
+	
 	private void generateNodesAndRelations() {
 
 		nodes.clear();
@@ -43,19 +47,32 @@ public class NeoPattern implements IPattern {
 		for (var n : p.getBody().getNodeBlocks()) {
 
 			NeoNode node = new NeoNode(n.getType().getName(), n.getName());
+			
+			n.getProperties().forEach(p -> node.addProperty(
+					p.getType().getName(), 
+					NeoUtil.handleValue(p.getValue())
+			));
 
 			// Get all relationships
-			n.getRelations().forEach(r -> relations.add(new NeoRelation(r.getType().getName(), r.getProperties(), node,
-					r.getTarget().getType().getName(), r.getTarget().getName())));
+			n.getRelations().forEach(r -> node.addRelation(
+					new NeoRelation(
+							r.getType().getName(),
+							r.getProperties(), 
+							r.getTarget().getType().getName(), 
+							r.getTarget().getName())
+					)
+			);
+			
+			//		r.getTarget().getType().getName(), r.getTarget().getName())));
 
 			// Get all properties or conditions
-			n.getProperties().forEach(p -> {
+			/*n.getProperties().forEach(p -> {
 				if (p.getOp().equals(ConditionOperator.EQ))
 					node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
 				else
 					conditions.add(new NeoCondition(p.getType().getName(), p.getOp(), NeoUtil.handleValue(p.getValue()),
 							node.getVarName()));
-			});
+			});*/
 
 			nodes.add(node);
 		}
@@ -70,10 +87,10 @@ public class NeoPattern implements IPattern {
 		NeoNode matchnode = new NeoNode("Match", "matchingNode");
 		matchnode.addProperty("uuid", uuid);
 
-		for (NeoNode node : nodes) {
+		/*for (NeoNode node : nodes) {
 			relations.add(
-					new NeoRelation("matches_" + node.getVarName(), matchnode, node.getClassType(), node.getVarName()));
-		}
+			//new NeoRelation("matches_" + node.getVarName(), matchnode, node.getClassType(), node.getVarName()));
+		}*/
 
 		nodes.add(matchnode);
 
@@ -107,7 +124,8 @@ public class NeoPattern implements IPattern {
 
 		logger.info("Searching matches for Pattern: " + getName());
 
-		String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes, conditions, relations, getName());
+		//String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes, conditions, relations, getName());
+		String cypherQuery = CypherPatternBuilder.readQuery(nodes,injective);
 		logger.info(cypherQuery);
 
 		StatementResult result = driver.session().run(cypherQuery);
@@ -115,13 +133,18 @@ public class NeoPattern implements IPattern {
 
 		while (result.hasNext()) {
 			Record res = result.next();
-			matches.add(new NeoMatch(getName(), this, res.get("uuid").toString(), driver));
-			logger.info(res.get("uuid").toString());
+			matches.add(new NeoMatch(getName(), this, res.get("id").toString(), driver));
+			logger.info(res.get("id").toString());
 		}
 		if (matches.isEmpty()) {
 			logger.error("NO MATCHES FOUND!");
 		}
 		return matches;
 
+	}
+
+	@Override
+	public void setInjectivity(Boolean injective) {
+		this.injective = injective;
 	}
 }

@@ -4,6 +4,8 @@ import java.util.Collection;
 
 public interface IPattern {
 	String getName();
+	
+	void setInjectivity(Boolean injective);
 
 	Collection<IMatch> getMatches();
 

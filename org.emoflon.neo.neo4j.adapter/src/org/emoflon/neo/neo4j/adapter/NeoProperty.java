@@ -7,9 +7,8 @@ public class NeoProperty {
 
 	private String classVarName;
 
-	public NeoProperty(String name, String value, String classVarName) {
+	public NeoProperty(String name, String value) {
 
-		this.classVarName = classVarName;
 		this.name = name;
 		this.value = value;
 
