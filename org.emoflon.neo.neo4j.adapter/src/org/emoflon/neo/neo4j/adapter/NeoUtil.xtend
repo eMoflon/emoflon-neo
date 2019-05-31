@@ -9,6 +9,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.Value
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.impl.AttributeExpressionImpl
 
 class NeoUtil {
 	def static String handleValue(Value value) {
@@ -20,8 +21,10 @@ class NeoUtil {
 		if(value instanceof PrimitiveBoolean) return Boolean.toString(PrimitiveBoolean.cast(value).isTrue())
 
 		if(value instanceof EnumValue) return "\""+EnumValue.cast(value).getLiteral().getName().toString()+"\""
-
-		// TODO[Jannik] How to handle attribute expressions?
+		
+		if(value instanceof AttributeExpressionImpl) return AttributeExpressionImpl.cast(value).node.name.toString + "." +
+												AttributeExpressionImpl.cast(value).node.type.allPropertiesOf.get(0).name.toString
+		
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
 	
