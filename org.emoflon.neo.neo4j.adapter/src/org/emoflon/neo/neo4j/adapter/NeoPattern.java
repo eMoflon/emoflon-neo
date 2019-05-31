@@ -41,7 +41,6 @@ public class NeoPattern implements IPattern {
 	private void generateNodesAndRelations() {
 
 		nodes.clear();
-		relations.clear();
 		conditions.clear();
 
 		for (var n : p.getBody().getNodeBlocks()) {
@@ -124,8 +123,7 @@ public class NeoPattern implements IPattern {
 
 		logger.info("Searching matches for Pattern: " + getName());
 
-		//String cypherQuery = CypherPatternBuilder.createCypherQuery(nodes, conditions, relations, getName());
-		String cypherQuery = CypherPatternBuilder.readQuery(nodes,injective);
+		String cypherQuery = CypherPatternBuilder.readQuery(nodes,injective,false);
 		logger.info(cypherQuery);
 
 		StatementResult result = driver.session().run(cypherQuery);
@@ -133,8 +131,7 @@ public class NeoPattern implements IPattern {
 
 		while (result.hasNext()) {
 			Record res = result.next();
-			matches.add(new NeoMatch(getName(), this, res.get("id").toString(), driver));
-			logger.info(res.get("id").toString());
+			matches.add(new NeoMatch(getName(), nodes, res, driver));
 		}
 		if (matches.isEmpty()) {
 			logger.error("NO MATCHES FOUND!");
@@ -146,5 +143,10 @@ public class NeoPattern implements IPattern {
 	@Override
 	public void setInjectivity(Boolean injective) {
 		this.injective = injective;
+	}
+	
+	// TODO[Jannik]: implements this
+	public void isStillValidForAllMatches() {
+		
 	}
 }

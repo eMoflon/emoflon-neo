@@ -7,6 +7,8 @@ import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
 public class NeoNode {
+	
+	private String id;
 
 	private String classType;
 	private String varName;
@@ -34,6 +36,13 @@ public class NeoNode {
 	}
 	public Collection<NeoRelation> getRelations() {
 		return relations;
+	}
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(Object object) {
+		this.id = object.toString();
 	}
 
 	public void addProperty(String name, String value) {

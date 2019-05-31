@@ -4,10 +4,10 @@ import java.util.Collection
 
 class CypherPatternBuilder {
 	
-	def static String readQuery(Collection<NeoNode> nodes, boolean injective) {
+	def static String readQuery(Collection<NeoNode> nodes, boolean injective, boolean isValidQuery) {
 		'''«matchQuery(nodes)»
-		«withQuery(nodes,injective)»
-		«returnQuery(nodes)»'''
+		«withQuery(nodes,injective,isValidQuery)»
+		«returnQuery(nodes,isValidQuery)»'''
 	}
 	
 	def static String matchQuery(Collection<NeoNode> nodes) {
@@ -19,8 +19,10 @@ class CypherPatternBuilder {
 					«ENDIF»
 				«ENDFOR»'''	
 	}
-	def static String withQuery(Collection<NeoNode> nodes, boolean injective) {
-		'''«IF injective && nodes.size > 1»«injectityBlock(nodes)»«ENDIF»'''
+	def static String withQuery(Collection<NeoNode> nodes, boolean injective, boolean isValidQuery) {
+		'''«IF injective && nodes.size > 1»«injectityBlock(nodes)»
+		«ELSEIF isValidQuery»«nodeIdBlock(nodes)»«ENDIF»
+		'''
 	}
 	
 	def static String injectityBlock(Collection<NeoNode> nodes) {
@@ -42,8 +44,24 @@ class CypherPatternBuilder {
 	    }
 	    return ret
 	}
-	def static String returnQuery(Collection<NeoNode> nodes) {
-		'''RETURN «FOR n:nodes SEPARATOR ', '»id(«n.varName») AS «n.varName»«ENDFOR»'''	
+	def static String nodeIdBlock(Collection<NeoNode> nodes) {
+		var String ret = ''
+		var boolean first = true
+		
+	    for (n:nodes) {
+  			if(!first) {
+  				ret += " AND"
+  			} else {
+  				ret += "WHERE "
+  				first = false
+  			}
+  			ret += " ID("+n.varName+")="+ n.id
+	    }
+	    return ret
+	}
+	def static String returnQuery(Collection<NeoNode> nodes, boolean isValidQuery) {
+		'''RETURN «IF isValidQuery»TRUE
+		«ELSE»«FOR n:nodes SEPARATOR ', '»id(«n.varName») AS «n.varName»«ENDFOR»«ENDIF»'''	
 	}
 	
 	def static String sourceNode (NeoNode n) {
