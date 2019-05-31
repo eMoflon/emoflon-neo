@@ -20,9 +20,27 @@ class CypherPatternBuilder {
 				«ENDFOR»'''	
 	}
 	def static String withQuery(Collection<NeoNode> nodes, boolean injective) {
-		'''«IF injective»
-		WHERE TRUE«FOR n:nodes»«FOR m:nodes»«IF n.varName != m.varName» AND NOT id(«n.varName»)=id(«m.varName»)«ENDIF»«ENDFOR»«ENDFOR»
-		«ENDIF»'''
+		'''«IF injective && nodes.size > 1»«injectityBlock(nodes)»«ENDIF»'''
+	}
+	
+	def static String injectityBlock(Collection<NeoNode> nodes) {
+		var String ret = ''
+		var boolean first = true
+		
+	    for (var i = 0 ; i < nodes.size ; i++) {
+	      	for (var j = i+1 ; j < nodes.size ; j++) {
+	      		if(nodes.get(i).classType == nodes.get(j).classType) {
+	      			if(!first) {
+	      				ret += "AND "
+	      			} else {
+	      				ret += "WHERE "
+	      				first = false
+	      			}
+	      			ret += " NOT id(" + nodes.get(i).varName +")=id("+ nodes.get(j).varName +")"
+	      		}
+	    	}
+	    }
+	    return ret
 	}
 	def static String returnQuery(Collection<NeoNode> nodes) {
 		'''RETURN «FOR n:nodes SEPARATOR ', '»id(«n.varName») AS «n.varName»«ENDFOR»'''	

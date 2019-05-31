@@ -19,7 +19,7 @@ class NeoUtil {
 
 		if(value instanceof PrimitiveBoolean) return Boolean.toString(PrimitiveBoolean.cast(value).isTrue())
 
-		if(value instanceof EnumValue) return EnumValue.cast(value).getLiteral().getName()
+		if(value instanceof EnumValue) return "\""+EnumValue.cast(value).getLiteral().getName().toString()+"\""
 
 		// TODO[Jannik] How to handle attribute expressions?
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
