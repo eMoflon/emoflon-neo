@@ -13,7 +13,7 @@ class CypherPatternBuilder {
 	def static String matchQuery(Collection<NeoNode> nodes) {
 		'''MATCH «FOR n:nodes SEPARATOR ', '»
 					«IF n.relations.size > 0 »
-						«FOR r:n.relations SEPARATOR ', '»(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)-[«r.relVarName»:«r.relType»«IF r.properties.size > 0»«FOR rp:r.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«rp.name»:«rp.value»«ENDFOR»«ENDIF»]->(«r.toNodeVar»:«r.toNodeLabel»)«ENDFOR»
+						«FOR r:n.relations SEPARATOR ', '»«sourceNode(n)»«directedRelation(r)»«targetNode(r)»«ENDFOR»
 					«ELSE»
 						(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)
 					«ENDIF»
@@ -31,7 +31,7 @@ class CypherPatternBuilder {
 	      	for (var j = i+1 ; j < nodes.size ; j++) {
 	      		if(nodes.get(i).classType == nodes.get(j).classType) {
 	      			if(!first) {
-	      				ret += "AND "
+	      				ret += " AND"
 	      			} else {
 	      				ret += "WHERE "
 	      				first = false
@@ -45,6 +45,26 @@ class CypherPatternBuilder {
 	def static String returnQuery(Collection<NeoNode> nodes) {
 		'''RETURN «FOR n:nodes SEPARATOR ', '»id(«n.varName») AS «n.varName»«ENDFOR»'''	
 	}
+	
+	def static String sourceNode (NeoNode n) {
+		'''(«n.varName»:«n.classType»«properties(n.properties)»)'''
+	}
+	def static String targetNode(NeoRelation r) {
+		'''(«r.toNodeVar»:«r.toNodeLabel»)'''
+	}
+	def static String directedRelation (NeoRelation r) {
+		'''-[«r.relVarName»:«r.relType»«properties(r.properties)»]->'''
+	}
+	def static String properties(Collection<NeoProperty> props) {
+		'''«IF props.size > 0»«FOR p:props BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»'''
+	}
+	
+	
+	
+	
+	
+	
+	/* +++ OLD SECTION */
 	
 	def static String createCypherQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations, String pName) {
 		val mnName = "matchingNode"
