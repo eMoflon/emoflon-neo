@@ -37,6 +37,12 @@ public class ENeoConsole extends AppenderSkeleton {
 					+ message);
 			out.close();
 			revealConsole(console);
+		} catch (NullPointerException e) {
+			System.out.println("[" //
+					+ Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":"//
+					+ Calendar.getInstance().get(Calendar.MINUTE) + ":"//
+					+ Calendar.getInstance().get(Calendar.SECOND) + "] "//
+					+ message);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

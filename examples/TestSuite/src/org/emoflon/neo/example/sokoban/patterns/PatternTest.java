@@ -27,12 +27,12 @@ public class PatternTest extends ENeoTest {
 	}
 
 	@Test
-	@Disabled("TODO[Jannik] Implement solution for injectivity checks")
 	public void test_TwoSokoban() {
 		expectNoMatch(entities.getPattern_TwoSokoban());
 	}
 
 	@Test
+	//@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_OneSokoban_StillValid() {
 		NeoPattern p = entities.getPattern_OneSokoban();
 		var matches = p.getMatches();
@@ -213,7 +213,6 @@ public class PatternTest extends ENeoTest {
 	}
 
 	@Test
-	@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_All3x3Fields_StillValid() {
 		NeoPattern p = entities.getPattern_All3x3Fields();
 		var matches = p.getMatches();
@@ -227,7 +226,6 @@ public class PatternTest extends ENeoTest {
 	}
 
 	@Test
-	@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		NeoPattern p = entities.getPattern_All3x3Fields();
 		var matches = p.getMatches();

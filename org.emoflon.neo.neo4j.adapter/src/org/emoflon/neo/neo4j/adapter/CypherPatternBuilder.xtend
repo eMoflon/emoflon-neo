@@ -4,6 +4,86 @@ import java.util.Collection
 
 class CypherPatternBuilder {
 	
+	def static String readQuery(Collection<NeoNode> nodes, boolean injective, boolean isValidQuery) {
+		'''«matchQuery(nodes)»
+		«withQuery(nodes,injective,isValidQuery)»
+		«returnQuery(nodes,isValidQuery)»'''
+	}
+	
+	def static String matchQuery(Collection<NeoNode> nodes) {
+		'''MATCH «FOR n:nodes SEPARATOR ', '»
+					«IF n.relations.size > 0 »
+						«FOR r:n.relations SEPARATOR ', '»«sourceNode(n)»«directedRelation(r)»«targetNode(r)»«ENDFOR»
+					«ELSE»
+						(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)
+					«ENDIF»
+				«ENDFOR»'''	
+	}
+	def static String withQuery(Collection<NeoNode> nodes, boolean injective, boolean isValidQuery) {
+		'''«IF injective && nodes.size > 1»«injectityBlock(nodes)»
+		«ELSEIF isValidQuery»«nodeIdBlock(nodes)»«ENDIF»
+		'''
+	}
+	
+	def static String injectityBlock(Collection<NeoNode> nodes) {
+		var String ret = ''
+		var boolean first = true
+		
+	    for (var i = 0 ; i < nodes.size ; i++) {
+	      	for (var j = i+1 ; j < nodes.size ; j++) {
+	      		if(nodes.get(i).classType == nodes.get(j).classType) {
+	      			if(!first) {
+	      				ret += " AND"
+	      			} else {
+	      				ret += "WHERE "
+	      				first = false
+	      			}
+	      			ret += " NOT id(" + nodes.get(i).varName +")=id("+ nodes.get(j).varName +")"
+	      		}
+	    	}
+	    }
+	    return ret
+	}
+	def static String nodeIdBlock(Collection<NeoNode> nodes) {
+		var String ret = ''
+		var boolean first = true
+		
+	    for (n:nodes) {
+  			if(!first) {
+  				ret += " AND"
+  			} else {
+  				ret += "WHERE "
+  				first = false
+  			}
+  			ret += " ID("+n.varName+")="+ n.id
+	    }
+	    return ret
+	}
+	def static String returnQuery(Collection<NeoNode> nodes, boolean isValidQuery) {
+		'''RETURN «IF isValidQuery»TRUE
+		«ELSE»«FOR n:nodes SEPARATOR ', '»id(«n.varName») AS «n.varName»«ENDFOR»«ENDIF»'''	
+	}
+	
+	def static String sourceNode (NeoNode n) {
+		'''(«n.varName»:«n.classType»«properties(n.properties)»)'''
+	}
+	def static String targetNode(NeoRelation r) {
+		'''(«r.toNodeVar»:«r.toNodeLabel»)'''
+	}
+	def static String directedRelation (NeoRelation r) {
+		'''-[«r.relVarName»:«r.relType»«properties(r.properties)»]->'''
+	}
+	def static String properties(Collection<NeoProperty> props) {
+		'''«IF props.size > 0»«FOR p:props BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»'''
+	}
+	
+	
+	
+	
+	
+	
+	/* +++ OLD SECTION */
+	
 	def static String createCypherQuery(Collection<NeoNode> nodes, Collection<NeoCondition> conditions, Collection<NeoRelation> relations, String pName) {
 		val mnName = "matchingNode"
 		val relName = "matches"
@@ -38,7 +118,7 @@ class CypherPatternBuilder {
 	}
 	
 	def static String cypherRelation(NeoNode node, NeoRelation relation, Collection<NeoProperty> properties) {
-		'''(«node.varName»)-[«relation.relName»:«relation.relType»«IF properties.size > 0» «cypherProperties(properties)»«ENDIF»]->(«relation.toVarName»)'''
+		'''(«node.varName»)-[«relation.relVarName»:«relation.relType»«IF properties.size > 0» «cypherProperties(properties)»«ENDIF»]->(«relation.toNodeVar»)'''
 	}
 
 	

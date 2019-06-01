@@ -3,70 +3,58 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
 public class NeoRelation {
 
 	private String relType;
-	private String relName;
-	private NeoNode fromNode;
-	private String toNode;
-	private String toVarName;
+	private String relVarName;
+	private String toNodeVar;
+	private String toNodeLabel;
 
 	private Collection<NeoProperty> properties;
 
-	public NeoRelation(String relType, Collection<ModelPropertyStatement> props, NeoNode fromNode, String toNode,
-			String toVarName) {
+	public NeoRelation(String relType, EList<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
 
 		this.properties = new ArrayList<>();
 
 		this.relType = relType;
-		this.relName = "";
-		this.fromNode = fromNode;
-		this.toNode = toNode;
-		this.toVarName = toVarName;
+		this.relVarName = "";
+		this.toNodeLabel = toNodeLabel;
+		this.toNodeVar = toNodeVar;
 
 		props.forEach(prop -> addProperty(prop.getType().getName(), NeoUtil.handleValue(prop.getValue())));
 	}
 
-	public NeoRelation(String relType, NeoNode fromNode, String toNode, String toVarName) {
+	public void addProperty(String name, String value) {
+		this.properties.add(new NeoProperty(name, value));
+	}
 
-		this.properties = new ArrayList<>();
-
-		this.relType = relType;
-		this.relName = "";
-		this.fromNode = fromNode;
-		this.toNode = toNode;
-		this.toVarName = toVarName;
+	@Override
+	public String toString() {
+		//return CypherPatternBuilder.cypherRelation(fromNode, this, properties);
+		return "";
 	}
 
 	public String getRelType() {
 		return relType;
 	}
 
-	public String getToNode() {
-		return toNode;
+	public String getRelVarName() {
+		return relVarName;
 	}
 
-	public String getToVarName() {
-		return toVarName;
+	public String getToNodeVar() {
+		return toNodeVar;
 	}
 
-	public String getRelName() {
-		return relName;
+	public String getToNodeLabel() {
+		return toNodeLabel;
 	}
 
 	public Collection<NeoProperty> getProperties() {
 		return properties;
-	}
-
-	public void addProperty(String name, String value) {
-		this.properties.add(new NeoProperty(name, value, toVarName));
-	}
-
-	@Override
-	public String toString() {
-		return CypherPatternBuilder.cypherRelation(fromNode, this, properties);
 	}
 
 }

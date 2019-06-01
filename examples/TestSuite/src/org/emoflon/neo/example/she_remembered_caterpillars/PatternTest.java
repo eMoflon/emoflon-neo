@@ -18,13 +18,11 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Extend patterns to handle attribute expressions")
 	public void testPatternWithAttributeExpression() {
 		expectSingleMatch(entities.getPattern_CanCrossBridge());
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Extend patterns to handle enums")
 	public void testPatternWithEnum() {
 		expectSingleMatch(entities.getPattern_EverythingBlue());
 	}
