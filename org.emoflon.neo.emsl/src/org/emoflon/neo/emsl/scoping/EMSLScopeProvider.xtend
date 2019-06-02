@@ -73,11 +73,11 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		}
 
 		if (nameOfRelationStatement(context, reference)) {
-			return handleNameOfRelationStatement(context as ModelRelationStatement, reference)
+			return handleTypeOfRelationStatementInModelNodeBlock(context as ModelRelationStatement, context.eContainer as ModelNodeBlock)
 		}
 
 		if (nameOfPropertyStatement(context, reference)) {
-			return handleNameOfPropertyStatement(context as ModelPropertyStatement, reference)
+			return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement, context.eContainer as ModelNodeBlock)
 		}
 
 		if (typeOfPropertyStatementInRelationStatement(context, reference))
@@ -129,7 +129,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def handleTypeOfPropertyStatementInModelNodeBlock(ModelPropertyStatement prop, ModelNodeBlock container) {
 		val nodeBlocks = EMSLUtil.thisAndAllSuperTypes(container.type)
 		val possibilities = new HashMap
-		for (nb : nodeBlocks.keySet) {
+		for (nb : nodeBlocks) {
 			(nb as MetamodelNodeBlock).properties.forEach[r|possibilities.put(r, null)]
 		}
 
@@ -206,7 +206,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def handleTypeOfRelationStatementInModelNodeBlock(ModelRelationStatement context, ModelNodeBlock container) {
 		val nodeBlocks = EMSLUtil.thisAndAllSuperTypes(container.type)
 		val possibilities = new HashMap
-		for (nb : nodeBlocks.keySet) {
+		for (nb : nodeBlocks) {
 			(nb as MetamodelNodeBlock).relations.forEach[r|possibilities.put(r, null)]
 		}
 

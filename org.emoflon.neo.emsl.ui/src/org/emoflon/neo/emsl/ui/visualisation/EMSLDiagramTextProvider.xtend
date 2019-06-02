@@ -5,8 +5,11 @@ import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider
 import org.eclipse.jface.text.TextSelection
 import org.eclipse.jface.viewers.ISelection
 import org.eclipse.ui.IEditorPart
+import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.ui.editor.XtextEditor
+import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInType
@@ -39,13 +42,6 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
-import org.emoflon.neo.emsl.eMSL.SourceNAC
-import org.emoflon.neo.emsl.EMSLFlattener
-import org.emoflon.neo.emsl.eMSL.EMSLFactory
-import org.emoflon.neo.emsl.eMSL.ActionOperator
-import org.eclipse.xtext.EcoreUtil2
-import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.common.util.URI
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -213,7 +209,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForObject(nb)» --> «IF link.target !== null»«labelForObject(link.target)»«ELSE»"?"«ENDIF» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForObject(nb)» : «attr.type.name» = «IF attr.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
+				«labelForObject(nb)» : «IF attr.type.name !== null»«attr.type.name»«ELSE»?«ENDIF» = «IF attr.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -230,11 +226,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	dispatch def printTarget(NodeAttributeExpTarget target) {
-		'''«target.attribute.name»'''
+		'''«IF target !== null && target.attribute !== null»«target.attribute.name»«ELSE»?«ENDIF»'''
 	}
 
 	dispatch def printTarget(LinkAttributeExpTarget target) {
-		'''-«target.link.type»->.«target.attribute.name»'''
+		'''-«IF target !== null»«target.link.type»->.«target.attribute.name»«ELSE»?«ENDIF»'''
 	}
 
 	dispatch def printValue(EnumValue value) {
@@ -258,7 +254,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForObject(ModelNodeBlock nb) {
 		val entity = nb.eContainer as Model
-		'''"«entity?.name».«nb?.name»:«nb?.type?.name»"'''
+		'''"«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
 	}
 	
 	/**
@@ -914,7 +910,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				entity instanceof Enum || entity instanceof Constraint))
 				for (nodeBlock : entity.nodeBlocks) {
 					val object = NodeModelUtils.getNode(nodeBlock);
-					if (selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
+					if (object !== null && selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
 						return Optional.of(nodeBlock)
 					}
 				}

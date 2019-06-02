@@ -29,34 +29,29 @@ public class EMSLFlattener {
 	public AtomicPattern flattenPattern(AtomicPattern pattern, ArrayList<String> alreadyRefinedPatternNames) {
 		var<RefinementCommand> refinements = pattern.getSuperRefinementTypes();
 		
-		// TODO [Maximilian]: find out why NodeBlocks are not deleted if removed from the file; implement their removal; find out why Types are lost (e.g. sokoban:?)
+		// TODO [Maximilian]: find out why NodeBlocks are not deleted if removed from the file; implement their removal;
 		
 		// check if anything has to be done, if not return
 		if (refinements.isEmpty())
 			return pattern;
 		
-		// IDEA: collect NodeBlocks of the to-be-refined pattern
-		//collectNodes(refinements, alreadyRefinedPatternNames).values().forEach(n -> pattern.getNodeBlocks().addAll(n));
-		
-		var<String, ArrayList<ModelNodeBlock>> createdNodeBlocks = collectNodes(refinements, alreadyRefinedPatternNames);
-		
+		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(refinements, alreadyRefinedPatternNames);
+	
 		pattern.getNodeBlocks().forEach(nb -> {
-			if (createdNodeBlocks.keySet().contains(nb.getName())) {
-				createdNodeBlocks.get(nb.getName()).add(nb);
+			if (collectedNodeBlocks.keySet().contains(nb.getName())) {
+				collectedNodeBlocks.get(nb.getName()).add(nb);
 			}
 			else {
 				var<ModelNodeBlock> foo = new ArrayList<ModelNodeBlock>();
 				foo.add(nb);
-				createdNodeBlocks.put(nb.getName(), foo);
+				collectedNodeBlocks.put(nb.getName(), foo);
 			}
 		});
 
-		var mergedNodes = mergeAllNodes(createdNodeBlocks);
+		var mergedNodes = mergeNodes(collectedNodeBlocks);
+		
 		pattern.getNodeBlocks().clear();
 		pattern.getNodeBlocks().addAll((mergedNodes));
-		
-		// IDEA: collect edges and connect to correct nodeblock-objects
-		//var collectedEdges = collectEdges(refinements);
 		
 		return pattern;
 	}
@@ -72,7 +67,7 @@ public class EMSLFlattener {
 		
 		for (var r : refinementList) {			
 			if (r.getReferencedType() instanceof AtomicPattern) {				
-				if (alreadyRefinedPatternNames.toString().contains(((AtomicPattern) r.getReferencedType()).getName())) {
+				if (alreadyRefinedPatternNames.contains(((AtomicPattern) r.getReferencedType()).getName())) {
 					// check for cycles in refinements, if found: throw unusual exception; TODO [Maximilian]: change to more appropriate error handling
 					throw new RuntimeException();
 				}
@@ -115,37 +110,21 @@ public class EMSLFlattener {
 	}
 	
 	/**
-	 * This method collects all RelationStatements from the NodeBlocks. Those RelationStatements are used after building the
-	 * union to correctly connect two NodeBlocks.
-	 * @param refinementList List of RefinementCommands holding all pattern that should be refined.
-	 * @return List of RelationStatements that appear in the NodeBlocks of the Pattern listed in the RefinementCommands.
-	 */
-	private ArrayList<ModelRelationStatement> collectEdges(EList<RefinementCommand> refinementList) {
-		var<ModelRelationStatement> relationStatements = new ArrayList<ModelRelationStatement>();
-		
-		// get edges, maybe call this function from the collectNodes to connect there already instead of later;
-		// might contradict the idea to first collect everything and the construct the union
-		
-		return relationStatements;
-	}
-	
-	/**
 	 * This method takes a HashMap of lists of NodeBlocks mapped to the names of the contained NodeBlocks.
 	 * All of those NodeBlocks with the same name (mapping) are then merged into one that is added to the model. During
-	 * the merging the least common subtype of all NodeBlocks with the same name is searched for.
+	 * the merging the least common subtype of all NodeBlocks with the same name is searched for. All of the edges with the same
+	 * target and same type are also merged.
+	 * 
 	 * @param nodeBlocks HashMap of Lists of ModelNodeBlocks that are mapped to the names of the NodeBlocks contained in such a list.
 	 * @return ArrayList of ModelNodeBlocks that only contains the ModelNodeBlocks that were created during merging.
 	 */
-	private ArrayList<ModelNodeBlock> mergeAllNodes(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) {
+	private ArrayList<ModelNodeBlock> mergeNodes(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) {
 		var<ModelNodeBlock> mergedNodes = new ArrayList<ModelNodeBlock>();
 		
 		// take all nodeBlocks with the same name/key out of the HashMap and merge
 		for (var name : nodeBlocks.keySet()) {
 			var blocksWithKey = nodeBlocks.get(name);
 			// merge nodes with the same name
-			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
-			mergedNodes.add(newNb);
-			newNb.setName(name);
 			
 			Comparator<MetamodelNodeBlock> comparator = new Comparator<MetamodelNodeBlock>() {
 				@Override
@@ -174,16 +153,67 @@ public class EMSLFlattener {
 			};
 			
 			// store/sort types in this PriorityQueue
-			PriorityQueue<MetamodelNodeBlock> queue = new PriorityQueue<MetamodelNodeBlock>(comparator);
+			PriorityQueue<MetamodelNodeBlock> nodeBlockTypeQueue = new PriorityQueue<MetamodelNodeBlock>(comparator);
 			
 			// collect types
 			for (var nb : blocksWithKey) {
 				if (nb.getType() != null) {
-					queue.add(nb.getType());
+					nodeBlockTypeQueue.add(nb.getType());
 				}
-			}			
-			newNb.setType(queue.peek());			
+			}
+			
+			// create new NodeBlock that will be added to the pattern
+			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
+			mergedNodes.add(newNb);
+			newNb.setName(name);
+			newNb.setType(nodeBlockTypeQueue.peek());
+			
 		}
+		
+		return mergeEdgesOfNodeBlocks(nodeBlocks, mergedNodes);
+	}
+	
+	/**
+	 * This method takes a list of collected NodeBlocks that were collected from all the refinements, and a list of merged nodes
+	 * and adds the merged RelationStatements to the mergedNodes which are then returned.
+	 * @param nodeBlocks that were collected from the refinements.
+	 * @param mergedNodes nodeBlocks that were except for the relationStatements already merged.
+	 * @return list of ModelNodeBlocks that now have merged RelationStatements.
+	 */
+	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
+		
+		// collect all edges in hashmap; first key is type name, second is target name
+		for (var name : nodeBlocks.keySet()) {
+			var edges = new HashMap<String, HashMap<String, ArrayList<ModelRelationStatement>>>();
+			for (var nb : nodeBlocks.get(name)) {
+				for (var rel : nb.getRelations()) {
+					if (!edges.containsKey(rel.getType().getName())) {
+						edges.put(rel.getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
+					}
+					if (!edges.get(rel.getType().getName()).containsKey(rel.getTarget().getName())) {
+						edges.get(rel.getType().getName()).put(rel.getTarget().getName(), new ArrayList<ModelRelationStatement>());
+					}
+					edges.get(rel.getType().getName()).get(rel.getTarget().getName()).add(rel);
+				}
+			}
+			
+			// iterate over all types and targets to create new RelationStatement that is the result of the merging
+			for (var typename : edges.keySet()) {
+				for (var targetname : edges.get(typename).keySet()) {
+					var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
+					newRel.setType(edges.get(typename).get(targetname).get(0).getType());
+					mergedNodes.forEach(nb -> {
+						if (nb.getName().equals(targetname)) {
+							newRel.setTarget(nb);
+						}
+						if (nb.getName().equals(name)) {
+							nb.getRelations().add(newRel);
+						}
+					});
+				}
+			}
+		}
+		
 		return mergedNodes;
 	}
 	
@@ -216,6 +246,17 @@ public class EMSLFlattener {
 		
 		newNb.setType(nb.getType());
 		newNb.setAction(nb.getAction());
+		
+		// add relations and properties to new nodeblock
+		for (var rel : nb.getRelations()) {
+			var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
+			newRel.setAction(rel.getAction());
+			newRel.setTarget(rel.getTarget());
+			newRel.setType(rel.getType());
+			newNb.getRelations().add(newRel);
+		}
+		
+		newNb.getProperties().addAll(nb.getProperties());
 		
 		return newNb;
 	}
