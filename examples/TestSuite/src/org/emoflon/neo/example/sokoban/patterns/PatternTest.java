@@ -7,9 +7,7 @@ import org.emoflon.neo.api.API_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Rules_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.example.ENeoTest;
-import org.emoflon.neo.neo4j.adapter.NeoPattern;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PatternTest extends ENeoTest {
@@ -17,7 +15,7 @@ public class PatternTest extends ENeoTest {
 	private API_Rules_SokobanPatternsRulesConstraints entities = new API_Rules_SokobanPatternsRulesConstraints(builder);
 
 	@BeforeEach
-	private void initDB() {
+	public void initDB() {
 		initDB(new API_Models_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
 	}
 
@@ -32,10 +30,9 @@ public class PatternTest extends ENeoTest {
 	}
 
 	@Test
-	//@Disabled("TODO[Jannik] Switch to ID-based isStillValid strategy")
 	public void test_OneSokoban_StillValid() {
-		NeoPattern p = entities.getPattern_OneSokoban();
-		var matches = p.getMatches();
+		var p = entities.getPattern_OneSokoban();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -47,15 +44,15 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OneBlock() {
-		NeoPattern p = entities.getPattern_OneBlock();
-		var matches = p.getMatches();
+		var p = entities.getPattern_OneBlock();
+		var matches = p.determineMatches();
 		assertThat(matches.size(), is(2));
 	}
 
 	@Test
 	public void test_OneBlock_StillValid() {
-		NeoPattern p = entities.getPattern_OneBlock();
-		var matches = p.getMatches();
+		var p = entities.getPattern_OneBlock();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -72,8 +69,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OneEndField_StillValid() {
-		NeoPattern p = entities.getPattern_OneEndField();
-		var matches = p.getMatches();
+		var p = entities.getPattern_OneEndField();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -90,8 +87,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OccupiedField_StillValid() {
-		NeoPattern p = entities.getPattern_OccupiedField();
-		var matches = p.getMatches();
+		var p = entities.getPattern_OccupiedField();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -103,8 +100,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_OccupiedField_StillValid_AfterDeletingBlocks() {
-		NeoPattern p = entities.getPattern_OccupiedField();
-		var matches = p.getMatches();
+		var p = entities.getPattern_OccupiedField();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		// removing 2 blocks, valid matches should be 2 less
@@ -124,8 +121,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AnOccupiedSokobanField_StillValid() {
-		NeoPattern p = entities.getPattern_AnOccupiedSokobanField();
-		var matches = p.getMatches();
+		var p = entities.getPattern_AnOccupiedSokobanField();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -142,8 +139,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AnOccupiedBlockField_StillValid() {
-		NeoPattern p = entities.getPattern_AnOccupiedBlockField();
-		var matches = p.getMatches();
+		var p = entities.getPattern_AnOccupiedBlockField();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -160,8 +157,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AnOccupiedBoulderField_StillValid() {
-		NeoPattern p = entities.getPattern_AnOccupiedBoulderField();
-		var matches = p.getMatches();
+		var p = entities.getPattern_AnOccupiedBoulderField();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -183,8 +180,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_AllNotBorderFieldsInARow_StillValid_AfterDeletingEdges() {
-		NeoPattern p = entities.getPattern_AllFieldsInARow();
-		var matches = p.getMatches();
+		var p = entities.getPattern_AllFieldsInARow();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		// removing all right edges
@@ -214,8 +211,26 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_All3x3Fields_StillValid() {
-		NeoPattern p = entities.getPattern_All3x3Fields();
-		var matches = p.getMatches();
+		var p = entities.getPattern_All3x3Fields();
+		var matches = p.determineMatches();
+		var matchesCount = 0;
+
+		for (IMatch m : matches) {
+			if (m.isStillValid())
+				matchesCount++;
+		}
+		assertThat(matchesCount, is(matches.size()));
+	}
+	
+	@Test
+	public void test_All2x2Fields() {
+		assertThat(entities.getPattern_All2x2Fields().countMatches(), is(9));
+	}
+
+	@Test
+	public void test_All2x2Fields_StillValid() {
+		var p = entities.getPattern_All2x2Fields();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		for (IMatch m : matches) {
@@ -227,8 +242,8 @@ public class PatternTest extends ENeoTest {
 
 	@Test
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
-		NeoPattern p = entities.getPattern_All3x3Fields();
-		var matches = p.getMatches();
+		var p = entities.getPattern_All3x3Fields();
+		var matches = p.determineMatches();
 		var matchesCount = 0;
 
 		// removing all right and bottom edges of endPos fields

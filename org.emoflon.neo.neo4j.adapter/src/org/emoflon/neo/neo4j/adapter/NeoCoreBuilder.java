@@ -194,6 +194,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return driver;
 	}
 
+	public StatementResult executeQuery(String cypherStatement) {
+		return driver.session().run(cypherStatement.trim());
+	}
+
 	@Override
 	public void close() throws Exception {
 		driver.close();

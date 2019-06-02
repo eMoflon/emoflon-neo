@@ -13,7 +13,7 @@ public class PatternTest extends ENeoTest {
 	private API_Emsl_SheRememberedCaterpillars entities = new API_Emsl_SheRememberedCaterpillars(builder);
 	
 	@BeforeEach
-	private void initDB() {
+	public void initDB() {
 		initDB(entities.getModel_SimpleGame());
 	}
 	

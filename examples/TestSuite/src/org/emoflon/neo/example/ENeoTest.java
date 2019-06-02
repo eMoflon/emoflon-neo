@@ -6,11 +6,12 @@ import static org.junit.Assert.fail;
 
 import java.util.Scanner;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.Model;
+import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoPattern;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,7 +26,9 @@ public abstract class ENeoTest {
 	protected static Driver driver;
 	
 	@BeforeAll
-	private static void startDBConnection() throws Exception {
+	public static void startDBConnection() throws Exception {
+		Logger.getRootLogger().setLevel(Level.DEBUG);
+		
 		logger.info("Database Connection established.");
 		builder = API_Common.createBuilder();
 		driver = builder.getDriver();
@@ -68,16 +71,16 @@ public abstract class ENeoTest {
 	}
 	
 	@AfterEach
-	private void clearDB() {
+	public void clearDB() {
 		driver.session().run("MATCH (n) DETACH DELETE n");
 		logger.info("Database cleared.");
 	}
 	
-	protected void expectSingleMatch(NeoPattern p) {
+	protected void expectSingleMatch(IPattern p) {
 		assertThat(p.countMatches(), is(1));
 	}
 	
-	protected void expectNoMatch(NeoPattern p) {
+	protected void expectNoMatch(IPattern p) {
 		assertThat(p.countMatches(), is(0));
 	}
 }

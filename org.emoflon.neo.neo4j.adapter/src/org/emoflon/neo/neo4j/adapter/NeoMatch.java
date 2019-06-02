@@ -1,64 +1,57 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.api.rules.IRule;
-import org.neo4j.driver.v1.Driver;
+import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Record;
-import org.neo4j.driver.v1.StatementResult;
 
 public class NeoMatch implements IMatch {
-
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	Driver driver;
 
-	private Record rec;
-	private Collection<NeoNode>  nodes;
-	private String pName;
-	private Map<String, Object> recMap;
+	private NeoPattern pattern;
+	private Map<String, Long> ids;
 
-	public NeoMatch(String pName, Collection<NeoNode> nodes, Record rec, Driver driver) {
-		this.driver = driver;
-		this.pName = pName;
-		this.nodes = nodes;
-		this.rec = rec;
-		
-		recMap = rec.asMap();
-		
-		String temp = "[";
-		for(NeoNode n:nodes) {
-			if(rec.asMap().containsKey(n.getVarName())) {
-				n.setId(recMap.get(n.getVarName()));
-				temp += n.getVarName()+":"+n.getClassType()+"<"+n.getId()+">, ";
+	public NeoMatch(NeoPattern pattern, Record record) {
+		this.pattern = pattern;
+
+		ids = new HashMap<>();
+		extractIds(record);
+	}
+
+	private void extractIds(Record record) {
+		var recMap = record.asMap();
+
+		for (var n : pattern.getNodes()) {
+			if (recMap.containsKey(n.getVarName()))
+				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
+
+			for (var r : n.getRelations()) {
+				if (recMap.containsKey(r.getVarName()))
+					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
 			}
 		}
-		temp += "]";
-		logger.info(temp);
+
+		logger.debug("Extracted ids: " + ids);
+	}
+
+	public long getIdForNode(NeoNode node) {
+		return ids.get(node.getVarName());
+	}
+
+	public long getIdForRelation(NeoRelation rel) {
+		return ids.get(rel.getVarName());
 	}
 
 	@Override
-	public IRule getRule() {
-		// TODO Auto-generated method stub
-		return null;
+	public IPattern getPattern() {
+		return pattern;
 	}
 
 	@Override
 	public boolean isStillValid() {
-		logger.info("Check if pattern " + pName + " is still valid");
-		String cypherQuery = CypherPatternBuilder.readQuery(nodes,false,true);
-		logger.info(cypherQuery);
-		StatementResult result = driver.session().run(cypherQuery);
-		return result.hasNext();
+		return pattern.isStillValid(this);
 	}
-
-	@Override
-	public void destroy() {
-		String statement = null;
-		logger.info(statement);
-		driver.session().run(statement);
-	}
-
 }

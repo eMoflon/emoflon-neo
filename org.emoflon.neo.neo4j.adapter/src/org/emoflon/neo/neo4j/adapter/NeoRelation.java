@@ -2,47 +2,34 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
 public class NeoRelation {
-
 	private String relType;
-	private String relVarName;
 	private String toNodeVar;
 	private String toNodeLabel;
-
+	private String varName;
 	private Collection<NeoProperty> properties;
 
-	public NeoRelation(String relType, EList<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
-
-		this.properties = new ArrayList<>();
-
+	public NeoRelation(NeoNode from, int index, String relType, List<ModelPropertyStatement> props, String toNodeLabel,
+			String toNodeVar) {
 		this.relType = relType;
-		this.relVarName = "";
-		this.toNodeLabel = toNodeLabel;
 		this.toNodeVar = toNodeVar;
+		this.toNodeLabel = toNodeLabel;
+		this.varName = from.getVarName() + "_" + relType + "_" + index + "_" + toNodeVar;
 
+		properties = new ArrayList<>();
 		props.forEach(prop -> addProperty(prop.getType().getName(), NeoUtil.handleValue(prop.getValue())));
 	}
 
 	public void addProperty(String name, String value) {
-		this.properties.add(new NeoProperty(name, value));
-	}
-
-	@Override
-	public String toString() {
-		//return CypherPatternBuilder.cypherRelation(fromNode, this, properties);
-		return "";
+		properties.add(new NeoProperty(name, value));
 	}
 
 	public String getRelType() {
 		return relType;
-	}
-
-	public String getRelVarName() {
-		return relVarName;
 	}
 
 	public String getToNodeVar() {
@@ -57,4 +44,7 @@ public class NeoRelation {
 		return properties;
 	}
 
+	public String getVarName() {
+		return varName;
+	}
 }

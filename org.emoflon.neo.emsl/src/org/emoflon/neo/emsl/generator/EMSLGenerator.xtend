@@ -70,6 +70,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 			import org.emoflon.neo.emsl.eMSL.Model;
 			import org.emoflon.neo.emsl.util.EMSLUtil;
+			import org.emoflon.neo.engine.api.rules.IPattern;
 			import org.emoflon.neo.neo4j.adapter.NeoPattern;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			
@@ -100,7 +101,7 @@ class EMSLGenerator extends AbstractGenerator {
 
 	dispatch def generateAccess(Pattern p, int index) {
 		'''
-			public NeoPattern getPattern_«p.body.name.toFirstUpper»(){
+			public IPattern getPattern_«p.body.name.toFirstUpper»(){
 				var p = (Pattern) spec.getEntities().get(«index»);
 				return new NeoPattern(p, builder);
 			}
