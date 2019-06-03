@@ -37,7 +37,7 @@ class CypherPatternBuilder {
 					«queryNode(n)»«IF n.relations.size > 0»", "«ENDIF»
 				«ENDIF»
 				«FOR r : n.relations SEPARATOR ', '»
-					()-[«r.varName»]->()
+					(:«n.classType»)-[«r.varName»]->(:«r.toNodeLabel»)
 				«ENDFOR»
 				«ENDFOR»'''
 	}
