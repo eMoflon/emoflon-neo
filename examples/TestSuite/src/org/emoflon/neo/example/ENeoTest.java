@@ -1,21 +1,23 @@
 package org.emoflon.neo.example;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
 import java.util.Scanner;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.Model;
+import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.StatementResult;
 
 public abstract class ENeoTest {
@@ -23,7 +25,6 @@ public abstract class ENeoTest {
 	private static Scanner reader;
 	protected static final Logger logger = Logger.getLogger(ENeoTest.class);
 	protected static NeoCoreBuilder builder; 
-	protected static Driver driver;
 	
 	@BeforeAll
 	public static void startDBConnection() throws Exception {
@@ -31,8 +32,7 @@ public abstract class ENeoTest {
 		
 		logger.info("Database Connection established.");
 		builder = API_Common.createBuilder();
-		driver = builder.getDriver();
-		StatementResult result = driver.session().run("MATCH (n) RETURN count(n)");
+		StatementResult result = builder.executeQuery("MATCH (n) RETURN count(n)");
 	
 		if (result.hasNext()) {
 
@@ -47,7 +47,7 @@ public abstract class ENeoTest {
 					closeDBConnection();
 					fail();
 				} else {
-					driver.session().run("MATCH (n) DETACH DELETE n");
+					builder.executeQueryForSideEffect("MATCH (n) DETACH DELETE n");
 					logger.info("Database cleared.");
 				}
 			} else {
@@ -72,7 +72,7 @@ public abstract class ENeoTest {
 	
 	@AfterEach
 	public void clearDB() {
-		driver.session().run("MATCH (n) DETACH DELETE n");
+		builder.executeQueryForSideEffect("MATCH (n) DETACH DELETE n");
 		logger.info("Database cleared.");
 	}
 	
@@ -82,5 +82,9 @@ public abstract class ENeoTest {
 	
 	protected void expectNoMatch(IPattern p) {
 		assertThat(p.countMatches(), is(0));
+	}
+	
+	protected void expectValidMatches(Collection<IMatch> matches, long number) {
+		assertEquals(matches.stream().filter(IMatch::isStillValid).count(), number);
 	}
 }
