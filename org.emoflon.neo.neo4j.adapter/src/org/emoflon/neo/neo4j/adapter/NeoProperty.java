@@ -1,18 +1,12 @@
 package org.emoflon.neo.neo4j.adapter;
 
 public class NeoProperty {
-
 	private String name;
 	private String value;
 
-	private String classVarName;
-
-	public NeoProperty(String name, String value, String classVarName) {
-
-		this.classVarName = classVarName;
+	public NeoProperty(String name, String value) {
 		this.name = name;
 		this.value = value;
-
 	}
 
 	public String getName() {
@@ -21,10 +15,6 @@ public class NeoProperty {
 
 	public String getValue() {
 		return value;
-	}
-
-	public String getClassVarName() {
-		return classVarName;
 	}
 
 	@Override

@@ -182,6 +182,30 @@ pattern all3x3Fields {
 	field33 : Field 
 }
 
+pattern all2x2Fields {
+	b: SokobanLanguage.Board {
+		-fields -> field11
+		-fields -> field12
+		-fields -> field21
+		-fields -> field22
+	}
+	
+	field11 : Field {
+		-right -> field12
+		-bottom -> field21
+	}
+	
+	field12 : Field {
+		-bottom -> field22
+	}
+	
+	field21 : Field {
+		-right -> field22
+	}
+	
+	field22 : Field
+}
+
 
 pattern boulderOnEndField -> oneEndField, anOccupiedField {
 	fig : Boulder

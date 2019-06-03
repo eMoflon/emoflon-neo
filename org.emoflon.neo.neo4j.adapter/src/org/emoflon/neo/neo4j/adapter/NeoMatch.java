@@ -1,44 +1,57 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.api.rules.IRule;
-import org.neo4j.driver.v1.Driver;
+import org.emoflon.neo.engine.api.rules.IPattern;
+import org.neo4j.driver.v1.Record;
 
 public class NeoMatch implements IMatch {
-
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	Driver driver;
 
-	private String uuid;
-	private String patternName;
 	private NeoPattern pattern;
+	private Map<String, Long> ids;
 
-	public NeoMatch(String name, NeoPattern pattern, String uuid, Driver driver) {
-		this.driver = driver;
-		this.patternName = name;
+	public NeoMatch(NeoPattern pattern, Record record) {
 		this.pattern = pattern;
-		this.uuid = uuid;
 
+		ids = new HashMap<>();
+		extractIds(record);
+	}
+
+	private void extractIds(Record record) {
+		var recMap = record.asMap();
+
+		for (var n : pattern.getNodes()) {
+			if (recMap.containsKey(n.getVarName()))
+				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
+
+			for (var r : n.getRelations()) {
+				if (recMap.containsKey(r.getVarName()))
+					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
+			}
+		}
+
+		logger.debug("Extracted ids: " + ids);
+	}
+
+	public long getIdForNode(NeoNode node) {
+		return ids.get(node.getVarName());
+	}
+
+	public long getIdForRelation(NeoRelation rel) {
+		return ids.get(rel.getVarName());
 	}
 
 	@Override
-	public IRule getRule() {
-		// TODO Auto-generated method stub
-		return null;
+	public IPattern getPattern() {
+		return pattern;
 	}
 
 	@Override
 	public boolean isStillValid() {
-		logger.info("Check if pattern" + patternName + "is still valid");
-		return(pattern.getValidMatches(uuid).size() == 1);
+		return pattern.isStillValid(this);
 	}
-
-	@Override
-	public void destroy() {
-		String statement = CypherPatternBuilder.createDestroyQuery(uuid);
-		logger.info(statement);
-		driver.session().run(statement);
-	}
-
 }
