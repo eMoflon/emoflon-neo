@@ -198,6 +198,11 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return driver.session().run(cypherStatement.trim());
 	}
 
+	public void executeQueryForSideEffect(String cypherStatement) {
+		var st = driver.session().run(cypherStatement.trim());
+		st.consume();
+	}
+
 	@Override
 	public void close() throws Exception {
 		driver.close();
