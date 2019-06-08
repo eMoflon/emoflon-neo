@@ -112,6 +112,10 @@ pattern colouredThingOnPlatform {
 	p:Platform
 }
 
+pattern colouredThing {
+	c:ColouredThing
+}
+
 pattern noWayForward {
 	a:Character {
 		-on->p
@@ -137,3 +141,13 @@ pattern bridge {
 		-feet->p2
 	}
 }
+
+constraint noStrangeBridges = forbid strangeBridge
+
+constraint strangeBridges = !noStrangeBridges
+
+constraint canCrossBridgeSomewhere = enforce canCrossBridge
+
+constraint alwaysOnPlatform = if colouredThing then colouredThingOnPlatform
+
+constraint nothingBlue = forbid everythingBlue
