@@ -15,6 +15,7 @@ import org.emoflon.neo.emsl.eMSL.Pattern
 import org.eclipse.core.runtime.preferences.InstanceScope
 import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.Metamodel
 
 /**
  * Generates code from your model files on save.
@@ -69,6 +70,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 			import org.emoflon.neo.emsl.eMSL.EMSL_Spec;
 			import org.emoflon.neo.emsl.eMSL.Model;
+			import org.emoflon.neo.emsl.eMSL.Metamodel;
 			import org.emoflon.neo.emsl.util.EMSLUtil;
 			import org.emoflon.neo.engine.api.rules.IPattern;
 			import org.emoflon.neo.neo4j.adapter.NeoPattern;
@@ -112,6 +114,14 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			public Model getModel_«m.name.toFirstUpper»(){
 				return (Model) spec.getEntities().get(«index»);
+			}
+		'''
+	}
+	
+	dispatch def generateAccess(Metamodel m, int index) {
+		'''
+			public Metamodel getMetamodel_«m.name.toFirstUpper.replace(".", "_")»(){
+				return (Metamodel) spec.getEntities().get(«index»);
 			}
 		'''
 	}

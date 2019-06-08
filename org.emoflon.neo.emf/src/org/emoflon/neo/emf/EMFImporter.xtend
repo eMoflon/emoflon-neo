@@ -10,27 +10,29 @@ import org.eclipse.emf.ecore.resource.ResourceSet
 
 import org.eclipse.emf.ecore.EClass
 
+/**
+ * Transforms EMF to EMSL
+ * Currently only metamodels, and also a very limited set of features (just meant as a stub).
+ */
 class EMFImporter {
 
 	def String generateEMSLSpecification(ResourceSet rs) {
 		'''
-			import "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
-			
 			«FOR r : rs.resources»
 				«FOR o : r.contents.filter[o | o instanceof EPackage] SEPARATOR "\n"»
 					«var p = o as EPackage»
 					metamodel «p.name» {
 						«FOR c : p.EClassifiers.filter[c | c instanceof EClass] SEPARATOR "\n"»
-							«c.name»:EClass {
+							«c.name» {
 							«var eclass = c as EClass»
 								«FOR attr : eclass.EAttributes»
 									.«attr.name»: «attr.EType.name»
 								«ENDFOR»
 								«IF !eclass.EAttributes.isEmpty && !eclass.EReferences.isEmpty»
-								
+									
 								«ENDIF»
 								«FOR ref : eclass.EReferences»
-									-«ref.name»->«ref.EType.name»
+									-«ref.name»(«ref.lowerBound»..«IF ref.upperBound==-1»*«ELSE»«ref.upperBound»«ENDIF»)->«ref.EType.name»
 								«ENDFOR»
 							}
 						«ENDFOR»
