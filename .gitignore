@@ -33,3 +33,5 @@ examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Models_SokobanSimpleTes
 examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Rules_SokobanPatternsRulesConstraints.java
 examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Rules_SokobanTGGs.java
 examples/SokobanLanguage/src-gen/org/emoflon/neo/api/API_Common.java
+examples/TestSuite/out/sokobanExchangeFormat.ecore
+examples/TestSuite/out/SokobanLanguage.ecore
