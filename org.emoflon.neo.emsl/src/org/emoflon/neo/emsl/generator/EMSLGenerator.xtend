@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope
 import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.Constraint
 
 /**
  * Generates code from your model files on save.
@@ -75,6 +76,9 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.rules.IPattern;
 			import org.emoflon.neo.neo4j.adapter.NeoPattern;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
+			import org.emoflon.neo.neo4j.adapter.NeoConstraint;
+			import org.emoflon.neo.engine.api.constraints.IConstraint;
+			import org.emoflon.neo.emsl.eMSL.Constraint;
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
@@ -90,7 +94,7 @@ class EMSLGenerator extends AbstractGenerator {
 					this(builder, "../");
 				}
 			
-				«FOR e : spec.entities»
+				«FOR e : spec.entities SEPARATOR "\n"»
 					«generateAccess(e, spec.entities.indexOf(e))»
 				«ENDFOR»
 			}
@@ -103,7 +107,7 @@ class EMSLGenerator extends AbstractGenerator {
 
 	dispatch def generateAccess(Pattern p, int index) {
 		'''
-			public IPattern getPattern_«p.body.name.toFirstUpper»(){
+			public IPattern getPattern_«namingConvention(p.body.name)»(){
 				var p = (Pattern) spec.getEntities().get(«index»);
 				return new NeoPattern(p, builder);
 			}
@@ -112,7 +116,7 @@ class EMSLGenerator extends AbstractGenerator {
 
 	dispatch def generateAccess(Model m, int index) {
 		'''
-			public Model getModel_«m.name.toFirstUpper»(){
+			public Model getModel_«namingConvention(m.name)»(){
 				return (Model) spec.getEntities().get(«index»);
 			}
 		'''
@@ -120,9 +124,22 @@ class EMSLGenerator extends AbstractGenerator {
 	
 	dispatch def generateAccess(Metamodel m, int index) {
 		'''
-			public Metamodel getMetamodel_«m.name.toFirstUpper.replace(".", "_")»(){
+			public Metamodel getMetamodel_«namingConvention(m.name)»(){
 				return (Metamodel) spec.getEntities().get(«index»);
 			}
 		'''
+	}
+	
+	dispatch def generateAccess(Constraint c, int index){
+		'''
+			public IConstraint getConstraint_«namingConvention(c.name)»() {
+				var c = (Constraint) spec.getEntities().get(«index»);
+				return new NeoConstraint(c, builder);
+			}
+		'''
+	}
+	
+	def String namingConvention(String name){
+		name.toFirstUpper.replace(".", "_")
 	}
 }
