@@ -29,7 +29,7 @@ class EMFImporter {
 									.«attr.name»: «attr.EType.name»
 								«ENDFOR»
 								«IF !eclass.EAttributes.isEmpty && !eclass.EReferences.isEmpty»
-									
+								
 								«ENDIF»
 								«FOR ref : eclass.EReferences»
 									-«ref.name»(«ref.lowerBound»..«IF ref.upperBound==-1»*«ELSE»«ref.upperBound»«ENDIF»)->«ref.EType.name»
