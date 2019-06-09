@@ -1,20 +1,18 @@
-import "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
-
 metamodel SimpleFamilies {
-	FamilyRegister:EClass {
-		-families->Family
+	FamilyRegister {
+		-families(0..5)->Family
 	}
 	
-	Family:EClass {
+	Family {
 		.name: EString
 		
-		-father->FamilyMember
-		-mother->FamilyMember
-		-sons->FamilyMember
-		-daughters->FamilyMember
+		-father(0..1)->FamilyMember
+		-mother(0..1)->FamilyMember
+		-sons(0..*)->FamilyMember
+		-daughters(0..*)->FamilyMember
 	}
 	
-	FamilyMember:EClass {
+	FamilyMember {
 		.name: EString
 	}
 }

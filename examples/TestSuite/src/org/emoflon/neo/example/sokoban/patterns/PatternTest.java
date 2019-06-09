@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import org.emoflon.neo.api.API_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Rules_SokobanPatternsRulesConstraints;
-import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,13 +32,7 @@ public class PatternTest extends ENeoTest {
 	public void test_OneSokoban_StillValid() {
 		var p = entities.getPattern_OneSokoban();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 	
 	@Test
@@ -68,13 +61,7 @@ public class PatternTest extends ENeoTest {
 	public void test_OneBlock_StillValid() {
 		var p = entities.getPattern_OneBlock();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
@@ -86,13 +73,7 @@ public class PatternTest extends ENeoTest {
 	public void test_OneEndField_StillValid() {
 		var p = entities.getPattern_OneEndField();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
@@ -104,29 +85,18 @@ public class PatternTest extends ENeoTest {
 	public void test_OccupiedField_StillValid() {
 		var p = entities.getPattern_OccupiedField();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
 	public void test_OccupiedField_StillValid_AfterDeletingBlocks() {
 		var p = entities.getPattern_OccupiedField();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
 
 		// removing 2 blocks, valid matches should be 2 less
-		driver.session().run("MATCH (b:Block) DETACH DELETE b");
+		builder.executeQueryForSideEffect("MATCH (b:Block) DETACH DELETE b");
 
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size() - 2));
+		expectValidMatches(matches, matches.size() - 2);
 	}
 
 
@@ -139,13 +109,7 @@ public class PatternTest extends ENeoTest {
 	public void test_AnOccupiedSokobanField_StillValid() {
 		var p = entities.getPattern_AnOccupiedSokobanField();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
@@ -157,13 +121,7 @@ public class PatternTest extends ENeoTest {
 	public void test_AnOccupiedBlockField_StillValid() {
 		var p = entities.getPattern_AnOccupiedBlockField();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
@@ -175,13 +133,7 @@ public class PatternTest extends ENeoTest {
 	public void test_AnOccupiedBoulderField_StillValid() {
 		var p = entities.getPattern_AnOccupiedBoulderField();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
@@ -198,16 +150,11 @@ public class PatternTest extends ENeoTest {
 	public void test_AllNotBorderFieldsInARow_StillValid_AfterDeletingEdges() {
 		var p = entities.getPattern_AllFieldsInARow();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
 
-		// removing all right edges
-		driver.session().run("MATCH (f:Field)-[r:right]->(g:Field) DETACH DELETE r");
+		// Removing all right edges
+		builder.executeQueryForSideEffect("MATCH (f:Field)-[r:right]->(g:Field) DETACH DELETE r");
 
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(4));
+		expectValidMatches(matches, 4);
 	}
 
 	@Test
@@ -229,13 +176,7 @@ public class PatternTest extends ENeoTest {
 	public void test_All3x3Fields_StillValid() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
 	}
 	
 	@Test
@@ -247,30 +188,21 @@ public class PatternTest extends ENeoTest {
 	public void test_All2x2Fields_StillValid() {
 		var p = entities.getPattern_All2x2Fields();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
 
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()));
+		expectValidMatches(matches, matches.size());
+		builder.executeQueryForSideEffect("MATCH (b:Board) DETACH DELETE b");
+		expectValidMatches(matches, 0);
 	}
 
 	@Test
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
 
-		// removing all right and bottom edges of endPos fields
-		driver.session().run("MATCH (f:Field {endPos: true, name: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
+		// Removing all right and bottom edges of endPos fields
+		builder.executeQueryForSideEffect("MATCH (f:Field {endPos: true, name: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
 
-		for (IMatch m : matches) {
-			if (m.isStillValid()) {
-				matchesCount++;
-			}
-		}
-		assertThat(matchesCount, is(matches.size() - 2));
+		expectValidMatches(matches, matches.size() - 2);
 	}
 	
 	@Test
