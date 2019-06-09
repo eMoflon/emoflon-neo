@@ -8,7 +8,6 @@ import org.eclipse.ui.IEditorPart
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.ui.editor.XtextEditor
-import org.emoflon.neo.emsl.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
@@ -42,6 +41,8 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
+import org.emoflon.neo.emsl.EMSLFlattener
+import java.util.ArrayList
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -178,6 +179,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 				«IF entity instanceof Enum»
 					package "Enum: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+						
+					}
+				«ENDIF»
+				«IF entity instanceof Constraint»
+					package "Constraint: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
@@ -449,6 +455,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
+	
 
 	/*-------------------------------------------------*/
 	/*------------------- Rules -----------------------*/
@@ -569,8 +576,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Constraint.
 	 */
 	def dispatch String visualiseEntity(Constraint entity) {
-		// TODO [Maximilian]
-		''''''
+		'''
+			legend bottom
+				«getConditionString(entity)»
+			endlegend
+			«visualiseCondition(entity)»
+		'''
 	}
 
 	/**
@@ -582,14 +593,44 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR c : conditionPattern»
 				«visualiseEntity((c as AtomicPattern).eContainer as Pattern)»
 			«ENDFOR»
-			«FOR nb : entity.nodeBlocks»
-				«FOR p : conditionPattern»
-					«FOR otherNB : (p as AtomicPattern).nodeBlocks»
-					«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
+			«IF entity instanceof Rule || entity instanceof Pattern»
+				«FOR nb : entity.nodeBlocks»
+					«FOR p : conditionPattern»
+						«FOR otherNB : (p as AtomicPattern).nodeBlocks»
+							«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
+						«ENDFOR»
+					«ENDFOR»
 				«ENDFOR»
-				«ENDFOR»
-			«ENDFOR»
+			«ENDIF»
+			«IF entity instanceof Constraint»
+				«createLinksForConstraintPatterns(conditionPattern)»
+			«ENDIF»
 		'''
+	}
+	
+	/**
+	 * Returns the diagram text for the links between objects with the same name in the patterns of a constraint.
+	 */
+	def String createLinksForConstraintPatterns(ArrayList patterns) {
+		var text = ""
+		for (p : patterns as ArrayList<AtomicPattern>) {
+			for (AtomicPattern other : patterns as ArrayList<AtomicPattern>) {
+				if (!p.name.equals(other.name)) {
+					for (ModelNodeBlock nb : p.nodeBlocks) {
+						for (ModelNodeBlock otherNB : other.nodeBlocks) {
+							if (otherNB.name.equals(nb.name)) {
+								// create link if not already created
+								if (!text.contains(labelForPatternComponent(nb) + "#-[#DarkRed]-#" + labelForPatternComponent(otherNB)) &&
+									!text.contains(labelForPatternComponent(otherNB) + "#-[#DarkRed]-#" + labelForPatternComponent(nb))
+								)
+									text += labelForPatternComponent(nb) + "#-[#DarkRed]-#" + labelForPatternComponent(otherNB) + "\n"
+							}
+						}
+					}
+				}
+			}
+		}
+		return text			
 	}
 
 	/**
@@ -605,7 +646,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 			// return the String for ConstraintReference
 			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference))
+				text += getConstraintReferenceString((entity.condition as ConstraintReference).reference)
 		} else if (entity instanceof Pattern) {
 			// return the String for simple Constraints
 			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint ||
@@ -614,7 +655,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 			// return the String for ConstraintReference
 			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference))
+				text += getConstraintReferenceString((entity.condition as ConstraintReference).reference)
+		} else if (entity instanceof Constraint) {
+			text += getConstraintReferenceString(entity as Constraint)
 		}
 		return text
 	}
@@ -622,16 +665,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a ConstraintReference (referencing an AtomicConstraint or another Constraint).
 	 */
-	def String getConstraintReferenceString(ConstraintReference constraint) {
+	def String getConstraintReferenceString(Constraint constraint) {
 		var text = ""
-		if (constraint.reference.body instanceof NegativeConstraint ||
-			constraint.reference.body instanceof PositiveConstraint || constraint.reference.body instanceof Implication)
-			text += getAtomicConstraintString(constraint.reference.body)
+		if (constraint.body instanceof NegativeConstraint ||
+			constraint.body instanceof PositiveConstraint || constraint.body instanceof Implication)
+			text += getAtomicConstraintString(constraint.body)
 		// OrBody
 		else {
-			if (constraint.reference.body !== null) {
-				var count = constraint.reference.body.children.size - 1
-				for (c : constraint.reference.body.children) {
+			if (constraint.body !== null) {
+				var count = constraint.body.children.size - 1
+				for (c : constraint.body.children) {
 					text += getOrBodyString(c)
 					if (count > 0)
 						text += " **||** "
@@ -666,7 +709,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var text = ""
 
 		if ((constraintBody instanceof ConstraintReference))
-			text += getConstraintReferenceString(constraintBody)
+			text += getConstraintReferenceString(constraintBody.reference)
 
 		var count = constraintBody.children.size - 1
 		if (constraintBody.children.size > 1)
@@ -690,7 +733,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var text = ""
 
 		if (constraintBody.children.get(0) instanceof ConstraintReference) {
-			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
+			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference).reference)
 		} else {
 			text += " ( "
 			text += getOrBodyString(constraintBody)
