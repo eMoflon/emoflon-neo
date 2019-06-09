@@ -296,6 +296,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInMetamodel(nb, false)»
 			«ENDFOR»
+			«FOR e : entity.enums»
+				«visualiseEnumInMetamodel(e, false)»
+			«ENDFOR»
 		'''
 	}
 
@@ -321,6 +324,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR attr : nb.properties»
 				«labelForClass(nb)» : «attr.name» : «IF (attr.type instanceof UserDefinedType)»«((attr.type as UserDefinedType).reference).name»«ELSE»«(attr.type as BuiltInType).reference.toString»«ENDIF»
 			«ENDFOR»
+		'''
+	}
+	
+	def String visualiseEnumInMetamodel(Enum e, boolean mainSelection) {
+		'''
+			class "«(e.eContainer as Metamodel).name».«e.name»" «IF mainSelection»<<Selection>>«ENDIF» {
+				«FOR literal : e.literals»
+					«literal.name»
+				«ENDFOR»
+			}
 		'''
 	}
 
@@ -355,8 +368,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseEnumLiterals(Enum entity) {
 		'''
-			«FOR item : entity.literals»
-				class "«entity.name».«item.name»"
+			«FOR literal : entity.literals»
+				class "«entity.name».«literal.name»"
 			«ENDFOR»
 		'''
 	}
