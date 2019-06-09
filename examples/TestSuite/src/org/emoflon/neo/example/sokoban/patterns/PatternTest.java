@@ -39,15 +39,9 @@ public class PatternTest extends ENeoTest {
 	public void test_OneSokoban_StillValid_AfterChangeSokobanToBlock() {
 		var p = entities.getPattern_OneSokoban();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
 		
-		driver.session().run("MATCH (s:Sokoban) SET s:Block REMOVE s:Sokoban");
-
-		for (IMatch m : matches) {
-			if (m.isStillValid())
-				matchesCount++;
-		}
-		assertThat(matchesCount, is(matches.size()-1));
+		builder.executeQueryForSideEffect("MATCH (s:Sokoban) SET s:Block REMOVE s:Sokoban");
+		expectValidMatches(matches, matches.size()-1);
 	}
 
 	@Test
@@ -209,16 +203,10 @@ public class PatternTest extends ENeoTest {
 	public void test_All3x3Fields_StillValid_AfterChangingTypesOfNodes() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.determineMatches();
-		var matchesCount = 0;
 
 		// removing all right and bottom edges of endPos fields
-		driver.session().run("MATCH (f:Field {name: \"f00\"}) SET f:OddLabel REMOVE f:Field");
+		builder.executeQueryForSideEffect("MATCH (f:Field {name: \"f00\"}) SET f:OddLabel REMOVE f:Field");
 
-		for (IMatch m : matches) {
-			if (m.isStillValid()) {
-				matchesCount++;
-			}
-		}
-		assertThat(matchesCount, is(matches.size()-1));
+		expectValidMatches(matches, matches.size() - 1);
 	}
 }
