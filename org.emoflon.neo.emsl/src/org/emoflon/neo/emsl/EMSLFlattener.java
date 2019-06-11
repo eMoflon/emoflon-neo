@@ -10,7 +10,9 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 
 public class EMSLFlattener {
@@ -26,14 +28,15 @@ public class EMSLFlattener {
 	 * @param alreadyRefinedPatternNames list of names of pattern that have already appeared in the refinement path (against loops).
 	 * @return the flattened pattern.
 	 */
-	public AtomicPattern flattenPattern(AtomicPattern pattern, ArrayList<String> alreadyRefinedPatternNames) {
+	public Pattern flattenPattern(Pattern p) {
+		var pattern = p.getBody();
 		var<RefinementCommand> refinements = pattern.getSuperRefinementTypes();
-		
+		var<String> alreadyRefinedPatternNames = new ArrayList<String>();
 		// TODO [Maximilian]: find out why NodeBlocks are not deleted if removed from the file; implement their removal;
 		
 		// check if anything has to be done, if not return
 		if (refinements.isEmpty())
-			return pattern;
+			return p;
 		
 		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(refinements, alreadyRefinedPatternNames);
 	
@@ -53,7 +56,8 @@ public class EMSLFlattener {
 		pattern.getNodeBlocks().clear();
 		pattern.getNodeBlocks().addAll((mergedNodes));
 		
-		return pattern;
+		p.setBody(pattern);
+		return p;
 	}
 	
 	/**
@@ -164,10 +168,10 @@ public class EMSLFlattener {
 			
 			// create new NodeBlock that will be added to the pattern
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
-			mergedNodes.add(newNb);
 			newNb.setName(name);
 			newNb.setType(nodeBlockTypeQueue.peek());
 			
+			mergedNodes.add(newNb);
 		}
 		
 		return mergeEdgesOfNodeBlocks(nodeBlocks, mergedNodes);

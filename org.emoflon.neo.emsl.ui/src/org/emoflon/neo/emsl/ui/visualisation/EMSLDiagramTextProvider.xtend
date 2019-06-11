@@ -381,7 +381,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Pattern.
 	 */
 	def dispatch String visualiseEntity(Pattern entity) {
-		new EMSLFlattener().flattenPattern(entity.body, newArrayList)
+		new EMSLFlattener().flattenPattern(entity)
 		'''
 			«FOR nb : entity.body.nodeBlocks»
 				«visualiseNodeBlockInPattern(nb, false)»
