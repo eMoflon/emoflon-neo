@@ -8,11 +8,15 @@ import java.util.PriorityQueue;
 import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
+import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
+import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
+import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 
 public class EMSLFlattener {
@@ -39,15 +43,15 @@ public class EMSLFlattener {
 			return p;
 		
 		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(refinements, alreadyRefinedPatternNames);
-	
+		
 		pattern.getNodeBlocks().forEach(nb -> {
 			if (collectedNodeBlocks.keySet().contains(nb.getName())) {
 				collectedNodeBlocks.get(nb.getName()).add(nb);
 			}
 			else {
-				var<ModelNodeBlock> foo = new ArrayList<ModelNodeBlock>();
-				foo.add(nb);
-				collectedNodeBlocks.put(nb.getName(), foo);
+				var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
+				tmp.add(nb);
+				collectedNodeBlocks.put(nb.getName(), tmp);
 			}
 		});
 
@@ -193,9 +197,7 @@ public class EMSLFlattener {
 			mergedNodes.add(newNb);
 		}
 		
-		var ret = mergeEdgesOfNodeBlocks(refinementList, nodeBlocks, mergePropertyStatementsOfNodeBlocks(nodeBlocks, mergedNodes));
-		
-		return ret;
+		return mergeEdgesOfNodeBlocks(refinementList, nodeBlocks, mergePropertyStatementsOfNodeBlocks(nodeBlocks, mergedNodes));
 	}
 	
 	/**
@@ -226,6 +228,40 @@ public class EMSLFlattener {
 			for (var typename : edges.keySet()) {
 				for (var targetname : edges.get(typename).keySet()) {
 					var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
+					
+					// merge PropertyStatements of Edges
+					var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
+					for (var e : edges.get(typename).get(targetname)) {
+						// collect propertyStatements
+						e.getProperties().forEach(p -> {
+							if (!properties.containsKey(p.getType().getName())) {
+								properties.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
+							}
+							properties.get(p.getType().getName()).add(p);
+						});
+					}
+					// merge statements
+					// check statements for compliance
+					for (var propertyName : properties.keySet()) {
+						var props = properties.get(propertyName);
+						ModelPropertyStatement basis = null;
+						if (properties.size() > 0) {
+							basis = props.get(0);
+						}
+						for (var p : props) {
+							if (p.getType().getType() != basis.getType().getType() || 
+									basis.getOp() != p.getOp()) 
+							{
+								throw new RuntimeException(); // incompatible types found, TODO [Maximilian] switch to different error handling
+							}
+						}
+						var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
+						newProp.setOp(basis.getOp());
+						newProp.setType(basis.getType());
+						newProp.setValue(basis.getValue());
+						newRel.getProperties().add(newProp);
+					}
+					
 					newRel.setType(edges.get(typename).get(targetname).get(0).getType());
 					mergedNodes.forEach(nb -> {
 						if (nb.getName().equals(targetname)) {
@@ -235,12 +271,71 @@ public class EMSLFlattener {
 							nb.getRelations().add(newRel);
 						}
 					});
+					for (var r : newRel.getProperties()) {
+						r.getType();
+					}
 				}
 			}
 		}
 		
 		return mergedNodes;
 	}
+	
+	/**
+	 * This method merges the ModelPropertyStatements of NodeBlocks. Throws an error if the operator, value or type
+	 * of the statements that are to merged are not equal.
+	 * @param nodeBlocks that were collected and merged into the new NodeBlocks.
+	 * @param mergedNodes result of the mergeNodes function. These nodeBlocks get the PropertyStatements.
+	 * @return list of mergedNodeBlocks with the new and merged ModelPropertyStatements.
+	 */
+	private ArrayList<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
+		for (var name : nodeBlocks.keySet()) {
+			var nodeBlocksWithKey = nodeBlocks.get(name);
+			var newProperties = new ArrayList<ModelPropertyStatement>();
+			
+			// collect ModelPropertyStatements with same name
+			var propertyStatementsSortedByName = new HashMap<String, ArrayList<ModelPropertyStatement>>();
+			for (var nb : nodeBlocksWithKey) {
+				for (var p : nb.getProperties()) {
+					if (!propertyStatementsSortedByName.containsKey(p.getType().getName())) {
+						propertyStatementsSortedByName.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
+					}
+					propertyStatementsSortedByName.get(p.getType().getName()).add(p);
+				}
+			}
+			
+			// check statements for compliance
+			for (var propertyName : propertyStatementsSortedByName.keySet()) {
+				var properties = propertyStatementsSortedByName.get(propertyName);
+				ModelPropertyStatement basis = null;
+				if (properties.size() > 0) {
+					basis = properties.get(0);
+				}
+				for (var p : properties) {
+					if (p.getType().getType() != basis.getType().getType() || 
+							basis.getOp() != p.getOp()) 
+					{
+						throw new RuntimeException(); // incompatible types found, TODO [Maximilian] switch to different error handling
+					}
+				}
+				var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
+				newProp.setOp(basis.getOp());
+				newProp.setType(basis.getType());
+				newProp.setValue(basis.getValue());
+				newProperties.add(newProp);
+			}
+			
+			// add merged properties to the new nodeblock
+			mergedNodes.forEach(nb -> {
+				if (nb.getName().equals(name)) {
+					nb.getProperties().addAll(newProperties);
+				}
+			});
+		}
+		
+		return mergedNodes;
+	}
+	
 	
 	/**
 	 * This method creates a new NodeBlock from the given NodeBlock that was referenced in the RefinementStatement. It also applies
@@ -276,12 +371,7 @@ public class EMSLFlattener {
 			var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
 			newRel.setAction(rel.getAction());
 			newRel.setType(rel.getType());
-			
-			// BS
-			newRel.setTarget(rel.getTarget());
-			
-			
-			
+			newRel.setTarget(rel.getTarget());			
 			newNb.getRelations().add(newRel);
 		}
 		
@@ -290,45 +380,29 @@ public class EMSLFlattener {
 			var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
 			newProp.setOp(prop.getOp());
 			newProp.setType(prop.getType());
-			newProp.setValue(prop.getValue());
+			
+			// create new Value for Property
+			if (prop.getValue() instanceof PrimitiveBoolean) {
+				newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveBoolean());
+				if (((PrimitiveBoolean) prop.getValue()).isTrue())
+					((PrimitiveBoolean) newProp.getValue()).setTrue(true);
+				else 
+					((PrimitiveBoolean) newProp.getValue()).setTrue(false);
+			} else if (prop.getValue() instanceof PrimitiveInt) {
+				newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveInt());
+				((PrimitiveInt) newProp.getValue()).setLiteral(((PrimitiveInt) prop.getValue()).getLiteral());
+			} else if (prop.getValue() instanceof PrimitiveString) {
+				newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveString());
+				((PrimitiveString) newProp.getValue()).setLiteral(((PrimitiveString) prop.getValue()).getLiteral());
+			} else if (prop.getValue() instanceof EnumValue) {
+				prop.getValue();
+				newProp.setValue(EMSLFactory.eINSTANCE.createEnumValue());
+				((EnumValue) newProp.getValue()).setLiteral(((EnumValue) prop.getValue()).getLiteral());
+			}
+			
 			newNb.getProperties().add(newProp);
 		}
 		
 		return newNb;
-	}
-	
-	
-	
-	
-	
-	
-	private ArrayList<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
-		for (var name : nodeBlocks.keySet()) {
-			var nodeBlocksWithKey = nodeBlocks.get(name);
-			var newProperties = new ArrayList<ModelPropertyStatement>();
-			
-			// collect relationStatements with same type
-			var propertyStatementsSortedByType = new HashMap<String, ArrayList<ModelPropertyStatement>>();
-			for (var nb : nodeBlocksWithKey) {
-				for (var p : nb.getProperties()) {
-					if (!propertyStatementsSortedByType.containsKey(p.getType().getName())) {
-						propertyStatementsSortedByType.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
-					}
-					propertyStatementsSortedByType.get(p.getType().getName()).add(p);
-				}
-			}
-			
-			// check statements for compliance
-			
-			
-			// add merged properties to the new nodeblock
-			mergedNodes.forEach(nb -> {
-				if (nb.getName().equals(name)) {
-					nb.getProperties().addAll(newProperties);
-				}
-			});
-		}
-		
-		return mergedNodes;
 	}
 }
