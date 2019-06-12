@@ -122,7 +122,7 @@ public class EMSLFlattener {
 	 * @param nodeBlocks HashMap of Lists of ModelNodeBlocks that are mapped to the names of the NodeBlocks contained in such a list.
 	 * @return ArrayList of ModelNodeBlocks that only contains the ModelNodeBlocks that were created during merging.
 	 */
-	private ArrayList<ModelNodeBlock> mergeNodes(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) {
+	private ArrayList<ModelNodeBlock> mergeNodes(EList<RefinementCommand> refinementList, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) {
 		var<ModelNodeBlock> mergedNodes = new ArrayList<ModelNodeBlock>();
 		
 		// take all nodeBlocks with the same name/key out of the HashMap and merge
@@ -168,13 +168,15 @@ public class EMSLFlattener {
 			
 			// create new NodeBlock that will be added to the pattern
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
-			newNb.setName(name);
 			newNb.setType(nodeBlockTypeQueue.peek());
+			newNb.setName(name);
 			
 			mergedNodes.add(newNb);
 		}
 		
-		return mergeEdgesOfNodeBlocks(nodeBlocks, mergedNodes);
+		var ret = mergeEdgesOfNodeBlocks(refinementList, nodeBlocks, mergePropertyStatementsOfNodeBlocks(nodeBlocks, mergedNodes));
+		
+		return ret;
 	}
 	
 	/**
@@ -184,7 +186,7 @@ public class EMSLFlattener {
 	 * @param mergedNodes nodeBlocks that were except for the relationStatements already merged.
 	 * @return list of ModelNodeBlocks that now have merged RelationStatements.
 	 */
-	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
+	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(EList<RefinementCommand> refinementList, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
 		
 		// collect all edges in hashmap; first key is type name, second is target name
 		for (var name : nodeBlocks.keySet()) {
@@ -244,24 +246,70 @@ public class EMSLFlattener {
 				}
 			}
 		}
-		if (newNb.getName() == null) {
+		if (newNb.getName() == null)
 			newNb.setName(nb.getName());
-		}
 		
 		newNb.setType(nb.getType());
 		newNb.setAction(nb.getAction());
 		
-		// add relations and properties to new nodeblock
+		// add relations to new nodeblock
 		for (var rel : nb.getRelations()) {
 			var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
 			newRel.setAction(rel.getAction());
-			newRel.setTarget(rel.getTarget());
 			newRel.setType(rel.getType());
+			
+			// BS
+			newRel.setTarget(rel.getTarget());
+			
+			
+			
 			newNb.getRelations().add(newRel);
 		}
 		
-		newNb.getProperties().addAll(nb.getProperties());
+		// add properties to new nodeblock
+		for (var prop : nb.getProperties()) {
+			var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
+			newProp.setOp(prop.getOp());
+			newProp.setType(prop.getType());
+			newProp.setValue(prop.getValue());
+			newNb.getProperties().add(newProp);
+		}
 		
 		return newNb;
+	}
+	
+	
+	
+	
+	
+	
+	private ArrayList<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
+		for (var name : nodeBlocks.keySet()) {
+			var nodeBlocksWithKey = nodeBlocks.get(name);
+			var newProperties = new ArrayList<ModelPropertyStatement>();
+			
+			// collect relationStatements with same type
+			var propertyStatementsSortedByType = new HashMap<String, ArrayList<ModelPropertyStatement>>();
+			for (var nb : nodeBlocksWithKey) {
+				for (var p : nb.getProperties()) {
+					if (!propertyStatementsSortedByType.containsKey(p.getType().getName())) {
+						propertyStatementsSortedByType.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
+					}
+					propertyStatementsSortedByType.get(p.getType().getName()).add(p);
+				}
+			}
+			
+			// check statements for compliance
+			
+			
+			// add merged properties to the new nodeblock
+			mergedNodes.forEach(nb -> {
+				if (nb.getName().equals(name)) {
+					nb.getProperties().addAll(newProperties);
+				}
+			});
+		}
+		
+		return mergedNodes;
 	}
 }
