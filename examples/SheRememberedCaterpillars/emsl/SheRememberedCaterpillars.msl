@@ -56,7 +56,7 @@ pattern canCrossBridge {
 	}
 	
 	b:Bridge {
-		.colour : a::colour  
+		.colour : enum::BLUE  
 		
 		-feet->p1
 		-feet->p2
