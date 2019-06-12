@@ -6,15 +6,15 @@ Bundle-Vendor: My Company
 Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: org.emoflon.neo.emsl; singleton:=true
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.xtext;visibility:=reexport,
- org.eclipse.xtext.xbase;visibility:=reexport,
- org.eclipse.equinox.common;bundle-version="3.5.0";visibility:=reexport,
- org.eclipse.emf.ecore;visibility:=reexport,
- org.eclipse.xtext.xbase.lib;bundle-version="2.14.0";visibility:=reexport,
- org.eclipse.xtext.util;visibility:=reexport,
- org.eclipse.emf.common;visibility:=reexport,
- org.eclipse.xtend.lib;bundle-version="2.14.0";visibility:=reexport,
- org.antlr.runtime;bundle-version="[3.2.0,3.2.1)";visibility:=reexport,
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.eclipse.xtend.lib;bundle-version="2.14.0",
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.eclipse.ui;bundle-version="3.111.0",
  org.eclipse.core.runtime;bundle-version="3.15.100"
 Export-Package: org.emoflon.neo.emsl,

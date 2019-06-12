@@ -1,7 +1,9 @@
 package org.emoflon.neo.example.she_remembered_caterpillars;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import org.emoflon.neo.api.API_Emsl_SheRememberedCaterpillars;
 import org.emoflon.neo.example.ENeoTest;
@@ -51,5 +53,31 @@ public class PatternTest extends ENeoTest {
 	@Test
 	public void testNoDeadEnd() {
 		expectSingleMatch(entities.getPattern_NoDeadEnd());
+	}
+	
+	@Test
+	@Disabled("TODO[Jannik] Handle constraints")
+	public void testNoStrangeBridges() {
+		assertTrue(entities.getConstraint_NoStrangeBridges().isSatisfied());
+		assertFalse(entities.getConstraint_StrangeBridges().isSatisfied());
+	}
+	
+	@Test
+	@Disabled("TODO[Jannik] Handle constraints")
+	public void testCanCrossBridgeSomewhere() {
+		assertTrue(entities.getConstraint_CanCrossBridgeSomewhere().isSatisfied());
+	}
+	
+	@Test
+	@Disabled("TODO[Jannik] Handle constraints")
+	public void testAlwaysOnPlatform() {
+		assertTrue(entities.getConstraint_AlwaysOnPlatform().isSatisfied());
+	}
+	
+	@Test
+	@Disabled("TODO[Jannik] Handle constraints")
+	public void testNothingBlue() {
+		assertFalse(entities.getConstraint_NothingBlue().isSatisfied());
+		assertTrue(entities.getConstraint_NothingBlue().isViolated());
 	}
 }
