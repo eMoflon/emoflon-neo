@@ -51,7 +51,7 @@ public class EMSLFlattener {
 			}
 		});
 
-		var mergedNodes = mergeNodes(collectedNodeBlocks);
+		var mergedNodes = mergeNodes(refinements, collectedNodeBlocks);
 		
 		pattern.getNodeBlocks().clear();
 		pattern.getNodeBlocks().addAll((mergedNodes));
@@ -107,6 +107,25 @@ public class EMSLFlattener {
 						nodeBlocks.put(key, value);
 					}
 				});
+			}
+		}
+		
+		for (var name : nodeBlocks.keySet()) {
+			for (var n : nodeBlocks.get(name)) {
+				for (var rel : n.getRelations()) {
+					if (nodeBlocks.containsKey(rel.getTarget().getName()) && nodeBlocks.get(rel.getTarget().getName()) != null) {
+						rel.setTarget(nodeBlocks.get(rel.getTarget().getName()).get(0));
+					} else {
+						// relabeling happened, find new target
+						for (var r : refinementList) {
+							for (var relabeling : r.getRelabeling()) {
+								if (nodeBlocks.containsKey(relabeling.getNewLabel()) && nodeBlocks.get(relabeling.getNewLabel()) != null) {
+									rel.setTarget(nodeBlocks.get(relabeling.getNewLabel()).get(0));
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		
