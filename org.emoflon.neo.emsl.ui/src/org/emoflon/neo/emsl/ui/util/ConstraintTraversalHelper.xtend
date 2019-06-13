@@ -10,10 +10,11 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.Constraint
+import java.util.ArrayList
 
 class ConstraintTraversalHelper {
 
-	var patternList = newArrayList
+	ArrayList<AtomicPattern> patternList = newArrayList
 
 	def getConstraintPattern(Entity entity) {
 		getConditionString(entity)
