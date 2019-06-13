@@ -624,10 +624,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for the links between objects with the same name in the patterns of a constraint.
 	 */
-	def String createLinksForConstraintPatterns(ArrayList patterns) {
+	def String createLinksForConstraintPatterns(ArrayList<AtomicPattern> patterns) {
 		var text = ""
-		for (p : patterns as ArrayList<AtomicPattern>) {
-			for (AtomicPattern other : patterns as ArrayList<AtomicPattern>) {
+		for (p : patterns) {
+			for (AtomicPattern other : patterns) {
 				if (!p.name.equals(other.name)) {
 					for (ModelNodeBlock nb : p.nodeBlocks) {
 						for (ModelNodeBlock otherNB : other.nodeBlocks) {
