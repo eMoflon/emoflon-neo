@@ -157,11 +157,14 @@ public class EMSLFlattener {
 				@Override
 				public int compare(MetamodelNodeBlock o1, MetamodelNodeBlock o2) {
 					if (o1.getSuperTypes().contains(o2) || recursiveContainment(o1, o2, false)) {
-						return 1;
-					} else if (o2.getSuperTypes().contains(o1) || recursiveContainment(o2, o1, false)) {
 						return -1;
-					} else {
+					} else if (o2.getSuperTypes().contains(o1) || recursiveContainment(o2, o1, false)) {
+						return 1;
+					} else if (o1 == o2) {
 						return 0;
+					} else {
+						// no common type could be found, merge not possible
+						throw new RuntimeException(); // TODO [Maximilian] change to proper error handling
 					}
 				}
 				
