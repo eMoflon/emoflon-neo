@@ -9,6 +9,7 @@ import org.emoflon.neo.emsl.eMSL.ConstraintReference
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.Constraint
 
 class ConstraintTraversalHelper {
 
@@ -21,20 +22,28 @@ class ConstraintTraversalHelper {
 	
 	def getConditionString(Entity entity) {
 		if (entity instanceof Rule) {
-			// return the String for simple Constraints
+			
 			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
 				getSimpleConstraintString(entity.condition as ConstraintBody)
-			// return the String for ConstraintReference
+			
 			if (entity.condition instanceof ConstraintReference)
 				getConstraintReferenceString((entity.condition as ConstraintReference))
 		}
 		else if (entity instanceof Pattern) {
-			// return the String for simple Constraints
+			
 			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint || entity.condition instanceof Implication)
 				getSimpleConstraintString(entity.condition as ConstraintBody)
-			// return the String for ConstraintReference
+			
 			if (entity.condition instanceof ConstraintReference)
 				getConstraintReferenceString((entity.condition as ConstraintReference))
+		}
+		else if (entity instanceof Constraint) {
+			
+			if (entity.body instanceof NegativeConstraint || entity.body instanceof PositiveConstraint || entity.body instanceof Implication)
+				getSimpleConstraintString(entity.body as ConstraintBody)
+			
+			else
+				getOrBodyString(entity.body)
 		}
 	}
 	
@@ -64,8 +73,10 @@ class ConstraintTraversalHelper {
 	}
 	
 	def getPrimaryString(ConstraintBody constraintBody) {
-		if (constraintBody.children.get(0) instanceof ConstraintReference)
+		if (constraintBody.children.size > 0 && constraintBody.children.get(0) instanceof ConstraintReference)
 			getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
+		else if (constraintBody instanceof ConstraintReference)
+			getConstraintReferenceString(constraintBody)
 		else
 			getOrBodyString(constraintBody)
 	}

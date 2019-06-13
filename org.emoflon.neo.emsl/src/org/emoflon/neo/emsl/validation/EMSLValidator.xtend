@@ -3,6 +3,17 @@
  */
 package org.emoflon.neo.emsl.validation
 
+import org.eclipse.xtext.validation.Check
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.PrimitiveInt
+import org.emoflon.neo.emsl.eMSL.BuiltInType
+import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
+import org.emoflon.neo.emsl.eMSL.EMSLPackage
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
+import org.emoflon.neo.emsl.eMSL.PrimitiveString
+import org.emoflon.neo.emsl.eMSL.UserDefinedType
+import org.emoflon.neo.emsl.eMSL.EnumValue
+import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
 
 /**
  * This class contains custom validation rules. 
@@ -10,16 +21,30 @@ package org.emoflon.neo.emsl.validation
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class EMSLValidator extends AbstractEMSLValidator {
-	
-//	public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					EMSLPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
+
+	@Check
+	def checkPropertyStatementOfNodeBlock(ModelPropertyStatement p) {
+		
+		if (p.type instanceof MetamodelPropertyStatement) {
+			if (p.type.type instanceof BuiltInType) {
+				var propertyType = (p.type.type as BuiltInType).reference
+				
+				if (!(p.value instanceof PrimitiveInt && propertyType == BuiltInDataTypes.EINT) &&
+					!(p.value instanceof PrimitiveBoolean && propertyType == BuiltInDataTypes.EBOOLEAN) &&
+					!(p.value instanceof PrimitiveString && propertyType == BuiltInDataTypes.ESTRING)
+				)
+					error("The value of this PropertyStatement must be of type " + propertyType.getName, 
+						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
+			} else if (p.type.type instanceof UserDefinedType) {
+				var propertyType = (p.type.type as UserDefinedType).reference
+				var literals = propertyType.literals
+				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal))) {
+					error("The value of this PropertyStatement must be of type " + propertyType.getName, 
+						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
+				}
+			}
+		}
+				
+	}
 	
 }
