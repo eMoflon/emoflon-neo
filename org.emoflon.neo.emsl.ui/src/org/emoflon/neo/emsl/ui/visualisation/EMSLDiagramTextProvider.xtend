@@ -270,15 +270,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var root = EcoreUtil2.getRootContainer(model)
 		var allMetamodels = EcoreUtil2.getAllContentsOfType(root, Metamodel)
 		if (!model.nodeBlocks.isEmpty) {
-			'''
-			«FOR nb : model.nodeBlocks»
-				«FOR i : allMetamodels»
-					«IF i.nodeBlocks.contains(nb.type)»
-						"Model: «model.name»" --> "Metamodel: «i.name»"
-						
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»'''
+			for (nb : model.nodeBlocks) {
+				for (i : allMetamodels) {
+					if (i.nodeBlocks.contains(nb.type))
+						return "\"Model: " + model.name + "\" --> \"Metamodel: " + i.name + "\""
+				}
+			}
 		}
 		else {
 			''''''
