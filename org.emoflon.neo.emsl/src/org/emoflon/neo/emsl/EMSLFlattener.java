@@ -78,11 +78,15 @@ public class EMSLFlattener {
 	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Pattern p, EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 		
-		for (var r : refinementList) {			
+		for (var r : refinementList) {		
+			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 			if (r.getReferencedType() instanceof AtomicPattern) {				
 				if (alreadyRefinedPatternNames.contains(((AtomicPattern) r.getReferencedType()).getName())) {
-					// check for cycles in refinements, if found: throw unusual exception
+					// check for cycles in refinements, if found: throw exception
 					throw new FlattenerException(p, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+				} else if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
+					// check if a superEntity possesses a condition block
+					throw new FlattenerException(p, FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK, r.getReferencedType());
 				}
 				else {
 					var<String> alreadyRefined = alreadyRefinedPatternNames;
@@ -101,8 +105,25 @@ public class EMSLFlattener {
 						else {
 							nodeBlocks.get(newNb.getName()).add(newNb);
 						}
+						nodeBlocksOfSuperEntity.add(newNb);
 					}
 				}
+				
+				// re-set targets of edges
+				for (var nb : nodeBlocksOfSuperEntity) {
+					for (var rel : nb.getRelations()) {
+						for (var ref : r.getRelabeling()) {
+							if (((ModelNodeBlock) ref.getOldLabel()).getName().equals(rel.getTarget().getName())) {
+								for (var node : nodeBlocksOfSuperEntity) {
+									if (ref.getNewLabel().equals(node.getName())) {
+										rel.setTarget(node);
+									}
+								}
+							}
+						}
+					}
+				}
+				
 			}
 			
 			// recursively collect nodes
@@ -119,6 +140,7 @@ public class EMSLFlattener {
 			}
 		}
 		
+		// re-set targets of edges
 		for (var name : nodeBlocks.keySet()) {
 			for (var n : nodeBlocks.get(name)) {
 				for (var rel : n.getRelations()) {
@@ -197,8 +219,6 @@ public class EMSLFlattener {
 					try {
 						nodeBlockTypeQueue.add(nb.getType());
 					} catch (AssertionError e) {
-						//e.printStackTrace();
-						//throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES, new ArrayList<String>());
 						throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES, nb);
 					}
 				}

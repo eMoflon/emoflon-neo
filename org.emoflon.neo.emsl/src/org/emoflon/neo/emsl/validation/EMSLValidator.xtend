@@ -63,15 +63,18 @@ class EMSLValidator extends AbstractEMSLValidator {
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
 				error("The types of the Objects you are trying to refine are not compatible.", 
 					e.nodeBlock, 
-					EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE
-				)
+					EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
 				
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
-				error(/*"The types of the properties you are trying to refine are not compatible. The types " + 
+				error("The types of the properties you are trying to refine are not compatible. The types " + 
 					(e.property1 as ModelPropertyStatement).type.name + " and " + 
-					(e.property2 as ModelPropertyStatement).type.name + " must be the same."*/ "foo", 
+					(e.property2 as ModelPropertyStatement).type.name + " must be the same.", 
 					e.property2, 
 					EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+					
+			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK) {
+				error("Using Entities that have conditions are not allowed to be refined.", 
+					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 			}
 		} catch (AssertionError e) {
 			e.printStackTrace

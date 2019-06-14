@@ -3,13 +3,14 @@ package org.emoflon.neo.emsl.util;
 import java.util.ArrayList;
 
 import org.emoflon.neo.emsl.eMSL.Entity;
-import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.eMSL.SuperType;
 
 public class FlattenerException extends Exception {
 
 	private Entity entity;
+	private SuperType superEntity;
 	
 	private FlattenerErrorType errorType;
 
@@ -47,6 +48,13 @@ public class FlattenerException extends Exception {
 		this.nodeBlock = nodeBlock;
 	}
 	
+	// for superEntities with when condition
+	public FlattenerException(Entity entity, FlattenerErrorType type, SuperType superEntity ) {
+		this.entity = entity;
+		this.errorType = type;
+		this.superEntity = superEntity;
+	}
+	
 	public ModelPropertyStatement getProperty1() {
 		return property1;
 	}
@@ -69,6 +77,10 @@ public class FlattenerException extends Exception {
 	
 	public ModelNodeBlock getNodeBlock() {
 		return nodeBlock;
+	}
+
+	public SuperType getSuperEntity() {
+		return superEntity;
 	}
 	
 }
