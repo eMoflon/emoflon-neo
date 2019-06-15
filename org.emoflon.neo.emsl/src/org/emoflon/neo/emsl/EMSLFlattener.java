@@ -77,18 +77,18 @@ public class EMSLFlattener {
 	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Pattern entity, EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 		
-		for (var r : refinementList) {		
+		for (var r : refinementList) {
 			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 			if (r.getReferencedType() instanceof AtomicPattern) {				
 				if (alreadyRefinedPatternNames.contains(((AtomicPattern) r.getReferencedType()).getName())) {
 					// check for cycles in refinements, if found: throw exception
-					throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+					//throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
 				} else if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
 					// check if a superEntity possesses a condition block
 					throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK, r.getReferencedType());
 				}
 				else {
-					for (var nb : ((AtomicPattern) r.getReferencedType()).getNodeBlocks()) {
+					for (var nb : (flattenPattern((Pattern)/*(AtomicPattern)*/ r.getReferencedType().eContainer()).getBody()).getNodeBlocks()) {
 						
 						// create new NodeBlock
 						var newNb = createNewModelNodeBlock(nb, r);
@@ -116,6 +116,12 @@ public class EMSLFlattener {
 										rel.setTarget(node);
 									}
 								}
+							} else {
+								for (var node : nodeBlocksOfSuperEntity) {
+									if (rel.getTarget().getName().equals(node.getName())) {
+										rel.setTarget(node);
+									}
+								}
 							}
 						}
 					}
@@ -128,15 +134,13 @@ public class EMSLFlattener {
 		for (var r : refinementList) {
 			if (!alreadyRefined.contains(((AtomicPattern) r.getReferencedType()).getName())) {
 				alreadyRefined.add(((AtomicPattern) r.getReferencedType()).getName());
-			} else if (!alreadyRefined.contains(((AtomicPattern) r.getReferencedType()).getName())) {
-				alreadyRefined.add(((AtomicPattern) r.getReferencedType()).getName());
 			}
 		}
 		
 		for (var r : refinementList) {
 			// recursively collect nodes
 			if (r.getReferencedType() instanceof AtomicPattern && ((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes() != null) {
-				var tmp = collectNodes(entity, ((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes(), alreadyRefined);
+				var tmp = collectNodes(entity, (flattenPattern((Pattern)/*(AtomicPattern)*/ r.getReferencedType().eContainer())).getBody().getSuperRefinementTypes(), alreadyRefined);
 				tmp.forEach((key, value) -> {
 					if (nodeBlocks.containsKey(key)) {
 						tmp.get(key).addAll(tmp.get(key));
@@ -145,7 +149,16 @@ public class EMSLFlattener {
 						nodeBlocks.put(key, value);
 					}
 				});
-			} 
+			}
+			for (var ref : r.getRelabeling()) {
+				for (var name : nodeBlocks.keySet()) {
+					for (var nb : nodeBlocks.get(name)) {
+						if (nb.getName().equals(((ModelNodeBlock) ref.getOldLabel()).getName())) {
+							nb.setName(ref.getNewLabel());
+						}
+					}
+				}
+			}
 		}
 		
 		return nodeBlocks;
@@ -238,7 +251,7 @@ public class EMSLFlattener {
 			var edges = new HashMap<String, HashMap<String, ArrayList<ModelRelationStatement>>>();
 			for (var nb : nodeBlocks.get(name)) {
 				for (var rel : nb.getRelations()) {
-					if (rel.getType() == null) {
+					if (rel.getType() == null || rel.getTarget() == null) {
 						continue;
 					}
 					if (!edges.containsKey(rel.getType().getName())) {
