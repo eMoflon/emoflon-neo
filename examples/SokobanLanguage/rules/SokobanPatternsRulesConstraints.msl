@@ -79,6 +79,11 @@ pattern anOccupiedBoulderField {
 	}	
 }
 
+pattern byBlockAndBoulderOccupiedFields -> anOccupiedBlockField, 
+	anOccupiedBoulderField [field -> otherField,fig -> otherFig] {
+
+}
+
 
 pattern allFieldsInARow {
 	b : SokobanLanguage.Board {

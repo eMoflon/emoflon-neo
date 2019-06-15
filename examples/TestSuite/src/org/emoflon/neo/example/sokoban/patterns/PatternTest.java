@@ -188,4 +188,25 @@ public class PatternTest extends ENeoTest {
 
 		expectValidMatches(matches, matches.size() - 2);
 	}
+	
+	@Test
+	public void test_OccupiedNext() {
+		assertThat(entities.getPattern_OccupiedNext().countMatches(), is(9));
+	}
+	
+	@Test
+	public void test_BoulderOnEndField() {
+		expectNoMatch(entities.getPattern_BoulderOnEndField());
+	}
+	
+	@Test
+	public void test_BlockNotOnEndFieldInCorner() {
+		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().countMatches(), is(2));
+	}
+	
+	@Test
+	public void test_ByBlockAndBoulderOccupiedFields() {
+		assertThat(entities.getPattern_ByBlockAndBoulderOccupiedFields().countMatches(), is(14));
+	}
+	
 }

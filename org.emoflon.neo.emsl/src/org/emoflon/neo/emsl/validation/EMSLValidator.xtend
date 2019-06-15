@@ -75,9 +75,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK) {
 				error("Using Entities that have conditions are not allowed to be refined.", 
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
-			}
-		} catch (AssertionError e) {
-			e.printStackTrace
+			}	
 		}
 	}
 	
