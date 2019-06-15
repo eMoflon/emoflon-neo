@@ -8,7 +8,7 @@
         contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
         default="true"
         extensions="msl"
-        icon="resources/eNeoIcon.png"
+        icon="icons/eNeoIcon.png"
         id="org.emoflon.neo.emsl.EMSL"
         name="EMSL Editor">
 		</editor>
