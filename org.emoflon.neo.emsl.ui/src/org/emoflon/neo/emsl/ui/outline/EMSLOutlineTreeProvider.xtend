@@ -4,12 +4,29 @@
 package org.emoflon.neo.emsl.ui.outline
 
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
+import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Entity
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode
+import org.emoflon.neo.emsl.eMSL.Constraint
 
 /**
  * Customization of the default outline structure.
- *
+ * 
  * See https://www.eclipse.org/Xtext/documentation/310_eclipse_support.html#outline
  */
 class EMSLOutlineTreeProvider extends DefaultOutlineTreeProvider {
-
+	def _createChildren(DocumentRootNode parentNode, EMSL_Spec root) {
+		for (Entity element : root.entities) {
+			if (element instanceof Pattern)
+				createNode(parentNode, element.body)
+			else
+				createNode(parentNode, element);
+		}
+	}
+	
+	def _createChildren(EObjectNode parentNode, Constraint c){
+		
+	}
 }
