@@ -14,6 +14,11 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.util.FlattenerException
+import org.emoflon.neo.emsl.util.FlattenerErrorType
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 
 /**
  * This class contains custom validation rules. 
@@ -43,8 +48,35 @@ class EMSLValidator extends AbstractEMSLValidator {
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}
 			}
-		}
+		}	
+	}
+	
+	@Check
+	def checkFlattening(AtomicPattern pattern) {
+		try {
+			new EMSLFlattener().flattenPattern(pattern.eContainer as Pattern);
+		} catch (FlattenerException e) {
+			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
+				error("You have created an infinite loop in your refinements. The pattern \"" + 
+					(e.entity as Pattern).body.name + "\" appears at least twice.", 
+					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
+				error("The types of the Objects you are trying to refine are not compatible.", 
+					e.nodeBlock, 
+					EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
 				
+			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
+				error("The types of the properties you are trying to refine are not compatible. The types " + 
+					(e.property1 as ModelPropertyStatement).type.name + " and " + 
+					(e.property2 as ModelPropertyStatement).type.name + " must be the same.", 
+					e.property2, 
+					EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+					
+			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK) {
+				error("Using Entities that have conditions are not allowed to be refined.", 
+					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+			}	
+		}
 	}
 	
 }

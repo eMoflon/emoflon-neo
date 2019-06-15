@@ -8,6 +8,7 @@ import java.util.PriorityQueue;
 import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
+import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -18,6 +19,8 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
+import org.emoflon.neo.emsl.util.FlattenerErrorType;
+import org.emoflon.neo.emsl.util.FlattenerException;
 
 public class EMSLFlattener {
 
@@ -31,8 +34,9 @@ public class EMSLFlattener {
 	 * @param pattern that should be flattened.
 	 * @param alreadyRefinedPatternNames list of names of pattern that have already appeared in the refinement path (against loops).
 	 * @return the flattened pattern.
+	 * @throws FlattenerException is thrown if an error during the flattening process occurs.
 	 */
-	public Pattern flattenPattern(Pattern p) {
+	public Pattern flattenPattern(Pattern p) throws FlattenerException {
 		var pattern = p.getBody();
 		var<RefinementCommand> refinements = pattern.getSuperRefinementTypes();
 		var<String> alreadyRefinedPatternNames = new ArrayList<String>();
@@ -42,7 +46,7 @@ public class EMSLFlattener {
 		if (refinements.isEmpty())
 			return p;
 		
-		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(refinements, alreadyRefinedPatternNames);
+		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(p, refinements, alreadyRefinedPatternNames);
 		
 		pattern.getNodeBlocks().forEach(nb -> {
 			if (collectedNodeBlocks.keySet().contains(nb.getName())) {
@@ -55,7 +59,7 @@ public class EMSLFlattener {
 			}
 		});
 
-		var mergedNodes = mergeNodes(refinements, collectedNodeBlocks);
+		var mergedNodes = mergeNodes(p, refinements, collectedNodeBlocks);
 		
 		pattern.getNodeBlocks().clear();
 		pattern.getNodeBlocks().addAll((mergedNodes));
@@ -69,15 +73,20 @@ public class EMSLFlattener {
 	 * @param refinementList List of RefinementCommands holding all pattern that should be refined.
 	 * @param alreadyRefinedPatternNames List of Pattern names that have already appeared in the refinement path (against loops).
 	 * @return HashMap of NodeBlocks mapped to their name that have to be added to the refining Pattern.
+	 * @throws FlattenerException is thrown if an error occurs during collecting the nodes, like an infinite loop is detected
 	 */
-	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedPatternNames) {
+	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Pattern p, EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 		
-		for (var r : refinementList) {			
+		for (var r : refinementList) {		
+			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 			if (r.getReferencedType() instanceof AtomicPattern) {				
 				if (alreadyRefinedPatternNames.contains(((AtomicPattern) r.getReferencedType()).getName())) {
-					// check for cycles in refinements, if found: throw unusual exception; TODO [Maximilian]: change to more appropriate error handling
-					throw new RuntimeException();
+					// check for cycles in refinements, if found: throw exception
+					throw new FlattenerException(p, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+				} else if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
+					// check if a superEntity possesses a condition block
+					throw new FlattenerException(p, FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK, r.getReferencedType());
 				}
 				else {
 					var<String> alreadyRefined = alreadyRefinedPatternNames;
@@ -96,13 +105,30 @@ public class EMSLFlattener {
 						else {
 							nodeBlocks.get(newNb.getName()).add(newNb);
 						}
+						nodeBlocksOfSuperEntity.add(newNb);
 					}
 				}
+				
+				// re-set targets of edges
+				for (var nb : nodeBlocksOfSuperEntity) {
+					for (var rel : nb.getRelations()) {
+						for (var ref : r.getRelabeling()) {
+							if (((ModelNodeBlock) ref.getOldLabel()).getName().equals(rel.getTarget().getName())) {
+								for (var node : nodeBlocksOfSuperEntity) {
+									if (ref.getNewLabel().equals(node.getName())) {
+										rel.setTarget(node);
+									}
+								}
+							}
+						}
+					}
+				}
+				
 			}
 			
 			// recursively collect nodes
 			if (r.getReferencedType() instanceof AtomicPattern && ((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes() != null) {
-				var tmp = collectNodes(((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes(), alreadyRefinedPatternNames);
+				var tmp = collectNodes(p, ((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes(), alreadyRefinedPatternNames);
 				tmp.forEach((key, value) -> {
 					if (nodeBlocks.containsKey(key)) {
 						tmp.get(key).addAll(tmp.get(key));
@@ -114,6 +140,7 @@ public class EMSLFlattener {
 			}
 		}
 		
+		// re-set targets of edges
 		for (var name : nodeBlocks.keySet()) {
 			for (var n : nodeBlocks.get(name)) {
 				for (var rel : n.getRelations()) {
@@ -144,8 +171,9 @@ public class EMSLFlattener {
 	 * 
 	 * @param nodeBlocks HashMap of Lists of ModelNodeBlocks that are mapped to the names of the NodeBlocks contained in such a list.
 	 * @return ArrayList of ModelNodeBlocks that only contains the ModelNodeBlocks that were created during merging.
+	 * @throws FlattenerException is thrown if something went wrong during the merging process.
 	 */
-	private ArrayList<ModelNodeBlock> mergeNodes(EList<RefinementCommand> refinementList, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) {
+	private ArrayList<ModelNodeBlock> mergeNodes(Entity entity, EList<RefinementCommand> refinementList, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) throws FlattenerException {
 		var<ModelNodeBlock> mergedNodes = new ArrayList<ModelNodeBlock>();
 		
 		// take all nodeBlocks with the same name/key out of the HashMap and merge
@@ -157,11 +185,14 @@ public class EMSLFlattener {
 				@Override
 				public int compare(MetamodelNodeBlock o1, MetamodelNodeBlock o2) {
 					if (o1.getSuperTypes().contains(o2) || recursiveContainment(o1, o2, false)) {
-						return 1;
-					} else if (o2.getSuperTypes().contains(o1) || recursiveContainment(o2, o1, false)) {
 						return -1;
-					} else {
+					} else if (o2.getSuperTypes().contains(o1) || recursiveContainment(o2, o1, false)) {
+						return 1;
+					} else if (o1 == o2) {
 						return 0;
+					} else {
+						// no common type could be found, merge not possible
+						throw new AssertionError();
 					}
 				}
 				
@@ -185,7 +216,11 @@ public class EMSLFlattener {
 			// collect types
 			for (var nb : blocksWithKey) {
 				if (nb.getType() != null) {
-					nodeBlockTypeQueue.add(nb.getType());
+					try {
+						nodeBlockTypeQueue.add(nb.getType());
+					} catch (AssertionError e) {
+						throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES, nb);
+					}
 				}
 			}
 			
@@ -197,7 +232,7 @@ public class EMSLFlattener {
 			mergedNodes.add(newNb);
 		}
 		
-		return mergeEdgesOfNodeBlocks(refinementList, nodeBlocks, mergePropertyStatementsOfNodeBlocks(nodeBlocks, mergedNodes));
+		return mergeEdgesOfNodeBlocks(entity, refinementList, nodeBlocks, mergePropertyStatementsOfNodeBlocks(entity, nodeBlocks, mergedNodes));
 	}
 	
 	/**
@@ -206,8 +241,9 @@ public class EMSLFlattener {
 	 * @param nodeBlocks that were collected from the refinements.
 	 * @param mergedNodes nodeBlocks that were except for the relationStatements already merged.
 	 * @return list of ModelNodeBlocks that now have merged RelationStatements.
+	 * @throws FlattenerException is thrown if something went wrong during the merging process.
 	 */
-	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(EList<RefinementCommand> refinementList, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
+	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, EList<RefinementCommand> refinementList, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) throws FlattenerException {
 		
 		// collect all edges in hashmap; first key is type name, second is target name
 		for (var name : nodeBlocks.keySet()) {
@@ -252,7 +288,7 @@ public class EMSLFlattener {
 							if (p.getType().getType() != basis.getType().getType() || 
 									basis.getOp() != p.getOp()) 
 							{
-								throw new RuntimeException(); // incompatible types found, TODO [Maximilian] switch to different error handling
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p); // incompatible types/operands found
 							}
 						}
 						var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
@@ -287,8 +323,9 @@ public class EMSLFlattener {
 	 * @param nodeBlocks that were collected and merged into the new NodeBlocks.
 	 * @param mergedNodes result of the mergeNodes function. These nodeBlocks get the PropertyStatements.
 	 * @return list of mergedNodeBlocks with the new and merged ModelPropertyStatements.
+	 * @throws FlattenerException is thrown if something went wrong during the merging process.
 	 */
-	private ArrayList<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) {
+	private ArrayList<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(Entity entity, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) throws FlattenerException {
 		for (var name : nodeBlocks.keySet()) {
 			var nodeBlocksWithKey = nodeBlocks.get(name);
 			var newProperties = new ArrayList<ModelPropertyStatement>();
@@ -312,10 +349,10 @@ public class EMSLFlattener {
 					basis = properties.get(0);
 				}
 				for (var p : properties) {
-					if (p.getType().getType() != basis.getType().getType() || 
-							basis.getOp() != p.getOp()) 
+					if (!(p.getType().getType() == basis.getType().getType() && 
+							basis.getOp() == p.getOp())) 
 					{
-						throw new RuntimeException(); // incompatible types found, TODO [Maximilian] switch to different error handling
+						throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p); // incompatible types found
 					}
 				}
 				var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();

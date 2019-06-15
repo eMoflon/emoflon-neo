@@ -43,6 +43,7 @@ import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.EMSLFlattener
 import java.util.ArrayList
+import org.emoflon.neo.emsl.util.FlattenerException
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -270,15 +271,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var root = EcoreUtil2.getRootContainer(model)
 		var allMetamodels = EcoreUtil2.getAllContentsOfType(root, Metamodel)
 		if (!model.nodeBlocks.isEmpty) {
-			'''
-			«FOR nb : model.nodeBlocks»
-				«FOR i : allMetamodels»
-					«IF i.nodeBlocks.contains(nb.type)»
-						"Model: «model.name»" --> "Metamodel: «i.name»"
-						
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»'''
+			for (nb : model.nodeBlocks) {
+				for (i : allMetamodels) {
+					if (i.nodeBlocks.contains(nb.type))
+						return "\"Model: " + model.name + "\" --> \"Metamodel: " + i.name + "\""
+				}
+			}
 		}
 		else {
 			''''''
@@ -381,7 +379,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Pattern.
 	 */
 	def dispatch String visualiseEntity(Pattern entity) {
-		new EMSLFlattener().flattenPattern(entity)
+		try {
+			new EMSLFlattener().flattenPattern(entity)
+		} catch (AssertionError e) {
+			
+		} catch (FlattenerException e) {
+			
+		}
+		
+		
 		'''
 			«FOR nb : entity.body.nodeBlocks»
 				«visualiseNodeBlockInPattern(nb, false)»
