@@ -323,6 +323,9 @@ public class EMSLFlattener {
 			var propertyStatementsSortedByName = new HashMap<String, ArrayList<ModelPropertyStatement>>();
 			for (var nb : nodeBlocksWithKey) {
 				for (var p : nb.getProperties()) {
+					if (p.getType() == null) {
+						continue;
+					}
 					if (!propertyStatementsSortedByName.containsKey(p.getType().getName())) {
 						propertyStatementsSortedByName.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
 					}
