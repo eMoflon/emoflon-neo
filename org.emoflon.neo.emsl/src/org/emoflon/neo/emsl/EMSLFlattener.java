@@ -36,18 +36,24 @@ public class EMSLFlattener {
 	 * @return the flattened pattern.
 	 * @throws FlattenerException is thrown if an error during the flattening process occurs.
 	 */
-	public Pattern flattenPattern(Pattern p) throws FlattenerException {
-		var pattern = p.getBody();
-		var<RefinementCommand> refinements = pattern.getSuperRefinementTypes();
-		var<String> alreadyRefinedPatternNames = new ArrayList<String>();
+	public Pattern flattenPattern(Pattern pattern, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
+		var atomicPattern = pattern.getBody();
+		var<RefinementCommand> refinements = atomicPattern.getSuperRefinementTypes();
+		
+		// check for loop in refinements
+
+		if (alreadyRefinedPatternNames.contains(atomicPattern.getName())) 
+			throw new FlattenerException(pattern, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+		// if none has been found, add current name to list
+		
 		
 		// check if anything has to be done, if not return
 		if (refinements.isEmpty())
-			return p;
+			return pattern;
 		
 		// 1. step: collect nodes with edges
-		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(p, refinements, alreadyRefinedPatternNames);
-		pattern.getNodeBlocks().forEach(nb -> {
+		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(pattern, refinements, alreadyRefinedPatternNames);
+		atomicPattern.getNodeBlocks().forEach(nb -> {
 			if (collectedNodeBlocks.keySet().contains(nb.getName())) {
 				collectedNodeBlocks.get(nb.getName()).add(nb);
 			}
@@ -59,14 +65,14 @@ public class EMSLFlattener {
 		});
 
 		// 2. step: merge nodes and edges
-		var mergedNodes = mergeNodes(p, refinements, collectedNodeBlocks);
+		var mergedNodes = mergeNodes(pattern, refinements, collectedNodeBlocks);
 		
 		// 3. step: add merged nodeBlocks to pattern and return
-		pattern.getNodeBlocks().clear();
-		pattern.getNodeBlocks().addAll((mergedNodes));
+		atomicPattern.getNodeBlocks().clear();
+		atomicPattern.getNodeBlocks().addAll((mergedNodes));
 		
-		p.setBody(pattern);
-		return p;
+		pattern.setBody(atomicPattern);
+		return pattern;
 	}
 	
 	/**
@@ -80,15 +86,18 @@ public class EMSLFlattener {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 		
 		for (var r : refinementList) {
+			
+			// add current entity to list of names
+			var alreadyRefinedPatternNamesCopy = new ArrayList<String>();
+			alreadyRefinedPatternNames.forEach(n -> alreadyRefinedPatternNamesCopy.add(n));
+			alreadyRefinedPatternNamesCopy.add(entity.getBody().getName());
+			
 			// recursively flatten superEntities
-			var flattenedSuperEntity = flattenPattern((Pattern) r.getReferencedType().eContainer()).getBody();
+			var flattenedSuperEntity = flattenPattern((Pattern) r.getReferencedType().eContainer(), alreadyRefinedPatternNamesCopy).getBody();
 			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 			
 			if (flattenedSuperEntity instanceof AtomicPattern) {				
-				if (alreadyRefinedPatternNames.contains(flattenedSuperEntity.getName())) {
-					// check for cycles in refinements, if found: throw exception
-					//throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
-				} else if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
+				if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
 					// check if a superEntity possesses a condition block
 					throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION, r.getReferencedType());
 				}

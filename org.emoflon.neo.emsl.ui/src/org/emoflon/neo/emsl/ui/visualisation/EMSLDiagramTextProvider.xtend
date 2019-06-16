@@ -380,7 +380,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def dispatch String visualiseEntity(Pattern entity) {
 		try {
-			new EMSLFlattener().flattenPattern(entity)
+			new EMSLFlattener().flattenPattern(entity, newArrayList)
 		} catch (AssertionError e) {
 			
 		} catch (FlattenerException e) {

@@ -19,6 +19,7 @@ import org.emoflon.neo.emsl.EMSLFlattener
 import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import java.util.ArrayList
 
 /**
  * This class contains custom validation rules. 
@@ -54,7 +55,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check
 	def checkFlattening(AtomicPattern pattern) {
 		try {
-			new EMSLFlattener().flattenPattern(pattern.eContainer as Pattern);
+			new EMSLFlattener().flattenPattern(pattern.eContainer as Pattern, new ArrayList);
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				error("You have created an infinite loop in your refinements. The pattern \"" + 
