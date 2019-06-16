@@ -45,8 +45,8 @@ public class EMSLFlattener {
 		if (refinements.isEmpty())
 			return p;
 		
+		// 1. step: collect nodes with edges
 		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(p, refinements, alreadyRefinedPatternNames);
-		
 		pattern.getNodeBlocks().forEach(nb -> {
 			if (collectedNodeBlocks.keySet().contains(nb.getName())) {
 				collectedNodeBlocks.get(nb.getName()).add(nb);
@@ -58,8 +58,10 @@ public class EMSLFlattener {
 			}
 		});
 
+		// 2. step: merge nodes and edges
 		var mergedNodes = mergeNodes(p, refinements, collectedNodeBlocks);
 		
+		// 3. step: add merged nodeBlocks to pattern and return
 		pattern.getNodeBlocks().clear();
 		pattern.getNodeBlocks().addAll((mergedNodes));
 		
@@ -78,20 +80,23 @@ public class EMSLFlattener {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 		
 		for (var r : refinementList) {
+			// recursively flatten superEntities
+			var flattenedSuperEntity = flattenPattern((Pattern) r.getReferencedType().eContainer()).getBody();
 			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
-			if (r.getReferencedType() instanceof AtomicPattern) {				
-				if (alreadyRefinedPatternNames.contains(((AtomicPattern) r.getReferencedType()).getName())) {
+			
+			if (flattenedSuperEntity instanceof AtomicPattern) {				
+				if (alreadyRefinedPatternNames.contains(flattenedSuperEntity.getName())) {
 					// check for cycles in refinements, if found: throw exception
 					//throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
 				} else if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
 					// check if a superEntity possesses a condition block
-					throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK, r.getReferencedType());
+					throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION, r.getReferencedType());
 				}
 				else {
-					for (var nb : (flattenPattern((Pattern)/*(AtomicPattern)*/ r.getReferencedType().eContainer()).getBody()).getNodeBlocks()) {
+					for (var nb : (flattenedSuperEntity).getNodeBlocks()) {
 						
 						// create new NodeBlock
-						var newNb = createNewModelNodeBlock(nb, r);
+						var newNb = copyModelNodeBlock(nb, r);
 						
 						// add nodeBlock to list according to its name
 						if (!nodeBlocks.containsKey(newNb.getName())) {
@@ -109,17 +114,25 @@ public class EMSLFlattener {
 				// re-set targets of edges
 				for (var nb : nodeBlocksOfSuperEntity) {
 					for (var rel : nb.getRelations()) {
+						boolean targetSet = false;
+						if (targetSet)
+							break;
 						for (var ref : r.getRelabeling()) {
+							if (targetSet)
+								break;
 							if (((ModelNodeBlock) ref.getOldLabel()).getName().equals(rel.getTarget().getName())) {
 								for (var node : nodeBlocksOfSuperEntity) {
 									if (ref.getNewLabel().equals(node.getName())) {
 										rel.setTarget(node);
+										targetSet = true;
+										break;
 									}
 								}
 							} else {
 								for (var node : nodeBlocksOfSuperEntity) {
 									if (rel.getTarget().getName().equals(node.getName())) {
 										rel.setTarget(node);
+										break;
 									}
 								}
 							}
@@ -127,38 +140,6 @@ public class EMSLFlattener {
 					}
 				}
 			} 
-		}
-		
-		var<String> alreadyRefined = alreadyRefinedPatternNames;
-		
-		for (var r : refinementList) {
-			if (!alreadyRefined.contains(((AtomicPattern) r.getReferencedType()).getName())) {
-				alreadyRefined.add(((AtomicPattern) r.getReferencedType()).getName());
-			}
-		}
-		
-		for (var r : refinementList) {
-			// recursively collect nodes
-			if (r.getReferencedType() instanceof AtomicPattern && ((AtomicPattern) r.getReferencedType()).getSuperRefinementTypes() != null) {
-				var tmp = collectNodes(entity, (flattenPattern((Pattern)/*(AtomicPattern)*/ r.getReferencedType().eContainer())).getBody().getSuperRefinementTypes(), alreadyRefined);
-				tmp.forEach((key, value) -> {
-					if (nodeBlocks.containsKey(key)) {
-						tmp.get(key).addAll(tmp.get(key));
-					}
-					else {
-						nodeBlocks.put(key, value);
-					}
-				});
-			}
-			for (var ref : r.getRelabeling()) {
-				for (var name : nodeBlocks.keySet()) {
-					for (var nb : nodeBlocks.get(name)) {
-						if (nb.getName().equals(((ModelNodeBlock) ref.getOldLabel()).getName())) {
-							nb.setName(ref.getNewLabel());
-						}
-					}
-				}
-			}
 		}
 		
 		return nodeBlocks;
@@ -180,7 +161,6 @@ public class EMSLFlattener {
 		// take all nodeBlocks with the same name/key out of the HashMap and merge
 		for (var name : nodeBlocks.keySet()) {
 			var blocksWithKey = nodeBlocks.get(name);
-			// merge nodes with the same name
 			
 			Comparator<MetamodelNodeBlock> comparator = new Comparator<MetamodelNodeBlock>() {
 				@Override
@@ -233,7 +213,7 @@ public class EMSLFlattener {
 			mergedNodes.add(newNb);
 		}
 		
-		return mergeEdgesOfNodeBlocks(entity, refinementList, nodeBlocks, mergePropertyStatementsOfNodeBlocks(entity, nodeBlocks, mergedNodes));
+		return mergeEdgesOfNodeBlocks(entity, nodeBlocks, mergePropertyStatementsOfNodeBlocks(entity, nodeBlocks, mergedNodes));
 	}
 	
 	/**
@@ -244,7 +224,7 @@ public class EMSLFlattener {
 	 * @return list of ModelNodeBlocks that now have merged RelationStatements.
 	 * @throws FlattenerException is thrown if something went wrong during the merging process.
 	 */
-	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, EList<RefinementCommand> refinementList, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) throws FlattenerException {
+	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes) throws FlattenerException {
 		
 		// collect all edges in hashmap; first key is type name, second is target name
 		for (var name : nodeBlocks.keySet()) {
@@ -290,16 +270,13 @@ public class EMSLFlattener {
 						}
 						for (var p : props) {
 							if (p.getType().getType() != basis.getType().getType() || 
-									basis.getOp() != p.getOp()) 
-							{
-								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p); // incompatible types/operands found
+									basis.getOp() != p.getOp()) {
+								// incompatible types/operands found
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p);
 							}
+							// TODO [Maximilian] add check for same value
 						}
-						var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
-						newProp.setOp(basis.getOp());
-						newProp.setType(basis.getType());
-						newProp.setValue(basis.getValue());
-						newRel.getProperties().add(newProp);
+						newRel.getProperties().add(copyModelPropertyStatement(basis));
 					}
 					
 					newRel.setType(edges.get(typename).get(targetname).get(0).getType());
@@ -311,9 +288,6 @@ public class EMSLFlattener {
 							nb.getRelations().add(newRel);
 						}
 					});
-					for (var r : newRel.getProperties()) {
-						r.getType();
-					}
 				}
 			}
 		}
@@ -358,12 +332,9 @@ public class EMSLFlattener {
 					{
 						throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p); // incompatible types found
 					}
+					// TODO [Maximilian] add check for same value
 				}
-				var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
-				newProp.setOp(basis.getOp());
-				newProp.setType(basis.getType());
-				newProp.setValue(basis.getValue());
-				newProperties.add(newProp);
+				newProperties.add(copyModelPropertyStatement(basis));
 			}
 			
 			// add merged properties to the new nodeblock
@@ -386,18 +357,15 @@ public class EMSLFlattener {
 	 * @param newLabel New name of the NodeBlock, must not be present if no relabeling is to be done.
 	 * @return The newly created NodeBlock based on the NodeBlock passed as parameter.
 	 */
-	private ModelNodeBlock createNewModelNodeBlock(ModelNodeBlock nb, RefinementCommand refinement) {
+	private ModelNodeBlock copyModelNodeBlock(ModelNodeBlock nb, RefinementCommand refinement) {
 		var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 		
 		// apply relabeling
 		if (refinement.getRelabeling() != null) {
 			for (var r : refinement.getRelabeling()) {
-				if (r.getOldLabel() != null 
-						&& r.getOldLabel().eContainer() != null
-						&& r.getOldLabel().eContainer() instanceof AtomicPattern
-						&& ((AtomicPattern) r.getOldLabel().eContainer()).getName() != null 
-						&& nb.getName().equals(((ModelNodeBlock) r.getOldLabel()).getName())) {
+				if (r.getOldLabel() != null && nb.getName().equals(((ModelNodeBlock) r.getOldLabel()).getName())) {
 					newNb.setName(r.getNewLabel());
+					break;
 				}
 			}
 		}
@@ -418,32 +386,36 @@ public class EMSLFlattener {
 		
 		// add properties to new nodeblock
 		for (var prop : nb.getProperties()) {
-			var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
-			newProp.setOp(prop.getOp());
-			newProp.setType(prop.getType());
-			
-			// create new Value for Property
-			if (prop.getValue() instanceof PrimitiveBoolean) {
-				newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveBoolean());
-				if (((PrimitiveBoolean) prop.getValue()).isTrue())
-					((PrimitiveBoolean) newProp.getValue()).setTrue(true);
-				else 
-					((PrimitiveBoolean) newProp.getValue()).setTrue(false);
-			} else if (prop.getValue() instanceof PrimitiveInt) {
-				newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveInt());
-				((PrimitiveInt) newProp.getValue()).setLiteral(((PrimitiveInt) prop.getValue()).getLiteral());
-			} else if (prop.getValue() instanceof PrimitiveString) {
-				newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveString());
-				((PrimitiveString) newProp.getValue()).setLiteral(((PrimitiveString) prop.getValue()).getLiteral());
-			} else if (prop.getValue() instanceof EnumValue) {
-				prop.getValue();
-				newProp.setValue(EMSLFactory.eINSTANCE.createEnumValue());
-				((EnumValue) newProp.getValue()).setLiteral(((EnumValue) prop.getValue()).getLiteral());
-			}
-			
-			newNb.getProperties().add(newProp);
+			newNb.getProperties().add(copyModelPropertyStatement(prop));
 		}
 		
 		return newNb;
+	}
+	
+	private ModelPropertyStatement copyModelPropertyStatement(ModelPropertyStatement oldStatement) {
+		var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
+		newProp.setOp(oldStatement.getOp());
+		newProp.setType(oldStatement.getType());
+		
+		// create new Value for Property
+		if (oldStatement.getValue() instanceof PrimitiveBoolean) {
+			newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveBoolean());
+			if (((PrimitiveBoolean) oldStatement.getValue()).isTrue())
+				((PrimitiveBoolean) newProp.getValue()).setTrue(true);
+			else 
+				((PrimitiveBoolean) newProp.getValue()).setTrue(false);
+		} else if (oldStatement.getValue() instanceof PrimitiveInt) {
+			newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveInt());
+			((PrimitiveInt) newProp.getValue()).setLiteral(((PrimitiveInt) oldStatement.getValue()).getLiteral());
+		} else if (oldStatement.getValue() instanceof PrimitiveString) {
+			newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveString());
+			((PrimitiveString) newProp.getValue()).setLiteral(((PrimitiveString) oldStatement.getValue()).getLiteral());
+		} else if (oldStatement.getValue() instanceof EnumValue) {
+			oldStatement.getValue();
+			newProp.setValue(EMSLFactory.eINSTANCE.createEnumValue());
+			((EnumValue) newProp.getValue()).setLiteral(((EnumValue) oldStatement.getValue()).getLiteral());
+		}
+		
+		return newProp;
 	}
 }
