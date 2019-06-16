@@ -37,41 +37,43 @@ public class EMSLFlattener {
 	 * @throws FlattenerException is thrown if an error during the flattening process occurs.
 	 */
 	public Pattern flattenPattern(Pattern pattern, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
-		var atomicPattern = pattern.getBody();
-		var<RefinementCommand> refinements = atomicPattern.getSuperRefinementTypes();
-		
-		// check for loop in refinements
-
-		if (alreadyRefinedPatternNames.contains(atomicPattern.getName())) 
-			throw new FlattenerException(pattern, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
-		// if none has been found, add current name to list
-		
-		
-		// check if anything has to be done, if not return
-		if (refinements.isEmpty())
-			return pattern;
-		
-		// 1. step: collect nodes with edges
-		var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(pattern, refinements, alreadyRefinedPatternNames);
-		atomicPattern.getNodeBlocks().forEach(nb -> {
-			if (collectedNodeBlocks.keySet().contains(nb.getName())) {
-				collectedNodeBlocks.get(nb.getName()).add(nb);
-			}
-			else {
-				var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
-				tmp.add(nb);
-				collectedNodeBlocks.put(nb.getName(), tmp);
-			}
-		});
-
-		// 2. step: merge nodes and edges
-		var mergedNodes = mergeNodes(pattern, refinements, collectedNodeBlocks);
-		
-		// 3. step: add merged nodeBlocks to pattern and return
-		atomicPattern.getNodeBlocks().clear();
-		atomicPattern.getNodeBlocks().addAll((mergedNodes));
-		
-		pattern.setBody(atomicPattern);
+		if (pattern != null) {
+			var atomicPattern = pattern.getBody();
+			var<RefinementCommand> refinements = atomicPattern.getSuperRefinementTypes();
+			
+			// check for loop in refinements
+	
+			if (alreadyRefinedPatternNames.contains(atomicPattern.getName())) 
+				throw new FlattenerException(pattern, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+			// if none has been found, add current name to list
+			
+			
+			// check if anything has to be done, if not return
+			if (refinements.isEmpty())
+				return pattern;
+			
+			// 1. step: collect nodes with edges
+			var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(pattern, refinements, alreadyRefinedPatternNames);
+			atomicPattern.getNodeBlocks().forEach(nb -> {
+				if (collectedNodeBlocks.keySet().contains(nb.getName())) {
+					collectedNodeBlocks.get(nb.getName()).add(nb);
+				}
+				else {
+					var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
+					tmp.add(nb);
+					collectedNodeBlocks.put(nb.getName(), tmp);
+				}
+			});
+	
+			// 2. step: merge nodes and edges
+			var mergedNodes = mergeNodes(pattern, refinements, collectedNodeBlocks);
+			
+			// 3. step: add merged nodeBlocks to pattern and return
+			atomicPattern.getNodeBlocks().clear();
+			atomicPattern.getNodeBlocks().addAll((mergedNodes));
+			
+			pattern.setBody(atomicPattern);
+		}
 		return pattern;
 	}
 	
