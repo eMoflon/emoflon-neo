@@ -283,7 +283,7 @@ pattern occupiedField {
 	to : Field
 }
 
-pattern occupiedNext -> occupiedField [to-> next] { }
+pattern occupiedNext -> occupiedField [to -> next] { }
 
 abstract rule moveSokoban {
 	from : Field
