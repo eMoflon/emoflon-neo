@@ -379,20 +379,21 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Pattern.
 	 */
 	def dispatch String visualiseEntity(Pattern entity) {
+		var entityCopy = entity
 		try {
-			new EMSLFlattener().flattenPattern(entity, newArrayList)
+			entityCopy = new EMSLFlattener().flattenCopyOfPattern(entity, newArrayList)
 		} catch (AssertionError e) {
 			
 		} catch (FlattenerException e) {
-			
+			e.printStackTrace
 		}
 		
 		
 		'''
-			«FOR nb : entity.body.nodeBlocks»
+			«FOR nb : entityCopy.body.nodeBlocks»
 				«visualiseNodeBlockInPattern(nb, false)»
 			«ENDFOR»
-			«IF entity.condition !== null »
+			«IF entityCopy.condition !== null »
 				legend bottom
 					«getConditionString(entity)»
 				endlegend

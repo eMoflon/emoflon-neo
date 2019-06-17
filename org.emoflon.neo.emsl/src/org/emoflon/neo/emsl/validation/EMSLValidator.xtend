@@ -28,7 +28,7 @@ import java.util.ArrayList
  */
 class EMSLValidator extends AbstractEMSLValidator {
 
-	@Check
+	@Check(NORMAL)
 	def checkPropertyStatementOfNodeBlock(ModelPropertyStatement p) {
 		
 		if (p.type instanceof MetamodelPropertyStatement) {
@@ -52,10 +52,10 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}	
 	}
 	
-	@Check
+	@Check(NORMAL)
 	def checkFlattening(AtomicPattern pattern) {
 		try {
-			new EMSLFlattener().flattenPattern(pattern.eContainer as Pattern, new ArrayList);
+			new EMSLFlattener().flattenCopyOfPattern(pattern.eContainer as Pattern, new ArrayList);
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				error("You have created an infinite loop in your refinements. The pattern \"" + 

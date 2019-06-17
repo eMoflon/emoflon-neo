@@ -19,6 +19,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
+import org.emoflon.neo.emsl.util.EntityCloner;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
@@ -77,6 +78,51 @@ public class EMSLFlattener {
 		return pattern;
 	}
 	
+	public Pattern flattenCopyOfPattern(Pattern originalPattern, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
+		
+		var pattern = (Pattern) new EntityCloner().cloneEntity(originalPattern);
+		
+		if (pattern != null) {
+			var atomicPattern = pattern.getBody();
+			var<RefinementCommand> refinements = atomicPattern.getSuperRefinementTypes();
+			
+			// check for loop in refinements
+	
+			if (alreadyRefinedPatternNames.contains(atomicPattern.getName())) 
+				throw new FlattenerException(pattern, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+			// if none has been found, add current name to list
+			
+			
+			// check if anything has to be done, if not return
+			if (refinements.isEmpty())
+				return pattern;
+			
+			// 1. step: collect nodes with edges
+			var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(pattern, refinements, alreadyRefinedPatternNames);
+			atomicPattern.getNodeBlocks().forEach(nb -> {
+				if (collectedNodeBlocks.keySet().contains(nb.getName())) {
+					collectedNodeBlocks.get(nb.getName()).add(nb);
+				}
+				else {
+					var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
+					tmp.add(nb);
+					collectedNodeBlocks.put(nb.getName(), tmp);
+				}
+			});
+	
+			// 2. step: merge nodes and edges
+			var mergedNodes = mergeNodes(pattern, refinements, collectedNodeBlocks);
+			
+			// 3. step: add merged nodeBlocks to pattern and return
+			atomicPattern.getNodeBlocks().clear();
+			atomicPattern.getNodeBlocks().addAll((mergedNodes));
+			
+			pattern.setBody(atomicPattern);
+		}
+		System.out.println("flattened : " + pattern.getBody().getName());
+		return pattern;
+	}
+	
 	/**
 	 * This method creates all NodeBlocks that have to be imported into the Pattern from the SuperEntities.
 	 * @param refinementList List of RefinementCommands holding all pattern that should be refined.
@@ -131,8 +177,7 @@ public class EMSLFlattener {
 						for (var ref : r.getRelabeling()) {
 							if (targetSet)
 								break;
-							if (ref.getOldLabel() instanceof ModelNodeBlock 
-									&& ((ModelNodeBlock) ref.getOldLabel()).getName().equals(rel.getTarget().getName())) {
+							if (ref.getOldLabel().equals(rel.getTarget().getName())) {
 								for (var node : nodeBlocksOfSuperEntity) {
 									if (ref.getNewLabel().equals(node.getName())) {
 										rel.setTarget(node);
@@ -377,9 +422,8 @@ public class EMSLFlattener {
 		// apply relabeling
 		if (refinement.getRelabeling() != null) {
 			for (var r : refinement.getRelabeling()) {
-				if (r.getOldLabel() != null 
-						&& r.getOldLabel() instanceof ModelNodeBlock 
-						&& nb.getName().equals(((ModelNodeBlock) r.getOldLabel()).getName())) {
+				if (r.getOldLabel() != null  
+						&& nb.getName().equals(r.getOldLabel())) {
 					newNb.setName(r.getNewLabel());
 					break;
 				}

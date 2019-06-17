@@ -260,10 +260,10 @@ MetamodelRefinementCommand:
 	referencedType=[SuperType|QualifiedName] ('[' relabeling+=MetamodelRelabelingCommand (',' relabeling+=MetamodelRelabelingCommand)* ']')?;
 
 ModelRelabelingCommand returns RelabelingCommand:
-	oldLabel=[ModelNodeBlock|QualifiedName] '->' newLabel=ID;
+	oldLabel=ID '->' newLabel=ID;
 	
 MetamodelRelabelingCommand returns RelabelingCommand:
-	oldLabel=[MetamodelNodeBlock|QualifiedName] '->' newLabel=ID;
+	oldLabel=ID '->' newLabel=ID;
 
 SuperType:
 	Metamodel | Model | AtomicPattern | Rule | TripleRule;

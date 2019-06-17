@@ -26,7 +26,7 @@ public class NeoPattern implements IPattern {
 		injective = true;
 		this.builder = builder;
 		try {
-			this.p = new EMSLFlattener().flattenPattern(p, new ArrayList<String>());
+			this.p = new EMSLFlattener().flattenCopyOfPattern(p, new ArrayList<String>());
 		} catch (FlattenerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
