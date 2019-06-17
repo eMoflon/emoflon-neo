@@ -6,6 +6,26 @@ package org.emoflon.neo.emsl.ui.labeling
 import com.google.inject.Inject
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.EnumValue
+import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
+import org.emoflon.neo.emsl.eMSL.PrimitiveInt
+import org.emoflon.neo.emsl.eMSL.PrimitiveString
+import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.CorrespondenceType
+import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
 
 /**
  * Provides labels for EObjects.
@@ -19,13 +39,95 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 		super(delegate);
 	}
 
-	// Labels and icons can be computed like this:
+	def image(Metamodel m) {
+		'metamodel.gif'
+	}
 	
-//	def text(Greeting ele) {
-//		'A greeting to ' + ele.name
-//	}
-//
-//	def image(Greeting ele) {
-//		'Greeting.gif'
-//	}
+	def image(AtomicPattern p){
+		'gt-pattern.gif'
+	}
+	
+	def image(Constraint c){
+		'gt-condition.gif'
+	}
+	
+	def image(Rule r){
+		'gt-rule.gif'
+	}
+	
+	def image(Model m){
+		'model.gif'
+	}
+	
+	def image(ModelNodeBlock n){
+		'node.gif'
+	}
+	
+	def image(MetamodelNodeBlock n){
+		'node.gif'
+	}
+	
+	def image(ModelRelationStatement r){
+		'edge.gif'
+	}
+	
+	def text(ModelRelationStatement r){
+		r.target.name
+	}
+	
+	def image(MetamodelRelationStatement r){
+		'edge.gif'
+	}
+	
+	def image(MetamodelPropertyStatement p) {
+		'prop.gif'
+	}
+	
+	def image(ModelPropertyStatement p) {
+		'prop.gif'
+	}
+	
+	def text(ModelPropertyStatement p){
+		p.type.name + " " + p.op + " " + p.value.print
+	}
+		
+	dispatch def String print(PrimitiveInt value){
+		value.literal.toString
+	}
+	
+	dispatch def String print(PrimitiveString value){
+		value.literal.toString
+	}
+	
+	dispatch def String print(PrimitiveBoolean value){
+		value.^true.toString
+	}
+	
+	dispatch def String print(EnumValue value){
+		value.literal.name
+	}
+	
+	dispatch def String print(AttributeExpression exp){
+		exp.node.name + "." + exp.target.getText()
+	}
+	
+	def image(TripleRule r){
+		'tgg-rule.gif'
+	}
+	
+	def image(Correspondence c){
+		'corr.gif'
+	}
+	
+	def text(Correspondence c){
+		c.source.name + "<->" + c.target.name
+	}
+	
+	def image(CorrespondenceType t){
+		'corr-type.gif'
+	}
+	
+	def image(TripleGrammar tgg){
+		'tgg.gif'
+	}
 }

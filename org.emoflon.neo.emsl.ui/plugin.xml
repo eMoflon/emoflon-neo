@@ -4,12 +4,13 @@
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor
-			class="org.emoflon.neo.emsl.ui.EMSLExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
-			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
-			default="true"
-			extensions="msl"
-			id="org.emoflon.neo.emsl.EMSL"
-			name="EMSL Editor">
+        class="org.emoflon.neo.emsl.ui.EMSLExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+        contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+        default="true"
+        extensions="msl"
+        icon="icons/eNeoIcon.png"
+        id="org.emoflon.neo.emsl.EMSL"
+        name="EMSL Editor">
 		</editor>
 	</extension>
 	<extension
@@ -497,5 +498,15 @@
     <initializer
           class="org.emoflon.neo.emsl.ui.preferences.PreferenceInitializer">
     </initializer>
+ </extension>
+ <extension
+       point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+    <hyperlinkDetector
+          activate="true"
+          class="org.emoflon.neo.emsl.ui.editor.Java2EMSLHyperlinkDetector"
+          id="org.emoflon.neo.emsl.ui.hyperlinkDetector.java2emsl"
+          name="Java2EMSL"
+          targetId="org.eclipse.jdt.ui.javaCode">
+    </hyperlinkDetector>
  </extension>
 </plugin>

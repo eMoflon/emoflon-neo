@@ -74,7 +74,7 @@ ModelRelationStatement:
 /*-------------------------------------------------*/
 Metamodel:
 	'metamodel' name=QualifiedName 
-	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
+	('->' (superRefinementTypes+=MetamodelRefinementCommand (',' superRefinementTypes+=MetamodelRefinementCommand)*))?
 	'{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}';
 
 MetamodelNodeBlock:
@@ -254,7 +254,16 @@ enum LibraryAttributeCondition:
 /*------------------- Common ----------------------*/
 /*-------------------------------------------------*/
 RefinementCommand:
-	referencedType=[SuperType|QualifiedName] (relabling='[' /* TODO [Maximilian]: fill relabeling brackets */ ']')?;
+	referencedType=[SuperType|QualifiedName] ('[' relabeling+=ModelRelabelingCommand (',' relabeling+=ModelRelabelingCommand)* ']')?;
+
+MetamodelRefinementCommand:
+	referencedType=[SuperType|QualifiedName] ('[' relabeling+=MetamodelRelabelingCommand (',' relabeling+=MetamodelRelabelingCommand)* ']')?;
+
+ModelRelabelingCommand returns RelabelingCommand:
+	oldLabel=[ModelNodeBlock|QualifiedName] '->' newLabel=ID;
+	
+MetamodelRelabelingCommand returns RelabelingCommand:
+	oldLabel=[MetamodelNodeBlock|QualifiedName] '->' newLabel=ID;
 
 SuperType:
 	Metamodel | Model | AtomicPattern | Rule | TripleRule;

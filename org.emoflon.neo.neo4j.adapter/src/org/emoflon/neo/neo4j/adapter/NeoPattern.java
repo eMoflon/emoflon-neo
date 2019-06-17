@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.StatementResult;
@@ -23,7 +25,12 @@ public class NeoPattern implements IPattern {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.builder = builder;
-		this.p = p;
+		try {
+			this.p = new EMSLFlattener().flattenPattern(p);
+		} catch (FlattenerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		extractNodesAndRelations();
 	}

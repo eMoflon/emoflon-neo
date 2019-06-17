@@ -39,7 +39,10 @@ public class PlatformFragmentLinkOpener implements ILinkOpener {
 	@Override
 	public void openLink(final LinkData link) {
 		URI uri = URI.createURI(link.href);
+		openLink(uri);
+	}
 
+	public void openLink(URI uri) {
 		IPath path = new Path(uri.path()).removeFirstSegments(1);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 
@@ -56,11 +59,9 @@ public class PlatformFragmentLinkOpener implements ILinkOpener {
 	/**
 	 * Opens the default editor for the given file and returns it.
 	 * 
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the opened editor
-	 * @throws PartInitException
-	 *             if the editor could not be created or initialized
+	 * @throws PartInitException if the editor could not be created or initialized
 	 */
 	private static IEditorPart openEditor(final IFile file) throws PartInitException {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -71,14 +72,11 @@ public class PlatformFragmentLinkOpener implements ILinkOpener {
 	/**
 	 * Goes to the line of the given URI's fragment in the opened editor
 	 * 
-	 * @param xtextEditor
-	 *            the editor for the line
-	 * @param file
-	 *            the file
-	 * @param fragment
-	 *            the URI fragment
-	 * @throws CoreException
-	 *             if an error occurs during setting the marker for the target
+	 * @param xtextEditor the editor for the line
+	 * @param file        the file
+	 * @param fragment    the URI fragment
+	 * @throws CoreException if an error occurs during setting the marker for the
+	 *                       target
 	 */
 	private static void goToFragmentLine(final XtextEditor xtextEditor, final IFile file, final String fragment)
 			throws CoreException {
@@ -90,7 +88,7 @@ public class PlatformFragmentLinkOpener implements ILinkOpener {
 		IMarker marker = file.createMarker(IMarker.TEXT);
 		marker.setAttribute(IMarker.LINE_NUMBER, NodeModelUtils.getNode(fragmentObject).getStartLine());
 
-		IGotoMarker goToMarker = (IGotoMarker) xtextEditor.getAdapter(IGotoMarker.class);
+		IGotoMarker goToMarker = xtextEditor.getAdapter(IGotoMarker.class);
 		goToMarker.gotoMarker(marker);
 
 		marker.delete();
