@@ -62,9 +62,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 					(e.entity as Pattern).body.name + "\" appears at least twice.", 
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-				error("The types of the Objects you are trying to refine are not compatible.", 
-					e.nodeBlock, 
-					EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+				error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.", 
+					//(e.entity as Pattern).body, 
+					EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
 				
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
 				error("The types of the properties you are trying to refine are not compatible. The types " + 

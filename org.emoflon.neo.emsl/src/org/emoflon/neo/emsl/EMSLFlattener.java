@@ -119,7 +119,7 @@ public class EMSLFlattener {
 			
 			pattern.setBody(atomicPattern);
 		}
-		System.out.println("flattened : " + pattern.getBody().getName());
+		
 		return pattern;
 	}
 	

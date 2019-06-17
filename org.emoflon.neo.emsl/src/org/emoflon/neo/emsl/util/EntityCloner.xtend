@@ -17,7 +17,6 @@ class EntityCloner {
 		
 		for (c : collectionCopy) {
 			if (c.class == entity.class) {
-				System.out.println((c as Pattern).body.name)
 				return c
 			}
 		}
