@@ -131,7 +131,8 @@ public class EMSLFlattener {
 						for (var ref : r.getRelabeling()) {
 							if (targetSet)
 								break;
-							if (((ModelNodeBlock) ref.getOldLabel()).getName().equals(rel.getTarget().getName())) {
+							if (ref.getOldLabel() instanceof ModelNodeBlock 
+									&& ((ModelNodeBlock) ref.getOldLabel()).getName().equals(rel.getTarget().getName())) {
 								for (var node : nodeBlocksOfSuperEntity) {
 									if (ref.getNewLabel().equals(node.getName())) {
 										rel.setTarget(node);
@@ -271,8 +272,7 @@ public class EMSLFlattener {
 							properties.get(p.getType().getName()).add(p);
 						});
 					}
-					// merge statements
-					// check statements for compliance
+					// merge statements	and check statements for compliance
 					for (var propertyName : properties.keySet()) {
 						var props = properties.get(propertyName);
 						ModelPropertyStatement basis = null;
@@ -377,12 +377,15 @@ public class EMSLFlattener {
 		// apply relabeling
 		if (refinement.getRelabeling() != null) {
 			for (var r : refinement.getRelabeling()) {
-				if (r.getOldLabel() != null && nb.getName().equals(((ModelNodeBlock) r.getOldLabel()).getName())) {
+				if (r.getOldLabel() != null 
+						&& r.getOldLabel() instanceof ModelNodeBlock 
+						&& nb.getName().equals(((ModelNodeBlock) r.getOldLabel()).getName())) {
 					newNb.setName(r.getNewLabel());
 					break;
 				}
 			}
 		}
+		
 		if (newNb.getName() == null)
 			newNb.setName(nb.getName());
 		

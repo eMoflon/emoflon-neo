@@ -94,11 +94,11 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		}
 
 		
-		if (isOldLabelInRefinementCommandInPattern(context, reference))
-			return handleOldLabelInRefinementCommandInPattern(context as RefinementCommand, reference)
+		//if (isOldLabelInRefinementCommandInPattern(context, reference))
+		//	return handleOldLabelInRefinementCommandInPattern(context as RefinementCommand, reference)
 			
-		if (isOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference))
-			return handleOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference)
+		//if (isOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference))
+		//	return handleOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference)
 			
 		return super.getScope(context, reference)
 	}
@@ -442,9 +442,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	def handleOldLabelInRefinementCommandInPattern(EObject context, EReference reference) {	
 		var nodeBlocks = new HashMap
-		for (nb : ((context as RefinementCommand).referencedType as AtomicPattern).nodeBlocks) {
+		
+		for (nb : ((context as RefinementCommand).referencedType.eContainer as Pattern).body.nodeBlocks) {
 			nodeBlocks.put(nb, null)
-		}	
+		}
 		determineScope(nodeBlocks)
 	}
 	
