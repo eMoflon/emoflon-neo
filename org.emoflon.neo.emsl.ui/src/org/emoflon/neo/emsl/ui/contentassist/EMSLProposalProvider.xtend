@@ -12,6 +12,7 @@ import java.util.ArrayList
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.util.EntityCloner
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -26,6 +27,17 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		for (nb : new EMSLFlattener().flattenPattern(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern, new ArrayList<String>()).body.nodeBlocks) {
 			acceptor.accept(createCompletionProposal(nb.name, context))
 		}	
+	}
+	
+	override completeModelRelationStatement_ProxyTarget(
+		EObject entity, Assignment assignemnt,
+		ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+			
+		for (refinement : (entity.eContainer.eContainer as AtomicPattern).superRefinementTypes) {
+			for (relabeling : refinement.relabeling) {
+				acceptor.accept(createCompletionProposal(relabeling.newLabel, context))
+			}
+		}
 	}
 	
 }

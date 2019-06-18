@@ -342,7 +342,7 @@ public class EMSLFlattener {
 								// incompatible types/operands found
 								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p);
 							}
-							// TODO [Maximilian] add check for same value
+							compareValueOfModelPropertyStatement(entity, basis, p);
 						}
 						newRel.getProperties().add(copyModelPropertyStatement(basis));
 					}
@@ -403,7 +403,7 @@ public class EMSLFlattener {
 					{
 						throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p); // incompatible types found
 					}
-					// TODO [Maximilian] add check for same value
+					compareValueOfModelPropertyStatement(entity, basis, p);
 				}
 				newProperties.add(copyModelPropertyStatement(basis));
 			}
@@ -490,5 +490,26 @@ public class EMSLFlattener {
 		}
 		
 		return newProp;
+	}
+	
+	private boolean compareValueOfModelPropertyStatement(Entity entity, ModelPropertyStatement p1, ModelPropertyStatement p2) throws FlattenerException {
+		
+		if (p1.getValue() instanceof PrimitiveBoolean && p2.getValue() instanceof PrimitiveBoolean
+				&& (((PrimitiveBoolean) p1.getValue()).isTrue() && ((PrimitiveBoolean) p2.getValue()).isTrue()
+				|| !((PrimitiveBoolean) p1.getValue()).isTrue() && !((PrimitiveBoolean) p2.getValue()).isTrue())) {
+			return true;
+		} else if (p1.getValue() instanceof PrimitiveInt && p2.getValue() instanceof PrimitiveInt
+				&& ((PrimitiveInt) p1.getValue()).getLiteral() == ((PrimitiveInt) p2.getValue()).getLiteral()) {
+			return true;
+		} else if (p1.getValue() instanceof PrimitiveString && p2.getValue() instanceof PrimitiveString
+				&& ((PrimitiveString) p1.getValue()).getLiteral().equals(((PrimitiveString) p2.getValue()).getLiteral())) {
+			return true;
+		} else if (p1.getValue() instanceof EnumValue && p2.getValue() instanceof EnumValue
+				&& ((EnumValue) p1.getValue()).getLiteral() == ((EnumValue) p2.getValue()).getLiteral()) {
+			return true;
+		}
+		throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2);
+		//return false;
+	
 	}
 }

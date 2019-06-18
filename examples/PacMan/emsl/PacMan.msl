@@ -1,0 +1,95 @@
+metamodel PacMan {
+	Figure {
+		-standsOn(1..1)-> Field
+	}
+	
+	Field {
+		-right(1..1)-> Field
+		-bottom(1..1)-> Field
+	}
+	
+	Marble {
+		-liesOn(1..1)-> Field
+	}
+	
+	PacMan : Figure {
+		.marbles : EInt
+	}
+	
+	Ghost : Figure
+}
+
+model SimplePacManGame {
+	f00 : Field {
+		-right-> f01
+		-bottom-> f10
+	}
+	
+	f01 : Field {
+		-bottom-> f11
+	}
+	
+	f10 : Field {
+		-right-> f11
+	}
+	
+	f11 : Field {
+		
+	}
+	
+	p : PacMan {
+		.marbles : 0
+		-standsOn-> f00
+	}
+	
+	g : Ghost {
+		-standsOn-> f11
+	}
+	
+	g2 : Ghost {
+		-standsOn-> f10
+	}
+}
+
+pattern onePacMan {
+	p : PacMan
+}
+
+pattern figureOnField {
+	fig : Figure {
+		-standsOn-> field
+	}
+	
+	field : Field
+}
+
+pattern oneGhost {
+	g : Ghost
+}
+
+pattern pacManOnField -> figureOnField, onePacMan [p -> fig]
+
+pattern ghostOnField -> figureOnField, oneGhost [g -> fig]
+
+pattern pacManAndGhostOnFields -> pacManOnField [fig -> p, field -> f00], ghostOnField [fig -> g, field -> f10] 
+
+pattern pacManAndGhostOnNeighbouringFields -> pacManAndGhostOnFields {
+	f00 : Field {
+		-bottom-> f10
+	}
+	
+	f10 : Field {
+		
+	}
+}
+
+pattern twoPacManOnBoard -> 
+	pacManAndGhostOnFields, 
+	pacManOnField [fig -> p2, field -> f01]
+
+
+
+
+
+
+

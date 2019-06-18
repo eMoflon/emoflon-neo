@@ -28,7 +28,7 @@ import java.util.ArrayList
  */
 class EMSLValidator extends AbstractEMSLValidator {
 
-	@Check(NORMAL)
+	@Check
 	def checkPropertyStatementOfNodeBlock(ModelPropertyStatement p) {
 		
 		if (p.type instanceof MetamodelPropertyStatement) {
@@ -61,6 +61,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				error("You have created an infinite loop in your refinements. The pattern \"" + 
 					(e.entity as Pattern).body.name + "\" appears at least twice.", 
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+			
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
 				error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.", 
 					//(e.entity as Pattern).body, 
@@ -76,7 +77,11 @@ class EMSLValidator extends AbstractEMSLValidator {
 			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
 				error("Using Entities that have conditions are not allowed to be refined.", 
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
-			}	
+			
+			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
+				error("The value of " + e.property2.type.name + " does not match with your other refinements",
+					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+			}
 		}
 	}
 	
