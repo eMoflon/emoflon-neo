@@ -64,7 +64,7 @@ PrimitiveBoolean:
 ;
 
 ModelRelationStatement:
-	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' target=[ModelNodeBlock|QualifiedName]
+	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
@@ -89,7 +89,7 @@ MetamodelPropertyStatement:
 
 MetamodelRelationStatement:
 	kind=RelationKind name=ID
-	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' target=[MetamodelNodeBlock|QualifiedName]
+	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=MetamodelPropertyStatement*
 	'}')?;

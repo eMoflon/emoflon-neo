@@ -405,7 +405,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Pattern.
 	 */
-	def String visualiseNodeBlockInPattern(ModelNodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInPattern(ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EMSLFlattener().flattenCopyOfPattern(nodeBlock.eContainer.eContainer as Pattern, new ArrayList<String>())).body.nodeBlocks) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
 		'''
 			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»

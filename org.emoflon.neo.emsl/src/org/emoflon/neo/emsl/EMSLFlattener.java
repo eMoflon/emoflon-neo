@@ -177,7 +177,8 @@ public class EMSLFlattener {
 						for (var ref : r.getRelabeling()) {
 							if (targetSet)
 								break;
-							if (ref.getOldLabel().equals(rel.getTarget().getName())) {
+							if ((rel.getTarget() != null && ref.getOldLabel().equals(rel.getTarget().getName()))
+									|| rel.getProxyTarget() != null && ref.getOldLabel().equals(rel.getProxyTarget())) {
 								for (var node : nodeBlocksOfSuperEntity) {
 									if (ref.getNewLabel().equals(node.getName())) {
 										rel.setTarget(node);
@@ -187,7 +188,8 @@ public class EMSLFlattener {
 								}
 							} else {
 								for (var node : nodeBlocksOfSuperEntity) {
-									if (rel.getTarget().getName().equals(node.getName())) {
+									if (rel.getTarget() != null && rel.getTarget().getName().equals(node.getName()) 
+											|| (rel.getProxyTarget() != null && rel.getProxyTarget().equals(node.getName()))) {
 										rel.setTarget(node);
 										break;
 									}
@@ -288,16 +290,26 @@ public class EMSLFlattener {
 			var edges = new HashMap<String, HashMap<String, ArrayList<ModelRelationStatement>>>();
 			for (var nb : nodeBlocks.get(name)) {
 				for (var rel : nb.getRelations()) {
-					if (rel.getType() == null || rel.getTarget() == null) {
+					if (rel.getType() == null) {
 						continue;
 					}
-					if (!edges.containsKey(rel.getType().getName())) {
-						edges.put(rel.getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
+					if (rel.getTarget() != null) {
+						if (!edges.containsKey(rel.getType().getName())) {
+							edges.put(rel.getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
+						}
+						if (!edges.get(rel.getType().getName()).containsKey(rel.getTarget().getName())) {
+							edges.get(rel.getType().getName()).put(rel.getTarget().getName(), new ArrayList<ModelRelationStatement>());
+						}
+						edges.get(rel.getType().getName()).get(rel.getTarget().getName()).add(rel);
+					} else if (rel.getProxyTarget() != null) {
+						if (!edges.containsKey(rel.getType().getName())) {
+							edges.put(rel.getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
+						}
+						if (!edges.get(rel.getType().getName()).containsKey(rel.getProxyTarget())) {
+							edges.get(rel.getType().getName()).put(rel.getProxyTarget(), new ArrayList<ModelRelationStatement>());
+						}
+						edges.get(rel.getType().getName()).get(rel.getProxyTarget()).add(rel);
 					}
-					if (!edges.get(rel.getType().getName()).containsKey(rel.getTarget().getName())) {
-						edges.get(rel.getType().getName()).put(rel.getTarget().getName(), new ArrayList<ModelRelationStatement>());
-					}
-					edges.get(rel.getType().getName()).get(rel.getTarget().getName()).add(rel);
 				}
 			}
 			
