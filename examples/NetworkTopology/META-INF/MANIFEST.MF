@@ -5,3 +5,4 @@ Bundle-SymbolicName: NetworkTopology
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0"
 Export-Package: org.emoflon.neo.api
+Automatic-Module-Name: NetworkTopology
