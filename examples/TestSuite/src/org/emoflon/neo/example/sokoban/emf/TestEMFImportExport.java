@@ -10,7 +10,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.emoflon.neo.api.API_Metamodels_SokobanLanguage;
+import org.emoflon.neo.api.API_Src_Metamodels_SokobanLanguage;
 import org.emoflon.neo.emf.EMFExporter;
 import org.emoflon.neo.emf.EMFImporter;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,7 +36,7 @@ class TestEMFImportExport {
 
 	@Test
 	void testExportSimpleFamilies() throws IOException {
-		var metamodel = new API_Metamodels_SokobanLanguage(null);
+		var metamodel = new API_Src_Metamodels_SokobanLanguage(null);
 		
 		var exporter = new EMFExporter(metamodel.getMetamodel_SokobanLanguage().eResource().getResourceSet(), "platform:/resource/TestSuite/out/", ".ecore");
 		var rs = exporter.generateEMFModelsFromEMSL();

@@ -3,19 +3,19 @@ package org.emoflon.neo.example.sokoban.patterns;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import org.emoflon.neo.api.API_Models_SokobanSimpleTestField;
-import org.emoflon.neo.api.API_Rules_SokobanPatternsRulesConstraints;
+import org.emoflon.neo.api.API_Src_Models_SokobanSimpleTestField;
+import org.emoflon.neo.api.API_Src_Rules_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PatternTest extends ENeoTest {
 
-	private API_Rules_SokobanPatternsRulesConstraints entities = new API_Rules_SokobanPatternsRulesConstraints(builder);
+	private API_Src_Rules_SokobanPatternsRulesConstraints entities = new API_Src_Rules_SokobanPatternsRulesConstraints(builder);
 
 	@BeforeEach
 	public void initDB() {
-		initDB(new API_Models_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
+		initDB(new API_Src_Models_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
 	}
 
 	@Test

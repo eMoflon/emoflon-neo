@@ -3,13 +3,13 @@ package org.emoflon.neo.example.pac_man;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import org.emoflon.neo.api.API_Emsl_PacMan;
+import org.emoflon.neo.api.API_Src_PacMan;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PatternTest extends ENeoTest {
-	private API_Emsl_PacMan entities = new API_Emsl_PacMan(builder);
+	private API_Src_PacMan entities = new API_Src_PacMan(builder);
 	
 	@BeforeEach
 	public void initDB() {
