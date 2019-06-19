@@ -76,12 +76,17 @@ public abstract class ENeoTest {
 		logger.info("Database cleared.");
 	}
 	
+	
+	protected void expectMatches(IPattern p, Number no) {
+		assertThat(p.countMatches(), is(no));
+	}
+	
 	protected void expectSingleMatch(IPattern p) {
-		assertThat(p.countMatches(), is(1));
+		expectMatches(p, 1);
 	}
 	
 	protected void expectNoMatch(IPattern p) {
-		assertThat(p.countMatches(), is(0));
+		expectMatches(p, 0);
 	}
 	
 	protected void expectValidMatches(Collection<IMatch> matches, long number) {
