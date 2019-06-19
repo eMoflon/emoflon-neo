@@ -19,6 +19,7 @@ import org.emoflon.neo.emsl.EMSLFlattener
 import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import java.util.ArrayList
 
 /**
  * This class contains custom validation rules. 
@@ -51,19 +52,20 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}	
 	}
 	
-	@Check
+	@Check(NORMAL)
 	def checkFlattening(AtomicPattern pattern) {
 		try {
-			new EMSLFlattener().flattenPattern(pattern.eContainer as Pattern);
+			new EMSLFlattener().flattenCopyOfPattern(pattern.eContainer as Pattern, new ArrayList);
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				error("You have created an infinite loop in your refinements. The pattern \"" + 
 					(e.entity as Pattern).body.name + "\" appears at least twice.", 
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+			
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-				error("The types of the Objects you are trying to refine are not compatible.", 
-					e.nodeBlock, 
-					EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+				error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.", 
+					//(e.entity as Pattern).body, 
+					EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
 				
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
 				error("The types of the properties you are trying to refine are not compatible. The types " + 
@@ -72,10 +74,14 @@ class EMSLValidator extends AbstractEMSLValidator {
 					e.property2, 
 					EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
 					
-			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_WHEN_BLOCK) {
+			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
 				error("Using Entities that have conditions are not allowed to be refined.", 
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
-			}	
+			
+			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
+				error("The value of " + e.property2.type.name + " does not match with your other refinements",
+					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+			}
 		}
 	}
 	

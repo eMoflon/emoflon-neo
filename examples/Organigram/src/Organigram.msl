@@ -1,0 +1,118 @@
+metamodel Company {
+	Company {
+		<+>-ceo(1..1)-> CEO
+		-employees(0..*)-> Employee
+	}
+	
+	Employee {
+		.name : EString
+		.surname : EString
+	}
+	
+	Staff : Employee
+	
+	CEO : Employee {
+		<+>-managers(0..*)-> Manager
+	}
+	
+	abstract Manager : Employee
+	
+	ProductionManager : Manager {
+		-foremen(1..*)-> Foreman
+	}
+	
+	MarketingManager : Manager {
+		<+>-salesOfficers(0..*)-> SalesOfficer
+	}
+	
+	Foreman : Staff {
+		<+>-workers(0..*)-> Worker
+	}
+	
+	Worker : Staff
+	
+	SalesOfficer : Staff {
+		<+>-salesPeople(0..5)-> SalesPerson
+	}
+	
+	SalesPerson : Staff
+}
+
+model SimpleCompany {
+	company : Company {
+		-ceo-> ceo
+		-employees-> ceo
+		-employees-> foreman1
+		-employees-> foreman2
+		-employees-> marketingManager
+		-employees-> productionManager
+		-employees-> salesOfficer1
+		-employees-> salesOfficer2
+		-employees-> salesPerson1
+		-employees-> salesPerson2
+		-employees-> worker1
+		-employees-> worker2
+	}
+	
+	ceo : CEO {
+		-managers-> productionManager
+		-managers-> marketingManager
+	}
+	
+	productionManager : ProductionManager {
+		-foremen-> foreman1
+		-foremen-> foreman2
+	}
+	
+	marketingManager : MarketingManager {
+		-salesOfficers-> salesOfficer1
+		-salesOfficers-> salesOfficer2
+	}
+	
+	foreman1 : Foreman {
+		-workers-> worker1
+		-workers-> worker2
+	}
+	
+	foreman2 : Foreman
+	
+	salesOfficer1 : SalesOfficer {
+		-salesPeople-> salesPerson1
+	}
+	
+	salesOfficer2 : SalesOfficer {
+		-salesPeople-> salesPerson2
+	}
+	
+	worker1 : Worker
+	worker2 : Worker
+	
+	salesPerson1 : SalesPerson
+	salesPerson2 : SalesPerson
+}
+
+pattern isEmployed {
+	company : Company {
+		-employees-> manager
+	}
+	
+	manager : Employee
+}
+
+pattern managersMustBeEmployed -> isEmployed {
+	manager : Manager
+}
+
+pattern ceoIsEmployed -> isEmployed [manager -> ceo] {
+	ceo : CEO
+}
+
+pattern ceoAndManagerEmployed -> ceoIsEmployed, isEmployed {
+	manager : Manager
+}
+
+
+
+
+
+

@@ -3,33 +3,279 @@
  */
 package org.emoflon.neo.emsl.formatting2
 
-//import com.google.inject.Inject
 import org.eclipse.xtext.formatting2.AbstractFormatter2
 import org.eclipse.xtext.formatting2.IFormattableDocument
-import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Condition
+import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.EMSLPackage
+import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
-//import org.emoflon.neo.emsl.services.EMSLGrammarAccess
+import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.Value
 
 class EMSLFormatter extends AbstractFormatter2 {
 	
-	//@Inject extension EMSLGrammarAccess
+	// Declarations starting with keywords val are unsettable and var are settable
+	val KW_IMPORT = "import"
+	val KW_MODEL = "model"
+	val KW_METAMODEL = "metamodel"
+	val KW_OPEN_PAR = "{"
+	val KW_CLOSE_PAR = "}"
+	val KW_COLON = ":"
+	val KW_ABSTRACT = "abstract"
+	val KW_RELATION = "->"
+	val KW_RULE = "rule"
+	val KW_WHEN = "when"
+	val KW_PATTERN = "pattern"
+	val KW_COMMA = ","
+	val KW_AND = "&&"
+	val KW_OR = "||"
+	val KW_FORBID = "forbid"
+	val KW_FORCE = "force"
+    val KW_IF = "if"
+    val KW_THEN = "then"
+    val KW_HYPHEN = "-"
+    val KW_DOT = "."
+    val KW_DOUBLE_DOT = ".."
+    val KW_OBRKT = "("
+    val KW_CBRKT = ")"
+    val KW_ENFORCE = "enforce"
+    val KW_CONSTRAINT = "constraint"
+    val KW_EQ = "="
+    val Spacing = 2
+     
 
-	def dispatch void format(EMSL_Spec eMSL_Spec, extension IFormattableDocument document) {
-		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
-		for (importStatement : eMSL_Spec.imports) {
-			importStatement.format
-		}
-		for (entity : eMSL_Spec.entities) {
-			entity.format
-		}
+	def dispatch void format(ImportStatement imp, extension IFormattableDocument document) {
+		imp.regionFor.keyword(KW_IMPORT).append[oneSpace]
+		imp.regionFor.feature(EMSLPackage.eINSTANCE.importStatement_Value).append[newLine]
 	}
-
-	def dispatch void format(Metamodel metamodel, extension IFormattableDocument document) {
-		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
-		for (nodeBlock : metamodel.nodeBlocks) {
-			nodeBlock.format
+	
+	def dispatch void format(Model mod, extension IFormattableDocument document) {
+		mod.interior[indent]
+		mod.regionFor.keyword(KW_MODEL).append[oneSpace]
+		mod.regionFor.feature(EMSLPackage.eINSTANCE.model_Name).append[oneSpace]
+		mod.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+		mod.regionFor.keyword(KW_CLOSE_PAR).append[newLines=Spacing]
+		
+		for (nb : mod.nodeBlocks) {
+			nb.interior[indent]
+			nb.regionFor.keyword(KW_ABSTRACT).append[oneSpace]
+			nb.regionFor.feature(EMSLPackage.eINSTANCE.modelNodeBlock_Name).append[oneSpace].prepend[newLines = Spacing]
+			nb.regionFor.keyword(KW_COLON).append[oneSpace]
+			nb.regionFor.feature(EMSLPackage.eINSTANCE.modelNodeBlock_Type).append[oneSpace]
+			nb.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+			nb.regionFor.keyword(KW_CLOSE_PAR).prepend[newLine]
+			if (mod.nodeBlocks.length > 1) {
+				nb.regionFor.keyword(KW_CLOSE_PAR).append[newLines=Spacing]
+			} else {
+				nb.regionFor.keyword(KW_CLOSE_PAR).append[newLine]
+			}
+			
+			for (ps : nb.properties) {
+				ps.regionFor.keyword(KW_DOT).append[noSpace].prepend[newLine]
+				ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Type).append[oneSpace]
+				ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Op).append[oneSpace]
+			}
+			
+			for (rs : nb.relations) {
+				rs.interior[indent]
+				rs.regionFor.keyword(KW_HYPHEN).append[noSpace].prepend[newLine]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Type).append[oneSpace]
+				rs.regionFor.keyword(KW_RELATION).append[oneSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Target).append[oneSpace]
+				rs.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+				rs.regionFor.keyword(KW_CLOSE_PAR).prepend[newLine]
+				
+				for (ps : rs.properties) {
+					ps.regionFor.keyword(KW_DOT).append[noSpace].prepend[newLine]
+					ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Type).append[oneSpace]
+					ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Op).append[oneSpace]
+				}
+			}
 		}
 	}
 	
-	// TODO: implement for Model, Pattern, Rule, TripleRule, TripleRuleCorrespondence, AttributeCondition, TripleGrammar, NodeBlock, Constraint, RelationStatement
+	def dispatch void format(Value value, extension IFormattableDocument document) {
+		value.regionFor.feature(EMSLPackage.eINSTANCE.attributeExpression_Node).append[newLine]
+		value.regionFor.feature(EMSLPackage.eINSTANCE.primitiveBoolean_True).append[newLine]
+		value.regionFor.feature(EMSLPackage.eINSTANCE.primitiveInt_Literal).append[newLine]
+	}
+	
+	
+	def dispatch void format(Metamodel mod, extension IFormattableDocument document) {
+		mod.interior[indent]
+		mod.regionFor.keyword(KW_METAMODEL).append[oneSpace]
+		mod.regionFor.feature(EMSLPackage.eINSTANCE.model_Name).append[oneSpace]
+		mod.regionFor.keyword(KW_CLOSE_PAR).append[newLines=2].prepend[newLines=Spacing]
+		for (nb : mod.nodeBlocks) {
+			nb.interior[indent]
+			if(nb.regionFor.keyword(KW_ABSTRACT) !== null) {
+				nb.regionFor.keyword(KW_ABSTRACT).append[oneSpace].prepend[newLines=Spacing]
+				nb.regionFor.feature(EMSLPackage.eINSTANCE.metamodelNodeBlock_Name).append[oneSpace]
+			} else {
+				nb.regionFor.feature(EMSLPackage.eINSTANCE.metamodelNodeBlock_Name).append[oneSpace].prepend[newLines=Spacing]
+			}	
+			nb.regionFor.keyword(KW_COLON).append[oneSpace]
+			nb.regionFor.feature(EMSLPackage.eINSTANCE.metamodelNodeBlock_SuperTypes).append[oneSpace]
+			nb.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+			nb.regionFor.keyword(KW_CLOSE_PAR).prepend[newLine]
+			if (mod.nodeBlocks.length > 1) {
+				nb.regionFor.keyword(KW_CLOSE_PAR).append[newLines=Spacing]
+			} else {
+				nb.regionFor.keyword(KW_CLOSE_PAR).append[newLine]
+			}
+			
+			for (ps : nb.properties) {
+				ps.regionFor.keyword(KW_DOT).append[noSpace].prepend[newLine]
+				ps.regionFor.keyword(KW_COLON).append[oneSpace]
+				ps.regionFor.feature(EMSLPackage.eINSTANCE.metamodelPropertyStatement_Name).append[oneSpace]
+			}
+			
+			for (rs : nb.relations) {
+				rs.interior[indent]
+				rs.regionFor.keyword(KW_HYPHEN).append[noSpace].prepend[newLine]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.metamodelRelationStatement_Kind).append[noSpace].prepend[newLine]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.metamodelRelationStatement_Name).append[noSpace]
+				rs.regionFor.keyword(KW_OBRKT).append[noSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.metamodelRelationStatement_Lower).append[noSpace]
+				rs.regionFor.keyword(KW_DOUBLE_DOT).append[noSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.metamodelRelationStatement_Upper).append[noSpace]
+				rs.regionFor.keyword(KW_CBRKT).append[oneSpace]
+				
+				rs.regionFor.keyword(KW_RELATION).surround[oneSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.metamodelRelationStatement_Target).append[oneSpace]
+				rs.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+				rs.regionFor.keyword(KW_CLOSE_PAR).surround[newLine]
+				
+				for (ps : rs.properties) {
+					ps.regionFor.keyword(KW_DOT).append[noSpace].prepend[newLine]
+					ps.regionFor.keyword(KW_COLON).append[oneSpace]
+					ps.regionFor.feature(EMSLPackage.eINSTANCE.metamodelPropertyStatement_Name).append[oneSpace]
+				}
+			}
+		}
+	}
+	
+	def dispatch void format(Condition con, extension IFormattableDocument document) {		
+			con.regionFor.keyword(KW_FORBID).surround[oneSpace]
+			con.regionFor.keyword(KW_FORCE).surround[oneSpace]
+			con.regionFor.keyword(KW_ENFORCE).surround[oneSpace]
+			con.regionFor.keyword(KW_IF).surround[oneSpace]
+			con.regionFor.keyword(KW_THEN).surround[oneSpace]
+	}
+	
+	
+	def dispatch void format(Rule rule, extension IFormattableDocument document) {
+		rule.interior[indent]
+		
+		if(rule.regionFor.keyword(KW_ABSTRACT) !== null) {
+				rule.regionFor.keyword(KW_ABSTRACT).append[oneSpace].prepend[newLines=Spacing]
+				rule.regionFor.keyword(KW_RULE).append[oneSpace]
+				
+		} else {
+				rule.regionFor.keyword(KW_RULE).append[oneSpace].prepend[newLines=Spacing]
+		}
+		rule.regionFor.feature(EMSLPackage.eINSTANCE.rule_Name).append[oneSpace]
+		rule.regionFor.keyword(KW_RELATION).append[oneSpace]
+		rule.regionFor.keyword(KW_OPEN_PAR).append[newLines=2].prepend[oneSpace]
+		rule.regionFor.keyword(KW_CLOSE_PAR).prepend[newLines=2].prepend[noIndentation]
+		rule.regionFor.keyword(KW_WHEN).append[oneSpace].prepend[oneSpace]
+		rule.regionFor.keyword(KW_COMMA).append[oneSpace].prepend[noSpace]
+		
+		
+		for (nb : rule.nodeBlocks) {
+			nb.interior[indent]			
+			nb.regionFor.feature(EMSLPackage.eINSTANCE.modelNodeBlock_Name).append[oneSpace].prepend[newLines=Spacing]
+			nb.regionFor.keyword(KW_COLON).append[oneSpace]
+			nb.regionFor.feature(EMSLPackage.eINSTANCE.modelNodeBlock_Type)
+			
+			nb.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+			nb.regionFor.keyword(KW_CLOSE_PAR).prepend[newLine].append[newLines=Spacing]
+			
+			for (ps : nb.properties) {
+				ps.regionFor.keyword(KW_COLON).append[oneSpace]
+				ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Type).append[oneSpace]
+				ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Value).append[newLine]	
+			}
+			
+			for (rs : nb.relations) {
+				rs.interior[indent]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Type).append[oneSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.action_Op).append[oneSpace]
+				rs.regionFor.keyword(KW_HYPHEN).append[noSpace]
+				rs.regionFor.keyword(KW_RELATION).append[oneSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Target).append[newLine]
+				rs.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+				rs.regionFor.keyword(KW_CLOSE_PAR).surround[newLine]
+				
+				for (ps : rs.properties) {
+					ps.regionFor.keyword(KW_COLON).append[oneSpace]
+					ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Type).append[oneSpace]
+					ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Value).append[newLine]
+				}
+			}
+		}
+	}
+	
+	
+	def dispatch void format(Pattern pat, extension IFormattableDocument document) {
+		pat.interior[indent]
+		pat.regionFor.feature(EMSLPackage.eINSTANCE.atomicPattern_Name).append[oneSpace]
+		pat.regionFor.keyword(KW_OPEN_PAR).append[newLine].prepend[oneSpace]
+		pat.regionFor.keyword(KW_CLOSE_PAR).prepend[newLine]
+		pat.regionFor.keyword(KW_PATTERN).append[oneSpace].prepend[newLines=Spacing]
+		pat.regionFor.keyword(KW_COMMA).append[oneSpace].prepend[noSpace]
+		pat.regionFor.keyword(KW_WHEN).surround[oneSpace]
+		pat.regionFor.keyword(KW_AND).surround[oneSpace]
+		pat.regionFor.keyword(KW_OR).surround[oneSpace]
+		pat.regionFor.keyword(KW_RELATION).surround[oneSpace]
+		
+		
+		for (nb : pat.body.nodeBlocks) {
+			nb.interior[indent]
+			nb.regionFor.feature(EMSLPackage.eINSTANCE.modelNodeBlock_Name).append[oneSpace].prepend[newLines=Spacing]
+			nb.regionFor.keyword(KW_COLON).append[oneSpace]
+			nb.regionFor.feature(EMSLPackage.eINSTANCE.modelNodeBlock_Type).append[oneSpace]
+			nb.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+			nb.regionFor.keyword(KW_CLOSE_PAR).prepend[newLine]
+			
+			if (pat.body.nodeBlocks.length > 1) {
+				nb.regionFor.keyword(KW_CLOSE_PAR).append[newLines=Spacing]
+			} else {
+				nb.regionFor.keyword(KW_CLOSE_PAR).append[newLine]
+			}
+			
+			for (ps : nb.properties) {
+				ps.regionFor.keyword(KW_COLON).append[oneSpace]
+				ps.regionFor.keyword(KW_DOT).append[noSpace].prepend[newLine]
+				ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Type).append[oneSpace]
+				ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Op).append[oneSpace]
+			}
+			
+			for (rs : nb.relations) {
+				rs.interior[indent]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Type).append[oneSpace]
+				rs.regionFor.keyword(KW_RELATION).append[oneSpace]
+				rs.regionFor.keyword(KW_HYPHEN).append[noSpace].prepend[newLine]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Target).append[oneSpace]
+				rs.regionFor.keyword(KW_OPEN_PAR).append[newLine]
+				rs.regionFor.keyword(KW_CLOSE_PAR).surround[newLine]
+				
+				for (ps : rs.properties) {
+					ps.regionFor.keyword(KW_COLON).append[oneSpace]
+					ps.regionFor.keyword(KW_DOT).append[noSpace].prepend[newLine]
+					ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Type).append[oneSpace]
+					ps.regionFor.feature(EMSLPackage.eINSTANCE.modelPropertyStatement_Op).append[oneSpace]
+				}
+			}
+		}
+	}
+	
+	def dispatch void format(Constraint cons, extension IFormattableDocument document) {		
+			cons.regionFor.keyword(KW_CONSTRAINT).surround[oneSpace].prepend[newLines=2]
+			cons.regionFor.feature(EMSLPackage.eINSTANCE.constraint_Name).surround[oneSpace]
+			cons.regionFor.keyword(KW_EQ).surround[oneSpace]
+	}
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_Models_SokobanSimple;
+import org.emoflon.neo.api.API_Src_Models_SokobanSimple;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
@@ -43,7 +43,7 @@ public class ScalabilityTest {
 		NeoCoreBuilder builder = API_Common.createBuilder();
 
 		try {
-			Model model = new API_Models_SokobanSimple(builder).getModel_SokobanSimple();
+			Model model = new API_Src_Models_SokobanSimple(builder).getModel_SokobanSimple();
 			
 			model.setName(model.getName() + "_" + modelSize);
 			generateContents(model, modelSize);

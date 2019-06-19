@@ -379,20 +379,21 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Pattern.
 	 */
 	def dispatch String visualiseEntity(Pattern entity) {
+		var entityCopy = entity
 		try {
-			new EMSLFlattener().flattenPattern(entity)
+			entityCopy = new EMSLFlattener().flattenCopyOfPattern(entity, newArrayList)
 		} catch (AssertionError e) {
 			
 		} catch (FlattenerException e) {
-			
+			e.printStackTrace
 		}
 		
 		
 		'''
-			«FOR nb : entity.body.nodeBlocks»
+			«FOR nb : entityCopy.body.nodeBlocks»
 				«visualiseNodeBlockInPattern(nb, false)»
 			«ENDFOR»
-			«IF entity.condition !== null »
+			«IF entityCopy.condition !== null »
 				legend bottom
 					«getConditionString(entity)»
 				endlegend
@@ -404,7 +405,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Pattern.
 	 */
-	def String visualiseNodeBlockInPattern(ModelNodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInPattern(ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EMSLFlattener().flattenCopyOfPattern(nodeBlock.eContainer.eContainer as Pattern, new ArrayList<String>())).body.nodeBlocks) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
 		'''
 			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
