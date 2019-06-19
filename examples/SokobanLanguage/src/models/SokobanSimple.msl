@@ -1,4 +1,4 @@
-import "platform:/resource/SokobanLanguage/metamodels/SokobanLanguage.msl"
+import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 model SokobanSimple {
 	b : SokobanLanguage.Board {

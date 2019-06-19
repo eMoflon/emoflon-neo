@@ -16,72 +16,72 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 
 @SuppressWarnings("unused")
-public class API_Emsl_PacMan {
+public class API_Src_PacMan {
 	private EMSL_Spec spec;
 	private NeoCoreBuilder builder;
 
-	public API_Emsl_PacMan(NeoCoreBuilder builder, String platformURIRoot){
-		spec = (EMSL_Spec) EMSLUtil.loadSpecification("platform:/resource/PacMan/emsl/PacMan.msl", platformURIRoot);
+	public API_Src_PacMan(NeoCoreBuilder builder, String platformURIRoot){
+		spec = (EMSL_Spec) EMSLUtil.loadSpecification("platform:/resource/PacMan/src/PacMan.msl", platformURIRoot);
 		this.builder = builder;
 	}
 	
-	public API_Emsl_PacMan(NeoCoreBuilder builder){
+	public API_Src_PacMan(NeoCoreBuilder builder){
 		this(builder, "../");
 	}
 
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.0
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.0
 	public Metamodel getMetamodel_PacMan(){
 		return (Metamodel) spec.getEntities().get(0);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.1
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.1
 	public Model getModel_SimplePacManGame(){
 		return (Model) spec.getEntities().get(1);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.2
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.2
 	public IPattern getPattern_OnePacMan(){
 		var p = (Pattern) spec.getEntities().get(2);
 		return new NeoPattern(p, builder);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.3
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.3
 	public IPattern getPattern_FigureOnField(){
 		var p = (Pattern) spec.getEntities().get(3);
 		return new NeoPattern(p, builder);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.4
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.4
 	public IPattern getPattern_OneGhost(){
 		var p = (Pattern) spec.getEntities().get(4);
 		return new NeoPattern(p, builder);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.5
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.5
 	public IPattern getPattern_PacManOnField(){
 		var p = (Pattern) spec.getEntities().get(5);
 		return new NeoPattern(p, builder);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.6
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.6
 	public IPattern getPattern_GhostOnField(){
 		var p = (Pattern) spec.getEntities().get(6);
 		return new NeoPattern(p, builder);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.7
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.7
 	public IPattern getPattern_PacManAndGhostOnFields(){
 		var p = (Pattern) spec.getEntities().get(7);
 		return new NeoPattern(p, builder);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.8
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.8
 	public IPattern getPattern_PacManAndGhostOnNeighbouringFields(){
 		var p = (Pattern) spec.getEntities().get(8);
 		return new NeoPattern(p, builder);
 	}
 	
-	//:~> platform:/resource/PacMan/emsl/PacMan.msl#//@entities.9
+	//:~> platform:/resource/PacMan/src/PacMan.msl#//@entities.9
 	public IPattern getPattern_TwoPacManOnBoard(){
 		var p = (Pattern) spec.getEntities().get(9);
 		return new NeoPattern(p, builder);
