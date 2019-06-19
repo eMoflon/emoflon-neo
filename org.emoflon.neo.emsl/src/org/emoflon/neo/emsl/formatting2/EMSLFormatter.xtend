@@ -5,16 +5,15 @@ package org.emoflon.neo.emsl.formatting2
 
 import org.eclipse.xtext.formatting2.AbstractFormatter2
 import org.eclipse.xtext.formatting2.IFormattableDocument
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Condition
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.Value
-import org.emoflon.neo.emsl.eMSL.Pattern
 
 class EMSLFormatter extends AbstractFormatter2 {
 	
@@ -112,7 +111,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 		mod.regionFor.keyword(KW_CLOSE_PAR).append[newLines=2].prepend[newLines=Spacing]
 		for (nb : mod.nodeBlocks) {
 			nb.interior[indent]
-			if(nb.regionFor.keyword(KW_ABSTRACT) != null) {
+			if(nb.regionFor.keyword(KW_ABSTRACT) !== null) {
 				nb.regionFor.keyword(KW_ABSTRACT).append[oneSpace].prepend[newLines=Spacing]
 				nb.regionFor.feature(EMSLPackage.eINSTANCE.metamodelNodeBlock_Name).append[oneSpace]
 			} else {
@@ -171,7 +170,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 	def dispatch void format(Rule rule, extension IFormattableDocument document) {
 		rule.interior[indent]
 		
-		if(rule.regionFor.keyword(KW_ABSTRACT) != null) {
+		if(rule.regionFor.keyword(KW_ABSTRACT) !== null) {
 				rule.regionFor.keyword(KW_ABSTRACT).append[oneSpace].prepend[newLines=Spacing]
 				rule.regionFor.keyword(KW_RULE).append[oneSpace]
 				
