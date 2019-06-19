@@ -30,12 +30,12 @@ public class EMSLFlattener {
 	}
 	
 	/**
-	 * Returns the flattened Pattern, i.e. (for now) collects all NodeBlocks from the superEntities.
+	 * Returns the flattened Pattern.
 	 * 
 	 * @param pattern that should be flattened.
 	 * @param alreadyRefinedPatternNames list of names of pattern that have already appeared in the refinement path (against loops).
 	 * @return the flattened pattern.
-	 * @throws FlattenerException is thrown if an error during the flattening process occurs.
+	 * @throws FlattenerException is thrown if the pattern could not be flattened.
 	 */
 	public Pattern flattenPattern(Pattern pattern, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
 		if (pattern != null) {
@@ -74,10 +74,20 @@ public class EMSLFlattener {
 			atomicPattern.getNodeBlocks().addAll((mergedNodes));
 			
 			pattern.setBody(atomicPattern);
+			
+			checkForResolvedProxies(pattern);
 		}
 		return pattern;
 	}
 	
+	
+	/**
+	 * Returns a flattened copy of the given Pattern.
+	 * @param originalPattern that is to be copied and flattened.
+	 * @param alreadyRefinedPatternNames list of names that of pattern that have already appeared in the refinement path (against loops). 
+	 * @return flattened copy of given Pattern.
+	 * @throws FlattenerException is thrown if the pattern could not be flattened.
+	 */
 	public Pattern flattenCopyOfPattern(Pattern originalPattern, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
 		
 		var pattern = (Pattern) new EntityCloner().cloneEntity(originalPattern);
@@ -118,10 +128,13 @@ public class EMSLFlattener {
 			atomicPattern.getNodeBlocks().addAll((mergedNodes));
 			
 			pattern.setBody(atomicPattern);
+			
+			checkForResolvedProxies(pattern);
 		}
 		
 		return pattern;
 	}
+	
 	
 	/**
 	 * This method creates all NodeBlocks that have to be imported into the Pattern from the SuperEntities.
@@ -465,6 +478,11 @@ public class EMSLFlattener {
 		return newNb;
 	}
 	
+	/**
+	 * Creates a new ModelPropertyStatement that is equal to the one that is given.
+	 * @param oldStatement that is to be copied.
+	 * @return a new ModelPropertyStatement with equal attributes of the given one.
+	 */
 	private ModelPropertyStatement copyModelPropertyStatement(ModelPropertyStatement oldStatement) {
 		var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
 		newProp.setOp(oldStatement.getOp());
@@ -492,24 +510,45 @@ public class EMSLFlattener {
 		return newProp;
 	}
 	
-	private boolean compareValueOfModelPropertyStatement(Entity entity, ModelPropertyStatement p1, ModelPropertyStatement p2) throws FlattenerException {
+	/**
+	 * Compares the two given PropertyStatements for equal values. If the values are not equal an according exception is thrown.
+	 * @param entity that contains the PropertyStatements.
+	 * @param p1 first statement in the comparison.
+	 * @param p2 second statement in the comparison.
+	 * @throws FlattenerException is thrown if the values of the two statements are not equal.
+	 */
+	private void compareValueOfModelPropertyStatement(Entity entity, ModelPropertyStatement p1, ModelPropertyStatement p2) throws FlattenerException {
 		
 		if (p1.getValue() instanceof PrimitiveBoolean && p2.getValue() instanceof PrimitiveBoolean
 				&& (((PrimitiveBoolean) p1.getValue()).isTrue() && ((PrimitiveBoolean) p2.getValue()).isTrue()
 				|| !((PrimitiveBoolean) p1.getValue()).isTrue() && !((PrimitiveBoolean) p2.getValue()).isTrue())) {
-			return true;
+			return;
 		} else if (p1.getValue() instanceof PrimitiveInt && p2.getValue() instanceof PrimitiveInt
 				&& ((PrimitiveInt) p1.getValue()).getLiteral() == ((PrimitiveInt) p2.getValue()).getLiteral()) {
-			return true;
+			return;
 		} else if (p1.getValue() instanceof PrimitiveString && p2.getValue() instanceof PrimitiveString
 				&& ((PrimitiveString) p1.getValue()).getLiteral().equals(((PrimitiveString) p2.getValue()).getLiteral())) {
-			return true;
+			return;
 		} else if (p1.getValue() instanceof EnumValue && p2.getValue() instanceof EnumValue
 				&& ((EnumValue) p1.getValue()).getLiteral() == ((EnumValue) p2.getValue()).getLiteral()) {
-			return true;
+			return;
 		}
-		throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2);
-		//return false;
+		throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2);	
+	}
 	
+	/**
+	 * Iterates over all relations in the newly flattened pattern and checks if a proxy target could not be resolved to
+	 * a nodeBlock from one of the superEntities.
+	 * @param pattern that is to be checked if all proxies were resolved.
+	 * @throws FlattenerException is thrown if a proxy was not resolved during flattening.
+	 */
+	private void checkForResolvedProxies(Pattern pattern) throws FlattenerException {
+		for (var nb : pattern.getBody().getNodeBlocks()) {
+			for (var relation : nb.getRelations()) {
+				if (!(relation.getTarget() instanceof ModelNodeBlock)) {
+					throw new FlattenerException(pattern, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
+				}
+			}
+		}
 	}
 }

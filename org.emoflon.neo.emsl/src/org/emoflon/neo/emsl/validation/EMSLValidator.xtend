@@ -20,6 +20,7 @@ import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import java.util.ArrayList
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 
 /**
  * This class contains custom validation rules. 
@@ -27,7 +28,7 @@ import java.util.ArrayList
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class EMSLValidator extends AbstractEMSLValidator {
-
+	
 	@Check
 	def checkPropertyStatementOfNodeBlock(ModelPropertyStatement p) {
 		
@@ -63,8 +64,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 			
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-				error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.", 
-					//(e.entity as Pattern).body, 
+				error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.",  
 					EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
 				
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
@@ -81,6 +81,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
 				error("The value of " + e.property2.type.name + " does not match with your other refinements",
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+			} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_PROXY) {
+				for (nb : pattern.nodeBlocks) {
+					if (nb.name.equals((e.relation.eContainer as ModelNodeBlock).name)) {
+						error("A proxy target you defined could not be resolved.",
+							nb,
+							EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME
+						)
+					}
+				}
+				
+				
 			}
 		}
 	}
