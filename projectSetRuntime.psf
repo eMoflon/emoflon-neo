@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <psf version="2.0">
 <provider id="org.eclipse.egit.core.GitProvider">
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/NetworkTopology"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Organigram"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/PacMan"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SheRememberedCaterpillars"/>

@@ -1,0 +1,58 @@
+metamodel NetworkTopology {
+	Node {
+		-connected(2..2)->Node
+	}
+	
+	TopNode : Node
+}
+
+ pattern Pair {
+ 	a:Node {
+ 		-connected->b
+ 	}
+ 	
+ 	b:Node
+ }
+ 
+ pattern Triangle -> 
+ 	Pair [a -> t1, b -> t2],
+ 	Pair [a -> t2, b -> t3],
+ 	Pair [a -> t3, b -> t1]
+ 
+ pattern Rectangle ->
+ 	Triangle, 
+ 	Triangle [t1 -> t4] {
+ 		t1:TopNode
+ 	}
+ 
+ pattern Pyramid ->
+ 	Triangle,
+ 	Triangle [t1 -> t2, t2 -> t4, t3 -> t5],
+ 	Triangle [t1 -> t3, t2 -> t5, t3 -> t6] {
+ 		t1:TopNode
+ 		
+ 	}
+ 	
+ model ExampleTopology {
+ 	t1:TopNode {
+ 		-connected->t2
+ 	}
+ 	t2:Node {
+ 		-connected->t4
+ 		-connected->t3
+ 	}
+ 	t3:Node {
+ 		-connected->t5
+ 		-connected->t1
+ 	}
+ 	t4:Node {
+ 		-connected->t5
+ 	}
+ 	t5:Node {
+ 		-connected->t2
+ 		-connected->t6
+ 	}
+ 	t6:Node {
+ 		-connected->t3
+ 	}
+ }
