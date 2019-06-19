@@ -39,3 +39,11 @@ examples/TestSuite/out/SokobanLanguage.ecore
 org.emoflon.neo.emf/xtend-gen/org/emoflon/neo/emf/EMFExporter.java
 examples/TestSuite/src-gen/org/emoflon/neo/api/API_Resources_Expected_SimpleFamilies.java
 examples/TestSuite/src-gen/org/emoflon/neo/api/API_Common.java
+
+examples/Organigram/src-gen/org/emoflon/neo/api/API_Common\.java
+
+examples/Organigram/src-gen/org/emoflon/neo/api/API_Emsl_Organigram\.java
+
+examples/PacMan/src-gen/org/emoflon/neo/api/API_Common\.java
+
+examples/PacMan/src-gen/org/emoflon/neo/api/API_Emsl_PacMan\.java

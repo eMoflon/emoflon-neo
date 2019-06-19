@@ -20,7 +20,7 @@ Entity:
 Model:
 	'model' name=QualifiedName 
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))? 
-	'{' nodeBlocks+=ModelNodeBlock* '}';
+	('{' nodeBlocks+=ModelNodeBlock* '}')?;
 
 ModelNodeBlock:
 	(action=Action)? name=ID ':' type=[MetamodelNodeBlock|QualifiedName]
@@ -64,7 +64,7 @@ PrimitiveBoolean:
 ;
 
 ModelRelationStatement:
-	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' target=[ModelNodeBlock|QualifiedName]
+	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
@@ -75,7 +75,7 @@ ModelRelationStatement:
 Metamodel:
 	'metamodel' name=QualifiedName 
 	('->' (superRefinementTypes+=MetamodelRefinementCommand (',' superRefinementTypes+=MetamodelRefinementCommand)*))?
-	'{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}';
+	('{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}')?;
 
 MetamodelNodeBlock:
 	(abstract?='abstract')? name=ID
@@ -89,7 +89,7 @@ MetamodelPropertyStatement:
 
 MetamodelRelationStatement:
 	kind=RelationKind name=ID
-	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' target=[MetamodelNodeBlock|QualifiedName]
+	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=MetamodelPropertyStatement*
 	'}')?;
@@ -133,9 +133,9 @@ enum BuiltInDataTypes:
 AtomicPattern:
 	'pattern' name=QualifiedName
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
-	'{'
+	('{'
 	nodeBlocks+=ModelNodeBlock*
-	'}';
+	'}')?;
 
 Pattern:
 	body=AtomicPattern ('when' condition=Condition)?;
@@ -176,9 +176,9 @@ Primary returns ConstraintBody:
 Rule:
 	(abstract?='abstract')? 'rule' name=QualifiedName
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
-	'{'
+	('{'
 	nodeBlocks+=ModelNodeBlock*
-	'}' ('when' condition=Condition)?;
+	'}')? ('when' condition=Condition)?;
 
 GraphGrammar:
 	'grammar' name=QualifiedName '{'
@@ -260,10 +260,10 @@ MetamodelRefinementCommand:
 	referencedType=[SuperType|QualifiedName] ('[' relabeling+=MetamodelRelabelingCommand (',' relabeling+=MetamodelRelabelingCommand)* ']')?;
 
 ModelRelabelingCommand returns RelabelingCommand:
-	oldLabel=[ModelNodeBlock|QualifiedName] '->' newLabel=ID;
+	oldLabel=ID '->' newLabel=ID;
 	
 MetamodelRelabelingCommand returns RelabelingCommand:
-	oldLabel=[MetamodelNodeBlock|QualifiedName] '->' newLabel=ID;
+	oldLabel=ID '->' newLabel=ID;
 
 SuperType:
 	Metamodel | Model | AtomicPattern | Rule | TripleRule;
