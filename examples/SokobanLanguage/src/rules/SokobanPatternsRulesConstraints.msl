@@ -1,7 +1,5 @@
 import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
-// BoardPattern.gt
-
 pattern oneSokoban {
 	sokoban : Sokoban
 }
@@ -13,7 +11,7 @@ pattern oneSokobanSelectedFigureRequired {
 
 constraint noSokobanAllowed = enforce oneSokoban
 
-pattern noSokoban {} when forbid oneSokoban
+pattern noSokoban when forbid oneSokoban
 
 pattern sokobanMustBeSelectedFigure {
 	sokoban:Sokoban
@@ -41,12 +39,7 @@ pattern oneEndField {
 	}
 }
 
-pattern anSelectedFigure {
-	
-}
-
 pattern anOccupiedField {
-	
 	field : Field
 	
 	fig : Figure {
@@ -55,23 +48,22 @@ pattern anOccupiedField {
 }
 
 pattern anOccupiedSokobanField {
-	
 	field : Field
 	
 	fig : Sokoban {
 		-field-> field
 	}
 }
-pattern anOccupiedBlockField {
-	
+
+pattern anOccupiedBlockField {	
 	field : Field
 	
 	fig : Block	{
 		-field-> field
 	}
 }
+
 pattern anOccupiedBoulderField {
-	
 	field : Field
 	
 	fig : Boulder {
@@ -80,10 +72,7 @@ pattern anOccupiedBoulderField {
 }
 
 pattern byBlockAndBoulderOccupiedFields -> anOccupiedBlockField, 
-	anOccupiedBoulderField [field -> otherField,fig -> otherFig] {
-
-}
-
+	anOccupiedBoulderField [field -> otherField,fig -> otherFig]
 
 pattern allFieldsInARow {
 	b : SokobanLanguage.Board {
@@ -228,7 +217,6 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 	fig: Block {
 		-field->field
 	}
-
 } when noCorner
 
 constraint forbidLeftSide = forbid hasLeft
@@ -273,9 +261,6 @@ pattern hasBottom {
 	bottomFig: Field
 }
 
-
-// RulesForMovingSokoban.gt
-
 pattern occupiedField {
 	fig : Figure {
 		-field-> to
@@ -283,7 +268,7 @@ pattern occupiedField {
 	to : Field
 }
 
-pattern occupiedNext -> occupiedField [to -> next] { }
+pattern occupiedNext -> occupiedField [to -> next]
 
 abstract rule moveSokoban {
 	from : Field
@@ -306,7 +291,6 @@ abstract rule pushBlock {
 		++ -field-> next
 	}
 }
-
 
 rule moveSokobanUp -> moveSokoban {
 	to : Field {
@@ -331,10 +315,3 @@ rule pushBlockDown -> pushBlock, moveSokobanDown {
 		-bottom-> next
 	}
 } when forbid occupiedNext
-	
-
-
-
-
-
-
