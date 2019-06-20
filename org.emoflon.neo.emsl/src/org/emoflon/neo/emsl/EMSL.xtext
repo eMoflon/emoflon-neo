@@ -231,11 +231,15 @@ CorrespondenceType:
 	source=[MetamodelNodeBlock|QualifiedName] '<-' name=QualifiedName '->' target=[MetamodelNodeBlock|QualifiedName];
 
 ParameterBinding:
-	name=ID 'as' value=(Value | Proxy)
+	(pre?='\'')? name=ID (post?='\'')? ':' value=(Value | TemporaryVariable | IgnoredVariable)
 ;
 
-Proxy returns Value:
+TemporaryVariable returns Value:
 	'$' name=ID
+;
+
+IgnoredVariable returns Value:
+	{IgnoredVariable} '_'
 ;
 
 TripleRuleNAC:
@@ -252,6 +256,7 @@ TripleGrammar:
 	'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
 	'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
 	'correspondence' '{' correspondences+=CorrespondenceType* '}'
+	'}'
 	;
 
 /*-------------------------------------------------*/
