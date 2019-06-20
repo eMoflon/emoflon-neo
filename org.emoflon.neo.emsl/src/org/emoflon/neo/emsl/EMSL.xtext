@@ -278,6 +278,6 @@ enum ActionOperator:
 	CREATE='++' | DELETE='--';
 
 enum ConditionOperator:
-	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ=':' | GREATER='>' | GREATEREQ='>=';
+	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ=':' | GREATER='>' | GREATEREQ='>=' | ASSIGN=':=';
 
 
