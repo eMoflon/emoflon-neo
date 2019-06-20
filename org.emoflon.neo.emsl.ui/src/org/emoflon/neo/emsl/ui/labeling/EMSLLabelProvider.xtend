@@ -7,9 +7,13 @@ import com.google.inject.Inject
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeCondition
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.CorrespondenceType
 import org.emoflon.neo.emsl.eMSL.EnumValue
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
@@ -18,14 +22,13 @@ import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.Rule
-import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.CorrespondenceType
-import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 /**
  * Provides labels for EObjects.
@@ -108,7 +111,15 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 	}
 	
 	dispatch def String print(AttributeExpression exp){
-		exp.node.name + "." + exp.target.getText()
+		exp.node.name + "." + print(exp.target)
+	}
+	
+	dispatch def String print(NodeAttributeExpTarget trg){
+		trg.attribute.name
+	}
+	
+	dispatch def String print(LinkAttributeExpTarget trg){
+		trg.attribute.name
 	}
 	
 	def image(TripleRule r){
@@ -129,5 +140,13 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 	
 	def image(TripleGrammar tgg){
 		'tgg.gif'
+	}
+	
+	def image(AttributeCondition ac){
+		'gt-condition.gif'
+	}
+	
+	def text(AttributeCondition ac){
+		ac.operator.literal	
 	}
 }

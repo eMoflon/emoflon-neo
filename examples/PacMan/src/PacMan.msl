@@ -83,8 +83,29 @@ pattern twoPacManOnBoard ->
 	pacManAndGhostOnFields, 
 	pacManOnField [fig -> p2, field -> f01]
 
-
-
+rule collectMarble {
+	pacMan:PacMan {
+		-- -standsOn->from
+		++ -standsOn->to
+	}
+	
+	-- marble:Marble {
+		-- -liesOn->to
+	}
+	
+	from:Field {
+		-right->to
+	}
+	
+	to:Field
+	
+	attributeConditions {
+		add(summand as pacMan::marbles, 
+			summand as 1, 
+			sum 	as pacMan::marbles
+		)
+	}
+}
 
 
 

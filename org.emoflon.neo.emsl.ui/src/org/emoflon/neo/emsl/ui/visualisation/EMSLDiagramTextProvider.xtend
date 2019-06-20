@@ -516,7 +516,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «attr.type.name» = «attr.value»
+				«labelForRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»

@@ -178,7 +178,30 @@ Rule:
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
 	nodeBlocks+=ModelNodeBlock*
+	('attributeConditions' '{' attributeConditions+=AttributeCondition* '}')?
 	'}')? ('when' condition=Condition)?;
+
+AttributeCondition:
+	operator=LibraryAttributeCondition '(' (bindings+=ParameterBinding)? (',' bindings+=ParameterBinding)* ')';
+
+enum LibraryAttributeCondition:
+	EQ='eq' |
+	ADD='add' |
+	SUB='sub' |
+	DIVIDE='divide' |
+	MULTIPLY='multiply' |
+	MAX='max' |
+	MIN='min' |
+	ADDPREFIX='addPrefix' |
+	ADDSUFFIX='addSuffix' |
+	CONCAT='concat' |
+	SETDEFAULTNumber='setDefaultNumber' |
+	SETDEFAULTSTRING='setDefaultString' |
+	SETRANDOMSTRING='setRandomString' |
+	SMALLEROREQUAL='smallerOrEqual' |
+	STRINGTODOUBLE='stringToDouble' |
+	STRINGTOINT='stringToInt' 
+	;
 
 GraphGrammar:
 	'grammar' name=QualifiedName '{'
@@ -207,8 +230,13 @@ Correspondence:
 CorrespondenceType:
 	source=[MetamodelNodeBlock|QualifiedName] '<-' name=QualifiedName '->' target=[MetamodelNodeBlock|QualifiedName];
 
-AttributeCondition:
-	operator=LibraryAttributeCondition '(' /* TODO [Tony]: How will this look like? Consider properties of links! */ ')';
+ParameterBinding:
+	name=ID 'as' value=(Value | Proxy)
+;
+
+Proxy returns Value:
+	'$' name=ID
+;
 
 TripleRuleNAC:
 	SourceNAC | TargetNAC;
@@ -224,31 +252,7 @@ TripleGrammar:
 	'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
 	'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
 	'correspondence' '{' correspondences+=CorrespondenceType* '}'
-	'attributeConditions' '{' /* TODO [Tony]: Unclear how to define attribute conditions?  Can we support this? */ '}'
-	'}';
-
-enum LibraryAttributeCondition:
-	ADD='add' |
-	ADDPREFIX='addPrefix' |
-	ADDSUFFIX='addSuffix' |
-	CONCAT='concat' |
-	DIVIDE='divide' |
-	EQBOOLEAN='eq_boolean' |
-	EQCHAR='eq_char' |
-	EQDOUBLE='eq_double' |
-	EQFLOAT='eq_float' |
-	EQINT='eq_int' |
-	EQLONG='eq_long' |
-	EQSTRING='eq_string' |
-	MAX='max' |
-	MULTIPLY='multiply' |
-	SETDEFAULTNumber='setDefaultNumber' |
-	SETDEFAULTSTRING='setDefaultString' |
-	SETRANDOMSTRING='setRandomString' |
-	SMALLEROREQUAL='smallerOrEqual' |
-	STRINGTODOUBLE='stringToDouble' |
-	STRINGTOINT='stringToInt' |
-	SUB='sub';
+	;
 
 /*-------------------------------------------------*/
 /*------------------- Common ----------------------*/
@@ -278,6 +282,6 @@ enum ActionOperator:
 	CREATE='++' | DELETE='--';
 
 enum ConditionOperator:
-	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ=':' | GREATER='>' | GREATEREQ='>=';
+	NOTEQ='!=' | LESS='<' | LESSEQ='<=' | EQ=':' | GREATER='>' | GREATEREQ='>=' | ASSIGN=':=';
 
 
