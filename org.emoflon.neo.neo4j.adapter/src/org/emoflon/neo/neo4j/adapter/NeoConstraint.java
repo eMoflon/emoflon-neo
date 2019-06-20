@@ -110,6 +110,11 @@ public class NeoConstraint implements IConstraint {
 					return true;
 				else
 					return false;
+			} else if (c.getBody() instanceof NegativeConstraint) {
+				if(matches == 0)
+					return true;
+				else
+					return false;
 			}
 			
 		}
