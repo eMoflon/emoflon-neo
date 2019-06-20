@@ -63,7 +63,7 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle constraints")
+	//@Disabled("TODO[Jannik] Handle constraints")
 	public void testCanCrossBridgeSomewhere() {
 		assertTrue(entities.getConstraint_CanCrossBridgeSomewhere().isSatisfied());
 	}

@@ -13,21 +13,24 @@ public class NeoCondition {
 
 	public NeoCondition(String name, ConditionOperator op, String value, String classVarName) {
 
+		/*
 		this.classVarName = classVarName;
 
 		this.name = name;
 		this.value = value;
 		this.opNeg = false;
 		convertOp(op);
+		*/
 	}
 
 	@Override
 	public String toString() {
-		return CypherPatternBuilder.cypherCondition(name, op, opNeg, value, classVarName);
+		return ""; 
+		//CypherPatternBuilder.cypherCondition(name, op, opNeg, value, classVarName);
 	}
 
 	private void convertOp(ConditionOperator opcode) {
-
+		/*
 		switch (opcode) {
 		case EQ:
 			this.op = "=";
@@ -51,7 +54,7 @@ public class NeoCondition {
 		default:
 			throw new IllegalArgumentException("Unknown condition operator: " + opcode);
 		}
-
+	*/
 	}
 
 }

@@ -17,6 +17,11 @@ public class PatternTest extends ENeoTest {
 	public void initDB() {
 		initDB(new API_Src_Models_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
 	}
+	
+	@Test
+	public void test_Condition() {
+		expectSingleMatch(entities.getPattern_OneSokobanSelectedFigureRequired());
+	}
 
 	@Test
 	public void test_OneSokoban() {

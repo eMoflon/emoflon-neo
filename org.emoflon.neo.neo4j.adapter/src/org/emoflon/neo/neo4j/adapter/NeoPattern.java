@@ -5,8 +5,17 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.Condition;
+import org.emoflon.neo.emsl.eMSL.Constraint;
+import org.emoflon.neo.emsl.eMSL.ConstraintReference;
+import org.emoflon.neo.emsl.eMSL.Implication;
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
@@ -20,19 +29,49 @@ public class NeoPattern implements IPattern {
 	private boolean injective;
 
 	private List<NeoNode> nodes;
+	private List<NeoConstraint> constraints;
+	
+	private Condition c;
 
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.builder = builder;
+		
 		try {
 			this.p = new EMSLFlattener().flattenCopyOfPattern(p, new ArrayList<String>());
 		} catch (FlattenerException e) {
-			// TODO Auto-generated catch block
+			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();
 		}
 
 		extractNodesAndRelations();
+		
+		if(p.getCondition() != null) {
+			
+			this.c = (Condition) p.getCondition();
+			logger.info(c.getClass().getName().toString());
+			
+			if (c instanceof PositiveConstraint) {
+
+				AtomicPattern ap = (AtomicPattern) p.getCondition().eCrossReferences().get(0);
+				logger.info(ap.getNodeBlocks().toString());
+				
+			} else if (c instanceof NegativeConstraint) {
+				AtomicPattern ap = (AtomicPattern) p.getCondition().eCrossReferences().get(0);
+				logger.info(ap.getNodeBlocks().toString());
+				
+			} else if (c instanceof Implication) {
+				AtomicPattern ap = (AtomicPattern) p.getCondition().eCrossReferences().get(0);
+				logger.info(ap.getNodeBlocks().toString());
+				
+			} else if (c instanceof ConstraintReference) {
+
+				
+			} else {
+				throw new UnsupportedOperationException("Unsuppported Constraint Type");
+			}
+		}
 	}
 
 	private void extractNodesAndRelations() {
@@ -89,6 +128,15 @@ public class NeoPattern implements IPattern {
 		StatementResult result = builder.executeQuery(cypherQuery);
 		return result.hasNext();
 	}
+	/*
+	public boolean isStillValid(Collection<NeoMatch> m) {
+		logger.info("Check if match for " + getName() + " is still valid");
+		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
+		logger.debug(cypherQuery);
+		StatementResult result = builder.executeQuery(cypherQuery);
+		return result.hasNext();
+	}
+	*/
 
 	@Override
 	public void setMatchInjectively(Boolean injective) {
