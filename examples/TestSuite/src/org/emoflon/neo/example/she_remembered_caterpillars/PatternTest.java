@@ -67,9 +67,8 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle constraints")
 	public void testAlwaysOnPlatform() {
-		assertTrue(entities.getConstraint_AlwaysOnPlatform().isSatisfied());
+		assertTrue(entities.getConstraint_AlwaysOnPlatform().isViolated());
 	}
 	
 	@Test

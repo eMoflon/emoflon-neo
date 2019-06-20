@@ -34,7 +34,7 @@ public class NeoConstraint implements IConstraint {
 	private Constraint c;
 	private Collection<AtomicPattern> pattern;
 	List<EObject> ref;
-	
+		
 	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
 		this.pattern = new ArrayList<>();
 		this.builder = builder;
@@ -89,6 +89,8 @@ public class NeoConstraint implements IConstraint {
 	@Override
 	public boolean isSatisfied() {
 		
+		int countIfElseMatches = -1;
+		
 		for(AtomicPattern ap : pattern) {
 			
 			List<NeoNode> nodes = extractPatternInformations(ap);
@@ -115,6 +117,14 @@ public class NeoConstraint implements IConstraint {
 					return true;
 				else
 					return false;
+			} else if (c.getBody() instanceof Implication) {
+				if(countIfElseMatches == -1) {
+					countIfElseMatches = matches;
+				} else if (countIfElseMatches != matches){
+					return false;
+				} else {
+					return true;
+				}
 			}
 			
 		}
