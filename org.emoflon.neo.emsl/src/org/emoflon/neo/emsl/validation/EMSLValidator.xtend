@@ -20,6 +20,10 @@ import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import java.util.ArrayList
+import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.DataType
 
 /**
  * This class contains custom validation rules. 
@@ -37,7 +41,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 				
 				if (!(p.value instanceof PrimitiveInt && propertyType == BuiltInDataTypes.EINT) &&
 					!(p.value instanceof PrimitiveBoolean && propertyType == BuiltInDataTypes.EBOOLEAN) &&
-					!(p.value instanceof PrimitiveString && propertyType == BuiltInDataTypes.ESTRING)
+					!(p.value instanceof PrimitiveString && propertyType == BuiltInDataTypes.ESTRING) &&
+					!(p.value instanceof AttributeExpression && isOfCorrectType(p.value as AttributeExpression, p.type.type))
 				)
 					error("The value of this PropertyStatement must be of type " + propertyType.getName, 
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
@@ -50,6 +55,14 @@ class EMSLValidator extends AbstractEMSLValidator {
 				}
 			}
 		}	
+	}
+		
+	def isOfCorrectType(AttributeExpression attrExpr, DataType type) {
+		if(attrExpr.target instanceof NodeAttributeExpTarget){
+			(attrExpr.target as NodeAttributeExpTarget).attribute.type.equals(type)
+		} else if(attrExpr.target instanceof LinkAttributeExpTarget){
+			return (attrExpr.target as LinkAttributeExpTarget).attribute.type.equals(type)
+		}
 	}
 	
 	@Check(NORMAL)
