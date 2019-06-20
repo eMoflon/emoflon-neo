@@ -231,7 +231,7 @@ CorrespondenceType:
 	source=[MetamodelNodeBlock|QualifiedName] '<-' name=QualifiedName '->' target=[MetamodelNodeBlock|QualifiedName];
 
 ParameterBinding:
-	(pre?='\'')? name=ID (post?='\'')? ':' value=(Value | TemporaryVariable | IgnoredVariable)
+	name=ID ':' (pre?='`')? value=(Value | TemporaryVariable | IgnoredVariable) (post?='´')?
 ;
 
 TemporaryVariable returns Value:
