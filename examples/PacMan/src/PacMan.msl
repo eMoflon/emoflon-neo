@@ -100,9 +100,9 @@ rule collectMarble {
 	to:Field
 	
 	attributeConditions {
-		add(summand as pacMan::marbles, 
-			summand as 1, 
-			sum 	as pacMan::marbles
+		add(summand : `pacMan::marbles,
+			summand : 1, 
+			sum 	: pacMan::marbles´
 		)
 	}
 }
