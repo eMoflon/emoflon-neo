@@ -10,9 +10,6 @@ pattern oneSokobanSelectedFigureRequired {
 	sokoban : Sokoban
 } when enforce selectedFigureRequired
 
-
-constraint noSokobanAllowed = enforce oneSokoban
-
 pattern noSokoban {} when forbid oneSokoban
 
 pattern sokobanMustBeSelectedFigure {
