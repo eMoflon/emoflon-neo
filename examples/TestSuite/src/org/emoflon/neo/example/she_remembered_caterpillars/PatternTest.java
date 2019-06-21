@@ -68,7 +68,7 @@ public class PatternTest extends ENeoTest {
 	
 	@Test
 	public void testAlwaysOnPlatform() {
-		assertTrue(entities.getConstraint_AlwaysOnPlatform().isViolated());
+		assertFalse(entities.getConstraint_AlwaysOnPlatform().isSatisfied());
 	}
 	
 	@Test

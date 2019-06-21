@@ -10,6 +10,12 @@ class CypherPatternBuilder {
 		«withQuery(nodes,injective)»
 		«returnQuery(nodes)»'''
 	}
+	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, boolean injective) {
+		'''
+		«matchQuery(nodes,nodes2)»
+		«withQuery(nodes,injective)»
+		«returnQuery(nodes,nodes2)»'''
+	}
 
 	def static String isStillValidQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective) {
 		'''
@@ -26,7 +32,11 @@ class CypherPatternBuilder {
 			«ENDIF»
 			«ENDFOR»'''
 	}
-
+	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
+		'''«matchQuery(nodes)»
+		OPTIONAL «matchQuery(nodes2)»'''
+	}
+	
 	protected def static CharSequence queryNode(NeoNode n) '''
 		(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
 
@@ -71,6 +81,7 @@ class CypherPatternBuilder {
 
 		'''«IF ret.length > 0»WHERE «ENDIF»«ret»'''
 	}
+	
 
 	def static String nodeIdBlock(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
@@ -88,6 +99,17 @@ class CypherPatternBuilder {
 	def static String returnQuery(Collection<NeoNode> nodes) {
 		'''
 			RETURN «FOR n : nodes SEPARATOR ',\n '»
+				«IF n.relations.size == 0 || n.properties.size > 0»
+					id(«n.varName») AS «n.varName»«IF n.relations.size > 0»,«ENDIF»
+				«ENDIF»
+				«FOR r : n.relations SEPARATOR ',\n  '»
+					id(«r.varName») AS «r.varName»
+				«ENDFOR»
+				«ENDFOR»'''
+	}
+	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
+		'''
+			«returnQuery(nodes)», «FOR n : nodes2 SEPARATOR ',\n '»
 				«IF n.relations.size == 0 || n.properties.size > 0»
 					id(«n.varName») AS «n.varName»«IF n.relations.size > 0»,«ENDIF»
 				«ENDIF»

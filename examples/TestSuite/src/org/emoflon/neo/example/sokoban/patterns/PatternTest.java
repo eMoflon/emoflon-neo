@@ -1,7 +1,9 @@
 package org.emoflon.neo.example.sokoban.patterns;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import org.emoflon.neo.api.API_Src_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Src_Rules_SokobanPatternsRulesConstraints;
@@ -232,6 +234,22 @@ public class PatternTest extends ENeoTest {
 	@Test
 	public void test_ByBlockAndBoulderOccupiedFields() {
 		assertThat(entities.getPattern_ByBlockAndBoulderOccupiedFields().countMatches(), is(14));
+	}
+	
+	/*
+	 * Constraint Tests
+	 */
+	
+	@Test
+	public void test_constraint_hasLeft() {
+		assertTrue(entities.getConstraint_ForbidLeftSide().isViolated());
+		assertFalse(entities.getConstraint_ForbidLeftSide().isSatisfied());
+	}
+	
+	@Test
+	public void test_constraint_hasTopLeftCorner() {
+		assertTrue(entities.getConstraint_TopLeftCorner().isViolated());
+		assertFalse(entities.getConstraint_TopLeftCorner().isSatisfied());
 	}
 	
 }

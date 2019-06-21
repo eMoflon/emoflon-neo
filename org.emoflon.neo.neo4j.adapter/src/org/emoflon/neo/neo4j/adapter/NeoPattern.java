@@ -5,17 +5,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.emf.ecore.EObject;
 import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.emsl.eMSL.Condition;
-import org.emoflon.neo.emsl.eMSL.Constraint;
-import org.emoflon.neo.emsl.eMSL.ConstraintReference;
-import org.emoflon.neo.emsl.eMSL.Implication;
-import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
-import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
@@ -29,10 +24,7 @@ public class NeoPattern implements IPattern {
 	private boolean injective;
 
 	private List<NeoNode> nodes;
-	private List<NeoConstraint> constraints;
 	
-	private Condition c;
-
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		injective = true;
@@ -47,32 +39,14 @@ public class NeoPattern implements IPattern {
 
 		extractNodesAndRelations();
 		
-		if(p.getCondition() != null) {
-			
-			this.c = (Condition) p.getCondition();
-			logger.info(c.getClass().getName().toString());
-			
-			if (c instanceof PositiveConstraint) {
-
-				AtomicPattern ap = (AtomicPattern) p.getCondition().eCrossReferences().get(0);
-				logger.info(ap.getNodeBlocks().toString());
-				
-			} else if (c instanceof NegativeConstraint) {
-				AtomicPattern ap = (AtomicPattern) p.getCondition().eCrossReferences().get(0);
-				logger.info(ap.getNodeBlocks().toString());
-				
-			} else if (c instanceof Implication) {
-				AtomicPattern ap = (AtomicPattern) p.getCondition().eCrossReferences().get(0);
-				logger.info(ap.getNodeBlocks().toString());
-				
-			} else if (c instanceof ConstraintReference) {
-
-				
-			} else {
-				throw new UnsupportedOperationException("Unsuppported Constraint Type");
-			}
-		}
 	}
+	public NeoPattern(AtomicPattern ap, NeoCoreBuilder builder) {
+		nodes = new ArrayList<>();
+		injective = true;
+		this.builder = builder;
+		extractNodesAndRelations(ap);
+	}
+	
 
 	private void extractNodesAndRelations() {
 		for (var n : p.getBody().getNodeBlocks()) {
@@ -87,6 +61,28 @@ public class NeoPattern implements IPattern {
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
 					r.getTarget().getName())));
+			nodes.add(node);
+		}
+	}
+	
+	private void extractNodesAndRelations(AtomicPattern ap) {
+		
+		for(ModelNodeBlock n : ap.getNodeBlocks()) {
+			
+			var node = new NeoNode(n.getType().getName(), n.getName());
+			
+			for(ModelPropertyStatement p : n.getProperties()) {
+				node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
+			}
+			for(ModelRelationStatement r: n.getRelations()) {
+				node.addRelation(new NeoRelation(
+						node, //
+						n.getRelations().indexOf(r), //
+						r.getType().getName(), //
+						r.getProperties(), //
+						r.getTarget().getType().getName(), //
+						r.getTarget().getName()));
+			}
 			nodes.add(node);
 		}
 	}
