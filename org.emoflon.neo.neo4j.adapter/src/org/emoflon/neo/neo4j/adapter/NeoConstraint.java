@@ -62,21 +62,22 @@ public class NeoConstraint implements IConstraint {
 		
 		} else if (c.getBody() instanceof ConstraintBody){
 			
-			for(int i=0; i<c.getBody().getChildren().size(); i++) {
-				
-				if(c.getBody().getChildren().get(i) instanceof ConstraintReference) {
-					var r = (ConstraintReference) c.getBody().getChildren().get(i);
-					logger.info(r.isNegated() + " <-> " + r.getReference().getName());
-					cChilds.add(new NeoConstraint(r.getReference(), builder));
+			for(int j=0; j<c.getBody().getChildren().size(); j++) {
+				for(int i=0; i<c.getBody().getChildren().get(j).getChildren().size(); i++) {
+					
+					if(c.getBody().getChildren().get(j).getChildren().get(i) instanceof ConstraintReference) {
+						var r = (ConstraintReference) c.getBody().getChildren().get(j).getChildren().get(i);
+						logger.info(r.isNegated() + " <-> " + r.getReference().getName());
+						cChilds.add(new NeoConstraint(r.getReference(), builder));
+					}
 				}
-			
 			}	
 			
 		} else {
 			logger.info("Its an Unkown Type!");
 			throw new UnsupportedOperationException(c.getBody().toString());
 		}
-
+		
 	}
 
 	@Override
