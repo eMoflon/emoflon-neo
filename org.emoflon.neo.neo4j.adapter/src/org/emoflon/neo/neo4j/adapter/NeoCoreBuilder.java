@@ -439,7 +439,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(METAMODEL, ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT));
+			var nc = cb.matchNode(List.of(), List.of(METAMODEL));
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
@@ -451,7 +451,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		var newModels = new ArrayList<Model>();
 		newModels.addAll(models);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(MODEL, ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT));
+			var nc = cb.matchNode(List.of(), List.of(MODEL));
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
