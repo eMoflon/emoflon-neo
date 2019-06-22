@@ -29,46 +29,62 @@ public class NeoConstraint implements IConstraint {
 	private Collection<NeoConstraint> cChilds;
 	private Collection<ConstraintReference> refs;
 
-	private Collection<NeoPositiveConstraint> positiveConstraint;
-	private Collection<NeoNegativeConstraint> negativeConstraint;
-	private Collection<NeoImplication> implicationConstraint;
-		
 	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
-		this.positiveConstraint = new ArrayList<NeoPositiveConstraint>();
-		this.negativeConstraint = new ArrayList<NeoNegativeConstraint>();
-		this.implicationConstraint = new ArrayList<NeoImplication>();
 		this.refs = new ArrayList<ConstraintReference>();
 		this.cChilds = new ArrayList<NeoConstraint>();
 		this.builder = builder;
 		this.c = c;
 		
+	}
+
+	@Override
+	public boolean isSatisfied() {
+		
 		if(c.getBody() instanceof PositiveConstraint) {			
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			positiveConstraint.add(new NeoPositiveConstraint(ap,builder));
+			var co = new NeoPositiveConstraint(ap,builder);
+			
+			if(co.isSatisfied())
+				return true;
+			else
+				return false;
 			
 		} else if(c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			negativeConstraint.add(new NeoNegativeConstraint(ap,builder));
+			var co = new NeoNegativeConstraint(ap,builder);
+			
+			if(co.isSatisfied())
+				return true;
+			else
+				return false;
 			
 		} else if(c.getBody() instanceof Implication) {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			implicationConstraint.add(new NeoImplication(apIf,apThen,builder));
+			var co = new NeoImplication(apIf,apThen,builder);
+			
+			if(co.isSatisfied())
+				return true;
+			else
+				return false;
 			
 		} else if(c.getBody() instanceof ConstraintReference) { 
 		
-			logger.info("Its a ContraintReference!");
+			logger.info("Its a ConstraintReference!");
 			throw new UnsupportedOperationException(c.getBody().toString());
 		
 		} else if (c.getBody() instanceof ConstraintBody){
 			
 			for(int j=0; j<c.getBody().getChildren().size(); j++) {
+				
+				ConstraintBody cpr = c.getBody().getChildren().get(j);
+				
 				for(int i=0; i<c.getBody().getChildren().get(j).getChildren().size(); i++) {
-					
+										
 					if(c.getBody().getChildren().get(j).getChildren().get(i) instanceof ConstraintReference) {
 						var r = (ConstraintReference) c.getBody().getChildren().get(j).getChildren().get(i);
 						logger.info(r.isNegated() + " <-> " + r.getReference().getName());
-						cChilds.add(new NeoConstraint(r.getReference(), builder));
+						//cChilds.add(new NeoConstraint(r.getReference(), builder));
 					}
 				}
 			}	
@@ -78,27 +94,7 @@ public class NeoConstraint implements IConstraint {
 			throw new UnsupportedOperationException(c.getBody().toString());
 		}
 		
-	}
-
-	@Override
-	public boolean isSatisfied() {
-		
-		for(NeoPositiveConstraint ap : positiveConstraint) {
-			if(!ap.isSatisfied())
-				return false;
-		}
-		for(NeoNegativeConstraint ap : negativeConstraint) {
-			if(!ap.isSatisfied())
-				return false;
-		}
-		for(NeoImplication ap : implicationConstraint) {
-			if(!ap.isSatisfied())
-				return false;
-		}
-		for(NeoConstraint c : cChilds) {
-			
-		}
-		return true;
+		throw new UnsupportedOperationException();
 	}
 
 }

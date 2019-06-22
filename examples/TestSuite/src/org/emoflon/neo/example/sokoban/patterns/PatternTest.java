@@ -254,7 +254,7 @@ public class PatternTest extends ENeoTest {
 	
 	@Test
 	public void test_constraint_hasNoCorner() {
-		assertTrue(entities.getConstraint_NoCorner().isViolated());
+		assertTrue(entities.getConstraint_NoCorner().isSatisfied());
 	}
 	
 }
