@@ -165,10 +165,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final List<String> eBooleanLabels = List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
 
 	private static final List<NeoProp> eenumProps = List.of(new NeoProp(NAME_PROP, EENUM));
-	private static final List<String> eenumLabels = List.of(EDATA_TYPE, EOBJECT, ECLASSIFIER);
+	private static final List<String> eenumLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eenumLiteralProps = List.of(new NeoProp(NAME_PROP, EENUM_LITERAL));
-	private static final List<String> eenumLiteralLabels = List.of(EDATA_TYPE, EOBJECT, ECLASSIFIER);
+	private static final List<String> eenumLiteralLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eLiteralsProps = List.of(new NeoProp(NAME_PROP, ELITERALS));
 	private static final List<String> eLiteralsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
@@ -301,26 +301,27 @@ public class NeoCoreBuilder implements AutoCloseable {
 			cb.createEdge(EREFERENCE_TYPE, metaType, eobject);
 			cb.createEdge(EREFERENCES, eAttrEle, eAttributes);
 			cb.createEdge(EREFERENCE_TYPE, eAttributes, eattr);
-			cb.createEdge(ESUPER_TYPE, eclass, eAttrEle);
-			cb.createEdge(ESUPER_TYPE, eref, eAttrEle);
-			cb.createEdge(ESUPER_TYPE, eref, eStruct);
-			cb.createEdge(ESUPER_TYPE, eattr, eStruct);
-			cb.createEdge(ESUPER_TYPE, eTypedele, eobject);
-			cb.createEdge(ESUPER_TYPE, eclassifier, eobject);
 			cb.createEdge(EATTRIBUTES, eclass, abstractattr);
 			cb.createEdge(EATTRIBUTE_TYPE, abstractattr, eBoolean);
-			cb.createEdge(ESUPER_TYPE, mmodel, model);
-			cb.createEdge(ESUPER_TYPE, model, eobject);
-			cb.createEdge(ESUPER_TYPE, eAttrEle, eobject);
-			cb.createEdge(ESUPER_TYPE, eDataType, eobject);
-			cb.createEdge(ESUPER_TYPE, eStruct, eobject);
 			cb.createEdge(EREFERENCES, model, conformto);
 			cb.createEdge(EREFERENCE_TYPE, conformto, mmodel);
 			cb.createEdge(EREFERENCES, eobject, eleof);
 			cb.createEdge(EREFERENCE_TYPE, eleof, model);
-			cb.createEdge(ESUPER_TYPE, eenum, eDataType);
 			cb.createEdge(EREFERENCES, eenum, eLiterals);
 			cb.createEdge(EREFERENCE_TYPE, eLiterals, eenumLiteral);
+			cb.createEdge(ESUPER_TYPE, eclass, eAttrEle);
+			cb.createEdge(ESUPER_TYPE, eclass, eclassifier);
+			cb.createEdge(ESUPER_TYPE, eDataType, eclassifier);
+			cb.createEdge(ESUPER_TYPE, eref, eAttrEle);
+			cb.createEdge(ESUPER_TYPE, eref, eStruct);
+			cb.createEdge(ESUPER_TYPE, eattr, eStruct);
+			cb.createEdge(ESUPER_TYPE, eenum, eDataType);
+			cb.createEdge(ESUPER_TYPE, mmodel, model);
+			cb.createEdge(ESUPER_TYPE, eStruct, eTypedele);
+			cb.createEdge(ESUPER_TYPE, eTypedele, eobject);
+			cb.createEdge(ESUPER_TYPE, eclassifier, eobject);
+			cb.createEdge(ESUPER_TYPE, model, eobject);
+			cb.createEdge(ESUPER_TYPE, eAttrEle, eobject);
 		});
 	}
 
