@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
+import org.emoflon.neo.emsl.eMSL.ConstraintBody;
+import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.Implication;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
@@ -27,12 +29,14 @@ public class NeoConstraint implements IConstraint {
 	private Collection<NeoPositiveConstraint> positiveConstraint;
 	private Collection<NeoNegativeConstraint> negativeConstraint;
 	private Collection<NeoImplication> implicationConstraint;
-	List<EObject> ref;
+	private Collection<ConstraintReference> ref;
 		
 	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
 		this.positiveConstraint = new ArrayList<NeoPositiveConstraint>();
 		this.negativeConstraint = new ArrayList<NeoNegativeConstraint>();
 		this.implicationConstraint = new ArrayList<NeoImplication>();
+		this.ref = new ArrayList<ConstraintReference>();
+		
 		this.builder = builder;
 		this.c = c;
 		
@@ -49,11 +53,31 @@ public class NeoConstraint implements IConstraint {
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
 			implicationConstraint.add(new NeoImplication(apIf,apThen,builder));
 			
+		} else if(c.getBody() instanceof ConstraintReference) { 
+		
+			logger.info("Its a ContraintReference!");
+			throw new UnsupportedOperationException(c.getBody().toString());
+		
+		} else if (c.getBody() instanceof ConstraintBody){
+			
+			for(int i=0; i<c.getBody().getChildren().get(0).getChildren().size(); i++) {
+				
+				if(c.getBody().getChildren().get(0).getChildren().get(i) instanceof ConstraintReference) {
+					var r = (ConstraintReference) c.getBody().getChildren().get(0).getChildren().get(i);
+					logger.info(r.isNegated());
+					ref.add(r);
+				}
+				
+			}
+			
+			//logger.debug(c.getBody().toString());
+			//throw new UnsupportedOperationException(c.getBody().toString());
 		} else {
+			logger.info("Its an Unkown Type!");
 			throw new UnsupportedOperationException(c.getBody().toString());
 		}
 		
-		logger.info(c.getBody().toString());
+		//logger.info(c.getBody().toString());
 
 	}
 
