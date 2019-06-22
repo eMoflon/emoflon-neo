@@ -96,8 +96,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final List<String> eobjectLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> erefProps = List.of(new NeoProp(NAME_PROP, EREFERENCE));
-	private static final List<String> erefLabels = List.of(ECLASS, EATTRIBUTED_ELEMENT, ECLASSIFIER,
-			EOBJECT);
+	private static final List<String> erefLabels = List.of(ECLASS, EATTRIBUTED_ELEMENT, ECLASSIFIER, EOBJECT);
 
 	private static final List<NeoProp> eleofProps = List.of(new NeoProp(NAME_PROP, META_EL_OF));
 	private static final List<String> eleofLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
@@ -116,7 +115,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eattrProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE));
-	private static final List<String> eattrLabels = List.of(ECLASS, EOBJECT, EATTRIBUTED_ELEMENT,ECLASSIFIER);
+	private static final List<String> eattrLabels = List.of(ECLASS, EOBJECT, EATTRIBUTED_ELEMENT, ECLASSIFIER);
 
 	private static final List<NeoProp> nameProps = List.of(new NeoProp(NAME_PROP, NAME_PROP));
 	private static final List<String> nameLabels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
@@ -174,7 +173,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final List<NeoProp> eLiteralsProps = List.of(new NeoProp(NAME_PROP, ELITERALS));
 	private static final List<String> eLiteralsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
-
 
 	// Defaults for export
 	private int maxTransactionSizeEdges = 10000;
@@ -560,7 +558,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 			HashMap<Object, NodeCommand> blockToCommand, HashMap<Metamodel, NodeCommand> mmNodes, Metamodel metamodel,
 			NodeCommand mmodel, NodeCommand eobject) {
 
-		var mmNode = cb.createNode(List.of(new NeoProp(URI_PROP, metamodel.getName())), List.of(METAMODEL));
+		var mmNode = cb.createNode(List.of(new NeoProp(URI_PROP, metamodel.getName())),
+				List.of(METAMODEL, MODEL, EOBJECT));
 
 		mmNodes.put(metamodel, mmNode);
 
@@ -586,8 +585,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			HashMap<ModelNodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model,
 			NodeCommand nodeCommandForModel, NodeCommand eobject) {
 
-		var mNode = cb.createNode(List.of(new NeoProp(URI_PROP, model.getName())), List.of(MODEL, ECLASS, ECLASSIFIER,
-				EATTRIBUTED_ELEMENT, EOBJECT));
+		var mNode = cb.createNode(List.of(new NeoProp(URI_PROP, model.getName())), List.of(MODEL, EOBJECT));
 
 		mNodes.put(model, mNode);
 
