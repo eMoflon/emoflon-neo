@@ -154,66 +154,71 @@ public class EMSLFlattener {
 			alreadyRefinedPatternNamesCopy.add(entity.getBody().getName());
 			
 			// recursively flatten superEntities
-			var flattenedSuperEntity = flattenPattern((Pattern) r.getReferencedType().eContainer(), alreadyRefinedPatternNamesCopy).getBody();
-			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
+			if (r.getReferencedType().eContainer() != null) {
+				var flattenedSuperEntity = flattenPattern((Pattern) r.getReferencedType().eContainer(), alreadyRefinedPatternNamesCopy).getBody();
 			
-			if (flattenedSuperEntity instanceof AtomicPattern) {				
-				if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
-					// check if a superEntity possesses a condition block
-					throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION, r.getReferencedType());
-				}
-				else {
-					for (var nb : (flattenedSuperEntity).getNodeBlocks()) {
-						
-						// create new NodeBlock
-						var newNb = copyModelNodeBlock(nb, r);
-						
-						// add nodeBlock to list according to its name
-						if (!nodeBlocks.containsKey(newNb.getName())) {
-							var<ModelNodeBlock> newList = new ArrayList<ModelNodeBlock>();
-							newList.add(newNb);
-							nodeBlocks.put(newNb.getName(), newList);
-						}
-						else {
-							nodeBlocks.get(newNb.getName()).add(newNb);
-						}
-						nodeBlocksOfSuperEntity.add(newNb);
-					}
-				}
+				var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 				
-				// re-set targets of edges
-				for (var nb : nodeBlocksOfSuperEntity) {
-					for (var rel : nb.getRelations()) {
-						boolean targetSet = false;
-						if (targetSet)
-							break;
-						for (var ref : r.getRelabeling()) {
+				if (flattenedSuperEntity instanceof AtomicPattern) {				
+					if (((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
+						// check if a superEntity possesses a condition block
+						throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION, r.getReferencedType());
+					}
+					else {
+						for (var nb : (flattenedSuperEntity).getNodeBlocks()) {
+							
+							// create new NodeBlock
+							var newNb = copyModelNodeBlock(nb, r);
+							
+							// add nodeBlock to list according to its name
+							if (!nodeBlocks.containsKey(newNb.getName())) {
+								var<ModelNodeBlock> newList = new ArrayList<ModelNodeBlock>();
+								newList.add(newNb);
+								nodeBlocks.put(newNb.getName(), newList);
+							}
+							else {
+								nodeBlocks.get(newNb.getName()).add(newNb);
+							}
+							nodeBlocksOfSuperEntity.add(newNb);
+						}
+					}
+					
+					// re-set targets of edges
+					for (var nb : nodeBlocksOfSuperEntity) {
+						for (var rel : nb.getRelations()) {
+							boolean targetSet = false;
 							if (targetSet)
 								break;
-							if ((rel.getTarget() != null && ref.getOldLabel().equals(rel.getTarget().getName()))
-									|| rel.getProxyTarget() != null && ref.getOldLabel().equals(rel.getProxyTarget())) {
-								for (var node : nodeBlocksOfSuperEntity) {
-									if (ref.getNewLabel().equals(node.getName())) {
-										rel.setTarget(node);
-										targetSet = true;
-										break;
+							for (var ref : r.getRelabeling()) {
+								if (targetSet)
+									break;
+								if ((rel.getTarget() != null && ref.getOldLabel().equals(rel.getTarget().getName()))
+										|| rel.getProxyTarget() != null && ref.getOldLabel().equals(rel.getProxyTarget())) {
+									for (var node : nodeBlocksOfSuperEntity) {
+										if (ref.getNewLabel().equals(node.getName())) {
+											rel.setTarget(node);
+											targetSet = true;
+											break;
+										}
 									}
-								}
-							} else {
-								for (var node : nodeBlocksOfSuperEntity) {
-									if (rel.getTarget() != null && rel.getTarget().getName().equals(node.getName()) 
-											|| (rel.getProxyTarget() != null && rel.getProxyTarget().equals(node.getName()))) {
-										rel.setTarget(node);
-										break;
+								} else {
+									for (var node : nodeBlocksOfSuperEntity) {
+										if (rel.getTarget() != null && rel.getTarget().getName().equals(node.getName()) 
+												|| (rel.getProxyTarget() != null && rel.getProxyTarget().equals(node.getName()))) {
+											rel.setTarget(node);
+											break;
+										}
 									}
 								}
 							}
 						}
+				
 					}
-				}
-			} 
-		}
+			
+				} 
 		
+			}
+		}
 		return nodeBlocks;
 	}
 	

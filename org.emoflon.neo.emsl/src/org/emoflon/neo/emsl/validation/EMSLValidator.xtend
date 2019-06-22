@@ -88,7 +88,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 					EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
 					
 			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
-				error("Using Entities that have conditions are not allowed to be refined.", 
+				error("Entities with conditions cannot be refined.", 
 					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 			
 			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {

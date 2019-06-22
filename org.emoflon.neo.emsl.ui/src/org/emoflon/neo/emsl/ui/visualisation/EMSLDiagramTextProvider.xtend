@@ -44,6 +44,8 @@ import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.EMSLFlattener
 import java.util.ArrayList
 import org.emoflon.neo.emsl.util.FlattenerException
+import java.util.HashMap
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -110,7 +112,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			return visualiseOverview(root)
 
 		if (!selectedNodeBlock.isPresent)
-			return visualiseEntity(selectedEntity.get)
+			return visualiseEntity(selectedEntity.get, true)
 
 		visualiseNodeBlock(selectedNodeBlock.get, true)
 	}
@@ -154,19 +156,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					package "Pattern: «entity.body.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
-					«visualiseSuperTypesInPattern(entity)»
 				«ENDIF»
 				«IF entity instanceof Rule»
 					package "Rule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
-					«visualiseSuperTypesInRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleRule»
 					package "TripleRule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
-					«visualiseSuperTypesInTripleRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
 					package "TripleGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
@@ -188,6 +187,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						
 					}
 				«ENDIF»
+				«visualiseSuperTypesInEntity(entity)»
 			«ENDFOR»
 		'''
 	}
@@ -198,7 +198,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Model.
 	 */
-	def dispatch String visualiseEntity(Model entity) {
+	def dispatch String visualiseEntity(Model entity, boolean mainSelection) {
 		'''
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInModel(nb, false)»
@@ -289,7 +289,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Metamodel.
 	 */
-	def dispatch String visualiseEntity(Metamodel entity) {
+	def dispatch String visualiseEntity(Metamodel entity, boolean mainSelection) {
 		'''
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInMetamodel(nb, false)»
@@ -353,7 +353,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for an Enum.
 	 */
-	def dispatch String visualiseEntity(Enum entity) {
+	def dispatch String visualiseEntity(Enum entity, boolean mainSelection) {
 		'''
 			«FOR item : entity.literals»
 				class "«entity.name»"
@@ -378,7 +378,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Pattern.
 	 */
-	def dispatch String visualiseEntity(Pattern entity) {
+	def dispatch String visualiseEntity(Pattern entity, boolean mainSelection) {
 		var entityCopy = entity
 		try {
 			entityCopy = new EMSLFlattener().flattenCopyOfPattern(entity, newArrayList)
@@ -387,12 +387,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		} catch (FlattenerException e) {
 			e.printStackTrace
 		}
-		
-		
 		'''
+			package «entity.body.name»«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : entityCopy.body.nodeBlocks»
 				«visualiseNodeBlockInPattern(nb, false)»
 			«ENDFOR»
+			}
 			«IF entityCopy.condition !== null »
 				legend bottom
 					«getConditionString(entity)»
@@ -454,34 +454,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			'''"«entityName».«nbName»:«nbTypeName»"'''
 		} else
 			'''"?"'''
-	}
-
-	/**
-	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
-	 */
-	def String visualiseSuperTypesInPattern(Pattern entity) {
-		'''
-			«FOR st : entity.body.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"Pattern: «entity.body.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"Pattern: "«entity.body.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"Pattern: «entity.body.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"Pattern: «entity.body.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"Pattern: «entity.body.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
-	
+	}	
 
 	/*-------------------------------------------------*/
 	/*------------------- Rules -----------------------*/
@@ -489,7 +462,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Rule.
 	 */
-	def dispatch String visualiseEntity(Rule entity) {
+	def dispatch String visualiseEntity(Rule entity, boolean mainSelection) {
 		'''
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInRule(nb, false)»
@@ -552,35 +525,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	/**
-	 * Returns the diagram text for all SuperTypes of a Rule with inheritance arrows.
-	 */
-	def String visualiseSuperTypesInRule(Rule entity) {
-		'''
-			«FOR st : entity.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"Rule: «entity.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"Rule: «entity.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"Rule: «entity.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"Rule: «entity.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"Rule: «entity.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
-
-	/**
 	 * Returns the diagram text for a GraphGrammar.
 	 */
-	def dispatch String visualiseEntity(GraphGrammar entity) {
+	def dispatch String visualiseEntity(GraphGrammar entity, boolean mainSelection) {
 		'''
 			«FOR r : entity.rules»
 				class "«entity.name».«r.name»"
@@ -601,7 +548,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Constraint.
 	 */
-	def dispatch String visualiseEntity(Constraint entity) {
+	def dispatch String visualiseEntity(Constraint entity, boolean mainSelection) {
 		'''
 			legend bottom
 				«getConditionString(entity)»
@@ -617,7 +564,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
 		'''
 			«FOR c : conditionPattern»
-				«visualiseEntity((c as AtomicPattern).eContainer as Pattern)»
+				«visualiseEntity((c as AtomicPattern).eContainer as Pattern, false)»
 			«ENDFOR»
 			«IF entity instanceof Rule || entity instanceof Pattern»
 				«FOR nb : entity.nodeBlocks»
@@ -787,7 +734,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a TripleRule.
 	 */
-	def dispatch String visualiseEntity(TripleRule entity) {
+	def dispatch String visualiseEntity(TripleRule entity, boolean mainSelection) {
 		'''
 			together {
 				«FOR snb : entity.srcNodeBlocks»
@@ -853,32 +800,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	/**
-	 * Returns the diagram text for all SuperTypes of a TripleRule with inheritance arrows.
-	 */
-	def String visualiseSuperTypesInTripleRule(TripleRule entity) {
-		'''
-			«FOR st : entity.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"TripleRule: «entity.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"TripleRule: "«entity.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"TripleRule: «entity.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"TripleRule: «entity.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"TripleRule: «entity.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
-
-	/**
 	 * Returns the diagram text for the NACs of a given TripleRule.
 	 */
 	def String visualiseTripleRuleNACs(TripleRule entity) {
@@ -886,7 +807,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			«FOR c : entity.nacs»
 				«IF c.pattern.eContainer !== null»
-					«visualiseEntity(c.pattern.eContainer as Pattern)»
+					«visualiseEntity(c.pattern.eContainer as Pattern, false)»
 				«ENDIF»
 			«ENDFOR»
 			
@@ -899,7 +820,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a TripleGrammar.
 	 */
-	def dispatch String visualiseEntity(TripleGrammar entity) {
+	def dispatch String visualiseEntity(TripleGrammar entity, boolean mainSelection) {
 		'''
 			together Source {
 				«FOR mm : entity.srcMetamodels»
@@ -954,10 +875,106 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		nodeBlocks.addAll(entity.trgNodeBlocks)
 		return nodeBlocks
 	}
+	
+	
+	/*-----------------------------------------*/
+	/*------ Get SuperRefinementTypes ---------*/
+	/*-----------------------------------------*/
+
+	def dispatch getSuperRefinementTypes(Model entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Metamodel entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Pattern entity) {
+		entity.body.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Rule entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(TripleRule entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Constraint entity) {
+		return newArrayList
+	}
+	
+	def dispatch getSuperRefinementTypes(TripleGrammar entity) {
+		return newArrayList
+	}
+	
+	def dispatch getSuperRefinementTypes(GraphGrammar entity) {
+		return newArrayList
+	}
+	
+	/*------------------------------*/
+	/*---------- Get Names ---------*/
+	/*------------------------------*/
+
+	def dispatch getName(Model entity) {
+		entity.name
+	}
+	
+	def dispatch getName(Metamodel entity) {
+		entity.name
+	}
+	
+	def dispatch getName(Pattern entity) {
+		entity.body.name
+	}
+	
+	def dispatch getName(Rule entity) {
+		entity.name
+	}
+	
+	def dispatch getName(TripleRule entity) {
+		entity.name
+	}
+	
+
 
 	/*------------------------------*/
 	/*------------ Misc ------------*/
 	/*------------------------------*/
+	
+	/**
+	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
+	 */
+	def String visualiseSuperTypesInEntity(Entity entity) {
+		var superTypeNames = new HashMap<String, ArrayList<String>>()
+		superTypeNames.put("Pattern", new ArrayList<String>())
+		superTypeNames.put("Rule", new ArrayList<String>())
+		superTypeNames.put("Model", new ArrayList<String>())
+		superTypeNames.put("Metamodel", new ArrayList<String>())
+		superTypeNames.put("TripleRule", new ArrayList<String>())
+		
+		for (st : entity.superRefinementTypes) {
+			if ((st as RefinementCommand).referencedType instanceof AtomicPattern && !superTypeNames.get("Pattern").contains(((st as RefinementCommand).referencedType as AtomicPattern).name))
+				superTypeNames.get("Pattern").add(((st as RefinementCommand).referencedType as AtomicPattern).name)
+			else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name))
+				superTypeNames.get("Rule").add(((st as RefinementCommand).referencedType as Rule).name)
+			else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name))
+				superTypeNames.get("Model").add(((st as RefinementCommand).referencedType as Rule).name)
+			else if ((st as RefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as RefinementCommand).referencedType as Metamodel).name))
+				superTypeNames.get("Metamodel").add(((st as RefinementCommand).referencedType as Metamodel).name)
+			else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name))
+				superTypeNames.get("TripleRule").add(((st as RefinementCommand).referencedType as TripleRule).name)
+		}
+		'''
+			«FOR type : superTypeNames.keySet»
+				«FOR name : superTypeNames.get(type)»
+					"«entity.eClass.name»: «entity.name»"--|>"«type»: «name»"
+				«ENDFOR»
+			«ENDFOR»
+		'''
+	}
+	
 	/**
 	 * Returns the diagram text for a link to the given entity to make it clickable.
 	 */
@@ -1063,6 +1080,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				BackgroundColor GhostWhite
 				BorderColor LightSlateGray
 				Fontcolor LightSlateGray
+				BackgroundColor<<Selection>> PapayaWhip
 			}
 			
 			skinparam object {
