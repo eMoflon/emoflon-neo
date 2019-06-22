@@ -26,17 +26,19 @@ public class NeoConstraint implements IConstraint {
 	private NeoCoreBuilder builder;
 
 	private Constraint c;
+	private Collection<NeoConstraint> cChilds;
+	private Collection<ConstraintReference> refs;
+
 	private Collection<NeoPositiveConstraint> positiveConstraint;
 	private Collection<NeoNegativeConstraint> negativeConstraint;
 	private Collection<NeoImplication> implicationConstraint;
-	private Collection<ConstraintReference> ref;
 		
 	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
 		this.positiveConstraint = new ArrayList<NeoPositiveConstraint>();
 		this.negativeConstraint = new ArrayList<NeoNegativeConstraint>();
 		this.implicationConstraint = new ArrayList<NeoImplication>();
-		this.ref = new ArrayList<ConstraintReference>();
-		
+		this.refs = new ArrayList<ConstraintReference>();
+		this.cChilds = new ArrayList<NeoConstraint>();
 		this.builder = builder;
 		this.c = c;
 		
@@ -60,24 +62,20 @@ public class NeoConstraint implements IConstraint {
 		
 		} else if (c.getBody() instanceof ConstraintBody){
 			
-			for(int i=0; i<c.getBody().getChildren().get(0).getChildren().size(); i++) {
+			for(int i=0; i<c.getBody().getChildren().size(); i++) {
 				
-				if(c.getBody().getChildren().get(0).getChildren().get(i) instanceof ConstraintReference) {
-					var r = (ConstraintReference) c.getBody().getChildren().get(0).getChildren().get(i);
-					logger.info(r.isNegated());
-					ref.add(r);
+				if(c.getBody().getChildren().get(i) instanceof ConstraintReference) {
+					var r = (ConstraintReference) c.getBody().getChildren().get(i);
+					logger.info(r.isNegated() + " <-> " + r.getReference().getName());
+					cChilds.add(new NeoConstraint(r.getReference(), builder));
 				}
-				
-			}
 			
-			//logger.debug(c.getBody().toString());
-			//throw new UnsupportedOperationException(c.getBody().toString());
+			}	
+			
 		} else {
 			logger.info("Its an Unkown Type!");
 			throw new UnsupportedOperationException(c.getBody().toString());
 		}
-		
-		//logger.info(c.getBody().toString());
 
 	}
 
@@ -95,6 +93,9 @@ public class NeoConstraint implements IConstraint {
 		for(NeoImplication ap : implicationConstraint) {
 			if(!ap.isSatisfied())
 				return false;
+		}
+		for(NeoConstraint c : cChilds) {
+			
 		}
 		return true;
 	}
