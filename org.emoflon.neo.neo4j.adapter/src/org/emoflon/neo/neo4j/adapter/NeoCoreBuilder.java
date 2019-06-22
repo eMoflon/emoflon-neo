@@ -50,7 +50,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String EDATA_TYPE = "EDataType";
 	private static final String ESTRUCTURAL_FEATURE = "EStructuralFeature";
 	private static final String ETYPED_ELEMENT = "ETypedElement";
-	private static final String EATTRIBUTED_ELEMENTS = "EAttributedElement";
+	private static final String EATTRIBUTED_ELEMENT = "EAttributedElement";
 	private static final String METAMODEL = "MetaModel";
 	private static final String MODEL = "Model";
 	private static final String EOBJECT = "EObject";
@@ -81,51 +81,51 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	// Lists of properties and labels for meta types
 	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(URI_PROP, ORG_EMOFLON_NEO_CORE));
-	private static final List<String> neoCoreLabels = List.of(METAMODEL);
+	private static final List<String> neoCoreLabels = List.of(METAMODEL, MODEL, EOBJECT);
 
 	private static final List<NeoProp> eclassProps = List.of(new NeoProp(NAME_PROP, ECLASS));
-	private static final List<String> eclassLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENTS);
+	private static final List<String> eclassLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
 
 	private static final List<NeoProp> mmodelProps = List.of(new NeoProp(NAME_PROP, METAMODEL));
-	private static final List<String> mmodelLabels = List.of(ECLASS, EOBJECT);
+	private static final List<String> mmodelLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> modelProps = List.of(new NeoProp(NAME_PROP, MODEL));
-	private static final List<String> modelLabels = List.of(ECLASS, EOBJECT);
+	private static final List<String> modelLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eobjectProps = List.of(new NeoProp(NAME_PROP, EOBJECT));
-	private static final List<String> eobjectLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENTS);
+	private static final List<String> eobjectLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> erefProps = List.of(new NeoProp(NAME_PROP, EREFERENCE));
-	private static final List<String> erefLabels = List.of(ECLASS, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
+	private static final List<String> erefLabels = List.of(ECLASS, EATTRIBUTED_ELEMENT, ECLASSIFIER,
+			EOBJECT);
 
 	private static final List<NeoProp> eleofProps = List.of(new NeoProp(NAME_PROP, META_EL_OF));
-	private static final List<String> eleofLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> eleofLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> conformtoProps = List.of(new NeoProp(NAME_PROP, CONFORMS_TO_PROP));
-	private static final List<String> conformtoLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> conformtoLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> erefsProps = List.of(new NeoProp(NAME_PROP, EREFERENCES));
-	private static final List<String> erefsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> erefsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eRefTypeProps = List.of(new NeoProp(NAME_PROP, EREFERENCE_TYPE));
-	private static final List<String> eRefTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> eRefTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eattrProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE));
-	private static final List<String> eattrLabels = List.of(ECLASS, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
+	private static final List<String> eattrLabels = List.of(ECLASS, EOBJECT, EATTRIBUTED_ELEMENT,ECLASSIFIER);
 
 	private static final List<NeoProp> nameProps = List.of(new NeoProp(NAME_PROP, NAME_PROP));
 	private static final List<String> nameLabels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
 
 	private static final List<NeoProp> eDataTypeProps = List.of(new NeoProp(NAME_PROP, EDATA_TYPE));
-	private static final List<String> eDataTypeLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENTS);
+	private static final List<String> eDataTypeLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
 
-	private static final List<NeoProp> eAttrEleProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTED_ELEMENTS));
-	private static final List<String> eAttrEleLabels = List.of(ECLASS, EOBJECT);
+	private static final List<NeoProp> eAttrEleProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTED_ELEMENT));
+	private static final List<String> eAttrEleLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
 
 	private static final List<NeoProp> eStringProps = List.of(new NeoProp(NAME_PROP, ESTRING));
 	private static final List<String> eStringLabels = List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
@@ -134,29 +134,29 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final List<String> eintLabels = List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
 
 	private static final List<NeoProp> eAttrTypeProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE_TYPE));
-	private static final List<String> eAttrTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> eAttrTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eSupTypeProps = List.of(new NeoProp(NAME_PROP, ESUPER_TYPE));
-	private static final List<String> eSupTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> eSupTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eclassifierProps = List.of(new NeoProp(NAME_PROP, ECLASSIFIER));
-	private static final List<String> eclassifierLabels = List.of(ECLASS, EOBJECT);
+	private static final List<String> eclassifierLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
 
 	private static final List<NeoProp> eTypedeleProps = List.of(new NeoProp(NAME_PROP, ETYPED_ELEMENT));
-	private static final List<String> eTypedeleLabels = List.of(ECLASS, EOBJECT);
+	private static final List<String> eTypedeleLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
 
 	private static final List<NeoProp> metaTypeProps = List.of(new NeoProp(NAME_PROP, META_TYPE));
-	private static final List<String> metaTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> metaTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eAttributesProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTES));
-	private static final List<String> eAttributesLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> eAttributesLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eStructProps = List.of(new NeoProp(NAME_PROP, ESTRUCTURAL_FEATURE));
-	private static final List<String> eStructLabels = List.of(ECLASS, ETYPED_ELEMENT);
+	private static final List<String> eStructLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> abstractattrProps = List.of(new NeoProp(NAME_PROP, ABSTRACT_PROP));
 	private static final List<String> abstractattrLabels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE,
@@ -166,14 +166,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final List<String> eBooleanLabels = List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
 
 	private static final List<NeoProp> eenumProps = List.of(new NeoProp(NAME_PROP, EENUM));
-	private static final List<String> eenumLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENTS);
+	private static final List<String> eenumLabels = List.of(EDATA_TYPE, EOBJECT, ECLASSIFIER);
 
 	private static final List<NeoProp> eenumLiteralProps = List.of(new NeoProp(NAME_PROP, EENUM_LITERAL));
-	private static final List<String> eenumLiteralLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENTS);
+	private static final List<String> eenumLiteralLabels = List.of(EDATA_TYPE, EOBJECT, ECLASSIFIER);
 
 	private static final List<NeoProp> eLiteralsProps = List.of(new NeoProp(NAME_PROP, ELITERALS));
-	private static final List<String> eLiteralsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE,
+	private static final List<String> eLiteralsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
+
 
 	// Defaults for export
 	private int maxTransactionSizeEdges = 10000;
@@ -421,14 +422,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 		metamodel.getEnums().forEach(eenumNode -> {
 			var eenumCommand = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, eenumNode.getName())), //
-					List.of(EENUM, EDATA_TYPE, EOBJECT), eenum, mmNode);
+					List.of(EENUM, EDATA_TYPE, EOBJECT, ECLASSIFIER), eenum, mmNode);
 
 			blockToCommand.put(eenumNode, eenumCommand);
 
 			for (EnumLiteral literal : eenumNode.getLiterals()) {
 				var literalCommand = cb.createNodeWithContAndType(//
 						List.of(new NeoProp(NAME_PROP, literal.getName())), //
-						List.of(EENUM_LITERAL, EOBJECT), eenumLiteral, mmNode);
+						List.of(EENUM_LITERAL, EOBJECT, EDATA_TYPE, ECLASSIFIER), eenumLiteral, mmNode);
 
 				cb.createEdge(ELITERALS, eenumCommand, literalCommand);
 			}
@@ -439,7 +440,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(METAMODEL));
+			var nc = cb.matchNode(List.of(), List.of(METAMODEL, ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT));
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
@@ -451,7 +452,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		var newModels = new ArrayList<Model>();
 		newModels.addAll(models);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(MODEL));
+			var nc = cb.matchNode(List.of(), List.of(MODEL, ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT));
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
@@ -509,7 +510,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		for (var rs : nb.getRelations()) {
 			var ref = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, rs.getName())), //
-					List.of(EREFERENCE, EOBJECT, EATTRIBUTED_ELEMENTS, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT), eref,
+					List.of(EREFERENCE, EOBJECT, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT), eref,
 					mmNode);
 
 			var refOwner = blockToCommand.get(nb);
@@ -571,7 +572,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			var nbNode = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, nb.getName()), //
 							new NeoProp(ABSTRACT_PROP, nb.isAbstract())),
-					List.of(ECLASS, EOBJECT), eclass, mmNode);
+					eclassLabels, eclass, mmNode);
 
 			if (nb.getSuperTypes().isEmpty()) {
 				cb.createEdge(ESUPER_TYPE, nbNode, eobject);
@@ -585,7 +586,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 			HashMap<ModelNodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model,
 			NodeCommand nodeCommandForModel, NodeCommand eobject) {
 
-		var mNode = cb.createNode(List.of(new NeoProp(URI_PROP, model.getName())), List.of(MODEL));
+		var mNode = cb.createNode(List.of(new NeoProp(URI_PROP, model.getName())), List.of(MODEL, ECLASS, ECLASSIFIER,
+				EATTRIBUTED_ELEMENT, EOBJECT));
 
 		mNodes.put(model, mNode);
 
@@ -596,7 +598,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 			var typeOfNode = cb.matchNodeWithContainer(//
 					List.of(new NeoProp(NAME_PROP, nb.getType().getName())), //
-					List.of(ECLASS), mmNode);
+					List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT), mmNode);
 
 			cb.createEdge(CONFORMS_TO_PROP, mNode, mmNode);
 			cb.createEdge(META_TYPE, mNode, nodeCommandForModel);
