@@ -14,10 +14,6 @@ tripleGrammar SokobanImportExport {
 	
 		sokobanExchangeFormat.Board <-BoardToBoard-> SokobanLanguage.Board
 	}
-	
-	attributeConditions {
-		
-	}
 }
 
 
