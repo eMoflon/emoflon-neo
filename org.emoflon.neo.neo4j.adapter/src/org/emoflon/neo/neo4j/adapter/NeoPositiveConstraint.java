@@ -47,7 +47,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	@Override
 	public IMatch getMatch() {
 		
-		logger.info("Searching matches for Pattern: " + ap.getName());
+		logger.info("Check constraint: ENFORCE " + ap.getName());
 		
 		var cypherQuery = CypherPatternBuilder.readQuery(p.getNodes(), true);
 		logger.debug(cypherQuery);
@@ -57,9 +57,11 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		while (result.hasNext()) {
 			var record = result.next();
 			logger.info("Found match(es).");
+			logger.info("Constraint: ENFORCE " + ap.getName() + " is complied!");
 			return new NeoMatch(p, record);
 		}
 		logger.info("Not matches found.");
+		logger.info("Constraint: ENFORCE " + ap.getName() + " is NOT complied!");
 		return null;
 		
 	}

@@ -5,16 +5,20 @@ import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 pattern oneSokoban {
 	sokoban : Sokoban
 }
+pattern twoSokoban {
+	sok1: Sokoban
+	sok2: Sokoban
+}
 
 pattern oneSokobanSelectedFigureRequired {
 	sokoban : Sokoban
 } when enforce selectedFigureRequired
 
-pattern noSokoban {} when forbid oneSokoban
+constraint noSokoban = forbid oneSokoban
+constraint oneSokobans = enforce oneSokoban
+constraint twoSokobans = forbid twoSokoban
 
-constraint noSokobanAllowed = enforce oneSokoban
-
-pattern noSokoban when forbid oneSokoban
+constraint hasOneSokoban = oneSokobans && twoSokobans
 
 pattern sokobanMustBeSelectedFigure {
 	sokoban:Sokoban
@@ -29,10 +33,9 @@ pattern selectedFigureRequired {
 	sokoban:Sokoban
 }
 
-pattern twoSokoban {
-	sok1: Sokoban
-	sok2: Sokoban
-}
+
+
+
 
 pattern oneBlock {
 	block : Block
@@ -232,17 +235,17 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 
 } when noCorner
 
-constraint forbidLeftSide = forbid hasLeft
-constraint forbidTopSide = forbid hasTop
-constraint forbidRightSide = forbid hasRight
-constraint forbidBottomSide = forbid hasBottom
+constraint forbidLeftSide = enforce hasLeft
+constraint forbidTopSide = enforce hasTop
+constraint forbidRightSide = enforce hasRight
+constraint forbidBottomSide = enforce hasBottom
 
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide
 constraint bottomLeftCorner = forbidLeftSide && forbidBottomSide
 constraint bottomRightCorner = forbidRightSide && forbidBottomSide
 
-constraint noCorner = topLeftCorner || topRightCorner || bottomLeftCorner || bottomRightCorner
+constraint noCorner = topLeftCorner || topRightCorner && bottomLeftCorner && bottomRightCorner
 
 pattern hasLeft {
 	field: Field

@@ -56,7 +56,7 @@ public class NeoImplication implements IPositiveConstraint {
 	@Override
 	public IMatch getMatch() {
 		
-		logger.info("Searching matches for Pattern: " + name);
+		logger.info("Check constraint: " + name);
 		
 		var cypherQuery = CypherPatternBuilder.readQuery(pIf.getNodes(), pThen.getNodes(), true);
 		logger.debug(cypherQuery);
@@ -73,6 +73,7 @@ public class NeoImplication implements IPositiveConstraint {
 				if (recMap.containsKey(n.getVarName())) {
 					if(recMap.get(n.getVarName()) == null) {
 						logger.info("Invalid match found");
+						logger.info("Constraint: " + name + " is NOT complied!");
 						return null;						
 					}
 				}
@@ -80,6 +81,7 @@ public class NeoImplication implements IPositiveConstraint {
 					if (recMap.containsKey(r.getVarName())) {
 						if(recMap.get(r.getVarName()) == null) {
 							logger.info("Invalid match found");
+							logger.info("Constraint: " + name + " is NOT complied!");
 							return null;						
 						}
 					}
@@ -88,6 +90,7 @@ public class NeoImplication implements IPositiveConstraint {
 		}
 		
 		logger.info("No invalid matches found.");
+		logger.info("Constraint: " + name + " is complied!");
 		return matches.get(0);
 		
 	}
