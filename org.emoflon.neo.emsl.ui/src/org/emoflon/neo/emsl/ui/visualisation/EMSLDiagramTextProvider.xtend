@@ -47,6 +47,7 @@ import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.FlattenerException
 import java.util.HashMap
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -380,27 +381,26 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Pattern.
 	 */
 	def dispatch String visualiseEntity(Pattern entity, boolean mainSelection) {
-		var entityCopy = entity
 		try {
-			entityCopy = new EMSLFlattener().flattenCopyOfPattern(entity, newArrayList)
+			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
+			'''
+				package «(entityCopy as Pattern).body.name»«IF mainSelection» <<Selection>> «ENDIF»{
+				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
+					«visualiseNodeBlockInPattern(nb, false)»
+				«ENDFOR»
+				}
+				«IF (entityCopy as Pattern).condition !== null »
+					legend bottom
+						«getConditionString(entity)»
+					endlegend
+					«visualiseCondition(entity)»
+				«ENDIF»
+			'''
 		} catch (AssertionError e) {
 			
 		} catch (FlattenerException e) {
-			e.printStackTrace
+			
 		}
-		'''
-			package «entity.body.name»«IF mainSelection» <<Selection>> «ENDIF»{
-			«FOR nb : entityCopy.body.nodeBlocks»
-				«visualiseNodeBlockInPattern(nb, false)»
-			«ENDFOR»
-			}
-			«IF entityCopy.condition !== null »
-				legend bottom
-					«getConditionString(entity)»
-				endlegend
-				«visualiseCondition(entity)»
-			«ENDIF»
-		'''
 	}
 
 	/**
@@ -408,7 +408,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInPattern(ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		for (n : (new EMSLFlattener().flattenCopyOfPattern(nodeBlock.eContainer.eContainer as Pattern, new ArrayList<String>())).body.nodeBlocks) {
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer.eContainer as Entity, new ArrayList<String>()))))) {
 			if (nodeBlock.name.equals(n.name))
 				node = n
 		}
@@ -464,17 +464,25 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Rule.
 	 */
 	def dispatch String visualiseEntity(Rule entity, boolean mainSelection) {
+		try {
+			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
 		'''
-			«FOR nb : entity.nodeBlocks»
+			package «(entityCopy as Rule).name»«IF mainSelection» <<Selection>> «ENDIF»{
+			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
 				«visualiseNodeBlockInRule(nb, false)»
 			«ENDFOR»
-			«IF entity.condition !== null»
+			}
+			«IF (entityCopy as Rule).condition !== null»
 				legend bottom
-					«getConditionString(entity)»
+					«getConditionString(entityCopy)»
 				endlegend
-				«visualiseCondition(entity)»
+				«visualiseCondition(entityCopy)»
 			«ENDIF»
 		'''
+		} catch (FlattenerException e) {
+			e.printStackTrace
+			return ""
+		}
 	}
 
 	/**
@@ -563,14 +571,18 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseCondition(Entity entity) {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
+		var copiesOfConditionPatterns = newArrayList
+		for (p : conditionPattern) {
+			copiesOfConditionPatterns.add(new EMSLFlattener().flattenCopyOfEntity(p.eContainer as Pattern, new ArrayList<String>()))
+		}
 		'''
-			«FOR c : conditionPattern»
-				«visualiseEntity((c as AtomicPattern).eContainer as Pattern, false)»
+			«FOR c : copiesOfConditionPatterns»
+				«visualiseEntity(c as Pattern, false)»
 			«ENDFOR»
 			«IF entity instanceof Rule || entity instanceof Pattern»
 				«FOR nb : entity.nodeBlocks»
-					«FOR p : conditionPattern»
-						«FOR otherNB : (p as AtomicPattern).nodeBlocks»
+					«FOR p : copiesOfConditionPatterns»
+						«FOR otherNB : (p as Pattern).body.nodeBlocks»
 							«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
 						«ENDFOR»
 					«ENDFOR»

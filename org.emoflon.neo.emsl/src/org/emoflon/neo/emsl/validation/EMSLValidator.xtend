@@ -25,6 +25,9 @@ import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.DataType
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
+import org.emoflon.neo.emsl.eMSL.Entity
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.eMSL.Rule
 
 /**
  * This class contains custom validation rules. 
@@ -55,7 +58,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}
 			}
-		}	
+		}
 	}
 		
 	def isOfCorrectType(AttributeExpression attrExpr, DataType type) {
@@ -67,44 +70,66 @@ class EMSLValidator extends AbstractEMSLValidator {
 	}
 	
 	@Check(NORMAL)
-	def checkFlattening(AtomicPattern pattern) {
+	def checkFlattening(Entity entity) {
 		try {
-			new EMSLFlattener().flattenCopyOfPattern(pattern.eContainer as Pattern, new ArrayList);
+			if (entity instanceof Pattern) {
+				new EMSLFlattener().flattenCopyOfEntity(entity as Pattern, new ArrayList);
+			} else if (entity instanceof Rule) {
+				new EMSLFlattener().flattenCopyOfEntity(entity as Entity, new ArrayList);
+			}
 		} catch (FlattenerException e) {
-			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
-				error("You have created an infinite loop in your refinements. The pattern \"" + 
-					(e.entity as Pattern).body.name + "\" appears at least twice.", 
-					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
-			
-			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-				error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.",  
-					EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+			if (entity instanceof Pattern) {
+				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
+					error("You have created an infinite loop in your refinements. The pattern \"" + 
+						new EntityAttributeDispatcher().getName(entity) + "\" appears at least twice.", 
+						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 				
-			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
+				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
+					error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.",  
+						EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+					
+				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
+					error("Entities with conditions cannot be refined.", 
+						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+				
+				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
+					error("The value of " + e.property2.type.name + " does not match with your other refinements",
+						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+				}
+			} else if (entity instanceof Rule) {
+				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
+					error("You have created an infinite loop in your refinements. The pattern \"" + 
+						new EntityAttributeDispatcher().getName(entity) + "\" appears at least twice.", 
+						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
+				
+				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
+					error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.",  
+						EMSLPackage.Literals.RULE__NAME)
+					
+				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
+					error("Entities with conditions cannot be refined.", 
+						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
+				
+				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
+					error("The value of " + e.property2.type.name + " does not match with your other refinements",
+						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
+				}
+			}
+			if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
 				error("The types of the properties you are trying to refine are not compatible. The types " + 
 					(e.property1 as ModelPropertyStatement).type.name + " and " + 
 					(e.property2 as ModelPropertyStatement).type.name + " must be the same.", 
 					e.property2, 
-					EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
-					
-			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
-				error("Entities with conditions cannot be refined.", 
-					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
-			
-			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
-				error("The value of " + e.property2.type.name + " does not match with your other refinements",
-					EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+					EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)			
 			} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_PROXY) {
-				for (nb : pattern.nodeBlocks) {
+				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 					if (nb.name.equals((e.relation.eContainer as ModelNodeBlock).name)) {
 						error("A proxy target you defined could not be resolved.",
 							nb,
 							EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME
 						)
 					}
-				}
-				
-				
+				}	
 			}
 		}
 	}
