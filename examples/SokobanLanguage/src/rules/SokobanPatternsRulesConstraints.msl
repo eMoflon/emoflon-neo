@@ -12,9 +12,13 @@ pattern oneSokobanSelectedFigureRequired {
 
 pattern noSokoban {} when forbid oneSokoban
 
+constraint noSokobanAllowed = enforce oneSokoban
+
+pattern noSokoban when forbid oneSokoban
+
 pattern sokobanMustBeSelectedFigure {
-	sokoban: Sokoban
-} when sokobanIsSelectedFigure
+	sokoban:Sokoban
+} 
 
 constraint sokobanIsSelectedFigure = if oneSokoban then selectedFigureRequired
 
@@ -61,14 +65,15 @@ pattern anOccupiedSokobanField {
 		-field-> field
 	}
 }
-pattern anOccupiedBlockField {
-	
+
+pattern anOccupiedBlockField {	
 	field : Field
 	
 	fig : Block	{
 		-field-> field
 	}
 }
+
 pattern anOccupiedBoulderField {
 	
 	field : Field
@@ -79,10 +84,7 @@ pattern anOccupiedBoulderField {
 }
 
 pattern byBlockAndBoulderOccupiedFields -> anOccupiedBlockField, 
-	anOccupiedBoulderField [field -> otherField,fig -> otherFig] {
-
-}
-
+	anOccupiedBoulderField [field -> otherField,fig -> otherFig]
 
 pattern allFieldsInARow {
 	b : SokobanLanguage.Board {

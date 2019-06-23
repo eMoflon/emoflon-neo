@@ -78,17 +78,36 @@ pattern pacManAndGhostOnNeighbouringFields -> pacManAndGhostOnFields {
 		-bottom-> f10
 	}
 	
-	f10 : Field {
-		
-	}
+	f10 : Field
 }
 
 pattern twoPacManOnBoard -> 
 	pacManAndGhostOnFields, 
 	pacManOnField [fig -> p2, field -> f01]
 
-
-
+rule collectMarble {
+	pacMan:PacMan {
+		-- -standsOn->from
+		++ -standsOn->to
+	}
+	
+	-- marble:Marble {
+		-- -liesOn->to
+	}
+	
+	from:Field {
+		-right->to
+	}
+	
+	to:Field
+	
+	attributeConditions {
+		add(summand : `pacMan::marbles,
+			summand : 1, 
+			sum 	: pacMan::marbles´
+		)
+	}
+}
 
 
 

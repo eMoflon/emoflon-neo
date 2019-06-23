@@ -47,3 +47,6 @@ examples/Organigram/src-gen/org/emoflon/neo/api/API_Emsl_Organigram\.java
 examples/PacMan/src-gen/org/emoflon/neo/api/API_Common\.java
 
 examples/PacMan/src-gen/org/emoflon/neo/api/API_Emsl_PacMan\.java
+examples/PacMan/src-gen/org/emoflon/neo/api/API_Src_PacMan.java
+examples/NetworkTopology/src-gen/org/emoflon/neo/api/API_Common.java
+examples/NetworkTopology/src-gen/org/emoflon/neo/api/API_Src_NetworkTopology.java

@@ -1,16 +1,20 @@
 package org.emoflon.neo.emsl.ui.util
 
-import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.eMSL.ConstraintBody
-import org.emoflon.neo.emsl.eMSL.NegativeConstraint
-import org.emoflon.neo.emsl.eMSL.PositiveConstraint
-import org.emoflon.neo.emsl.eMSL.Implication
-import org.emoflon.neo.emsl.eMSL.ConstraintReference
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.Entity
-import org.emoflon.neo.emsl.eMSL.Rule
-import org.emoflon.neo.emsl.eMSL.Constraint
 import java.util.ArrayList
+import java.util.List
+import org.emoflon.neo.emsl.eMSL.AndBody
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.ConstraintBody
+import org.emoflon.neo.emsl.eMSL.ConstraintReference
+import org.emoflon.neo.emsl.eMSL.Entity
+import org.emoflon.neo.emsl.eMSL.Implication
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint
+import org.emoflon.neo.emsl.eMSL.OrBody
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint
+import org.emoflon.neo.emsl.eMSL.Primary
+import org.emoflon.neo.emsl.eMSL.Rule
 
 class ConstraintTraversalHelper {
 
@@ -58,6 +62,18 @@ class ConstraintTraversalHelper {
 					getOrBodyString(c)		
 			}
 		}
+	}
+	
+	def dispatch static List<? extends ConstraintBody> getChildren(AndBody body){
+		return body.children
+	}
+	
+	def dispatch static List<? extends ConstraintBody> getChildren(OrBody body){
+		return body.children
+	}
+	
+	def dispatch static List<? extends ConstraintBody> getChildren(Primary body){
+		return body.children
 	}
 	
 	def void getOrBodyString(ConstraintBody constraintBody) {

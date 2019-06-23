@@ -5,14 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import org.emoflon.neo.api.API_Emsl_SheRememberedCaterpillars;
+import org.emoflon.neo.api.API_Src_SheRememberedCaterpillars;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PatternTest extends ENeoTest {
-	private API_Emsl_SheRememberedCaterpillars entities = new API_Emsl_SheRememberedCaterpillars(builder);
+	private API_Src_SheRememberedCaterpillars entities = new API_Src_SheRememberedCaterpillars(builder);
 	
 	@BeforeEach
 	public void initDB() {

@@ -1,5 +1,7 @@
 package org.emoflon.neo.emsl.ui.visualisation
 
+import java.util.ArrayList
+import java.util.List
 import java.util.Optional
 import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider
 import org.eclipse.jface.text.TextSelection
@@ -8,6 +10,7 @@ import org.eclipse.ui.IEditorPart
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.ui.editor.XtextEditor
+import org.emoflon.neo.emsl.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
@@ -41,8 +44,6 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
-import org.emoflon.neo.emsl.EMSLFlattener
-import java.util.ArrayList
 import org.emoflon.neo.emsl.util.FlattenerException
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
@@ -516,7 +517,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «attr.type.name» = «attr.value»
+				«labelForRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -709,6 +710,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			}
 		}
 		return text
+	}
+	
+	def List<? extends ConstraintBody> getChildren(ConstraintBody body){
+		return ConstraintTraversalHelper.getChildren(body)
 	}
 
 	/**
