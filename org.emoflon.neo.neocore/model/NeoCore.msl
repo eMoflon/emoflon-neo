@@ -1,9 +1,36 @@
 metamodel org.emoflon.neo.NeoCore {
-	EClass : EClass {
+	EClass : EClassifier, EAttributedElements {
 		.name : EString
+		-eReferences(0..*)-> EReference 		
 	}
 	
-	EReference : EClass {
-	
+	EReference : EStructuralFeature, EAttributedElements {
+		-eReferenceType(1..1)-> EClass
 	}
-}
+	
+	EAttributedElements : EClass {
+		-eAttributes(0..*)-> EAttribute
+	}
+	
+	EAttribute : EStructuralFeature {
+		-eAttributeType(1..1)-> EDataType
+	}
+
+	EDataType : EClassifier
+
+	EStructuralFeature : ETypedElement
+
+	ETypedElement : EObject
+
+	EClassifier : EObject
+
+	EObject {
+		-elementOf(1..1)-> Model
+	}
+	
+	Model : EObject {
+		-conformsTo(1..1)-> MetaModel 
+	}
+	
+	MetaModel : Model
+} 

@@ -161,14 +161,16 @@ ConstraintReference:
 Constraint:
 	'constraint' name=QualifiedName '=' body=(AtomicConstraint | OrBody);
 
-OrBody returns ConstraintBody:
+OrBody:
 	children+=AndBody ('||' children+=AndBody)*;
 
-AndBody returns ConstraintBody:
+AndBody:
 	children+=Primary ('&&' children+=Primary)*;
 
-Primary returns ConstraintBody:
+Primary:
 	ConstraintReference | '(' OrBody ')';
+
+ConstraintBody: OrBody | AndBody | Primary;
 
 /*-------------------------------------------------*/
 /*------------------- Rules -----------------------*/
