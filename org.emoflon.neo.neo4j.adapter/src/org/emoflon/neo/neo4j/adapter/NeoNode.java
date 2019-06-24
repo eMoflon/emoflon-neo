@@ -34,7 +34,7 @@ public class NeoNode {
 	public Collection<NeoRelation> getRelations() {
 		return relations;
 	}
-	
+
 	public Collection<NeoRelation> getConditions() {
 		return conditions;
 	}
@@ -46,6 +46,7 @@ public class NeoNode {
 	public void addRelation(NeoRelation rel) {
 		this.relations.add(rel);
 	}
+
 	public void addCondition(NeoRelation rel) {
 		this.conditions.add(rel);
 	}

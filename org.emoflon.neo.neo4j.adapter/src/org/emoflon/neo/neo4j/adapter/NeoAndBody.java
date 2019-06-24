@@ -25,13 +25,13 @@ public class NeoAndBody {
 			if (b instanceof ConstraintReference) {
 				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
 
-				if(((ConstraintReference) b).isNegated()) {
+				if (((ConstraintReference) b).isNegated()) {
 					logger.info("Attention: Constraint is negated!");
 				}
-				
-				if ((!consRef.isSatisfied() && !((ConstraintReference) b).isNegated()) ||
-						consRef.isSatisfied() && ((ConstraintReference) b).isNegated()) {
-					
+
+				if ((!consRef.isSatisfied() && !((ConstraintReference) b).isNegated())
+						|| consRef.isSatisfied() && ((ConstraintReference) b).isNegated()) {
+
 					return false;
 				}
 

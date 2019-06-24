@@ -24,12 +24,12 @@ public class NeoPattern implements IPattern {
 	private boolean injective;
 
 	private List<NeoNode> nodes;
-	
+
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.builder = builder;
-		
+
 		try {
 			this.p = new EMSLFlattener().flattenCopyOfPattern(p, new ArrayList<String>());
 		} catch (FlattenerException e) {
@@ -38,15 +38,15 @@ public class NeoPattern implements IPattern {
 		}
 
 		extractNodesAndRelations();
-		
+
 	}
+
 	public NeoPattern(AtomicPattern ap, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.builder = builder;
 		extractNodesAndRelations(ap);
 	}
-	
 
 	private void extractNodesAndRelations() {
 		for (var n : p.getBody().getNodeBlocks()) {
@@ -64,19 +64,18 @@ public class NeoPattern implements IPattern {
 			nodes.add(node);
 		}
 	}
-	
+
 	private void extractNodesAndRelations(AtomicPattern ap) {
-		
-		for(ModelNodeBlock n : ap.getNodeBlocks()) {
-			
+
+		for (ModelNodeBlock n : ap.getNodeBlocks()) {
+
 			var node = new NeoNode(n.getType().getName(), n.getName());
-			
-			for(ModelPropertyStatement p : n.getProperties()) {
+
+			for (ModelPropertyStatement p : n.getProperties()) {
 				node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
 			}
-			for(ModelRelationStatement r: n.getRelations()) {
-				node.addRelation(new NeoRelation(
-						node, //
+			for (ModelRelationStatement r : n.getRelations()) {
+				node.addRelation(new NeoRelation(node, //
 						n.getRelations().indexOf(r), //
 						r.getType().getName(), //
 						r.getProperties(), //
@@ -124,15 +123,6 @@ public class NeoPattern implements IPattern {
 		StatementResult result = builder.executeQuery(cypherQuery);
 		return result.hasNext();
 	}
-	/*
-	public boolean isStillValid(Collection<NeoMatch> m) {
-		logger.info("Check if match for " + getName() + " is still valid");
-		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
-		logger.debug(cypherQuery);
-		StatementResult result = builder.executeQuery(cypherQuery);
-		return result.hasNext();
-	}
-	*/
 
 	@Override
 	public void setMatchInjectively(Boolean injective) {
