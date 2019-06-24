@@ -245,7 +245,7 @@ constraint topRightCorner = forbidRightSide && forbidTopSide
 constraint bottomLeftCorner = forbidLeftSide && forbidBottomSide
 constraint bottomRightCorner = forbidRightSide && forbidBottomSide
 
-constraint noCorner = topLeftCorner || topRightCorner && bottomLeftCorner && bottomRightCorner
+constraint noCorner = (topLeftCorner || topRightCorner) && bottomLeftCorner && bottomRightCorner
 
 pattern hasLeft {
 	field: Field

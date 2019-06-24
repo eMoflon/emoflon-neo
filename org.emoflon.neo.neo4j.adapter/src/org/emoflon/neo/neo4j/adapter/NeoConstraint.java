@@ -25,105 +25,56 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 public class NeoConstraint implements IConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-
 	private NeoCoreBuilder builder;
-
 	private Constraint c;
 
 	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
 		this.builder = builder;
 		this.c = c;
-		
+
 	}
 
 	@Override
 	public boolean isSatisfied() {
-		
+
 		logger.info("Check constraint: " + c.getName());
-		
-		if(c.getBody() instanceof PositiveConstraint) {			
+
+		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap,builder);
-			
-			if(co.isSatisfied())
-				return true;
-			else
-				return false;
-			
-		} else if(c.getBody() instanceof NegativeConstraint) {
+			var co = new NeoPositiveConstraint(ap, builder);
+
+			return co.isSatisfied();
+
+		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap,builder);
-			
-			if(co.isSatisfied())
-				return true;
-			else
-				return false;
-			
-		} else if(c.getBody() instanceof Implication) {
+			var co = new NeoNegativeConstraint(ap, builder);
+
+			return co.isSatisfied();
+
+		} else if (c.getBody() instanceof Implication) {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf,apThen,builder);
+			var co = new NeoImplication(apIf, apThen, builder);
+
+			return co.isSatisfied();
 			
-			if(co.isSatisfied())
-				return true;
-			else
-				return false;
-			
-		} else if(c.getBody() instanceof ConstraintReference) { 
-		
+		} else if (c.getBody() instanceof ConstraintReference) {
+
 			logger.info("Its a ConstraintReference!");
 			throw new UnsupportedOperationException(c.getBody().toString());
-		
-		} else if (c.getBody() instanceof OrBody) {
-			
-			var co = (Constraint) c.getBody().eContainer();
-			var bd = (OrBody) co.getBody();
-			
-			for(int i=0; i<bd.getChildren().size(); i++) {
-				for(int j=0; j<bd.getChildren().get(i).getChildren().size(); j++) {
-					
-					var nestedConstraint = (Constraint) bd.getChildren().get(i).getChildren().get(j).eCrossReferences().get(0);
-					var nestedNeoContarint = new NeoConstraint(nestedConstraint, builder);
-					if(!nestedNeoContarint.isSatisfied()) {
-						return false;
-					}
-				}
-			}
-			return true;
-			
-		} else if (c.getBody() instanceof AndBody) {
-			
-			var co = (Constraint) c.getBody().eContainer();
-			var bd = (AndBody) co.getBody();
-			
-			for(int i=0; i<bd.getChildren().size(); i++) {
-					
-					var nestedConstraint = (Constraint) bd.getChildren().get(i).eCrossReferences().get(0);
-					var nestedNeoContarint = new NeoConstraint(nestedConstraint, builder);
-					if(!nestedNeoContarint.isSatisfied()) {
-						return false;
-					}
-			}
-			return true;
-			
-		} else if (c.getBody() instanceof Primary) {
-			
-			var co = (Constraint) c.getBody().eContainer();
-			var bd = (Primary) co.getBody();
-				
-			var nestedConstraint = (Constraint) bd.eCrossReferences().get(0);
-			var nestedNeoContarint = new NeoConstraint(nestedConstraint, builder);
-			if(nestedNeoContarint.isSatisfied()) {
-				return true;
-			}
 
-			return true;
-			
+		} else if (c.getBody() instanceof OrBody) {
+
+			var body = (OrBody) c.getBody();
+			var neoBody = new NeoOrBody(body, builder);
+
+			return neoBody.isSatisfied();
+
 		} else {
 			logger.info("Its an Unkown Type!");
 			throw new UnsupportedOperationException(c.getBody().toString());
 		}
-		
+
 	}
 
 }

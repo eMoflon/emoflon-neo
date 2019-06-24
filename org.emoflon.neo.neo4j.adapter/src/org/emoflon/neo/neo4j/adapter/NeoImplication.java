@@ -72,16 +72,16 @@ public class NeoImplication implements IPositiveConstraint {
 			for (var n : pThen.getNodes()) {
 				if (recMap.containsKey(n.getVarName())) {
 					if(recMap.get(n.getVarName()) == null) {
-						logger.info("Invalid match found");
-						logger.info("Constraint: " + name + " is NOT complied!");
+						logger.info("Invalid match found. Constraint: " 
+										+ name + " is NOT complied!");
 						return null;						
 					}
 				}
 				for (var r : n.getRelations()) {
 					if (recMap.containsKey(r.getVarName())) {
 						if(recMap.get(r.getVarName()) == null) {
-							logger.info("Invalid match found");
-							logger.info("Constraint: " + name + " is NOT complied!");
+							logger.info("Invalid match found. Constraint: " 
+										+ name + " is NOT complied!");
 							return null;						
 						}
 					}
@@ -89,8 +89,8 @@ public class NeoImplication implements IPositiveConstraint {
 			}
 		}
 		
-		logger.info("No invalid matches found.");
-		logger.info("Constraint: " + name + " is complied!");
+		logger.info("No invalid matches found. Constraint: " 
+						+ name + " is complied!");
 		return matches.get(0);
 		
 	}

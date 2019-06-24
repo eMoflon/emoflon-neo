@@ -55,13 +55,12 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		var result = builder.executeQuery(cypherQuery);
 
 		while (result.hasNext()) {
-			var record = result.next();
-			logger.info("Found match(es).");
-			logger.info("Constraint: ENFORCE " + ap.getName() + " is complied!");
-			return new NeoMatch(p, record);
+			logger.info("Found match(es). Constraint: ENFORCE "
+							+ ap.getName() + " is complied!");
+			return new NeoMatch(p, result.next());
 		}
-		logger.info("Not matches found.");
-		logger.info("Constraint: ENFORCE " + ap.getName() + " is NOT complied!");
+		logger.info("Not matches found. Constraint: ENFORCE " 
+							+ ap.getName() + " is NOT complied!");
 		return null;
 		
 	}
