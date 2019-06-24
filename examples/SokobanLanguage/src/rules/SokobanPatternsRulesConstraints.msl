@@ -6,8 +6,8 @@ pattern oneSokoban {
 	sokoban : Sokoban
 }
 pattern twoSokoban {
-	sok1: Sokoban
-	sok2: Sokoban
+	sokoban: Sokoban
+	sokoban2: Sokoban
 }
 
 pattern oneSokobanSelectedFigureRequired {
@@ -18,7 +18,8 @@ constraint noSokoban = forbid oneSokoban
 constraint oneSokobans = enforce oneSokoban
 constraint twoSokobans = enforce twoSokoban
 
-constraint hasOneSokoban = oneSokobans && !twoSokobans
+// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
+//constraint hasOneSokoban = oneSokobans && twoSokobans
 
 pattern sokobanMustBeSelectedFigure {
 	sokoban:Sokoban
