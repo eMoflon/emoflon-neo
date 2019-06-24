@@ -29,8 +29,10 @@ public class NeoAndBody {
 					logger.info("Attention: Constraint is negated!");
 				}
 
-				if ((!consRef.isSatisfied() && !((ConstraintReference) b).isNegated())
-						|| consRef.isSatisfied() && ((ConstraintReference) b).isNegated()) {
+				var satisfied = consRef.isSatisfied();
+				
+				if ((!satisfied && !((ConstraintReference) b).isNegated())
+					|| satisfied && ((ConstraintReference) b).isNegated()) {
 
 					return false;
 				}

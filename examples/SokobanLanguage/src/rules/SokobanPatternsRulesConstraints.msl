@@ -19,7 +19,7 @@ constraint oneSokobans = enforce oneSokoban
 constraint twoSokobans = enforce twoSokoban
 
 // TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
-constraint hasOneSokoban = oneSokobans && twoSokobans
+constraint hasOneSokoban = oneSokobans && !twoSokobans
 
 pattern sokobanMustBeSelectedFigure {
 	sokoban:Sokoban
@@ -236,10 +236,10 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 
 } when noCorner
 
-constraint forbidLeftSide = forbid hasLeft
-constraint forbidTopSide = forbid hasTop
-constraint forbidRightSide = forbid hasRight
-constraint forbidBottomSide = forbid hasBottom
+constraint forbidLeftSide = enforce hasLeft
+constraint forbidTopSide = enforce hasTop
+constraint forbidRightSide = enforce hasRight
+constraint forbidBottomSide = enforce hasBottom
 
 // TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
@@ -249,6 +249,8 @@ constraint bottomRightCorner = forbidRightSide && forbidBottomSide
 
 // TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint noCorner = topLeftCorner || topRightCorner || bottomLeftCorner || bottomRightCorner
+
+constraint extremeConstraint = ((topLeftCorner && !topRightCorner) || topRightCorner) && bottomLeftCorner && (!bottomRightCorner || (bottomLeftCorner && (topRightCorner && topRightCorner)))
 
 pattern hasLeft {
 	field: Field

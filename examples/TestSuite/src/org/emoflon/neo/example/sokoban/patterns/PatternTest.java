@@ -256,10 +256,15 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	
-	/* TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
+	// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 	@Test
 	public void test_hasOneSokoban() {
 		assertTrue(entities.getConstraint_HasOneSokoban().isSatisfied());
 	}
-	*/
+	
+	@Test
+	public void test_allConstraintTypesAtOnes() {
+		assertTrue(entities.getConstraint_ExtremeConstraint().isSatisfied());
+	}
+
 }
