@@ -1,13 +1,14 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 
 public class NeoAndBody {
 
+	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private AndBody body;
-
 	private NeoCoreBuilder builder;
 
 	public NeoAndBody(AndBody body, NeoCoreBuilder builder) {
@@ -24,7 +25,13 @@ public class NeoAndBody {
 			if (b instanceof ConstraintReference) {
 				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
 
-				if (!consRef.isSatisfied()) {
+				if(((ConstraintReference) b).isNegated()) {
+					logger.info("Attention: Constraint is negated!");
+				}
+				
+				if ((!consRef.isSatisfied() && !((ConstraintReference) b).isNegated()) ||
+						consRef.isSatisfied() && ((ConstraintReference) b).isNegated()) {
+					
 					return false;
 				}
 

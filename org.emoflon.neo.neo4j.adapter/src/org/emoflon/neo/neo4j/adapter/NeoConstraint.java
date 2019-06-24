@@ -58,16 +58,11 @@ public class NeoConstraint implements IConstraint {
 
 			return co.isSatisfied();
 			
-		} else if (c.getBody() instanceof ConstraintReference) {
-
-			logger.info("Its a ConstraintReference!");
-			throw new UnsupportedOperationException(c.getBody().toString());
-
 		} else if (c.getBody() instanceof OrBody) {
 
 			var body = (OrBody) c.getBody();
 			var neoBody = new NeoOrBody(body, builder);
-
+			
 			return neoBody.isSatisfied();
 
 		} else {

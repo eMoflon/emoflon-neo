@@ -16,9 +16,9 @@ pattern oneSokobanSelectedFigureRequired {
 
 constraint noSokoban = forbid oneSokoban
 constraint oneSokobans = enforce oneSokoban
-constraint twoSokobans = forbid twoSokoban
+constraint twoSokobans = enforce twoSokoban
 
-constraint hasOneSokoban = oneSokobans && twoSokobans
+constraint hasOneSokoban = oneSokobans && !twoSokobans
 
 pattern sokobanMustBeSelectedFigure {
 	sokoban:Sokoban
@@ -235,17 +235,17 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 
 } when noCorner
 
-constraint forbidLeftSide = enforce hasLeft
-constraint forbidTopSide = enforce hasTop
-constraint forbidRightSide = enforce hasRight
-constraint forbidBottomSide = enforce hasBottom
+constraint forbidLeftSide = forbid hasLeft
+constraint forbidTopSide = forbid hasTop
+constraint forbidRightSide = forbid hasRight
+constraint forbidBottomSide = forbid hasBottom
 
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide
 constraint bottomLeftCorner = forbidLeftSide && forbidBottomSide
 constraint bottomRightCorner = forbidRightSide && forbidBottomSide
 
-constraint noCorner = (topLeftCorner || topRightCorner) && bottomLeftCorner && bottomRightCorner
+constraint noCorner = topLeftCorner || topRightCorner || bottomLeftCorner || bottomRightCorner
 
 pattern hasLeft {
 	field: Field
