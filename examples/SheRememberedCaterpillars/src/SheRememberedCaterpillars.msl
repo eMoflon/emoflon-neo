@@ -144,6 +144,7 @@ pattern bridge {
 
 constraint noStrangeBridges = forbid strangeBridge
 
+// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint strangeBridges = !noStrangeBridges
 
 constraint canCrossBridgeSomewhere = enforce canCrossBridge
