@@ -242,17 +242,17 @@ public class PatternTest extends ENeoTest {
 	
 	@Test
 	public void test_constraint_hasLeft() {
-		assertTrue(entities.getConstraint_ForbidLeftSide().isSatisfied());
+		assertTrue(entities.getConstraint_ForbidLeftSide().isViolated());
 	}
 	
 	@Test
 	public void test_constraint_hasTopLeftCorner() {
-		assertTrue(entities.getConstraint_TopLeftCorner().isSatisfied());
+		assertTrue(entities.getConstraint_TopLeftCorner().isViolated());
 	}
 	
 	@Test
 	public void test_constraint_hasNoCorner() {
-		assertTrue(entities.getConstraint_NoCorner().isSatisfied());
+		assertTrue(entities.getConstraint_NoCorner().isViolated());
 	}
 	
 	
