@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.Constraint;
+import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
@@ -21,6 +23,7 @@ public class NeoPattern implements IPattern {
 
 	private NeoCoreBuilder builder;
 	private Pattern p;
+	private Constraint c;
 	private boolean injective;
 
 	private List<NeoNode> nodes;
@@ -38,6 +41,10 @@ public class NeoPattern implements IPattern {
 		}
 
 		extractNodesAndRelations();
+		
+		if(p.getCondition() != null) {
+			this.c = (Constraint) p.getCondition().eCrossReferences().get(0);
+		}		
 
 	}
 
@@ -111,9 +118,15 @@ public class NeoPattern implements IPattern {
 
 		if (matches.isEmpty()) {
 			logger.debug("NO MATCHES FOUND");
+			return null;
+		} else {
+			
+			// check condition
+			var cond = new NeoCondition(new NeoConstraint(c, builder), this, c.getName());
+			
+			return matches;
 		}
 
-		return matches;
 	}
 
 	public boolean isStillValid(NeoMatch m) {
