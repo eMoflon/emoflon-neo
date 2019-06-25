@@ -45,6 +45,9 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.FlattenerException
+import org.emoflon.neo.emsl.eMSL.AndBody
+import org.emoflon.neo.emsl.eMSL.OrBody
+import org.emoflon.neo.emsl.eMSL.Primary
 import java.util.HashMap
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
@@ -623,126 +626,124 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for the condition of a Rule or Pattern.
 	 */
 	def String getConditionString(Entity entity) {
-		var text = ""
+		var builder = new StringBuilder();
 		if (entity instanceof Rule) {
-			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint ||
-				entity.condition instanceof Implication)
-				text += getAtomicConstraintString(entity.condition as ConstraintBody)
-
+			// return for atomicConstraints
+			if ((entity as Rule).condition instanceof NegativeConstraint)
+				return '''**forbid** «((entity as Rule).condition as NegativeConstraint).pattern.name» '''
+			else if ((entity as Rule).condition instanceof PositiveConstraint)
+				return '''**enforce** «((entity as Rule).condition as PositiveConstraint).pattern.name» '''
+			else if ((entity as Rule).condition instanceof Implication) {
+				return '''**if** «((entity as Rule).condition as Implication).premise.name» **then** «((entity as Rule).condition as Implication).conclusion.name» '''
+			} 	
 			// return the String for ConstraintReference
-			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference).reference)
-		} else if (entity instanceof Pattern) {
-			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint ||
-				entity.condition instanceof Implication)
-				text += getAtomicConstraintString(entity.condition as ConstraintBody)
-
-			// return the String for ConstraintReference
-			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference).reference)
-		} else if (entity instanceof Constraint) {
-			text += getConstraintReferenceString(entity as Constraint)
-		}
-		return text
-	}
-
-	/**
-	 * Returns the diagram text for a ConstraintReference (referencing an AtomicConstraint or another Constraint).
-	 */
-	def String getConstraintReferenceString(Constraint constraint) {
-		var text = ""
-		if (constraint.body instanceof NegativeConstraint ||
-			constraint.body instanceof PositiveConstraint || constraint.body instanceof Implication)
-			text += getAtomicConstraintString(constraint.body)
-		// OrBody
-		else {
-			if (constraint.body !== null) {
-				var count = constraint.body.children.size - 1
-				for (c : constraint.body.children) {
-					text += getOrBodyString(c)
-					if (count > 0)
-						text += " **||** "
-					count--
+			else if (entity.condition instanceof ConstraintReference) {
+				if ((entity.condition as ConstraintReference).reference.body instanceof NegativeConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof PositiveConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof Implication) {
+					builder.append(getAtomicConstraintString((entity.condition as ConstraintReference).reference.body))
+				} else if ((entity.condition as ConstraintReference).reference.body instanceof OrBody) {
+					builder.append(getOrBodyString((entity.condition as ConstraintReference).reference.body))
 				}
 			}
+		} else if (entity instanceof Pattern) {
+			// return for atomicConstraints
+			if ((entity as Pattern).condition instanceof NegativeConstraint)
+				return '''**forbid** «((entity as Pattern).condition as NegativeConstraint).pattern.name» '''
+			else if ((entity as Pattern).condition instanceof PositiveConstraint)
+				return '''**enforce** «((entity as Pattern).condition as PositiveConstraint).pattern.name» '''
+			else if ((entity as Pattern).condition instanceof Implication) {
+				return '''**if** «((entity as Pattern).condition as Implication).premise.name» **then** «((entity as Pattern).condition as Implication).conclusion.name» '''
+			} 
+			// return the String for ConstraintReference
+			else if (entity.condition instanceof ConstraintReference) {
+				if ((entity.condition as ConstraintReference).reference.body instanceof NegativeConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof PositiveConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof Implication) {
+					builder.append(getAtomicConstraintString((entity.condition as ConstraintReference).reference.body))
+				} else if ((entity.condition as ConstraintReference).reference.body instanceof OrBody) {
+					builder.append(getOrBodyString((entity.condition as ConstraintReference).reference.body))
+				}
+			}
+		} else if (entity instanceof Constraint) {
+			// return for atomicConstraints
+			if ((entity as Constraint).body instanceof NegativeConstraint)
+				return '''**forbid** «((entity as Constraint).body as NegativeConstraint).pattern.name» '''
+			else if ((entity as Constraint) instanceof PositiveConstraint)
+				return '''**enforce** «((entity as Constraint).body as PositiveConstraint).pattern.name» '''
+			else if ((entity as Constraint).body instanceof Implication) {
+				return '''**if** «((entity as Constraint).body as Implication).premise.name» **then** «((entity as Constraint).body as Implication).conclusion.name» '''
+			} 
+			// return for OrBody
+			else if ((entity as Constraint).body instanceof OrBody) {
+				builder.append(getOrBodyString((entity as Constraint).body))
+			}
 		}
-		return text
-	}
-	
-	def List<? extends ConstraintBody> getChildren(ConstraintBody body){
-		return ConstraintTraversalHelper.getChildren(body)
+		return builder.toString
 	}
 
 	/**
 	 * Returns the diagram text for an OrBody in a recursive Constraint definition.
 	 */
 	def String getOrBodyString(ConstraintBody constraintBody) {
-		var text = ""
-
+		var builder = new StringBuilder()
 		var count = constraintBody.children.size - 1
 		for (c : constraintBody.children) {
-			text += getAndBodyString(c)
-			if (count > 0)
-				text += " **&&** "
-			count--
+			if (c instanceof AndBody) {
+				builder.append(getAndBodyString(c))
+				if (count > 0)
+					builder.append(" **||** ")
+				count--
+			}
 		}
-
-		return text
+		return builder.toString
 	}
 
 	/**
 	 * Returns the diagram text for an AndBody in a recursive Constraint definition.
 	 */
 	def String getAndBodyString(ConstraintBody constraintBody) {
-		var text = ""
-
-		if ((constraintBody instanceof ConstraintReference))
-			text += getConstraintReferenceString(constraintBody.reference)
-
+		var builder = new StringBuilder()
 		var count = constraintBody.children.size - 1
-		if (constraintBody.children.size > 1)
-			text += " ( "
 		for (c : constraintBody.children) {
-			text += getPrimaryString(c)
+			if (c instanceof ConstraintReference) {
+				if (c.negated)
+					builder.append("**!**(")
+				if ((c as ConstraintReference).reference.body instanceof NegativeConstraint 
+						|| (c as ConstraintReference).reference.body instanceof PositiveConstraint 
+						|| (c as ConstraintReference).reference.body instanceof Implication) {
+					builder.append(getAtomicConstraintString(c))
+				} else if ((c as ConstraintReference).reference.body instanceof OrBody) {
+					builder.append(getOrBodyString(c.reference.body))
+				}
+				if (c.negated)
+					builder.append(")")
+			} else if (c instanceof OrBody) {
+				builder.append(" (" + getOrBodyString(c) + ") ")
+			}
 			if (count > 0)
-				text += " **||** "
-			count--
+				builder.append(" **&&** ")
+			count --
 		}
-		if (constraintBody.children.size > 1)
-			text += " ) "
-
-		return text
-	}
-
-	/**
-	 * Returns the diagram text for a Primary in a recursive Constraint definition.
-	 */
-	def String getPrimaryString(ConstraintBody constraintBody) {
-		var text = ""
-
-		if (constraintBody.children.get(0) instanceof ConstraintReference) {
-			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference).reference)
-		} else {
-			text += " ( "
-			text += getOrBodyString(constraintBody)
-			text += " ) "
-		}
-
-		return text
+		return builder.toString
 	}
 
 	/**
 	 * Returns the diagram text for an AtomicConstraint.
 	 */
 	def String getAtomicConstraintString(ConstraintBody constraintBody) {
-		if (constraintBody instanceof NegativeConstraint)
-			return '''**forbid** «(constraintBody as NegativeConstraint).pattern.name»'''
-		else if (constraintBody instanceof PositiveConstraint)
-			return '''**enforce** «(constraintBody as PositiveConstraint).pattern.name»'''
-		else if (constraintBody instanceof Implication)
-			return '''**if** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
+		if (constraintBody instanceof ConstraintReference) {
+			if (constraintBody.reference.body instanceof NegativeConstraint)
+				return '''**forbid** «(constraintBody.reference.body as NegativeConstraint).pattern.name» '''
+			else if (constraintBody.reference.body instanceof PositiveConstraint)
+				return '''**enforce** «(constraintBody.reference.body as PositiveConstraint).pattern.name» '''
+			else if (constraintBody.reference.body instanceof Implication)
+				return '''**if** «(constraintBody.reference.body as Implication).premise.name» **then** «(constraintBody.reference.body as Implication).conclusion.name» '''
+		}		
+	}
+	
+	def List<? extends ConstraintBody> getChildren(ConstraintBody body){
+		return ConstraintTraversalHelper.getChildren(body)
 	}
 
 	/*-------------------------------------------------*/
