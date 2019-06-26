@@ -22,7 +22,7 @@ public class PatternTest extends ENeoTest {
 	
 	@Test
 	public void test_Condition() {
-		expectSingleMatch(entities.getPattern_OneSokobanSelectedFigureRequired());
+		assertTrue(entities.getConstraint_SokobanIsSelectedFigure().isSatisfied());
 	}
 
 	@Test
