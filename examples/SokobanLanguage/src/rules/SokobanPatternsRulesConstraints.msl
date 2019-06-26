@@ -356,4 +356,4 @@ pattern neighborBottomField {
 }
 constraint hasRightField = enforce neighborRightField
 constraint hasBottomField = enforce neighborBottomField
-constraint hasBottomAndRightField = hasBottomField && hasRightField
+constraint hasBottomAndRightField = hasBottomField && !hasRightField
