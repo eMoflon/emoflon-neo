@@ -10,11 +10,11 @@ class CypherPatternBuilder {
 		«withQuery(nodes,injective)»
 		«returnQuery(nodes)»'''
 	}
-	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, boolean injective) {
+	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap, boolean injective) {
 		'''
-		«matchQuery(nodes,nodes2)»
-		«withQuery(nodes,injective)»
-		«returnQuery(nodes,nodes2)»'''
+		«matchQuery(nodes,nodes2,nodesMap)»
+		«withQuery(nodes,nodes2,nodesMap)»
+		«returnQuery(nodes,nodes2,nodesMap)»'''
 	}
 
 	def static String isStillValidQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective) {
@@ -32,9 +32,18 @@ class CypherPatternBuilder {
 			«ENDIF»
 			«ENDFOR»'''
 	}
-	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
+	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,Collection<String> nodesMap) {
 		'''«matchQuery(nodes)»
-		OPTIONAL «matchQuery(nodes2)»'''
+		OPTIONAL «matchQuery(nodes2)»
+		'''
+	}
+	
+	def static String withQuery(Collection<NeoNode> nodes) {
+		'''WITH «FOR n:nodes SEPARATOR ', '»«n.varName»«ENDFOR»'''
+	}
+	def static String withQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,Collection<String> nodesMap) {
+		'''WITH «FOR n:nodesMap SEPARATOR ', '»«n»«ENDFOR»
+		WHERE «FOR n:nodesMap SEPARATOR 'OR '»«n» IS NULL «ENDFOR»'''
 	}
 	
 	protected def static CharSequence queryNode(NeoNode n) '''
@@ -107,16 +116,8 @@ class CypherPatternBuilder {
 				«ENDFOR»
 				«ENDFOR»'''
 	}
-	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
-		'''
-			«returnQuery(nodes)», «FOR n : nodes2 SEPARATOR ',\n '»
-				«IF n.relations.size == 0 || n.properties.size > 0»
-					id(«n.varName») AS «n.varName»«IF n.relations.size > 0»,«ENDIF»
-				«ENDIF»
-				«FOR r : n.relations SEPARATOR ',\n  '»
-					id(«r.varName») AS «r.varName»
-				«ENDFOR»
-				«ENDFOR»'''
+	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap) {
+		'''RETURN «FOR n:nodesMap SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
 	}
 
 	def static String returnQueryForIsStillValid() {
