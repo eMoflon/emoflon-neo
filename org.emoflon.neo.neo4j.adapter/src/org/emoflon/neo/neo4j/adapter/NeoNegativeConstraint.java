@@ -1,5 +1,7 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.Collection;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.engine.api.constraints.IPositiveConstraint;
@@ -27,6 +29,18 @@ public class NeoNegativeConstraint implements IPositiveConstraint {
 
 	public AtomicPattern getPattern() {
 		return ap;
+	}
+	
+	public Collection<NeoNode> getNodes() {
+		return p.getNodes();
+	}
+	
+	public String getQueryString_OptionalMatch() { 
+		return "OPTIONAL " + CypherPatternBuilder.matchQuery(p.getNodes());
+	}
+	
+	public String getQueryString_Where() {
+		return CypherPatternBuilder.whereNegativeConstraintQuery(p.getNodes());
 	}
 
 	@Override

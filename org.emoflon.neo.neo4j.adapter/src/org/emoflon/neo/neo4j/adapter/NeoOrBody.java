@@ -1,5 +1,8 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 
@@ -14,6 +17,22 @@ public class NeoOrBody {
 		this.body = body;
 		this.builder = builder;
 
+	}
+	
+	public Collection<NeoNode> getNodes() {
+		
+		Collection<NeoNode> nodes = new ArrayList<>();
+		
+		for (AndBody b : body.getChildren()) {
+			var andbody = new NeoAndBody(b, builder);
+			for(NeoNode node : andbody.getNodes()) {
+				if(!nodes.contains(node))
+					nodes.add(node);
+			}
+
+		}
+		return nodes;
+		
 	}
 
 	public boolean isSatisfied() {

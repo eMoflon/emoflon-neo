@@ -1,5 +1,8 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
@@ -19,6 +22,41 @@ public class NeoConstraint implements IConstraint {
 		this.builder = builder;
 		this.c = c;
 
+	}
+	
+	public Collection<NeoNode> getNodes() {
+		if (c.getBody() instanceof PositiveConstraint) {
+			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var co = new NeoPositiveConstraint(ap, builder);
+
+			return co.getNodes();
+
+		} else if (c.getBody() instanceof NegativeConstraint) {
+			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var co = new NeoNegativeConstraint(ap, builder);
+
+			return co.getNodes();
+
+		} else if (c.getBody() instanceof Implication) {
+			throw new UnsupportedOperationException(c.getBody().toString());
+
+		} else if (c.getBody() instanceof OrBody) {
+
+			var body = (OrBody) c.getBody();
+			var neoBody = new NeoOrBody(body, builder);
+			
+			Collection<NeoNode> nodes = new ArrayList<>();
+			
+			for(NeoNode node : neoBody.getNodes()) {
+				if(!nodes.contains(node))
+					nodes.add(node);
+			}
+			return nodes;
+
+		} else {
+			logger.info("Its an Unkown Type!");
+			throw new UnsupportedOperationException(c.getBody().toString());
+		}
 	}
 
 	@Override

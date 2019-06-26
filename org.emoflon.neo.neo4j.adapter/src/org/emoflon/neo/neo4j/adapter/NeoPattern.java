@@ -123,7 +123,7 @@ public class NeoPattern implements IPattern {
 			
 			// check condition
 			var cond = new NeoCondition(new NeoConstraint(c, builder), this, c.getName());
-			
+			cond.isSatisfied();
 			return matches;
 		}
 

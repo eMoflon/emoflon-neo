@@ -159,4 +159,16 @@ class CypherPatternBuilder {
 	def static String cypherProperty(String name, String value) {
 		'''«name»: «value»'''
 	}
+	
+	
+	/*
+	 * Conditions
+	 */
+	 
+	 def static String whereNegativeConstraintQuery(Collection<NeoNode> nodes) {
+	 	'''«FOR n:nodes SEPARATOR 'AND '»«n.varName» IS NULL«FOR r:n.relations BEFORE 'AND ' SEPARATOR 'AND '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
+	 }
+	 def static String wherePositiveConstraintQuery(Collection<NeoNode> nodes) {
+	 	'''«FOR n:nodes SEPARATOR 'AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE 'AND ' SEPARATOR 'AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
+	 }
 }

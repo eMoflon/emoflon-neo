@@ -64,6 +64,13 @@ public class NeoImplication implements IPositiveConstraint {
 	public AtomicPattern getThenPattern() {
 		return apThen;
 	}
+	
+	public String getQueryString_OptionalMatch() {
+		throw new UnsupportedOperationException("Implcations constraints are currently unsupported in conditions");
+	}
+	public String getQueryString_Where() {
+		throw new UnsupportedOperationException("Implcations constraints are currently unsupported in conditions");
+	}
 
 	@Override
 	public boolean isSatisfied() {
