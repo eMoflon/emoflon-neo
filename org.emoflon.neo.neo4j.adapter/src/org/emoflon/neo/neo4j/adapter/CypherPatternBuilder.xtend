@@ -171,4 +171,8 @@ class CypherPatternBuilder {
 	 def static String wherePositiveConstraintQuery(Collection<NeoNode> nodes) {
 	 	'''«FOR n:nodes SEPARATOR 'AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE 'AND ' SEPARATOR 'AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
 	 }
+	 
+	 def static String withConstraintQuery(Collection<String> nodes) {
+	 	'''WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
+	 }
 }

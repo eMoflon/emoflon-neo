@@ -48,13 +48,7 @@ public class NeoConstraint implements IConstraint {
 			Collection<NeoNode> nodes = new ArrayList<>();
 			
 			for(NeoNode node : neoBody.getNodes()) {
-				var isContained = false;
-				for(NeoNode n: nodes) {
-					if(n.getVarName().equals(node.getVarName()))
-						isContained = true;
-				}
-				if(!isContained)
-					nodes.add(node);
+				nodes.add(node);
 			}
 			return nodes;
 

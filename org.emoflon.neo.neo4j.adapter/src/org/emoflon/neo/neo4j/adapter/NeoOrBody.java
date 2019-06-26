@@ -42,13 +42,7 @@ public class NeoOrBody {
 		for (AndBody b : body.getChildren()) {
 			var andbody = new NeoAndBody(b, builder);
 			for(NeoNode node : andbody.getNodes()) {
-				var isContained = false;
-				for(NeoNode n: nodes) {
-					if(n.getVarName() == node.getVarName())
-						isContained = true;
-				}
-				if(!isContained)
-					nodes.add(node);
+				nodes.add(node);
 			}
 			
 		}
