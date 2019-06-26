@@ -8,6 +8,8 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.SuperType
 
 class EntityAttributeDispatcher {
 	
@@ -70,6 +72,18 @@ class EntityAttributeDispatcher {
 	
 	def dispatch getName(TripleRule entity) {
 		entity.name
+	}
+	
+	def dispatch getName(AtomicPattern entity) {
+		entity.name
+	}
+	
+	def getSuperTypeName(SuperType entity) {
+		if (entity instanceof Pattern) {
+			return entity.body.name
+		} else {
+			return entity.name
+		}
 	}
 	
 	

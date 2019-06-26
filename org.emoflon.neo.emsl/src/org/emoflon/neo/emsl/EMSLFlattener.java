@@ -11,6 +11,7 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
+import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
@@ -20,6 +21,8 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
+import org.emoflon.neo.emsl.eMSL.SuperType;
+import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.EntityCloner;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
@@ -34,22 +37,22 @@ public class EMSLFlattener {
 	}
 	
 	/**
-	 * Returns the flattened Pattern.
+	 * Returns the flattened Entity.
 	 * 
 	 * @param entity that should be flattened.
-	 * @param alreadyRefinedPatternNames list of names of pattern that have already appeared in the refinement path (against loops).
-	 * @return the flattened pattern.
-	 * @throws FlattenerException is thrown if the pattern could not be flattened.
+	 * @param alreadyRefinedEntityNames list of names of entities that have already appeared in the refinement path (against loops).
+	 * @return the flattened entity.
+	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	public Entity flattenEntity(Entity entity, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
+	public Entity flattenEntity(Entity entity, ArrayList<String> alreadyRefinedEntityNames) throws FlattenerException {
 		if (entity != null) {			
 			@SuppressWarnings("unchecked")
 			EList<RefinementCommand> refinements = (EList<RefinementCommand>) dispatcher.getSuperRefinementTypes(entity);
 			
 			// check for loop in refinements
 	
-			if (alreadyRefinedPatternNames.contains(dispatcher.getName(entity))) 
-				throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+			if (alreadyRefinedEntityNames.contains(dispatcher.getName(entity))) 
+				throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedEntityNames);
 			// if none has been found, add current name to list
 			
 			
@@ -58,7 +61,7 @@ public class EMSLFlattener {
 				return entity;
 			
 			// 1. step: collect nodes with edges
-			var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedPatternNames);
+			var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedEntityNames);
 			dispatcher.getNodeBlocks(entity).forEach(nb -> {
 				if (collectedNodeBlocks.keySet().contains(nb.getName())) {
 					collectedNodeBlocks.get(nb.getName()).add(nb);
@@ -73,7 +76,7 @@ public class EMSLFlattener {
 			// 2. step: merge nodes and edges
 			var mergedNodes = mergeNodes(entity, refinements, collectedNodeBlocks);
 			
-			// 3. step: add merged nodeBlocks to pattern and return
+			// 3. step: add merged nodeBlocks to entity and return
 			dispatcher.getNodeBlocks(entity).clear();
 			dispatcher.getNodeBlocks(entity).addAll((mergedNodes));
 			
@@ -90,13 +93,13 @@ public class EMSLFlattener {
 	
 	
 	/**
-	 * Returns a flattened copy of the given Pattern.
+	 * Returns a flattened copy of the given Entity.
 	 * @param originalEntity that is to be copied and flattened.
-	 * @param alreadyRefinedPatternNames list of names that of pattern that have already appeared in the refinement path (against loops). 
-	 * @return flattened copy of given Pattern.
-	 * @throws FlattenerException is thrown if the pattern could not be flattened.
+	 * @param alreadyRefinedEntityNames list of names that of entities that have already appeared in the refinement path (against loops). 
+	 * @return flattened copy of given Entity.
+	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	public Entity flattenCopyOfEntity(Entity originalEntity, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
+	public Entity flattenCopyOfEntity(Entity originalEntity, ArrayList<String> alreadyRefinedEntityNames) throws FlattenerException {
 		
 		var entity = (Entity) new EntityCloner().cloneEntity(originalEntity);
 		
@@ -106,8 +109,8 @@ public class EMSLFlattener {
 			
 			// check for loop in refinements
 	
-			if (alreadyRefinedPatternNames.contains(dispatcher.getName(entity))) 
-				throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedPatternNames);
+			if (alreadyRefinedEntityNames.contains(dispatcher.getName(entity))) 
+				throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedEntityNames);
 			// if none has been found, add current name to list
 			
 			
@@ -116,7 +119,7 @@ public class EMSLFlattener {
 				return entity;
 			
 			// 1. step: collect nodes with edges
-			var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedPatternNames);
+			var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedEntityNames);
 			dispatcher.getNodeBlocks(entity).forEach(nb -> {
 				if (collectedNodeBlocks.keySet().contains(nb.getName())) {
 					collectedNodeBlocks.get(nb.getName()).add(nb);
@@ -131,7 +134,7 @@ public class EMSLFlattener {
 			// 2. step: merge nodes and edges
 			var mergedNodes = mergeNodes(entity, refinements, collectedNodeBlocks);
 			
-			// 3. step: add merged nodeBlocks to pattern and return
+			// 3. step: add merged nodeBlocks to entity and return
 			dispatcher.getNodeBlocks(entity).clear();
 			dispatcher.getNodeBlocks(entity).addAll((mergedNodes));
 			
@@ -148,20 +151,28 @@ public class EMSLFlattener {
 	
 	
 	/**
-	 * This method creates all NodeBlocks that have to be imported into the Pattern from the SuperEntities.
-	 * @param refinementList List of RefinementCommands holding all pattern that should be refined.
-	 * @param alreadyRefinedPatternNames List of Pattern names that have already appeared in the refinement path (against loops).
-	 * @return HashMap of NodeBlocks mapped to their name that have to be added to the refining Pattern.
+	 * This method creates all NodeBlocks that have to be imported into the Entity from the SuperEntities.
+	 * @param refinementList List of RefinementCommands holding all entities that should be refined.
+	 * @param alreadyRefinedEntityNames List of entity names that have already appeared in the refinement path (against loops).
+	 * @return HashMap of NodeBlocks mapped to their name that have to be added to the refining Entity.
 	 * @throws FlattenerException is thrown if an error occurs during collecting the nodes, like an infinite loop is detected
 	 */
-	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Entity entity, EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedPatternNames) throws FlattenerException {
+	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Entity entity, EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedEntityNames) throws FlattenerException {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 		
 		for (var r : refinementList) {
+			
+			if (entity.eClass() != r.getReferencedType().eClass()) {
+				if (!(entity instanceof Pattern && r.getReferencedType() instanceof AtomicPattern)) {
+					throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, r.getReferencedType());
+				}
+			}
+			checkSuperEntityTypeForCompliance(entity, r.getReferencedType()); 
+			
 			// add current entity to list of names
-			var alreadyRefinedPatternNamesCopy = new ArrayList<String>();
-			alreadyRefinedPatternNames.forEach(n -> alreadyRefinedPatternNamesCopy.add(n));
-			alreadyRefinedPatternNamesCopy.add(dispatcher.getName(entity));
+			var alreadyRefinedEntityNamesCopy = new ArrayList<String>();
+			alreadyRefinedEntityNames.forEach(n -> alreadyRefinedEntityNamesCopy.add(n));
+			alreadyRefinedEntityNamesCopy.add((String) dispatcher.getName(entity));
 			
 			// recursively flatten superEntities
 			if (!(r.getReferencedType() instanceof AtomicPattern) || (r.getReferencedType() instanceof AtomicPattern && r.getReferencedType().eContainer() != null)) {
@@ -169,9 +180,9 @@ public class EMSLFlattener {
 				
 				Entity flattenedSuperEntity;
 				if (r.getReferencedType() instanceof AtomicPattern) {
-					flattenedSuperEntity = (flattenEntity((Entity) r.getReferencedType().eContainer(), alreadyRefinedPatternNamesCopy));
+					flattenedSuperEntity = (flattenEntity((Entity) r.getReferencedType().eContainer(), alreadyRefinedEntityNamesCopy));
 				} else {
-					flattenedSuperEntity = (flattenEntity((Entity) r.getReferencedType(), alreadyRefinedPatternNamesCopy));
+					flattenedSuperEntity = (flattenEntity((Entity) r.getReferencedType(), alreadyRefinedEntityNamesCopy));
 				}
 							
 				if (r.getReferencedType() instanceof AtomicPattern && ((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
@@ -293,7 +304,7 @@ public class EMSLFlattener {
 				}
 			}
 			
-			// create new NodeBlock that will be added to the pattern
+			// create new NodeBlock that will be added to the entity
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 			newNb.setType(nodeBlockTypeQueue.peek());
 			newNb.setName(name);
@@ -598,7 +609,7 @@ public class EMSLFlattener {
 	}
 	
 	/**
-	 * Iterates over all relations in the newly flattened pattern and checks if a proxy target could not be resolved to
+	 * Iterates over all relations in the newly flattened entity and checks if a proxy target could not be resolved to
 	 * a nodeBlock from one of the superEntities.
 	 * @param entity that is to be checked if all proxies were resolved.
 	 * @throws FlattenerException is thrown if a proxy was not resolved during flattening.
@@ -611,5 +622,14 @@ public class EMSLFlattener {
 				}
 			}
 		}
+	}
+	
+	private void checkSuperEntityTypeForCompliance(Entity entity, SuperType superEntity) throws FlattenerException {
+		if (entity instanceof Metamodel && !(superEntity instanceof Metamodel)
+				|| !(entity instanceof Metamodel) && superEntity instanceof Metamodel)
+			throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, superEntity);
+		else if (entity instanceof TripleRule && !(superEntity instanceof TripleRule)
+				|| !(entity instanceof TripleRule) && superEntity instanceof TripleRule)
+			throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, superEntity);
 	}
 }

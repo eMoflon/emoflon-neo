@@ -18,7 +18,6 @@ import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.EMSLFlattener
 import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.util.FlattenerErrorType
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import java.util.ArrayList
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
@@ -28,6 +27,8 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 
 /**
  * This class contains custom validation rules. 
@@ -95,6 +96,19 @@ class EMSLValidator extends AbstractEMSLValidator {
 				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
 					error("The value of " + e.property2.type.name + " does not match with your other refinements",
 						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+				} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
+					var dispatcher = new EntityAttributeDispatcher()
+					for (s : dispatcher.getSuperRefinementTypes(entity)) {
+						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
+							error("The type of entity you are trying to refine is not supported.",
+								entity.body,
+								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
+							error("The type of entity you are trying to refine is not supported.",
+								entity.body,
+								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+						}
+					}
 				}
 			} else if (entity instanceof Rule) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
@@ -113,6 +127,19 @@ class EMSLValidator extends AbstractEMSLValidator {
 				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
 					error("The value of " + e.property2.type.name + " does not match with your other refinements",
 						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
+				} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
+					var dispatcher = new EntityAttributeDispatcher()
+					for (s : dispatcher.getSuperRefinementTypes(entity)) {
+						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
+							error("The type of entity you are trying to refine is not supported.",
+								entity,
+								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
+							error("The type of entity you are trying to refine is not supported.",
+								entity,
+								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+						}
+					}
 				}
 			}
 			if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
