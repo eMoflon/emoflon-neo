@@ -51,6 +51,7 @@ import org.emoflon.neo.emsl.eMSL.Primary
 import java.util.HashMap
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.util.FlattenerErrorType
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -204,8 +205,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Model.
 	 */
 	def dispatch String visualiseEntity(Model entity, boolean mainSelection) {
+		var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>())
 		'''
-			«FOR nb : entity.nodeBlocks»
+			«FOR nb : entityCopy.nodeBlocks»
 				«visualiseNodeBlockInModel(nb, false)»
 			«ENDFOR»
 		'''
@@ -402,7 +404,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		} catch (AssertionError e) {
 			
 		} catch (FlattenerException e) {
-			
+			if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY)
+				return ""
 		}
 	}
 
@@ -978,7 +981,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name))
 				superTypeNames.get("Rule").add(((st as RefinementCommand).referencedType as Rule).name)
 			else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name))
-				superTypeNames.get("Model").add(((st as RefinementCommand).referencedType as Rule).name)
+				superTypeNames.get("Model").add(((st as RefinementCommand).referencedType as Model).name)
 			else if ((st as RefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as RefinementCommand).referencedType as Metamodel).name))
 				superTypeNames.get("Metamodel").add(((st as RefinementCommand).referencedType as Metamodel).name)
 			else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name))
