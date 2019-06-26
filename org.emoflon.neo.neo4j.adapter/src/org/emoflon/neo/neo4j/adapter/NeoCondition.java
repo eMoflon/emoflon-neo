@@ -4,39 +4,48 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.engine.api.rules.IMatch;
 
 public class NeoCondition {
 	
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	private NeoCoreBuilder builder;
 	private NeoConstraint c;
 	private NeoPattern p;
 	
 	private Collection<String> nodesAndRefs;
 	
-	private String name;
-
-	public NeoCondition(NeoConstraint c, NeoPattern p, String name) {
-		
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder) {
+		this.builder = builder;
 		this.c = c;
 		this.p = p;
 		this.nodesAndRefs = new ArrayList<>();
-		this.name = name;
 	}
 	
-	public boolean isSatisfied() {
+	public Collection<IMatch> determineMatches() {
+		
+		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
 		
 		removeDuplicates();
 		
-		var queryOptionalMatch = c.getOptionalQuery();
-		logger.info(queryOptionalMatch);
+		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes());
+		cypherQuery += c.getOptionalQuery();
+		cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
+		cypherQuery += "\nWHERE " + c.getWhereQuery();
+		cypherQuery += "\n" + CypherPatternBuilder.returnConstraintQuery(nodesAndRefs);
 		
-		var queryWith = CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
-		logger.info(queryWith);
 		
-		var queryWhere = c.getWhereQuery();
-		logger.info(queryWhere);
+		logger.debug(cypherQuery);
+
+		var result = builder.executeQuery(cypherQuery);
+
+		var matches = new ArrayList<IMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			matches.add(new NeoMatch(p, record));
+		}
 		
-		return false;
+		return matches;
 	}
 	
 	private void removeDuplicates() {

@@ -175,4 +175,8 @@ class CypherPatternBuilder {
 	 def static String withConstraintQuery(Collection<String> nodes) {
 	 	'''WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
 	 }
+	 
+	 def static String returnConstraintQuery(Collection<String> nodes) {
+	 	'''RETURN «FOR n:nodes SEPARATOR ', '»id(«n») AS «n»«ENDFOR»'''
+	 }
 }

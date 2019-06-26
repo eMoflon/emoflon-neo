@@ -34,10 +34,6 @@ pattern selectedFigureRequired {
 	sokoban:Sokoban
 }
 
-
-
-
-
 pattern oneBlock {
 	block : Block
 }
@@ -341,9 +337,23 @@ rule pushBlockDown -> pushBlock, moveSokobanDown {
 	}
 } when forbid occupiedNext
 	
+	
+pattern oneField {
+	f:Field
+} when hasBottomAndRightField
 
-
-
-
-
-
+pattern neighborRightField {
+	f:Field {
+		-right -> f_r
+	}
+	f_r:Field
+}
+pattern neighborBottomField {
+	f:Field {
+		-bottom -> f_b
+	}
+	f_b:Field
+}
+constraint hasRightField = enforce neighborRightField
+constraint hasBottomField = enforce neighborBottomField
+constraint hasBottomAndRightField = hasBottomField && hasRightField

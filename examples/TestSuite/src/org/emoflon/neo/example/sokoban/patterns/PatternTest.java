@@ -266,5 +266,11 @@ public class PatternTest extends ENeoTest {
 	public void test_allConstraintTypesAtOnes() {
 		assertTrue(entities.getConstraint_ExtremeConstraint().isSatisfied());
 	}
+	
+	@Test
+	public void test_ConditionHasField() {
+		assertThat(entities.getPattern_OneField().countMatches(), is(9));
+	}
+		
 
 }

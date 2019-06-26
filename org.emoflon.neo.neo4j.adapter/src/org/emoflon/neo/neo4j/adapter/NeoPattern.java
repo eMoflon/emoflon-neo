@@ -119,11 +119,12 @@ public class NeoPattern implements IPattern {
 		if (matches.isEmpty()) {
 			logger.debug("NO MATCHES FOUND");
 			return null;
-		} else {
+		} else if(c != null) {
 			
 			// check condition
-			var cond = new NeoCondition(new NeoConstraint(c, builder), this, c.getName());
-			cond.isSatisfied();
+			var cond = new NeoCondition(new NeoConstraint(c, builder), this, c.getName(), builder);		
+			return cond.determineMatches();
+		} else {
 			return matches;
 		}
 

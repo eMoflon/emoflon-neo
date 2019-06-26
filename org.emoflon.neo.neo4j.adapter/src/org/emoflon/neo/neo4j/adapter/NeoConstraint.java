@@ -24,6 +24,10 @@ public class NeoConstraint implements IConstraint {
 
 	}
 	
+	public String getName() {
+		return c.getName();
+	}
+	
 	public String getWhereQuery() {
 		if (c.getBody() instanceof PositiveConstraint) {
 			
