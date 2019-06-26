@@ -19,21 +19,6 @@ public class NeoOrBody {
 
 	}
 	
-	public Collection<NeoNode> getNodes() {
-		
-		Collection<NeoNode> nodes = new ArrayList<>();
-		
-		for (AndBody b : body.getChildren()) {
-			var andbody = new NeoAndBody(b, builder);
-			for(NeoNode node : andbody.getNodes()) {
-				if(!nodes.contains(node))
-					nodes.add(node);
-			}
-
-		}
-		return nodes;
-		
-	}
 
 	public boolean isSatisfied() {
 
@@ -50,4 +35,24 @@ public class NeoOrBody {
 
 	}
 
+	public Collection<NeoNode> getNodes() {
+		
+		Collection<NeoNode> nodes = new ArrayList<>();
+		
+		for (AndBody b : body.getChildren()) {
+			var andbody = new NeoAndBody(b, builder);
+			for(NeoNode node : andbody.getNodes()) {
+				var isContained = false;
+				for(NeoNode n: nodes) {
+					if(n.getVarName() == node.getVarName())
+						isContained = true;
+				}
+				if(!isContained)
+					nodes.add(node);
+			}
+			
+		}
+		return nodes;
+		
+	}
 }

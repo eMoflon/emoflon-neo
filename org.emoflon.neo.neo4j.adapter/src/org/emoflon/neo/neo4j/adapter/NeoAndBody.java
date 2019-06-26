@@ -63,7 +63,12 @@ public class NeoAndBody {
 				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
 
 				for (NeoNode node : consRef.getNodes()) {
-					if (!nodes.contains(node))
+					var isContained = false;
+					for(NeoNode n: nodes) {
+						if(n.getVarName().equals(node.getVarName()))
+							isContained = true;
+					}
+					if(!isContained)
 						nodes.add(node);
 				}
 
@@ -71,7 +76,12 @@ public class NeoAndBody {
 				var orbody = new NeoOrBody((OrBody) b, builder);
 
 				for (NeoNode node : orbody.getNodes()) {
-					if (!nodes.contains(node))
+					var isContained = false;
+					for(NeoNode n: nodes) {
+						if(n.getVarName().equals(node.getVarName()))
+							isContained = true;
+					}
+					if(!isContained)
 						nodes.add(node);
 				}
 			}
