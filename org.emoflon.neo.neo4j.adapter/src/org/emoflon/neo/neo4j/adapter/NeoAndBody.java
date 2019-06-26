@@ -98,4 +98,37 @@ public class NeoAndBody {
 		return query;
 	}
 
+	public String getQueryString_Where() {
+		
+		var query = "(";
+		var first = true;
+		
+		for (Object b : body.getChildren()) {
+
+			if (b instanceof ConstraintReference) {
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
+				if(first) {
+					first = false;
+				} else {
+					query += " AND ";
+				}
+				if(((ConstraintReference) b).isNegated())
+					query += "NOT ";
+					
+				query += consRef.getWhereQuery();
+
+			} else if (b instanceof OrBody) {
+				var orbody = new NeoOrBody((OrBody) b, builder);
+				if(first) {
+					first = false;
+				} else {
+					query += " OR ";
+				}
+				query += orbody.getQueryString_Where();
+			}
+		}
+		
+		return query + ")";
+	}
+
 }

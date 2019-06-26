@@ -166,10 +166,10 @@ class CypherPatternBuilder {
 	 */
 	 
 	 def static String whereNegativeConstraintQuery(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes SEPARATOR 'AND '»«n.varName» IS NULL«FOR r:n.relations BEFORE 'AND ' SEPARATOR 'AND '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
+	 	'''«FOR n:nodes SEPARATOR ' OR '»«n.varName» IS NULL«FOR r:n.relations BEFORE ' OR ' SEPARATOR 'OR '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
 	 }
 	 def static String wherePositiveConstraintQuery(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes SEPARATOR 'AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE 'AND ' SEPARATOR 'AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
+	 	'''«FOR n:nodes SEPARATOR ' AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE ' AND ' SEPARATOR 'AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
 	 }
 	 
 	 def static String withConstraintQuery(Collection<String> nodes) {

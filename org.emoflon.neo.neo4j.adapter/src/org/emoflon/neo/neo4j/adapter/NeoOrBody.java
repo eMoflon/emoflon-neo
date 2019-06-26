@@ -62,4 +62,24 @@ public class NeoOrBody {
 		}
 		return query;
 	}
+
+
+	public String getQueryString_Where() {
+		
+		var query = "(";
+		var first = true;
+		
+		for (AndBody b : body.getChildren()) {
+			
+			var andbody = new NeoAndBody(b, builder);
+			if(first) {
+				first = false;
+			} else {
+				query += " OR ";
+			}
+			query += andbody.getQueryString_Where();
+
+		}
+		return query + ")";
+	}
 }

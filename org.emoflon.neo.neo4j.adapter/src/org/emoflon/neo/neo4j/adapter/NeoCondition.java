@@ -33,6 +33,9 @@ public class NeoCondition {
 		var queryWith = CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 		logger.info(queryWith);
 		
+		var queryWhere = c.getWhereQuery();
+		logger.info(queryWhere);
+		
 		return false;
 	}
 	
