@@ -24,6 +24,36 @@ public class NeoConstraint implements IConstraint {
 
 	}
 	
+	public String getOptionalQuery() {
+		if (c.getBody() instanceof PositiveConstraint) {
+			
+			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var co = new NeoPositiveConstraint(ap, builder);
+
+			return co.getQueryString_OptionalMatch();
+
+		} else if (c.getBody() instanceof NegativeConstraint) {
+			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var co = new NeoNegativeConstraint(ap, builder);
+
+			return co.getQueryString_OptionalMatch();
+
+		} else if (c.getBody() instanceof Implication) {
+			throw new UnsupportedOperationException(c.getBody().toString());
+
+		} else if (c.getBody() instanceof OrBody) {
+
+			var body = (OrBody) c.getBody();
+			var neoBody = new NeoOrBody(body, builder);
+			
+			return neoBody.getOptionalQuery();
+			
+		} else {
+			logger.info("Its an Unkown Type!");
+			throw new UnsupportedOperationException(c.getBody().toString());
+		}
+	}
+	
 	public Collection<NeoNode> getNodes() {
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);

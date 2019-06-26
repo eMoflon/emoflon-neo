@@ -25,6 +25,18 @@ public class NeoCondition {
 	
 	public boolean isSatisfied() {
 		
+		removeDuplicates();
+		
+		var queryOptionalMatch = c.getOptionalQuery();
+		logger.info(queryOptionalMatch);
+		
+		var queryWith = CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
+		logger.info(queryWith);
+		
+		return false;
+	}
+	
+	private void removeDuplicates() {
 		for(NeoNode node : c.getNodes()) {
 			
 			if(!nodesAndRefs.contains(node.getVarName())) {
@@ -37,9 +49,6 @@ public class NeoCondition {
 				}
 			}
 		}
-		var query = CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
-		logger.info(query);
-		return false;
 	}
 
 }

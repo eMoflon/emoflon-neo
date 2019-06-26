@@ -49,4 +49,17 @@ public class NeoOrBody {
 		return nodes;
 		
 	}
+
+	public String getOptionalQuery() {
+		
+		var query = "";
+		
+		for (AndBody b : body.getChildren()) {
+			
+			var andbody = new NeoAndBody(b, builder);
+			query += andbody.getOptionalMatch();
+
+		}
+		return query;
+	}
 }

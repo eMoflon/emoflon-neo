@@ -79,4 +79,23 @@ public class NeoAndBody {
 
 	}
 
+	public String getOptionalMatch() {
+		
+		var query = "";
+		
+		for (Object b : body.getChildren()) {
+
+			if (b instanceof ConstraintReference) {
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
+				query += consRef.getOptionalQuery();
+
+			} else if (b instanceof OrBody) {
+				var orbody = new NeoOrBody((OrBody) b, builder);
+				query += orbody.getOptionalQuery();
+			}
+		}
+		
+		return query;
+	}
+
 }
