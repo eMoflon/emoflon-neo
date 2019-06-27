@@ -47,7 +47,6 @@ import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.eMSL.AndBody
 import org.emoflon.neo.emsl.eMSL.OrBody
-import org.emoflon.neo.emsl.eMSL.Primary
 import java.util.HashMap
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
@@ -216,7 +215,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Model.
 	 */
-	def String visualiseNodeBlockInModel(ModelNodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInModel(ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
@@ -494,7 +499,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Rule.
 	 */
-	def String visualiseNodeBlockInRule(ModelNodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInRule(ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
 		'''
 			class «labelForRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»

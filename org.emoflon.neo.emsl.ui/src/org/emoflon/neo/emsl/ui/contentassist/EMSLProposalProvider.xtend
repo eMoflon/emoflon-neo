@@ -52,9 +52,17 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 			
 		super.completeModelRelationStatement_Target(entity, assignment, context, acceptor)
-		for (refinement : (entity.eContainer.eContainer as AtomicPattern).superRefinementTypes) {
-			for (relabeling : refinement.relabeling) {
-				acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
+		if (entity.eContainer instanceof AtomicPattern) {
+			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer.eContainer as Entity)) {
+				for (relabeling : (refinement as RefinementCommand).relabeling) {
+					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
+				}
+			}
+		} else {
+			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer as Entity)) {
+				for (relabeling : (refinement as RefinementCommand).relabeling) {
+					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
+				}
 			}
 		}
 	}
@@ -64,8 +72,14 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		
 		super.completeModelNodeBlock_Name(entity, assignment, context, acceptor)
-		for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity.eContainer as Pattern) as Pattern, new ArrayList<String>()))) {
-			acceptor.accept(createCompletionProposal(nb.name, context))
+		if (entity instanceof AtomicPattern) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity.eContainer as Pattern) as Pattern, new ArrayList<String>()))) {
+				acceptor.accept(createCompletionProposal(nb.name, context))
+			}
+		} else {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity) as Entity, new ArrayList<String>()))) {
+				acceptor.accept(createCompletionProposal(nb.name, context))
+			}
 		}
 	}
 	
