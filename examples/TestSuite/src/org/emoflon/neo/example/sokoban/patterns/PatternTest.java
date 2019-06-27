@@ -271,6 +271,9 @@ public class PatternTest extends ENeoTest {
 	public void test_ConditionHasField() {
 		assertThat(entities.getPattern_OneField().countMatches(), is(3));
 	}
-		
+	@Test
+	public void test_ConditionHasFieldIfThen() {
+		assertThat(entities.getPattern_OneFieldIfThen().countMatches(), is(13));
+	}	
 
 }

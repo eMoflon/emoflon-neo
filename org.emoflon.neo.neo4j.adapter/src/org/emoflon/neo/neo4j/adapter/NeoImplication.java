@@ -65,11 +65,22 @@ public class NeoImplication implements IPositiveConstraint {
 		return apThen;
 	}
 	
-	public String getQueryString_OptionalMatch() {
-		throw new UnsupportedOperationException("Implcations constraints are currently unsupported in conditions");
+	public Collection<NeoNode> getIfNodes() {
+		return pIf.getNodes();
+	}
+	public Collection<NeoNode> getThenNodes() {
+		return pIf.getNodes();
+	}
+	
+	public String getQueryString_OptionalMatch() { 
+		return "OPTIONAL " +  CypherPatternBuilder.matchQuery(pIf.getNodes()) + 
+			"OPTIONAL " +  CypherPatternBuilder.matchQuery(pThen.getNodes());
+				
 	}
 	public String getQueryString_Where() {
-		throw new UnsupportedOperationException("Implcations constraints are currently unsupported in conditions");
+		return "( NOT (" + CypherPatternBuilder.wherePositiveConstraintQuery(pIf.getNodes()) + ")" +
+				" OR (" + CypherPatternBuilder.wherePositiveConstraintQuery(pThen.getNodes()) + "))"
+	    ;
 	}
 
 	@Override

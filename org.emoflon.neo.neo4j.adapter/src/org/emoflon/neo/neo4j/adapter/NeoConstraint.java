@@ -43,7 +43,11 @@ public class NeoConstraint implements IConstraint {
 			return co.getQueryString_Where();
 
 		} else if (c.getBody() instanceof Implication) {
-			throw new UnsupportedOperationException(c.getBody().toString());
+			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
+			var co = new NeoImplication(apIf, apThen, builder);
+
+			return co.getQueryString_Where();
 
 		} else if (c.getBody() instanceof OrBody) {
 
@@ -73,7 +77,11 @@ public class NeoConstraint implements IConstraint {
 			return co.getQueryString_OptionalMatch();
 
 		} else if (c.getBody() instanceof Implication) {
-			throw new UnsupportedOperationException(c.getBody().toString());
+			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
+			var co = new NeoImplication(apIf, apThen, builder);
+
+			return co.getQueryString_OptionalMatch();
 
 		} else if (c.getBody() instanceof OrBody) {
 
@@ -102,7 +110,14 @@ public class NeoConstraint implements IConstraint {
 			return co.getNodes();
 
 		} else if (c.getBody() instanceof Implication) {
-			throw new UnsupportedOperationException(c.getBody().toString());
+			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
+			var co = new NeoImplication(apIf, apThen, builder);
+			
+			var nodes = co.getIfNodes();
+			nodes.addAll(co.getThenNodes());
+
+			return nodes;
 
 		} else if (c.getBody() instanceof OrBody) {
 

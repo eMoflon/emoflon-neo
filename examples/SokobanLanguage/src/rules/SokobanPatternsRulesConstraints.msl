@@ -342,6 +342,10 @@ pattern oneField {
 	f:Field
 } when hasBottomAndRightField
 
+pattern oneFieldIfThen {
+	f:Field
+} when hasBottomAndRighFieldIfThen
+
 pattern neighborRightField {
 	f:Field {
 		-right -> f_r
@@ -357,3 +361,6 @@ pattern neighborBottomField {
 constraint hasRightField = enforce neighborRightField
 constraint hasBottomField = enforce neighborBottomField
 constraint hasBottomAndRightField = hasBottomField && !hasRightField
+
+constraint hasRightIfThen = if neighborRightField then neighborBottomField
+constraint hasBottomAndRighFieldIfThen = hasRightIfThen
