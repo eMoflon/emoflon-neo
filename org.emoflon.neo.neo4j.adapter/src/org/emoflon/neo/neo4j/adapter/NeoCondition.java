@@ -32,7 +32,7 @@ public class NeoCondition {
 		cypherQuery += c.getOptionalQuery();
 		cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 		cypherQuery += "\nWHERE " + c.getWhereQuery();
-		cypherQuery += "\n" + CypherPatternBuilder.returnConstraintQuery(nodesAndRefs);
+		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());
 		
 		
 		logger.debug(cypherQuery);

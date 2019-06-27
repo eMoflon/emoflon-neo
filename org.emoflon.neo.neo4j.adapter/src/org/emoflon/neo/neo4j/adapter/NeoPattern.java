@@ -104,29 +104,32 @@ public class NeoPattern implements IPattern {
 
 	@Override
 	public Collection<IMatch> determineMatches() {
-		logger.info("Searching matches for Pattern: " + getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
-		logger.debug(cypherQuery);
-
-		var result = builder.executeQuery(cypherQuery);
-
-		var matches = new ArrayList<IMatch>();
-		while (result.hasNext()) {
-			var record = result.next();
-			matches.add(new NeoMatch(this, record));
-		}
-
-		if (matches.isEmpty()) {
-			logger.debug("NO MATCHES FOUND");
-			return null;
-		} else if(c != null) {
+		
+		if(c == null) {
+			logger.info("Searching matches for Pattern: " + getName());
+			var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
+			logger.debug(cypherQuery);
 			
+			var result = builder.executeQuery(cypherQuery);
+			
+			var matches = new ArrayList<IMatch>();
+			while (result.hasNext()) {
+				var record = result.next();
+				matches.add(new NeoMatch(this, record));	
+			}
+			
+			if (matches.isEmpty()) {
+				logger.debug("NO MATCHES FOUND");
+				return null;
+			} else {
+				return matches;
+			}
+		} else {
 			// check condition
 			var cond = new NeoCondition(new NeoConstraint(c, builder), this, c.getName(), builder);		
 			return cond.determineMatches();
-		} else {
-			return matches;
-		}
+			
+		} 
 
 	}
 
