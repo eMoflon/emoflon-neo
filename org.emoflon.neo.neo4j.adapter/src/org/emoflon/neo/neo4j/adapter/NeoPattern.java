@@ -120,10 +120,9 @@ public class NeoPattern implements IPattern {
 			
 			if (matches.isEmpty()) {
 				logger.debug("NO MATCHES FOUND");
-				return null;
-			} else {
-				return matches;
-			}
+			} 
+			return matches;
+			
 		} else {
 			// check condition
 			var cond = new NeoCondition(new NeoConstraint(c, builder), this, c.getName(), builder);		
@@ -144,5 +143,15 @@ public class NeoPattern implements IPattern {
 	@Override
 	public void setMatchInjectively(Boolean injective) {
 		this.injective = injective;
+	}
+	
+	@Override
+	public Number countMatches() {
+		var matches = determineMatches();
+		if(matches != null)
+			return matches.size();
+		else
+			return 0;
+		
 	}
 }
