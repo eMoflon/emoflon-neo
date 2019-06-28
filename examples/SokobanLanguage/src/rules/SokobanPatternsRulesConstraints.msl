@@ -212,7 +212,7 @@ pattern all2x2Fields {
 	field22 : Field
 }
 
-
+// TODO: Refinement Error (not all nodes available?!
 pattern boulderOnEndField -> oneEndField, anOccupiedField {
 	fig : Boulder
 } when forbid block
@@ -342,9 +342,45 @@ pattern oneField {
 	f:Field
 } when hasBottomAndRightField
 
-pattern oneFieldIfThen {
+pattern oneFieldNeg {
 	f:Field
-} when hasBottomAndRighFieldIfThen
+} when !hasBottomAndRightField
+
+pattern oneFieldEnforceTwo {
+	f:Field
+} when enforce oneTwoField
+
+pattern oneFieldForbidTwo {
+	f:Field
+} when forbid oneTwoField
+
+pattern oneFieldForbidIfThen {
+	f:Field
+} when if twoField then oneTwoField
+
+
+pattern twoField {
+	f:Field
+	f2:Field
+}
+pattern oneTwoField {
+	f:Field {
+		-bottom -> f2
+	}
+	f2:Field
+}
+
+pattern oneFieldHasBottomAndRight {
+	f:Field
+} when hasBottomAndRightField
+pattern oneFieldHasNoBottomAndNoRight {
+	f:Field
+} when !hasBottomAndRightField
+
+pattern oneFieldHasBottomAndNoRight {
+	f:Field
+} when hasBottomAndNoRightField
+
 
 pattern neighborRightField {
 	f:Field {
@@ -360,7 +396,8 @@ pattern neighborBottomField {
 }
 constraint hasRightField = enforce neighborRightField
 constraint hasBottomField = enforce neighborBottomField
-constraint hasBottomAndRightField = hasBottomField && !hasRightField
+constraint hasBottomAndRightField = hasBottomField && hasRightField
+constraint hasBottomAndNoRightField = hasBottomField && !hasRightField
 
 constraint hasRightIfThen = if neighborRightField then neighborBottomField
 constraint hasBottomAndRighFieldIfThen = hasRightIfThen

@@ -269,11 +269,32 @@ public class PatternTest extends ENeoTest {
 	
 	@Test
 	public void test_ConditionHasField() {
-		assertThat(entities.getPattern_OneField().countMatches(), is(3));
+		assertThat(entities.getPattern_OneField().countMatches(), is(9));
+	}
+	@Test
+	public void test_ConditionHasFieldNeg() {
+		assertThat(entities.getPattern_OneFieldNeg().countMatches(), is(7));
+	}
+	@Test
+	public void test_ConditionHasFieldEnforceTwo() {
+		assertThat(entities.getPattern_OneFieldEnforceTwo().countMatches(), is(12));
+	}
+	@Test
+	public void test_ConditionHasFieldForbidFwo() {
+		assertThat(entities.getPattern_OneFieldForbidTwo().countMatches(), is(4));
 	}
 	@Test
 	public void test_ConditionHasFieldIfThen() {
-		assertThat(entities.getPattern_OneFieldIfThen().countMatches(), is(13));
-	}	
+		assertThat(entities.getPattern_OneFieldForbidIfThen().countMatches(), is(0));
+	}
+	
+	@Test
+	public void test_ConditionHasOneFieldHasBottomAndRight() {
+		assertThat(entities.getPattern_OneFieldHasBottomAndRight().countMatches(), is(9));
+	}
+	@Test
+	public void test_ConditionHasOneFieldHasNoBottomAndNoRight() {
+		assertThat(entities.getPattern_OneFieldHasNoBottomAndNoRight().countMatches(), is(7));
+	}
 
 }

@@ -1,13 +1,14 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.constraints.IPositiveConstraint;
+import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
 import org.emoflon.neo.engine.api.rules.IMatch;
 
-public class NeoNegativeConstraint implements IPositiveConstraint {
+public class NeoNegativeConstraint implements INegativeConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private NeoCoreBuilder builder;
@@ -46,7 +47,7 @@ public class NeoNegativeConstraint implements IPositiveConstraint {
 	@Override
 	public boolean isSatisfied() {
 
-		if (getMatch() == null)
+		if (getViolations() == null)
 			return true;
 		else
 			return false;
@@ -54,8 +55,7 @@ public class NeoNegativeConstraint implements IPositiveConstraint {
 	}
 
 	@Override
-	public IMatch getMatch() {
-
+	public Collection<IMatch> getViolations() {
 		logger.info("Check constraint: FORBID " + ap.getName());
 
 		var cypherQuery = CypherPatternBuilder.readQuery(p.getNodes(), true);
@@ -63,13 +63,18 @@ public class NeoNegativeConstraint implements IPositiveConstraint {
 
 		var result = builder.executeQuery(cypherQuery);
 
+		var matches = new ArrayList<IMatch>();
 		while (result.hasNext()) {
-			logger.info("Found match(es). Constraint: FORBID " + ap.getName() + " is NOT complied!");
-			return new NeoMatch(p, result.next());
+			matches.add(new NeoMatch(p, result.next()));
 		}
+
+		if (!matches.isEmpty()) {
+			logger.info("Found match(es). Constraint: FORBID " + ap.getName() + " is NOT complied!");
+			return matches;
+		}
+		
 		logger.info("Not matches found. Constraint: FORBID " + ap.getName() + " is complied!");
 		return null;
-
 	}
 
 }

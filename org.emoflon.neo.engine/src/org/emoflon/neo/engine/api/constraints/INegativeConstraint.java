@@ -6,4 +6,6 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 
 public interface INegativeConstraint {
 	Collection<IMatch> getViolations();
+
+	boolean isSatisfied();
 }

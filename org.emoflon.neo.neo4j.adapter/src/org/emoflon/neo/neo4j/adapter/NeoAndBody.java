@@ -115,7 +115,7 @@ public class NeoAndBody {
 				if(((ConstraintReference) b).isNegated())
 					query += "NOT(" + consRef.getWhereQuery() + ")";
 				else
-					query += consRef.getWhereQuery();
+					query += "(" + consRef.getWhereQuery() + ")";
 				
 			} else if (b instanceof OrBody) {
 				var orbody = new NeoOrBody((OrBody) b, builder);

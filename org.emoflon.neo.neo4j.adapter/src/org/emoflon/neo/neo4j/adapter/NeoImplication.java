@@ -5,10 +5,10 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.constraints.IPositiveConstraint;
+import org.emoflon.neo.engine.api.constraints.IIfElseConstraint;
 import org.emoflon.neo.engine.api.rules.IMatch;
 
-public class NeoImplication implements IPositiveConstraint {
+public class NeoImplication implements IIfElseConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private NeoCoreBuilder builder;
@@ -86,7 +86,7 @@ public class NeoImplication implements IPositiveConstraint {
 	@Override
 	public boolean isSatisfied() {
 
-		if (getMatch() == null)
+		if (getViolations() == null)
 			return true;
 		else
 			return false;
@@ -94,8 +94,7 @@ public class NeoImplication implements IPositiveConstraint {
 	}
 
 	@Override
-	public IMatch getMatch() {
-
+	public Collection<IMatch> getViolations() {
 		logger.info("Check constraint: " + name);
 
 		var cypherQuery = CypherPatternBuilder.readQuery(pIf.getNodes(), pThen.getNodes(), nodesMap, true);
@@ -103,11 +102,16 @@ public class NeoImplication implements IPositiveConstraint {
 
 		var result = builder.executeQuery(cypherQuery);
 
+		var matches = new ArrayList<IMatch>();
 		while (result.hasNext()) {
-			logger.info("No invalid matches found. Constraint: " + name + " is NOT complied!");
-			return new NeoMatch(pIf, result.next());
+			matches.add(new NeoMatch(pIf, result.next()));
 		}
 
+		if (!matches.isEmpty()) {
+			logger.info("No invalid matches found. Constraint: " + name + " is NOT complied!");
+			return matches;
+		}
+		
 		logger.info("No invalid matches found. Constraint: " + name + " is complied!");
 		return null;
 
