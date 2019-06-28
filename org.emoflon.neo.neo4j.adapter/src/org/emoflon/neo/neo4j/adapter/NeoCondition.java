@@ -15,18 +15,21 @@ public class NeoCondition {
 	private NeoPattern p;
 	
 	private Collection<String> nodesAndRefs;
+	private Collection<NeoNode> nodesAndRefsN;
 	
 	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder) {
 		this.builder = builder;
 		this.c = c;
 		this.p = p;
 		this.nodesAndRefs = new ArrayList<>();
+		this.nodesAndRefsN = new ArrayList<>();
 	}
 	
 	public NeoCondition(NeoPattern p, NeoPattern c, String name, NeoCoreBuilder builder) {
 		this.builder = builder;
 		this.p = p;
 		this.nodesAndRefs = new ArrayList<>();
+		this.nodesAndRefsN = new ArrayList<>();
 	}
 	
 	public Collection<IMatch> determineMatches() {
@@ -43,6 +46,8 @@ public class NeoCondition {
 			cypherQuery += "\nWHERE NOT(" + c.getWhereQuery() + ")";
 		else
 			cypherQuery += "\nWHERE " + c.getWhereQuery();
+		if(p.isInjective())
+			cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
 		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());
 		
 		
@@ -64,6 +69,7 @@ public class NeoCondition {
 			
 			if(!nodesAndRefs.contains(node.getVarName())) {
 				nodesAndRefs.add(node.getVarName());
+				nodesAndRefsN.add(node);
 			}
 			
 			for(NeoRelation rel: node.getRelations()) {

@@ -94,6 +94,21 @@ class CypherPatternBuilder {
 
 		'''«IF ret.length > 0»WHERE «ENDIF»«ret»'''
 	}
+	
+	def static String injectivityBlockCond(Collection<NeoNode> nodes) {
+		var String ret = ''
+		var boolean first = true
+
+		for (var i = 0; i < nodes.size; i++) {
+			for (var j = i + 1; j < nodes.size; j++) {
+				if (nodes.get(i).classType == nodes.get(j).classType) {
+					ret += ''' AND (NOT id(«nodes.get(i).varName») = id(«nodes.get(j).varName») OR «nodes.get(i).varName» IS NULL OR «nodes.get(j).varName» IS NULL) '''
+				}
+			}
+		}
+
+		'''«ret»'''
+	}
 
 	def static String nodeIdBlock(Collection<NeoNode> nodes, NeoMatch match) {
 		'''

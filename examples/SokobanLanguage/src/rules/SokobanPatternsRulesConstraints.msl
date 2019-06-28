@@ -353,7 +353,7 @@ pattern oneFieldForbidTwo {
 	f:Field
 } when forbid oneTwoField
 
-pattern oneFieldForbidIfThen {
+pattern oneFieldIfThenTwo {
 	f:Field
 } when if twoField then oneTwoField
 
