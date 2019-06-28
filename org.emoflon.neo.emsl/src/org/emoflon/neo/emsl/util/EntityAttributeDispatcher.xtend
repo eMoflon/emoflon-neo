@@ -78,6 +78,18 @@ class EntityAttributeDispatcher {
 		entity.name
 	}
 	
+	def dispatch getName(Constraint entity) {
+		entity.name
+	}
+	
+	def dispatch getName(TripleGrammar entity) {
+		entity.name
+	}
+	
+	def dispatch getName(GraphGrammar entity) {
+		entity.name
+	}
+	
 	def getSuperTypeName(SuperType entity) {
 		if (entity instanceof Pattern) {
 			return entity.body.name

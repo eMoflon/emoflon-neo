@@ -31,6 +31,12 @@ import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import java.util.HashMap
+import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.emoflon.neo.emsl.eMSL.Constraint
 
 /**
  * This class contains custom validation rules. 
@@ -177,6 +183,59 @@ class EMSLValidator extends AbstractEMSLValidator {
 						)
 					}
 				}	
+			}
+		}
+	}
+	
+	@Check(NORMAL)
+	def checkForEntitiesWithSameName(EMSL_Spec spec) {
+		var namelistsOfEntities = new HashMap<String, ArrayList<String>>();
+		namelistsOfEntities.put("Pattern", new ArrayList<String>())
+		namelistsOfEntities.put("Rule", new ArrayList<String>())
+		namelistsOfEntities.put("Model", new ArrayList<String>())
+		namelistsOfEntities.put("Metamodel", new ArrayList<String>())
+		namelistsOfEntities.put("TripleRule", new ArrayList<String>())
+		namelistsOfEntities.put("TripleGrammar", new ArrayList<String>())
+		namelistsOfEntities.put("GraphGrammar", new ArrayList<String>())
+		namelistsOfEntities.put("Constraint", new ArrayList<String>())
+		
+		for (entity : spec.entities) {
+			var dispatcher = new EntityAttributeDispatcher()
+		 	if (!namelistsOfEntities.get(entity.eClass.name).contains(dispatcher.getName(entity))) {
+				namelistsOfEntities.get(entity.eClass.name).add(dispatcher.getName(entity))
+			} else {
+				if (entity instanceof Rule)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity,
+						EMSLPackage.Literals.RULE__NAME)
+				else if (entity instanceof Model)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity,
+						EMSLPackage.Literals.MODEL__NAME)
+				else if (entity instanceof Metamodel)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity,
+						EMSLPackage.Literals.METAMODEL__NAME)
+				else if (entity instanceof TripleRule)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity,
+						EMSLPackage.Literals.TRIPLE_RULE__NAME)
+				else if (entity instanceof TripleGrammar)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity,
+						EMSLPackage.Literals.TRIPLE_GRAMMAR__NAME)
+				else if (entity instanceof GraphGrammar)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity,
+						EMSLPackage.Literals.GRAPH_GRAMMAR__NAME)
+				else if (entity instanceof Constraint)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity,
+						EMSLPackage.Literals.CONSTRAINT__NAME)
+				else if (entity instanceof Pattern)
+					error("Two " + entity.eClass.name + "s with the same name are not allowed.",
+						entity.body,
+						EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
 			}
 		}
 	}
