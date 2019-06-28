@@ -45,7 +45,6 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle when conditions")
 	public void testNoWayForward() {
 		expectNoMatch(entities.getPattern_NoWayForward());
 	}

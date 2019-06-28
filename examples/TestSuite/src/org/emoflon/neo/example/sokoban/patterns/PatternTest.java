@@ -228,7 +228,7 @@ public class PatternTest extends ENeoTest {
 	
 	@Test
 	public void test_BlockNotOnEndFieldInCorner() {
-		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().countMatches(), is(2));
+		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().countMatches(), is(0));
 	}
 	
 	@Test

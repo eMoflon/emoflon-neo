@@ -212,7 +212,6 @@ pattern all2x2Fields {
 	field22 : Field
 }
 
-// TODO: Refinement Error (not all nodes available?!
 pattern boulderOnEndField -> oneEndField, anOccupiedField {
 	fig : Boulder
 } when forbid block
