@@ -683,7 +683,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			// return for atomicConstraints
 			if ((entity as Constraint).body instanceof NegativeConstraint)
 				return '''**forbid** «((entity as Constraint).body as NegativeConstraint).pattern.name» '''
-			else if ((entity as Constraint) instanceof PositiveConstraint)
+			else if ((entity as Constraint).body instanceof PositiveConstraint)
 				return '''**enforce** «((entity as Constraint).body as PositiveConstraint).pattern.name» '''
 			else if ((entity as Constraint).body instanceof Implication) {
 				return '''**if** «((entity as Constraint).body as Implication).premise.name» **then** «((entity as Constraint).body as Implication).conclusion.name» '''

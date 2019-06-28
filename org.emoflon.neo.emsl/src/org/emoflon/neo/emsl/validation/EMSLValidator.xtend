@@ -29,6 +29,8 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.Metamodel
 
 /**
  * This class contains custom validation rules. 
@@ -67,6 +69,24 @@ class EMSLValidator extends AbstractEMSLValidator {
 			(attrExpr.target as NodeAttributeExpTarget).attribute.type.equals(type)
 		} else if(attrExpr.target instanceof LinkAttributeExpTarget){
 			return (attrExpr.target as LinkAttributeExpTarget).attribute.type.equals(type)
+		}
+	}
+	
+	@Check
+	def checkForMultipleMetamodels(Entity entity) {
+		if (entity instanceof Pattern || entity instanceof Rule || entity instanceof Model) {
+			var dispatcher = new EntityAttributeDispatcher()
+			if (!(dispatcher.getNodeBlocks(entity).empty)) {
+				var firstMetamodel = dispatcher.getNodeBlocks(entity).get(0).type.eContainer as Metamodel
+				for (nb : dispatcher.getNodeBlocks(entity)) {
+					if ((nb.type.eContainer as Metamodel) != firstMetamodel) {
+						error("It is not allowed to create instances of Types from different Metamodels",
+							nb,
+							EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE
+						)
+					}
+				}
+			}
 		}
 	}
 	
