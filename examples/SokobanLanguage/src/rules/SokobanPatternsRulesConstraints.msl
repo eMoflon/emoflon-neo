@@ -33,10 +33,6 @@ pattern selectedFigureRequired {
 	sokoban:Sokoban
 }
 
-
-
-
-
 pattern oneBlock {
 	block : Block
 }
@@ -47,12 +43,7 @@ pattern oneEndField {
 	}
 }
 
-pattern anSelectedFigure {
-	
-}
-
 pattern anOccupiedField {
-	
 	field : Field
 	
 	fig : Figure {
@@ -61,7 +52,6 @@ pattern anOccupiedField {
 }
 
 pattern anOccupiedSokobanField {
-	
 	field : Field
 	
 	fig : Sokoban {
@@ -78,7 +68,6 @@ pattern anOccupiedBlockField {
 }
 
 pattern anOccupiedBoulderField {
-	
 	field : Field
 	
 	fig : Boulder {
@@ -118,8 +107,7 @@ pattern allNotBorderFieldsInARow {
 		-right -> field
 	}
 	
-	fieldR : Field {
-	}
+	fieldR : Field
 }
 
 pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
@@ -313,7 +301,6 @@ abstract rule pushBlock {
 	}
 }
 
-
 rule moveSokobanUp -> moveSokoban {
 	to : Field {
 		-bottom-> from
@@ -337,10 +324,3 @@ rule pushBlockDown -> pushBlock, moveSokobanDown {
 		-bottom-> next
 	}
 } when forbid occupiedNext
-	
-
-
-
-
-
-
