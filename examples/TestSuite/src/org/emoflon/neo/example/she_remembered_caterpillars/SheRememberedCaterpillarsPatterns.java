@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class PatternTest extends ENeoTest {
+public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 	private API_Src_SheRememberedCaterpillars entities = new API_Src_SheRememberedCaterpillars(builder);
 	
 	@BeforeEach
