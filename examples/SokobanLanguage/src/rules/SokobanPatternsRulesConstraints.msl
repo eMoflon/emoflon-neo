@@ -18,7 +18,6 @@ constraint noSokoban = forbid oneSokoban
 constraint oneSokobans = enforce oneSokoban
 constraint twoSokobans = enforce twoSokoban
 
-// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint hasOneSokoban = oneSokobans && !twoSokobans
 
 pattern sokobanMustBeSelectedFigure {
@@ -241,13 +240,11 @@ constraint forbidTopSide = forbid hasTop
 constraint forbidRightSide = forbid hasRight
 constraint forbidBottomSide = forbid hasBottom
 
-// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide
 constraint bottomLeftCorner = forbidLeftSide && forbidBottomSide
 constraint bottomRightCorner = forbidRightSide && forbidBottomSide
 
-// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint noCorner = topLeftCorner || topRightCorner || bottomLeftCorner || bottomRightCorner
 
 constraint extremeConstraint = ((!topLeftCorner && topRightCorner) || !topRightCorner) && !bottomLeftCorner && (bottomRightCorner || (!bottomLeftCorner || (!topRightCorner && !topRightCorner)))

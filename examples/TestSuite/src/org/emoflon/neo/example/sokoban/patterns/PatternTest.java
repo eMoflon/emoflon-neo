@@ -254,9 +254,7 @@ public class PatternTest extends ENeoTest {
 	public void test_constraint_hasNoCorner() {
 		assertTrue(entities.getConstraint_NoCorner().isViolated());
 	}
-	
-	
-	// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
+		
 	@Test
 	public void test_hasOneSokoban() {
 		assertTrue(entities.getConstraint_HasOneSokoban().isSatisfied());
