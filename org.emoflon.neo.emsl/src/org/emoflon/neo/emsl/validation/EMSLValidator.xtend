@@ -3,40 +3,44 @@
  */
 package org.emoflon.neo.emsl.validation
 
-import org.eclipse.xtext.validation.Check
-import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
-import org.emoflon.neo.emsl.eMSL.PrimitiveInt
-import org.emoflon.neo.emsl.eMSL.BuiltInType
-import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
-import org.emoflon.neo.emsl.eMSL.EMSLPackage
-import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
-import org.emoflon.neo.emsl.eMSL.PrimitiveString
-import org.emoflon.neo.emsl.eMSL.UserDefinedType
-import org.emoflon.neo.emsl.eMSL.EnumValue
-import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
-import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.EMSLFlattener
-import org.emoflon.neo.emsl.util.FlattenerException
-import org.emoflon.neo.emsl.util.FlattenerErrorType
 import java.util.ArrayList
-import org.emoflon.neo.emsl.eMSL.AttributeExpression
-import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
-import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
-import org.emoflon.neo.emsl.eMSL.DataType
-import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
-import org.emoflon.neo.emsl.eMSL.Entity
-import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
-import org.emoflon.neo.emsl.eMSL.Rule
-import org.emoflon.neo.emsl.eMSL.RefinementCommand
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.Model
-import org.emoflon.neo.emsl.eMSL.Metamodel
-import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import java.util.HashMap
-import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.xtext.validation.Check
+import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
+import org.emoflon.neo.emsl.eMSL.BuiltInType
+import org.emoflon.neo.emsl.eMSL.Condition
 import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.ConstraintReference
+import org.emoflon.neo.emsl.eMSL.DataType
+import org.emoflon.neo.emsl.eMSL.EMSLPackage
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Entity
+import org.emoflon.neo.emsl.eMSL.EnumValue
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.emoflon.neo.emsl.eMSL.Implication
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
+import org.emoflon.neo.emsl.eMSL.PrimitiveInt
+import org.emoflon.neo.emsl.eMSL.PrimitiveString
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.UserDefinedType
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.util.FlattenerErrorType
+import org.emoflon.neo.emsl.util.FlattenerException
 
 /**
  * This class contains custom validation rules. 
@@ -57,13 +61,13 @@ class EMSLValidator extends AbstractEMSLValidator {
 					!(p.value instanceof PrimitiveString && propertyType == BuiltInDataTypes.ESTRING) &&
 					!(p.value instanceof AttributeExpression && isOfCorrectType(p.value as AttributeExpression, p.type.type))
 				)
-					error("The value of this PropertyStatement must be of type " + propertyType.getName, 
+					error("The value of this property must be of type " + propertyType.getName, 
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 			} else if (p.type.type instanceof UserDefinedType) {
 				var propertyType = (p.type.type as UserDefinedType).reference
 				var literals = propertyType.literals
 				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal))) {
-					error("The value of this PropertyStatement must be of type " + propertyType.getName, 
+					error("The value of this property must be of type " + propertyType.getName, 
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}
 			}
@@ -86,7 +90,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				var firstMetamodel = dispatcher.getNodeBlocks(entity).get(0).type.eContainer as Metamodel
 				for (nb : dispatcher.getNodeBlocks(entity)) {
 					if ((nb.type.eContainer as Metamodel) != firstMetamodel) {
-						error("It is not allowed to create instances of Types from different Metamodels",
+						error("It is not allowed to create instances of types from different metamodels",
 							nb,
 							EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE
 						)
@@ -112,7 +116,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 				
 				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-					error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.",  
+					error("The type " + e.nodeBlock.type.name + " in your refinements cannot be merged into a common subtype.",  
 						EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
 					
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
@@ -120,17 +124,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 				
 				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
-					error("The value of " + e.property2.type.name + " does not match with your other refinements",
+					error("The value of " + e.property2.type.name + " does not match your other refinements",
 						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 				} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
 					var dispatcher = new EntityAttributeDispatcher()
 					for (s : dispatcher.getSuperRefinementTypes(entity)) {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error("The type of entity you are trying to refine is not supported.",
+							error("The type of entity you are trying to refine is not yet supported.",
 								entity.body,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-							error("The type of entity you are trying to refine is not supported.",
+							error("The type of entity you are trying to refine is not yet supported.",
 								entity.body,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 						}
@@ -143,7 +147,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
 				
 				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-					error("The type " + e.nodeBlock.type.name + " in your refinements is not mergeable.",  
+					error("The type " + e.nodeBlock.type.name + " in your refinements cannot be merged into a common subtype.",  
 						EMSLPackage.Literals.RULE__NAME)
 					
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
@@ -151,17 +155,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
 				
 				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
-					error("The value of " + e.property2.type.name + " does not match with your other refinements",
+					error("The value of " + e.property2.type.name + " does not match your other refinements",
 						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
 				} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
 					var dispatcher = new EntityAttributeDispatcher()
 					for (s : dispatcher.getSuperRefinementTypes(entity)) {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error("The type of entity you are trying to refine is not supported.",
+							error("The type of entity you are trying to refine is not yet supported.",
 								entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern && dispatcher.getSuperTypeName(e.superEntity).equals(dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-							error("The type of entity you are trying to refine is not supported.",
+							error("The type of entity you are trying to refine is not yet supported.",
 								entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 						}
@@ -240,4 +244,22 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}
 	}
 	
+	@Check(NORMAL)
+	def void forbidIfElseAsApplicationCondition(Pattern p){
+		forbidIfElseAsApplicationCondition(p.condition)
+	}
+	
+	def void forbidIfElseAsApplicationCondition(Condition c){
+		var allConditions = new ArrayList<EObject>()
+		allConditions.add(c)
+		allConditions.addAll(c.eAllContents.toList)
+		allConditions.filter[it instanceof Implication].forEach[
+			error("If/else conditions are currently not supported as part of application conditions", EMSLPackage.Literals.PATTERN__CONDITION)
+		]
+		
+		allConditions.filter[it instanceof ConstraintReference].forEach[
+			var refCond = (it as ConstraintReference).reference.body
+			forbidIfElseAsApplicationCondition(refCond)
+		]
+	}	
 }
