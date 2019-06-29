@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.sokoban.scalability;
+package org.emoflon.neo.example.sokoban;
 
 import java.util.ArrayList;
 import java.util.List;
