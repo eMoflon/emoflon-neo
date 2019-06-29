@@ -10,5 +10,7 @@ public interface IRule extends IPattern {
 	 * 
 	 * @return The comatch if application was possible.
 	 */
-	Optional<ICoMatch> apply();
+	default Optional<ICoMatch> apply() {
+		return determineOneMatch().map(this::apply);
+	}
 }

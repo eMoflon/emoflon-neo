@@ -11,6 +11,7 @@ import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanRules extends ENeoTest {
@@ -22,6 +23,7 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 	@Test
+	@Disabled("TODO[Jannik] Implement rules")
 	public void testMoveSokobanDown() {
 		IRule rule = entities.getRule_MoveSokobanDown();
 		var matches = rule.determineMatches();

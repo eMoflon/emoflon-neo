@@ -1,6 +1,7 @@
 package org.emoflon.neo.engine.api.rules;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IPattern {
 	String getName();
@@ -19,6 +20,22 @@ public interface IPattern {
 	 * @return Collection of all determined matches.
 	 */
 	Collection<IMatch> determineMatches();
+
+	/**
+	 * Only compute as most as many matches as required.
+	 * 
+	 * @return at most limit random matches for the pattern.
+	 */
+	Collection<IMatch> determineMatches(int limit);
+
+	/**
+	 * Compute a single match for the pattern.
+	 * 
+	 * @return A single match or empty if there are no matches for the pattern.
+	 */
+	default Optional<IMatch> determineOneMatch() {
+		return determineMatches(1).stream().findAny();
+	}
 
 	/**
 	 * Compute all matches but only return the number of matches found. Note: as

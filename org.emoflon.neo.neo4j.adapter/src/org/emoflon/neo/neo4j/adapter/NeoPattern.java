@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.EMSLFlattener;
-import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
@@ -127,5 +127,12 @@ public class NeoPattern implements IPattern {
 	@Override
 	public void setMatchInjectively(Boolean injective) {
 		this.injective = injective;
+	}
+
+	@Override
+	public Collection<IMatch> determineMatches(int limit) {
+		// TODO[Jannik] Implement this in such a way that neo4j limits the search to
+		// exactly n matches.
+		return null;
 	}
 }
