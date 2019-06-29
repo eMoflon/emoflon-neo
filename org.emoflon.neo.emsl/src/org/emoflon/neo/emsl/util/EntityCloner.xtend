@@ -2,7 +2,6 @@ package org.emoflon.neo.emsl.util
 
 import java.util.ArrayList
 import org.eclipse.emf.ecore.EObject
-import org.emoflon.neo.emsl.eMSL.Pattern
 import org.eclipse.emf.ecore.util.EcoreUtil
 
 class EntityCloner {
@@ -11,7 +10,7 @@ class EntityCloner {
 		var collection = new ArrayList<EObject> ();
 		
 		collection.addAll((entity).eAllContents.toSet.toList)
-		collection.add(entity as Pattern)
+		collection.add(entity)
 		
 		var collectionCopy = EcoreUtil.copyAll(collection)
 		

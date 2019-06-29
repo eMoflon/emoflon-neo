@@ -75,10 +75,8 @@ pattern pacManAndGhostOnFields -> pacManOnField [fig -> p, field -> f00], ghostO
 
 pattern pacManAndGhostOnNeighbouringFields -> pacManAndGhostOnFields {
 	f00 : Field {
-		-bottom-> f10
+		-bottom-> $f10
 	}
-	
-	f10 : Field
 }
 
 pattern twoPacManOnBoard -> 

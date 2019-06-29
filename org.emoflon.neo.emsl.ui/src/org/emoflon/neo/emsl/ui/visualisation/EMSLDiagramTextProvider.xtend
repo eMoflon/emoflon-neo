@@ -45,6 +45,12 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.FlattenerException
+import org.emoflon.neo.emsl.eMSL.AndBody
+import org.emoflon.neo.emsl.eMSL.OrBody
+import java.util.HashMap
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.util.FlattenerErrorType
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -111,7 +117,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			return visualiseOverview(root)
 
 		if (!selectedNodeBlock.isPresent)
-			return visualiseEntity(selectedEntity.get)
+			return visualiseEntity(selectedEntity.get, true)
 
 		visualiseNodeBlock(selectedNodeBlock.get, true)
 	}
@@ -155,19 +161,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					package "Pattern: «entity.body.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
-					«visualiseSuperTypesInPattern(entity)»
 				«ENDIF»
 				«IF entity instanceof Rule»
 					package "Rule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
-					«visualiseSuperTypesInRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleRule»
 					package "TripleRule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
-					«visualiseSuperTypesInTripleRule(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
 					package "TripleGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
@@ -189,6 +192,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						
 					}
 				«ENDIF»
+				«visualiseSuperTypesInEntity(entity)»
 			«ENDFOR»
 		'''
 	}
@@ -199,9 +203,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Model.
 	 */
-	def dispatch String visualiseEntity(Model entity) {
+	def dispatch String visualiseEntity(Model entity, boolean mainSelection) {
+		var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>())
 		'''
-			«FOR nb : entity.nodeBlocks»
+			«FOR nb : entityCopy.nodeBlocks»
 				«visualiseNodeBlockInModel(nb, false)»
 			«ENDFOR»
 		'''
@@ -210,7 +215,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Model.
 	 */
-	def String visualiseNodeBlockInModel(ModelNodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInModel(ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
@@ -290,7 +301,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Metamodel.
 	 */
-	def dispatch String visualiseEntity(Metamodel entity) {
+	def dispatch String visualiseEntity(Metamodel entity, boolean mainSelection) {
 		'''
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInMetamodel(nb, false)»
@@ -354,7 +365,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for an Enum.
 	 */
-	def dispatch String visualiseEntity(Enum entity) {
+	def dispatch String visualiseEntity(Enum entity, boolean mainSelection) {
 		'''
 			«FOR item : entity.literals»
 				class "«entity.name»"
@@ -379,28 +390,28 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Pattern.
 	 */
-	def dispatch String visualiseEntity(Pattern entity) {
-		var entityCopy = entity
+	def dispatch String visualiseEntity(Pattern entity, boolean mainSelection) {
 		try {
-			entityCopy = new EMSLFlattener().flattenCopyOfPattern(entity, newArrayList)
+			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
+			'''
+				package «(entityCopy as Pattern).body.name»«IF mainSelection» <<Selection>> «ENDIF»{
+				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
+					«visualiseNodeBlockInPattern(nb, false)»
+				«ENDFOR»
+				}
+				«IF (entityCopy as Pattern).condition !== null »
+					legend bottom
+						«getConditionString(entity)»
+					endlegend
+					«visualiseCondition(entity)»
+				«ENDIF»
+			'''
 		} catch (AssertionError e) {
 			
 		} catch (FlattenerException e) {
-			e.printStackTrace
+			if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY)
+				return ""
 		}
-		
-		
-		'''
-			«FOR nb : entityCopy.body.nodeBlocks»
-				«visualiseNodeBlockInPattern(nb, false)»
-			«ENDFOR»
-			«IF entityCopy.condition !== null »
-				legend bottom
-					«getConditionString(entity)»
-				endlegend
-				«visualiseCondition(entity)»
-			«ENDIF»
-		'''
 	}
 
 	/**
@@ -408,7 +419,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInPattern(ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		for (n : (new EMSLFlattener().flattenCopyOfPattern(nodeBlock.eContainer.eContainer as Pattern, new ArrayList<String>())).body.nodeBlocks) {
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer.eContainer as Entity, new ArrayList<String>()))))) {
 			if (nodeBlock.name.equals(n.name))
 				node = n
 		}
@@ -455,34 +466,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			'''"«entityName».«nbName»:«nbTypeName»"'''
 		} else
 			'''"?"'''
-	}
-
-	/**
-	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
-	 */
-	def String visualiseSuperTypesInPattern(Pattern entity) {
-		'''
-			«FOR st : entity.body.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"Pattern: «entity.body.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"Pattern: "«entity.body.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"Pattern: «entity.body.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"Pattern: «entity.body.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"Pattern: «entity.body.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
-	
+	}	
 
 	/*-------------------------------------------------*/
 	/*------------------- Rules -----------------------*/
@@ -490,24 +474,38 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Rule.
 	 */
-	def dispatch String visualiseEntity(Rule entity) {
+	def dispatch String visualiseEntity(Rule entity, boolean mainSelection) {
+		try {
+			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
 		'''
-			«FOR nb : entity.nodeBlocks»
+			package «(entityCopy as Rule).name»«IF mainSelection» <<Selection>> «ENDIF»{
+			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
 				«visualiseNodeBlockInRule(nb, false)»
 			«ENDFOR»
-			«IF entity.condition !== null»
+			}
+			«IF (entityCopy as Rule).condition !== null»
 				legend bottom
-					«getConditionString(entity)»
+					«getConditionString(entityCopy)»
 				endlegend
-				«visualiseCondition(entity)»
+				«visualiseCondition(entityCopy)»
 			«ENDIF»
 		'''
+		} catch (FlattenerException e) {
+			e.printStackTrace
+			return ""
+		}
 	}
 
 	/**
 	 * Returns the diagram text for a NodeBlock in a Rule.
 	 */
-	def String visualiseNodeBlockInRule(ModelNodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInRule(ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
 		'''
 			class «labelForRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
@@ -553,35 +551,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	/**
-	 * Returns the diagram text for all SuperTypes of a Rule with inheritance arrows.
-	 */
-	def String visualiseSuperTypesInRule(Rule entity) {
-		'''
-			«FOR st : entity.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"Rule: «entity.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"Rule: «entity.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"Rule: «entity.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"Rule: «entity.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"Rule: «entity.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
-
-	/**
 	 * Returns the diagram text for a GraphGrammar.
 	 */
-	def dispatch String visualiseEntity(GraphGrammar entity) {
+	def dispatch String visualiseEntity(GraphGrammar entity, boolean mainSelection) {
 		'''
 			«FOR r : entity.rules»
 				class "«entity.name».«r.name»"
@@ -602,7 +574,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Constraint.
 	 */
-	def dispatch String visualiseEntity(Constraint entity) {
+	def dispatch String visualiseEntity(Constraint entity, boolean mainSelection) {
 		'''
 			legend bottom
 				«getConditionString(entity)»
@@ -616,14 +588,18 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseCondition(Entity entity) {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
+		var copiesOfConditionPatterns = newArrayList
+		for (p : conditionPattern) {
+			copiesOfConditionPatterns.add(new EMSLFlattener().flattenCopyOfEntity(p.eContainer as Pattern, new ArrayList<String>()))
+		}
 		'''
-			«FOR c : conditionPattern»
-				«visualiseEntity((c as AtomicPattern).eContainer as Pattern)»
+			«FOR c : copiesOfConditionPatterns»
+				«visualiseEntity(c as Pattern, false)»
 			«ENDFOR»
 			«IF entity instanceof Rule || entity instanceof Pattern»
 				«FOR nb : entity.nodeBlocks»
-					«FOR p : conditionPattern»
-						«FOR otherNB : (p as AtomicPattern).nodeBlocks»
+					«FOR p : copiesOfConditionPatterns»
+						«FOR otherNB : (p as Pattern).body.nodeBlocks»
 							«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
 						«ENDFOR»
 					«ENDFOR»
@@ -664,126 +640,124 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for the condition of a Rule or Pattern.
 	 */
 	def String getConditionString(Entity entity) {
-		var text = ""
+		var builder = new StringBuilder();
 		if (entity instanceof Rule) {
-			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint ||
-				entity.condition instanceof Implication)
-				text += getAtomicConstraintString(entity.condition as ConstraintBody)
-
+			// return for atomicConstraints
+			if ((entity as Rule).condition instanceof NegativeConstraint)
+				return '''**forbid** «((entity as Rule).condition as NegativeConstraint).pattern.name» '''
+			else if ((entity as Rule).condition instanceof PositiveConstraint)
+				return '''**enforce** «((entity as Rule).condition as PositiveConstraint).pattern.name» '''
+			else if ((entity as Rule).condition instanceof Implication) {
+				return '''**if** «((entity as Rule).condition as Implication).premise.name» **then** «((entity as Rule).condition as Implication).conclusion.name» '''
+			} 	
 			// return the String for ConstraintReference
-			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference).reference)
-		} else if (entity instanceof Pattern) {
-			// return the String for simple Constraints
-			if (entity.condition instanceof NegativeConstraint || entity.condition instanceof PositiveConstraint ||
-				entity.condition instanceof Implication)
-				text += getAtomicConstraintString(entity.condition as ConstraintBody)
-
-			// return the String for ConstraintReference
-			if (entity.condition instanceof ConstraintReference)
-				text += getConstraintReferenceString((entity.condition as ConstraintReference).reference)
-		} else if (entity instanceof Constraint) {
-			text += getConstraintReferenceString(entity as Constraint)
-		}
-		return text
-	}
-
-	/**
-	 * Returns the diagram text for a ConstraintReference (referencing an AtomicConstraint or another Constraint).
-	 */
-	def String getConstraintReferenceString(Constraint constraint) {
-		var text = ""
-		if (constraint.body instanceof NegativeConstraint ||
-			constraint.body instanceof PositiveConstraint || constraint.body instanceof Implication)
-			text += getAtomicConstraintString(constraint.body)
-		// OrBody
-		else {
-			if (constraint.body !== null) {
-				var count = constraint.body.children.size - 1
-				for (c : constraint.body.children) {
-					text += getOrBodyString(c)
-					if (count > 0)
-						text += " **||** "
-					count--
+			else if (entity.condition instanceof ConstraintReference) {
+				if ((entity.condition as ConstraintReference).reference.body instanceof NegativeConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof PositiveConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof Implication) {
+					builder.append(getAtomicConstraintString((entity.condition as ConstraintReference).reference.body))
+				} else if ((entity.condition as ConstraintReference).reference.body instanceof OrBody) {
+					builder.append(getOrBodyString((entity.condition as ConstraintReference).reference.body))
 				}
 			}
+		} else if (entity instanceof Pattern) {
+			// return for atomicConstraints
+			if ((entity as Pattern).condition instanceof NegativeConstraint)
+				return '''**forbid** «((entity as Pattern).condition as NegativeConstraint).pattern.name» '''
+			else if ((entity as Pattern).condition instanceof PositiveConstraint)
+				return '''**enforce** «((entity as Pattern).condition as PositiveConstraint).pattern.name» '''
+			else if ((entity as Pattern).condition instanceof Implication) {
+				return '''**if** «((entity as Pattern).condition as Implication).premise.name» **then** «((entity as Pattern).condition as Implication).conclusion.name» '''
+			} 
+			// return the String for ConstraintReference
+			else if (entity.condition instanceof ConstraintReference) {
+				if ((entity.condition as ConstraintReference).reference.body instanceof NegativeConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof PositiveConstraint
+						|| (entity.condition as ConstraintReference).reference.body instanceof Implication) {
+					builder.append(getAtomicConstraintString((entity.condition as ConstraintReference).reference.body))
+				} else if ((entity.condition as ConstraintReference).reference.body instanceof OrBody) {
+					builder.append(getOrBodyString((entity.condition as ConstraintReference).reference.body))
+				}
+			}
+		} else if (entity instanceof Constraint) {
+			// return for atomicConstraints
+			if ((entity as Constraint).body instanceof NegativeConstraint)
+				return '''**forbid** «((entity as Constraint).body as NegativeConstraint).pattern.name» '''
+			else if ((entity as Constraint).body instanceof PositiveConstraint)
+				return '''**enforce** «((entity as Constraint).body as PositiveConstraint).pattern.name» '''
+			else if ((entity as Constraint).body instanceof Implication) {
+				return '''**if** «((entity as Constraint).body as Implication).premise.name» **then** «((entity as Constraint).body as Implication).conclusion.name» '''
+			} 
+			// return for OrBody
+			else if ((entity as Constraint).body instanceof OrBody) {
+				builder.append(getOrBodyString((entity as Constraint).body))
+			}
 		}
-		return text
-	}
-	
-	def List<? extends ConstraintBody> getChildren(ConstraintBody body){
-		return ConstraintTraversalHelper.getChildren(body)
+		return builder.toString
 	}
 
 	/**
 	 * Returns the diagram text for an OrBody in a recursive Constraint definition.
 	 */
 	def String getOrBodyString(ConstraintBody constraintBody) {
-		var text = ""
-
+		var builder = new StringBuilder()
 		var count = constraintBody.children.size - 1
 		for (c : constraintBody.children) {
-			text += getAndBodyString(c)
-			if (count > 0)
-				text += " **&&** "
-			count--
+			if (c instanceof AndBody) {
+				builder.append(getAndBodyString(c))
+				if (count > 0)
+					builder.append(" **||** ")
+				count--
+			}
 		}
-
-		return text
+		return builder.toString
 	}
 
 	/**
 	 * Returns the diagram text for an AndBody in a recursive Constraint definition.
 	 */
 	def String getAndBodyString(ConstraintBody constraintBody) {
-		var text = ""
-
-		if ((constraintBody instanceof ConstraintReference))
-			text += getConstraintReferenceString(constraintBody.reference)
-
+		var builder = new StringBuilder()
 		var count = constraintBody.children.size - 1
-		if (constraintBody.children.size > 1)
-			text += " ( "
 		for (c : constraintBody.children) {
-			text += getPrimaryString(c)
+			if (c instanceof ConstraintReference) {
+				if (c.negated)
+					builder.append("**!**(")
+				if ((c as ConstraintReference).reference.body instanceof NegativeConstraint 
+						|| (c as ConstraintReference).reference.body instanceof PositiveConstraint 
+						|| (c as ConstraintReference).reference.body instanceof Implication) {
+					builder.append(getAtomicConstraintString(c))
+				} else if ((c as ConstraintReference).reference.body instanceof OrBody) {
+					builder.append(getOrBodyString(c.reference.body))
+				}
+				if (c.negated)
+					builder.append(")")
+			} else if (c instanceof OrBody) {
+				builder.append(" (" + getOrBodyString(c) + ") ")
+			}
 			if (count > 0)
-				text += " **||** "
-			count--
+				builder.append(" **&&** ")
+			count --
 		}
-		if (constraintBody.children.size > 1)
-			text += " ) "
-
-		return text
-	}
-
-	/**
-	 * Returns the diagram text for a Primary in a recursive Constraint definition.
-	 */
-	def String getPrimaryString(ConstraintBody constraintBody) {
-		var text = ""
-
-		if (constraintBody.children.get(0) instanceof ConstraintReference) {
-			text += getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference).reference)
-		} else {
-			text += " ( "
-			text += getOrBodyString(constraintBody)
-			text += " ) "
-		}
-
-		return text
+		return builder.toString
 	}
 
 	/**
 	 * Returns the diagram text for an AtomicConstraint.
 	 */
 	def String getAtomicConstraintString(ConstraintBody constraintBody) {
-		if (constraintBody instanceof NegativeConstraint)
-			return '''**forbid** «(constraintBody as NegativeConstraint).pattern.name»'''
-		else if (constraintBody instanceof PositiveConstraint)
-			return '''**enforce** «(constraintBody as PositiveConstraint).pattern.name»'''
-		else if (constraintBody instanceof Implication)
-			return '''**if** «(constraintBody as Implication).premise.name» **then** «(constraintBody as Implication).conclusion.name»'''
+		if (constraintBody instanceof ConstraintReference) {
+			if (constraintBody.reference.body instanceof NegativeConstraint)
+				return '''**forbid** «(constraintBody.reference.body as NegativeConstraint).pattern.name» '''
+			else if (constraintBody.reference.body instanceof PositiveConstraint)
+				return '''**enforce** «(constraintBody.reference.body as PositiveConstraint).pattern.name» '''
+			else if (constraintBody.reference.body instanceof Implication)
+				return '''**if** «(constraintBody.reference.body as Implication).premise.name» **then** «(constraintBody.reference.body as Implication).conclusion.name» '''
+		}		
+	}
+	
+	def List<? extends ConstraintBody> getChildren(ConstraintBody body){
+		return ConstraintTraversalHelper.getChildren(body)
 	}
 
 	/*-------------------------------------------------*/
@@ -792,7 +766,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a TripleRule.
 	 */
-	def dispatch String visualiseEntity(TripleRule entity) {
+	def dispatch String visualiseEntity(TripleRule entity, boolean mainSelection) {
 		'''
 			together {
 				«FOR snb : entity.srcNodeBlocks»
@@ -858,32 +832,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	/**
-	 * Returns the diagram text for all SuperTypes of a TripleRule with inheritance arrows.
-	 */
-	def String visualiseSuperTypesInTripleRule(TripleRule entity) {
-		'''
-			«FOR st : entity.superRefinementTypes»
-				«IF (st instanceof Pattern)»
-					"TripleRule: «entity.name»"--|>"Pattern: «st.body.name»"
-				«ENDIF»
-				«IF (st instanceof Rule)»
-					"TripleRule: "«entity.name»"--|>"Rule: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Model)»
-					"TripleRule: «entity.name»"--|>"Model: «st.name»"
-				«ENDIF»
-				«IF (st instanceof Metamodel)»
-					"TripleRule: «entity.name»"--|>"Metamodel: «st.name»"
-				«ENDIF»
-				«IF (st instanceof TripleRule)»
-					"TripleRule: «entity.name»"--|>"TripleRule: «st.name»"
-				«ENDIF»
-				««« Maybe add more types
-			«ENDFOR»
-		'''
-	}
-
-	/**
 	 * Returns the diagram text for the NACs of a given TripleRule.
 	 */
 	def String visualiseTripleRuleNACs(TripleRule entity) {
@@ -891,7 +839,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			«FOR c : entity.nacs»
 				«IF c.pattern.eContainer !== null»
-					«visualiseEntity(c.pattern.eContainer as Pattern)»
+					«visualiseEntity(c.pattern.eContainer as Pattern, false)»
 				«ENDIF»
 			«ENDFOR»
 			
@@ -904,7 +852,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a TripleGrammar.
 	 */
-	def dispatch String visualiseEntity(TripleGrammar entity) {
+	def dispatch String visualiseEntity(TripleGrammar entity, boolean mainSelection) {
 		'''
 			together Source {
 				«FOR mm : entity.srcMetamodels»
@@ -959,10 +907,106 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		nodeBlocks.addAll(entity.trgNodeBlocks)
 		return nodeBlocks
 	}
+	
+	
+	/*-----------------------------------------*/
+	/*------ Get SuperRefinementTypes ---------*/
+	/*-----------------------------------------*/
+
+	def dispatch getSuperRefinementTypes(Model entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Metamodel entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Pattern entity) {
+		entity.body.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Rule entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(TripleRule entity) {
+		entity.superRefinementTypes
+	}
+	
+	def dispatch getSuperRefinementTypes(Constraint entity) {
+		return newArrayList
+	}
+	
+	def dispatch getSuperRefinementTypes(TripleGrammar entity) {
+		return newArrayList
+	}
+	
+	def dispatch getSuperRefinementTypes(GraphGrammar entity) {
+		return newArrayList
+	}
+	
+	/*------------------------------*/
+	/*---------- Get Names ---------*/
+	/*------------------------------*/
+
+	def dispatch getName(Model entity) {
+		entity.name
+	}
+	
+	def dispatch getName(Metamodel entity) {
+		entity.name
+	}
+	
+	def dispatch getName(Pattern entity) {
+		entity.body.name
+	}
+	
+	def dispatch getName(Rule entity) {
+		entity.name
+	}
+	
+	def dispatch getName(TripleRule entity) {
+		entity.name
+	}
+	
+
 
 	/*------------------------------*/
 	/*------------ Misc ------------*/
 	/*------------------------------*/
+	
+	/**
+	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
+	 */
+	def String visualiseSuperTypesInEntity(Entity entity) {
+		var superTypeNames = new HashMap<String, ArrayList<String>>()
+		superTypeNames.put("Pattern", new ArrayList<String>())
+		superTypeNames.put("Rule", new ArrayList<String>())
+		superTypeNames.put("Model", new ArrayList<String>())
+		superTypeNames.put("Metamodel", new ArrayList<String>())
+		superTypeNames.put("TripleRule", new ArrayList<String>())
+		
+		for (st : entity.superRefinementTypes) {
+			if ((st as RefinementCommand).referencedType instanceof AtomicPattern && !superTypeNames.get("Pattern").contains(((st as RefinementCommand).referencedType as AtomicPattern).name))
+				superTypeNames.get("Pattern").add(((st as RefinementCommand).referencedType as AtomicPattern).name)
+			else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name))
+				superTypeNames.get("Rule").add(((st as RefinementCommand).referencedType as Rule).name)
+			else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name))
+				superTypeNames.get("Model").add(((st as RefinementCommand).referencedType as Model).name)
+			else if ((st as RefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as RefinementCommand).referencedType as Metamodel).name))
+				superTypeNames.get("Metamodel").add(((st as RefinementCommand).referencedType as Metamodel).name)
+			else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name))
+				superTypeNames.get("TripleRule").add(((st as RefinementCommand).referencedType as TripleRule).name)
+		}
+		'''
+			«FOR type : superTypeNames.keySet»
+				«FOR name : superTypeNames.get(type)»
+					"«entity.eClass.name»: «entity.name»"--|>"«type»: «name»"
+				«ENDFOR»
+			«ENDFOR»
+		'''
+	}
+	
 	/**
 	 * Returns the diagram text for a link to the given entity to make it clickable.
 	 */
@@ -1068,6 +1112,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				BackgroundColor GhostWhite
 				BorderColor LightSlateGray
 				Fontcolor LightSlateGray
+				BackgroundColor<<Selection>> PapayaWhip
 			}
 			
 			skinparam object {

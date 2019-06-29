@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 
 public class FlattenerException extends Exception {
@@ -20,6 +21,8 @@ public class FlattenerException extends Exception {
 	private ModelPropertyStatement property2;
 
 	private ModelNodeBlock nodeBlock;
+	
+	private ModelRelationStatement relation;
 
 	/**
 	 * Constructor for the case of a detected infinite loop.
@@ -58,6 +61,13 @@ public class FlattenerException extends Exception {
 		this.errorType = type;
 		this.superEntity = superEntity;
 	}
+	
+	// for non-resolvable proxies of relation statements
+	public FlattenerException(Entity entity, FlattenerErrorType type, ModelRelationStatement relation) {
+		this.entity = entity;
+		this.errorType = type;
+		this.relation = relation;
+	}
 
 	public ModelPropertyStatement getProperty1() {
 		return property1;
@@ -85,6 +95,10 @@ public class FlattenerException extends Exception {
 
 	public SuperType getSuperEntity() {
 		return superEntity;
+	}
+	
+	public ModelRelationStatement getRelation() {
+		return relation;
 	}
 
 }

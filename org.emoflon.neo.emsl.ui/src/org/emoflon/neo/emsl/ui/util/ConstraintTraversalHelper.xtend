@@ -72,10 +72,6 @@ class ConstraintTraversalHelper {
 		return body.children
 	}
 	
-	def dispatch static List<? extends ConstraintBody> getChildren(Primary body){
-		return body.children
-	}
-	
 	def void getOrBodyString(ConstraintBody constraintBody) {
 		for (c : constraintBody.children)
 			getAndBodyString(c)
@@ -85,15 +81,17 @@ class ConstraintTraversalHelper {
 		if ((constraintBody instanceof ConstraintReference))
 			getConstraintReferenceString(constraintBody)
 
-		for (c : constraintBody.children)
-			getPrimaryString(c)
+		if (!(constraintBody instanceof ConstraintReference)) {
+			for (c : constraintBody.children)
+				getPrimaryString(c)
+		}
 	}
 	
 	def getPrimaryString(ConstraintBody constraintBody) {
-		if (constraintBody.children.size > 0 && constraintBody.children.get(0) instanceof ConstraintReference)
-			getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
-		else if (constraintBody instanceof ConstraintReference)
+		if (constraintBody instanceof ConstraintReference)
 			getConstraintReferenceString(constraintBody)
+		else if (constraintBody.children.size > 0 && constraintBody.children.get(0) instanceof ConstraintReference)
+			getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
 		else
 			getOrBodyString(constraintBody)
 	}

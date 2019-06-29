@@ -13,6 +13,8 @@ import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.util.EntityCloner
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.eMSL.Entity
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -21,17 +23,22 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern
 class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 	
 	override completeModelRelabelingCommand_OldLabel(
-		EObject entity, Assignment assignment, 
-  		ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-		
-		for (nb : new EMSLFlattener().flattenPattern(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern, new ArrayList<String>()).body.nodeBlocks) {
-			acceptor.accept(createCompletionProposal(nb.name, context))
-		}	
+			EObject entity, Assignment assignment, 
+  			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		if ((entity as RefinementCommand).referencedType.eContainer instanceof Pattern) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern, new ArrayList<String>()))) {
+				acceptor.accept(createCompletionProposal(nb.name, context))
+			}
+		} else {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType) as Entity, new ArrayList<String>()))) {
+				acceptor.accept(createCompletionProposal(nb.name, context))
+			}
+		}
 	}
 	
 	override completeModelRelationStatement_ProxyTarget(
-		EObject entity, Assignment assignemnt,
-		ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+			EObject entity, Assignment assignemnt,
+			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 			
 		for (refinement : (entity.eContainer.eContainer as AtomicPattern).superRefinementTypes) {
 			for (relabeling : refinement.relabeling) {
@@ -39,5 +46,42 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			}
 		}
 	}
+	
+	override completeModelRelationStatement_Target(
+			EObject entity, Assignment assignment,
+			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+			
+		super.completeModelRelationStatement_Target(entity, assignment, context, acceptor)
+		if (entity.eContainer instanceof AtomicPattern) {
+			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer.eContainer as Entity)) {
+				for (relabeling : (refinement as RefinementCommand).relabeling) {
+					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
+				}
+			}
+		} else {
+			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer as Entity)) {
+				for (relabeling : (refinement as RefinementCommand).relabeling) {
+					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
+				}
+			}
+		}
+	}
+	
+	override completeModelNodeBlock_Name(
+			EObject entity, Assignment assignment,
+			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		
+		super.completeModelNodeBlock_Name(entity, assignment, context, acceptor)
+		if (entity instanceof AtomicPattern) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity.eContainer as Pattern) as Pattern, new ArrayList<String>()))) {
+				acceptor.accept(createCompletionProposal(nb.name, context))
+			}
+		} else {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity) as Entity, new ArrayList<String>()))) {
+				acceptor.accept(createCompletionProposal(nb.name, context))
+			}
+		}
+	}
+	
 	
 }
