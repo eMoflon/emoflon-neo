@@ -78,7 +78,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}
 	}
 	
-	@Check
+	@Check(NORMAL)
 	def checkForMultipleMetamodels(Entity entity) {
 		if (entity instanceof Pattern || entity instanceof Rule || entity instanceof Model) {
 			var dispatcher = new EntityAttributeDispatcher()
