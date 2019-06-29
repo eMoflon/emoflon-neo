@@ -15,6 +15,7 @@ import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.util.EMSLUtil
 
 /**
@@ -73,8 +74,10 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.eMSL.Metamodel;
 			import org.emoflon.neo.emsl.util.EMSLUtil;
 			import org.emoflon.neo.engine.api.rules.IPattern;
+			import org.emoflon.neo.engine.api.rules.IRule;
 			import org.emoflon.neo.neo4j.adapter.NeoPattern;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
+			import org.emoflon.neo.emsl.eMSL.Rule;
 			import org.emoflon.neo.neo4j.adapter.NeoConstraint;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
@@ -110,6 +113,16 @@ class EMSLGenerator extends AbstractGenerator {
 			public IPattern getPattern_«namingConvention(p.body.name)»(){
 				var p = (Pattern) spec.getEntities().get(«index»);
 				return new NeoPattern(p, builder);
+			}
+		'''
+	}
+	
+	dispatch def generateAccess(Rule r, int index) {
+		'''
+			public IRule getRule_«namingConvention(r.name)»(){
+				var r = (Rule) spec.getEntities().get(«index»);
+				// TODO[Jannik] return new NeoRule(r, builder);
+				return null;
 			}
 		'''
 	}
