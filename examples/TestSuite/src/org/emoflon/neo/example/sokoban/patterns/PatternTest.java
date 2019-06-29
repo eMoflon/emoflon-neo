@@ -1,7 +1,9 @@
 package org.emoflon.neo.example.sokoban.patterns;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import org.emoflon.neo.api.API_Src_Models_SokobanSimpleTestField;
 import org.emoflon.neo.api.API_Src_Rules_SokobanPatternsRulesConstraints;
@@ -16,6 +18,11 @@ public class PatternTest extends ENeoTest {
 	@BeforeEach
 	public void initDB() {
 		initDB(new API_Src_Models_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
+	}
+	
+	@Test
+	public void test_Condition() {
+		assertTrue(entities.getConstraint_SokobanIsSelectedFigure().isSatisfied());
 	}
 
 	@Test
@@ -33,6 +40,15 @@ public class PatternTest extends ENeoTest {
 		var p = entities.getPattern_OneSokoban();
 		var matches = p.determineMatches();
 		expectValidMatches(matches, matches.size());
+	}
+	
+	@Test
+	public void test_OneSokoban_StillValid_AfterChangeSokobanToBlock() {
+		var p = entities.getPattern_OneSokoban();
+		var matches = p.determineMatches();
+		
+		builder.executeQueryForSideEffect("MATCH (s:Sokoban) SET s:Block REMOVE s:Sokoban");
+		expectValidMatches(matches, matches.size()-1);
 	}
 
 	@Test
@@ -190,6 +206,17 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
+	public void test_All3x3Fields_StillValid_AfterChangingTypesOfNodes() {
+		var p = entities.getPattern_All3x3Fields();
+		var matches = p.determineMatches();
+
+		// removing all right and bottom edges of endPos fields
+		builder.executeQueryForSideEffect("MATCH (f:Field {name: \"f00\"}) SET f:OddLabel REMOVE f:Field");
+
+		expectValidMatches(matches, matches.size() - 1);
+	}
+
+	@Test
 	public void test_OccupiedNext() {
 		assertThat(entities.getPattern_OccupiedNext().countMatches(), is(9));
 	}
@@ -209,4 +236,35 @@ public class PatternTest extends ENeoTest {
 		assertThat(entities.getPattern_ByBlockAndBoulderOccupiedFields().countMatches(), is(14));
 	}
 	
+	/*
+	 * Constraint Tests
+	 */
+	
+	@Test
+	public void test_constraint_hasLeft() {
+		assertTrue(entities.getConstraint_ForbidLeftSide().isViolated());
+	}
+	
+	@Test
+	public void test_constraint_hasTopLeftCorner() {
+		assertTrue(entities.getConstraint_TopLeftCorner().isViolated());
+	}
+	
+	@Test
+	public void test_constraint_hasNoCorner() {
+		assertTrue(entities.getConstraint_NoCorner().isViolated());
+	}
+	
+	
+	// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
+	@Test
+	public void test_hasOneSokoban() {
+		assertTrue(entities.getConstraint_HasOneSokoban().isSatisfied());
+	}
+	
+	@Test
+	public void test_allConstraintTypesAtOnes() {
+		assertTrue(entities.getConstraint_ExtremeConstraint().isSatisfied());
+	}
+
 }

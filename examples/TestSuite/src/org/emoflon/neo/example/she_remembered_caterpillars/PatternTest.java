@@ -56,26 +56,21 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle constraints")
 	public void testNoStrangeBridges() {
-		assertTrue(entities.getConstraint_NoStrangeBridges().isSatisfied());
 		assertFalse(entities.getConstraint_StrangeBridges().isSatisfied());
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle constraints")
 	public void testCanCrossBridgeSomewhere() {
 		assertTrue(entities.getConstraint_CanCrossBridgeSomewhere().isSatisfied());
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle constraints")
 	public void testAlwaysOnPlatform() {
-		assertTrue(entities.getConstraint_AlwaysOnPlatform().isSatisfied());
+		assertFalse(entities.getConstraint_AlwaysOnPlatform().isSatisfied());
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle constraints")
 	public void testNothingBlue() {
 		assertFalse(entities.getConstraint_NothingBlue().isSatisfied());
 		assertTrue(entities.getConstraint_NothingBlue().isViolated());

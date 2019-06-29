@@ -1,21 +1,31 @@
 import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
+// BoardPattern.gt
+
 pattern oneSokoban {
 	sokoban : Sokoban
+}
+pattern twoSokoban {
+	sokoban: Sokoban
+	sokoban2: Sokoban
 }
 
 pattern oneSokobanSelectedFigureRequired {
 	sokoban : Sokoban
 } when enforce selectedFigureRequired
 
+constraint noSokoban = forbid oneSokoban
+constraint oneSokobans = enforce oneSokoban
+constraint twoSokobans = enforce twoSokoban
 
-constraint noSokobanAllowed = enforce oneSokoban
-
-pattern noSokoban when forbid oneSokoban
+// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
+constraint hasOneSokoban = oneSokobans && !twoSokobans
 
 pattern sokobanMustBeSelectedFigure {
 	sokoban:Sokoban
 } 
+
+constraint sokobanIsSelectedFigure = if oneSokoban then selectedFigureRequired
 
 pattern selectedFigureRequired {
 	b:SokobanLanguage.Board {
@@ -24,10 +34,9 @@ pattern selectedFigureRequired {
 	sokoban:Sokoban
 }
 
-pattern twoSokoban {
-	sok1: Sokoban
-	sok2: Sokoban
-}
+
+
+
 
 pattern oneBlock {
 	block : Block
@@ -39,7 +48,12 @@ pattern oneEndField {
 	}
 }
 
+pattern anSelectedFigure {
+	
+}
+
 pattern anOccupiedField {
+	
 	field : Field
 	
 	fig : Figure {
@@ -48,6 +62,7 @@ pattern anOccupiedField {
 }
 
 pattern anOccupiedSokobanField {
+	
 	field : Field
 	
 	fig : Sokoban {
@@ -64,6 +79,7 @@ pattern anOccupiedBlockField {
 }
 
 pattern anOccupiedBoulderField {
+	
 	field : Field
 	
 	fig : Boulder {
@@ -217,6 +233,7 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 	fig: Block {
 		-field->field
 	}
+
 } when noCorner
 
 constraint forbidLeftSide = forbid hasLeft
@@ -224,12 +241,16 @@ constraint forbidTopSide = forbid hasTop
 constraint forbidRightSide = forbid hasRight
 constraint forbidBottomSide = forbid hasBottom
 
+// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide
 constraint bottomLeftCorner = forbidLeftSide && forbidBottomSide
 constraint bottomRightCorner = forbidRightSide && forbidBottomSide
 
+// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 constraint noCorner = topLeftCorner || topRightCorner || bottomLeftCorner || bottomRightCorner
+
+constraint extremeConstraint = ((!topLeftCorner && topRightCorner) || !topRightCorner) && !bottomLeftCorner && (bottomRightCorner || (!bottomLeftCorner || (!topRightCorner && !topRightCorner)))
 
 pattern hasLeft {
 	field: Field
@@ -261,6 +282,9 @@ pattern hasBottom {
 	bottomFig: Field
 }
 
+
+// RulesForMovingSokoban.gt
+
 pattern occupiedField {
 	fig : Figure {
 		-field-> to
@@ -268,7 +292,7 @@ pattern occupiedField {
 	to : Field
 }
 
-pattern occupiedNext -> occupiedField [to -> next]
+pattern occupiedNext -> occupiedField [to -> next] { }
 
 abstract rule moveSokoban {
 	from : Field
@@ -291,6 +315,7 @@ abstract rule pushBlock {
 		++ -field-> next
 	}
 }
+
 
 rule moveSokobanUp -> moveSokoban {
 	to : Field {
@@ -315,3 +340,10 @@ rule pushBlockDown -> pushBlock, moveSokobanDown {
 		-bottom-> next
 	}
 } when forbid occupiedNext
+	
+
+
+
+
+
+
