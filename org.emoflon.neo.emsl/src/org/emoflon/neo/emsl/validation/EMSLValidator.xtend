@@ -51,7 +51,6 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 	@Check
 	def checkPropertyStatementOfNodeBlock(ModelPropertyStatement p) {
-
 		if (p.type instanceof MetamodelPropertyStatement) {
 			if (p.type.type instanceof BuiltInType) {
 				var propertyType = (p.type.type as BuiltInType).reference
@@ -79,25 +78,6 @@ class EMSLValidator extends AbstractEMSLValidator {
 			(attrExpr.target as NodeAttributeExpTarget).attribute.type.equals(type)
 		} else if (attrExpr.target instanceof LinkAttributeExpTarget) {
 			return (attrExpr.target as LinkAttributeExpTarget).attribute.type.equals(type)
-		}
-	}
-
-	@Check(NORMAL)
-	def checkForMultipleMetamodels(Entity entity) {
-		if (entity instanceof Pattern || entity instanceof Rule || entity instanceof Model) {
-			var dispatcher = new EntityAttributeDispatcher()
-			if (!(dispatcher.getNodeBlocks(entity).empty)) {
-				var firstMetamodel = dispatcher.getNodeBlocks(entity).get(0).type.eContainer as Metamodel
-				for (nb : dispatcher.getNodeBlocks(entity)) {
-					if ((nb.type.eContainer as Metamodel) != firstMetamodel) {
-						error(
-							"It is not allowed to create instances of types from different metamodels",
-							nb,
-							EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE
-						)
-					}
-				}
-			}
 		}
 	}
 
