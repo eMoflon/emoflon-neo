@@ -3,9 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: TestSuite
 Bundle-SymbolicName: TestSuite
 Bundle-Version: 1.0.0.qualifier
-Export-Package: org.emoflon.neo.example.sokoban.emf,
- org.emoflon.neo.example.sokoban.patterns,
- org.emoflon.neo.example.sokoban.scalability
 Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  org.eclipse.emf.common;bundle-version="2.15.0",
  org.eclipse.xtext;bundle-version="2.16.0",

@@ -8,7 +8,7 @@ import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class PatternTest extends ENeoTest {
+public class PacManPatterns extends ENeoTest {
 	private API_Src_PacMan entities = new API_Src_PacMan(builder);
 	
 	@BeforeEach

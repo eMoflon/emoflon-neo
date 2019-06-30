@@ -6,6 +6,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.EMSLFlattener;
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
@@ -25,14 +29,23 @@ public class NeoPattern implements IPattern {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.builder = builder;
+
 		try {
 			this.p = (Pattern) new EMSLFlattener().flattenCopyOfEntity(p, new ArrayList<String>());
 		} catch (FlattenerException e) {
-			// TODO Auto-generated catch block
+			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();
 		}
 
 		extractNodesAndRelations();
+
+	}
+
+	public NeoPattern(AtomicPattern ap, NeoCoreBuilder builder) {
+		nodes = new ArrayList<>();
+		injective = true;
+		this.builder = builder;
+		extractNodesAndRelations(ap);
 	}
 
 	private void extractNodesAndRelations() {
@@ -48,6 +61,27 @@ public class NeoPattern implements IPattern {
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
 					r.getTarget().getName())));
+			nodes.add(node);
+		}
+	}
+
+	private void extractNodesAndRelations(AtomicPattern ap) {
+
+		for (ModelNodeBlock n : ap.getNodeBlocks()) {
+
+			var node = new NeoNode(n.getType().getName(), n.getName());
+
+			for (ModelPropertyStatement p : n.getProperties()) {
+				node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
+			}
+			for (ModelRelationStatement r : n.getRelations()) {
+				node.addRelation(new NeoRelation(node, //
+						n.getRelations().indexOf(r), //
+						r.getType().getName(), //
+						r.getProperties(), //
+						r.getTarget().getType().getName(), //
+						r.getTarget().getName()));
+			}
 			nodes.add(node);
 		}
 	}
@@ -93,5 +127,12 @@ public class NeoPattern implements IPattern {
 	@Override
 	public void setMatchInjectively(Boolean injective) {
 		this.injective = injective;
+	}
+
+	@Override
+	public Collection<IMatch> determineMatches(int limit) {
+		// TODO[Jannik] Implement this in such a way that neo4j limits the search to
+		// exactly n matches.
+		return null;
 	}
 }

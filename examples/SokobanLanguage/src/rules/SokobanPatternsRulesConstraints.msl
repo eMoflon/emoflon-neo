@@ -1,32 +1,36 @@
 import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
+// BoardPattern.gt
+
 pattern oneSokoban {
 	sokoban : Sokoban
+}
+pattern twoSokoban {
+	sokoban: Sokoban
+	sokoban2: Sokoban
 }
 
 pattern oneSokobanSelectedFigureRequired {
 	sokoban : Sokoban
 } when enforce selectedFigureRequired
 
+constraint noSokoban = forbid oneSokoban
+constraint oneSokobans = enforce oneSokoban
+constraint twoSokobans = enforce twoSokoban
 
-constraint noSokobanAllowed = enforce oneSokoban
-
-pattern noSokoban when forbid oneSokoban
+constraint hasOneSokoban = oneSokobans && !twoSokobans
 
 pattern sokobanMustBeSelectedFigure {
 	sokoban:Sokoban
 } 
+
+constraint sokobanIsSelectedFigure = if oneSokoban then selectedFigureRequired
 
 pattern selectedFigureRequired {
 	b:SokobanLanguage.Board {
 		-selectedFigure->sokoban
 	}
 	sokoban:Sokoban
-}
-
-pattern twoSokoban {
-	sok1: Sokoban
-	sok2: Sokoban
 }
 
 pattern oneBlock {
@@ -103,8 +107,7 @@ pattern allNotBorderFieldsInARow {
 		-right -> field
 	}
 	
-	fieldR : Field {
-	}
+	fieldR : Field
 }
 
 pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
@@ -217,6 +220,7 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 	fig: Block {
 		-field->field
 	}
+
 } when noCorner
 
 constraint forbidLeftSide = forbid hasLeft
@@ -230,6 +234,8 @@ constraint bottomLeftCorner = forbidLeftSide && forbidBottomSide
 constraint bottomRightCorner = forbidRightSide && forbidBottomSide
 
 constraint noCorner = topLeftCorner || topRightCorner || bottomLeftCorner || bottomRightCorner
+
+constraint extremeConstraint = ((!topLeftCorner && topRightCorner) || !topRightCorner) && !bottomLeftCorner && (bottomRightCorner || (!bottomLeftCorner || (!topRightCorner && !topRightCorner)))
 
 pattern hasLeft {
 	field: Field
@@ -261,6 +267,9 @@ pattern hasBottom {
 	bottomFig: Field
 }
 
+
+// RulesForMovingSokoban.gt
+
 pattern occupiedField {
 	fig : Figure {
 		-field-> to
@@ -268,7 +277,7 @@ pattern occupiedField {
 	to : Field
 }
 
-pattern occupiedNext -> occupiedField [to -> next]
+pattern occupiedNext -> occupiedField [to -> next] { }
 
 abstract rule moveSokoban {
 	from : Field
