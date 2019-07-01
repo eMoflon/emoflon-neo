@@ -398,5 +398,8 @@ constraint hasBottomField = enforce neighborBottomField
 constraint hasBottomAndRightField = hasBottomField && hasRightField
 constraint hasBottomAndNoRightField = hasBottomField && !hasRightField
 
+constraint twoConnFields = enforce neighborBottomField
+constraint iftwothenConn = if twoField then neighborBottomField
+
 constraint hasRightIfThen = if neighborRightField then neighborBottomField
 constraint hasBottomAndRighFieldIfThen = hasRightIfThen

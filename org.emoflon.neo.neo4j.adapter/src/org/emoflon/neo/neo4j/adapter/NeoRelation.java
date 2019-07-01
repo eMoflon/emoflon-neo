@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
+/*
+ * Class for representing an EMSL relation for creating Cypher queries
+ */
 public class NeoRelation {
 	private String relType;
 	private String toNodeVar;
@@ -13,6 +16,14 @@ public class NeoRelation {
 	private String varName;
 	private Collection<NeoProperty> properties;
 
+	/*
+	 * @param from the source NeoNode node of the relation
+	 * @param index the index of the relation per source node
+	 * @param relType the label/class of the relation 
+	 * @param props the properties of the relation
+	 * @param toNodelLabel the label/class of the target node
+	 * @param toNodeVar the variable used in cypher of the target node
+	 */
 	public NeoRelation(NeoNode from, int index, String relType, List<ModelPropertyStatement> props, String toNodeLabel,
 			String toNodeVar) {
 		this.relType = relType;

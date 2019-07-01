@@ -268,6 +268,11 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
+	public void test_allConstraintTwoConn() {
+		assertTrue(entities.getConstraint_IftwothenConn().isViolated());
+	}
+	
+	@Test
 	public void test_ConditionHasField() {
 		assertThat(entities.getPattern_OneField().countMatches(), is(9));
 	}
@@ -283,11 +288,6 @@ public class PatternTest extends ENeoTest {
 	public void test_ConditionHasFieldForbidFwo() {
 		assertThat(entities.getPattern_OneFieldForbidTwo().countMatches(), is(4));
 	}
-	@Test
-	public void test_ConditionHasFieldIfThen() {
-		assertThat(entities.getPattern_OneFieldIfThenTwo().countMatches(), is(0));
-	}
-	
 	@Test
 	public void test_ConditionHasOneFieldHasBottomAndRight() {
 		assertThat(entities.getPattern_OneFieldHasBottomAndRight().countMatches(), is(9));

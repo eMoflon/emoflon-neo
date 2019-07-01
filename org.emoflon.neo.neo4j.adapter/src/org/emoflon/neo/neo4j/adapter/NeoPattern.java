@@ -260,10 +260,18 @@ public class NeoPattern implements IPattern {
 		return result.hasNext();
 	}
 	
+	/*
+	 * Return is the given pattern an base on the constraint reference is negated
+	 * @return boolean if or not the given result of constraint reference must be negated
+	 */
 	protected boolean isNegated() {
 		return ((ConstraintReference)(p.getCondition())).isNegated();
 	}
 	
+	/*
+	 * Removes all duplicated nodes or relations from the node and relation list
+	 * @param nodes nodes that should be added to the list (only if not present in the list)
+	 */
 	private void removeDuplicates(Collection<NeoNode> nodes) {
 		for(NeoNode node : nodes) {
 			
@@ -280,15 +288,26 @@ public class NeoPattern implements IPattern {
 		}
 	}
 
+	/*
+	 * Set is the pattern should be injective or not
+	 * @param injective is the pattern should be injective matched
+	 */
 	@Override
 	public void setMatchInjectively(Boolean injective) {
 		this.injective = injective;
 	}
 	
+	/* Get the injectivity information of a pattern
+	 * @return boolean true if the given pattern requires injective pattern matching
+	 */
 	public boolean isInjective() {
 		return injective;
 	}
 
+	/*
+	 * Runs the pattern matching and counts size of matches
+	 * @return Number of matches
+	 */
 	@Override
 	public Number countMatches() {
 		var matches = determineMatches();
@@ -296,6 +315,5 @@ public class NeoPattern implements IPattern {
 			return matches.size();
 		else
 			return 0;
-
 	}
 }
