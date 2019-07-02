@@ -18,7 +18,7 @@ Entity:
 /*------------------- Models ----------------------*/
 /*-------------------------------------------------*/
 Model:
-	'model' name=QualifiedName 
+	(abstract?='abstract')? 'model' name=QualifiedName 
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))? 
 	('{' nodeBlocks+=ModelNodeBlock* '}')?;
 
@@ -73,7 +73,7 @@ ModelRelationStatement:
 /*----------------- Metamodels --------------------*/
 /*-------------------------------------------------*/
 Metamodel:
-	'metamodel' name=QualifiedName 
+	(abstract?='abstract')? 'metamodel' name=QualifiedName 
 	('->' (superRefinementTypes+=MetamodelRefinementCommand (',' superRefinementTypes+=MetamodelRefinementCommand)*))?
 	('{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}')?;
 
@@ -131,7 +131,7 @@ enum BuiltInDataTypes:
 /*------------------ Patterns ---------------------*/
 /*-------------------------------------------------*/
 AtomicPattern:
-	'pattern' name=QualifiedName
+	(abstract?='abstract')? 'pattern' name=QualifiedName
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
 	nodeBlocks+=ModelNodeBlock*
@@ -206,7 +206,7 @@ enum LibraryAttributeCondition:
 	;
 
 GraphGrammar:
-	'grammar' name=QualifiedName '{'
+	(abstract?='abstract')? 'grammar' name=QualifiedName '{'
 	rules+=[Rule|QualifiedName]+
 	'}';
 
@@ -254,7 +254,7 @@ TargetNAC:
 	'trg(' pattern=[AtomicPattern|QualifiedName] ')';
 
 TripleGrammar:
-	'tripleGrammar' name=QualifiedName '{'
+	(abstract?='abstract')? 'tripleGrammar' name=QualifiedName '{'
 	'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
 	'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
 	'correspondence' '{' correspondences+=CorrespondenceType* '}'

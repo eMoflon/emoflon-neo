@@ -313,11 +313,11 @@ rule pushBlockUp -> pushBlock, moveSokobanUp {
 	}
 } when forbid occupiedNext
 
-rule moveSokobanDown -> moveSokoban, pushBlock {
+rule moveSokobanDown -> moveSokoban {
 	from : Field {
-		-bottom-> next
+		-bottom-> to
 	}
-} when forbid occupiedNext
+} when forbid occupiedField
 
 rule pushBlockDown -> pushBlock, moveSokobanDown {
 	to : Field {

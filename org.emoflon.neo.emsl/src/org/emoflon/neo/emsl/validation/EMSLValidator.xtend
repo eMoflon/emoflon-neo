@@ -248,4 +248,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 			forbidIfElseAsApplicationCondition(refCond)
 		]
 	}
+	
+	/**
+	 * Checks if a modelNodeBlock's action contains an operator. As this does not make sense for models
+	 * an error message is shown.
+	 */
+	@Check
+	def void forbidOperatorsInModelNodeBlocks(Model m) {
+		for (nb : m.nodeBlocks) {
+			if (nb.action !== null) {
+				error("Actions are not allowed in Models.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__ACTION)
+			}
+		}
+	}
 }

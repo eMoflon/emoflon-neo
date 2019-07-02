@@ -401,9 +401,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				}
 				«IF (entityCopy as Pattern).condition !== null »
 					legend bottom
-						«getConditionString(entity)»
+						«getConditionString(entityCopy)»
 					endlegend
-					«visualiseCondition(entity)»
+					«visualiseCondition(entityCopy)»
 				«ENDIF»
 			'''
 		} catch (AssertionError e) {
