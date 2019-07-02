@@ -1,8 +1,5 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
@@ -28,113 +25,52 @@ public class NeoConstraint implements IConstraint {
 		return c.getName();
 	}
 	
-	public String getWhereQuery() {
+	public NeoReturn getConstraintData() {
+		
+		NeoReturn returnStmt = new NeoReturn();
+		
 		if (c.getBody() instanceof PositiveConstraint) {
-			
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var co = new NeoPositiveConstraint(ap, builder);
 
-			return co.getQueryString_Where();
+			returnStmt.addNodes(co.getNodes());
+			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
+			returnStmt.addWhereClause(co.getQueryString_Where());
+			
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var co = new NeoNegativeConstraint(ap, builder);
 
-			return co.getQueryString_Where();
-
-		} else if (c.getBody() instanceof Implication) {
-			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder);
-
-			return co.getQueryString_Where();
-
-		} else if (c.getBody() instanceof OrBody) {
-
-			var body = (OrBody) c.getBody();
-			var neoBody = new NeoOrBody(body, builder);
-			
-			return neoBody.getQueryString_Where();
-			
-		} else {
-			logger.info("Its an Unkown Type!");
-			throw new UnsupportedOperationException(c.getBody().toString());
-		}
-	}
-	
-	public String getOptionalQuery() {
-		if (c.getBody() instanceof PositiveConstraint) {
-			
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap, builder);
-
-			return co.getQueryString_OptionalMatch();
-
-		} else if (c.getBody() instanceof NegativeConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap, builder);
-
-			return co.getQueryString_OptionalMatch();
-
-		} else if (c.getBody() instanceof Implication) {
-			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder);
-
-			return co.getQueryString_OptionalMatch();
-
-		} else if (c.getBody() instanceof OrBody) {
-
-			var body = (OrBody) c.getBody();
-			var neoBody = new NeoOrBody(body, builder);
-			
-			return neoBody.getOptionalQuery();
-			
-		} else {
-			logger.info("Its an Unkown Type!");
-			throw new UnsupportedOperationException(c.getBody().toString());
-		}
-	}
-	
-	public Collection<NeoNode> getNodes() {
-		if (c.getBody() instanceof PositiveConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap, builder);
-
-			return co.getNodes();
-
-		} else if (c.getBody() instanceof NegativeConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap, builder);
-
-			return co.getNodes();
+			returnStmt.addNodes(co.getNodes());
+			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
+			returnStmt.addWhereClause(co.getQueryString_Where());
 
 		} else if (c.getBody() instanceof Implication) {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
 			var co = new NeoImplication(apIf, apThen, builder);
 			
-			var nodes = co.getIfNodes();
-			nodes.addAll(co.getThenNodes());
-
-			return nodes;
+			returnStmt.addNodes(co.getIfNodes());
+			returnStmt.addNodes(co.getThenNodes());
+			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
+			returnStmt.addWhereClause(co.getQueryString_Where());
 
 		} else if (c.getBody() instanceof OrBody) {
 
 			var body = (OrBody) c.getBody();
 			var neoBody = new NeoOrBody(body, builder);
 			
-			Collection<NeoNode> nodes = new ArrayList<>();
-			
-			for(NeoNode node : neoBody.getNodes()) {
-				nodes.add(node);
-			}
-			return nodes;
+			returnStmt.addNodes(neoBody.getConstraintData().getNodes());
+			returnStmt.addOptionalMatch(neoBody.getConstraintData().getOptionalMatchString());
+			returnStmt.addWhereClause(neoBody.getConstraintData().getWhereClause());
 
 		} else {
 			logger.info("Its an Unkown Type!");
 			throw new UnsupportedOperationException(c.getBody().toString());
 		}
+		
+		return returnStmt;
 	}
 
 	@Override

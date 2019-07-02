@@ -97,7 +97,6 @@ class CypherPatternBuilder {
 	
 	def static String injectivityBlockCond(Collection<NeoNode> nodes) {
 		var String ret = ''
-		var boolean first = true
 
 		for (var i = 0; i < nodes.size; i++) {
 			for (var j = i + 1; j < nodes.size; j++) {

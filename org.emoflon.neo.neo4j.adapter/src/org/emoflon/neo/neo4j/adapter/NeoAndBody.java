@@ -1,8 +1,5 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
@@ -52,7 +49,7 @@ public class NeoAndBody {
 				var satisfied = consRef.isSatisfied();
 
 				if ((!satisfied && !((ConstraintReference) b).isNegated())
-						|| satisfied && ((ConstraintReference) b).isNegated()) {
+						|| (satisfied && ((ConstraintReference) b).isNegated())) {
 
 					return false;
 				}
@@ -77,94 +74,37 @@ public class NeoAndBody {
 	 * 
 	 * @return NeoNode Collection of all nodes in the nested constraint or body
 	 */
-	public Collection<NeoNode> getNodes() {
-
-		Collection<NeoNode> nodes = new ArrayList<>();
-
-		for (Object b : body.getChildren()) {
-
-			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
-
-				for (NeoNode node : consRef.getNodes()) {
-					nodes.add(node);
-				}
-
-			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder);
-
-				for (NeoNode node : orbody.getNodes()) {
-					nodes.add(node);
-				}
-			}
-		}
-
-		return nodes;
-
-	}
-
-	/*
-	 * Returns the OPTIONAL MATCH cypher string for all nested bodies and
-	 * constraints
-	 * 
-	 * @return String OPTIONAL MATCH cypher string of all nested bodies and
-	 * constraints
-	 */
-	public String getOptionalMatch() {
-
+	public NeoReturn getConstraintData() {
+		
+		NeoReturn returnStmt = new NeoReturn();
 		var query = "";
 
 		for (Object b : body.getChildren()) {
-
-			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
-				query += consRef.getOptionalQuery();
-
-			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder);
-				query += orbody.getOptionalQuery();
+			
+			if (!query.equals("")) {
+				query += " AND ";
 			}
-		}
-
-		return query;
-	}
-
-	/*
-	 * Returns the WHERE cypher string for all nested bodies and constraints
-	 * 
-	 * @return String WHERE cypher string of all nested bodies and constraints
-	 */
-	public String getQueryString_Where() {
-
-		var query = "(";
-		var first = true;
-
-		for (Object b : body.getChildren()) {
 
 			if (b instanceof ConstraintReference) {
 				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
-				if (first) {
-					first = false;
-				} else {
-					query += " AND ";
-				}
+				returnStmt.addNodes(consRef.getConstraintData().getNodes());
+				returnStmt.addOptionalMatch(consRef.getConstraintData().getOptionalMatchString());
+
 				if (((ConstraintReference) b).isNegated())
-					query += "NOT(" + consRef.getWhereQuery() + ")";
+					query += "NOT(" + consRef.getConstraintData().getWhereClause() + ")";
 				else
-					query += "(" + consRef.getWhereQuery() + ")";
+					query += "(" + consRef.getConstraintData().getWhereClause() + ")";
 
 			} else if (b instanceof OrBody) {
 				var orbody = new NeoOrBody((OrBody) b, builder);
-				if (first) {
-					first = false;
-				} else {
-					query += " OR ";
-				}
-				query += orbody.getQueryString_Where();
+				returnStmt.addNodes(orbody.getConstraintData().getNodes());
+				returnStmt.addOptionalMatch(orbody.getConstraintData().getOptionalMatchString());
+				query += orbody.getConstraintData().getWhereClause();
 			}
 		}
+		returnStmt.addWhereClause("(" + query + ")");
+		return returnStmt;
 
-		return query + ")";
 	}
 
-}
+}	

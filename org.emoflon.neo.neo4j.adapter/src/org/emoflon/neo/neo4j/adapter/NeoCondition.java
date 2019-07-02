@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.engine.api.rules.IMatch;
 
 public class NeoCondition {
@@ -37,15 +36,15 @@ public class NeoCondition {
 		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
 		
 		removeDuplicates(p.getNodes());
-		removeDuplicates(c.getNodes());
+		removeDuplicates(c.getConstraintData().getNodes());
 		
 		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes());
-		cypherQuery += c.getOptionalQuery();
+		cypherQuery += c.getConstraintData().getOptionalMatchString();
 		cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 		if(p.isNegated())
-			cypherQuery += "\nWHERE NOT(" + c.getWhereQuery() + ")";
+			cypherQuery += "\nWHERE NOT(" + c.getConstraintData().getWhereClause() + ")";
 		else
-			cypherQuery += "\nWHERE " + c.getWhereQuery();
+			cypherQuery += "\nWHERE " + c.getConstraintData().getWhereClause();
 		if(p.isInjective())
 			cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
 		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());

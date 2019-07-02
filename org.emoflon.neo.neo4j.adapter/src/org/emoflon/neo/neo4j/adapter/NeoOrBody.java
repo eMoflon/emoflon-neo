@@ -1,8 +1,5 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 
@@ -42,7 +39,6 @@ public class NeoOrBody {
 			if (andbody.isSatisfied()) {
 				return true;
 			}
-
 		}
 
 		return false;
@@ -54,62 +50,25 @@ public class NeoOrBody {
 	 * 
 	 * @return NeoNode Collection of all nodes in the nested constraint or body
 	 */
-	public Collection<NeoNode> getNodes() {
+	public NeoReturn getConstraintData() {
 
-		Collection<NeoNode> nodes = new ArrayList<>();
-
-		for (AndBody b : body.getChildren()) {
-			var andbody = new NeoAndBody(b, builder);
-			for (NeoNode node : andbody.getNodes()) {
-				nodes.add(node);
-			}
-
-		}
-		return nodes;
-
-	}
-
-	/*
-	 * Returns the OPTIONAL MATCH cypher string for all nested bodies and
-	 * constraints
-	 * 
-	 * @return String OPTIONAL MATCH cypher string of all nested bodies and
-	 * constraints
-	 */
-	public String getOptionalQuery() {
-
+		NeoReturn returnStmt = new NeoReturn();
 		var query = "";
 
 		for (AndBody b : body.getChildren()) {
-
 			var andbody = new NeoAndBody(b, builder);
-			query += andbody.getOptionalMatch();
-
-		}
-		return query;
-	}
-
-	/*
-	 * Returns the WHERE cypher string for all nested bodies and constraints
-	 * 
-	 * @return String WHERE cypher string of all nested bodies and constraints
-	 */
-	public String getQueryString_Where() {
-
-		var query = "(";
-		var first = true;
-
-		for (AndBody b : body.getChildren()) {
-
-			var andbody = new NeoAndBody(b, builder);
-			if (first) {
-				first = false;
-			} else {
+			returnStmt.addNodes(andbody.getConstraintData().getNodes());
+			returnStmt.addOptionalMatch(andbody.getConstraintData().getOptionalMatchString());
+			
+			if (!query.equals("")) {
 				query += " OR ";
 			}
-			query += andbody.getQueryString_Where();
-
+			query += andbody.getConstraintData().getWhereClause();
+			
 		}
-		return query + ")";
+		returnStmt.addWhereClause("(" + query + ")");
+		return returnStmt;
+
 	}
+	
 }

@@ -252,6 +252,11 @@ public class NeoPattern implements IPattern {
 
 	}
 
+	/*
+	 * Checks if a specifiy match is still valid, is still correctly in the database
+	 * @param m NeoMatch the match that should be checked
+	 * @return true if the match is still valid or false if not
+	 */
 	public boolean isStillValid(NeoMatch m) {
 		logger.info("Check if match for " + getName() + " is still valid");
 		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
