@@ -75,12 +75,12 @@ public class NeoAndBody {
 	 * @return NeoNode Collection of all nodes in the nested constraint or body
 	 */
 	public NeoReturn getConstraintData() {
-		
+
 		NeoReturn returnStmt = new NeoReturn();
 		var query = "";
 
 		for (Object b : body.getChildren()) {
-			
+
 			if (!query.equals("")) {
 				query += " AND ";
 			}
@@ -107,4 +107,4 @@ public class NeoAndBody {
 
 	}
 
-}	
+}

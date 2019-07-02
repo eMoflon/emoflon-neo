@@ -4,51 +4,56 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class NeoReturn {
-	
-	private Collection<String> nodes;
-	private Collection<NeoNode> nodesC;
-	
+
+	private Collection<String> nodesS;
+	private Collection<NeoNode> nodesN;
+
 	private String optionalMatch;
 	private String whereClause;
-	
+
 	public NeoReturn() {
-		this.nodes = new ArrayList<>();
-		this.nodesC = new ArrayList<>();
+		this.nodesS = new ArrayList<>();
+		this.nodesN = new ArrayList<>();
 		this.optionalMatch = "";
 		this.whereClause = "";
 	}
-	
+
 	public void addNodes(Collection<NeoNode> nodes) {
-		for(NeoNode node : nodes) {
-			
-			if(!this.nodes.contains(node.getVarName())) {
-				this.nodes.add(node.getVarName());
-				this.nodesC.add(node);
+		for (NeoNode n : nodes) {
+
+			if (!this.nodesS.contains(n.getVarName())) {
+				this.nodesS.add(n.getVarName());
+				this.nodesN.add(n);
 			}
-			
-			for(NeoRelation rel: node.getRelations()) {
-				if(!this.nodes.contains(rel.getVarName())) {
-					this.nodes.add(rel.getVarName());
+
+			for (NeoRelation rel : n.getRelations()) {
+				if (!this.nodesS.contains(rel.getVarName())) {
+					this.nodesS.add(rel.getVarName());
 				}
 			}
 		}
 	}
+
 	public Collection<NeoNode> getNodes() {
-		return nodesC;
+		return nodesN;
 	}
+
 	public Collection<String> getNodesAsString() {
-		return nodes;
+		return nodesS;
 	}
-	
+
 	public String getOptionalMatchString() {
 		return optionalMatch;
 	}
+
 	public void addOptionalMatch(String opt) {
 		optionalMatch += opt;
 	}
+
 	public String getWhereClause() {
 		return whereClause;
 	}
+
 	public void addWhereClause(String where) {
 		whereClause += where;
 	}

@@ -29,28 +29,6 @@ public class NeoImplication implements IIfElseConstraint {
 		this.pIf = new NeoPattern(apIf, builder);
 		this.pThen = new NeoPattern(apThen, builder);
 		this.nodesMap = new ArrayList<String>();
-		createNodesMap();
-	}
-
-	private void createNodesMap() {
-
-		for (NeoNode n : pIf.getNodes()) {
-			nodesMap.add(n.getVarName());
-			for (NeoRelation r : n.getRelations()) {
-				nodesMap.add(r.getVarName());
-			}
-		}
-		for (NeoNode n : pThen.getNodes()) {
-			if (!nodesMap.contains(n.getVarName())) {
-				nodesMap.add(n.getVarName());
-			}
-			for (NeoRelation r : n.getRelations()) {
-				if (!nodesMap.contains(r.getVarName())) {
-					nodesMap.add(r.getVarName());
-				}
-			}
-		}
-
 	}
 
 	public String getName() {
@@ -69,14 +47,24 @@ public class NeoImplication implements IIfElseConstraint {
 		return pIf.getNodes();
 	}
 	public Collection<NeoNode> getThenNodes() {
-		return pIf.getNodes();
+		return pThen.getNodes();
+	}
+	public Collection<String> getNodesString() {
+		return nodesMap;
 	}
 	
 	public String getQueryString_OptionalMatch() { 
-		return "OPTIONAL " +  CypherPatternBuilder.matchQuery(pIf.getNodes()) + 
-			"OPTIONAL " +  CypherPatternBuilder.matchQuery(pThen.getNodes());
-				
+		var query = "OPTIONAL " +  CypherPatternBuilder.matchQuery(pIf.getNodes());
+		if(pIf.isInjective()) {
+			query += CypherPatternBuilder.injectivityBlock(pIf.getNodes());
+		}
+		query += "OPTIONAL " +  CypherPatternBuilder.matchQuery(pThen.getNodes());
+		if(pThen.isInjective()) { 
+			query += CypherPatternBuilder.injectivityBlock(pThen.getNodes());
+		}
+		return query + "\n";
 	}
+
 	public String getQueryString_Where() {
 		return "( NOT (" + CypherPatternBuilder.wherePositiveConstraintQuery(pIf.getNodes()) + ")" +
 				" OR (" + CypherPatternBuilder.wherePositiveConstraintQuery(pThen.getNodes()) + "))"

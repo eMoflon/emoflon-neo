@@ -37,7 +37,11 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	}
 	
 	public String getQueryString_OptionalMatch() { 
-		return "OPTIONAL " + CypherPatternBuilder.matchQuery(p.getNodes());
+		var query = "OPTIONAL " + CypherPatternBuilder.matchQuery(p.getNodes());
+		if(p.isInjective()) {
+			query += CypherPatternBuilder.injectivityBlock(p.getNodes());
+		} 
+		return query + "\n";
 	}
 	
 	public String getQueryString_Where() {

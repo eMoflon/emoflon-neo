@@ -249,14 +249,24 @@ public class PatternTest extends ENeoTest {
 	public void test_constraint_hasTopLeftCorner() {
 		assertTrue(entities.getConstraint_TopLeftCorner().isViolated());
 	}
+	@Test
+	public void test_constraint_hasTopRightCorner() {
+		assertTrue(entities.getConstraint_TopRightCorner().isViolated());
+	}
+	@Test
+	public void test_constraint_hasBottomLeftCorner() {
+		assertTrue(entities.getConstraint_BottomLeftCorner().isViolated());
+	}
+	@Test
+	public void test_constraint_hasBottomRightCorner() {
+		assertTrue(entities.getConstraint_BottomRightCorner().isViolated());
+	}
 	
 	@Test
 	public void test_constraint_hasNoCorner() {
 		assertTrue(entities.getConstraint_NoCorner().isViolated());
 	}
 	
-	
-	// TODO [Maximilian] Constraint leads to an event loop exception java.lang.StackOverflowError in PlantUML
 	@Test
 	public void test_hasOneSokoban() {
 		assertTrue(entities.getConstraint_HasOneSokoban().isSatisfied());
@@ -268,7 +278,7 @@ public class PatternTest extends ENeoTest {
 	}
 	
 	@Test
-	public void test_allConstraintTwoConn() {
+	public void test_allConstraintIfTwoThenTwoConn() {
 		assertTrue(entities.getConstraint_IftwothenConn().isViolated());
 	}
 	

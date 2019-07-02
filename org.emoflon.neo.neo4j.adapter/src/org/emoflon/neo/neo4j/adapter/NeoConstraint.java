@@ -1,5 +1,7 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
@@ -20,15 +22,15 @@ public class NeoConstraint implements IConstraint {
 		this.c = c;
 
 	}
-	
+
 	public String getName() {
 		return c.getName();
 	}
-	
+
 	public NeoReturn getConstraintData() {
-		
+
 		NeoReturn returnStmt = new NeoReturn();
-		
+
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var co = new NeoPositiveConstraint(ap, builder);
@@ -36,7 +38,6 @@ public class NeoConstraint implements IConstraint {
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
 			returnStmt.addWhereClause(co.getQueryString_Where());
-			
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
@@ -50,7 +51,7 @@ public class NeoConstraint implements IConstraint {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
 			var co = new NeoImplication(apIf, apThen, builder);
-			
+
 			returnStmt.addNodes(co.getIfNodes());
 			returnStmt.addNodes(co.getThenNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
@@ -60,16 +61,14 @@ public class NeoConstraint implements IConstraint {
 
 			var body = (OrBody) c.getBody();
 			var neoBody = new NeoOrBody(body, builder);
-			
-			returnStmt.addNodes(neoBody.getConstraintData().getNodes());
-			returnStmt.addOptionalMatch(neoBody.getConstraintData().getOptionalMatchString());
-			returnStmt.addWhereClause(neoBody.getConstraintData().getWhereClause());
+
+			returnStmt = neoBody.getConstraintData();
 
 		} else {
 			logger.info("Its an Unkown Type!");
 			throw new UnsupportedOperationException(c.getBody().toString());
 		}
-		
+
 		return returnStmt;
 	}
 
@@ -77,38 +76,23 @@ public class NeoConstraint implements IConstraint {
 	public boolean isSatisfied() {
 
 		logger.info("Check constraint: " + c.getName());
+		NeoReturn returnStmt = getConstraintData();
 
-		if (c.getBody() instanceof PositiveConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap, builder);
+		logger.info("Searching matches for Constraint: " + c.getName());
 
-			return co.isSatisfied();
+		var cypherQuery = returnStmt.getOptionalMatchString();
+		cypherQuery += "\n" + CypherPatternBuilder.withConstraintQuery(returnStmt.getNodesAsString());
+		cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
+		cypherQuery += "\nRETURN TRUE";
 
-		} else if (c.getBody() instanceof NegativeConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap, builder);
+		logger.debug(cypherQuery);
+		var result = builder.executeQuery(cypherQuery);
 
-			return co.isSatisfied();
-
-		} else if (c.getBody() instanceof Implication) {
-			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder);
-
-			return co.isSatisfied();
-
-		} else if (c.getBody() instanceof OrBody) {
-
-			var body = (OrBody) c.getBody();
-			var neoBody = new NeoOrBody(body, builder);
-
-			return neoBody.isSatisfied();
-
+		if (result.hasNext()) {
+			return true;
 		} else {
-			logger.info("Its an Unkown Type!");
-			throw new UnsupportedOperationException(c.getBody().toString());
+		return false;
 		}
-
 	}
 
 }

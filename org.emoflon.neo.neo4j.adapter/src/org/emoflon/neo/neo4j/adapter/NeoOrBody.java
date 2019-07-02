@@ -59,16 +59,16 @@ public class NeoOrBody {
 			var andbody = new NeoAndBody(b, builder);
 			returnStmt.addNodes(andbody.getConstraintData().getNodes());
 			returnStmt.addOptionalMatch(andbody.getConstraintData().getOptionalMatchString());
-			
+
 			if (!query.equals("")) {
 				query += " OR ";
 			}
 			query += andbody.getConstraintData().getWhereClause();
-			
+
 		}
 		returnStmt.addWhereClause("(" + query + ")");
 		return returnStmt;
 
 	}
-	
+
 }

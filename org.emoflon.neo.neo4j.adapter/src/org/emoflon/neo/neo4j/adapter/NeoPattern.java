@@ -47,6 +47,7 @@ public class NeoPattern implements IPattern {
 		}
 
 		extractNodesAndRelations();
+		
 
 		if (p.getCondition() != null) {
 
@@ -98,7 +99,7 @@ public class NeoPattern implements IPattern {
 
 		for (ModelNodeBlock n : ap.getNodeBlocks()) {
 
-			var node = new NeoNode(n.getType().getName(), n.getName());
+			var node = new NeoNode(n.getType().getName(), n.getName() + "_" + ap.hashCode());
 
 			for (ModelPropertyStatement p : n.getProperties()) {
 				node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
@@ -109,7 +110,7 @@ public class NeoPattern implements IPattern {
 						r.getType().getName(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
-						r.getTarget().getName()));
+						r.getTarget().getName()+ "_" + ap.hashCode()));
 			}
 			nodes.add(node);
 		}
