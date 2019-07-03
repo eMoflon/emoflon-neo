@@ -12,9 +12,6 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.Implication;
-import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
-import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
@@ -47,7 +44,6 @@ public class NeoPattern implements IPattern {
 		}
 
 		extractNodesAndRelations();
-		
 
 		if (p.getCondition() != null) {
 
@@ -55,27 +51,19 @@ public class NeoPattern implements IPattern {
 				this.c = (Constraint) p.getCondition().eCrossReferences().get(0);
 				
 			} else if (p.getCondition() instanceof PositiveConstraint) {
-				cond = (NeoPositiveConstraint)(new NeoPositiveConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder));
+				cond = (NeoPositiveConstraint)(new NeoPositiveConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder, injective));
 
 			} else if (p.getCondition() instanceof NegativeConstraint) {
-				cond = (NeoNegativeConstraint)(new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder));
+				cond = (NeoNegativeConstraint)(new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder, injective));
 				
 			} else if (p.getCondition() instanceof Implication) {
 				cond = (NeoImplication)(new NeoImplication((AtomicPattern) p.getCondition().eCrossReferences().get(0),
-						(AtomicPattern) p.getCondition().eCrossReferences().get(1), builder));
+						(AtomicPattern) p.getCondition().eCrossReferences().get(1), builder, injective));
 			} else {
 				logger.info(p.getCondition().toString());
 				throw new UnsupportedOperationException();
 			}
 		}
-
-	}
-
-	public NeoPattern(AtomicPattern ap, NeoCoreBuilder builder) {
-		nodes = new ArrayList<>();
-		injective = true;
-		this.builder = builder;
-		extractNodesAndRelations(ap);
 	}
 
 	private void extractNodesAndRelations() {
@@ -91,27 +79,6 @@ public class NeoPattern implements IPattern {
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
 					r.getTarget().getName())));
-			nodes.add(node);
-		}
-	}
-
-	private void extractNodesAndRelations(AtomicPattern ap) {
-
-		for (ModelNodeBlock n : ap.getNodeBlocks()) {
-
-			var node = new NeoNode(n.getType().getName(), n.getName() + "_" + ap.hashCode());
-
-			for (ModelPropertyStatement p : n.getProperties()) {
-				node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
-			}
-			for (ModelRelationStatement r : n.getRelations()) {
-				node.addRelation(new NeoRelation(node, //
-						n.getRelations().indexOf(r), //
-						r.getType().getName(), //
-						r.getProperties(), //
-						r.getTarget().getType().getName(), //
-						r.getTarget().getName()+ "_" + ap.hashCode()));
-			}
 			nodes.add(node);
 		}
 	}
@@ -271,7 +238,10 @@ public class NeoPattern implements IPattern {
 	 * @return boolean if or not the given result of constraint reference must be negated
 	 */
 	protected boolean isNegated() {
-		return ((ConstraintReference)(p.getCondition())).isNegated();
+		if(p.getCondition() != null)
+			return ((ConstraintReference)(p.getCondition())).isNegated();
+		else
+			return false;
 	}
 	
 	/*

@@ -1,7 +1,5 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
@@ -33,7 +31,7 @@ public class NeoConstraint implements IConstraint {
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap, builder);
+			var co = new NeoPositiveConstraint(ap, builder, true);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
@@ -41,7 +39,7 @@ public class NeoConstraint implements IConstraint {
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap, builder);
+			var co = new NeoNegativeConstraint(ap, builder, true);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
@@ -50,7 +48,7 @@ public class NeoConstraint implements IConstraint {
 		} else if (c.getBody() instanceof Implication) {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder);
+			var co = new NeoImplication(apIf, apThen, builder, true);
 
 			returnStmt.addNodes(co.getIfNodes());
 			returnStmt.addNodes(co.getThenNodes());
@@ -88,11 +86,10 @@ public class NeoConstraint implements IConstraint {
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
-		if (result.hasNext()) {
+		if (result.hasNext())
 			return true;
-		} else {
-		return false;
-		}
+		else
+			return false;
 	}
 
 }

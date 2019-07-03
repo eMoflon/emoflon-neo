@@ -11,7 +11,7 @@ class CypherPatternBuilder {
 		«returnQuery(nodes)»'''
 	}
 
-	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap,
+	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap,
 		boolean injective) {
 		'''
 		«matchQuery(nodes,nodes2,nodesMap)»
@@ -35,7 +35,7 @@ class CypherPatternBuilder {
 		«ENDFOR»'''
 	}
 
-	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap) {
+	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap) {
 		'''«matchQuery(nodes)»
 		OPTIONAL «matchQuery(nodes2)»
 		'''
@@ -45,9 +45,9 @@ class CypherPatternBuilder {
 		'''WITH «FOR n : nodes SEPARATOR ', '»«n.varName»«ENDFOR»'''
 	}
 
-	def static String withQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap) {
-		'''WITH «FOR n : nodesMap SEPARATOR ', '»«n»«ENDFOR»
-		WHERE «FOR n : nodesMap SEPARATOR 'OR '»«n» IS NULL «ENDFOR»'''
+	def static String withQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap) {
+		'''WITH «FOR n : nodesMap SEPARATOR ', '»«n.varName»«ENDFOR»
+		WHERE «FOR n : nodesMap SEPARATOR 'OR '»«n.varName» IS NULL «ENDFOR»'''
 	}
 
 	protected def static CharSequence queryNode(NeoNode n) '''
@@ -134,8 +134,8 @@ class CypherPatternBuilder {
 			«ENDFOR»'''
 	}
 
-	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap) {
-		'''RETURN «FOR n : nodesMap SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
+	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap) {
+		'''RETURN «FOR n : nodesMap SEPARATOR ', '»id(«n.varName») AS «n.varName»«ENDFOR» LIMIT 1'''
 	}
 
 	def static String returnQueryForIsStillValid() {

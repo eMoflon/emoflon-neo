@@ -1,5 +1,8 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.engine.api.rules.IMatch;
@@ -10,14 +13,32 @@ public class NeoConstraintReference {
 	private NeoCoreBuilder builder;
 
 	private AtomicPattern ap;
-	private NeoPattern p;
 	private String name;
+	private List<NeoNode> nodes;
 
 	public NeoConstraintReference(AtomicPattern ap, NeoCoreBuilder builder) {
 		this.builder = builder;
 		this.ap = ap;
 		this.name = ap.getName();
-		this.p = new NeoPattern(ap, builder);
+		nodes = new ArrayList<>();
+		extractNodesAndRelations();
+	}
+	
+	private void extractNodesAndRelations() {
+		for (var n : ap.getNodeBlocks()) {
+			var node = new NeoNode(n.getType().getName(), n.getName());
+			n.getProperties().forEach(p -> node.addProperty(//
+					p.getType().getName(), //
+					NeoUtil.handleValue(p.getValue())));
+			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
+					node, //
+					n.getRelations().indexOf(r), //
+					r.getType().getName(), //
+					r.getProperties(), //
+					r.getTarget().getType().getName(), //
+					r.getTarget().getName())));
+			nodes.add(node);
+		}
 	}
 
 	public String getName() {
@@ -41,7 +62,7 @@ public class NeoConstraintReference {
 
 		logger.info("Searching matches for Pattern: " + ap.getName());
 
-		var cypherQuery = CypherPatternBuilder.readQuery(p.getNodes(), true);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, true);
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);
@@ -49,7 +70,7 @@ public class NeoConstraintReference {
 		while (result.hasNext()) {
 			var record = result.next();
 			logger.info("Found match(es).");
-			return new NeoMatch(p, record);
+			return new NeoMatch(null, record);
 		}
 		logger.info("Not matches found.");
 		return null;

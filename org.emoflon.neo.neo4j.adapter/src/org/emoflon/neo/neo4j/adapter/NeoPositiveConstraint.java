@@ -1,6 +1,8 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
@@ -13,14 +15,18 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	private NeoCoreBuilder builder;
 
 	private AtomicPattern ap;
-	private NeoPattern p;
 	private String name;
+	private List<NeoNode> nodes;
+	
+	private boolean injective;
 
-	public NeoPositiveConstraint(AtomicPattern ap, NeoCoreBuilder builder) {
+	public NeoPositiveConstraint(AtomicPattern ap, NeoCoreBuilder builder, boolean injective) {
 		this.builder = builder;
-		this.ap = ap;
 		this.name = ap.getName();
-		this.p = new NeoPattern(ap, builder);
+		this.ap = ap;
+		nodes = new ArrayList<>();
+		this.injective = injective;
+		extractNodesAndRelations();
 	}
 
 	public String getName() {
@@ -31,20 +37,37 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		return ap;
 	}
 
+	private void extractNodesAndRelations() {
+		for (var n : ap.getNodeBlocks()) {
+			var node = new NeoNode(n.getType().getName(), n.getName());
+			n.getProperties().forEach(p -> node.addProperty(//
+					p.getType().getName(), //
+					NeoUtil.handleValue(p.getValue())));
+			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
+					node, //
+					n.getRelations().indexOf(r), //
+					r.getType().getName(), //
+					r.getProperties(), //
+					r.getTarget().getType().getName(), //
+					r.getTarget().getName())));
+			nodes.add(node);
+		}
+	}
+	
 	public Collection<NeoNode> getNodes() {
-		return p.getNodes();
+		return nodes;
 	}
 
 	public String getQueryString_OptionalMatch() { 
-		var query = "OPTIONAL " + CypherPatternBuilder.matchQuery(p.getNodes());
-		if(p.isInjective()) {
-			query += CypherPatternBuilder.injectivityBlock(p.getNodes());
+		var query = "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes);
+		if(injective) {
+			query += CypherPatternBuilder.injectivityBlock(nodes);
 		} 
 		return query + "\n";	
 	}
 
 	public String getQueryString_Where() {
-		return CypherPatternBuilder.wherePositiveConstraintQuery(p.getNodes());
+		return CypherPatternBuilder.wherePositiveConstraintQuery(nodes);
 	}
 
 	@Override
@@ -62,14 +85,14 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 
 		logger.info("Check constraint: ENFORCE " + ap.getName());
 
-		var cypherQuery = CypherPatternBuilder.readQuery(p.getNodes(), true);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);
 
-		while (result.hasNext()) {
+		if (result.hasNext()) {
 			logger.info("Found match(es). Constraint: ENFORCE " + ap.getName() + " is complied!");
-			return new NeoMatch(p, result.next());
+			return new NeoMatch(null, result.next());
 		}
 		logger.info("Not matches found. Constraint: ENFORCE " + ap.getName() + " is NOT complied!");
 		return null;

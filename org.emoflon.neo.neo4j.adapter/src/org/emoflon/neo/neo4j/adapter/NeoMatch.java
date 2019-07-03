@@ -34,7 +34,7 @@ public class NeoMatch implements IMatch {
 			}
 		}
 
-		//logger.debug("Extracted ids: " + ids);
+		logger.debug("Extracted ids: " + ids);
 	}
 
 	public long getIdForNode(NeoNode node) {
