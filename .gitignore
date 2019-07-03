@@ -55,3 +55,7 @@ examples/NetworkTopology/src-gen/org/emoflon/neo/api/API_NetworkTopology.java
 examples/Organigram/src-gen/org/emoflon/neo/api/API_Organigram.java
 examples/PacMan/src-gen/org/emoflon/neo/api/API_PacMan.java
 examples/TestSuite/src-gen/org/emoflon/neo/api/expected/API_SimpleFamilies.java
+examples/SokobanGUI/src-gen/org/emoflon/neo/api/API_Common.java
+examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangamegui/patterns/API_SokobanGUIPatterns.java
+examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangamegui/patterns/BoardData.java
+examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangamegui/patterns/EmptyFieldsData.java
