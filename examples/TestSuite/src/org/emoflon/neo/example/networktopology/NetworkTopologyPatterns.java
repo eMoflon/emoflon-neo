@@ -1,12 +1,12 @@
 package org.emoflon.neo.example.networktopology;
 
-import org.emoflon.neo.api.API_Src_NetworkTopology;
+import org.emoflon.neo.api.API_NetworkTopology;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class NetworkTopologyPatterns extends ENeoTest {
-	private API_Src_NetworkTopology entities = new API_Src_NetworkTopology(builder);
+	private API_NetworkTopology entities = new API_NetworkTopology(builder);
 	
 	@BeforeEach
 	public void initDB() {
