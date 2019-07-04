@@ -17,6 +17,9 @@ import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.compiler.TGGCompiler
 
 /**
  * Generates code from your model files on save.
@@ -32,7 +35,11 @@ class EMSLGenerator extends AbstractGenerator {
 		.drop(2) //
 		.map[s|s.toFirstUpper] //
 		.join("_");
+		
 		var emslSpec = resource.contents.get(0) as EMSL_Spec
+		
+		TGGCompiler.compileTGGs(emslSpec.entities.filter[it instanceof TripleGrammar].map[it as TripleGrammar])
+		TGGCompiler.compileTGGRules(emslSpec.entities.filter[it instanceof TripleRule].map[it as TripleRule])
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
 		fsa.generateFile("org/emoflon/neo/api/" + apiName + ".java", generateAPIFor(apiName, emslSpec, resource))
