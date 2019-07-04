@@ -21,11 +21,14 @@ public class NeoReturn {
 	public void addNodes(Collection<NeoNode> nodes) {
 		for (NeoNode n : nodes) {
 
-			this.nodesS.add(n.getVarName());
-			this.nodesN.add(n);
+			if(!nodesS.contains(n.getVarName())) {				
+				this.nodesS.add(n.getVarName());
+				this.nodesN.add(n);
+			}
 
 			for (NeoRelation rel : n.getRelations()) {
-				this.nodesS.add(rel.getVarName());
+				if(!nodesS.contains(rel.getVarName()))
+					this.nodesS.add(rel.getVarName());
 			}
 		}
 	}

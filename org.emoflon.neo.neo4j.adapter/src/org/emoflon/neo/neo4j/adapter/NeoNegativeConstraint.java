@@ -41,8 +41,6 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	
 	private void extractNodesAndRelations() {
 		
-		helper.newConstraint();
-		
 		for (var n : ap.getNodeBlocks()) {
 			
 			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), ap));

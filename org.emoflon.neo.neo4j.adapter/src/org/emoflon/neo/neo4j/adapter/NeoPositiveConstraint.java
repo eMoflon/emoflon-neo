@@ -41,8 +41,6 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 
 	private void extractNodesAndRelations() {
 		
-		helper.newConstraint();
-		
 		for (var n : ap.getNodeBlocks()) {
 			
 			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(),ap));

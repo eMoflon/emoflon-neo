@@ -49,8 +49,6 @@ public class NeoImplication implements IIfElseConstraint {
 	
 	private void extractNodesAndRelations() {
 		
-		helper.newConstraint();
-		
 		for (var n : apIf.getNodeBlocks()) {
 			
 			//TODO: create methode for IfThen Constraints

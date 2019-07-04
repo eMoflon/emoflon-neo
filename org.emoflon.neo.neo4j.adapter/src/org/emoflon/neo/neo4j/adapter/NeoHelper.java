@@ -9,13 +9,11 @@ import org.emoflon.neo.emsl.eMSL.Pattern;
 public class NeoHelper {
 
 	private HashMap matchNodes;
-	private int optionalCount;
 	private HashMap optionalNodes;
 	
 
 	public NeoHelper() {
 		this.matchNodes = new HashMap<String, String>();
-		optionalCount = 0;
 		this.optionalNodes = new HashMap<String, String>();
 	}
 
@@ -29,18 +27,14 @@ public class NeoHelper {
 		optionalNodes.put(name + "_" + index  + "_" + toName, p.getBody().getName());
 		return name + "_" + index  + "_" + toName;
 	}
-
-	public void newConstraint() {
-		optionalCount++;
-	}
 	
 	public String newConstraintNode(String name, AtomicPattern ap) {
 		
 		if(matchNodes.containsKey(name)) {
 			return name;
 		} else {
-			optionalNodes.put(ap.getName() + "_" + optionalCount + "_" + name, ap.getName());
-			return ap.getName() + "_" + optionalCount + "_" + name;
+			optionalNodes.put(ap.getName() + "_" + ap.hashCode() + "_" + name, ap.getName());
+			return ap.getName() + "_" + ap.hashCode() + "_" + name;
 		}		
 	
 	}
