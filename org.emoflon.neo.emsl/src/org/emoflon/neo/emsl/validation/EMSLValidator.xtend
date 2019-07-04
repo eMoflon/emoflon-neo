@@ -48,7 +48,19 @@ import org.emoflon.neo.emsl.util.FlattenerException
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class EMSLValidator extends AbstractEMSLValidator {
+	
+	static final String WRONG_PROPERTY_TYPE = "The value of this property must be of type "
+	// TODO [Maximilian] find other way (no splitting) maybe give template??
+	static final String REFINEMENT_LOOP_1 = "You have created an infinite loop in your refinements. \""
+	static final String REFINEMENT_LOOP_2 = "\" appears multiple times."
+	static final String CONDITION_IN_SUPER_ENTITY = "Entities with conditions cannot be refined."
+	static final String NOT_SUPPORTED_ENTITY = "The type of entity you are trying to refine is not yet supported."
+	
 
+	/**
+	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
+	 * in the metamodel.
+	 */
 	@Check
 	def checkPropertyStatementOfNodeBlock(ModelPropertyStatement p) {
 		if (p.type instanceof MetamodelPropertyStatement) {
@@ -58,21 +70,23 @@ class EMSLValidator extends AbstractEMSLValidator {
 				if (!(p.value instanceof PrimitiveInt && propertyType == BuiltInDataTypes.EINT) &&
 					!(p.value instanceof PrimitiveBoolean && propertyType == BuiltInDataTypes.EBOOLEAN) &&
 					!(p.value instanceof PrimitiveString && propertyType == BuiltInDataTypes.ESTRING) &&
-					!(p.value instanceof AttributeExpression &&
-						isOfCorrectType(p.value as AttributeExpression, p.type.type)))
-					error("The value of this property must be of type " + propertyType.getName,
-						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
+					!(p.value instanceof AttributeExpression &&	isOfCorrectType(p.value as AttributeExpression, p.type.type)))
+					
+					error(WRONG_PROPERTY_TYPE + propertyType.getName, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 			} else if (p.type.type instanceof UserDefinedType) {
 				var propertyType = (p.type.type as UserDefinedType).reference
 				var literals = propertyType.literals
 				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal))) {
-					error("The value of this property must be of type " + propertyType.getName,
-						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
+					error(WRONG_PROPERTY_TYPE + propertyType.getName, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}
 			}
 		}
 	}
 
+	/**
+	 * Helper method for checking the values of AttributeExpressions for correctness in respect of the
+	 * metamodel.
+	 */
 	def isOfCorrectType(AttributeExpression attrExpr, DataType type) {
 		if (attrExpr.target instanceof NodeAttributeExpTarget) {
 			(attrExpr.target as NodeAttributeExpTarget).attribute.type.equals(type)
@@ -81,6 +95,10 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}
 	}
 
+	/**
+	 * Tries to flatten the given Entity to find out if there are non-mergeable objects/statements etc.
+	 * If an error occurs, an appropriate error message is shown.
+	 */
 	@Check(NORMAL)
 	def checkFlattening(Entity entity) {
 		try {
@@ -92,80 +110,150 @@ class EMSLValidator extends AbstractEMSLValidator {
 		} catch (FlattenerException e) {
 			if (entity instanceof Pattern) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
-					error(
-						"You have created an infinite loop in your refinements. The pattern \"" +
-							new EntityAttributeDispatcher().getName(entity) + "\" appears at least twice.",
-						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+					var index = 0
+					for (s : entity.body.superRefinementTypes) {
+						if (e.alreadyRefinedPatternNames.contains((s.referencedType as AtomicPattern).name))
+							error(
+						REFINEMENT_LOOP_1 +
+							new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2, entity.body,
+						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+						index++
+					}
 
 				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-					error("The type " + e.nodeBlock.type.name +
-						" in your refinements cannot be merged into a common subtype.",
-						EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+					var index = 0
+					for (nb : entity.body.nodeBlocks) {
+						if (nb.type.name.equals(e.nodeBlock.type.name)) {
+							error("The type " + e.nodeBlock.type.name +
+								" in your refinements cannot be merged into a common subtype.", nb,
+								EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+						}
+						index++
+					}
 
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
-					error("Entities with conditions cannot be refined.",
-						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+					var index = 0
+					for (s : entity.body.superRefinementTypes) {
+						if ((s.referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name)) 
+							error(CONDITION_IN_SUPER_ENTITY,
+								entity.body,
+								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+						index++
+					}
 
-				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
-					error("The value of " + e.property2.type.name + " does not match your other refinements",
-						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 				} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
 					var dispatcher = new EntityAttributeDispatcher()
+					var index = 0
 					for (s : dispatcher.getSuperRefinementTypes(entity)) {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error("The type of entity you are trying to refine is not yet supported.", entity.body,
-								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+							error(NOT_SUPPORTED_ENTITY, entity.body,
+								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-							error("The type of entity you are trying to refine is not yet supported.", entity.body,
-								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+							error(NOT_SUPPORTED_ENTITY, entity.body,
+								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						}
+						index++
 					}
 				}
 			} else if (entity instanceof Rule) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
-					error(
-						"You have created an infinite loop in your refinements. The pattern \"" +
-							new EntityAttributeDispatcher().getName(entity) + "\" appears at least twice.",
-						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
+					var index = 0
+					for (s : entity.superRefinementTypes) {
+						if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name))
+							error(
+								REFINEMENT_LOOP_1 + new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2,
+								EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+						index++
+					}
 
 				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
-					error("The type " + e.nodeBlock.type.name +
-						" in your refinements cannot be merged into a common subtype.", EMSLPackage.Literals.RULE__NAME)
+					var index = 0
+					for (nb : entity.nodeBlocks) {
+						if (nb.type.name.equals(e.nodeBlock.type.name))
+							error("The type " + e.nodeBlock.type.name +	" in your refinements cannot be merged into a common subtype.",
+								nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE, index)
+						index++
+					}
 
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
-					error("Entities with conditions cannot be refined.",
-						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
-
-				} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
-					error("The value of " + e.property2.type.name + " does not match your other refinements",
-						EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES)
+					var index = 0
+					for (s : entity.superRefinementTypes) {
+						if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name)) 
+							error(CONDITION_IN_SUPER_ENTITY, EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+						index++
+					}
+					
 				} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
 					var dispatcher = new EntityAttributeDispatcher()
+					var index = 0
 					for (s : dispatcher.getSuperRefinementTypes(entity)) {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error("The type of entity you are trying to refine is not yet supported.", entity,
-								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+							
+							error("The type of entity you are trying to refine is not supported yet.", entity,
+								EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+						
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
+						
 							error("The type of entity you are trying to refine is not yet supported.", entity,
-								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
+								EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+						
 						}
+						index++
 					}
 				}
 			}
 			if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
-				error(
-					"The types of the properties you are trying to refine are not compatible. The types " +
-						(e.property1 as ModelPropertyStatement).type.name + " and " +
-						(e.property2 as ModelPropertyStatement).type.name + " must be the same.", e.property2,
-					EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+					for (propertyStatement : nb.properties) {
+						if (propertyStatement.type.name.equals(e.property1.type.name))
+						error(
+							"The types of the properties you are trying to refine are not compatible. The types " +
+								(e.property1 as ModelPropertyStatement).type.name + " and " +
+								(e.property2 as ModelPropertyStatement).type.name + " must be the same.", propertyStatement,
+							EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+					}
+				}
+			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS) {
+				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+					for (propertyStatement : nb.properties) {
+						if (propertyStatement.type.name.equals(e.property1.type.name))
+						error("The operators of the properties you are trying to refine are not compatible.", 
+							propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+					}
+					for (relationStatement : nb.relations) {
+						for (propertyStatement : relationStatement.properties) {
+							if (propertyStatement.type.name.equals(e.property1.type.name)) {
+							error("The operators of the properties you are trying to refine are not compatible.", 
+							propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+							}
+						}
+					}
+				}
+			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
+				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+					for (propertyStatement : nb.properties) {
+						if (propertyStatement.type.name.equals(e.property1.type.name)) {
+							error("The value of " + e.property2.type.name + " does not match your other refinements", propertyStatement,
+								EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+						}
+					}
+					for (relationStatement : nb.relations) {
+						for (propertyStatement : relationStatement.properties) {
+							if (propertyStatement.type.name.equals(e.property1.type.name)) {
+							error("The value of " + e.property2.type.name + " does not match your other refinements", propertyStatement,
+								EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+							}
+						}
+					}
+				}
 			} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_PROXY) {
 				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 					if (nb.name.equals((e.relation.eContainer as ModelNodeBlock).name)) {

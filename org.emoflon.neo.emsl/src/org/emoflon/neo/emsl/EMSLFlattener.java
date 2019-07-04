@@ -13,6 +13,7 @@ import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
@@ -21,6 +22,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
+import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
@@ -184,9 +186,11 @@ public class EMSLFlattener {
 				} else {
 					flattenedSuperEntity = (flattenEntity((Entity) r.getReferencedType(), alreadyRefinedEntityNamesCopy));
 				}
-							
-				if (r.getReferencedType() instanceof AtomicPattern && ((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
-					// check if a superEntity possesses a condition block
+				
+				// check if a superEntity possesses a condition block
+				if (r.getReferencedType() instanceof AtomicPattern && ((Pattern) r.getReferencedType().eContainer()).getCondition() != null
+						|| r.getReferencedType() instanceof Rule && ((Rule) r.getReferencedType()).getCondition() != null
+						|| r.getReferencedType() instanceof TripleRule && ((TripleRule) r.getReferencedType()).getNacs() != null) {
 					throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION, r.getReferencedType());
 				}
 				
@@ -398,10 +402,19 @@ public class EMSLFlattener {
 							basis = props.get(0);
 						}
 						for (var p : props) {
-							if (p.getType().getType() != basis.getType().getType() || 
-									basis.getOp() != p.getOp()) {
+							if (p.getType().getType() != basis.getType().getType()) {
 								// incompatible types/operands found
-								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p);
+								if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+									throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+								} else {
+									throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+								}
+							} else if (basis.getOp() != p.getOp()) {
+								if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+									throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+								} else {
+									throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+								}
 							}
 							compareValueOfModelPropertyStatement(entity, basis, p);
 						}
@@ -480,10 +493,18 @@ public class EMSLFlattener {
 					basis = properties.get(0);
 				}
 				for (var p : properties) {
-					if (!(p.getType().getType() == basis.getType().getType() && 
-							basis.getOp() == p.getOp())) 
-					{
-						throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p); // incompatible types found
+					if (p.getType().getType() != basis.getType().getType())	{
+						if (p.eContainer().eContainer() instanceof AtomicPattern) {
+							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p, (SuperType) p.eContainer().eContainer());
+						} else {
+							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p, (SuperType) p.eContainer().eContainer()); // incompatible types found
+						}
+					} else if (basis.getOp() != p.getOp()) {
+						if (p.eContainer().eContainer() instanceof AtomicPattern) {
+							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p, (SuperType) p.eContainer().eContainer());
+						} else {
+							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p, (SuperType) p.eContainer().eContainer()); // incompatible operators found
+						}
 					}
 					compareValueOfModelPropertyStatement(entity, basis, p);
 				}
@@ -536,6 +557,9 @@ public class EMSLFlattener {
 			if (rel.getAction() != null) {
 				newRel.setAction(EMSLFactory.eINSTANCE.createAction());
 				newRel.getAction().setOp(rel.getAction().getOp());
+			}
+			for (var prop : rel.getProperties()) {
+				newRel.getProperties().add(copyModelPropertyStatement(prop));
 			}
 			newRel.setType(rel.getType());
 			newRel.setTarget(rel.getTarget());			
@@ -605,7 +629,15 @@ public class EMSLFlattener {
 				&& ((EnumValue) p1.getValue()).getLiteral() == ((EnumValue) p2.getValue()).getLiteral()) {
 			return;
 		}
-		throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2);	
+		if (p2.eContainer().eContainer() instanceof AtomicPattern) {
+			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2, (SuperType) p2.eContainer().eContainer().eContainer());
+		} else if (p2.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2, (SuperType) p2.eContainer().eContainer().eContainer());
+		} else if (p2.eContainer().eContainer() instanceof Rule || p2.eContainer().eContainer() instanceof Model) {
+			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2, (SuperType) p2.eContainer().eContainer());
+		} else if (p2.eContainer().eContainer().eContainer() instanceof Rule || p2.eContainer().eContainer().eContainer() instanceof Model) {
+			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2, (SuperType) p2.eContainer().eContainer().eContainer());
+		}
 	}
 	
 	/**

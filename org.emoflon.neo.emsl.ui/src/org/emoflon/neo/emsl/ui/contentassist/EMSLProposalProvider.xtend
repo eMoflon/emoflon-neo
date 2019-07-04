@@ -52,7 +52,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 			
 		super.completeModelRelationStatement_Target(entity, assignment, context, acceptor)
-		if (entity.eContainer instanceof AtomicPattern) {
+		if (entity.eContainer.eContainer instanceof AtomicPattern) {
 			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer.eContainer as Entity)) {
 				for (relabeling : (refinement as RefinementCommand).relabeling) {
 					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
