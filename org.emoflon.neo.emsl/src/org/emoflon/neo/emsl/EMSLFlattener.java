@@ -8,6 +8,7 @@ import java.util.PriorityQueue;
 import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.AttributeCondition;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
@@ -136,9 +137,14 @@ public class EMSLFlattener {
 			// 2. step: merge nodes and edges
 			var mergedNodes = mergeNodes(entity, refinements, collectedNodeBlocks);
 			
-			// 3. step: add merged nodeBlocks to entity and return
+			// 3. step: add merged nodeBlocks to entity
 			dispatcher.getNodeBlocks(entity).clear();
 			dispatcher.getNodeBlocks(entity).addAll((mergedNodes));
+			
+			// 4. step: merge attribute conditions in rules/patterns(/tripleRules)
+			var mergedAttributeConditions = mergeAttributeConditions(entity);
+			dispatcher.getAttributeConditions(entity).clear();
+			dispatcher.getAttributeConditions(entity).addAll(mergedAttributeConditions);
 			
 			if (entity instanceof Pattern) {
 				var atomicPattern = ((Pattern) entity).getBody();
@@ -522,6 +528,12 @@ public class EMSLFlattener {
 		return mergedNodes;
 	}
 	
+	private ArrayList<AttributeCondition> mergeAttributeConditions(Entity entity) {
+		var conditions = new ArrayList<AttributeCondition>();
+		
+		return conditions;
+	}
+	
 	
 	/**
 	 * This method creates a new NodeBlock from the given NodeBlock that was referenced in the RefinementStatement. It also applies
@@ -656,6 +668,12 @@ public class EMSLFlattener {
 		}
 	}
 	
+	/**
+	 * Checks if the type of a superEntity matches the type of the entity that is to be flattened. 
+	 * @param entity 				that is to be flattened.
+	 * @param superEntity			that is to be refined.
+	 * @throws FlattenerException	is thrown if the type of superEntity is not supported.
+	 */
 	private void checkSuperEntityTypeForCompliance(Entity entity, SuperType superEntity) throws FlattenerException {
 		if (entity instanceof Metamodel && !(superEntity instanceof Metamodel)
 				|| !(entity instanceof Metamodel) && superEntity instanceof Metamodel)

@@ -64,10 +64,17 @@ PrimitiveBoolean:
 ;
 
 ModelRelationStatement:
-	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
+	(action=Action)? 
+	'-' 
+		type+=ModelRelationStatementType+ 
+	'->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
+	
+ModelRelationStatementType:
+	type+=[MetamodelRelationStatement|QualifiedName] ('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')
+;
 
 /*-------------------------------------------------*/
 /*----------------- Metamodels --------------------*/
@@ -135,6 +142,7 @@ AtomicPattern:
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
 	nodeBlocks+=ModelNodeBlock*
+	('attributeConditions' '{' attributeConditions+=AttributeCondition* '}')?
 	'}')?;
 
 Pattern:
@@ -258,8 +266,9 @@ TripleGrammar:
 	'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
 	'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
 	'correspondence' '{' correspondences+=CorrespondenceType* '}'
+	('rules' '{' rules+=[TripleRule|QualifiedName]* '}')?
 	'}'
-	;
+;
 
 /*-------------------------------------------------*/
 /*------------------- Common ----------------------*/
