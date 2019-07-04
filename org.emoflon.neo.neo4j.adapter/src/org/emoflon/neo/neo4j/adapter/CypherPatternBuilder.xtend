@@ -108,6 +108,12 @@ class CypherPatternBuilder {
 
 		'''«ret»'''
 	}
+	
+	def static String ifThenConstraintWithWhere(Collection<String> with, Collection<String> where) {
+		'''
+WITH «FOR w:with SEPARATOR ", "»«w»«ENDFOR»
+WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
+	}
 
 	def static String nodeIdBlock(Collection<NeoNode> nodes, NeoMatch match) {
 		'''

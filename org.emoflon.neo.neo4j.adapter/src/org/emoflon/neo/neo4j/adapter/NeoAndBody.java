@@ -14,16 +14,17 @@ public class NeoAndBody {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private AndBody body;
 	private NeoCoreBuilder builder;
+	private NeoHelper helper;
 
 	/*
 	 * @param body of the current AndBody
 	 * @param builder for creating and running cypher queries
 	 */
-	public NeoAndBody(AndBody body, NeoCoreBuilder builder) {
+	public NeoAndBody(AndBody body, NeoCoreBuilder builder, NeoHelper helper) {
 
 		this.body = body;
 		this.builder = builder;
-
+		this.helper = helper;
 	}
 
 	/*
@@ -40,7 +41,7 @@ public class NeoAndBody {
 
 			// if its an constraint body, check if this constraint satisfies
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
 
 				if (((ConstraintReference) b).isNegated()) {
 					logger.info("Attention: Constraint is negated!");
@@ -57,7 +58,7 @@ public class NeoAndBody {
 			}
 			// if its an nested body, check if this nested body and its constraint satisfy
 			else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder);
+				var orbody = new NeoOrBody((OrBody) b, builder, helper);
 
 				if (!orbody.isSatisfied()) {
 					return false;
@@ -86,20 +87,33 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder);
-				returnStmt.addNodes(consRef.getConstraintData().getNodes());
-				returnStmt.addOptionalMatch(consRef.getConstraintData().getOptionalMatchString());
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consData = consRef.getConstraintData();
+				
+				
+				returnStmt.addNodes(consData.getNodes());
+				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 
-				if (((ConstraintReference) b).isNegated())
-					query += "NOT(" + consRef.getConstraintData().getWhereClause() + ")";
-				else
-					query += "(" + consRef.getConstraintData().getWhereClause() + ")";
+				if (((ConstraintReference) b).isNegated()) {
+					query += "NOT(" + consData.getWhereClause() + ")";
+					consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere("NOT " + elem));
+				} else {
+					query += "(" + consData.getWhereClause() + ")";
+					consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
+				}				
 
 			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder);
-				returnStmt.addNodes(orbody.getConstraintData().getNodes());
-				returnStmt.addOptionalMatch(orbody.getConstraintData().getOptionalMatchString());
-				query += orbody.getConstraintData().getWhereClause();
+				var orbody = new NeoOrBody((OrBody) b, builder, helper);
+				var consData = orbody.getConstraintData();
+				returnStmt.addNodes(consData.getNodes());
+				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
+				
+				consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+				consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
+				
+				query += consData.getWhereClause();
 			}
 		}
 		returnStmt.addWhereClause("(" + query + ")");

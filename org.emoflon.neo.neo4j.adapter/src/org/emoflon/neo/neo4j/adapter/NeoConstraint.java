@@ -20,8 +20,14 @@ public class NeoConstraint implements IConstraint {
 		this.builder = builder;
 		this.helper = new NeoHelper();
 		this.c = c;
-
 	}
+	
+	public NeoConstraint(Constraint c, NeoCoreBuilder builder, NeoHelper helper) {
+		this.builder = builder;
+		this.helper = helper;
+		this.c = c;
+	}
+
 
 	public String getName() {
 		return c.getName();
@@ -56,11 +62,13 @@ public class NeoConstraint implements IConstraint {
 			returnStmt.addNodes(co.getThenNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
 			returnStmt.addWhereClause(co.getQueryString_Where());
+			returnStmt.addIfThenWith(co.getQueryStringWhereCount()[0]);
+			returnStmt.addIfThenWhere(co.getQueryStringWhereCount()[1]);
 
 		} else if (c.getBody() instanceof OrBody) {
 
 			var body = (OrBody) c.getBody();
-			var neoBody = new NeoOrBody(body, builder);
+			var neoBody = new NeoOrBody(body, builder, helper);
 
 			returnStmt = neoBody.getConstraintData();
 
@@ -83,15 +91,21 @@ public class NeoConstraint implements IConstraint {
 		var cypherQuery = returnStmt.getOptionalMatchString();
 		cypherQuery += "\n" + CypherPatternBuilder.withConstraintQuery(returnStmt.getNodesAsString());
 		cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
+		if(!returnStmt.getIfThenWith().isEmpty() && !returnStmt.getIfThenWhere().isEmpty()) {
+			cypherQuery += CypherPatternBuilder.ifThenConstraintWithWhere(returnStmt.getIfThenWith(),returnStmt.getIfThenWhere());
+		}
 		cypherQuery += "\nRETURN TRUE";
 
 		logger.debug(cypherQuery);
-		var result = builder.executeQuery(cypherQuery);
+		/**var result = builder.executeQuery(cypherQuery);
 
 		if (result.hasNext())
 			return true;
 		else
 			return false;
+			
+		*/
+		return false;
 	}
 
 }

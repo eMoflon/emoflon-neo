@@ -3,6 +3,8 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
@@ -20,8 +22,11 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	private List<NeoNode> nodes;
 	
 	private boolean injective;
+	private int uuid;
 
 	public NeoPositiveConstraint(AtomicPattern ap, NeoCoreBuilder builder, boolean injective, NeoHelper helper) {
+		Random zufall = new Random();
+		uuid = zufall.nextInt(Integer.MAX_VALUE);
 		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
@@ -43,7 +48,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		
 		for (var n : ap.getNodeBlocks()) {
 			
-			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(),ap));
+			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), ap, uuid));
 			
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -51,11 +56,11 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getType().getName(), ap),
+					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getName(), ap),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
-					r.getTarget().getName())));
+					helper.newConstraintNode(r.getTarget().getName(), ap, uuid))));
 			
 			nodes.add(node);
 		}

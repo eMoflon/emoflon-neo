@@ -3,6 +3,8 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
@@ -22,8 +24,11 @@ public class NeoImplication implements IIfElseConstraint {
 	private List<NeoNode> nodesThen;
 	
 	private boolean injective;
+	private int uuid;
 
 	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, NeoCoreBuilder builder, boolean injective, NeoHelper helper) {
+		Random zufall = new Random();
+		uuid = zufall.nextInt(Integer.MAX_VALUE);
 		this.builder = builder;
 		this.helper = helper;
 		this.apIf = apIf;
@@ -51,8 +56,7 @@ public class NeoImplication implements IIfElseConstraint {
 		
 		for (var n : apIf.getNodeBlocks()) {
 			
-			//TODO: create methode for IfThen Constraints
-			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf));
+			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf, uuid));
 			
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -60,18 +64,18 @@ public class NeoImplication implements IIfElseConstraint {
 			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getType().getName(), apIf),
+					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getName(), apIf),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
-					r.getTarget().getName())));
+					helper.newConstraintNode(r.getTarget().getName(), apIf, uuid))));
 			
 			nodesIf.add(node);
 		}
 		for (var n : apThen.getNodeBlocks()) {
 			
 			//TODO: create methode for IfThen Constraints
-			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf));
+			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf, uuid));
 			
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -79,11 +83,11 @@ public class NeoImplication implements IIfElseConstraint {
 			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getType().getName(), apIf),
+					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getName(), apIf),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
-					r.getTarget().getName())));
+					helper.newConstraintNode(r.getTarget().getName(), apIf, uuid))));
 			nodesThen.add(node);
 		}
 	}
@@ -113,9 +117,28 @@ public class NeoImplication implements IIfElseConstraint {
 	}
 
 	public String getQueryString_Where() {
-		return "( NOT (" + CypherPatternBuilder.wherePositiveConstraintQuery(nodesIf) + ")" +
-				" OR (" + CypherPatternBuilder.wherePositiveConstraintQuery(nodesThen) + "))"
+		return "((" + CypherPatternBuilder.wherePositiveConstraintQuery(nodesIf) + ")" +
+				" AND (" + CypherPatternBuilder.whereNegativeConstraintQuery(nodesThen) + "))"
 	    ;
+	}
+	
+	public String[] getQueryStringWhereCount() {
+		
+		var found = false;
+		var uNode = "";
+		
+		for(NeoNode n: nodesIf) {
+			if(!found) {
+				for(NeoNode m: nodesThen) {
+					if(n.getVarName().equals(m.getVarName())) {
+						found = true;
+					}
+				}
+				uNode = n.getVarName();
+			}
+		}
+		String[] ary = {"count(" + uNode + ") as c_" + uNode, "c_" + uNode + " = 0"};	
+		return ary;
 	}
 
 	@Override

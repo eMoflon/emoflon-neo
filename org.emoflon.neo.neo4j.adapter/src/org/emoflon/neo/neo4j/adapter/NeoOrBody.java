@@ -11,15 +11,17 @@ public class NeoOrBody {
 
 	private OrBody body;
 	private NeoCoreBuilder builder;
+	private NeoHelper helper;
 
 	/*
 	 * @param body of the current OrBody
 	 * @param builder for creating and running Cypher queries
 	 */
-	public NeoOrBody(OrBody body, NeoCoreBuilder builder) {
+	public NeoOrBody(OrBody body, NeoCoreBuilder builder, NeoHelper helper) {
 
 		this.body = body;
 		this.builder = builder;
+		this.helper = helper;
 
 	}
 
@@ -34,7 +36,7 @@ public class NeoOrBody {
 
 		// for all child in the constraint body
 		for (AndBody b : body.getChildren()) {
-			var andbody = new NeoAndBody(b, builder);
+			var andbody = new NeoAndBody(b, builder, helper);
 
 			if (andbody.isSatisfied()) {
 				return true;
@@ -56,14 +58,17 @@ public class NeoOrBody {
 		var query = "";
 
 		for (AndBody b : body.getChildren()) {
-			var andbody = new NeoAndBody(b, builder);
-			returnStmt.addNodes(andbody.getConstraintData().getNodes());
-			returnStmt.addOptionalMatch(andbody.getConstraintData().getOptionalMatchString());
+			var andbody = new NeoAndBody(b, builder, helper);
+			var consData = andbody.getConstraintData();
+			returnStmt.addNodes(consData.getNodes());
+			returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 
 			if (!query.equals("")) {
 				query += " OR ";
 			}
-			query += andbody.getConstraintData().getWhereClause();
+			query += consData.getWhereClause();
+			consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+			consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
 
 		}
 		returnStmt.addWhereClause("(" + query + ")");
