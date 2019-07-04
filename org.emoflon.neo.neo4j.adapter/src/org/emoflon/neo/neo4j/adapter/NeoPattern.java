@@ -22,6 +22,8 @@ public class NeoPattern implements IPattern {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	private NeoCoreBuilder builder;
+	private NeoHelper helper;
+	
 	private Pattern p;
 	private Constraint c;
 	private Object cond;
@@ -35,6 +37,7 @@ public class NeoPattern implements IPattern {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.builder = builder;
+		this.helper = new NeoHelper();
 
 		try {
 			this.p = new EMSLFlattener().flattenCopyOfPattern(p, new ArrayList<String>());
@@ -51,14 +54,14 @@ public class NeoPattern implements IPattern {
 				this.c = (Constraint) p.getCondition().eCrossReferences().get(0);
 				
 			} else if (p.getCondition() instanceof PositiveConstraint) {
-				cond = (NeoPositiveConstraint)(new NeoPositiveConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder, injective));
+				cond = (NeoPositiveConstraint)(new NeoPositiveConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder, injective, helper));
 
 			} else if (p.getCondition() instanceof NegativeConstraint) {
-				cond = (NeoNegativeConstraint)(new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder, injective));
+				cond = (NeoNegativeConstraint)(new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder, injective, helper));
 				
 			} else if (p.getCondition() instanceof Implication) {
 				cond = (NeoImplication)(new NeoImplication((AtomicPattern) p.getCondition().eCrossReferences().get(0),
-						(AtomicPattern) p.getCondition().eCrossReferences().get(1), builder, injective));
+						(AtomicPattern) p.getCondition().eCrossReferences().get(1), builder, injective, helper));
 			} else {
 				logger.info(p.getCondition().toString());
 				throw new UnsupportedOperationException();
@@ -67,18 +70,23 @@ public class NeoPattern implements IPattern {
 	}
 
 	private void extractNodesAndRelations() {
+		
 		for (var n : p.getBody().getNodeBlocks()) {
-			var node = new NeoNode(n.getType().getName(), n.getName());
+			
+			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName(), p));
+			
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
 					NeoUtil.handleValue(p.getValue())));
+			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					n.getRelations().indexOf(r), //
+					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getType().getName(), p),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
 					r.getTarget().getName())));
+			
 			nodes.add(node);
 		}
 	}

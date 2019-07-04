@@ -247,7 +247,7 @@ constraint extremeConstraint = ((!topLeftCorner && topRightCorner) || !topRightC
 pattern hasLeft {
 	field: Field
 	
-	leftFig: Field {
+	leftField: Field {
 		-right-> field
 	}
 }
@@ -255,23 +255,23 @@ pattern hasLeft {
 pattern hasTop {
 	field: Field
 	
-	topFig: Field {
+	topField: Field {
 		-bottom-> field
 	}
 }
 
 pattern hasRight {
 	field: Field {
-		-right->rightFig
+		-right->rightField
 	}
-	rightFig: Field
+	rightField: Field
 }
 
 pattern hasBottom {
 	field: Field {
-		-bottom->bottomFig
+		-bottom->bottomField
 	}
-	bottomFig: Field
+	bottomField: Field
 }
 
 

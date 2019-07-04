@@ -24,12 +24,11 @@ public class NeoRelation {
 	 * @param toNodelLabel the label/class of the target node
 	 * @param toNodeVar the variable used in cypher of the target node
 	 */
-	public NeoRelation(NeoNode from, int index, String relType, List<ModelPropertyStatement> props, String toNodeLabel,
-			String toNodeVar) {
+	public NeoRelation(NeoNode from, String varName, String relType, List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
 		this.relType = relType;
 		this.toNodeVar = toNodeVar;
 		this.toNodeLabel = toNodeLabel;
-		this.varName = from.getVarName() + "_" + relType + "_" + index + "_" + toNodeVar;
+		this.varName = varName;
 
 		properties = new ArrayList<>();
 		props.forEach(prop -> addProperty(prop.getType().getName(), NeoUtil.handleValue(prop.getValue())));

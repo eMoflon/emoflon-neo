@@ -41,7 +41,7 @@ public class NeoAtomicPattern implements IPattern {
 			}
 			for (ModelRelationStatement r : n.getRelations()) {
 				node.addRelation(new NeoRelation(node, //
-						n.getRelations().indexOf(r), //
+						node.getVarName(),
 						r.getType().getName(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //

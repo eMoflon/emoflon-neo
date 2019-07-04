@@ -24,13 +24,6 @@ public class NeoCondition {
 		this.nodesAndRefsN = new ArrayList<>();
 	}
 
-	public NeoCondition(NeoPattern p, NeoPattern c, String name, NeoCoreBuilder builder) {
-		this.builder = builder;
-		this.p = p;
-		this.nodesAndRefs = new ArrayList<>();
-		this.nodesAndRefsN = new ArrayList<>();
-	}
-
 	public Collection<IMatch> determineMatches() {
 
 		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());

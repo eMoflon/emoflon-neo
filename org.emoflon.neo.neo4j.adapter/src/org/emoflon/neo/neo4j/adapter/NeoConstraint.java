@@ -13,10 +13,12 @@ public class NeoConstraint implements IConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private NeoCoreBuilder builder;
+	private NeoHelper helper;
 	private Constraint c;
 
 	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
 		this.builder = builder;
+		this.helper = new NeoHelper();
 		this.c = c;
 
 	}
@@ -31,7 +33,7 @@ public class NeoConstraint implements IConstraint {
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap, builder, true);
+			var co = new NeoPositiveConstraint(ap, builder, true, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
@@ -39,7 +41,7 @@ public class NeoConstraint implements IConstraint {
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap, builder, true);
+			var co = new NeoNegativeConstraint(ap, builder, true, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
@@ -48,7 +50,7 @@ public class NeoConstraint implements IConstraint {
 		} else if (c.getBody() instanceof Implication) {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder, true);
+			var co = new NeoImplication(apIf, apThen, builder, true, helper);
 
 			returnStmt.addNodes(co.getIfNodes());
 			returnStmt.addNodes(co.getThenNodes());
