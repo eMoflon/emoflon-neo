@@ -39,7 +39,6 @@ public class NeoHelper {
 	
 	}
 
-
 	public String newConstraintReference(String name, int index, String toName, AtomicPattern ap) {
 		
 		if(matchNodes.containsKey(name)) {

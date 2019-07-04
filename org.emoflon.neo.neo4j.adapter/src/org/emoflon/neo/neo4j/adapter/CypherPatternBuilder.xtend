@@ -109,9 +109,9 @@ class CypherPatternBuilder {
 		'''«ret»'''
 	}
 	
-	def static String ifThenConstraintWithWhere(Collection<String> with, Collection<String> where) {
+	def static String ifThenConstraintWithWhere(Collection<String> with, Collection<String> where, Collection<String> nodes) {
 		'''
-WITH «FOR w:with SEPARATOR ", "»«w»«ENDFOR»
+WITH «FOR w:with SEPARATOR ", "»«w»«ENDFOR»«FOR n:nodes BEFORE ", " SEPARATOR ", " »«n»«ENDFOR»
 WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 	}
 

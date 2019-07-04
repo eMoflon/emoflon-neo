@@ -127,14 +127,16 @@ public class NeoImplication implements IIfElseConstraint {
 		var found = false;
 		var uNode = "";
 		
-		for(NeoNode n: nodesIf) {
-			if(!found) {
-				for(NeoNode m: nodesThen) {
+		for(NeoNode n: nodesThen) {
+			if(uNode.equals("")) {
+				for(NeoNode m: nodesIf) {
 					if(n.getVarName().equals(m.getVarName())) {
 						found = true;
 					}
 				}
-				uNode = n.getVarName();
+				if(!found) {
+					uNode = n.getVarName();
+				}
 			}
 		}
 		String[] ary = {"count(" + uNode + ") as c_" + uNode, "c_" + uNode + " = 0"};	

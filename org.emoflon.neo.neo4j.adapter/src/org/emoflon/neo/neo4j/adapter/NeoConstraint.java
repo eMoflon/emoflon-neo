@@ -92,7 +92,7 @@ public class NeoConstraint implements IConstraint {
 		cypherQuery += "\n" + CypherPatternBuilder.withConstraintQuery(returnStmt.getNodesAsString());
 		cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
 		if(!returnStmt.getIfThenWith().isEmpty() && !returnStmt.getIfThenWhere().isEmpty()) {
-			cypherQuery += CypherPatternBuilder.ifThenConstraintWithWhere(returnStmt.getIfThenWith(),returnStmt.getIfThenWhere());
+			cypherQuery += CypherPatternBuilder.ifThenConstraintWithWhere(returnStmt.getIfThenWith(),returnStmt.getIfThenWhere(),returnStmt.getNodesAsString());
 		}
 		cypherQuery += "\nRETURN TRUE";
 
