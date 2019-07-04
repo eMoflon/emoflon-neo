@@ -77,10 +77,9 @@ public class NeoCoreBuilder implements AutoCloseable {
 	// Meta attributes and relations
 	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
 	private static final String CONFORMS_TO_PROP = "conformsTo";
-	private static final String URI_PROP = "_uri_";
 
 	// Lists of properties and labels for meta types
-	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(URI_PROP, ORG_EMOFLON_NEO_CORE));
+	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, ORG_EMOFLON_NEO_CORE));
 	private static final List<String> neoCoreLabels = List.of(METAMODEL, MODEL, EOBJECT);
 
 	private static final List<NeoProp> eclassProps = List.of(new NeoProp(NAME_PROP, ECLASS));
@@ -339,7 +338,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	private boolean ecoreIsNotPresent() {
 		var result = executeActionAsMatchTransaction(cb -> {
-			cb.returnWith(cb.matchNode(List.of(new NeoProp(URI_PROP, ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
+			cb.returnWith(cb.matchNode(List.of(new NeoProp(NAME_PROP, ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
 		});
 
 		return result.stream().count() == 0;
@@ -443,7 +442,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
-				mmNode -> newMetamodels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(URI_PROP).asString())));
+				mmNode -> newMetamodels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(NAME_PROP).asString())));
 		return newMetamodels;
 	}
 
@@ -455,7 +454,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
-				mmNode -> newModels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(URI_PROP).asString())));
+				mmNode -> newModels.removeIf(mm -> mm.getName().equals(mmNode.get(0).get(NAME_PROP).asString())));
 		return newModels;
 	}
 
@@ -559,7 +558,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			HashMap<Object, NodeCommand> blockToCommand, HashMap<Metamodel, NodeCommand> mmNodes, Metamodel metamodel,
 			NodeCommand mmodel, NodeCommand eobject) {
 
-		var mmNode = cb.createNode(List.of(new NeoProp(URI_PROP, metamodel.getName())),
+		var mmNode = cb.createNode(List.of(new NeoProp(NAME_PROP, metamodel.getName())),
 				List.of(METAMODEL, MODEL, EOBJECT));
 
 		mmNodes.put(metamodel, mmNode);
@@ -586,14 +585,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 			HashMap<ModelNodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model,
 			NodeCommand nodeCommandForModel, NodeCommand eobject) {
 
-		var mNode = cb.createNode(List.of(new NeoProp(URI_PROP, model.getName())), List.of(MODEL, EOBJECT));
+		var mNode = cb.createNode(List.of(new NeoProp(NAME_PROP, model.getName())), List.of(MODEL, EOBJECT));
 
 		mNodes.put(model, mNode);
 
 		model.getNodeBlocks().forEach(nb -> {
 			Metamodel mm = (Metamodel) nb.getType().eContainer();
 
-			var mmNode = cb.matchNode(List.of(new NeoProp(URI_PROP, mm.getName())), List.of(METAMODEL));
+			var mmNode = cb.matchNode(List.of(new NeoProp(NAME_PROP, mm.getName())), List.of(METAMODEL));
 
 			var typeOfNode = cb.matchNodeWithContainer(//
 					List.of(new NeoProp(NAME_PROP, nb.getType().getName())), //
