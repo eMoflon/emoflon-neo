@@ -13,10 +13,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.BuiltInType;
-import org.emoflon.neo.emsl.eMSL.DataType;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
 import org.emoflon.neo.emsl.eMSL.EnumLiteral;
-import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
@@ -24,11 +22,9 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
-import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
-import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
-import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -75,11 +71,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String ABSTRACT_PROP = "abstract";
 
 	// Meta attributes and relations
-	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
 	private static final String CONFORMS_TO_PROP = "conformsTo";
 
 	// Lists of properties and labels for meta types
-	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, ORG_EMOFLON_NEO_CORE));
+	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE));
 	private static final List<String> neoCoreLabels = List.of(METAMODEL, MODEL, EOBJECT);
 
 	private static final List<NeoProp> eclassProps = List.of(new NeoProp(NAME_PROP, ECLASS));
@@ -338,7 +333,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	private boolean ecoreIsNotPresent() {
 		var result = executeActionAsMatchTransaction(cb -> {
-			cb.returnWith(cb.matchNode(List.of(new NeoProp(NAME_PROP, ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
+			cb.returnWith(
+					cb.matchNode(List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
 		});
 
 		return result.stream().count() == 0;
@@ -653,49 +649,19 @@ public class NeoCoreBuilder implements AutoCloseable {
 				.flatMap(et -> et.getProperties().stream())//
 				.filter(etPs -> etPs.getName().equals(propName))//
 				.map(etPs -> etPs.getType())//
-				.map(t -> parseStringWithType(value, t))//
+				.map(t -> EMSLUtil.parseStringWithType(value, t))//
 				.findAny();
 
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
 	private Object inferTypeForNodeAttribute(Value value, String propName, MetamodelNodeBlock nodeType) {
-		var typedValue = NeoUtil.allPropertiesOf(nodeType).stream()//
+		var typedValue = EMSLUtil.allPropertiesOf(nodeType).stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//
-				.map(t -> parseStringWithType(value, t))//
+				.map(t -> EMSLUtil.parseStringWithType(value, t))//
 				.findAny();
 
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
-	}
-
-	private Object parseStringWithType(Value value, DataType type) {
-		if (type instanceof BuiltInType) {
-			var builtInType = ((BuiltInType) type).getReference();
-
-			switch (builtInType) {
-			case ESTRING:
-				return PrimitiveString.class.cast(value).getLiteral();
-			case EINT:
-				return PrimitiveInt.class.cast(value).getLiteral();
-			case EBOOLEAN:
-				return PrimitiveBoolean.class.cast(value).isTrue();
-			default:
-				throw new IllegalStateException("This literal has to be handled: " + value);
-			}
-		} else if (type instanceof UserDefinedType) {
-			var userDefinedType = (UserDefinedType) type;
-
-			EnumLiteral enumLiteral = EnumValue.class.cast(value).getLiteral();
-
-			if (userDefinedType.getReference().getLiterals().stream()//
-					.anyMatch(literal -> literal.equals(enumLiteral)))
-				return enumLiteral.getName();
-			else {
-				throw new IllegalArgumentException(value + " is not a legal literal of " + type);
-			}
-		} else {
-			throw new IllegalArgumentException("Unable to parse: " + value + " as a " + type);
-		}
 	}
 }

@@ -12,14 +12,10 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoPattern;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
-import org.neo4j.driver.v1.types.Node;
 
 public class NeoController implements IController {
-
 	private API_SokobanGUIPatterns api;
 	private NeoCoreBuilder builder;
 
@@ -29,9 +25,7 @@ public class NeoController implements IController {
 
 	public NeoController() {
 		builder = API_Common.createBuilder();
-		api = new API_SokobanGUIPatterns(builder, //
-				"/Users/anthonyanjorin/git/emoflon-neo/examples/", //
-				"/Users/anthonyanjorin/git/emoflon-neo/");
+		api = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		defaultBoard();
 	}
 
@@ -55,27 +49,17 @@ public class NeoController implements IController {
 	public List<String> getFigureTypes() {
 		return api.getPattern_FigureTypes().determineMatches()//
 				.stream().map(m -> {
-					NeoMatch nm = (NeoMatch) m;
-					var figType = nm.getData().get("eclass");
-					return figType.get("name").asString();
+					var data = api.getData_FigureTypes(m);
+					return data.eclass.name;
 				}).collect(Collectors.toList());
 	}
 
 	@Override
 	public Optional<Field> getSelectedField() {
 		return api.getPattern_SelectedFigure().determineOneMatch().flatMap(m -> {
-			var neoMatch = (NeoMatch) m;
-			var p = (NeoPattern) m.getPattern();
-			var r = p.getNodes()//
-					.stream()//
-					.flatMap(n -> n.getRelations().stream())//
-					.filter(rl -> rl.getRelType().equals("fields")).findAny();
-			var rName = r.get().getVarName();
-			var rNode = neoMatch.getData().get(rName);
-			var row = rNode.get("row").asInt();
-			var col = rNode.get("col").asInt();
+			var data = api.getData_SelectedFigure(m);
 			return fields.stream()//
-					.filter(f -> f.getRow() == row && f.getCol() == col)//
+					.filter(f -> f.getRow() == data.b_fields_1_f.row && f.getCol() == data.b_fields_1_f.col)//
 					.findFirst();
 		});
 	}
@@ -112,7 +96,7 @@ public class NeoController implements IController {
 	}
 
 	private void defaultBoard() {
-		var exampleBoard = new API_SokobanSimpleTestField(builder);
+		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		var board = exampleBoard.getModel_SokobanSimpleTestField();
 		builder.exportEMSLEntityToNeo4j(board);
 
@@ -125,40 +109,21 @@ public class NeoController implements IController {
 			api.getPattern_EmptyFields().determineMatches().forEach(f -> {
 				var fData = api.getData_EmptyFields(f);
 				fields.add(new Field(//
-						fData.board_fields_field.row, //
-						fData.board_fields_field.col, //
+						fData.board_fields_0_field.row, //
+						fData.board_fields_0_field.col, //
 						fData.field.endPos, //
 						null));
 			});
 
-			api.getPattern_OcupiedFields().determineMatches().forEach(f -> {
-				var fm = (NeoMatch) f;
-				var data = fm.getData();
-				var fNode = data.get("field");
-				var p = (NeoPattern) fm.getPattern();
-				var r = p.getNodes()//
-						.stream()//
-						.flatMap(n -> n.getRelations().stream())//
-						.filter(rl -> rl.getRelType().equals("fields")).findAny();
-				var rName = r.get().getVarName();
-				var rNode = data.get(rName);
-				var figNode = data.get("fig").asNode();
+			api.getPattern_OccupiedFields().determineMatches().forEach(f -> {
+				var data = api.getData_OccupiedFields(f);
 				fields.add(new Field(//
-						rNode.get("row").asInt(), //
-						rNode.get("col").asInt(), //
-						fNode.get("endPos").asBoolean(), //
-						determineTypeOfFigure(figNode)));
+						data.board_fields_0_field.row, //
+						data.board_fields_0_field.col, //
+						data.field.endPos, //
+						data.type.name));
 			});
 		});
-	}
-
-	private String determineTypeOfFigure(Node figNode) {
-		if (figNode.hasLabel("Block"))
-			return "Block";
-		else if (figNode.hasLabel("Boulder"))
-			return "Boulder";
-		else
-			return "Sokoban";
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class ScalabilityTest {
 		NeoCoreBuilder builder = API_Common.createBuilder();
 
 		try {
-			Model model = new API_SokobanSimple(builder).getModel_SokobanSimple();
+			Model model = new API_SokobanSimple(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SokobanSimple();
 			
 			model.setName(model.getName() + "_" + modelSize);
 			generateContents(model, modelSize);

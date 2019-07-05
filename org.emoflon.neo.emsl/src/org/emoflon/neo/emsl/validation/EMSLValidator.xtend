@@ -90,7 +90,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				new EMSLFlattener().flattenCopyOfEntity(entity as Entity, new ArrayList);
 			}
 		} catch (FlattenerException e) {
-			if (entity instanceof Pattern) {
+			if (entity instanceof AtomicPattern) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 					error(
 						"You have created an infinite loop in your refinements. The pattern \"" +
@@ -115,12 +115,12 @@ class EMSLValidator extends AbstractEMSLValidator {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error("The type of entity you are trying to refine is not yet supported.", entity.body,
+							error("The type of entity you are trying to refine is not yet supported.", entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-							error("The type of entity you are trying to refine is not yet supported.", entity.body,
+							error("The type of entity you are trying to refine is not yet supported.", entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES)
 						}
 					}

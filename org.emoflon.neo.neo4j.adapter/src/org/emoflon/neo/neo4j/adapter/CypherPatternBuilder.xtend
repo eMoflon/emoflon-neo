@@ -25,6 +25,13 @@ class CypherPatternBuilder {
 		«withQueryForIsStillValid(nodes, match, injective)»
 		«returnQueryForIsStillValid()»'''
 	}
+	
+	def static String getDataQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective){
+		'''
+		«matchQueryForData(nodes, match)»
+		«withQueryForIsStillValid(nodes, match, injective)»
+		«returnDataQuery(nodes)»'''
+	}
 
 	def static String matchQuery(Collection<NeoNode> nodes) {
 		'''MATCH «FOR n : nodes SEPARATOR ', '»
@@ -57,10 +64,20 @@ class CypherPatternBuilder {
 		'''
 		MATCH «FOR n : nodes SEPARATOR ', '»
 				«IF n.relations.size == 0 || n.properties.size > 0»
-					«queryNode(n)»«IF n.relations.size > 0»", "«ENDIF»
+					«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 				«ENDIF»
 				«FOR r : n.relations SEPARATOR ', '»
 					(:«n.classType»)-[«r.varName»]->(:«r.toNodeLabel»)
+				«ENDFOR»
+			«ENDFOR»'''
+	}
+	
+	def static String matchQueryForData(Collection<NeoNode> nodes, NeoMatch match) {
+		'''
+		MATCH «FOR n : nodes SEPARATOR ', '»
+					«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
+				«FOR r : n.relations SEPARATOR ', '»
+					(«n.varName»:«n.classType»)-[«r.varName»]->(«r.toNodeVar»:«r.toNodeLabel»)
 				«ENDFOR»
 			«ENDFOR»'''
 	}
@@ -116,6 +133,16 @@ class CypherPatternBuilder {
 				«ENDIF»
 				«FOR r : n.relations SEPARATOR ',\n  '»
 					id(«r.varName») AS «r.varName»
+				«ENDFOR»
+			«ENDFOR»'''
+	}
+	
+	def static String returnDataQuery(Collection<NeoNode> nodes) {
+		'''
+		RETURN «FOR n : nodes SEPARATOR ',\n '»
+					«n.varName» AS «n.varName»«IF n.relations.size > 0»,«ENDIF»
+				«FOR r : n.relations SEPARATOR ',\n  '»
+					«r.varName» AS «r.varName»
 				«ENDFOR»
 			«ENDFOR»'''
 	}

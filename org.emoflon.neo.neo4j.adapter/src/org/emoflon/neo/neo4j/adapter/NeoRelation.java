@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 
 public class NeoRelation {
 	private String relType;
@@ -18,10 +19,10 @@ public class NeoRelation {
 		this.relType = relType;
 		this.toNodeVar = toNodeVar;
 		this.toNodeLabel = toNodeLabel;
-		this.varName = from.getVarName() + "_" + relType + "_" + index + "_" + toNodeVar;
+		this.varName = EMSLUtil.relationNameConvention(from.getVarName(), relType, toNodeVar, index);
 
 		properties = new ArrayList<>();
-		props.forEach(prop -> addProperty(prop.getType().getName(), NeoUtil.handleValue(prop.getValue())));
+		props.forEach(prop -> addProperty(prop.getType().getName(), EMSLUtil.handleValue(prop.getValue())));
 	}
 
 	public void addProperty(String name, String value) {

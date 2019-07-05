@@ -45,8 +45,12 @@ public class NeoMatch implements IMatch {
 		return ids.get(rel.getVarName());
 	}
 
+	public Record getData() {
+		return pattern.getData(this);
+	}
+
 	@Override
-	public IPattern getPattern() {
+	public IPattern<NeoMatch> getPattern() {
 		return pattern;
 	}
 

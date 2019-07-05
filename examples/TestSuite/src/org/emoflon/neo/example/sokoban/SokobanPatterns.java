@@ -4,6 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
@@ -12,11 +13,11 @@ import org.junit.jupiter.api.Test;
 
 public class SokobanPatterns extends ENeoTest {
 
-	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder);
+	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 
 	@BeforeEach
 	public void initDB() {
-		initDB(new API_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
+		initDB(new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SokobanSimpleTestField());
 	}
 	
 	@Test

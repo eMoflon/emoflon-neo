@@ -15,13 +15,13 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.NeoMatch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.neo4j.driver.v1.StatementResult;
 
 public abstract class ENeoTest {
-	
 	private static Scanner reader;
 	protected static final Logger logger = Logger.getLogger(ENeoTest.class);
 	protected static NeoCoreBuilder builder; 
@@ -77,19 +77,19 @@ public abstract class ENeoTest {
 	}
 	
 	
-	protected void expectMatches(IPattern p, Number no) {
+	protected void expectMatches(IPattern<NeoMatch> p, Number no) {
 		assertThat(p.countMatches(), is(no));
 	}
 	
-	protected void expectSingleMatch(IPattern p) {
+	protected void expectSingleMatch(IPattern<NeoMatch> p) {
 		expectMatches(p, 1);
 	}
 	
-	protected void expectNoMatch(IPattern p) {
+	protected void expectNoMatch(IPattern<NeoMatch> p) {
 		expectMatches(p, 0);
 	}
 	
-	protected void expectValidMatches(Collection<IMatch> matches, long number) {
+	protected void expectValidMatches(Collection<NeoMatch> matches, long number) {
 		assertEquals(matches.stream().filter(IMatch::isStillValid).count(), number);
 	}
 }
