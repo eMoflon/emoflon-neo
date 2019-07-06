@@ -196,6 +196,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 		st.consume();
 	}
 
+	public void clearDataBase() {
+		executeQueryForSideEffect("MATCH (n) DETACH DELETE n");
+	}
+
 	@Override
 	public void close() throws Exception {
 		driver.close();

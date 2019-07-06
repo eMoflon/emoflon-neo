@@ -16,6 +16,7 @@ import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
 
 public class NeoController implements IController {
+	private View view;
 	private API_SokobanGUIPatterns api;
 	private NeoCoreBuilder builder;
 
@@ -27,12 +28,16 @@ public class NeoController implements IController {
 		builder = API_Common.createBuilder();
 		api = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		defaultBoard();
+		setView(new View(this));
 	}
 
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		var controller = new NeoController();
-		new View(controller);
+		new NeoController();
+	}
+
+	private void setView(View view) {
+		this.view = view;
 	}
 
 	@Override
@@ -92,14 +97,17 @@ public class NeoController implements IController {
 
 	@Override
 	public void newBoard(int width, int height) {
-		// TODO: Use width and height to create an empty board?
+		// TODO: Use a grammar to generate a new board
 	}
 
 	private void defaultBoard() {
 		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		var board = exampleBoard.getModel_SokobanSimpleTestField();
 		builder.exportEMSLEntityToNeo4j(board);
+		extractFields();
+	}
 
+	private void extractFields() {		
 		api.getPattern_Board().determineOneMatch().ifPresent(m -> {
 			var mData = api.getData_Board(m);
 			this.width = mData.board.width;

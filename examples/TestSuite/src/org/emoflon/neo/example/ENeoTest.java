@@ -35,7 +35,6 @@ public abstract class ENeoTest {
 		StatementResult result = builder.executeQuery("MATCH (n) RETURN count(n)");
 	
 		if (result.hasNext()) {
-
 			if (result.next().get(0).asInt() > 0) {
 				logger.info(
 						"Database not empty. All data will be removed! \n" + "Do you want to continue (Y=Yes / N=No)?");
@@ -47,7 +46,7 @@ public abstract class ENeoTest {
 					closeDBConnection();
 					fail();
 				} else {
-					builder.executeQueryForSideEffect("MATCH (n) DETACH DELETE n");
+					builder.clearDataBase();;
 					logger.info("Database cleared.");
 				}
 			} else {
@@ -72,7 +71,7 @@ public abstract class ENeoTest {
 	
 	@AfterEach
 	public void clearDB() {
-		builder.executeQueryForSideEffect("MATCH (n) DETACH DELETE n");
+		builder.clearDataBase();
 		logger.info("Database cleared.");
 	}
 	

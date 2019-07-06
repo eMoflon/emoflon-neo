@@ -4,6 +4,8 @@
 package org.emoflon.neo.emsl.generator
 
 import java.util.ArrayList
+import org.eclipse.core.runtime.FileLocator
+import org.eclipse.core.runtime.Platform
 import org.eclipse.core.runtime.preferences.InstanceScope
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.ui.preferences.ScopedPreferenceStore
@@ -11,17 +13,18 @@ import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.eclipse.core.runtime.Platform
-import org.eclipse.core.runtime.FileLocator
 
 /**
  * Generates code from your model files on save.
@@ -73,13 +76,13 @@ class EMSLGenerator extends AbstractGenerator {
 			}
 		'''
 	}
-	
-	private def getInstallLocation(){
+
+	private def getInstallLocation() {
 		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
 		val fileURI = FileLocator.resolve(plugin.getEntry("/")).toURI.normalize;
 		val segments = fileURI.path.split("/")
 		val path = segments.take(segments.length - 1)
-		path.join("/") + "/" 
+		path.join("/") + "/"
 	}
 
 	def generateAPIFor(String apiName, String apiPath, EMSL_Spec spec, Resource resource) {
@@ -151,72 +154,97 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «fileName» {
-					«FOR node : patternBody.nodeBlocks»
-						public final «node.name.toFirstUpper»Node «node.name»;
-						«FOR rel : node.relations»
-							«val relName = EMSLUtil.relationNameConvention(//
-						node.name,// 
-						rel.type.name,//
-						rel.target.name,// 
-						node.relations.indexOf(rel))»
-							public final «relName.toFirstUpper»Rel «relName»;
-						«ENDFOR»
-					«ENDFOR»
+					«classMembers(patternBody)»
 					
-					public «fileName»(NeoMatch m) {
-						var data = m.getData();
-						«FOR node : patternBody.nodeBlocks»
-							var «node.name» = data.get("«node.name»");
-							this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
-							«FOR rel : node.relations»
-								«val relName = EMSLUtil.relationNameConvention(//
-									node.name,// 
-									rel.type.name,//
-									rel.target.name,// 
-									node.relations.indexOf(rel))»
-								var «relName» = data.get("«relName»");
-								this.«relName» = new «relName.toFirstUpper»Rel(«relName»);
-							«ENDFOR»			
-						«ENDFOR»
-					}
+					«constructor(fileName, patternBody)»
 					
-					«FOR node : patternBody.nodeBlocks»
-						public class «node.name.toFirstUpper»Node {
-							«FOR prop : allProperties(node.type)»
-								public final «EMSLUtil.getJavaType(prop.type)» «prop.name»;
-							«ENDFOR»
-							
-							public «node.name.toFirstUpper»Node(Value «node.name») {
-								«FOR prop : allProperties(node.type)»
-									this.«prop.name» = «node.name».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
-								«ENDFOR»
-							}
-						}
-						«FOR rel : node.relations»
-							«val relName = EMSLUtil.relationNameConvention(//
-									node.name,// 
-									rel.type.name,//
-									rel.target.name,// 
-									node.relations.indexOf(rel))»
-							public class «relName.toFirstUpper»Rel {
-								«FOR prop : rel.type.properties»
-									public final «EMSLUtil.getJavaType(prop.type)» «prop.name»;
-								«ENDFOR»
-								
-								public «relName.toFirstUpper»Rel(Value «relName») {
-									«FOR prop : rel.type.properties»
-										this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
-									«ENDFOR»
-								}
-							}
-						«ENDFOR»
-					«ENDFOR»			
+					«helperClasses(patternBody)»
 				}
 			'''
 		} catch (Exception e) {
 			e.printStackTrace
 			'''//FIXME Unable to generate API: «e.toString»  */ '''
 		}
+	}
+
+	protected def CharSequence helperClasses(AtomicPattern patternBody) '''
+		«FOR node : patternBody.nodeBlocks»
+			«helperNodeClass(node)»
+			
+			«FOR rel : node.relations»
+				«helperRelClass(node, rel)»
+			«ENDFOR»
+		«ENDFOR»
+	'''
+
+	protected def CharSequence helperRelClass(ModelNodeBlock node, ModelRelationStatement rel) {
+		val relName = EMSLUtil.relationNameConvention(node.name, rel.type.name, rel.target.name,
+			node.relations.indexOf(rel))
+		'''
+			public class «relName.toFirstUpper»Rel {
+				«FOR prop : rel.type.properties»
+					public «EMSLUtil.getJavaType(prop.type)» «prop.name»;
+				«ENDFOR»
+			
+				public «relName.toFirstUpper»Rel(Value «relName») {
+				«FOR prop : rel.type.properties»
+					if(!«relName».get("«prop.name»").isNull())
+						this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
+				«ENDFOR»
+				}
+			}
+		'''
+	}
+
+	protected def CharSequence helperNodeClass(ModelNodeBlock node) '''
+		public class «node.name.toFirstUpper»Node {
+			«FOR prop : allProperties(node.type)»
+				public «EMSLUtil.getJavaType(prop.type)» «prop.name»;
+			«ENDFOR»
+			
+			public «node.name.toFirstUpper»Node(Value «node.name») {
+				«FOR prop : allProperties(node.type)»
+					if(!«node.name».get("«prop.name»").isNull())
+						this.«prop.name» = «node.name».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
+				«ENDFOR»
+			}
+		}
+	'''
+
+	protected def CharSequence constructor(String fileName, AtomicPattern patternBody) '''
+		public «fileName»(NeoMatch m) {
+			var data = m.getData();
+			«FOR node : patternBody.nodeBlocks»
+				var «node.name» = data.get("«node.name»");
+				this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
+				«FOR rel : node.relations»
+					«val relName = EMSLUtil.relationNameConvention(//
+						node.name,// 
+						rel.type.name,//
+						rel.target.name,// 
+						node.relations.indexOf(rel))»
+					var «relName» = data.get("«relName»");
+					this.«relName» = new «relName.toFirstUpper»Rel(«relName»);
+				«ENDFOR»			
+			«ENDFOR»
+		}
+		
+	'''
+
+	protected def CharSequence classMembers(AtomicPattern patternBody) {
+		'''
+			«FOR node : patternBody.nodeBlocks»
+				public final «node.name.toFirstUpper»Node «node.name»;
+				«FOR rel : node.relations»
+					«val relName = EMSLUtil.relationNameConvention(//
+						node.name,// 
+						rel.type.name,//
+						rel.target.name,// 
+						node.relations.indexOf(rel))»
+					public final «relName.toFirstUpper»Rel «relName»;
+				«ENDFOR»
+			«ENDFOR»
+		'''
 	}
 
 	def allProperties(MetamodelNodeBlock nb) {
