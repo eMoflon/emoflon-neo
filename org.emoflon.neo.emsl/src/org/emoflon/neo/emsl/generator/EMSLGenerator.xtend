@@ -108,6 +108,8 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
+			import org.emoflon.neo.neo4j.adapter.NeoAccess;
+			
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
@@ -142,21 +144,30 @@ class EMSLGenerator extends AbstractGenerator {
 		try {
 			val pattern = new EMSLFlattener().flattenEntity(p, new ArrayList<String>()) as Pattern;
 			val patternBody = pattern.body
-			val fileName = namingConvention(patternBody.name) + "Data"
+			val rootName = namingConvention(patternBody.name)
+			val dataClassName = rootName + "Data"
+			val accessClassName = rootName + "Access"
 			'''
-				public NeoPattern getPattern_«namingConvention(p.body.name)»(){
-					var p = (Pattern) spec.getEntities().get(«index»);
-					return new NeoPattern(p, builder);
+				public «accessClassName» getPattern_«rootName»() {
+					return new «accessClassName»();
 				}
 				
-				public «namingConvention(p.body.name)»Data getData_«namingConvention(p.body.name)»(NeoMatch m) {
-					return new «namingConvention(p.body.name)»Data(m);
+				public class «accessClassName» extends NeoAccess {
+					@Override
+					public NeoPattern matcher(){
+						var p = (Pattern) spec.getEntities().get(«index»);
+						return new NeoPattern(p, builder);
+					}
+					
+					public «dataClassName» data(NeoMatch m) {
+						return new «dataClassName»(m);
+					}
 				}
 				
-				public class «fileName» {
+				public class «dataClassName» {
 					«classMembers(patternBody)»
 					
-					«constructor(fileName, patternBody)»
+					«constructor(dataClassName, patternBody)»
 					
 					«helperClasses(patternBody)»
 				}

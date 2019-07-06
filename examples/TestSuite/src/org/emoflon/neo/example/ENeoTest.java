@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.api.rules.IPattern;
+import org.emoflon.neo.neo4j.adapter.NeoAccess;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoMatch;
 import org.junit.jupiter.api.AfterAll;
@@ -76,15 +76,15 @@ public abstract class ENeoTest {
 	}
 	
 	
-	protected void expectMatches(IPattern<NeoMatch> p, Number no) {
-		assertThat(p.countMatches(), is(no));
+	protected void expectMatches(NeoAccess p, Number no) {
+		assertThat(p.matcher().countMatches(), is(no));
 	}
 	
-	protected void expectSingleMatch(IPattern<NeoMatch> p) {
+	protected void expectSingleMatch(NeoAccess p) {
 		expectMatches(p, 1);
 	}
 	
-	protected void expectNoMatch(IPattern<NeoMatch> p) {
+	protected void expectNoMatch(NeoAccess p) {
 		expectMatches(p, 0);
 	}
 	

@@ -16,6 +16,7 @@ import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
 
 public class NeoController implements IController {
+	@SuppressWarnings("unused")
 	private View view;
 	private API_SokobanGUIPatterns api;
 	private NeoCoreBuilder builder;
@@ -52,17 +53,19 @@ public class NeoController implements IController {
 
 	@Override
 	public List<String> getFigureTypes() {
-		return api.getPattern_FigureTypes().determineMatches()//
+		var access = api.getPattern_FigureTypes();
+		return access.matcher().determineMatches()//
 				.stream().map(m -> {
-					var data = api.getData_FigureTypes(m);
+					var data = access.data(m);
 					return data.eclass.name;
 				}).collect(Collectors.toList());
 	}
 
 	@Override
 	public Optional<Field> getSelectedField() {
-		return api.getPattern_SelectedFigure().determineOneMatch().flatMap(m -> {
-			var data = api.getData_SelectedFigure(m);
+		var access = api.getPattern_SelectedFigure(); 
+		return access.matcher().determineOneMatch().flatMap(m -> {
+			var data = access.data(m);
 			return fields.stream()//
 					.filter(f -> f.getRow() == data.b_fields_1_f.row && f.getCol() == data.b_fields_1_f.col)//
 					.findFirst();
@@ -107,15 +110,17 @@ public class NeoController implements IController {
 		extractFields();
 	}
 
-	private void extractFields() {		
-		api.getPattern_Board().determineOneMatch().ifPresent(m -> {
-			var mData = api.getData_Board(m);
+	private void extractFields() {	
+		var accessBoard = api.getPattern_Board();
+		accessBoard.matcher().determineOneMatch().ifPresent(m -> {
+			var mData = accessBoard.data(m);
 			this.width = mData.board.width;
 			this.height = mData.board.height;
 
 			fields = new ArrayList<Field>();
-			api.getPattern_EmptyFields().determineMatches().forEach(f -> {
-				var fData = api.getData_EmptyFields(f);
+			var accessEmptyFields = api.getPattern_EmptyFields();
+			accessEmptyFields.matcher().determineMatches().forEach(f -> {
+				var fData = accessEmptyFields.data(f);
 				fields.add(new Field(//
 						fData.board_fields_0_field.row, //
 						fData.board_fields_0_field.col, //
@@ -123,8 +128,9 @@ public class NeoController implements IController {
 						null));
 			});
 
-			api.getPattern_OccupiedFields().determineMatches().forEach(f -> {
-				var data = api.getData_OccupiedFields(f);
+			var accessOccupiedFields = api.getPattern_OccupiedFields();
+			accessOccupiedFields.matcher().determineMatches().forEach(f -> {
+				var data = accessOccupiedFields.data(f);
 				fields.add(new Field(//
 						data.board_fields_0_field.row, //
 						data.board_fields_0_field.col, //
