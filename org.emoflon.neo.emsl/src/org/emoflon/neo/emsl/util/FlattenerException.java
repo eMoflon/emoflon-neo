@@ -41,11 +41,12 @@ public class FlattenerException extends Exception {
 
 	// for not mergeable property statements
 	public FlattenerException(Entity entity, FlattenerErrorType type, ModelPropertyStatement property1,
-			ModelPropertyStatement property2) {
+			ModelPropertyStatement property2, SuperType superEntity) {
 		this.entity = entity;
 		this.errorType = type;
 		this.property1 = property1;
 		this.property2 = property2;
+		this.superEntity = superEntity;
 	}
 
 	// for not mergeable nodeblocks
