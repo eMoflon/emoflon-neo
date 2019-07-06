@@ -18,11 +18,12 @@ class EMSLUtil {
 	public static final String P_USER = "UserPreference"
 	public static final String P_PASSWORD = "PasswordPreference"
 
-	def static EMSL_Spec loadSpecification(String modelURI, String platformURIRoot) {
+	def static EMSL_Spec loadSpecification(String modelURI, String platformURIRoot, String pluginURIRoot) {
 		EMSLPackageImpl.init()
 		new StandaloneSetup().setPlatformUri(platformURIRoot)
 		var Injector injector = new EMSLStandaloneSetup().createInjectorAndDoEMFRegistration()
 		var XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet)
+		resourceSet.URIConverter.URIMap.put(URI.createURI("platform:/plugin/"), URI.createURI(pluginURIRoot))
 		resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE)
 		var Resource resource = resourceSet.getResource(URI.createURI(modelURI), true)
 		var EMSL_Spec spec = (resource.getContents().get(0) as EMSL_Spec)

@@ -1,0 +1,54 @@
+import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
+import "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
+
+pattern board {
+	board:SokobanLanguage.Board
+}
+
+pattern fields {
+	board:SokobanLanguage.Board {
+		-fields->field
+	}
+	field:Field
+}
+
+pattern occupied {
+	field:Field
+	fig:Figure {
+		-field->field	
+	}
+}
+
+pattern emptyFields -> fields when forbid occupied
+
+pattern ocupiedFields -> fields, occupied
+
+pattern figureTypes {
+	figClass:EClass {
+		.name : "Figure"
+		-elementOf->mm
+	}
+	
+	eclass:EClass {
+		-elementOf->mm
+		-eSuperType->figClass
+	}
+	
+	mm:MetaModel {
+		.name : "SokobanLanguage"
+	}
+}
+
+pattern selectedFigure {
+	b:SokobanLanguage.Board {
+		-selectedFigure->fig
+		-fields->f
+	}
+	
+	fig:Figure {
+		-field->f
+	}
+	
+	f:Field
+	
+}
