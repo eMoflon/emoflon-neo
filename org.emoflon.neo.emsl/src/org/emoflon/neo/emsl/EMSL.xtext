@@ -258,8 +258,9 @@ TripleGrammar:
 	'source' '{' srcMetamodels+=[Metamodel|QualifiedName]* '}'
 	'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
 	'correspondence' '{' correspondences+=CorrespondenceType* '}'
+	('rules' '{' rules+=[TripleRule|QualifiedName]* '}')?
 	'}'
-	;
+;
 
 /*-------------------------------------------------*/
 /*------------------- Common ----------------------*/
