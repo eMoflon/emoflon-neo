@@ -5,6 +5,7 @@ import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 pattern oneSokoban {
 	sokoban : Sokoban
 }
+
 pattern twoSokoban {
 	sokoban: Sokoban
 	sokoban2: Sokoban
@@ -130,7 +131,7 @@ pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
 pattern allNotBorderFieldsInDiffRows -> allNotBorderFieldsInARow {
 	b : SokobanLanguage.Board {
 		-fields -> field {
-			.row : 4
+			//.row : 4
 			.col : 2
 		}
 	}
@@ -288,7 +289,7 @@ abstract rule moveSokoban {
 		-- -field-> from
 		++ -field-> to
 	}
-} when forbid occupiedField
+}
 
 abstract rule pushBlock {
 	to : Field
@@ -305,7 +306,10 @@ rule moveSokobanUp -> moveSokoban {
 	to : Field {
 		-bottom-> from
 	}
-} when forbid occupiedField
+}
+
+rule moveSokobanUpWithCondition -> moveSokobanUp
+	when forbid occupiedField
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
 	from : Field {
@@ -313,11 +317,14 @@ rule pushBlockUp -> pushBlock, moveSokobanUp {
 	}
 } when forbid occupiedNext
 
-rule moveSokobanDown -> moveSokoban, pushBlock {
+rule moveSokobanDown -> moveSokoban {
 	from : Field {
-		-bottom-> next
+		-bottom-> to
 	}
-} when forbid occupiedNext
+}
+
+rule moveSokobanDownWithCondition -> moveSokobanDown
+	when forbid occupiedField
 
 rule pushBlockDown -> pushBlock, moveSokobanDown {
 	to : Field {
