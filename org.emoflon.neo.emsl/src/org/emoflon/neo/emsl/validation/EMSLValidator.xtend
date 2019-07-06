@@ -111,18 +111,18 @@ class EMSLValidator extends AbstractEMSLValidator {
 			if (entity instanceof AtomicPattern) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 					var index = 0
-					for (s : entity.body.superRefinementTypes) {
+					for (s : entity.superRefinementTypes) {
 						if (e.alreadyRefinedPatternNames.contains((s.referencedType as AtomicPattern).name))
 							error(
 						REFINEMENT_LOOP_1 +
-							new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2, entity.body,
+							new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2, entity,
 						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
 
 				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
 					var index = 0
-					for (nb : entity.body.nodeBlocks) {
+					for (nb : entity.nodeBlocks) {
 						if (nb.type.name.equals(e.nodeBlock.type.name)) {
 							error("The type " + e.nodeBlock.type.name +
 								" in your refinements cannot be merged into a common subtype.", nb,
@@ -133,10 +133,10 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
 					var index = 0
-					for (s : entity.body.superRefinementTypes) {
+					for (s : entity.superRefinementTypes) {
 						if ((s.referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name)) 
 							error(CONDITION_IN_SUPER_ENTITY,
-								entity.body,
+								entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
@@ -148,12 +148,12 @@ class EMSLValidator extends AbstractEMSLValidator {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error(NOT_SUPPORTED_ENTITY, entity.body,
+							error(NOT_SUPPORTED_ENTITY, entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-							error(NOT_SUPPORTED_ENTITY, entity.body,
+							error(NOT_SUPPORTED_ENTITY, entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						}
 						index++
