@@ -9,7 +9,6 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanPatterns extends ENeoTest {
@@ -164,7 +163,6 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_AllNotBorderFieldsInDiffRows() {
 		expectNoMatch(entities.getPattern_AllNotBorderFieldsInDiffRows());
 	}
