@@ -50,12 +50,11 @@ import java.util.function.Consumer
  */
 class EMSLValidator extends AbstractEMSLValidator {
 
+	// Error and info messages
 	static final String WRONG_PROPERTY_TYPE = "The value of this property must be of type "
-	// TODO [Maximilian] find other way (no splitting) maybe give template??
-	static final String REFINEMENT_LOOP_1 = "You have created an infinite loop in your refinements. \""
-	static final String REFINEMENT_LOOP_2 = "\" appears multiple times."
 	static final String CONDITION_IN_SUPER_ENTITY = "Entities with conditions cannot be refined."
 	static final String NOT_SUPPORTED_ENTITY = "The type of entity you are trying to refine is not yet supported."
+	static final def String REFINEMENT_LOOP(String refinement) '''You have created an infinite loop in your refinements. "«refinement»" appears multiple times.'''
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -116,7 +115,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 					for (s : entity.superRefinementTypes) {
 						if (e.alreadyRefinedPatternNames.contains((s.referencedType as AtomicPattern).name))
 							error(
-								REFINEMENT_LOOP_1 + new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2,
+								REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
 								entity, EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
@@ -165,7 +164,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 					for (s : entity.superRefinementTypes) {
 						if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name))
 							error(
-								REFINEMENT_LOOP_1 + new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2,
+								REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
 								EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
