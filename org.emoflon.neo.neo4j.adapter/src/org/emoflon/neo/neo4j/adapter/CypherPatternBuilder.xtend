@@ -14,7 +14,7 @@ class CypherPatternBuilder {
 	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap,
 		boolean injective) {
 		'''
-		«matchQuery(nodes,nodes2,nodesMap)»
+		«matchQuery(nodes,nodes2)»
 		«withQuery(nodes,nodes2,nodesMap)»
 		«returnQuery(nodes,nodes2,nodesMap)»'''
 	}
@@ -34,10 +34,17 @@ class CypherPatternBuilder {
 			«ENDIF»
 		«ENDFOR»'''
 	}
+	def static String matchQueryAdd(Collection<NeoNode> nodes) {
+		'''«FOR n : nodes SEPARATOR ', '»
+			«IF n.relations.size > 0 »
+				«FOR r:n.relations SEPARATOR ', '»«sourceNode(n)»«directedRelation(r)»«targetNode(r)»«ENDFOR»
+			«ELSE»«queryNode(n)»
+			«ENDIF»
+		«ENDFOR»'''
+	}
 
-	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap) {
-		'''«matchQuery(nodes)»
-		OPTIONAL «matchQuery(nodes2)»
+	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
+		'''«matchQuery(nodes)», «matchQueryAdd(nodes2)»
 		'''
 	}
 

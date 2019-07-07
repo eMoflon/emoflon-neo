@@ -62,8 +62,6 @@ public class NeoConstraint implements IConstraint {
 			returnStmt.addNodes(co.getThenNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_Match());
 			returnStmt.addWhereClause(co.getQueryString_Where());
-			//returnStmt.addIfThenWith(co.getQueryStringWhereCount()[0]);
-			//returnStmt.addIfThenWhere(co.getQueryStringWhereCount()[1]);
 
 		} else if (c.getBody() instanceof OrBody) {
 

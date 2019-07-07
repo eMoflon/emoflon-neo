@@ -110,7 +110,7 @@ public class NeoImplication implements IIfElseConstraint {
 			query += CypherPatternBuilder.injectivityBlock(nodesIf);
 		}
 		query += "\n" + CypherPatternBuilder.withCountQuery(nodesIf,uuid-1);
-		query += "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesThen);
+		query += "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf,nodesThen);
 		if(injective) { 
 			query += CypherPatternBuilder.injectivityBlock(nodesThen);
 		}
@@ -122,27 +122,6 @@ public class NeoImplication implements IIfElseConstraint {
 
 	public String getQueryString_Where() {
 		return CypherPatternBuilder.whereImplicationConstraintQuery(uuid);
-	}
-	
-	public String[] getQueryStringWhereCount() {
-		
-		var found = false;
-		var uNode = "";
-		
-		for(NeoNode n: nodesThen) {
-			if(uNode.equals("")) {
-				for(NeoNode m: nodesIf) {
-					if(n.getVarName().equals(m.getVarName())) {
-						found = true;
-					}
-				}
-				if(!found) {
-					uNode = n.getVarName();
-				}
-			}
-		}
-		String[] ary = {"count(" + uNode + ") as c_" + uNode, "c_" + uNode + " = 0"};	
-		return ary;
 	}
 
 	@Override
