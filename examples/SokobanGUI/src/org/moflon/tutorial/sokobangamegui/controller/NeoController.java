@@ -4,6 +4,7 @@ package org.moflon.tutorial.sokobangamegui.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
@@ -26,19 +27,19 @@ public class NeoController implements IController {
 	private List<Field> fields;
 
 	public NeoController() {
+		this(c -> new View(c));
+	}
+
+	public NeoController(Function<IController, View> createView) {
 		builder = API_Common.createBuilder();
 		api = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		defaultBoard();
-		setView(new View(this));
+		view = createView.apply(this);
 	}
 
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
 		new NeoController();
-	}
-
-	private void setView(View view) {
-		this.view = view;
 	}
 
 	@Override

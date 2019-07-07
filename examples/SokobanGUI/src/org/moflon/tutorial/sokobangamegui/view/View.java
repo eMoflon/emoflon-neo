@@ -43,7 +43,7 @@ import org.moflon.tutorial.sokobangamegui.view.actions.PlayAction;
 public class View extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	private IController controller;
+	protected IController controller;
 
 	/* JFrame main window and field buttons */
 	protected FieldButton[][] buttons;
