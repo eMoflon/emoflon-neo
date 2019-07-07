@@ -27,7 +27,7 @@ public class PatternTest extends ENeoTest {
 	}
 	@Test
 	public void test_ifSokobanThenNotSelectedFigure() {
-		assertTrue(entities.getConstraint_SokokanIsNotSelectedFigure().isSatisfied());
+		assertTrue(entities.getConstraint_SokokanIsNotSelectedFigure().isViolated());
 	}
 	@Test
 	public void test_ifSokobanNotSelectedThenSelectedFigure() {

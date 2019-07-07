@@ -49,6 +49,10 @@ class CypherPatternBuilder {
 		'''WITH «FOR n : nodesMap SEPARATOR ', '»«n.varName»«ENDFOR»
 		WHERE «FOR n : nodesMap SEPARATOR 'OR '»«n.varName» IS NULL «ENDFOR»'''
 	}
+	
+	def static String whereQueryConstraint(Collection<NeoNode> nodes) {
+		'''WHERE «FOR n : nodes SEPARATOR 'AND '»«n.varName» IS NOT NULL «IF n.relations.size > 0»«FOR r:n.relations BEFORE 'AND ' SEPARATOR 'AND '»«r.varName» IS NOT NULL «ENDFOR»«ENDIF»«ENDFOR»'''
+	}
 
 	protected def static CharSequence queryNode(NeoNode n) '''
 	(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
@@ -191,6 +195,9 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 	 def static String wherePositiveConstraintQuery(int id) {
 	 	'''m_«id» > 0'''
 	 }
+	 def static String whereImplicationConstraintQuery(int id) {
+	 	'''(m_«id-1» = m_«id»)'''
+	 }
 	 
 	 def static String withConstraintQuery(Collection<String> nodes) {
 	 	'''WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
@@ -205,6 +212,10 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 		}
 
 		'''WITH «ret»count(«nodes.get(0).varName») as m_«id»'''
+	 }
+	 def static String withCountQueryImplication(Collection<NeoNode> nodes, int id) {
+	 	
+		'''«withCountQuery(nodes,id)»«FOR n:nodes BEFORE ", " SEPARATOR ", "»«n.varName»«IF n.relations.size > 0»«FOR r:n.relations BEFORE ", " SEPARATOR ", "»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
 	 }
 	 
 	 def static String returnConstraintQuery(Collection<String> nodes) {

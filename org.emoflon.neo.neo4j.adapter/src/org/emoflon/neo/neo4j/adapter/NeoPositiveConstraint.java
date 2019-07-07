@@ -74,7 +74,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		if(injective) {
 			query += CypherPatternBuilder.injectivityBlock(nodes);
 		}
-	query += "\n" + CypherPatternBuilder.withCountQuery(nodes,uuid);
+		query += "\n" + CypherPatternBuilder.withCountQuery(nodes,uuid);
 		return query + "\n";	
 	}
 
