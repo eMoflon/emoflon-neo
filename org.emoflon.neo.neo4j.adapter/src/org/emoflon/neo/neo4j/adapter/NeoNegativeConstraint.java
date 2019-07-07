@@ -25,8 +25,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	private int uuid;
 
 	public NeoNegativeConstraint(AtomicPattern ap, NeoCoreBuilder builder, boolean injective, NeoHelper helper) {
-		Random zufall = new Random();
-		uuid = zufall.nextInt(Integer.MAX_VALUE);
+		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
 		this.ap = ap;
@@ -70,16 +69,17 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 		return nodes;
 	}
 	
-	public String getQueryString_OptionalMatch() { 
+	public String getQueryString_Match() { 
 		var query = "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes);
 		if(injective) {
 			query += CypherPatternBuilder.injectivityBlock(nodes);
-		} 
-		return query + "\n";
+		}
+		query += "\n" + CypherPatternBuilder.withCountQuery(nodes,uuid);
+		return query + "\n";	
 	}
 	
 	public String getQueryString_Where() {
-		return CypherPatternBuilder.whereNegativeConstraintQuery(nodes);
+		return CypherPatternBuilder.whereNegativeConstraintQuery(uuid);
 	}
 
 	@Override

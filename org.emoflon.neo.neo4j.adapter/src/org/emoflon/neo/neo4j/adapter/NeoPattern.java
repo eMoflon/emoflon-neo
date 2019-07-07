@@ -138,7 +138,7 @@ public class NeoPattern implements IPattern {
 				removeDuplicates(((NeoPositiveConstraint) cond).getNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoPositiveConstraint) cond).getQueryString_OptionalMatch();
+				cypherQuery += ((NeoPositiveConstraint) cond).getQueryString_Match();
 				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 				cypherQuery += "\nWHERE " + ((NeoPositiveConstraint) cond).getQueryString_Where();
 				if(injective)
@@ -169,7 +169,7 @@ public class NeoPattern implements IPattern {
 				removeDuplicates(((NeoNegativeConstraint) cond).getNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoNegativeConstraint) cond).getQueryString_OptionalMatch();
+				cypherQuery += ((NeoNegativeConstraint) cond).getQueryString_Match();
 				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 				cypherQuery += "\nWHERE " + ((NeoNegativeConstraint) cond).getQueryString_Where();
 				if(injective)
@@ -201,7 +201,7 @@ public class NeoPattern implements IPattern {
 				removeDuplicates(((NeoImplication) cond).getThenNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoImplication) cond).getQueryString_OptionalMatch();
+				cypherQuery += ((NeoImplication) cond).getQueryString_Match();
 				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 				cypherQuery += "\nWHERE " + ((NeoImplication) cond).getQueryString_Where();
 				if(injective)

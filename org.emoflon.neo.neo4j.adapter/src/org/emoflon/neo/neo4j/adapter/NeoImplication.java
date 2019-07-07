@@ -27,8 +27,7 @@ public class NeoImplication implements IIfElseConstraint {
 	private int uuid;
 
 	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, NeoCoreBuilder builder, boolean injective, NeoHelper helper) {
-		Random zufall = new Random();
-		uuid = zufall.nextInt(Integer.MAX_VALUE);
+		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
 		this.apIf = apIf;
@@ -104,7 +103,7 @@ public class NeoImplication implements IIfElseConstraint {
 		return list;
 	}
 	
-	public String getQueryString_OptionalMatch() { 
+	public String getQueryString_Match() { 
 		var query = "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf);
 		if(injective) {
 			query += CypherPatternBuilder.injectivityBlock(nodesIf);
@@ -117,8 +116,8 @@ public class NeoImplication implements IIfElseConstraint {
 	}
 
 	public String getQueryString_Where() {
-		return "((" + CypherPatternBuilder.wherePositiveConstraintQuery(nodesIf) + ")" +
-				" AND (" + CypherPatternBuilder.whereNegativeConstraintQuery(nodesThen) + "))"
+		return "((" + CypherPatternBuilder.wherePositiveConstraintQuery(uuid) + ")" +
+				" AND (" + CypherPatternBuilder.whereNegativeConstraintQuery(uuid) + "))"
 	    ;
 	}
 	

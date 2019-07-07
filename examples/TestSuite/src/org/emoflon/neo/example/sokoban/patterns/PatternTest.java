@@ -271,7 +271,6 @@ public class PatternTest extends ENeoTest {
 		assertTrue(entities.getConstraint_BottomRightCorner().isViolated());
 	}
 	
-	@Disabled
 	@Test
 	public void test_constraint_hasNoCorner() {
 		assertTrue(entities.getConstraint_NoCorner().isViolated());
@@ -282,7 +281,6 @@ public class PatternTest extends ENeoTest {
 		assertTrue(entities.getConstraint_HasOneSokoban().isSatisfied());
 	}
 	
-	@Disabled
 	@Test
 	public void test_allConstraintTypesAtOnes() {
 		assertTrue(entities.getConstraint_ExtremeConstraint().isSatisfied());

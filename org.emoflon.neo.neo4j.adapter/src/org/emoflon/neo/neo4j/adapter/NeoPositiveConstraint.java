@@ -25,13 +25,12 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	private int uuid;
 
 	public NeoPositiveConstraint(AtomicPattern ap, NeoCoreBuilder builder, boolean injective, NeoHelper helper) {
-		Random zufall = new Random();
-		uuid = zufall.nextInt(Integer.MAX_VALUE);
+		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
 		this.ap = ap;
-		nodes = new ArrayList<>();
+		this.nodes = new ArrayList<>();
 		this.injective = injective;
 		extractNodesAndRelations();
 	}
@@ -70,16 +69,17 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		return nodes;
 	}
 
-	public String getQueryString_OptionalMatch() { 
+	public String getQueryString_Match() { 
 		var query = "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes);
 		if(injective) {
 			query += CypherPatternBuilder.injectivityBlock(nodes);
-		} 
+		}
+	query += "\n" + CypherPatternBuilder.withCountQuery(nodes,uuid);
 		return query + "\n";	
 	}
 
 	public String getQueryString_Where() {
-		return CypherPatternBuilder.wherePositiveConstraintQuery(nodes);
+		return CypherPatternBuilder.wherePositiveConstraintQuery(uuid);
 	}
 
 	@Override

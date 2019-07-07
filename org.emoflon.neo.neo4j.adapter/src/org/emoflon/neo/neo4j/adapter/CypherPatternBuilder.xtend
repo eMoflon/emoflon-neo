@@ -185,15 +185,26 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 	 * Conditions
 	 */
 	 
-	 def static String whereNegativeConstraintQuery(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes SEPARATOR ' OR '»«n.varName» IS NULL«FOR r:n.relations BEFORE ' OR ' SEPARATOR ' OR '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
+	 def static String whereNegativeConstraintQuery(int id) {
+	 	'''m_«id» = 0'''
 	 }
-	 def static String wherePositiveConstraintQuery(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes SEPARATOR ' AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE ' AND ' SEPARATOR ' AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
+	 def static String wherePositiveConstraintQuery(int id) {
+	 	'''m_«id» > 0'''
 	 }
 	 
 	 def static String withConstraintQuery(Collection<String> nodes) {
 	 	'''WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
+	 }
+	 
+	 def static String withCountQuery(Collection<NeoNode> nodes, int id) {
+	 	
+	 	var String ret = ''
+
+		for (var i = 0; i < id; i++) {
+			ret += "m_" + i + ", "
+		}
+
+		'''WITH «ret»count(«nodes.get(0).varName») as m_«id»'''
 	 }
 	 
 	 def static String returnConstraintQuery(Collection<String> nodes) {

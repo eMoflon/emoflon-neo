@@ -96,11 +96,11 @@ public class NeoAndBody {
 
 				if (((ConstraintReference) b).isNegated()) {
 					query += "NOT(" + consData.getWhereClause() + ")";
-					consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+					//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere("NOT " + elem));
 				} else {
 					query += "(" + consData.getWhereClause() + ")";
-					consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+					//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
 				}				
 
@@ -110,7 +110,7 @@ public class NeoAndBody {
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 				
-				consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+				//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
 				consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
 				
 				query += consData.getWhereClause();

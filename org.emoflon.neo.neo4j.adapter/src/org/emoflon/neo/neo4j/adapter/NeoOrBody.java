@@ -67,7 +67,7 @@ public class NeoOrBody {
 				query += " OR ";
 			}
 			query += consData.getWhereClause();
-			consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+			//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
 			consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
 
 		}

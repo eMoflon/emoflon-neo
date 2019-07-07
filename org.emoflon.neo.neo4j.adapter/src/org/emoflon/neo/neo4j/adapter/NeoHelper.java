@@ -11,12 +11,18 @@ public class NeoHelper {
 	private HashMap matchNodes;
 	private HashMap optionalNodes;
 	
+	private int cCount;
+	
 
 	public NeoHelper() {
 		this.matchNodes = new HashMap<String, String>();
 		this.optionalNodes = new HashMap<String, String>();
+		this.cCount = 0;
 	}
-
+	
+	public int addConstraint() {
+		return cCount++;
+	}
 	
 	public String newPatternNode(String name, Pattern p) {
 		matchNodes.put(name, p.getBody().getName());

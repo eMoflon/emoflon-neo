@@ -42,7 +42,7 @@ public class NeoConstraint implements IConstraint {
 			var co = new NeoPositiveConstraint(ap, builder, true, helper);
 
 			returnStmt.addNodes(co.getNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
+			returnStmt.addOptionalMatch(co.getQueryString_Match());
 			returnStmt.addWhereClause(co.getQueryString_Where());
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
@@ -50,7 +50,7 @@ public class NeoConstraint implements IConstraint {
 			var co = new NeoNegativeConstraint(ap, builder, true, helper);
 
 			returnStmt.addNodes(co.getNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
+			returnStmt.addOptionalMatch(co.getQueryString_Match());
 			returnStmt.addWhereClause(co.getQueryString_Where());
 
 		} else if (c.getBody() instanceof Implication) {
@@ -60,7 +60,7 @@ public class NeoConstraint implements IConstraint {
 
 			returnStmt.addNodes(co.getIfNodes());
 			returnStmt.addNodes(co.getThenNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_OptionalMatch());
+			returnStmt.addOptionalMatch(co.getQueryString_Match());
 			returnStmt.addWhereClause(co.getQueryString_Where());
 			returnStmt.addIfThenWith(co.getQueryStringWhereCount()[0]);
 			returnStmt.addIfThenWhere(co.getQueryStringWhereCount()[1]);
@@ -89,23 +89,16 @@ public class NeoConstraint implements IConstraint {
 		logger.info("Searching matches for Constraint: " + c.getName());
 
 		var cypherQuery = returnStmt.getOptionalMatchString();
-		cypherQuery += "\n" + CypherPatternBuilder.withConstraintQuery(returnStmt.getNodesAsString());
 		cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
-		if(!returnStmt.getIfThenWith().isEmpty() && !returnStmt.getIfThenWhere().isEmpty()) {
-			cypherQuery += CypherPatternBuilder.ifThenConstraintWithWhere(returnStmt.getIfThenWith(),returnStmt.getIfThenWhere(),returnStmt.getNodesAsString());
-		}
 		cypherQuery += "\nRETURN TRUE";
 
 		logger.debug(cypherQuery);
-		/**var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQuery(cypherQuery);
 
 		if (result.hasNext())
 			return true;
 		else
 			return false;
-			
-		*/
-		return false;
 	}
 
 }
