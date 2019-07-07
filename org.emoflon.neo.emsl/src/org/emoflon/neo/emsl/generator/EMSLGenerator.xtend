@@ -141,6 +141,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Pattern p, int index) {
+		if(p.body.abstract) return ""
 		try {
 			val pattern = new EMSLFlattener().flattenEntity(p, new ArrayList<String>()) as Pattern;
 			val patternBody = pattern.body
@@ -263,6 +264,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
+		if(r.abstract) return ""
 		'''
 			public IRule<NeoMatch, NeoCoMatch> getRule_«namingConvention(r.name)»(){
 				var r = (Rule) spec.getEntities().get(«index»);
@@ -273,6 +275,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Model m, int index) {
+		if(m.abstract) return ""
 		'''
 			public Model getModel_«namingConvention(m.name)»(){
 				return (Model) spec.getEntities().get(«index»);
@@ -281,6 +284,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Metamodel m, int index) {
+		if(m.abstract) return ""
 		'''
 			public Metamodel getMetamodel_«namingConvention(m.name)»(){
 				return (Metamodel) spec.getEntities().get(«index»);
