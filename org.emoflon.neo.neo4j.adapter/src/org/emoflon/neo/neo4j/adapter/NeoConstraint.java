@@ -53,16 +53,6 @@ public class NeoConstraint implements IConstraint {
 			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
 			returnStmt.addWhereClause(co.getQueryString_WhereConstraint());
 
-		} else if (c.getBody() instanceof Implication) {
-			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder, true, helper);
-
-			returnStmt.addNodes(co.getIfNodes());
-			returnStmt.addNodes(co.getThenNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
-			returnStmt.addWhereClause(co.getQueryString_Where());
-
 		} else if (c.getBody() instanceof OrBody) {
 
 			var body = (OrBody) c.getBody();
@@ -98,16 +88,6 @@ public class NeoConstraint implements IConstraint {
 			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
 			returnStmt.addWhereClause(co.getQueryString_WhereConditon());
 
-		} else if (c.getBody() instanceof Implication) {
-			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder, true, helper);
-
-			returnStmt.addNodes(co.getIfNodes());
-			returnStmt.addNodes(co.getThenNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
-			returnStmt.addWhereClause(co.getQueryString_Where());
-
 		} else if (c.getBody() instanceof OrBody) {
 
 			var body = (OrBody) c.getBody();
@@ -125,23 +105,34 @@ public class NeoConstraint implements IConstraint {
 
 	@Override
 	public boolean isSatisfied() {
+		
+		if (c.getBody() instanceof Implication) {
+			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
+			var co = new NeoImplication(apIf, apThen, builder, true, helper);
 
-		logger.info("Check constraint: " + c.getName());
-		NeoReturn returnStmt = getConstraintData();
+			return co.isSatisfied();
 
-		logger.info("Searching matches for Constraint: " + c.getName());
+		} else {
 
-		var cypherQuery = returnStmt.getOptionalMatchString();
-		cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
-		cypherQuery += "\nRETURN TRUE";
+			logger.info("Check constraint: " + c.getName());
+			NeoReturn returnStmt = getConstraintData();
 
-		logger.debug(cypherQuery);
-		var result = builder.executeQuery(cypherQuery);
+			logger.info("Searching matches for Constraint: " + c.getName());
+			
+			var cypherQuery = returnStmt.getOptionalMatchString();
+			cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
+			cypherQuery += "\nRETURN TRUE";
 
-		if (result.hasNext())
-			return true;
-		else
-			return false;
+			logger.debug(cypherQuery);
+			var result = builder.executeQuery(cypherQuery);
+
+			if (result.hasNext())
+				return true;
+			else
+				return false;
+		}
+
 	}
 
 }

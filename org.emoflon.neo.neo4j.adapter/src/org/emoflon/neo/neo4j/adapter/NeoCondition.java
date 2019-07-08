@@ -10,14 +10,16 @@ public class NeoCondition {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private NeoCoreBuilder builder;
+	private NeoHelper helper;
 	private NeoConstraint c;
 	private NeoPattern p;
 
 	private Collection<String> nodesAndRefs;
 	private Collection<NeoNode> nodesAndRefsN;
 
-	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder) {
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder, NeoHelper helper) {
 		this.builder = builder;
+		this.helper = helper;
 		this.c = c;
 		this.p = p;
 		this.nodesAndRefs = new ArrayList<>();
@@ -35,7 +37,7 @@ public class NeoCondition {
 
 		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes());
 		cypherQuery += condData.getOptionalMatchString();
-		cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
+		cypherQuery += CypherPatternBuilder.withConstraintQuery(helper.getNodes());
 		if (p.isNegated())
 			cypherQuery += "\nWHERE NOT(" + condData.getWhereClause() + ")";
 		else
@@ -49,7 +51,7 @@ public class NeoCondition {
 		var matches = new ArrayList<IMatch>();
 		while (result.hasNext()) {
 			var record = result.next();
-		//	matches.add(new NeoMatch(p, record));
+			matches.add(new NeoMatch(p, record));
 		}
 
 		return matches;

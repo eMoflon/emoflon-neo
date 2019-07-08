@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.engine.api.constraints.IIfElseConstraint;
 import org.emoflon.neo.engine.api.rules.IMatch;
 
@@ -24,11 +25,8 @@ public class NeoImplication implements IIfElseConstraint {
 	private List<NeoNode> nodesThen;
 	
 	private boolean injective;
-	private int uuid;
 
 	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, NeoCoreBuilder builder, boolean injective, NeoHelper helper) {
-		helper.addConstraint();
-		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
 		this.apIf = apIf;
@@ -56,7 +54,7 @@ public class NeoImplication implements IIfElseConstraint {
 		
 		for (var n : apIf.getNodeBlocks()) {
 			
-			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf, uuid));
+			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
 			
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -64,18 +62,18 @@ public class NeoImplication implements IIfElseConstraint {
 			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getName(), apIf),
+					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(), r.getTarget().getName()),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
-					helper.newConstraintNode(r.getTarget().getName(), apIf, uuid))));
+					helper.newPatternNode(r.getTarget().getName()))));
 			
 			nodesIf.add(node);
 		}
 		for (var n : apThen.getNodeBlocks()) {
 			
 			//TODO: create methode for IfThen Constraints
-			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf, uuid));
+			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf, 0));
 			
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -83,11 +81,11 @@ public class NeoImplication implements IIfElseConstraint {
 			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getName(), apIf),
+					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(), r.getTarget().getName(), apIf, 0),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
-					helper.newConstraintNode(r.getTarget().getName(), apIf, uuid))));
+					helper.newConstraintNode(r.getTarget().getName(), apIf, 0))));
 			nodesThen.add(node);
 		}
 	}
@@ -102,41 +100,6 @@ public class NeoImplication implements IIfElseConstraint {
 		var list = nodesIf;
 		nodesThen.forEach(elem -> list.add(elem));;
 		return list;
-	}
-	
-	public String getQueryString_MatchConstraint() { 
-		var query = "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf);
-		if(injective) {
-			query += CypherPatternBuilder.injectivityBlock(nodesIf);
-		}
-		query += "\n" + CypherPatternBuilder.withCountQuery(nodesIf,uuid-1);
-		query += "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf,nodesThen);
-		if(injective) { 
-			query += CypherPatternBuilder.injectivityBlock(nodesThen);
-		}
-		query += "\n" + CypherPatternBuilder.withCountQueryImplication(nodesThen,uuid);
-		query += "\n" + CypherPatternBuilder.whereQueryConstraint(nodesThen);
-		query += "\n" + CypherPatternBuilder.withCountQuery(nodesThen,uuid);
-		return query + "\n";
-	}
-	public String getQueryString_MatchCondition() { 
-		var query = "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf);
-		if(injective) {
-			query += CypherPatternBuilder.injectivityBlock(nodesIf);
-		}
-		query += "\n" + CypherPatternBuilder.withCountQuery(nodesIf,uuid-1);
-		query += "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf,nodesThen);
-		if(injective) { 
-			query += CypherPatternBuilder.injectivityBlock(nodesThen);
-		}
-		query += "\n" + CypherPatternBuilder.withCountQueryImplication(nodesThen,uuid);
-		query += "\n" + CypherPatternBuilder.whereQueryConstraint(nodesThen);
-		query += "\n" + CypherPatternBuilder.withCountQuery(nodesThen,uuid);
-		return query + "\n";
-	}
-
-	public String getQueryString_Where() {
-		return CypherPatternBuilder.whereImplicationConstraintQuery(uuid);
 	}
 
 	@Override
@@ -153,23 +116,23 @@ public class NeoImplication implements IIfElseConstraint {
 	public Collection<IMatch> getViolations() {
 		logger.info("Check constraint: " + name);
 
-		var cypherQuery = CypherPatternBuilder.readQuery(nodesIf, nodesThen, getNodes(), true);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodesIf, nodesThen, helper.getNodes(), true);
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);
 
 		var matches = new ArrayList<IMatch>();
 		while (result.hasNext()) {
-			matches.add(new NeoMatch(null, result.next()));
+			matches.add(new NeoConstraintMatch(nodesIf, result.next()));
 		}
 
-		if (!matches.isEmpty()) {
-			logger.info("No invalid matches found. Constraint: " + name + " is NOT complied!");
-			return matches;
+		if (matches.isEmpty()) {
+			logger.info("No invalid matches found. Constraint: " + name + " is complied!");
+			return null;
 		}
 		
-		logger.info("No invalid matches found. Constraint: " + name + " is complied!");
-		return null;
+		logger.info("Invalid matches found. Constraint: " + name + " is NOT complied!");
+		return matches;
 
 	}
 

@@ -12,6 +12,8 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.Implication;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
@@ -59,9 +61,6 @@ public class NeoPattern implements IPattern {
 			} else if (p.getCondition() instanceof NegativeConstraint) {
 				cond = (NeoNegativeConstraint)(new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), builder, injective, helper));
 				
-			} else if (p.getCondition() instanceof Implication) {
-				cond = (NeoImplication)(new NeoImplication((AtomicPattern) p.getCondition().eCrossReferences().get(0),
-						(AtomicPattern) p.getCondition().eCrossReferences().get(1), builder, injective, helper));
 			} else {
 				logger.info(p.getCondition().toString());
 				throw new UnsupportedOperationException();
@@ -73,7 +72,7 @@ public class NeoPattern implements IPattern {
 		
 		for (var n : p.getBody().getNodeBlocks()) {
 			
-			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName(), p));
+			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
 			
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -81,7 +80,7 @@ public class NeoPattern implements IPattern {
 			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getType().getName(), p),
+					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(), r.getTarget().getName()),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
@@ -124,7 +123,7 @@ public class NeoPattern implements IPattern {
 		} else {
 			if (p.getCondition() instanceof ConstraintReference) {
 				// check condition
-				var cond = new NeoCondition(new NeoConstraint(c, builder), this, c.getName(), builder);
+				var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
 				return cond.determineMatches();
 				
 			} else if (cond instanceof NeoPositiveConstraint) {
@@ -139,7 +138,6 @@ public class NeoPattern implements IPattern {
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
 				cypherQuery += ((NeoPositiveConstraint) cond).getQueryString_MatchConstraint();
-				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 				cypherQuery += "\nWHERE " + ((NeoPositiveConstraint) cond).getQueryString_WhereConstraint();
 				if(injective)
 					cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
@@ -170,40 +168,7 @@ public class NeoPattern implements IPattern {
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
 				cypherQuery += ((NeoNegativeConstraint) cond).getQueryString_MatchConstraint();
-				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 				cypherQuery += "\nWHERE " + ((NeoNegativeConstraint) cond).getQueryString_WhereConstraint();
-				if(injective)
-					cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
-				cypherQuery += "\n" + CypherPatternBuilder.returnQuery(nodes);
-				
-				
-				logger.debug(cypherQuery);
-
-				var result = builder.executeQuery(cypherQuery);
-
-				var matches = new ArrayList<IMatch>();
-				while (result.hasNext()) {
-					var record = result.next();
-					matches.add(new NeoMatch(this, record));
-				}
-				
-				return matches;
-				
-			} else if (cond instanceof NeoImplication) {
-				
-				logger.info("Searching matches for Pattern: " + p.getBody().getName() + " " +
-						((NeoImplication) cond).getName());
-				
-				nodesAndRefs = new ArrayList<>();
-				nodesAndRefsN = new ArrayList<>();
-				removeDuplicates(nodes);				
-				removeDuplicates(((NeoImplication) cond).getIfNodes());
-				removeDuplicates(((NeoImplication) cond).getThenNodes());
-				
-				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoImplication) cond).getQueryString_MatchConstraint();
-				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
-				cypherQuery += "\nWHERE " + ((NeoImplication) cond).getQueryString_Where();
 				if(injective)
 					cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
 				cypherQuery += "\n" + CypherPatternBuilder.returnQuery(nodes);
@@ -286,6 +251,10 @@ public class NeoPattern implements IPattern {
 	 */
 	public boolean isInjective() {
 		return injective;
+	}
+	
+	public Pattern getPattern() {
+		return p;
 	}
 
 	/*

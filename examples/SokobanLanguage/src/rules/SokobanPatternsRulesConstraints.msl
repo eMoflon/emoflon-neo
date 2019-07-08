@@ -25,8 +25,6 @@ pattern sokobanMustBeSelectedFigure {
 } 
 
 constraint sokobanIsSelectedFigure = if oneSokoban then selectedFigureRequired
-constraint sokokanIsNotSelectedFigure = !sokobanIsSelectedFigure
-constraint sokobanIfNotSelectedThenSeleceted = sokokanIsNotSelectedFigure || sokobanIsSelectedFigure
 
 pattern selectedFigureRequired {
 	b:SokobanLanguage.Board {
@@ -404,7 +402,7 @@ constraint hasBottomAndRightField = hasBottomField && hasRightField
 constraint hasBottomAndNoRightField = hasBottomField && !hasRightField
 
 constraint twoConnFields = enforce neighborBottomField
-constraint iftwothenConn = if twoField then neighborBottomField
+constraint ifTwoThenConn = if twoField then neighborBottomField
 constraint ifBottomThenRight = if neighborBottomField then neighborRightField2
 
 constraint hasRightIfThen = if neighborRightField then neighborBottomField

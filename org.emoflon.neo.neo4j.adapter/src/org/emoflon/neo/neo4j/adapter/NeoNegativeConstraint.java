@@ -55,7 +55,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 			
 			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
 					node, //
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getTarget().getName(), ap),
+					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(), r.getTarget().getName(), ap, uuid),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //

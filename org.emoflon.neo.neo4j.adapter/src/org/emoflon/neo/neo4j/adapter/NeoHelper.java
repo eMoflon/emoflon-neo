@@ -1,22 +1,26 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 
 public class NeoHelper {
 
-	private HashMap matchNodes;
-	private HashMap optionalNodes;
+	private Collection<String> matchNodes;
+	private Collection<String> optionalNodes;
 	
 	private int cCount;
-	
+	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	public NeoHelper() {
-		this.matchNodes = new HashMap<String, String>();
-		this.optionalNodes = new HashMap<String, String>();
+		
+		this.matchNodes = new ArrayList();
+		this.optionalNodes = new ArrayList<>();
 		this.cCount = 0;
 	}
 	
@@ -24,35 +28,48 @@ public class NeoHelper {
 		return cCount++;
 	}
 	
-	public String newPatternNode(String name, Pattern p) {
-		matchNodes.put(name, p.getBody().getName());
+	public String newPatternNode(String name) {
+		if(!matchNodes.contains(name))
+			matchNodes.add(name);
 		return name;	
 	}
 	
-	public String newPatternRelation(String name, int index, String toName, Pattern p) {
-		optionalNodes.put(name + "_" + index  + "_" + toName, p.getBody().getName());
-		return name + "_" + index  + "_" + toName;
+	public String newPatternRelation(String name, int index, String relVar, String toName) {
+		
+		logger.info(name + "_" + index + "_" + relVar + "_" + toName);
+		
+		matchNodes.add( name + "_" + index + "_" + relVar + "_" + toName);
+		return name + "_" + index + "_" + relVar + "_" + toName;
 	}
 	
 	public String newConstraintNode(String name, AtomicPattern ap, int uuid) {
 		
-		if(matchNodes.containsKey(name)) {
+		if(matchNodes.contains(name)) {
 			return name;
 		} else {
-			optionalNodes.put(name + "_" + uuid, ap.getName());
+			optionalNodes.add(name + "_" + uuid);
 			return name + "_" + uuid;
 		}		
 	
 	}
 
-	public String newConstraintReference(String name, int index, String toName, AtomicPattern ap) {
+	public String newConstraintReference(String name, int index, String relVar, String toName, AtomicPattern ap, int uuid) {
 		
-		if(matchNodes.containsKey(name)) {
-			return name;
+		if(matchNodes.contains(name + "_" + index + "_" + relVar + "_" + toName)) {
+			return name + "_" + index + "_" + relVar + "_" + toName;
 		} else {
-			optionalNodes.put(name + "_" + index  + "_" + toName, ap.getName());
-			return name + "_" + index  + "_" + toName;
+			optionalNodes.add(name + "_" + index + "_" + relVar + "_" + toName + "_" + uuid);
+			return name + "_" + index + "_" + relVar + "_" + toName + "_" + uuid;
 		}
+	}
+	
+	public Collection<String> getNodes() {
+		var list = matchNodes;
+		for(String node : optionalNodes) {
+			if(!list.contains(node))
+				list.add(node);
+		}
+		return list;
 	}
 
 }

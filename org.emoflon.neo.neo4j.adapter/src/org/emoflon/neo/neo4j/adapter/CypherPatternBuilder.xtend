@@ -11,11 +11,12 @@ class CypherPatternBuilder {
 		«returnQuery(nodes)»'''
 	}
 
-	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap,
+	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap,
 		boolean injective) {
 		'''
 		«matchQuery(nodes,nodes2)»
-		«withQuery(nodes,nodes2,nodesMap)»
+		«withConstraintQuery(nodesMap)»
+		WHERE «whereNegativeConditionQuery(nodes2)»
 		«returnQuery(nodes,nodes2,nodesMap)»'''
 	}
 
@@ -34,22 +35,16 @@ class CypherPatternBuilder {
 			«ENDIF»
 		«ENDFOR»'''
 	}
-	def static String matchQueryAdd(Collection<NeoNode> nodes) {
-		'''«FOR n : nodes SEPARATOR ', '»
-			«IF n.relations.size > 0 »
-				«FOR r:n.relations SEPARATOR ', '»«sourceNode(n)»«directedRelation(r)»«targetNode(r)»«ENDFOR»
-			«ELSE»«queryNode(n)»
-			«ENDIF»
-		«ENDFOR»'''
-	}
 
 	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
-		'''«matchQuery(nodes)», «matchQueryAdd(nodes2)»
+		'''«matchQuery(nodes)»
+		«withQuery(nodes)»
+		OPTIONAL «matchQuery(nodes2)»
 		'''
 	}
 
 	def static String withQuery(Collection<NeoNode> nodes) {
-		'''WITH «FOR n : nodes SEPARATOR ', '»«n.varName»«ENDFOR»'''
+		'''WITH «FOR n : nodes SEPARATOR ', '»«n.varName»«IF n.relations.size > 0»«FOR r: n.relations BEFORE ', ' SEPARATOR ', '»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
 	}
 
 	def static String withQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap) {
@@ -151,8 +146,8 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 			«ENDFOR»'''
 	}
 
-	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap) {
-		'''RETURN «FOR n : nodesMap SEPARATOR ', '»id(«n.varName») AS «n.varName»«ENDFOR» LIMIT 1'''
+	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap) {
+		'''RETURN «FOR n : nodesMap SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
 	}
 
 	def static String returnQueryForIsStillValid() {
@@ -229,6 +224,10 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 	 def static String withCountQueryImplication(Collection<NeoNode> nodes, int id) {
 	 	
 		'''«withCountQuery(nodes,id)»«FOR n:nodes BEFORE ", " SEPARATOR ", "»«n.varName»«IF n.relations.size > 0»«FOR r:n.relations BEFORE ", " SEPARATOR ", "»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
+	 }
+	 def static String withQueryImplication(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
+	 	
+		'''WITH«FOR n:nodes SEPARATOR ", "»«n.varName»«IF n.relations.size > 0»«FOR r:n.relations BEFORE ", " SEPARATOR ", "»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
 	 }
 	 
 	 def static String returnConstraintQuery(Collection<String> nodes) {
