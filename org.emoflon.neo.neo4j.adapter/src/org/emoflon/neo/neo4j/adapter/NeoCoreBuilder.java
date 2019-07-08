@@ -67,7 +67,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String EBOOLEAN = "EBoolean";
 
 	// Attributes
-	private static final String NAME_PROP = "name";
+	private static final String NAME_PROP = "ename";
 	private static final String ABSTRACT_PROP = "abstract";
 
 	// Meta attributes and relations
