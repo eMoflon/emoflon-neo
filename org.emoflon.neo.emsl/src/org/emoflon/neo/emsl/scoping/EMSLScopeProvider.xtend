@@ -95,10 +95,6 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
 		}
 
-		// if (isOldLabelInRefinementCommandInPattern(context, reference))
-		// return handleOldLabelInRefinementCommandInPattern(context as RefinementCommand, reference)
-		// if (isOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference))
-		// return handleOldLabelInRefinementCommandInRelabelingCommandInPattern(context, reference)
 		return super.getScope(context, reference)
 	}
 
@@ -136,10 +132,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def thisAndAllSuperTypes(MetamodelNodeBlock type) {
 		var st = EMSLUtil.thisAndAllSuperTypes(type)
 		val root = EcoreUtil2.getRootContainer(type)
-		
+
 		// Check if EObject is imported: if yes, then it is a supertype for everything
 		val eObject = allNodeBlocksInAllImportedMetamodels(root).keySet.findFirst[it.name == "EObject"]
-		if(eObject !== null)
+		if (eObject !== null)
 			st.add(eObject)
 		return st
 	}
@@ -325,7 +321,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 	protected def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(HashSet<ModelNodeBlock> allNodeBlocks,
 		ModelRelationStatement statement) {
-		allNodeBlocks.filter[nb|thisAndAllSuperTypes(nb.type).contains(statement.type.target)]
+		allNodeBlocks.filter[nb|thisAndAllSuperTypes(nb?.type).contains(statement?.type?.target)]
 	}
 
 	/**
@@ -416,6 +412,9 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	def <T extends EObject> allTypesInAllImportedMetamodels(EObject root, Class<T> type) {
 		val aliases = new HashMap<T, String>()
+		if(root === null)
+			return aliases
+		
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
 		for (st : importStatements) {
 			try {
@@ -430,14 +429,17 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 		// Don't forget all types in the same file
 		EcoreUtil2.getAllContentsOfType(root, type).forEach[o|aliases.put(o, null)]
-		
-		
+
 		// If NeoCore is not already imported, make sure to add it here and search for the types too
 		if (!importStatements.exists[it.value === EMSLUtil.ORG_EMOFLON_NEO_CORE_URI]) {
-			val sp = loadEMSL_Spec(EMSLUtil.ORG_EMOFLON_NEO_CORE_URI, root)
-			EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
+			try {
+				val sp = loadEMSL_Spec(EMSLUtil.ORG_EMOFLON_NEO_CORE_URI, root)
+				EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
+			} catch (Exception e) {
+				println(e)
+			}
 		}
-		
+
 		aliases
 	}
 

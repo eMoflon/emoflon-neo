@@ -91,10 +91,13 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 	}
 	
 	def text(ModelPropertyStatement p){
-		p.type.name + " " + p.op + " " + p.value.print
+		p?.type?.name + " " + p?.op + " " + p?.value?.print
 	}
 		
 	dispatch def String print(PrimitiveInt value){
+		if(value === null)
+			return "?"
+		
 		value.literal.toString
 	}
 	
