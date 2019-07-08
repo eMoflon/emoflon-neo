@@ -13,7 +13,7 @@ import org.emoflon.neo.emsl.eMSL.impl.AttributeExpressionImpl
 
 class NeoUtil {
 	def static String handleValue(Value value) {
-		if(value instanceof PrimitiveString) return PrimitiveString.cast(value).getLiteral()
+		if(value instanceof PrimitiveString) return "\"" + PrimitiveString.cast(value).getLiteral() + "\""
 
 		if(value instanceof PrimitiveInt) return Integer.toString(PrimitiveInt.cast(value).getLiteral())
 

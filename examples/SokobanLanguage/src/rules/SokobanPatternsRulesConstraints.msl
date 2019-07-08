@@ -131,7 +131,7 @@ pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
 pattern allNotBorderFieldsInDiffRows -> allNotBorderFieldsInARow {
 	b : SokobanLanguage.Board {
 		-fields -> field {
-			.row : 4
+			//.row : 4
 			.col : 2
 		}
 	}
