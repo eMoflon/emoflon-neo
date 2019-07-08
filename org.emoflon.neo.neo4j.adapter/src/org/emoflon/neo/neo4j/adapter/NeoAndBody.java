@@ -96,11 +96,9 @@ public class NeoAndBody {
 
 				if (((ConstraintReference) b).isNegated()) {
 					query += "NOT(" + consData.getWhereClause() + ")";
-					//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere("NOT " + elem));
 				} else {
 					query += "(" + consData.getWhereClause() + ")";
-					//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
 				}				
 
@@ -110,7 +108,49 @@ public class NeoAndBody {
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 				
-				//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+				consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
+				
+				query += consData.getWhereClause();
+			}
+		}
+		returnStmt.addWhereClause("(" + query + ")");
+		return returnStmt;
+
+	}
+	
+	public NeoReturn getConditionData() {
+
+		NeoReturn returnStmt = new NeoReturn();
+		var query = "";
+
+		for (Object b : body.getChildren()) {
+
+			if (!query.equals("")) {
+				query += " AND ";
+			}
+
+			if (b instanceof ConstraintReference) {
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consData = consRef.getConditionData();
+				
+				
+				returnStmt.addNodes(consData.getNodes());
+				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
+
+				if (((ConstraintReference) b).isNegated()) {
+					query += "NOT(" + consData.getWhereClause() + ")";
+					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere("NOT " + elem));
+				} else {
+					query += "(" + consData.getWhereClause() + ")";
+					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
+				}				
+
+			} else if (b instanceof OrBody) {
+				var orbody = new NeoOrBody((OrBody) b, builder, helper);
+				var consData = orbody.getConditionData();
+				returnStmt.addNodes(consData.getNodes());
+				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
+				
 				consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
 				
 				query += consData.getWhereClause();

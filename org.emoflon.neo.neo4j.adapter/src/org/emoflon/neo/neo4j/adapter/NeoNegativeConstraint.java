@@ -69,7 +69,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 		return nodes;
 	}
 	
-	public String getQueryString_Match() { 
+	public String getQueryString_MatchConstraint() { 
 		var query = "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes);
 		if(injective) {
 			query += CypherPatternBuilder.injectivityBlock(nodes);
@@ -77,9 +77,19 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 		query += "\n" + CypherPatternBuilder.withCountQuery(nodes,uuid);
 		return query + "\n";	
 	}
+	public String getQueryString_MatchCondition() { 
+		var query = "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes);
+		if(injective) {
+			query += CypherPatternBuilder.injectivityBlock(nodes);
+		}
+		return query + "\n";	
+	}
 	
-	public String getQueryString_Where() {
+	public String getQueryString_WhereConstraint() {
 		return CypherPatternBuilder.whereNegativeConstraintQuery(uuid);
+	}
+	public String getQueryString_WhereConditon() {
+		return CypherPatternBuilder.whereNegativeConditionQuery(nodes);
 	}
 
 	@Override

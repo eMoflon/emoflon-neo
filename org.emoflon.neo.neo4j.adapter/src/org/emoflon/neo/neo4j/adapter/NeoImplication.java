@@ -104,7 +104,22 @@ public class NeoImplication implements IIfElseConstraint {
 		return list;
 	}
 	
-	public String getQueryString_Match() { 
+	public String getQueryString_MatchConstraint() { 
+		var query = "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf);
+		if(injective) {
+			query += CypherPatternBuilder.injectivityBlock(nodesIf);
+		}
+		query += "\n" + CypherPatternBuilder.withCountQuery(nodesIf,uuid-1);
+		query += "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf,nodesThen);
+		if(injective) { 
+			query += CypherPatternBuilder.injectivityBlock(nodesThen);
+		}
+		query += "\n" + CypherPatternBuilder.withCountQueryImplication(nodesThen,uuid);
+		query += "\n" + CypherPatternBuilder.whereQueryConstraint(nodesThen);
+		query += "\n" + CypherPatternBuilder.withCountQuery(nodesThen,uuid);
+		return query + "\n";
+	}
+	public String getQueryString_MatchCondition() { 
 		var query = "\nOPTIONAL " +  CypherPatternBuilder.matchQuery(nodesIf);
 		if(injective) {
 			query += CypherPatternBuilder.injectivityBlock(nodesIf);

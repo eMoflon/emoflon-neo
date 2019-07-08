@@ -205,6 +205,12 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 	 def static String whereImplicationConstraintQuery(int id) {
 	 	'''(m_«id-1» = m_«id»)'''
 	 }
+	 def static String whereNegativeConditionQuery(Collection<NeoNode> nodes) {
+	 	'''«FOR n:nodes SEPARATOR ' OR '»«n.varName» IS NULL«FOR r:n.relations BEFORE ' OR ' SEPARATOR ' OR '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
+	 }
+	 def static String wherePositiveConditionQuery(Collection<NeoNode> nodes) {
+	 	'''«FOR n:nodes SEPARATOR ' AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE ' AND ' SEPARATOR ' AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
+	 }
 	 
 	 def static String withConstraintQuery(Collection<String> nodes) {
 	 	'''WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''

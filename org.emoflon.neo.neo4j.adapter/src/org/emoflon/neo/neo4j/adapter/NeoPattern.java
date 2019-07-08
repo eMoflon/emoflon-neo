@@ -138,9 +138,9 @@ public class NeoPattern implements IPattern {
 				removeDuplicates(((NeoPositiveConstraint) cond).getNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoPositiveConstraint) cond).getQueryString_Match();
+				cypherQuery += ((NeoPositiveConstraint) cond).getQueryString_MatchConstraint();
 				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
-				cypherQuery += "\nWHERE " + ((NeoPositiveConstraint) cond).getQueryString_Where();
+				cypherQuery += "\nWHERE " + ((NeoPositiveConstraint) cond).getQueryString_WhereConstraint();
 				if(injective)
 					cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
 				cypherQuery += "\n" + CypherPatternBuilder.returnQuery(nodes);
@@ -169,9 +169,9 @@ public class NeoPattern implements IPattern {
 				removeDuplicates(((NeoNegativeConstraint) cond).getNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoNegativeConstraint) cond).getQueryString_Match();
+				cypherQuery += ((NeoNegativeConstraint) cond).getQueryString_MatchConstraint();
 				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
-				cypherQuery += "\nWHERE " + ((NeoNegativeConstraint) cond).getQueryString_Where();
+				cypherQuery += "\nWHERE " + ((NeoNegativeConstraint) cond).getQueryString_WhereConstraint();
 				if(injective)
 					cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
 				cypherQuery += "\n" + CypherPatternBuilder.returnQuery(nodes);
@@ -201,7 +201,7 @@ public class NeoPattern implements IPattern {
 				removeDuplicates(((NeoImplication) cond).getThenNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoImplication) cond).getQueryString_Match();
+				cypherQuery += ((NeoImplication) cond).getQueryString_MatchConstraint();
 				cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 				cypherQuery += "\nWHERE " + ((NeoImplication) cond).getQueryString_Where();
 				if(injective)

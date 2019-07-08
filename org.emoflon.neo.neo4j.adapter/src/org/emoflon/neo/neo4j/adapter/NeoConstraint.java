@@ -42,16 +42,16 @@ public class NeoConstraint implements IConstraint {
 			var co = new NeoPositiveConstraint(ap, builder, true, helper);
 
 			returnStmt.addNodes(co.getNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_Match());
-			returnStmt.addWhereClause(co.getQueryString_Where());
+			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
+			returnStmt.addWhereClause(co.getQueryString_WhereConstraint());
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var co = new NeoNegativeConstraint(ap, builder, true, helper);
 
 			returnStmt.addNodes(co.getNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_Match());
-			returnStmt.addWhereClause(co.getQueryString_Where());
+			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
+			returnStmt.addWhereClause(co.getQueryString_WhereConstraint());
 
 		} else if (c.getBody() instanceof Implication) {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
@@ -60,7 +60,7 @@ public class NeoConstraint implements IConstraint {
 
 			returnStmt.addNodes(co.getIfNodes());
 			returnStmt.addNodes(co.getThenNodes());
-			returnStmt.addOptionalMatch(co.getQueryString_Match());
+			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
 			returnStmt.addWhereClause(co.getQueryString_Where());
 
 		} else if (c.getBody() instanceof OrBody) {
@@ -69,6 +69,51 @@ public class NeoConstraint implements IConstraint {
 			var neoBody = new NeoOrBody(body, builder, helper);
 
 			returnStmt = neoBody.getConstraintData();
+
+		} else {
+			logger.info("Its an Unkown Type!");
+			throw new UnsupportedOperationException(c.getBody().toString());
+		}
+
+		return returnStmt;
+	}
+	
+	public NeoReturn getConditionData() {
+
+		NeoReturn returnStmt = new NeoReturn();
+
+		if (c.getBody() instanceof PositiveConstraint) {
+			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var co = new NeoPositiveConstraint(ap, builder, true, helper);
+
+			returnStmt.addNodes(co.getNodes());
+			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
+			returnStmt.addWhereClause(co.getQueryString_WhereConditon());
+
+		} else if (c.getBody() instanceof NegativeConstraint) {
+			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var co = new NeoNegativeConstraint(ap, builder, true, helper);
+
+			returnStmt.addNodes(co.getNodes());
+			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
+			returnStmt.addWhereClause(co.getQueryString_WhereConditon());
+
+		} else if (c.getBody() instanceof Implication) {
+			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
+			var co = new NeoImplication(apIf, apThen, builder, true, helper);
+
+			returnStmt.addNodes(co.getIfNodes());
+			returnStmt.addNodes(co.getThenNodes());
+			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
+			returnStmt.addWhereClause(co.getQueryString_Where());
+
+		} else if (c.getBody() instanceof OrBody) {
+
+			var body = (OrBody) c.getBody();
+			var neoBody = new NeoOrBody(body, builder, helper);
+
+			returnStmt = neoBody.getConditionData();
 
 		} else {
 			logger.info("Its an Unkown Type!");

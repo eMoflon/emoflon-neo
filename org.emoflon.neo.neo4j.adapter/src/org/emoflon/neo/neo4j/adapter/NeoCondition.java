@@ -28,16 +28,18 @@ public class NeoCondition {
 
 		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
 
+		var condData = c.getConditionData();
+		
 		removeDuplicates(p.getNodes());
-		removeDuplicates(c.getConstraintData().getNodes());
+		removeDuplicates(condData.getNodes());
 
 		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes());
-		cypherQuery += c.getConstraintData().getOptionalMatchString();
+		cypherQuery += condData.getOptionalMatchString();
 		cypherQuery += CypherPatternBuilder.withConstraintQuery(nodesAndRefs);
 		if (p.isNegated())
-			cypherQuery += "\nWHERE NOT(" + c.getConstraintData().getWhereClause() + ")";
+			cypherQuery += "\nWHERE NOT(" + condData.getWhereClause() + ")";
 		else
-			cypherQuery += "\nWHERE " + c.getConstraintData().getWhereClause();
+			cypherQuery += "\nWHERE " + condData.getWhereClause();
 		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());
 
 		logger.debug(cypherQuery);
@@ -47,7 +49,7 @@ public class NeoCondition {
 		var matches = new ArrayList<IMatch>();
 		while (result.hasNext()) {
 			var record = result.next();
-			matches.add(new NeoMatch(p, record));
+		//	matches.add(new NeoMatch(p, record));
 		}
 
 		return matches;

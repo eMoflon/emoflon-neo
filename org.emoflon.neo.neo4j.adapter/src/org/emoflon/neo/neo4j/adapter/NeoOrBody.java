@@ -67,7 +67,30 @@ public class NeoOrBody {
 				query += " OR ";
 			}
 			query += consData.getWhereClause();
-			//consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
+			consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
+
+		}
+		returnStmt.addWhereClause("(" + query + ")");
+		return returnStmt;
+
+	}
+	
+	public NeoReturn getConditionData() {
+
+		NeoReturn returnStmt = new NeoReturn();
+		var query = "";
+
+		for (AndBody b : body.getChildren()) {
+			var andbody = new NeoAndBody(b, builder, helper);
+			var consData = andbody.getConditionData();
+			returnStmt.addNodes(consData.getNodes());
+			returnStmt.addOptionalMatch(consData.getOptionalMatchString());
+
+			if (!query.equals("")) {
+				query += " OR ";
+			}
+			query += consData.getWhereClause();
+			consData.getIfThenWith().forEach(elem -> returnStmt.addIfThenWith(elem));
 			consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
 
 		}
