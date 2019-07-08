@@ -14,7 +14,7 @@ class CypherPatternBuilder {
 	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap,
 		boolean injective) {
 		'''
-		«matchQuery(nodes,nodes2)»
+		«matchQuery(nodes,nodes2,injective)»
 		«withConstraintQuery(nodesMap)»
 		WHERE «whereNegativeConditionQuery(nodes2)»
 		«returnQuery(nodes,nodes2,nodesMap)»'''
@@ -36,10 +36,12 @@ class CypherPatternBuilder {
 		«ENDFOR»'''
 	}
 
-	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
+	def static String matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,boolean injective) {
 		'''«matchQuery(nodes)»
+		«injectivityBlock(nodes)»
 		«withQuery(nodes)»
 		OPTIONAL «matchQuery(nodes2)»
+		«injectivityBlock(nodes2)»
 		'''
 	}
 
