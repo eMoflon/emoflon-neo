@@ -58,7 +58,7 @@ public class NeoController implements IController {
 		return access.matcher().determineMatches()//
 				.stream().map(m -> {
 					var data = access.data(m);
-					return data.eclass.name;
+					return data.eclass.ename;
 				}).collect(Collectors.toList());
 	}
 
@@ -136,7 +136,7 @@ public class NeoController implements IController {
 						data.board_fields_0_field.row, //
 						data.board_fields_0_field.col, //
 						data.field.endPos, //
-						data.type.name));
+						data.type.ename));
 			});
 		});
 	}

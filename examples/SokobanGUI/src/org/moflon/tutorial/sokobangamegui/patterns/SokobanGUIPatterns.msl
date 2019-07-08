@@ -30,7 +30,7 @@ pattern occupiedFields -> fields, occupied {
 
 pattern figureTypes {
 	figClass:EClass {
-		.name : "Figure"
+		.ename : "Figure"
 		-elementOf->mm
 	}
 	
@@ -40,7 +40,7 @@ pattern figureTypes {
 	}
 	
 	mm:MetaModel {
-		.name : "SokobanLanguage"
+		.ename : "SokobanLanguage"
 	}
 }
 
