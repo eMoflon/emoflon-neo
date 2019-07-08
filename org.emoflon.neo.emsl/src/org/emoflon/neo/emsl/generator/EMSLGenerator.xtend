@@ -275,7 +275,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Model m, int index) {
-		if(m.abstract) return ""
+		if(m.abstract) return "// No API for abstract models"
 		'''
 			public Model getModel_«namingConvention(m.name)»(){
 				return (Model) spec.getEntities().get(«index»);
@@ -284,7 +284,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Metamodel m, int index) {
-		if(m.abstract) return ""
+		if(m.abstract) return "// No API for abstract metamodels"
 		'''
 			public Metamodel getMetamodel_«namingConvention(m.name)»(){
 				return (Metamodel) spec.getEntities().get(«index»);
