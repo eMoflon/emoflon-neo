@@ -312,7 +312,6 @@ public class PatternTest extends ENeoTest {
 		assertThat(entities.getPattern_OneFieldHasNoBottomOrNoRight().countMatches(), is(7));
 	}
 	
-	
 	@Test
 	public void test_constraint_SokobanHasFieldThenBlockHasField() {
 		assertTrue(entities.getConstraint_SokOnFieldThenBlockOnField().isViolated());

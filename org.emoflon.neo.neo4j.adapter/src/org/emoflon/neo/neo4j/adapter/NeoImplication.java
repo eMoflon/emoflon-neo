@@ -140,7 +140,7 @@ public class NeoImplication implements IIfElseConstraint {
 		logger.info("Check constraint: " + name);
 
 		// create query
-		var cypherQuery = CypherPatternBuilder.readQuery(nodesIf, nodesThen, helper.getNodes(), injective);
+		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery(nodesIf, nodesThen, helper.getNodes(), injective);
 		logger.debug(cypherQuery);
 
 		// execute query
