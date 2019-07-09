@@ -50,7 +50,6 @@ import org.emoflon.neo.emsl.eMSL.OrBody
 import java.util.HashMap
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
-import org.emoflon.neo.emsl.util.FlattenerErrorType
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -401,16 +400,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				}
 				«IF (entityCopy as Pattern).condition !== null »
 					legend bottom
-						«getConditionString(entity)»
+						«getConditionString(entityCopy)»
 					endlegend
-					«visualiseCondition(entity)»
+					«visualiseCondition(entityCopy)»
 				«ENDIF»
 			'''
 		} catch (AssertionError e) {
 			
 		} catch (FlattenerException e) {
-			if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY)
-				return ""
+			return ""
 		}
 	}
 

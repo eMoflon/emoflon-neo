@@ -13,7 +13,6 @@ import org.emoflon.neo.emsl.eMSL.NegativeConstraint
 import org.emoflon.neo.emsl.eMSL.OrBody
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint
-import org.emoflon.neo.emsl.eMSL.Primary
 import org.emoflon.neo.emsl.eMSL.Rule
 
 class ConstraintTraversalHelper {
