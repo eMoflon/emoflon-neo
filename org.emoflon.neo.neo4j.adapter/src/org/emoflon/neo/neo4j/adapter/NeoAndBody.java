@@ -5,9 +5,13 @@ import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 
-/*
+/**
  * Class for creating nested AndBodies used in NeoConstraints or NeoConditions
- * for proofing if a constraint or condition is satisfied
+ * for proofing directing query fragments of constraints or conditions, and
+ * calculating if they satisfy, getting the matches
+ * 
+ * @author Jannik Hinz
+ *
  */
 public class NeoAndBody {
 
@@ -16,8 +20,8 @@ public class NeoAndBody {
 	private NeoCoreBuilder builder;
 	private NeoHelper helper;
 
-	/*
-	 * @param body of the current AndBody
+	/**
+	 * @param body    of the current AndBody
 	 * @param builder for creating and running cypher queries
 	 */
 	public NeoAndBody(AndBody body, NeoCoreBuilder builder, NeoHelper helper) {
@@ -27,12 +31,12 @@ public class NeoAndBody {
 		this.helper = helper;
 	}
 
-	/*
+	/**
 	 * Calculates and creates the nested constraints and conditions an return if
 	 * they satisfy or not
 	 * 
 	 * @return boolean true iff the complete nested Body and referenced conditions
-	 * satisfy or false if not
+	 *         satisfy or false if not
 	 */
 	public boolean isSatisfied() {
 
@@ -70,10 +74,12 @@ public class NeoAndBody {
 
 	}
 
-	/*
-	 * Returns a NeoNode Collection of all nodes in the nested constraint or body
+	/**
+	 * Returns a NeoReturn Object with data and nodes in the nested constraints or
+	 * Or-Bodies
 	 * 
-	 * @return NeoNode Collection of all nodes in the nested constraint or body
+	 * @return NeoReturn Object with data and nodes in the nested constraints or
+	 *         Or-Bodies
 	 */
 	public NeoReturn getConstraintData() {
 
@@ -89,8 +95,7 @@ public class NeoAndBody {
 			if (b instanceof ConstraintReference) {
 				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
 				var consData = consRef.getConstraintData();
-				
-				
+
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 
@@ -100,16 +105,16 @@ public class NeoAndBody {
 				} else {
 					query += "(" + consData.getWhereClause() + ")";
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
-				}				
+				}
 
 			} else if (b instanceof OrBody) {
 				var orbody = new NeoOrBody((OrBody) b, builder, helper);
 				var consData = orbody.getConstraintData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
-				
+
 				consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
-				
+
 				query += consData.getWhereClause();
 			}
 		}
@@ -117,7 +122,14 @@ public class NeoAndBody {
 		return returnStmt;
 
 	}
-	
+
+	/**
+	 * Returns a NeoReturn Object with data and nodes in the nested conditions or
+	 * Or-Bodies
+	 * 
+	 * @return NeoReturn Object with data and nodes in the nested conditions or
+	 *         Or-Bodies
+	 */
 	public NeoReturn getConditionData() {
 
 		NeoReturn returnStmt = new NeoReturn();
@@ -132,8 +144,7 @@ public class NeoAndBody {
 			if (b instanceof ConstraintReference) {
 				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
 				var consData = consRef.getConditionData();
-				
-				
+
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 
@@ -143,16 +154,16 @@ public class NeoAndBody {
 				} else {
 					query += "(" + consData.getWhereClause() + ")";
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
-				}				
+				}
 
 			} else if (b instanceof OrBody) {
 				var orbody = new NeoOrBody((OrBody) b, builder, helper);
 				var consData = orbody.getConditionData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
-				
+
 				consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere(elem));
-				
+
 				query += consData.getWhereClause();
 			}
 		}

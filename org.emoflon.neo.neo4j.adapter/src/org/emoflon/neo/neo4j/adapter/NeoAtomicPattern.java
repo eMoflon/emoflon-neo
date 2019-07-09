@@ -13,6 +13,12 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.StatementResult;
 
+/**
+ * Class for handling Atomic Patterns defined in constraints or refined patterns
+ * 
+ * @author Jannik Hinz
+ * 
+ */
 public class NeoAtomicPattern implements IPattern {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
@@ -20,8 +26,13 @@ public class NeoAtomicPattern implements IPattern {
 	private AtomicPattern ap;
 	private boolean injective;
 
+	// List of all nodes in the pattern including their properties and relations
 	private List<NeoNode> nodes;
 
+	/**
+	 * @param ap      the current AtomicPattern
+	 * @param builder for creating and running cypher queries
+	 */
 	public NeoAtomicPattern(AtomicPattern ap, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
 		this.ap = ap;
@@ -30,38 +41,58 @@ public class NeoAtomicPattern implements IPattern {
 		extractNodesAndRelations();
 	}
 
+	/**
+	 * Extracts all nessecary information out of the atomic pattern for creating
+	 * queries out of it.
+	 */
 	private void extractNodesAndRelations() {
 
 		for (ModelNodeBlock n : ap.getNodeBlocks()) {
 
+			// create a new NeoNode for every node in the atomic pattern
 			var node = new NeoNode(n.getType().getName(), n.getName() + "_" + ap.hashCode());
 
+			// add the properties to the recently definded NeoNode by adding new NeoProperty
+			// to the NeoNode
 			for (ModelPropertyStatement p : n.getProperties()) {
 				node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
 			}
+
+			// add the relations to the recently definded NeoNode by adding new NeoRelation
+			// to the NeoNode
 			for (ModelRelationStatement r : n.getRelations()) {
 				node.addRelation(new NeoRelation(node, //
-						node.getVarName(),
-						r.getType().getName(), //
+						node.getVarName(), r.getType().getName(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
-						r.getTarget().getName()+ "_" + ap.hashCode()));
+						r.getTarget().getName() + "_" + ap.hashCode()));
 			}
 			nodes.add(node);
 		}
 	}
 
+	/**
+	 * Return the name of the AtomicPattern
+	 * 
+	 * @return String of the AtomicPattern
+	 */
 	@Override
 	public String getName() {
 		return ap.getName();
 	}
 
+	/**
+	 * Return the list of all nodes as NeoNodes in the atomic pattern
+	 * 
+	 * @return Collection NeoNode all nodes as NeoNodes in the atomic pattern
+	 */
 	public List<NeoNode> getNodes() {
 		return nodes;
 	}
 
-	/*
-	 * Checks if a specifiy match is still valid, is still correctly in the database
+	/**
+	 * Checks if a specific match is still valid, is still correctly in the database
+	 * 
 	 * @param m NeoMatch the match that should be checked
 	 * @return true if the match is still valid or false if not
 	 */
@@ -73,24 +104,28 @@ public class NeoAtomicPattern implements IPattern {
 		return result.hasNext();
 	}
 
-	/*
+	/**
 	 * Set is the pattern should be injective or not
+	 * 
 	 * @param injective is the pattern should be injective matched
 	 */
 	@Override
 	public void setMatchInjectively(Boolean injective) {
 		this.injective = injective;
 	}
-	
-	/* Get the injectivity information of a pattern
+
+	/**
+	 * Get the injectivity information of a pattern
+	 * 
 	 * @return boolean true if the given pattern requires injective pattern matching
 	 */
 	public boolean isInjective() {
 		return injective;
 	}
 
-	/*
+	/**
 	 * Runs the pattern matching and counts size of matches
+	 * 
 	 * @return Number of matches
 	 */
 	@Override
@@ -102,6 +137,12 @@ public class NeoAtomicPattern implements IPattern {
 			return 0;
 	}
 
+	/**
+	 * Creates the specific Cypher query and executes it in the database, analyze
+	 * the results and return the specific results
+	 * 
+	 * @return Collection<IMatch> List of Matches of the pattern matching process
+	 */
 	@Override
 	public Collection<IMatch> determineMatches() {
 		logger.info("Searching matches for Pattern: " + ap.getName());
