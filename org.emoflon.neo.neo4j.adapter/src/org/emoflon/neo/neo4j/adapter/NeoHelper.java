@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 
 /**
  * Helper class for managing nodes, relations and their unique names in queries.
@@ -172,7 +173,7 @@ public class NeoHelper {
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
-					NeoUtil.handleValue(p.getValue())));
+					EMSLUtil.handleValue(p.getValue())));
 
 			n.getRelations()
 					.forEach(r -> node.addRelation(

@@ -9,7 +9,7 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
-import org.emoflon.neo.engine.api.rules.IMatch;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.StatementResult;
 
@@ -19,7 +19,7 @@ import org.neo4j.driver.v1.StatementResult;
  * @author Jannik Hinz
  * 
  */
-public class NeoAtomicPattern implements IPattern {
+public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	private NeoCoreBuilder builder;
@@ -52,13 +52,13 @@ public class NeoAtomicPattern implements IPattern {
 			// create a new NeoNode for every node in the atomic pattern
 			var node = new NeoNode(n.getType().getName(), n.getName() + "_" + ap.hashCode());
 
-			// add the properties to the recently definded NeoNode by adding new NeoProperty
+			// add the properties to the recently defined NeoNode by adding new NeoProperty
 			// to the NeoNode
 			for (ModelPropertyStatement p : n.getProperties()) {
-				node.addProperty(p.getType().getName(), NeoUtil.handleValue(p.getValue()));
+				node.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 			}
 
-			// add the relations to the recently definded NeoNode by adding new NeoRelation
+			// add the relations to the recently defined NeoNode by adding new NeoRelation
 			// to the NeoNode
 			for (ModelRelationStatement r : n.getRelations()) {
 				node.addRelation(node.getVarName(), r.getType().getName(), //
@@ -143,14 +143,14 @@ public class NeoAtomicPattern implements IPattern {
 	 * @return Collection<IMatch> List of Matches of the pattern matching process
 	 */
 	@Override
-	public Collection<IMatch> determineMatches() {
+	public Collection<NeoMatch> determineMatches() {
 		logger.info("Searching matches for Pattern: " + ap.getName());
 		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);
 
-		var matches = new ArrayList<IMatch>();
+		var matches = new ArrayList<NeoMatch>();
 		while (result.hasNext()) {
 			var record = result.next();
 			matches.add(new NeoMatch(null, record));
@@ -160,5 +160,11 @@ public class NeoAtomicPattern implements IPattern {
 			logger.debug("NO MATCHES FOUND");
 		}
 		return matches;
+	}
+
+	@Override
+	public Collection<NeoMatch> determineMatches(int limit) {
+		// TODO Jannik
+		return null;
 	}
 }

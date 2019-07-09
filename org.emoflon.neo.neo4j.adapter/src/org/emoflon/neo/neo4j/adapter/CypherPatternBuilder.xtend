@@ -57,10 +57,7 @@ class CypherPatternBuilder {
 
 	def static String whereQuery(Collection<NeoNode> nodes, boolean injective) {
 		'''«IF injective && nodes.size > 1»«injectiveBlock(nodes)»«ENDIF»'''
-	}
-
-	protected def static CharSequence queryNode(NeoNode n) '''
-	(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
+	}	
 
 	def static String matchQueryForIsStillValid(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
@@ -82,10 +79,6 @@ class CypherPatternBuilder {
 					(«n.varName»:«n.classType»)-[«r.varName»]->(«r.toNodeVar»:«r.toNodeLabel»)
 				«ENDFOR»
 			«ENDFOR»'''
-	}
-
-	def static String withQuery(Collection<NeoNode> nodes, boolean injective) {
-		'''«IF injective && nodes.size > 1»«injectivityBlock(nodes)»«ENDIF»'''
 	}
 
 	def static String withQueryForIsStillValid(Collection<NeoNode> nodes, NeoMatch match, boolean injective) {

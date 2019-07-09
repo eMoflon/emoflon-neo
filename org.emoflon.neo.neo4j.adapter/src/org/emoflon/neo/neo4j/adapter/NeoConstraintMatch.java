@@ -3,6 +3,7 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
@@ -88,7 +89,7 @@ public class NeoConstraintMatch implements IMatch {
 	 * @throws UnsupportedOperationException constraint do not have any pattern
 	 */
 	@Override
-	public IPattern getPattern() {
+	public IPattern<NeoMatch> getPattern() {
 		throw new UnsupportedOperationException();
 	}
 

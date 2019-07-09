@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.engine.api.rules.IMatch;
 
 /**
  * Class created, when a pattern has a condition. Runs relevant pattern and
@@ -43,7 +42,7 @@ public class NeoCondition {
 	 * @return Collection<IMatch> return a list of all Matches of the pattern with
 	 *         condition matching
 	 */
-	public Collection<IMatch> determineMatches() {
+	public Collection<NeoMatch> determineMatches() {
 
 		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
 
@@ -51,10 +50,8 @@ public class NeoCondition {
 		var condData = c.getConditionData();
 
 		// creating the query string
-		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes()) 
-				+ CypherPatternBuilder.withQuery(p.getNodes())
-				+ condData.getOptionalMatchString() 
-				+ CypherPatternBuilder.constraint_withQuery(helper.getNodes());
+		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes()) + CypherPatternBuilder.withQuery(p.getNodes())
+				+ condData.getOptionalMatchString() + CypherPatternBuilder.constraint_withQuery(helper.getNodes());
 
 		if (p.isNegated())
 			cypherQuery += "\nWHERE NOT(" + condData.getWhereClause() + ")";
@@ -69,7 +66,7 @@ public class NeoCondition {
 		var result = builder.executeQuery(cypherQuery);
 
 		// analyze and return results
-		var matches = new ArrayList<IMatch>();
+		var matches = new ArrayList<NeoMatch>();
 		while (result.hasNext()) {
 			var record = result.next();
 			matches.add(new NeoMatch(p, record));

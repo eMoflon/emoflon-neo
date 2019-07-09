@@ -358,23 +358,17 @@ public class NeoCoreBuilder implements AutoCloseable {
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
-			var eclass = cb.matchNodeWithContainer(eclassProps, eclassLabels, neocore);
-			var eref = cb.matchNodeWithContainer(erefProps, erefLabels, neocore);
-			var edatatype = cb.matchNodeWithContainer(eDataTypeProps, eDataTypeLabels, neocore);
-			var eattribute = cb.matchNodeWithContainer(eattrProps, eattrLabels, neocore);
 			var model = cb.matchNodeWithContainer(modelProps, modelLabels, neocore);
-			var eobject = cb.matchNodeWithContainer(eobjectProps, eobjectLabels, neocore);
 
 			// Create nodes and edges in models
 			var mNodes = new HashMap<Model, NodeCommand>();
 			var blockToCommand = new HashMap<ModelNodeBlock, NodeCommand>();
 			for (var newModel : newModels) {
-				handleNodeBlocksInModel(cb, neocore, eclass, blockToCommand, mNodes, newModel, model, eobject);
+				handleNodeBlocksInModel(cb, blockToCommand, mNodes, newModel, model);
 			}
 			for (var newModel : newModels) {
-				var mNode = mNodes.get(newModel);
 				for (var nb : newModel.getNodeBlocks()) {
-					handleRelationStatementInModel(cb, neocore, eref, edatatype, eattribute, blockToCommand, mNode, nb);
+					handleRelationStatementInModel(cb, blockToCommand, nb);
 				}
 			}
 		});
@@ -535,9 +529,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 		}
 	}
 
-	private void handleRelationStatementInModel(CypherCreator cb, NodeCommand neocore, NodeCommand eref,
-			NodeCommand edatatype, NodeCommand eattribute, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
-			NodeCommand mNode, ModelNodeBlock nb) {
+	private void handleRelationStatementInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
+			ModelNodeBlock nb) {
 
 		for (var rs : nb.getRelations()) {
 
@@ -581,9 +574,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	private void handleNodeBlocksInModel(CypherCreator cb, NodeCommand neocore, NodeCommand eclass,
-			HashMap<ModelNodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model,
-			NodeCommand nodeCommandForModel, NodeCommand eobject) {
+	private void handleNodeBlocksInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
+			HashMap<Model, NodeCommand> mNodes, Model model, NodeCommand nodeCommandForModel) {
 
 		var mNode = cb.createNode(List.of(new NeoProp(NAME_PROP, model.getName())), List.of(MODEL, EOBJECT));
 

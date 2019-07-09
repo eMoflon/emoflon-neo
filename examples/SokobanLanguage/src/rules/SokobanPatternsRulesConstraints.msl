@@ -361,11 +361,6 @@ pattern oneFieldForbidTwo {
 	f:Field
 } when forbid oneTwoField
 
-pattern oneFieldIfThenTwo {
-	f:Field
-} when if twoField then oneTwoField
-
-
 pattern twoField {
 	f:Field
 	f2:Field
@@ -417,7 +412,6 @@ constraint ifTwoThenConn = if twoField then neighborBottomField
 constraint ifBottomThenRight = if neighborBottomField then neighborRightField2
 
 constraint hasRightIfThen = if neighborRightField then neighborBottomField
-constraint hasBottomAndRighFieldIfThen = hasRightIfThen
 
 pattern sokOnField {
 	sok:Sokoban {

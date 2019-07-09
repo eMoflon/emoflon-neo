@@ -288,27 +288,27 @@ public class SokobanPatterns extends ENeoTest {
 	
 	@Test
 	public void test_ConditionHasField() {
-		assertThat(entities.getPattern_OneField().countMatches(), is(9));
+		assertThat(entities.getPattern_OneField().matcher().countMatches(), is(9));
 	}
 	@Test
 	public void test_ConditionHasFieldNeg() {
-		assertThat(entities.getPattern_OneFieldNeg().countMatches(), is(7));
+		assertThat(entities.getPattern_OneFieldNeg().matcher().countMatches(), is(7));
 	}
 	@Test
 	public void test_ConditionHasFieldEnforceTwo() {
-		assertThat(entities.getPattern_OneFieldEnforceTwo().countMatches(), is(12));
+		assertThat(entities.getPattern_OneFieldEnforceTwo().matcher().countMatches(), is(12));
 	}
 	@Test
 	public void test_ConditionHasFieldForbidFwo() {
-		assertThat(entities.getPattern_OneFieldForbidTwo().countMatches(), is(4));
+		assertThat(entities.getPattern_OneFieldForbidTwo().matcher().countMatches(), is(4));
 	}
 	@Test
 	public void test_ConditionHasOneFieldHasBottomAndRight() {
-		assertThat(entities.getPattern_OneFieldHasBottomAndRight().countMatches(), is(9));
+		assertThat(entities.getPattern_OneFieldHasBottomAndRight().matcher().countMatches(), is(9));
 	}
 	@Test
 	public void test_ConditionHasOneFieldHasNoBottomOrNoRight() {
-		assertThat(entities.getPattern_OneFieldHasNoBottomOrNoRight().countMatches(), is(7));
+		assertThat(entities.getPattern_OneFieldHasNoBottomOrNoRight().matcher().countMatches(), is(7));
 	}
 	
 	@Test

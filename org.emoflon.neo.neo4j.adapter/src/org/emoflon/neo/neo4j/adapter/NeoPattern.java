@@ -7,16 +7,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
-import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
-import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
-import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
+import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IPattern;
@@ -74,12 +69,12 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				this.c = (Constraint) p.getCondition().eCrossReferences().get(0);
 
 			} else if (p.getCondition() instanceof PositiveConstraint) {
-				cond = (NeoPositiveConstraint) (new NeoPositiveConstraint(
-						(AtomicPattern) p.getCondition().eCrossReferences().get(0), injective, builder, helper));
+				cond = (new NeoPositiveConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), injective,
+						builder, helper));
 
 			} else if (p.getCondition() instanceof NegativeConstraint) {
-				cond = (NeoNegativeConstraint) (new NeoNegativeConstraint(
-						(AtomicPattern) p.getCondition().eCrossReferences().get(0), injective, builder, helper));
+				cond = (new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), injective,
+						builder, helper));
 
 			} else {
 				logger.info(p.getCondition().toString());
@@ -101,12 +96,16 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
-					NeoUtil.handleValue(p.getValue())));
-
-			n.getRelations().forEach(r -> node.addRelation(
-					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(),
-							r.getTarget().getName()),
 					EMSLUtil.handleValue(p.getValue())));
+
+			n.getRelations()
+					.forEach(r -> node.addRelation(
+							helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
+									r.getType().getName(), r.getTarget().getName()),
+							r.getType().getName(), //
+							r.getProperties(), //
+							r.getTarget().getType().getName(), //
+							r.getTarget().getName()));
 
 			nodes.add(node);
 		}
@@ -148,7 +147,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 			var result = builder.executeQuery(cypherQuery);
 
-			var matches = new ArrayList<IMatch>();
+			var matches = new ArrayList<NeoMatch>();
 			while (result.hasNext()) {
 				var record = result.next();
 				matches.add(new NeoMatch(this, record));
@@ -177,7 +176,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 				// Create Query
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
-						+ CypherPatternBuilder.whereQuery(nodes,injective) + "\n" 
+						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
 						+ CypherPatternBuilder.withQuery(nodes)
 						+ ((NeoPositiveConstraint) cond).getQueryString_MatchCondition()
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
@@ -191,7 +190,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				var result = builder.executeQuery(cypherQuery);
 
 				// Analyze and return results
-				var matches = new ArrayList<IMatch>();
+				var matches = new ArrayList<NeoMatch>();
 				while (result.hasNext()) {
 					var record = result.next();
 					matches.add(new NeoMatch(this, record));
@@ -206,8 +205,8 @@ public class NeoPattern implements IPattern<NeoMatch> {
 						+ ((NeoNegativeConstraint) cond).getName());
 
 				// create query
-				var cypherQuery = CypherPatternBuilder.matchQuery(nodes) 
-						+ CypherPatternBuilder.whereQuery(nodes,injective) + "\n" 
+				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
+						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
 						+ CypherPatternBuilder.withQuery(nodes)
 						+ ((NeoNegativeConstraint) cond).getQueryString_MatchCondition()
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
@@ -221,7 +220,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				var result = builder.executeQuery(cypherQuery);
 
 				// analyze and return results
-				var matches = new ArrayList<IMatch>();
+				var matches = new ArrayList<NeoMatch>();
 				while (result.hasNext()) {
 					var record = result.next();
 					matches.add(new NeoMatch(this, record));
@@ -295,7 +294,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		// exactly n matches.
 		return determineMatches();
 	}
-	
+
 	/**
 	 * Get the injectivity information of a pattern
 	 * 
