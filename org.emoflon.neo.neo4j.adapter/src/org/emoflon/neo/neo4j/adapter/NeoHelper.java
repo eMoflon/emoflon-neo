@@ -2,12 +2,8 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.emsl.eMSL.Pattern;
 
 public class NeoHelper {
 
@@ -19,8 +15,8 @@ public class NeoHelper {
 
 	public NeoHelper() {
 		
-		this.matchNodes = new ArrayList();
-		this.optionalNodes = new ArrayList<>();
+		this.matchNodes = new ArrayList<String>();
+		this.optionalNodes = new ArrayList<String>();
 		this.cCount = 0;
 	}
 	

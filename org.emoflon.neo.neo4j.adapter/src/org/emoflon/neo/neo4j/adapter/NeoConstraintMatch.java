@@ -2,11 +2,8 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Record;

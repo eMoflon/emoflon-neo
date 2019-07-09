@@ -3,12 +3,8 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.engine.api.constraints.IIfElseConstraint;
 import org.emoflon.neo.engine.api.rules.IMatch;
 
@@ -72,7 +68,6 @@ public class NeoImplication implements IIfElseConstraint {
 		}
 		for (var n : apThen.getNodeBlocks()) {
 			
-			//TODO: create methode for IfThen Constraints
 			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName(), apIf, 0));
 			
 			n.getProperties().forEach(p -> node.addProperty(//
@@ -116,7 +111,7 @@ public class NeoImplication implements IIfElseConstraint {
 	public Collection<IMatch> getViolations() {
 		logger.info("Check constraint: " + name);
 
-		var cypherQuery = CypherPatternBuilder.readQuery(nodesIf, nodesThen, helper.getNodes(), true);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodesIf, nodesThen, helper.getNodes(), injective);
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);

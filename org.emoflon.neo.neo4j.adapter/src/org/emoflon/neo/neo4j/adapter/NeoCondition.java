@@ -14,16 +14,11 @@ public class NeoCondition {
 	private NeoConstraint c;
 	private NeoPattern p;
 
-	private Collection<String> nodesAndRefs;
-	private Collection<NeoNode> nodesAndRefsN;
-
 	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder, NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;
 		this.p = p;
-		this.nodesAndRefs = new ArrayList<>();
-		this.nodesAndRefsN = new ArrayList<>();
 	}
 
 	public Collection<IMatch> determineMatches() {
@@ -32,9 +27,6 @@ public class NeoCondition {
 
 		var condData = c.getConditionData();
 		
-		removeDuplicates(p.getNodes());
-		removeDuplicates(condData.getNodes());
-
 		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes());
 		cypherQuery += CypherPatternBuilder.withQuery(p.getNodes());
 		cypherQuery += condData.getOptionalMatchString();
@@ -56,22 +48,6 @@ public class NeoCondition {
 		}
 
 		return matches;
-	}
-
-	private void removeDuplicates(Collection<NeoNode> nodes) {
-		for (NeoNode node : nodes) {
-
-			if (!nodesAndRefs.contains(node.getVarName())) {
-				nodesAndRefs.add(node.getVarName());
-				nodesAndRefsN.add(node);
-			}
-
-			for (NeoRelation rel : node.getRelations()) {
-				if (!nodesAndRefs.contains(rel.getVarName())) {
-					nodesAndRefs.add(rel.getVarName());
-				}
-			}
-		}
 	}
 
 }

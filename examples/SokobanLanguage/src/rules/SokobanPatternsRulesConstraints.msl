@@ -407,3 +407,17 @@ constraint ifBottomThenRight = if neighborBottomField then neighborRightField2
 
 constraint hasRightIfThen = if neighborRightField then neighborBottomField
 constraint hasBottomAndRighFieldIfThen = hasRightIfThen
+
+pattern sokOnField {
+	sok:Sokoban {
+		-field -> f
+	}
+	f: Field
+}
+pattern blockOnField {
+	b:Block {
+		-field -> f
+	}
+	f:Field
+}
+constraint sokOnFieldThenBlockOnField = if sokOnField then blockOnField

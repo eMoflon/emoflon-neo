@@ -11,9 +11,6 @@ import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
-import org.emoflon.neo.emsl.eMSL.Implication;
-import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
@@ -32,8 +29,6 @@ public class NeoPattern implements IPattern {
 	private boolean injective;
 
 	private List<NeoNode> nodes;
-	private Collection<String> nodesAndRefs;
-	private Collection<NeoNode> nodesAndRefsN;
 
 	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
 		nodes = new ArrayList<>();
@@ -131,11 +126,6 @@ public class NeoPattern implements IPattern {
 				logger.info("Searching matches for Pattern: " + p.getBody().getName() +
 						" ENFORCE " + ((NeoPositiveConstraint) cond).getName());
 				
-				nodesAndRefs = new ArrayList<>();
-				nodesAndRefsN = new ArrayList<>();
-				addNodes(nodes);			
-				addNodes(((NeoPositiveConstraint) cond).getNodes());
-				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
 				if(injective)
 					cypherQuery += CypherPatternBuilder.injectivityBlock(nodes) + "\n";
@@ -162,11 +152,6 @@ public class NeoPattern implements IPattern {
 				
 				logger.info("Searching matches for Pattern: " + p.getBody().getName() +
 						" FORBID " + ((NeoNegativeConstraint) cond).getName());
-				
-				nodesAndRefs = new ArrayList<>();
-				nodesAndRefsN = new ArrayList<>();
-				addNodes(nodes);			
-				addNodes(((NeoNegativeConstraint) cond).getNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
 				if(injective)
@@ -219,26 +204,6 @@ public class NeoPattern implements IPattern {
 			return ((ConstraintReference)(p.getCondition())).isNegated();
 		else
 			return false;
-	}
-	
-	/*
-	 * Removes all duplicated nodes or relations from the node and relation list
-	 * @param nodes nodes that should be added to the list (only if not present in the list)
-	 */
-	private void addNodes(Collection<NeoNode> nodes) {
-		for(NeoNode node : nodes) {
-			
-			if(!nodesAndRefs.contains(node.getVarName())) {
-				nodesAndRefs.add(node.getVarName());
-				nodesAndRefsN.add(node);
-			}
-			
-			for(NeoRelation rel: node.getRelations()) {
-				if(!nodesAndRefs.contains(rel.getVarName())) {
-					nodesAndRefs.add(rel.getVarName());
-				}
-			}
-		}
 	}
 
 	/*
