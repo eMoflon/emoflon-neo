@@ -58,15 +58,17 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var Optional<String> diagram = Optional.empty()
 		try {
 			var String d = getDiagramBody(editor, selection)
-			if (d === null || d.split("\n").length > MAX_SIZE)
-				diagram = Optional.of(tooBigDiagram())
+			if(d === null)
+				diagram = Optional.of(errorDiagram)
+			if (d.split("\n").length > MAX_SIZE)
+				diagram = Optional.of(tooBigDiagram)
 			else
 				diagram = Optional.of(d)
 		} catch (Exception e) {
 			e.printStackTrace()
 		}
 
-		return wrapInTags(diagram.orElse(errorDiagram()))
+		return wrapInTags(diagram.orElse(errorDiagram))
 	}
 
 	def String wrapInTags(String body) {
@@ -86,7 +88,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	def String errorDiagram() {
 		'''
-			title I'm having problems visualising the current selection (check your console).
+			title I'm having problems visualising the current selection (check your editor and console).
 		'''
 	}
 

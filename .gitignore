@@ -59,3 +59,4 @@ examples/SokobanGUI/src-gen/org/emoflon/neo/api/API_Common.java
 examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangamegui/patterns/API_SokobanGUIPatterns.java
 examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangamegui/patterns/BoardData.java
 examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangamegui/patterns/EmptyFieldsData.java
+examples/SokobanGUI/SokobanGUI.launch

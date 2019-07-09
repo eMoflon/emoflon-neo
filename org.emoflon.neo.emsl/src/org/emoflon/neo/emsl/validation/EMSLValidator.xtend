@@ -41,6 +41,7 @@ import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
+import java.util.function.Consumer
 
 /**
  * This class contains custom validation rules. 
@@ -48,14 +49,12 @@ import org.emoflon.neo.emsl.util.FlattenerException
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class EMSLValidator extends AbstractEMSLValidator {
-	
+
+	// Error and info messages
 	static final String WRONG_PROPERTY_TYPE = "The value of this property must be of type "
-	// TODO [Maximilian] find other way (no splitting) maybe give template??
-	static final String REFINEMENT_LOOP_1 = "You have created an infinite loop in your refinements. \""
-	static final String REFINEMENT_LOOP_2 = "\" appears multiple times."
 	static final String CONDITION_IN_SUPER_ENTITY = "Entities with conditions cannot be refined."
 	static final String NOT_SUPPORTED_ENTITY = "The type of entity you are trying to refine is not yet supported."
-	
+	static final def String REFINEMENT_LOOP(String refinement) '''You have created an infinite loop in your refinements. "«refinement»" appears multiple times.'''
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -70,14 +69,16 @@ class EMSLValidator extends AbstractEMSLValidator {
 				if (!(p.value instanceof PrimitiveInt && propertyType == BuiltInDataTypes.EINT) &&
 					!(p.value instanceof PrimitiveBoolean && propertyType == BuiltInDataTypes.EBOOLEAN) &&
 					!(p.value instanceof PrimitiveString && propertyType == BuiltInDataTypes.ESTRING) &&
-					!(p.value instanceof AttributeExpression &&	isOfCorrectType(p.value as AttributeExpression, p.type.type)))
-					
-					error(WRONG_PROPERTY_TYPE + propertyType.getName, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
+					!(p.value instanceof AttributeExpression &&
+						isOfCorrectType(p.value as AttributeExpression, p.type.type)))
+					error(WRONG_PROPERTY_TYPE + propertyType.getName,
+						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 			} else if (p.type.type instanceof UserDefinedType) {
 				var propertyType = (p.type.type as UserDefinedType).reference
 				var literals = propertyType.literals
 				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal))) {
-					error(WRONG_PROPERTY_TYPE + propertyType.getName, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
+					error(WRONG_PROPERTY_TYPE + propertyType.getName,
+						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}
 			}
 		}
@@ -108,21 +109,20 @@ class EMSLValidator extends AbstractEMSLValidator {
 				new EMSLFlattener().flattenCopyOfEntity(entity as Entity, new ArrayList);
 			}
 		} catch (FlattenerException e) {
-			if (entity instanceof Pattern) {
+			if (entity instanceof AtomicPattern) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 					var index = 0
-					for (s : entity.body.superRefinementTypes) {
+					for (s : entity.superRefinementTypes) {
 						if (e.alreadyRefinedPatternNames.contains((s.referencedType as AtomicPattern).name))
 							error(
-						REFINEMENT_LOOP_1 +
-							new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2, entity.body,
-						EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+								REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
+								entity, EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
 
 				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
 					var index = 0
-					for (nb : entity.body.nodeBlocks) {
+					for (nb : entity.nodeBlocks) {
 						if (nb.type.name.equals(e.nodeBlock.type.name)) {
 							error("The type " + e.nodeBlock.type.name +
 								" in your refinements cannot be merged into a common subtype.", nb,
@@ -133,10 +133,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
 					var index = 0
-					for (s : entity.body.superRefinementTypes) {
-						if ((s.referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name)) 
-							error(CONDITION_IN_SUPER_ENTITY,
-								entity.body,
+					for (s : entity.superRefinementTypes) {
+						if ((s.referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name))
+							error(CONDITION_IN_SUPER_ENTITY, entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
@@ -148,12 +147,12 @@ class EMSLValidator extends AbstractEMSLValidator {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error(NOT_SUPPORTED_ENTITY, entity.body,
+							error(NOT_SUPPORTED_ENTITY, entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-							error(NOT_SUPPORTED_ENTITY, entity.body,
+							error(NOT_SUPPORTED_ENTITY, entity,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						}
 						index++
@@ -165,7 +164,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 					for (s : entity.superRefinementTypes) {
 						if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name))
 							error(
-								REFINEMENT_LOOP_1 + new EntityAttributeDispatcher().getName(entity) + REFINEMENT_LOOP_2,
+								REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
 								EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
@@ -174,19 +173,20 @@ class EMSLValidator extends AbstractEMSLValidator {
 					var index = 0
 					for (nb : entity.nodeBlocks) {
 						if (nb.type.name.equals(e.nodeBlock.type.name))
-							error("The type " + e.nodeBlock.type.name +	" in your refinements cannot be merged into a common subtype.",
-								nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE, index)
+							error("The type " + e.nodeBlock.type.name +
+								" in your refinements cannot be merged into a common subtype.", nb,
+								EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE, index)
 						index++
 					}
 
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
 					var index = 0
 					for (s : entity.superRefinementTypes) {
-						if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name)) 
+						if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name))
 							error(CONDITION_IN_SUPER_ENTITY, EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
-					
+
 				} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
 					var dispatcher = new EntityAttributeDispatcher()
 					var index = 0
@@ -194,17 +194,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							
+
 							error("The type of entity you are trying to refine is not supported yet.", entity,
 								EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
-						
+
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-						
+
 							error("The type of entity you are trying to refine is not yet supported.", entity,
 								EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
-						
+
 						}
 						index++
 					}
@@ -214,25 +214,25 @@ class EMSLValidator extends AbstractEMSLValidator {
 				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 					for (propertyStatement : nb.properties) {
 						if (propertyStatement.type.name.equals(e.property1.type.name))
-						error(
-							"The types of the properties you are trying to refine are not compatible. The types " +
-								(e.property1 as ModelPropertyStatement).type.name + " and " +
-								(e.property2 as ModelPropertyStatement).type.name + " must be the same.", propertyStatement,
-							EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+							error(
+								"The types of the properties you are trying to refine are not compatible. The types " +
+									(e.property1 as ModelPropertyStatement).type.name + " and " +
+									(e.property2 as ModelPropertyStatement).type.name + " must be the same.",
+								propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
 					}
 				}
 			} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS) {
 				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 					for (propertyStatement : nb.properties) {
 						if (propertyStatement.type.name.equals(e.property1.type.name))
-						error("The operators of the properties you are trying to refine are not compatible.", 
-							propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+							error("The operators of the properties you are trying to refine are not compatible.",
+								propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
 					}
 					for (relationStatement : nb.relations) {
 						for (propertyStatement : relationStatement.properties) {
 							if (propertyStatement.type.name.equals(e.property1.type.name)) {
-							error("The operators of the properties you are trying to refine are not compatible.", 
-							propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+								error("The operators of the properties you are trying to refine are not compatible.",
+									propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
 							}
 						}
 					}
@@ -241,15 +241,16 @@ class EMSLValidator extends AbstractEMSLValidator {
 				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 					for (propertyStatement : nb.properties) {
 						if (propertyStatement.type.name.equals(e.property1.type.name)) {
-							error("The value of " + e.property2.type.name + " does not match your other refinements", propertyStatement,
-								EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+							error("The value of " + e.property2.type.name + " does not match your other refinements",
+								propertyStatement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
 						}
 					}
 					for (relationStatement : nb.relations) {
 						for (propertyStatement : relationStatement.properties) {
 							if (propertyStatement.type.name.equals(e.property1.type.name)) {
-							error("The value of " + e.property2.type.name + " does not match your other refinements", propertyStatement,
-								EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
+								error("The value of " + e.property2.type.name +
+									" does not match your other refinements", propertyStatement,
+									EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__TYPE)
 							}
 						}
 					}
@@ -314,29 +315,45 @@ class EMSLValidator extends AbstractEMSLValidator {
 	}
 
 	/**
+	 * We are currently able to handle if/else structures as constraints only if they are not mixed with other constraints.
+	 */
+	@Check(NORMAL)
+	def void checkIfElseAsConstraint(Constraint c) {
+		if (c.body instanceof Implication)
+			return
+		else
+			forbidIfElseAsChild(c.body, [o |
+			error('''If/else conditions such as "if «o.premise.name» then «o.conclusion.name»" cannot be referenced from other constraints.''',
+				EMSLPackage.Literals.CONSTRAINT__BODY)
+		])
+	}
+
+	/**
 	 * We are currently unable to handle if/else structures as application conditions for patterns.
 	 * This is related to the transformation to the underlying pattern matcher.
 	 */
 	@Check(NORMAL)
-	def void forbidIfElseAsApplicationCondition(Pattern p) {
-		forbidIfElseAsApplicationCondition(p.condition)
+	def void forbidIfElseAsChild(Pattern p) {
+		forbidIfElseAsChild(p.condition, [o |
+			error('''If/else conditions such as "if «o.premise.name» then «o.conclusion.name»" are currently not supported as part of application conditions''',
+				EMSLPackage.Literals.PATTERN__CONDITION)
+		])
 	}
 
-	def void forbidIfElseAsApplicationCondition(Condition c) {
+	private def void forbidIfElseAsChild(Condition c, Consumer<Implication> error) {
 		var allConditions = new ArrayList<EObject>()
 		allConditions.add(c)
 		allConditions.addAll(c.eAllContents.toList)
 		allConditions.filter[it instanceof Implication].forEach [
-			error("If/else conditions are currently not supported as part of application conditions",
-				EMSLPackage.Literals.PATTERN__CONDITION)
+			error.accept(it as Implication)
 		]
 
 		allConditions.filter[it instanceof ConstraintReference].forEach [
 			var refCond = (it as ConstraintReference).reference.body
-			forbidIfElseAsApplicationCondition(refCond)
+			forbidIfElseAsChild(refCond, error)
 		]
 	}
-	
+
 	/**
 	 * Checks if a modelNodeBlock's action contains an operator. As this does not make sense for models
 	 * an error message is shown.

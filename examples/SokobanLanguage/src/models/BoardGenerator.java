@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.sokoban;
+package models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +16,14 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
-public class ScalabilityTest {
+public class BoardGenerator {
 
-	private static final Logger logger = Logger.getLogger(ScalabilityTest.class);
+	private static final Logger logger = Logger.getLogger(BoardGenerator.class);
 
 	public static void main(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
 
-		ScalabilityTest t = new ScalabilityTest();
+		BoardGenerator t = new BoardGenerator();
 		EMSLPackageImpl.init();
 
 		int start = 0;
@@ -32,20 +32,32 @@ public class ScalabilityTest {
 
 		String log = "";
 		for (int size = start; size <= stop; size += step) {
-			log += t.runTests(size, 10000, 10000);
+			log += t.generateBoard("sokobanBoard_" + size, size, 10000, 10000);
 		}
 
 		logger.info(log);
 	}
 
-	public String runTests(int modelSize, int nodes, int edges) throws Exception {
+	/**
+	 * Generate an empty sokoban board
+	 * 
+	 * @param modelName
+	 * @param numberOfFields number of fields on the board
+	 * @throws Exception
+	 */
+	public void generateBoard(String modelName, int numberOfFields) throws Exception {
+		generateBoard(modelName, numberOfFields, 1000, 1000);
+	}
+
+	private String generateBoard(String modelName, int modelSize, int nodes, int edges) throws Exception {
 		String time = "";
 		NeoCoreBuilder builder = API_Common.createBuilder();
 
 		try {
-			Model model = new API_SokobanSimple(builder).getModel_SokobanSimple();
-			
-			model.setName(model.getName() + "_" + modelSize);
+			Model model = new API_SokobanSimple(builder, API_Common.PLATFORM_RESOURCE_URI,
+					API_Common.PLATFORM_PLUGIN_URI).getModel_SokobanSimple();
+
+			model.setName(modelName);
 			generateContents(model, modelSize);
 
 			long tic = System.currentTimeMillis();
@@ -66,13 +78,9 @@ public class ScalabilityTest {
 		ModelNodeBlock field0 = model.getNodeBlocks().get(1);
 
 		List<ModelNodeBlock> lastCol = new ArrayList<>();
-
 		lastCol.add(field0);
-
 		List<ModelNodeBlock> lastRow = new ArrayList<>();
-
 		lastRow.add(field0);
-
 		extendBoard(lastCol, lastRow, size, boardNb, model, field0);
 	}
 
@@ -103,7 +111,7 @@ public class ScalabilityTest {
 
 			{
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm,"right"));
+				rs.setType(retrieveRelType(mm, "right"));
 				rs.setTarget(rightField);
 				nb.getRelations().add(rs);
 			}
@@ -114,7 +122,7 @@ public class ScalabilityTest {
 				var lCol = newLastCol.get(index - 1);
 
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm,"bottom"));
+				rs.setType(retrieveRelType(mm, "bottom"));
 				rs.setTarget(rightField);
 				lCol.getRelations().add(rs);
 			}
@@ -131,14 +139,14 @@ public class ScalabilityTest {
 
 			{
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm,"fields"));
+				rs.setType(retrieveRelType(mm, "fields"));
 				rs.setTarget(bottomField);
 				board.getRelations().add(rs);
 			}
 
 			{
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm,"bottom"));
+				rs.setType(retrieveRelType(mm, "bottom"));
 				rs.setTarget(bottomField);
 				nb1.getRelations().add(rs);
 			}
@@ -149,7 +157,7 @@ public class ScalabilityTest {
 				var lRow = newLastRow.get(index - 1);
 
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm,"right"));
+				rs.setType(retrieveRelType(mm, "right"));
 				rs.setTarget(bottomField);
 				lRow.getRelations().add(rs);
 			}
@@ -166,14 +174,14 @@ public class ScalabilityTest {
 
 		{
 			ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			rs.setType(retrieveRelType(mm,"fields"));
+			rs.setType(retrieveRelType(mm, "fields"));
 			rs.setTarget(cornerField);
 			board.getRelations().add(rs);
 		}
 
 		{
 			ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			rs.setType(retrieveRelType(mm,"bottom"));
+			rs.setType(retrieveRelType(mm, "bottom"));
 			rs.setTarget(cornerField);
 			lc.getRelations().add(rs);
 
@@ -181,7 +189,7 @@ public class ScalabilityTest {
 
 		{
 			ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			rs.setType(retrieveRelType(mm,"right"));
+			rs.setType(retrieveRelType(mm, "right"));
 			rs.setTarget(cornerField);
 			lr.getRelations().add(rs);
 		}

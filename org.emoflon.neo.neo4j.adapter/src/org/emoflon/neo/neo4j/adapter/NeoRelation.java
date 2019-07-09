@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 
 /**
  * Class for representing an EMSL relation for creating Cypher queries
@@ -35,7 +36,7 @@ public class NeoRelation {
 		this.varName = varName;
 
 		properties = new ArrayList<>();
-		props.forEach(prop -> addProperty(prop.getType().getName(), NeoUtil.handleValue(prop.getValue())));
+		props.forEach(prop -> addProperty(prop.getType().getName(), EMSLUtil.handleValue(prop.getValue())));
 	}
 
 	/**

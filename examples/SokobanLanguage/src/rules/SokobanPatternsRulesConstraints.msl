@@ -88,17 +88,11 @@ pattern allFieldsInARow {
 	field : Field
 }
 
-pattern allNotBorderFieldsInARow {
+abstract pattern fieldsInARow {
 	b : SokobanLanguage.Board {
-		-fields -> field {
-			.row : 1
-		}
-		-fields -> fieldL {
-			.row : 1
-		}
-		-fields -> fieldR {
-			.row : 1
-		}
+		-fields -> field 
+		-fields -> fieldL 
+		-fields -> fieldR 
 	}
 	field : Field {
 		-right -> fieldR
@@ -111,7 +105,21 @@ pattern allNotBorderFieldsInARow {
 	fieldR : Field
 }
 
-pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
+pattern allNotBorderFieldsInARow -> fieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+		}
+		-fields -> fieldL {
+			.row : 1
+		}
+		-fields -> fieldR {
+			.row : 1
+		}
+	}
+}
+
+pattern allNotBorderFieldsInARowAndCol -> fieldsInARow {
 	b : SokobanLanguage.Board {
 		-fields -> field{
 			.row : 1
@@ -128,11 +136,17 @@ pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
 	}
 }
 
-pattern allNotBorderFieldsInDiffRows -> allNotBorderFieldsInARow {
+pattern allNotBorderFieldsInDiffRows -> fieldsInARow {
 	b : SokobanLanguage.Board {
 		-fields -> field {
-			//.row : 4
+			.row : 4
 			.col : 2
+		}
+		-fields -> fieldL {
+			.row : 1
+		}
+		-fields -> fieldR {
+			.row : 1
 		}
 	}
 }

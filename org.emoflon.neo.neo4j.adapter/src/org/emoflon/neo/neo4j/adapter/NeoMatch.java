@@ -73,13 +73,17 @@ public class NeoMatch implements IMatch {
 		return ids.get(rel.getVarName());
 	}
 
+	public Record getData() {
+		return pattern.getData(this);
+	}
+
 	/**
 	 * Return the correspondong pattern of the match
 	 * 
 	 * @return NeoPattern corresponding to the match
 	 */
 	@Override
-	public IPattern getPattern() {
+	public IPattern<NeoMatch> getPattern() {
 		return pattern;
 	}
 

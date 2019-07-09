@@ -17,9 +17,10 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
-import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
+import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 
 /**
@@ -29,7 +30,7 @@ import org.neo4j.driver.v1.StatementResult;
  * @author Jannik Hinz
  *
  */
-public class NeoPattern implements IPattern {
+public class NeoPattern implements IPattern<NeoMatch> {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	private NeoCoreBuilder builder;
@@ -105,10 +106,7 @@ public class NeoPattern implements IPattern {
 			n.getRelations().forEach(r -> node.addRelation(
 					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(),
 							r.getTarget().getName()),
-					r.getType().getName(), //
-					r.getProperties(), //
-					r.getTarget().getType().getName(), //
-					r.getTarget().getName()));
+					EMSLUtil.handleValue(p.getValue())));
 
 			nodes.add(node);
 		}
@@ -141,8 +139,7 @@ public class NeoPattern implements IPattern {
 	 *         condition matching
 	 */
 	@Override
-	public Collection<IMatch> determineMatches() {
-
+	public Collection<NeoMatch> determineMatches() {
 		// Run a normal pattern matching, if there is no condition
 		if (p.getCondition() == null) {
 			logger.info("Searching matches for Pattern: " + getName());
@@ -161,7 +158,6 @@ public class NeoPattern implements IPattern {
 				logger.debug("NO MATCHES FOUND");
 			}
 			return matches;
-
 		}
 		// Create and Run a Condition Matching, if the pattern has a condition
 		else {
@@ -268,6 +264,21 @@ public class NeoPattern implements IPattern {
 			return false;
 	}
 
+	public Record getData(NeoMatch m) {
+		logger.info("Extract data from " + getName());
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, m, injective);
+		logger.debug(cypherQuery);
+		StatementResult result = builder.executeQuery(cypherQuery);
+
+		// Query is id-based and must be unique
+		var results = result.list();
+		if (results.size() != 1) {
+			throw new IllegalStateException("Unable to extract data from match.\n"
+					+ "There should be only one record but found: " + results.size());
+		}
+		return results.get(0);
+	}
+
 	/**
 	 * Set is the pattern should be injective or not
 	 * 
@@ -279,10 +290,10 @@ public class NeoPattern implements IPattern {
 	}
 
 	@Override
-	public Collection<IMatch> determineMatches(int limit) {
+	public Collection<NeoMatch> determineMatches(int limit) {
 		// TODO[Jannik] Implement this in such a way that neo4j limits the search to
 		// exactly n matches.
-		return null;
+		return determineMatches();
 	}
 	
 	/**

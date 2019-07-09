@@ -4,20 +4,20 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanPatterns extends ENeoTest {
 
-	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder);
+	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 
 	@BeforeEach
 	public void initDB() {
-		initDB(new API_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
+		initDB(new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SokobanSimpleTestField());
 	}
 	
 	@Test
@@ -38,14 +38,14 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_OneSokoban_StillValid() {
 		var p = entities.getPattern_OneSokoban();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 	
 	@Test
 	public void test_OneSokoban_StillValid_AfterChangeSokobanToBlock() {
 		var p = entities.getPattern_OneSokoban();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		
 		builder.executeQueryForSideEffect("MATCH (s:Sokoban) SET s:Block REMOVE s:Sokoban");
 		expectValidMatches(matches, matches.size()-1);
@@ -54,45 +54,45 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_OneBlock() {
 		var p = entities.getPattern_OneBlock();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		assertThat(matches.size(), is(2));
 	}
 
 	@Test
 	public void test_OneBlock_StillValid() {
 		var p = entities.getPattern_OneBlock();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
 	public void test_OneEndField() {
-		assertThat(entities.getPattern_OneEndField().countMatches(), is(2));
+		assertThat(entities.getPattern_OneEndField().matcher().countMatches(), is(2));
 	}
 
 	@Test
 	public void test_OneEndField_StillValid() {
 		var p = entities.getPattern_OneEndField();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
 	public void test_OccupiedField() {
-		assertThat(entities.getPattern_OccupiedField().countMatches(), is(9));
+		assertThat(entities.getPattern_OccupiedField().matcher().countMatches(), is(9));
 	}
 
 	@Test
 	public void test_OccupiedField_StillValid() {
 		var p = entities.getPattern_OccupiedField();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
 	public void test_OccupiedField_StillValid_AfterDeletingBlocks() {
 		var p = entities.getPattern_OccupiedField();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 
 		// removing 2 blocks, valid matches should be 2 less
 		builder.executeQueryForSideEffect("MATCH (b:Block) DETACH DELETE b");
@@ -108,48 +108,48 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_AnOccupiedSokobanField_StillValid() {
 		var p = entities.getPattern_AnOccupiedSokobanField();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
 	public void test_AnOccupiedBlockField() {
-		assertThat(entities.getPattern_AnOccupiedBlockField().countMatches(), is(2));
+		assertThat(entities.getPattern_AnOccupiedBlockField().matcher().countMatches(), is(2));
 	}
 
 	@Test
 	public void test_AnOccupiedBlockField_StillValid() {
 		var p = entities.getPattern_AnOccupiedBlockField();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
 	public void test_AnOccupiedBoulderField() {
-		assertThat(entities.getPattern_AnOccupiedBoulderField().countMatches(), is(8));
+		assertThat(entities.getPattern_AnOccupiedBoulderField().matcher().countMatches(), is(8));
 	}
 
 	@Test
 	public void test_AnOccupiedBoulderField_StillValid() {
 		var p = entities.getPattern_AnOccupiedBoulderField();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 
 	@Test
 	public void test_AllFieldsInARow() {
-		assertThat(entities.getPattern_AllFieldsInARow().countMatches(), is(4));
+		assertThat(entities.getPattern_AllFieldsInARow().matcher().countMatches(), is(4));
 	}
 
 	@Test
 	public void test_AllNotBorderFieldsInARow() {
-		assertThat(entities.getPattern_AllNotBorderFieldsInARow().countMatches(), is(2));
+		assertThat(entities.getPattern_AllNotBorderFieldsInARow().matcher().countMatches(), is(2));
 	}
 
 	@Test
 	public void test_AllNotBorderFieldsInARow_StillValid_AfterDeletingEdges() {
 		var p = entities.getPattern_AllFieldsInARow();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 
 		// Removing all right edges
 		builder.executeQueryForSideEffect("MATCH (f:Field)-[r:right]->(g:Field) DETACH DELETE r");
@@ -163,32 +163,31 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_AllNotBorderFieldsInDiffRows() {
 		expectNoMatch(entities.getPattern_AllNotBorderFieldsInDiffRows());
 	}
 
 	@Test
 	public void test_All3x3Fields() {
-		assertThat(entities.getPattern_All3x3Fields().countMatches(), is(4));
+		assertThat(entities.getPattern_All3x3Fields().matcher().countMatches(), is(4));
 	}
 
 	@Test
 	public void test_All3x3Fields_StillValid() {
 		var p = entities.getPattern_All3x3Fields();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
 	
 	@Test
 	public void test_All2x2Fields() {
-		assertThat(entities.getPattern_All2x2Fields().countMatches(), is(9));
+		assertThat(entities.getPattern_All2x2Fields().matcher().countMatches(), is(9));
 	}
 
 	@Test
 	public void test_All2x2Fields_StillValid() {
 		var p = entities.getPattern_All2x2Fields();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 
 		expectValidMatches(matches, matches.size());
 		builder.executeQueryForSideEffect("MATCH (b:Board) DETACH DELETE b");
@@ -198,7 +197,7 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		var p = entities.getPattern_All3x3Fields();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 
 		// Removing all right and bottom edges of endPos fields
 		builder.executeQueryForSideEffect("MATCH (f:Field {endPos: true, name: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
@@ -209,7 +208,7 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_All3x3Fields_StillValid_AfterChangingTypesOfNodes() {
 		var p = entities.getPattern_All3x3Fields();
-		var matches = p.determineMatches();
+		var matches = p.matcher().determineMatches();
 
 		// removing all right and bottom edges of endPos fields
 		builder.executeQueryForSideEffect("MATCH (f:Field {name: \"f00\"}) SET f:OddLabel REMOVE f:Field");
@@ -219,7 +218,7 @@ public class SokobanPatterns extends ENeoTest {
 
 	@Test
 	public void test_OccupiedNext() {
-		assertThat(entities.getPattern_OccupiedNext().countMatches(), is(9));
+		assertThat(entities.getPattern_OccupiedNext().matcher().countMatches(), is(9));
 	}
 	
 	@Test
@@ -229,12 +228,12 @@ public class SokobanPatterns extends ENeoTest {
 	
 	@Test
 	public void test_BlockNotOnEndFieldInCorner() {
-		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().countMatches(), is(0));
+		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().matcher().countMatches(), is(0));
 	}
 	
 	@Test
 	public void test_ByBlockAndBoulderOccupiedFields() {
-		assertThat(entities.getPattern_ByBlockAndBoulderOccupiedFields().countMatches(), is(14));
+		assertThat(entities.getPattern_ByBlockAndBoulderOccupiedFields().matcher().countMatches(), is(14));
 	}
 	
 	/*

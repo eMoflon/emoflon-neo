@@ -1,0 +1,260 @@
+metamodel Quiltography {
+	Book {
+		.title : EString
+		-authors(1..*)->Author
+		-location(1..1)->Location
+		-classification(1..1)->Classification
+	}	
+	
+	Page {
+		.number : EInt
+		.name : EString
+		-type(1..1)->ContentType
+		-blockPattern(0..1)->BlockPattern
+		-book(1..1)->Book
+	}
+	
+	ContentType {
+		.name : EString
+	}
+	
+	BlockPattern {
+		.name : EString
+	}
+	
+	Location {
+		.name : EString
+	}
+	
+	Author {
+		.name : EString
+		.surname : EString
+	}
+	
+	Classification {
+		.name : EString
+	} 
+}
+
+abstract model GabisQuiltographyBooks {
+	jambalaya:Book {
+		.title : "Jambalaya Quilts"
+		-location->hd1
+		-authors->wright
+		-classification->strips
+	}
+	
+	pillows:Book {
+		.title : "Pillows"
+		-location->hd2
+		-authors->wells
+		-classification->mixed
+	}
+	
+	hd1:Location {
+		.name : "HD-1"
+	}
+	
+	hd2:Location {
+		.name : "HD-2"
+	}
+	
+	wright:Author {
+		.name : "Jean Ann"
+		.surname : "Wright"
+	}
+	
+	wells:Author {
+		.name : "Jean & Valori"
+		.surname : "Wells"
+	}
+	
+	strips:Classification {
+		.name : "Using Strips"
+	}
+	
+	mixed:Classification {
+		.name : "Mixed"
+	}
+}
+
+abstract model GabisQuiltographyTypesAndPatterns {
+	quilt:ContentType {
+		.name : "Quilt"
+	}
+	
+	technique:ContentType {
+		.name : "Technique"
+	}
+	
+	tip:ContentType {
+		.name : "Tip"
+	}
+	
+	sqInASq:BlockPattern {
+		.name : "Square in a square"
+	}
+	
+	weave:BlockPattern {
+		.name : "Weave"
+	}
+	
+	zigzag:BlockPattern {
+		.name : "Zig-Zag"
+	}
+	
+	stripe:BlockPattern {
+		.name : "Stripe with diagonal seam"
+	}
+	
+	star:BlockPattern {
+		.name : "Star"
+	}
+	
+	hexagon:BlockPattern {
+		.name : "Hexagon"
+	}
+	
+	xblocks:BlockPattern {
+		.name : "\"X\" Blocks"
+	}
+	
+	logcabin:BlockPattern {
+		.name : "Log Cabin"
+	}
+	
+	square:BlockPattern {
+		.name : "Square"
+	}
+}
+
+model GabisQuiltographyPages -> GabisQuiltographyBooks, GabisQuiltographyTypesAndPatterns {
+	p1:Page {
+		.number : 6
+		.name : "Baby King Cakes Quilt"
+		-type->quilt
+		-blockPattern->sqInASq
+		-book->jambalaya
+	}
+	
+	p2:Page {
+		.number : 9
+		.name : "Overlapping Seams"
+		-type->technique
+		-book->jambalaya
+	}
+	
+	p3:Page {
+		.number : 10
+		.name : "Streetcars Quilt"
+		-type->quilt
+		-blockPattern->weave
+		-book->jambalaya
+	}
+	
+	p4:Page {
+		.number : 13
+		.name : "Speedy Strip Piecing"
+		-type->technique
+		-book->jambalaya
+	}
+	
+	p5:Page {
+		.number : 13
+		.name : "Rulers"
+		-type->tip
+		-book->jambalaya
+	}
+	
+	p6 : Page {
+		-book -> jambalaya
+		.number : 14
+		-type -> quilt
+		.name : "Bourbon Street Bricks Quilt"
+		-blockPattern -> weave
+	}
+	
+	p7 : Page {
+		-book -> jambalaya
+		.number : 17
+		-type -> technique
+		.name : "Re-Sizing the Quilt"
+	}
+
+	p8 : Page {
+		-book -> jambalaya
+		.number : 18
+		-type -> quilt
+		.name : "The French Quarter Quilt"
+		-blockPattern -> zigzag
+	}
+
+	p9 : Page {
+		-book -> jambalaya
+		.number : 20
+		-type -> quilt
+		.name : "Andouille Quilt"
+		-blockPattern -> stripe
+	}
+
+	p10 : Page {
+		-book -> jambalaya
+		.number : 23
+		-type -> technique
+		.name : "Diagonal Seams"
+	}
+
+	p11 : Page {
+		-book -> jambalaya
+		.number : 24
+		-type -> quilt
+		.name : "Remoulade Stars Quilt"
+		-blockPattern -> star
+	}
+
+	p12 : Page {
+		-book -> jambalaya
+		.number : 28
+		-type -> quilt
+		.name : "Mardi Gras Throws Quilt"
+		-blockPattern -> hexagon
+	}
+
+	p13 : Page {
+		-book -> jambalaya
+		.number : 34
+		-type -> technique
+		.name : "Cutting Hexagons and 60-degree Triangles"
+	}
+
+	p14 : Page {
+		-book -> jambalaya
+		.number : 36
+		-type -> quilt
+		.name : "Beignet Bed Runner"
+		-blockPattern -> xblocks
+	}
+
+	p15 : Page {
+		-book -> jambalaya
+		.number : 39
+		-type -> technique
+		.name : "\"X\" Blocks or Album Blocks"
+	}
+
+	p16 : Page {
+		-book -> jambalaya
+		.number : 40
+		-type -> quilt
+		.name : "Lagniappe Log Cabin Quilt"
+		-blockPattern -> logcabin
+	}
+
+	p17 : Page {
+		-book -> jambalaya
+		.number : 44
+		-type -> quilt
+		.name : "Carnival Confetti Quilt"
+		-blockPattern -> square
+	}	
+}
