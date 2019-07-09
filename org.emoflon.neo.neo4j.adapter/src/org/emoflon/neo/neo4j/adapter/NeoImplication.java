@@ -45,10 +45,13 @@ public class NeoImplication implements IIfElseConstraint {
 		this.apIf = apIf;
 		this.apThen = apThen;
 		this.name = "IF " + apIf.getName() + " THEN " + apThen.getName();
-		nodesIf = new ArrayList<>();
-		nodesThen = new ArrayList<>();
 		this.injective = injective;
-		extractNodesAndRelations();
+
+		// Extracts all necessary information data from the Atomic Pattern
+		this.nodesIf = new ArrayList<>();
+		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());
+		this.nodesThen = new ArrayList<>();
+		this.nodesThen = this.helper.extractNodesAndRelations(apThen.getNodeBlocks());
 	}
 
 	/**
@@ -76,53 +79,6 @@ public class NeoImplication implements IIfElseConstraint {
 	 */
 	public AtomicPattern getThenPattern() {
 		return apThen;
-	}
-
-	/**
-	 * Creates and extracts all necessary information data from the If and Then
-	 * Atomic Patterns. Create new NeoNode for any AtomicPattern node and
-	 * corresponding add Relations and Properties and save them to the node in an
-	 * node list.
-	 */
-	private void extractNodesAndRelations() {
-
-		// extract information from If-Clause (all nodes, properties and relations)
-		for (var n : apIf.getNodeBlocks()) {
-
-			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
-
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					NeoUtil.handleValue(p.getValue())));
-
-			n.getRelations().forEach(r -> node.addRelation(
-					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(),
-							r.getTarget().getName()),
-					r.getType().getName(), //
-					r.getProperties(), //
-					r.getTarget().getType().getName(), //
-					helper.newPatternNode(r.getTarget().getName())));
-
-			nodesIf.add(node);
-		}
-		// extract information from Then-Clause (all nodes, properties and relations)
-		for (var n : apThen.getNodeBlocks()) {
-
-			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName()));
-
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					NeoUtil.handleValue(p.getValue())));
-
-			n.getRelations().forEach(r -> node.addRelation(
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(),
-							r.getTarget().getName()),
-					r.getType().getName(), //
-					r.getProperties(), //
-					r.getTarget().getType().getName(), //
-					helper.newConstraintNode(r.getTarget().getName())));
-			nodesThen.add(node);
-		}
 	}
 
 	/**

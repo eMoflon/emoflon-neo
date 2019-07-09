@@ -77,7 +77,6 @@ public class NeoNode {
 		this.properties.add(new NeoProperty(name, value));
 	}
 
-	// TODO [Jannik] Change params such that the relation is created here
 	public void addRelation(String varName, String relType, List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
 		this.relations.add(new NeoRelation(this, varName, relType, props, toNodeLabel, toNodeVar));
 	}

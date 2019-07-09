@@ -41,9 +41,11 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		this.helper = helper;
 		this.name = ap.getName();
 		this.ap = ap;
-		this.nodes = new ArrayList<>();
 		this.injective = injective;
-		extractNodesAndRelations();
+		
+		// Extracts all necessary information data from the Atomic Pattern
+		this.nodes = new ArrayList<>();
+		this.nodes = this.helper.extractNodesAndRelations(ap.getNodeBlocks());
 	}
 
 	/**
@@ -62,34 +64,6 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	 */
 	public AtomicPattern getPattern() {
 		return ap;
-	}
-
-	/**
-	 * TODO [Jannik] Auslagern in die Helper Klasse Creates and extracts all
-	 * necessary information data from the Atomic Pattern. Create new NeoNode for
-	 * any AtomicPattern node and corresponding add Relations and Properties and
-	 * save them to the node in an node list.
-	 */
-	private void extractNodesAndRelations() {
-
-		for (var n : ap.getNodeBlocks()) {
-
-			var node = new NeoNode(n.getType().getName(), helper.newConstraintNode(n.getName()));
-
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					NeoUtil.handleValue(p.getValue())));
-
-			n.getRelations().forEach(r -> node.addRelation(
-					helper.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(),
-							r.getTarget().getName()),
-					r.getType().getName(), //
-					r.getProperties(), //
-					r.getTarget().getType().getName(), //
-					helper.newConstraintNode(r.getTarget().getName())));
-
-			nodes.add(node);
-		}
 	}
 
 	/**

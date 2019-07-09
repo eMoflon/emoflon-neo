@@ -2,7 +2,11 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 
 /**
  * Helper class for managing nodes, relations and their unique names in queries.
@@ -147,6 +151,42 @@ public class NeoHelper {
 			list.add(node);
 		}
 		return list;
+	}
+
+	/**
+	 * Creates and extracts all necessary information data from the Atomic Pattern.
+	 * Create new NeoNode for any AtomicPattern node and corresponding add Relations
+	 * and Properties and save them to the node in an node list.
+	 * 
+	 * @param mnb Collection of all nodes of a AtomicPattern
+	 * @return NeoNode ArrayList of all Nodes and their Relation and Properties of
+	 *         the AtomicPattern
+	 */
+	public List<NeoNode> extractNodesAndRelations(EList<ModelNodeBlock> mnb) {
+
+		List<NeoNode> tempNodes = new ArrayList<NeoNode>();
+
+		for (var n : mnb) {
+
+			var node = new NeoNode(n.getType().getName(), this.newConstraintNode(n.getName()));
+
+			n.getProperties().forEach(p -> node.addProperty(//
+					p.getType().getName(), //
+					NeoUtil.handleValue(p.getValue())));
+
+			n.getRelations()
+					.forEach(r -> node.addRelation(
+							this.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
+									r.getType().getName(), r.getTarget().getName()),
+							r.getType().getName(), //
+							r.getProperties(), //
+							r.getTarget().getType().getName(), //
+							this.newConstraintNode(r.getTarget().getName())));
+
+			tempNodes.add(node);
+		}
+
+		return tempNodes;
 	}
 
 }
