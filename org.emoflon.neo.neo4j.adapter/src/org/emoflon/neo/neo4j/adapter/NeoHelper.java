@@ -68,11 +68,10 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newPatternRelation(String name, int index, String relVar, String toName) {
+		logger.info(EMSLUtil.relationNameConvention(name, relVar, toName, index));
 
-		logger.info(name + "_" + index + "_" + relVar + "_" + toName);
-
-		matchNodes.add(name + "_" + index + "_" + relVar + "_" + toName);
-		return name + "_" + index + "_" + relVar + "_" + toName;
+		matchNodes.add(EMSLUtil.relationNameConvention(name, relVar, toName, index));
+		return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 	}
 
 	/**
@@ -105,11 +104,11 @@ public class NeoHelper {
 	 */
 	public String newConstraintReference(String name, int index, String relVar, String toName) {
 
-		if (matchNodes.contains(name + "_" + index + "_" + relVar + "_" + toName)) {
-			return name + "_" + index + "_" + relVar + "_" + toName;
+		if (matchNodes.contains(EMSLUtil.relationNameConvention(name, relVar, toName, index))) {
+			return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 		} else {
-			optionalNodes.add(name + "_" + index + "_" + relVar + "_" + toName + "_" + cCount);
-			return name + "_" + index + "_" + relVar + "_" + toName + "_" + cCount;
+			optionalNodes.add(EMSLUtil.relationNameConvention(name, relVar, toName, index) + "_" + cCount);
+			return EMSLUtil.relationNameConvention(name, relVar, toName, index) + "_" + cCount;
 		}
 	}
 
