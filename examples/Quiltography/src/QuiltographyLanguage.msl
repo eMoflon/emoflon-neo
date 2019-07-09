@@ -98,6 +98,34 @@ abstract model GabisQuiltographyTypesAndPatterns {
 	weave:BlockPattern {
 		.name : "Weave"
 	}
+	
+	zigzag:BlockPattern {
+		.name : "Zig-Zag"
+	}
+	
+	stripe:BlockPattern {
+		.name : "Stripe with diagonal seam"
+	}
+	
+	star:BlockPattern {
+		.name : "Star"
+	}
+	
+	hexagon:BlockPattern {
+		.name : "Hexagon"
+	}
+	
+	xblocks:BlockPattern {
+		.name : "\"X\" Blocks"
+	}
+	
+	logcabin:BlockPattern {
+		.name : "Log Cabin"
+	}
+	
+	square:BlockPattern {
+		.name : "Square"
+	}
 }
 
 model GabisQuiltographyPages -> GabisQuiltographyBooks, GabisQuiltographyTypesAndPatterns {
@@ -145,4 +173,88 @@ model GabisQuiltographyPages -> GabisQuiltographyBooks, GabisQuiltographyTypesAn
 		.name : "Bourbon Street Bricks Quilt"
 		-blockPattern -> weave
 	}
+	
+	p7 : Page {
+		-book -> jambalaya
+		.number : 17
+		-type -> technique
+		.name : "Re-Sizing the Quilt"
+	}
+
+	p8 : Page {
+		-book -> jambalaya
+		.number : 18
+		-type -> quilt
+		.name : "The French Quarter Quilt"
+		-blockPattern -> zigzag
+	}
+
+	p9 : Page {
+		-book -> jambalaya
+		.number : 20
+		-type -> quilt
+		.name : "Andouille Quilt"
+		-blockPattern -> stripe
+	}
+
+	p10 : Page {
+		-book -> jambalaya
+		.number : 23
+		-type -> technique
+		.name : "Diagonal Seams"
+	}
+
+	p11 : Page {
+		-book -> jambalaya
+		.number : 24
+		-type -> quilt
+		.name : "Remoulade Stars Quilt"
+		-blockPattern -> star
+	}
+
+	p12 : Page {
+		-book -> jambalaya
+		.number : 28
+		-type -> quilt
+		.name : "Mardi Gras Throws Quilt"
+		-blockPattern -> hexagon
+	}
+
+	p13 : Page {
+		-book -> jambalaya
+		.number : 34
+		-type -> technique
+		.name : "Cutting Hexagons and 60-degree Triangles"
+	}
+
+	p14 : Page {
+		-book -> jambalaya
+		.number : 36
+		-type -> quilt
+		.name : "Beignet Bed Runner"
+		-blockPattern -> xblocks
+	}
+
+	p15 : Page {
+		-book -> jambalaya
+		.number : 39
+		-type -> technique
+		.name : "\"X\" Blocks or Album Blocks"
+	}
+
+	p16 : Page {
+		-book -> jambalaya
+		.number : 40
+		-type -> quilt
+		.name : "Lagniappe Log Cabin Quilt"
+		-blockPattern -> logcabin
+	}
+
+	p17 : Page {
+		-book -> jambalaya
+		.number : 44
+		-type -> quilt
+		.name : "Carnival Confetti Quilt"
+		-blockPattern -> square
+	}	
 }
