@@ -171,22 +171,22 @@ class CypherPatternBuilder {
 	 * Basic Condition Functions
 	 ****************************/
 	 
-	 def static String whereNegativeConstraintQuery(int id) {
-	 	'''m_«id» = 0'''
-	 }
 	 def static String wherePositiveConstraintQuery(int id) {
 	 	'''m_«id» > 0'''
+	 }
+	 def static String whereNegativeConstraintQuery(int id) {
+	 	'''m_«id» = 0'''
 	 }
 	 def static String whereImplicationConstraintQuery(int id) {
 	 	'''(m_«id-1» = m_«id»)'''
 	 }
-	 def static String whereNegativeConditionQuery(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes SEPARATOR ' OR '»«n.varName» IS NULL«FOR r:n.relations BEFORE ' OR ' SEPARATOR ' OR '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
-	 }
+	 
 	 def static String wherePositiveConditionQuery(Collection<NeoNode> nodes) {
 	 	'''«FOR n:nodes SEPARATOR ' AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE ' AND ' SEPARATOR ' AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
 	 }
-	 
+	 def static String whereNegativeConditionQuery(Collection<NeoNode> nodes) {
+	 	'''«FOR n:nodes SEPARATOR ' OR '»«n.varName» IS NULL«FOR r:n.relations BEFORE ' OR ' SEPARATOR ' OR '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
+	 }
 	 
 	 def static String withCountQuery(Collection<NeoNode> nodes, int id) {
 	 	
@@ -196,18 +196,7 @@ class CypherPatternBuilder {
 			ret += "m_" + i + ", "
 		}
 
-		'''WITH «ret»count(«nodes.get(0).varName») as m_«id»'''
+		'''WITH «ret» count(«nodes.get(0).varName») as m_«id»'''
 	 }
-	 def static String withCountQueryImplication(Collection<NeoNode> nodes, int id) {
-	 	
-		'''«withCountQuery(nodes,id)»«FOR n:nodes BEFORE ", " SEPARATOR ", "»«n.varName»«IF n.relations.size > 0»«FOR r:n.relations BEFORE ", " SEPARATOR ", "»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
-	 }
-	 def static String withQueryImplication(Collection<NeoNode> nodes, Collection<NeoNode> nodes2) {
-	 	
-		'''WITH«FOR n:nodes SEPARATOR ", "»«n.varName»«IF n.relations.size > 0»«FOR r:n.relations BEFORE ", " SEPARATOR ", "»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
-	 }
-	 
-	 def static String returnConstraintQuery(Collection<String> nodes) {
-	 	'''RETURN «FOR n:nodes SEPARATOR ', '»id(«n») AS «n»«ENDFOR»'''
-	 }
+
 }
