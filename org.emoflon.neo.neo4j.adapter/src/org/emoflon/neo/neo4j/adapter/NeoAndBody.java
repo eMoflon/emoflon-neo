@@ -22,7 +22,9 @@ public class NeoAndBody {
 
 	/**
 	 * @param body    of the current AndBody
-	 * @param builder for creating and running cypher queries
+	 * @param builder for creating and running Cypher queries
+	 * @param helper  for creating nodes and relation with a unique name and central
+	 *                node storage
 	 */
 	public NeoAndBody(AndBody body, NeoCoreBuilder builder, NeoHelper helper) {
 
@@ -35,7 +37,7 @@ public class NeoAndBody {
 	 * Calculates and creates the nested constraints and conditions an return if
 	 * they satisfy or not
 	 * 
-	 * @return boolean true iff the complete nested Body and referenced conditions
+	 * @return boolean true iff the complete nested Body and referenced constraints
 	 *         satisfy or false if not
 	 */
 	public boolean isSatisfied() {

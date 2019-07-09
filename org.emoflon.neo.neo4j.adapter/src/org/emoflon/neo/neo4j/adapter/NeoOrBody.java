@@ -3,9 +3,12 @@ package org.emoflon.neo.neo4j.adapter;
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 
-/*
+/**
  * Class for creating nested AndBodies used in NeoConstraints or NeoConditions
  * for proofing if a constraint or condition is satisfied
+ * 
+ * @author Jannik Hinz
+ *
  */
 public class NeoOrBody {
 
@@ -13,9 +16,11 @@ public class NeoOrBody {
 	private NeoCoreBuilder builder;
 	private NeoHelper helper;
 
-	/*
-	 * @param body of the current OrBody
+	/**
+	 * @param body    of the current OrBody
 	 * @param builder for creating and running Cypher queries
+	 * @param helper  for creating nodes and relation with a unique name and central
+	 *                node storage
 	 */
 	public NeoOrBody(OrBody body, NeoCoreBuilder builder, NeoHelper helper) {
 
@@ -25,12 +30,12 @@ public class NeoOrBody {
 
 	}
 
-	/*
-	 * Calculates and creates the nested AND constraints bodies and conditions an
-	 * return if they satisfy or not
+	/**
+	 * Calculates and creates the nested constraints and conditions an return if
+	 * they satisfy or not
 	 * 
-	 * @return boolean true iff the complete nested AND Body and their child satisfy
-	 * or false if not
+	 * @return boolean true iff the complete nested Body and referenced constraints
+	 *         satisfy or false if not
 	 */
 	public boolean isSatisfied() {
 
@@ -47,10 +52,10 @@ public class NeoOrBody {
 
 	}
 
-	/*
-	 * Returns a NeoNode Collection of all nodes in the nested constraint or body
+	/**
+	 * Returns a NeoReturn Object with data and nodes in the nested And-Bodies
 	 * 
-	 * @return NeoNode Collection of all nodes in the nested constraint or body
+	 * @return NeoReturn Object with data and nodes in the nested And-Bodies
 	 */
 	public NeoReturn getConstraintData() {
 
@@ -74,7 +79,12 @@ public class NeoOrBody {
 		return returnStmt;
 
 	}
-	
+
+	/**
+	 * Returns a NeoReturn Object with data and nodes in the nested And-Bodies
+	 * 
+	 * @return NeoReturn Object with data and nodes in the nested And-Bodies
+	 */
 	public NeoReturn getConditionData() {
 
 		NeoReturn returnStmt = new NeoReturn();

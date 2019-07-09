@@ -75,7 +75,7 @@ public class NeoConstraint implements IConstraint {
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap, builder, injective, helper);
+			var co = new NeoPositiveConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
@@ -83,7 +83,7 @@ public class NeoConstraint implements IConstraint {
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap, builder, injective, helper);
+			var co = new NeoNegativeConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
@@ -117,7 +117,7 @@ public class NeoConstraint implements IConstraint {
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoPositiveConstraint(ap, builder, injective, helper);
+			var co = new NeoPositiveConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
@@ -125,7 +125,7 @@ public class NeoConstraint implements IConstraint {
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var co = new NeoNegativeConstraint(ap, builder, injective, helper);
+			var co = new NeoNegativeConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
@@ -159,7 +159,7 @@ public class NeoConstraint implements IConstraint {
 		if (c.getBody() instanceof Implication) {
 			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
 			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
-			var co = new NeoImplication(apIf, apThen, builder, injective, helper);
+			var co = new NeoImplication(apIf, apThen, injective, builder, helper);
 
 			return co.isSatisfied();
 
