@@ -39,9 +39,4 @@ public class NeoProperty {
 		return value;
 	}
 
-	@Override
-	public String toString() {
-		return CypherPatternBuilder.cypherProperty(name, value);
-	}
-
 }

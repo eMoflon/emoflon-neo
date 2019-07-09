@@ -54,7 +54,7 @@ public class NeoCondition {
 		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes()) 
 				+ CypherPatternBuilder.withQuery(p.getNodes())
 				+ condData.getOptionalMatchString() 
-				+ CypherPatternBuilder.withConstraintQuery(helper.getNodes());
+				+ CypherPatternBuilder.constraint_withQuery(helper.getNodes());
 
 		if (p.isNegated())
 			cypherQuery += "\nWHERE NOT(" + condData.getWhereClause() + ")";

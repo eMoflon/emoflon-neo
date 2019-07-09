@@ -81,8 +81,4 @@ public class NeoNode {
 		this.relations.add(new NeoRelation(this, varName, relType, props, toNodeLabel, toNodeVar));
 	}
 
-	@Override
-	public String toString() {
-		return CypherPatternBuilder.cypherNode(varName, classType, properties);
-	}
 }

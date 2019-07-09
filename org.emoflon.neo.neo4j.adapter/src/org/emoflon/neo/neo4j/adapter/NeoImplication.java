@@ -107,7 +107,6 @@ public class NeoImplication implements IIfElseConstraint {
 	public Collection<NeoNode> getNodes() {
 		var list = nodesIf;
 		nodesThen.forEach(elem -> list.add(elem));
-		;
 		return list;
 	}
 

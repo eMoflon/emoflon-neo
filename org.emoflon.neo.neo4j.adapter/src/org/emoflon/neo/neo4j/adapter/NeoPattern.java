@@ -179,9 +179,9 @@ public class NeoPattern implements IPattern {
 						+ CypherPatternBuilder.whereQuery(nodes,injective) + "\n" 
 						+ CypherPatternBuilder.withQuery(nodes)
 						+ ((NeoPositiveConstraint) cond).getQueryString_MatchCondition()
-						+ CypherPatternBuilder.withConstraintQuery(helper.getNodes()) + "\nWHERE "
+						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
 						+ ((NeoPositiveConstraint) cond).getQueryString_WhereConditon() + "\n"
-						+ CypherPatternBuilder.withConstraintQuery(helper.getNodes()) + "\n"
+						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
 						+ CypherPatternBuilder.returnQuery(nodes);
 
 				logger.debug(cypherQuery);
@@ -209,9 +209,9 @@ public class NeoPattern implements IPattern {
 						+ CypherPatternBuilder.whereQuery(nodes,injective) + "\n" 
 						+ CypherPatternBuilder.withQuery(nodes)
 						+ ((NeoNegativeConstraint) cond).getQueryString_MatchCondition()
-						+ CypherPatternBuilder.withConstraintQuery(helper.getNodes()) + "\nWHERE "
+						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
 						+ ((NeoNegativeConstraint) cond).getQueryString_WhereConditon() + "\n"
-						+ CypherPatternBuilder.withConstraintQuery(helper.getNodes()) + "\n"
+						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
 						+ CypherPatternBuilder.returnQuery(nodes);
 
 				logger.debug(cypherQuery);

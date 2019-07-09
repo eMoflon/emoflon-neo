@@ -20,6 +20,10 @@ class CypherPatternBuilder {
 		'''(«r.toNodeVar»:«r.toNodeLabel»)'''
 	}
 
+	def static String properties(Collection<NeoProperty> props) {
+		'''«IF props.size > 0»«FOR p:props BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»'''
+	}
+	
 	protected def static CharSequence queryNode(NeoNode n) '''
 	(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
 	 
@@ -128,6 +132,7 @@ class CypherPatternBuilder {
 		'''RETURN TRUE'''
 	}
 	
+	
 	/*****************************
 	 * Basic Constraint Functions
 	 ****************************/
@@ -136,18 +141,13 @@ class CypherPatternBuilder {
 		'''WITH «FOR n : nodes SEPARATOR ', '»«n.varName»«IF n.relations.size > 0»«FOR r: n.relations BEFORE ', ' SEPARATOR ', '»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
 	}
 	
-	
-	/*****************************
-	 * If/Then Constraint Functions
-	 ****************************/
-	
 	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap,
 		boolean injective) {
 		'''
 		«constraint_ifThen_matchQuery(nodes,nodes2,injective)»
-		«withConstraintQuery(nodesMap)»
-		WHERE «whereNegativeConditionQuery(nodes2)»
-		«returnQuery(nodes,nodes2,nodesMap)»'''
+		«constraint_withQuery(nodesMap)»
+		WHERE «whereNegativeConditionQuery(nodes2)» // <<<<<<<<<<<<<<<<<<
+		«constraint_returnQuery(nodesMap)»'''
 	}
 	
 	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, boolean injective) {
@@ -159,75 +159,17 @@ class CypherPatternBuilder {
 		'''
 	}
 	
-	
-	
-
-	def static String withQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<NeoNode> nodesMap) {
-		'''WITH «FOR n : nodesMap SEPARATOR ', '»«n.varName»«ENDFOR»
-		WHERE «FOR n : nodesMap SEPARATOR 'OR '»«n.varName» IS NULL «ENDFOR»'''
+	def static String constraint_withQuery(Collection<String> nodes) {
+	 	''' WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
 	}
-	
-	def static String whereQueryConstraint(Collection<NeoNode> nodes) {
-		'''WHERE «FOR n : nodes SEPARATOR 'AND '»«n.varName» IS NOT NULL «IF n.relations.size > 0»«FOR r:n.relations BEFORE 'AND ' SEPARATOR 'AND '»«r.varName» IS NOT NULL «ENDFOR»«ENDIF»«ENDFOR»'''
+	def static String constraint_returnQuery(Collection<String> nodes) {
+		''' RETURN «FOR n : nodes SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
 	}
 
 
-
-
-
-	
-	def static String injectivityBlockCond(Collection<NeoNode> nodes) {
-		var String ret = ''
-
-		for (var i = 0; i < nodes.size; i++) {
-			for (var j = i + 1; j < nodes.size; j++) {
-				if (nodes.get(i).classType == nodes.get(j).classType) {
-					ret += ''' AND (NOT id(«nodes.get(i).varName») = id(«nodes.get(j).varName») OR «nodes.get(i).varName» IS NULL OR «nodes.get(j).varName» IS NULL) '''
-				}
-			}
-		}
-
-		'''«ret»'''
-	}
-	
-	def static String ifThenConstraintWithWhere(Collection<String> with, Collection<String> where, Collection<String> nodes) {
-		'''
-WITH «FOR w:with SEPARATOR ", "»«w»«ENDFOR»«FOR n:nodes BEFORE ", " SEPARATOR ", " »«n»«ENDFOR»
-WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
-	}
-
-
-
-	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap) {
-		'''RETURN «FOR n : nodesMap SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
-	}
-
-
-
-	def static String properties(Collection<NeoProperty> props) {
-		'''«IF props.size > 0»«FOR p:props BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»'''
-	}
-
-	def static String cypherNode(String varName, String classType, Collection<NeoProperty> properties) {
-		'''(«varName»:«classType»«IF properties.size > 0» «cypherProperties(properties)»«ENDIF»)'''
-	}
-
-	def static String cypherCondition(String name, String op, Boolean opNeg, String value, String classVarName) {
-		'''«IF opNeg»NOT «ENDIF»«classVarName».«name» «op» «value»'''
-	}
-
-	def static String cypherProperties(Collection<NeoProperty> properties) {
-		'''«IF properties.size > 0»«FOR p:properties BEFORE'{' SEPARATOR', ' AFTER '}'»«p.toString»«ENDFOR»«ENDIF»'''
-	}
-
-	def static String cypherProperty(String name, String value) {
-		'''«name»: «value»'''
-	}
-	
-	
-	/*
-	 * Conditions
-	 */
+	/*****************************
+	 * Basic Condition Functions
+	 ****************************/
 	 
 	 def static String whereNegativeConstraintQuery(int id) {
 	 	'''m_«id» = 0'''
@@ -245,10 +187,6 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 	 	'''«FOR n:nodes SEPARATOR ' AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE ' AND ' SEPARATOR ' AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
 	 }
 	 
-	 def static String withConstraintQuery(Collection<String> nodes) {
-	 	'''
-WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
-	 }
 	 
 	 def static String withCountQuery(Collection<NeoNode> nodes, int id) {
 	 	
