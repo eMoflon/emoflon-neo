@@ -199,10 +199,10 @@ class EMSLGenerator extends AbstractGenerator {
 				«ENDFOR»
 			
 				public «relName.toFirstUpper»Rel(Value «relName») {
-				«FOR prop : rel.type.properties»
+					«FOR prop : rel.type.properties»
 					if(!«relName».get("«prop.name»").isNull())
 						this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
-				«ENDFOR»
+					«ENDFOR»
 				}
 			}
 		'''
