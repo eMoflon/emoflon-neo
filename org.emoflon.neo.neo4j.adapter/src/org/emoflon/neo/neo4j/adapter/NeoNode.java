@@ -2,6 +2,9 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
 /**
  * Class for representing an EMSL node for creating Cypher queries
@@ -75,8 +78,8 @@ public class NeoNode {
 	}
 
 	// TODO [Jannik] Change params such that the relation is created here
-	public void addRelation(NeoRelation rel) {
-		this.relations.add(rel);
+	public void addRelation(String varName, String relType, List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
+		this.relations.add(new NeoRelation(this, varName, relType, props, toNodeLabel, toNodeVar));
 	}
 
 	@Override

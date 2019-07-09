@@ -97,14 +97,13 @@ public class NeoPattern implements IPattern {
 					p.getType().getName(), //
 					NeoUtil.handleValue(p.getValue())));
 
-			n.getRelations().forEach(r -> node.addRelation(new NeoRelation(//
-					node, //
+			n.getRelations().forEach(r -> node.addRelation(
 					helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r), r.getType().getName(),
 							r.getTarget().getName()),
 					r.getType().getName(), //
 					r.getProperties(), //
 					r.getTarget().getType().getName(), //
-					r.getTarget().getName())));
+					r.getTarget().getName()));
 
 			nodes.add(node);
 		}
