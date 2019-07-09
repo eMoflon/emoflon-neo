@@ -21,7 +21,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
-	public void test_Condition() {
+	public void test_ifSokobanThenSelectedFigure() {
 		assertTrue(entities.getConstraint_SokobanIsSelectedFigure().isSatisfied());
 	}
 
@@ -229,7 +229,7 @@ public class SokobanPatterns extends ENeoTest {
 	
 	@Test
 	public void test_BlockNotOnEndFieldInCorner() {
-		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().countMatches(), is(2));
+		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().countMatches(), is(0));
 	}
 	
 	@Test
@@ -250,12 +250,24 @@ public class SokobanPatterns extends ENeoTest {
 	public void test_constraint_hasTopLeftCorner() {
 		assertTrue(entities.getConstraint_TopLeftCorner().isViolated());
 	}
+	@Test
+	public void test_constraint_hasTopRightCorner() {
+		assertTrue(entities.getConstraint_TopRightCorner().isViolated());
+	}
+	@Test
+	public void test_constraint_hasBottomLeftCorner() {
+		assertTrue(entities.getConstraint_BottomLeftCorner().isViolated());
+	}
+	@Test
+	public void test_constraint_hasBottomRightCorner() {
+		assertTrue(entities.getConstraint_BottomRightCorner().isViolated());
+	}
 	
 	@Test
 	public void test_constraint_hasNoCorner() {
 		assertTrue(entities.getConstraint_NoCorner().isViolated());
 	}
-		
+	
 	@Test
 	public void test_hasOneSokoban() {
 		assertTrue(entities.getConstraint_HasOneSokoban().isSatisfied());
@@ -264,6 +276,45 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_allConstraintTypesAtOnes() {
 		assertTrue(entities.getConstraint_ExtremeConstraint().isSatisfied());
+	}
+	
+	@Test
+	public void test_allConstraintIfTwoThenTwoConn() {
+		assertTrue(entities.getConstraint_IfTwoThenConn().isViolated());
+	}
+	@Test
+	public void test_allConstraintIfTHasBottomThenHasRight() {
+		assertTrue(entities.getConstraint_IfBottomThenRight().isViolated());
+	}
+	
+	@Test
+	public void test_ConditionHasField() {
+		assertThat(entities.getPattern_OneField().countMatches(), is(9));
+	}
+	@Test
+	public void test_ConditionHasFieldNeg() {
+		assertThat(entities.getPattern_OneFieldNeg().countMatches(), is(7));
+	}
+	@Test
+	public void test_ConditionHasFieldEnforceTwo() {
+		assertThat(entities.getPattern_OneFieldEnforceTwo().countMatches(), is(12));
+	}
+	@Test
+	public void test_ConditionHasFieldForbidFwo() {
+		assertThat(entities.getPattern_OneFieldForbidTwo().countMatches(), is(4));
+	}
+	@Test
+	public void test_ConditionHasOneFieldHasBottomAndRight() {
+		assertThat(entities.getPattern_OneFieldHasBottomAndRight().countMatches(), is(9));
+	}
+	@Test
+	public void test_ConditionHasOneFieldHasNoBottomOrNoRight() {
+		assertThat(entities.getPattern_OneFieldHasNoBottomOrNoRight().countMatches(), is(7));
+	}
+	
+	@Test
+	public void test_constraint_SokobanHasFieldThenBlockHasField() {
+		assertTrue(entities.getConstraint_SokOnFieldThenBlockOnField().isViolated());
 	}
 
 }

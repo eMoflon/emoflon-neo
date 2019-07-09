@@ -1,60 +1,81 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import org.emoflon.neo.emsl.eMSL.ConditionOperator;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.apache.log4j.Logger;
+import org.emoflon.neo.engine.api.rules.IMatch;
+
+/**
+ * Class created, when a pattern has a condition. Runs relevant pattern and
+ * constraint matching checks
+ * 
+ * @author Jannik Hinz
+ *
+ */
 public class NeoCondition {
 
-	private String name;
-	private String op;
-	private boolean opNeg;
-	private String value;
+	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	private NeoCoreBuilder builder;
+	private NeoHelper helper;
+	private NeoConstraint c;
+	private NeoPattern p;
 
-	private String classVarName;
-
-	public NeoCondition(String name, ConditionOperator op, String value, String classVarName) {
-
-		/*
-		this.classVarName = classVarName;
-
-		this.name = name;
-		this.value = value;
-		this.opNeg = false;
-		convertOp(op);
-		*/
+	/**
+	 * @param c       NeoConstraing the extracted constraint in the pattern p
+	 * @param p       NeoPattern the pattern with the constraint c
+	 * @param name    of the pattern
+	 * @param builder for creating and running Cypher queries
+	 * @param helper  for creating nodes and relation with a unique name and central
+	 *                node storage
+	 */
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder, NeoHelper helper) {
+		this.builder = builder;
+		this.helper = helper;
+		this.c = c;
+		this.p = p;
 	}
 
-	@Override
-	public String toString() {
-		return ""; 
-		//CypherPatternBuilder.cypherCondition(name, op, opNeg, value, classVarName);
-	}
+	/**
+	 * Get the data and nodes from the (nested) conditions and runs the query in the
+	 * database, analyze the results and return the matches
+	 * 
+	 * @return Collection<IMatch> return a list of all Matches of the pattern with
+	 *         condition matching
+	 */
+	public Collection<IMatch> determineMatches() {
 
-	private void convertOp(ConditionOperator opcode) {
-		/*
-		switch (opcode) {
-		case EQ:
-			this.op = "=";
-			break;
-		case GREATER:
-			this.op = ">";
-			break;
-		case GREATEREQ:
-			this.op = ">=";
-			break;
-		case LESS:
-			this.op = "<";
-			break;
-		case LESSEQ:
-			this.op = "<=";
-			break;
-		case NOTEQ:
-			this.op = "=";
-			this.opNeg = true;
-			break;
-		default:
-			throw new IllegalArgumentException("Unknown condition operator: " + opcode);
+		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
+
+		// collecting the data
+		var condData = c.getConditionData();
+
+		// creating the query string
+		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes()) 
+				+ CypherPatternBuilder.withQuery(p.getNodes())
+				+ condData.getOptionalMatchString() 
+				+ CypherPatternBuilder.constraint_withQuery(helper.getNodes());
+
+		if (p.isNegated())
+			cypherQuery += "\nWHERE NOT(" + condData.getWhereClause() + ")";
+		else
+			cypherQuery += "\nWHERE " + condData.getWhereClause();
+
+		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());
+
+		logger.debug(cypherQuery);
+
+		// run the query
+		var result = builder.executeQuery(cypherQuery);
+
+		// analyze and return results
+		var matches = new ArrayList<IMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			matches.add(new NeoMatch(p, record));
 		}
-	*/
+
+		return matches;
 	}
 
 }

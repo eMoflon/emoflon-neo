@@ -1,34 +1,34 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Record;
 
 /**
- * Class for storing a match of a pattern matching created after a query
- * execution
+ * Class for storing a match or violation match of constraints, created after a
+ * query execution
  * 
  * @author Jannik Hinz
  *
  */
-public class NeoMatch implements IMatch {
+public class NeoConstraintMatch implements IMatch {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	private NeoPattern pattern;
+	private Collection<NeoNode> pNodes;
 	private Map<String, Long> ids;
 
 	/**
-	 * @param pattern the corresponding pattern to the match
-	 * @param record  one result record of the query execution
+	 * @param pNodes list of all Nodes including relations of the constraint
+	 * @param record one result record of the query execution
 	 */
-	public NeoMatch(NeoPattern pattern, Record record) {
-		this.pattern = pattern;
+	public NeoConstraintMatch(Collection<NeoNode> pNodes, Record record) {
+		this.pNodes = pNodes;
 
-		ids = new HashMap<>();
+		ids = new HashMap<String, Long>();
 		extractIds(record);
 	}
 
@@ -41,7 +41,7 @@ public class NeoMatch implements IMatch {
 	private void extractIds(Record record) {
 		var recMap = record.asMap();
 
-		for (var n : pattern.getNodes()) {
+		for (var n : pNodes) {
 			if (recMap.containsKey(n.getVarName()))
 				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
 
@@ -59,8 +59,8 @@ public class NeoMatch implements IMatch {
 	 * 
 	 * @return list of ID in regards to the variable name of matched nodes
 	 */
-	public long getIdForNode(NeoNode node) {
-		return ids.get(node.getVarName());
+	public Map<String, Long> getResults() {
+		return ids;
 	}
 
 	/**
@@ -69,29 +69,35 @@ public class NeoMatch implements IMatch {
 	 * @param node NeoNode define the node name search for in the ID HashMap
 	 * @return id of the NeoNode in the Result
 	 */
+	public long getIdForNode(NeoNode node) {
+		return ids.get(node.getVarName());
+	}
+
+	/**
+	 * Return the ID of a specific relation in regards to the given relation
+	 * variable name
+	 * 
+	 * @param rel NeoRelation define the relation name search for in the ID HashMap
+	 * @return id of the NeoRelation in the Result
+	 */
 	public long getIdForRelation(NeoRelation rel) {
 		return ids.get(rel.getVarName());
 	}
 
 	/**
-	 * Return the correspondong pattern of the match
-	 * 
-	 * @return NeoPattern corresponding to the match
+	 * @throws UnsupportedOperationException constraint do not have any pattern
 	 */
 	@Override
 	public IPattern getPattern() {
-		return pattern;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * Checks if the given match is still valid in the database by running a
-	 * specific query in the database and return if this is still valid or not
-	 * 
-	 * @return true if the given Match is still valid (existing in the database) or
-	 *         false if ot
+	 * @throws UnsupportedOperationException constraints can not be validated and
+	 *                                       must be run again
 	 */
 	@Override
 	public boolean isStillValid() {
-		return pattern.isStillValid(this);
+		throw new UnsupportedOperationException();
 	}
 }
