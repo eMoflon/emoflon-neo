@@ -210,7 +210,8 @@ WHERE «FOR w:where SEPARATOR " AND "»«w»«ENDFOR»'''
 	 }
 	 
 	 def static String withConstraintQuery(Collection<String> nodes) {
-	 	'''WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
+	 	'''
+WITH «FOR n:nodes SEPARATOR ', '»«n»«ENDFOR»'''
 	 }
 	 
 	 def static String withCountQuery(Collection<NeoNode> nodes, int id) {

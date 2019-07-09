@@ -28,9 +28,9 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
-		this.ap = ap;
 		this.name = ap.getName();
-		nodes = new ArrayList<>();
+		this.ap = ap;
+		this.nodes = new ArrayList<>();
 		this.injective = injective;
 		extractNodesAndRelations();
 	}
@@ -68,7 +68,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	public Collection<NeoNode> getNodes() {
 		return nodes;
 	}
-	
+
 	public String getQueryString_MatchConstraint() { 
 		var query = "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes);
 		if(injective) {
@@ -84,7 +84,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 		}
 		return query + "\n";	
 	}
-	
+
 	public String getQueryString_WhereConstraint() {
 		return CypherPatternBuilder.whereNegativeConstraintQuery(uuid);
 	}
@@ -104,6 +104,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 
 	@Override
 	public Collection<IMatch> getViolations() {
+
 		logger.info("Check constraint: FORBID " + ap.getName());
 
 		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);

@@ -133,16 +133,18 @@ public class NeoPattern implements IPattern {
 				
 				nodesAndRefs = new ArrayList<>();
 				nodesAndRefsN = new ArrayList<>();
-				removeDuplicates(nodes);			
-				removeDuplicates(((NeoPositiveConstraint) cond).getNodes());
+				addNodes(nodes);			
+				addNodes(((NeoPositiveConstraint) cond).getNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoPositiveConstraint) cond).getQueryString_MatchConstraint();
-				cypherQuery += "\nWHERE " + ((NeoPositiveConstraint) cond).getQueryString_WhereConstraint();
 				if(injective)
-					cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
+					cypherQuery += CypherPatternBuilder.injectivityBlock(nodes) + "\n";
+				cypherQuery += CypherPatternBuilder.withQuery(nodes);
+				cypherQuery += ((NeoPositiveConstraint) cond).getQueryString_MatchCondition();
+				cypherQuery += CypherPatternBuilder.withConstraintQuery(helper.getNodes());
+				cypherQuery += "\nWHERE " + ((NeoPositiveConstraint) cond).getQueryString_WhereConditon();
+				cypherQuery += "\n" + CypherPatternBuilder.withConstraintQuery(helper.getNodes());
 				cypherQuery += "\n" + CypherPatternBuilder.returnQuery(nodes);
-				
 				
 				logger.debug(cypherQuery);
 
@@ -163,16 +165,18 @@ public class NeoPattern implements IPattern {
 				
 				nodesAndRefs = new ArrayList<>();
 				nodesAndRefsN = new ArrayList<>();
-				removeDuplicates(nodes);			
-				removeDuplicates(((NeoNegativeConstraint) cond).getNodes());
+				addNodes(nodes);			
+				addNodes(((NeoNegativeConstraint) cond).getNodes());
 				
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes);
-				cypherQuery += ((NeoNegativeConstraint) cond).getQueryString_MatchConstraint();
-				cypherQuery += "\nWHERE " + ((NeoNegativeConstraint) cond).getQueryString_WhereConstraint();
 				if(injective)
-					cypherQuery += CypherPatternBuilder.injectivityBlockCond(nodesAndRefsN);
-				cypherQuery += "\n" + CypherPatternBuilder.returnQuery(nodes);
-				
+					cypherQuery += CypherPatternBuilder.injectivityBlock(nodes) + "\n";
+				cypherQuery += CypherPatternBuilder.withQuery(nodes);
+				cypherQuery += ((NeoNegativeConstraint) cond).getQueryString_MatchCondition();
+				cypherQuery += CypherPatternBuilder.withConstraintQuery(helper.getNodes());
+				cypherQuery += "\nWHERE " + ((NeoNegativeConstraint) cond).getQueryString_WhereConditon();
+				cypherQuery += "\n" + CypherPatternBuilder.withConstraintQuery(helper.getNodes());
+				cypherQuery += "\n" + CypherPatternBuilder.returnQuery(nodes);	
 				
 				logger.debug(cypherQuery);
 
@@ -221,7 +225,7 @@ public class NeoPattern implements IPattern {
 	 * Removes all duplicated nodes or relations from the node and relation list
 	 * @param nodes nodes that should be added to the list (only if not present in the list)
 	 */
-	private void removeDuplicates(Collection<NeoNode> nodes) {
+	private void addNodes(Collection<NeoNode> nodes) {
 		for(NeoNode node : nodes) {
 			
 			if(!nodesAndRefs.contains(node.getVarName())) {

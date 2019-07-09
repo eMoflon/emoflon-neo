@@ -36,6 +36,7 @@ public class NeoCondition {
 		removeDuplicates(condData.getNodes());
 
 		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes());
+		cypherQuery += CypherPatternBuilder.withQuery(p.getNodes());
 		cypherQuery += condData.getOptionalMatchString();
 		cypherQuery += CypherPatternBuilder.withConstraintQuery(helper.getNodes());
 		if (p.isNegated())

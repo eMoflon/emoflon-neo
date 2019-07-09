@@ -308,8 +308,8 @@ public class PatternTest extends ENeoTest {
 		assertThat(entities.getPattern_OneFieldHasBottomAndRight().countMatches(), is(9));
 	}
 	@Test
-	public void test_ConditionHasOneFieldHasNoBottomAndNoRight() {
-		assertThat(entities.getPattern_OneFieldHasNoBottomAndNoRight().countMatches(), is(7));
+	public void test_ConditionHasOneFieldHasNoBottomOrNoRight() {
+		assertThat(entities.getPattern_OneFieldHasNoBottomOrNoRight().countMatches(), is(7));
 	}
 
 }

@@ -118,7 +118,6 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		}
 		logger.info("Not matches found. Constraint: ENFORCE " + ap.getName() + " is NOT complied!");
 		return null;
-
 	}
 
 }
