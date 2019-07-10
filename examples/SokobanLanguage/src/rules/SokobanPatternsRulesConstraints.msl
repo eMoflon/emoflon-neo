@@ -365,6 +365,7 @@ pattern twoField {
 	f:Field
 	f2:Field
 }
+
 pattern fourField {
 	f1:Field
 	f2:Field
