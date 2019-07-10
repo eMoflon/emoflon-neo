@@ -25,6 +25,7 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.util.EMSLUtil
+import java.net.URI
 
 /**
  * Generates code from your model files on save.
@@ -79,7 +80,8 @@ class EMSLGenerator extends AbstractGenerator {
 
 	private def getInstallLocation() {
 		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
-		val fileURI = FileLocator.resolve(plugin.getEntry("/")).toURI.normalize;
+		val fileURL = FileLocator.resolve(plugin.getEntry("/")).toString
+		val fileURI = new URI(fileURL.replace(" ", "%20")).normalize
 		val segments = fileURI.path.split("/")
 		val path = segments.take(segments.length - 1)
 		path.join("/") + "/"
