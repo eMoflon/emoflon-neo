@@ -246,8 +246,15 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		logger.info("Check if match for " + getName() + " is still valid");
 		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
 		logger.debug(cypherQuery);
-		StatementResult result = builder.executeQuery(cypherQuery);
-		return result.hasNext();
+		var result = builder.executeQuery(cypherQuery);
+
+		// Query is id-based and must be unique
+		var results = result.list();
+		if (results.size() > 1) {
+			throw new IllegalStateException("There should be at most one record found not " + results.size());
+		}
+
+		return results.size() == 1;
 	}
 
 	/**
