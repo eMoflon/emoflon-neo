@@ -89,6 +89,6 @@ public abstract class ENeoTest {
 	}
 	
 	protected void expectValidMatches(Collection<NeoMatch> matches, long number) {
-		assertEquals(matches.stream().filter(IMatch::isStillValid).count(), number);
+		assertEquals(number, matches.stream().filter(IMatch::isStillValid).count());
 	}
 }

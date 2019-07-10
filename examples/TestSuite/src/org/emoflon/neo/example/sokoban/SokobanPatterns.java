@@ -210,6 +210,8 @@ public class SokobanPatterns extends ENeoTest {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.matcher().determineMatches();
 
+		expectValidMatches(matches, matches.size());
+		
 		// removing all right and bottom edges of endPos fields
 		builder.executeQueryForSideEffect("MATCH (f:Field {name: \"f00\"}) SET f:OddLabel REMOVE f:Field");
 
