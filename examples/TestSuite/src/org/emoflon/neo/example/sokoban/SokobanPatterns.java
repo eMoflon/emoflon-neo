@@ -256,7 +256,7 @@ public class SokobanPatterns extends ENeoTest {
 	
 	@Test
 	public void test_PatternAllFourFields() {
-		assertThat(entities.getPattern_FourField().matcher().determineMatches().size(), is(4));
+		assertThat(entities.getPattern_FourField().matcher().determineMatches().size(), is(43680));
 	}
 	@Test
 	public void test_PatternOneFourFields() {
