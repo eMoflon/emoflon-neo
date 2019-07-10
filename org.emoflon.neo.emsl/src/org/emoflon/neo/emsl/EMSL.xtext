@@ -66,14 +66,14 @@ PrimitiveBoolean:
 ModelRelationStatement:
 	(action=Action)? 
 	'-' 
-		type+=ModelRelationStatementType+ 
+		typeList+=ModelRelationStatementType+ ('|' typeList+=ModelRelationStatementType)*
 	'->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
 	
 ModelRelationStatementType:
-	type+=[MetamodelRelationStatement|QualifiedName] ('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')
+	type=[MetamodelRelationStatement|QualifiedName] ('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')?
 ;
 
 /*-------------------------------------------------*/

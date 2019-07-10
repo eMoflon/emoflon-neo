@@ -361,7 +361,7 @@ public class EMSLFlattener {
 			var edges = new HashMap<String, HashMap<String, ArrayList<ModelRelationStatement>>>();
 			for (var nb : nodeBlocks.get(name)) {
 				for (var rel : nb.getRelations()) {
-					if (rel.getType() == null) {
+					/*if (rel.getType() == null) {
 						continue;
 					}
 					if (rel.getTarget() != null) {
@@ -380,7 +380,7 @@ public class EMSLFlattener {
 							edges.get(rel.getType().getName()).put(rel.getProxyTarget(), new ArrayList<ModelRelationStatement>());
 						}
 						edges.get(rel.getType().getName()).get(rel.getProxyTarget()).add(rel);
-					}
+					}*/
 				}
 			}
 			
@@ -448,7 +448,7 @@ public class EMSLFlattener {
 						newRel.setAction(null);;
 					
 					
-					newRel.setType(edges.get(typename).get(targetname).get(0).getType());
+					//newRel.setType(edges.get(typename).get(targetname).get(0).getType());
 					mergedNodes.forEach(nb -> {
 						if (nb.getName().equals(targetname)) {
 							newRel.setTarget(nb);
@@ -573,7 +573,7 @@ public class EMSLFlattener {
 			for (var prop : rel.getProperties()) {
 				newRel.getProperties().add(copyModelPropertyStatement(prop));
 			}
-			newRel.setType(rel.getType());
+			//newRel.setType(rel.getType());
 			newRel.setTarget(rel.getTarget());			
 			newNb.getRelations().add(newRel);
 		}
