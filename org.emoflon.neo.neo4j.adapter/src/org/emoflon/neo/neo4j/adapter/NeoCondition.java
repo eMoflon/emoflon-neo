@@ -62,19 +62,8 @@ public class NeoCondition {
 		var condData = c.getConditionData();
 
 		// creating the query string
-		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes()) + CypherPatternBuilder.withQuery(p.getNodes())
-				+ condData.getOptionalMatchString() + CypherPatternBuilder.constraint_withQuery(helper.getNodes());
-
-		if (p.isNegated())
-			cypherQuery += "\nWHERE NOT(" + condData.getWhereClause() + ")";
-		else
-			cypherQuery += "\nWHERE " + condData.getWhereClause();
-
-		if(limit > 0)
-			cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes(), limit);
-		else
-			cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());
-			
+		var cypherQuery = CypherPatternBuilder.conditionQuery(p.getNodes(), condData.getOptionalMatchString(),
+				condData.getWhereClause(), helper.getNodes(), p.isNegated(), limit);
 		logger.debug(cypherQuery);
 
 		// run the query

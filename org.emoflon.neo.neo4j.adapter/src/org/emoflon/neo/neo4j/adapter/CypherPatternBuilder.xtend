@@ -228,6 +228,15 @@ class CypherPatternBuilder {
 	 * Basic Condition Functions
 	 ****************************/
 	 
+	 def static String conditionQuery(Collection<NeoNode> nodes, String optionalMatches, String whereClause, Collection<String> helperNodes, boolean isNegated, int limit) {
+	 	'''«matchQuery(nodes)»
+	 	«withQuery(nodes)»
+	 	«optionalMatches»
+	 	«constraint_withQuery(helperNodes)»
+	 	WHERE «IF(isNegated)»NOT(«ENDIF»«whereClause»«IF(isNegated)»)«ENDIF»
+	 	«IF limit>0»«returnQuery(nodes,limit)»«ELSE»«returnQuery(nodes)»«ENDIF»'''
+	 }
+	 
 	 def static String wherePositiveConstraintQuery(int id) {
 	 	'''m_«id» > 0'''
 	 }

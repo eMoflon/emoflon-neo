@@ -248,18 +248,20 @@ public class NeoPattern implements IPattern<NeoMatch> {
 					return cond.determineMatches();
 
 			} else if (cond instanceof NeoPositiveConstraint) {
+				
+				var constraint = ((NeoPositiveConstraint) cond);
 
 				// Condition is positive Constraint (ENFORCE xyz)
 				logger.info("Searching matches for Pattern: " + p.getBody().getName() + " ENFORCE "
-						+ ((NeoPositiveConstraint) cond).getName());
+						+ constraint.getName());
 
 				// Create Query
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
 						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
 						+ CypherPatternBuilder.withQuery(nodes)
-						+ ((NeoPositiveConstraint) cond).getQueryString_MatchCondition()
+						+ constraint.getQueryString_MatchCondition()
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
-						+ ((NeoPositiveConstraint) cond).getQueryString_WhereConditon() + "\n"
+						+ constraint.getQueryString_WhereConditon() + "\n"
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n";
 				if(limit > 0)
 					cypherQuery += CypherPatternBuilder.returnQuery(nodes, limit);
@@ -281,18 +283,20 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				return matches;
 
 			} else if (cond instanceof NeoNegativeConstraint) {
+				
+				var constraint = ((NeoNegativeConstraint) cond);
 
 				// Condition is negative Constraint (FORBID xyz)
 				logger.info("Searching matches for Pattern: " + p.getBody().getName() + " FORBID "
-						+ ((NeoNegativeConstraint) cond).getName());
+						+ constraint.getName());
 
 				// create query
 				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
 						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
 						+ CypherPatternBuilder.withQuery(nodes)
-						+ ((NeoNegativeConstraint) cond).getQueryString_MatchCondition()
+						+ constraint.getQueryString_MatchCondition()
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
-						+ ((NeoNegativeConstraint) cond).getQueryString_WhereConditon() + "\n"
+						+ constraint.getQueryString_WhereConditon() + "\n"
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n";
 				if(limit > 0)
 					cypherQuery += CypherPatternBuilder.returnQuery(nodes, limit);
