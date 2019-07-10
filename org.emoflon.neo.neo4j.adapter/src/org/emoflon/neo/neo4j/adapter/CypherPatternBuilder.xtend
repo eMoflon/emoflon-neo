@@ -193,6 +193,27 @@ class CypherPatternBuilder {
 	/*****************************
 	 * Basic Constraint Functions
 	 ****************************/
+	 
+	def static String constraintQuery_Satisfied(String optionalMatch, String whereClause) {
+		'''«optionalMatch»
+		WHERE «whereClause»
+		RETURN TRUE'''
+	} 
+	
+	def static String constraint_matchQuery(Collection<NeoNode> nodes, boolean injective, int uuid) {
+		'''
+		 OPTIONAL «matchQuery(nodes)»
+		«whereQuery(nodes,injective)»
+		«withCountQuery(nodes, uuid)»
+		'''
+	}
+	
+	def static String condition_matchQuery(Collection<NeoNode> nodes, boolean injective) {
+		'''
+		 OPTIONAL «matchQuery(nodes)»
+		«whereQuery(nodes,injective)»
+		'''
+	}
 	
 	def static String withQuery(Collection<NeoNode> nodes) {
 		'''WITH «FOR n : nodes SEPARATOR ', '»«n.varName»«IF n.relations.size > 0»«FOR r: n.relations BEFORE ', ' SEPARATOR ', '»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
@@ -233,7 +254,7 @@ class CypherPatternBuilder {
 	 	«withQuery(nodes)»
 	 	«optionalMatches»
 	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF(isNegated)»NOT(«ENDIF»«whereClause»«IF(isNegated)»)«ENDIF»
+	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
 	 	«IF limit>0»«returnQuery(nodes,limit)»«ELSE»«returnQuery(nodes)»«ENDIF»'''
 	 }
 	 

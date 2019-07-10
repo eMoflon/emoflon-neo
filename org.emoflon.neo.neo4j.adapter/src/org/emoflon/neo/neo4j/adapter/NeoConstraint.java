@@ -170,9 +170,8 @@ public class NeoConstraint implements IConstraint {
 
 			logger.info("Searching matches for Constraint: " + c.getName());
 
-			var cypherQuery = returnStmt.getOptionalMatchString();
-			cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
-			cypherQuery += "\nRETURN TRUE";
+			var cypherQuery = CypherPatternBuilder.constraintQuery_Satisfied(returnStmt.getOptionalMatchString(),
+					returnStmt.getWhereClause());
 
 			logger.debug(cypherQuery);
 			var result = builder.executeQuery(cypherQuery);
@@ -181,7 +180,7 @@ public class NeoConstraint implements IConstraint {
 				logger.info("Found matches! Constraint: " + c.getName() + " is satisfied!");
 				return true;
 			} else {
-				logger.info("Not matches found! Constraint: " + c.getName() + " is NOT satisfied!");				
+				logger.info("Not matches found! Constraint: " + c.getName() + " is NOT satisfied!");
 				return false;
 			}
 		}
