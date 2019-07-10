@@ -237,9 +237,12 @@ public class NeoCoreBuilder implements AutoCloseable {
 		logger.info("Trying to export models: " + modelNames);
 		var newModels = removeExistingModels(models);
 
+		// Remove abstract models
+		newModels = newModels.stream().filter(m -> !m.isAbstract()).collect(Collectors.toList());
+
 		for (Model m : models) {
 			if (!newModels.contains(m))
-				logger.info("Skipping model " + m.getName() + " as it is already present.");
+				logger.info("Skipping model " + m.getName() + " as it is already present or is abstract.");
 		}
 
 		if (!newModels.isEmpty())
