@@ -294,6 +294,14 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		this.injective = injective;
 	}
 
+	/**
+	 * Get the data and nodes from the pattern (and conditions) and runs the query
+	 * in the database, analyze the results and return the matches
+	 * 
+	 * @param limit number of matches, that should be returned
+	 * @return Collection<IMatch> return a list of all Matches of the pattern with
+	 *         condition matching
+	 */
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 		// Run a normal pattern matching, if there is no condition
@@ -339,7 +347,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
 						+ ((NeoPositiveConstraint) cond).getQueryString_WhereConditon() + "\n"
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
-						+ CypherPatternBuilder.returnQuery(nodes,limit);
+						+ CypherPatternBuilder.returnQuery(nodes, limit);
 
 				logger.debug(cypherQuery);
 
@@ -369,7 +377,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
 						+ ((NeoNegativeConstraint) cond).getQueryString_WhereConditon() + "\n"
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
-						+ CypherPatternBuilder.returnQuery(nodes,limit);
+						+ CypherPatternBuilder.returnQuery(nodes, limit);
 
 				logger.debug(cypherQuery);
 

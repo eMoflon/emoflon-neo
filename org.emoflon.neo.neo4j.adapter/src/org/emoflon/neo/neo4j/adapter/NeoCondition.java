@@ -74,11 +74,12 @@ public class NeoCondition {
 
 		return matches;
 	}
-	
+
 	/**
 	 * Get the data and nodes from the (nested) conditions and runs the query in the
 	 * database, analyze the results and return the matches
 	 * 
+	 * @param limit number of matches, that should be returned
 	 * @return Collection<IMatch> return a list of all Matches of the pattern with
 	 *         condition matching
 	 */
@@ -98,7 +99,7 @@ public class NeoCondition {
 		else
 			cypherQuery += "\nWHERE " + condData.getWhereClause();
 
-		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes(),limit);
+		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes(), limit);
 
 		logger.debug(cypherQuery);
 
