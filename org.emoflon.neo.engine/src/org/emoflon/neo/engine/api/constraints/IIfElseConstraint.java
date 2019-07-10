@@ -6,4 +6,6 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 
 public interface IIfElseConstraint {
 	Collection<IMatch> getViolations();
+
+	boolean isSatisfied();
 }

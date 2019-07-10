@@ -3,7 +3,7 @@ package org.emoflon.neo.engine.api.rules;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface IPattern {
+public interface IPattern<M extends IMatch> {
 	String getName();
 
 	/**
@@ -19,21 +19,21 @@ public interface IPattern {
 	 * 
 	 * @return Collection of all determined matches.
 	 */
-	Collection<IMatch> determineMatches();
+	Collection<M> determineMatches();
 
 	/**
 	 * Only compute as most as many matches as required.
 	 * 
 	 * @return at most limit random matches for the pattern.
 	 */
-	Collection<IMatch> determineMatches(int limit);
+	Collection<M> determineMatches(int limit);
 
 	/**
 	 * Compute a single match for the pattern.
 	 * 
 	 * @return A single match or empty if there are no matches for the pattern.
 	 */
-	default Optional<IMatch> determineOneMatch() {
+	default Optional<M> determineOneMatch() {
 		return determineMatches(1).stream().findAny();
 	}
 

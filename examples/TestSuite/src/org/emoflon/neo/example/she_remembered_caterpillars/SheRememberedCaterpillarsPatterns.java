@@ -5,14 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_SheRememberedCaterpillars;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SheRememberedCaterpillarsPatterns extends ENeoTest {
-	private API_SheRememberedCaterpillars entities = new API_SheRememberedCaterpillars(builder);
+	private API_SheRememberedCaterpillars entities = new API_SheRememberedCaterpillars(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 	
 	@BeforeEach
 	public void initDB() {
@@ -41,11 +41,10 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 	
 	@Test
 	public void testColouredThingsOnPlatforms() {
-		assertThat(entities.getPattern_ColouredThingOnPlatform().countMatches(), is(2));
+		assertThat(entities.getPattern_ColouredThingOnPlatform().matcher().countMatches(), is(2));
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Handle when conditions")
 	public void testNoWayForward() {
 		expectNoMatch(entities.getPattern_NoWayForward());
 	}

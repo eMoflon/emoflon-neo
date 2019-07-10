@@ -88,17 +88,11 @@ pattern allFieldsInARow {
 	field : Field
 }
 
-pattern allNotBorderFieldsInARow {
+abstract pattern fieldsInARow {
 	b : SokobanLanguage.Board {
-		-fields -> field {
-			.row : 1
-		}
-		-fields -> fieldL {
-			.row : 1
-		}
-		-fields -> fieldR {
-			.row : 1
-		}
+		-fields -> field 
+		-fields -> fieldL 
+		-fields -> fieldR 
 	}
 	field : Field {
 		-right -> fieldR
@@ -111,7 +105,21 @@ pattern allNotBorderFieldsInARow {
 	fieldR : Field
 }
 
-pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
+pattern allNotBorderFieldsInARow -> fieldsInARow {
+	b : SokobanLanguage.Board {
+		-fields -> field {
+			.row : 1
+		}
+		-fields -> fieldL {
+			.row : 1
+		}
+		-fields -> fieldR {
+			.row : 1
+		}
+	}
+}
+
+pattern allNotBorderFieldsInARowAndCol -> fieldsInARow {
 	b : SokobanLanguage.Board {
 		-fields -> field{
 			.row : 1
@@ -128,11 +136,17 @@ pattern allNotBorderFieldsInARowAndCol -> allNotBorderFieldsInARow {
 	}
 }
 
-pattern allNotBorderFieldsInDiffRows -> allNotBorderFieldsInARow {
+pattern allNotBorderFieldsInDiffRows -> fieldsInARow {
 	b : SokobanLanguage.Board {
 		-fields -> field {
-			//.row : 4
+			.row : 4
 			.col : 2
+		}
+		-fields -> fieldL {
+			.row : 1
+		}
+		-fields -> fieldR {
+			.row : 1
 		}
 	}
 }
@@ -204,7 +218,6 @@ pattern all2x2Fields {
 	field22 : Field
 }
 
-
 pattern boulderOnEndField -> oneEndField, anOccupiedField {
 	fig : Boulder
 } when forbid block
@@ -241,7 +254,7 @@ constraint extremeConstraint = ((!topLeftCorner && topRightCorner) || !topRightC
 pattern hasLeft {
 	field: Field
 	
-	leftFig: Field {
+	leftField: Field {
 		-right-> field
 	}
 }
@@ -249,23 +262,23 @@ pattern hasLeft {
 pattern hasTop {
 	field: Field
 	
-	topFig: Field {
+	topField: Field {
 		-bottom-> field
 	}
 }
 
 pattern hasRight {
 	field: Field {
-		-right->rightFig
+		-right->rightField
 	}
-	rightFig: Field
+	rightField: Field
 }
 
 pattern hasBottom {
 	field: Field {
-		-bottom->bottomFig
+		-bottom->bottomField
 	}
-	bottomFig: Field
+	bottomField: Field
 }
 
 
@@ -331,3 +344,91 @@ rule pushBlockDown -> pushBlock, moveSokobanDown {
 		-bottom-> next
 	}
 } when forbid occupiedNext
+
+pattern oneField {
+	f:Field
+} when hasBottomAndRightField
+
+pattern oneFieldNeg {
+	f:Field
+} when !hasBottomAndRightField
+
+pattern oneFieldEnforceTwo {
+	f:Field
+} when enforce oneTwoField
+
+pattern oneFieldForbidTwo {
+	f:Field
+} when forbid oneTwoField
+
+pattern twoField {
+	f:Field
+	f2:Field
+}
+pattern fourField {
+	f1:Field
+	f2:Field
+	f3:Field
+	f4:Field
+}
+pattern oneTwoField {
+	f:Field {
+		-bottom -> f2
+	}
+	f2:Field
+}
+
+pattern oneFieldHasBottomAndRight {
+	f:Field
+} when hasBottomAndRightField
+pattern oneFieldHasNoBottomOrNoRight {
+	f:Field
+} when !hasBottomAndRightField
+
+pattern oneFieldHasBottomAndNoRight {
+	f:Field
+} when hasBottomAndNoRightField
+
+
+pattern neighborRightField {
+	f:Field {
+		-right -> f2
+	}
+	f2:Field
+}
+pattern neighborBottomField {
+	f:Field {
+		-bottom -> f2
+	}
+	f2:Field
+}
+pattern neighborRightField2 {
+	f:Field {
+		-right -> f3
+	}
+	f3:Field
+}
+constraint hasRightField = enforce neighborRightField
+constraint hasBottomField = enforce neighborBottomField
+constraint hasBottomAndRightField = hasBottomField && hasRightField
+constraint hasBottomAndNoRightField = hasBottomField && !hasRightField
+
+constraint twoConnFields = enforce neighborBottomField
+constraint ifTwoThenConn = if twoField then neighborBottomField
+constraint ifBottomThenRight = if neighborBottomField then neighborRightField2
+
+constraint hasRightIfThen = if neighborRightField then neighborBottomField
+
+pattern sokOnField {
+	sok:Sokoban {
+		-field -> f
+	}
+	f: Field
+}
+pattern blockOnField {
+	b:Block {
+		-field -> f
+	}
+	f:Field
+}
+constraint sokOnFieldThenBlockOnField = if sokOnField then blockOnField

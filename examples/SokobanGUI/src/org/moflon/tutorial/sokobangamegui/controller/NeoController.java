@@ -4,6 +4,7 @@ package org.moflon.tutorial.sokobangamegui.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
@@ -12,14 +13,12 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoPattern;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
-import org.neo4j.driver.v1.types.Node;
 
 public class NeoController implements IController {
-
+	@SuppressWarnings("unused")
+	private View view;
 	private API_SokobanGUIPatterns api;
 	private NeoCoreBuilder builder;
 
@@ -28,17 +27,19 @@ public class NeoController implements IController {
 	private List<Field> fields;
 
 	public NeoController() {
+		this(c -> new View(c));
+	}
+
+	public NeoController(Function<IController, View> createView) {
 		builder = API_Common.createBuilder();
-		api = new API_SokobanGUIPatterns(builder, //
-				"/Users/anthonyanjorin/git/emoflon-neo/examples/", //
-				"/Users/anthonyanjorin/git/emoflon-neo/");
+		api = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		defaultBoard();
+		view = createView.apply(this);
 	}
 
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		var controller = new NeoController();
-		new View(controller);
+		new NeoController();
 	}
 
 	@Override
@@ -53,29 +54,21 @@ public class NeoController implements IController {
 
 	@Override
 	public List<String> getFigureTypes() {
-		return api.getPattern_FigureTypes().determineMatches()//
+		var access = api.getPattern_FigureTypes();
+		return access.matcher().determineMatches()//
 				.stream().map(m -> {
-					NeoMatch nm = (NeoMatch) m;
-					var figType = nm.getData().get("eclass");
-					return figType.get("name").asString();
+					var data = access.data(m);
+					return data.eclass.ename;
 				}).collect(Collectors.toList());
 	}
 
 	@Override
 	public Optional<Field> getSelectedField() {
-		return api.getPattern_SelectedFigure().determineOneMatch().flatMap(m -> {
-			var neoMatch = (NeoMatch) m;
-			var p = (NeoPattern) m.getPattern();
-			var r = p.getNodes()//
-					.stream()//
-					.flatMap(n -> n.getRelations().stream())//
-					.filter(rl -> rl.getRelType().equals("fields")).findAny();
-			var rName = r.get().getVarName();
-			var rNode = neoMatch.getData().get(rName);
-			var row = rNode.get("row").asInt();
-			var col = rNode.get("col").asInt();
+		var access = api.getPattern_SelectedFigure(); 
+		return access.matcher().determineOneMatch().flatMap(m -> {
+			var data = access.data(m);
 			return fields.stream()//
-					.filter(f -> f.getRow() == row && f.getCol() == col)//
+					.filter(f -> f.getRow() == data.b_fields_1_f.row && f.getCol() == data.b_fields_1_f.col)//
 					.findFirst();
 		});
 	}
@@ -108,57 +101,44 @@ public class NeoController implements IController {
 
 	@Override
 	public void newBoard(int width, int height) {
-		// TODO: Use width and height to create an empty board?
+		// TODO: Use a grammar to generate a new board
 	}
 
 	private void defaultBoard() {
-		var exampleBoard = new API_SokobanSimpleTestField(builder);
+		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		var board = exampleBoard.getModel_SokobanSimpleTestField();
-		builder.exportEMSLEntityToNeo4j(board);
+		builder.exportModelToNeo4j(board);
+		extractFields();
+	}
 
-		api.getPattern_Board().determineOneMatch().ifPresent(m -> {
-			var mData = api.getData_Board(m);
+	private void extractFields() {	
+		var accessBoard = api.getPattern_Board();
+		accessBoard.matcher().determineOneMatch().ifPresent(m -> {
+			var mData = accessBoard.data(m);
 			this.width = mData.board.width;
 			this.height = mData.board.height;
 
 			fields = new ArrayList<Field>();
-			api.getPattern_EmptyFields().determineMatches().forEach(f -> {
-				var fData = api.getData_EmptyFields(f);
+			var accessEmptyFields = api.getPattern_EmptyFields();
+			accessEmptyFields.matcher().determineMatches().forEach(f -> {
+				var fData = accessEmptyFields.data(f);
 				fields.add(new Field(//
-						fData.board_fields_field.row, //
-						fData.board_fields_field.col, //
+						fData.board_fields_0_field.row, //
+						fData.board_fields_0_field.col, //
 						fData.field.endPos, //
 						null));
 			});
 
-			api.getPattern_OcupiedFields().determineMatches().forEach(f -> {
-				var fm = (NeoMatch) f;
-				var data = fm.getData();
-				var fNode = data.get("field");
-				var p = (NeoPattern) fm.getPattern();
-				var r = p.getNodes()//
-						.stream()//
-						.flatMap(n -> n.getRelations().stream())//
-						.filter(rl -> rl.getRelType().equals("fields")).findAny();
-				var rName = r.get().getVarName();
-				var rNode = data.get(rName);
-				var figNode = data.get("fig").asNode();
+			var accessOccupiedFields = api.getPattern_OccupiedFields();
+			accessOccupiedFields.matcher().determineMatches().forEach(f -> {
+				var data = accessOccupiedFields.data(f);
 				fields.add(new Field(//
-						rNode.get("row").asInt(), //
-						rNode.get("col").asInt(), //
-						fNode.get("endPos").asBoolean(), //
-						determineTypeOfFigure(figNode)));
+						data.board_fields_0_field.row, //
+						data.board_fields_0_field.col, //
+						data.field.endPos, //
+						data.type.ename));
 			});
 		});
-	}
-
-	private String determineTypeOfFigure(Node figNode) {
-		if (figNode.hasLabel("Block"))
-			return "Block";
-		else if (figNode.hasLabel("Boulder"))
-			return "Boulder";
-		else
-			return "Sokoban";
 	}
 
 	@Override
