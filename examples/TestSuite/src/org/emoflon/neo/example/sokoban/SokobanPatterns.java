@@ -200,7 +200,7 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.matcher().determineMatches();
 
 		// Removing all right and bottom edges of endPos fields
-		builder.executeQueryForSideEffect("MATCH (f:Field {endPos: true, name: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
+		builder.executeQueryForSideEffect("MATCH (f:Field {endPos: true, ename: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
 
 		expectValidMatches(matches, matches.size() - 2);
 	}
@@ -213,7 +213,7 @@ public class SokobanPatterns extends ENeoTest {
 		expectValidMatches(matches, matches.size());
 		
 		// removing all right and bottom edges of endPos fields
-		builder.executeQueryForSideEffect("MATCH (f:Field {name: \"f00\"}) SET f:OddLabel REMOVE f:Field");
+		builder.executeQueryForSideEffect("MATCH (f:Field {ename: \"f00\"}) SET f:OddLabel REMOVE f:Field");
 
 		expectValidMatches(matches, matches.size() - 1);
 	}
