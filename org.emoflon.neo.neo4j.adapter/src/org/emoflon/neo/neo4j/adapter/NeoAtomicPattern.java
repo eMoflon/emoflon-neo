@@ -164,7 +164,21 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
-		// TODO Jannik
-		return null;
+		logger.info("Searching matches for Pattern: " + ap.getName());
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+		logger.debug(cypherQuery);
+
+		var result = builder.executeQuery(cypherQuery);
+
+		var matches = new ArrayList<NeoMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			matches.add(new NeoMatch(null, record));
+		}
+
+		if (matches.isEmpty()) {
+			logger.debug("NO MATCHES FOUND");
+		}
+		return matches;
 	}
 }
