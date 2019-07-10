@@ -29,5 +29,6 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  SheRememberedCaterpillars;bundle-version="1.0.0",
  PacMan;bundle-version="1.0.0",
  Organigram;bundle-version="1.0.0",
- NetworkTopology;bundle-version="1.0.0"
+ NetworkTopology;bundle-version="1.0.0",
+ SokobanGUI
 Automatic-Module-Name: TestSuite

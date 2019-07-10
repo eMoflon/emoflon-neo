@@ -80,7 +80,21 @@ public class NeoController implements IController {
 
 	@Override
 	public boolean boardIsValid() {
-		// TODO: Check all kind of constraints
+		if(api.getConstraint_ExactlyOneSokoban().isViolated()) {
+			view.updateStatus("You must have exactly one Sokoban!");
+			return false;
+		}
+			
+			
+		//TODO At least one EndField
+		
+		//TODO As many endfields as blocks
+		
+		//TODO Endfields blocked with boulders
+		
+		//TODO A block in a corner
+		
+		view.updateStatus("Everything seems to be ok...");
 		return true;
 	}
 
