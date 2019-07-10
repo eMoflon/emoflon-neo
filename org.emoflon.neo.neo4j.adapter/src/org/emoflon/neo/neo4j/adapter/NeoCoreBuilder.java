@@ -1,15 +1,17 @@
 package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.BuiltInType;
@@ -31,6 +33,7 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.StatementResult;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 
 public class NeoCoreBuilder implements AutoCloseable {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -205,49 +208,127 @@ public class NeoCoreBuilder implements AutoCloseable {
 		driver.close();
 	}
 
-	public void exportEMSLEntityToNeo4j(EObject entity) {
+	public void exportModelToNeo4j(Model m) {
 		bootstrapNeoCoreIfNecessary();
 
-		ResourceSet rs = entity.eResource().getResourceSet();
+		ResourceSet rs = m.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
 
-		var metamodels = new ArrayList<Metamodel>();
-		var models = new ArrayList<Model>();
-		rs.getAllContents().forEachRemaining(c -> {
-			if (c instanceof Metamodel)
-				metamodels.add((Metamodel) c);
-			if (c instanceof Model)
-				models.add((Model) c);
-		});
+		var models = collectReferencedModels(m);
+		var metamodels = models.stream()//
+				.flatMap(model -> collectDependentMetamodels(m).stream())//
+				.collect(Collectors.toSet());
 
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
 
+		// Remove abstract metamodels
+		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
+
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.info("Skipping metamodel " + mm.getName() + " as it is already present.");
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
 		}
 
 		if (!newMetamodels.isEmpty())
 			exportMetamodelsToNeo4j(newMetamodels);
-		logger.info("Exported metamodels.");
+		logger.info("Exported metamodels: " + newMetamodels);
 
 		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export models: " + modelNames);
 		var newModels = removeExistingModels(models);
 
 		// Remove abstract models
-		newModels = newModels.stream().filter(m -> !m.isAbstract()).collect(Collectors.toList());
+		newModels = newModels.stream().filter(mod -> !mod.isAbstract()).collect(Collectors.toList());
 
-		for (Model m : models) {
-			if (!newModels.contains(m))
-				logger.info("Skipping model " + m.getName() + " as it is already present or is abstract.");
+		for (Model mod : models) {
+			if (!newModels.contains(mod))
+				logger.info("Skipping model " + mod.getName() + " as it is already present or is abstract.");
 		}
 
 		if (!newModels.isEmpty())
 			exportModelsToNeo4j(newModels);
-		logger.info("Exported models.");
+
+		logger.info("Exported models: " + newModels);
+	}
+
+	private Collection<Model> collectReferencedModels(Model m) {
+		var allRefs = new HashSet<Model>();
+		collectReferencedModels(m, allRefs);
+		return allRefs;
+	}
+
+	private void collectReferencedModels(Model m, Set<Model> allRefs) {
+		var directRefs = m.getNodeBlocks().stream()//
+				.flatMap(nb -> nb.getRelations().stream())//
+				.map(rel -> (Model) (rel.getTarget().eContainer()))//
+				.collect(Collectors.toSet());
+
+		directRefs.forEach(ref -> {
+			if (!allRefs.contains(ref)) {
+				allRefs.add(ref);
+				collectReferencedModels(ref, allRefs);
+			}
+		});
+	}
+
+	private Collection<Metamodel> collectDependentMetamodels(Model m) {
+		return m.getNodeBlocks().stream()//
+				.map(nb -> (Metamodel) (nb.getType().eContainer()))//
+				.flatMap(mm -> collectReferencedMetamodels(mm).stream())//
+				.collect(Collectors.toSet());
+	}
+
+	private Collection<Metamodel> collectReferencedMetamodels(Metamodel m) {
+		var allRefs = new HashSet<Metamodel>();
+		collectReferencedMetamodels(m, allRefs);
+		return allRefs;
+	}
+
+	private void collectReferencedMetamodels(Metamodel m, HashSet<Metamodel> allRefs) {
+		var superTypes = m.getNodeBlocks().stream()//
+				.flatMap(nb -> nb.getSuperTypes().stream());
+
+		var referencedTypes = m.getNodeBlocks().stream()//
+				.flatMap(nb -> nb.getRelations().stream())//
+				.map(rel -> rel.getTarget());
+
+		var directRefs = Streams.concat(superTypes, referencedTypes)//
+				.map(nb -> (Metamodel) (nb.eContainer()))//
+				.collect(Collectors.toSet());
+
+		directRefs.forEach(ref -> {
+			if (!allRefs.contains(ref)) {
+				allRefs.add(ref);
+				collectReferencedMetamodels(ref, allRefs);
+			}
+		});
+	}
+
+	public void exportMetamodelToNeo4j(Metamodel m) {
+		bootstrapNeoCoreIfNecessary();
+		ResourceSet rs = m.eResource().getResourceSet();
+		EcoreUtil.resolveAll(rs);
+
+		var metamodels = collectReferencedMetamodels(m);
+
+		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
+		logger.info("Trying to export metamodels: " + metamodelNames);
+		var newMetamodels = removeExistingMetamodels(metamodels);
+
+		// Remove abstract metamodels
+		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
+
+		for (Metamodel mm : metamodels) {
+			if (!newMetamodels.contains(mm))
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
+		}
+
+		if (!newMetamodels.isEmpty())
+			exportMetamodelsToNeo4j(newMetamodels);
+
+		logger.info("Exported metamodels: " + newMetamodels);
 	}
 
 	public static boolean canBeExported(EClass eclass) {
@@ -431,7 +512,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	private List<Metamodel> removeExistingMetamodels(List<Metamodel> metamodels) {
+	private List<Metamodel> removeExistingMetamodels(Collection<Metamodel> metamodels) {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
@@ -443,7 +524,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return newMetamodels;
 	}
 
-	private List<Model> removeExistingModels(List<Model> models) {
+	private List<Model> removeExistingModels(Collection<Model> models) {
 		var newModels = new ArrayList<Model>();
 		newModels.addAll(models);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {

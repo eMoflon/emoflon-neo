@@ -107,7 +107,7 @@ public class NeoController implements IController {
 	private void defaultBoard() {
 		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		var board = exampleBoard.getModel_SokobanSimpleTestField();
-		builder.exportEMSLEntityToNeo4j(board);
+		builder.exportModelToNeo4j(board);
 		extractFields();
 	}
 

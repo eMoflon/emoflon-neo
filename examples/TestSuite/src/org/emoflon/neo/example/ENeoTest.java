@@ -59,7 +59,7 @@ public abstract class ENeoTest {
 	}
 
 	protected static void initDB(Model model) {
-		builder.exportEMSLEntityToNeo4j(model);
+		builder.exportModelToNeo4j(model);
 		logger.info("-----------------------------\n" + "Database initialised.");
 	}
 	

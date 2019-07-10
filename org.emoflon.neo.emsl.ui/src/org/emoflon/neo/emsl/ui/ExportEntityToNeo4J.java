@@ -18,6 +18,8 @@ import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.Entity;
+import org.emoflon.neo.emsl.eMSL.Metamodel;
+import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -87,7 +89,10 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 	private void exportEMSLEntityToNeo4j(Entity entity) {
 		try {
 			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
-			builder.exportEMSLEntityToNeo4j(flattenedEntity);
+			if (flattenedEntity instanceof Model)
+				builder.exportModelToNeo4j((Model) flattenedEntity);
+			else
+				builder.exportMetamodelToNeo4j((Metamodel) flattenedEntity);
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the entity.");
 			e.printStackTrace();
