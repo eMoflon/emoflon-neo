@@ -203,7 +203,7 @@ class CypherPatternBuilder {
 		'''
 		«constraint_ifThen_matchQuery(nodes,nodes2,injective)»
 		«constraint_withQuery(nodesMap)»
-		WHERE «whereNegativeConditionQuery(nodes2)» // <<<<<<<<<<<<<<<<<<
+		WHERE «whereNegativeConditionQuery(nodes2)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
 	

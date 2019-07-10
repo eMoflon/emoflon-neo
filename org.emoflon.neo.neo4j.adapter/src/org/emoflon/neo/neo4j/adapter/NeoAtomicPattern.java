@@ -158,10 +158,10 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	public Collection<NeoMatch> determineMatches(int limit) {
 		logger.info("Searching matches for Pattern: " + ap.getName());
 		var cypherQuery = "";
-		if(limit == 0)
-			cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
-		else
+		if(limit > 0)
 			cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+		else
+			cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
 		
 		logger.debug(cypherQuery);
 

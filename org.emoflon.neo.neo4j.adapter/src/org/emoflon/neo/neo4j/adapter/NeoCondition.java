@@ -70,10 +70,10 @@ public class NeoCondition {
 		else
 			cypherQuery += "\nWHERE " + condData.getWhereClause();
 
-		if(limit == 0)
-			cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());
-		else
+		if(limit > 0)
 			cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes(), limit);
+		else
+			cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes());
 			
 		logger.debug(cypherQuery);
 

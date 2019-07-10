@@ -215,10 +215,10 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		if (p.getCondition() == null) {
 			logger.info("Searching matches for Pattern: " + getName());
 			var cypherQuery = "";
-			if(limit == 0)
-				cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
-			else 
+			if(limit > 0)
 				cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+			else 
+				cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
 			logger.debug(cypherQuery);
 
 			var result = builder.executeQuery(cypherQuery);
@@ -242,10 +242,10 @@ public class NeoPattern implements IPattern<NeoMatch> {
 			// structure from there for query execution
 			if (p.getCondition() instanceof ConstraintReference) {
 				var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
-				if(limit == 0)
-					return cond.determineMatches();
-				else
+				if(limit > 0)
 					return cond.determineMatches(limit);
+				else
+					return cond.determineMatches();
 
 			} else if (cond instanceof NeoPositiveConstraint) {
 
@@ -261,10 +261,10 @@ public class NeoPattern implements IPattern<NeoMatch> {
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
 						+ ((NeoPositiveConstraint) cond).getQueryString_WhereConditon() + "\n"
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n";
-				if(limit == 0)
-					cypherQuery += CypherPatternBuilder.returnQuery(nodes);
-				else
+				if(limit > 0)
 					cypherQuery += CypherPatternBuilder.returnQuery(nodes, limit);
+				else
+					cypherQuery += CypherPatternBuilder.returnQuery(nodes);
 
 				logger.debug(cypherQuery);
 
@@ -294,10 +294,10 @@ public class NeoPattern implements IPattern<NeoMatch> {
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
 						+ ((NeoNegativeConstraint) cond).getQueryString_WhereConditon() + "\n"
 						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n";
-				if(limit == 0)
-					cypherQuery += CypherPatternBuilder.returnQuery(nodes);
-				else
+				if(limit > 0)
 					cypherQuery += CypherPatternBuilder.returnQuery(nodes, limit);
+				else
+					cypherQuery += CypherPatternBuilder.returnQuery(nodes);
 
 				logger.debug(cypherQuery);
 
