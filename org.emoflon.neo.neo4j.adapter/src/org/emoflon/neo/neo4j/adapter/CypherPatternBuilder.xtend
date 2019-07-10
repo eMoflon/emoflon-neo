@@ -38,6 +38,10 @@ class CypherPatternBuilder {
 		«whereQuery(nodes,injective)»
 		«returnQuery(nodes)»'''
 	}
+	def static String readQuery(Collection<NeoNode> nodes, boolean injective, int limit) {
+		'''
+		«readQuery(nodes,injective)» LIMIT «limit»'''
+	}
 	
 	def static String getDataQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective){
 		'''
@@ -117,6 +121,10 @@ class CypherPatternBuilder {
 					id(«r.varName») AS «r.varName»
 				«ENDFOR»
 			«ENDFOR»'''
+	}
+	
+	def static String returnQuery(Collection<NeoNode> nodes, int limit) {
+		'''«returnQuery(nodes)» LIMIT «limit»'''
 	}
 	
 	

@@ -171,6 +171,11 @@ public class SokobanPatterns extends ENeoTest {
 	public void test_All3x3Fields() {
 		assertThat(entities.getPattern_All3x3Fields().matcher().countMatches(), is(4));
 	}
+	
+	@Test
+	public void test_One3x3FieldsLimit() {
+		assertThat(entities.getPattern_All3x3Fields().matcher().determineMatches(1).size(), is(1));
+	}
 
 	@Test
 	public void test_All3x3Fields_StillValid() {
@@ -238,6 +243,26 @@ public class SokobanPatterns extends ENeoTest {
 		assertThat(entities.getPattern_ByBlockAndBoulderOccupiedFields().matcher().countMatches(), is(14));
 	}
 	
+	
+	
+	@Test
+	public void test_PatternAllTwoFields() {
+		assertThat(entities.getPattern_TwoField().matcher().determineMatches().size(), is(240));
+	}
+	@Test
+	public void test_PatternOneTwoFields() {
+		assertThat(entities.getPattern_TwoField().matcher().determineMatches(1).size(), is(1));
+	}
+	
+	@Test
+	public void test_PatternAllFourFields() {
+		assertThat(entities.getPattern_FourField().matcher().determineMatches().size(), is(4));
+	}
+	@Test
+	public void test_PatternOneFourFields() {
+		assertThat(entities.getPattern_FourField().matcher().determineMatches(1).size(), is(1));
+	}
+	
 	/*
 	 * Constraint Tests
 	 */
@@ -291,6 +316,14 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_ConditionHasField() {
 		assertThat(entities.getPattern_OneField().matcher().countMatches(), is(9));
+	}
+	@Test
+	public void test_ConditionHasFieldAllMatches() {
+		assertThat(entities.getPattern_OneField().matcher().determineMatches().size(), is(9));
+	}
+	@Test
+	public void test_ConditionHasFieldOneMatches() {
+		assertThat(entities.getPattern_OneField().matcher().determineMatches(1).size(), is(1));
 	}
 	@Test
 	public void test_ConditionHasFieldNeg() {

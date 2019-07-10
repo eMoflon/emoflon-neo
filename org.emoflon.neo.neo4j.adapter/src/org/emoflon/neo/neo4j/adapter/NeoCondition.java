@@ -74,5 +74,45 @@ public class NeoCondition {
 
 		return matches;
 	}
+	
+	/**
+	 * Get the data and nodes from the (nested) conditions and runs the query in the
+	 * database, analyze the results and return the matches
+	 * 
+	 * @return Collection<IMatch> return a list of all Matches of the pattern with
+	 *         condition matching
+	 */
+	public Collection<NeoMatch> determineMatches(int limit) {
+
+		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
+
+		// collecting the data
+		var condData = c.getConditionData();
+
+		// creating the query string
+		var cypherQuery = CypherPatternBuilder.matchQuery(p.getNodes()) + CypherPatternBuilder.withQuery(p.getNodes())
+				+ condData.getOptionalMatchString() + CypherPatternBuilder.constraint_withQuery(helper.getNodes());
+
+		if (p.isNegated())
+			cypherQuery += "\nWHERE NOT(" + condData.getWhereClause() + ")";
+		else
+			cypherQuery += "\nWHERE " + condData.getWhereClause();
+
+		cypherQuery += "\n" + CypherPatternBuilder.returnQuery(p.getNodes(),limit);
+
+		logger.debug(cypherQuery);
+
+		// run the query
+		var result = builder.executeQuery(cypherQuery);
+
+		// analyze and return results
+		var matches = new ArrayList<NeoMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			matches.add(new NeoMatch(p, record));
+		}
+
+		return matches;
+	}
 
 }
