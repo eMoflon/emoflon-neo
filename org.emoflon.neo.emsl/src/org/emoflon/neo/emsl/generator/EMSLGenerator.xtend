@@ -111,7 +111,9 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
 			import org.emoflon.neo.neo4j.adapter.NeoAccess;
-			
+			import org.emoflon.neo.neo4j.adapter.NeoMask;
+			import java.util.HashMap;
+			import java.util.Map;
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
@@ -150,6 +152,7 @@ class EMSLGenerator extends AbstractGenerator {
 			val rootName = namingConvention(patternBody.name)
 			val dataClassName = rootName + "Data"
 			val accessClassName = rootName + "Access"
+			val maskClassName = rootName + "Mask"
 			'''
 				public «accessClassName» getPattern_«rootName»() {
 					return new «accessClassName»();
@@ -162,8 +165,18 @@ class EMSLGenerator extends AbstractGenerator {
 						return new NeoPattern(p, builder);
 					}
 					
+					@Override
+					public NeoPattern matcher(NeoMask mask) {
+						var p = (Pattern) spec.getEntities().get(0);
+						return new NeoPattern(p, builder, mask);
+					}
+					
 					public «dataClassName» data(NeoMatch m) {
 						return new «dataClassName»(m);
+					}
+					
+					public «maskClassName» mask() {
+						return new «maskClassName»();
 					}
 				}
 				
@@ -173,6 +186,23 @@ class EMSLGenerator extends AbstractGenerator {
 					«constructor(dataClassName, patternBody)»
 					
 					«helperClasses(patternBody)»
+				}
+				
+				public class «maskClassName» extends NeoMask {
+					private HashMap<String, Long> nodeMask = new HashMap<>();
+					private HashMap<String, Object> attributeMask = new HashMap<>();
+					
+					@Override
+					public Map<String, Long> getMaskedNodes() {
+						return nodeMask;
+					}
+					
+					@Override
+					public Map<String, Object> getMaskedAttributes() {
+						return attributeMask;
+					}
+					
+					«maskMethods(patternBody, maskClassName)»
 				}
 			'''
 		} catch (Exception e) {
@@ -202,8 +232,8 @@ class EMSLGenerator extends AbstractGenerator {
 			
 				public «relName.toFirstUpper»Rel(Value «relName») {
 					«FOR prop : rel.type.properties»
-					if(!«relName».get("«prop.name»").isNull())
-						this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
+						if(!«relName».get("«prop.name»").isNull())
+							this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
 					«ENDFOR»
 				}
 			}
@@ -245,7 +275,7 @@ class EMSLGenerator extends AbstractGenerator {
 		
 	'''
 
-	protected def CharSequence classMembers(AtomicPattern patternBody) {
+	def CharSequence classMembers(AtomicPattern patternBody) {
 		'''
 			«FOR node : patternBody.nodeBlocks»
 				public final «node.name.toFirstUpper»Node «node.name»;
@@ -256,6 +286,36 @@ class EMSLGenerator extends AbstractGenerator {
 						rel.target.name,// 
 						node.relations.indexOf(rel))»
 					public final «relName.toFirstUpper»Rel «relName»;
+				«ENDFOR»
+			«ENDFOR»
+		'''
+	}
+
+	def CharSequence maskMethods(AtomicPattern patternBody, String maskClassName) {
+		'''
+			«FOR node : patternBody.nodeBlocks»
+				public «maskClassName» set«node.name.toFirstUpper»(Long value) {
+					nodeMask.put("«node.name»", value);
+					return this;
+				}
+				«FOR prop : allProperties(node.type)»
+					public «maskClassName» set«node.name.toFirstUpper»«prop.name.toFirstUpper»(«EMSLUtil.getJavaType(prop.type)» value) {
+						attributeMask.put("«node.name».«prop.name»", value);
+						return this;
+					}
+				«ENDFOR»
+				«FOR rel : node.relations»
+					«FOR prop : rel.type.properties»
+						«val relName = EMSLUtil.relationNameConvention(//
+											node.name,// 
+											rel.type.name,//
+											rel.target.name,// 
+											node.relations.indexOf(rel))»
+						public «maskClassName» set«relName.toFirstUpper»«prop.name.toFirstUpper»(«EMSLUtil.getJavaType(prop.type)» value) {
+							attributeMask.put("«relName».«prop.name»", value);
+							return this;
+						}
+					«ENDFOR»
 				«ENDFOR»
 			«ENDFOR»
 		'''
