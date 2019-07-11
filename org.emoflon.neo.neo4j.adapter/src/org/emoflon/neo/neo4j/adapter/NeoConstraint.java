@@ -118,7 +118,7 @@ public class NeoConstraint implements IConstraint {
 		NeoReturn returnStmt = new NeoReturn();
 
 		if (c.getBody() instanceof PositiveConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var ap = ((PositiveConstraint) c.getBody()).getPattern();
 			ap = helper.getFlattenedPattern(ap);
 			var co = new NeoPositiveConstraint(ap, injective, builder, helper);
 
@@ -127,7 +127,7 @@ public class NeoConstraint implements IConstraint {
 			returnStmt.addWhereClause(co.getQueryString_WhereConditon());
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var ap = ((NegativeConstraint) c.getBody()).getPattern();
 			ap = helper.getFlattenedPattern(ap);
 			var co = new NeoNegativeConstraint(ap, injective, builder, helper);
 
@@ -161,8 +161,9 @@ public class NeoConstraint implements IConstraint {
 	public boolean isSatisfied() {
 
 		if (c.getBody() instanceof Implication) {
-			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
+			var implication = (Implication) c.getBody();
+			var apIf = implication.getPremise();
+			var apThen = implication.getConclusion();
 			apIf = helper.getFlattenedPattern(apIf);
 			apThen = helper.getFlattenedPattern(apThen);
 			var co = new NeoImplication(apIf, apThen, injective, builder, helper);

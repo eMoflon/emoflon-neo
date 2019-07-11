@@ -23,6 +23,7 @@ import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.Value
 import org.emoflon.neo.emsl.eMSL.impl.AttributeExpressionImpl
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 class EMSLUtil {
 	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
@@ -41,6 +42,7 @@ class EMSLUtil {
 		resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE)
 		var Resource resource = resourceSet.getResource(URI.createURI(modelURI), true)
 		var EMSL_Spec spec = (resource.getContents().get(0) as EMSL_Spec)
+		EcoreUtil.resolveAll(resourceSet)
 		return spec
 	}
 
