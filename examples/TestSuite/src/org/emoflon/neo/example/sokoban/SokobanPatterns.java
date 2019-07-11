@@ -1,6 +1,7 @@
 package org.emoflon.neo.example.sokoban;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -351,4 +352,8 @@ public class SokobanPatterns extends ENeoTest {
 		assertTrue(entities.getConstraint_SokOnFieldThenBlockOnField().isViolated());
 	}
 
+	@Test
+	public void testNoBlockedBlocks() {
+		assertFalse(entities.getPattern_BlockNotOnEndFieldInCorner().matcher().determineOneMatch().isPresent());
+	}
 }
