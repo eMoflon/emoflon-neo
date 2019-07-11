@@ -148,48 +148,48 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			left to right direction
 			«FOR entity : root.entities»
 				«IF entity instanceof Metamodel»
-					package "Metamodel: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Metamodel: «entity.name»" <<Rectangle>> «IF entity.abstract»<<Abstract>>«ENDIF» «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Model»
-					package "Model: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Model: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 					«referenceInstantiatedMetamodel(entity as Model)»
 				«ENDIF»
 				«IF entity instanceof Pattern»
-					package "Pattern: «entity.body.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Pattern: «entity.body.name»" «IF entity.body.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Rule»
-					package "Rule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Rule: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof TripleRule»
-					package "TripleRule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "TripleRule: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
-					package "TripleGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "TripleGrammar: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof GraphGrammar»
-					package "GraphGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "GraphGrammar: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
-				«IF entity instanceof Enum»
-					package "Enum: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
-						
-					}
-				«ENDIF»
+				««««IF entity instanceof Enum»
+				«««	rectangle "Enum: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+				«««		
+				«««	}
+				««««ENDIF»
 				«IF entity instanceof Constraint»
-					package "Constraint: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Constraint: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
@@ -207,9 +207,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Model entity, boolean mainSelection) {
 		var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>())
 		'''
+			package "«IF entity.abstract»//«ENDIF»«(entityCopy as Model).name»«IF entity.abstract»//«ENDIF»"«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : entityCopy.nodeBlocks»
 				«visualiseNodeBlockInModel(nb, false)»
 			«ENDFOR»
+			}
 		'''
 	}
 
@@ -278,7 +280,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForObject(ModelNodeBlock nb) {
 		val entity = nb.eContainer as Model
-		'''"«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
+		'''"«IF (nb.eContainer as Model).abstract»//«ENDIF»«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF»«IF (nb.eContainer as Model).abstract»//«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
 	}
 	
 	/**
@@ -308,12 +310,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def dispatch String visualiseEntity(Metamodel entity, boolean mainSelection) {
 		'''
+			package "«IF entity.abstract»//«ENDIF»«(entity as Metamodel).name»«IF entity.abstract»//«ENDIF»"«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInMetamodel(nb, false)»
 			«ENDFOR»
 			«FOR e : entity.enums»
 				«visualiseEnumInMetamodel(e, false)»
 			«ENDFOR»
+			}
 		'''
 	}
 
@@ -344,7 +348,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	
 	def String visualiseEnumInMetamodel(Enum e, boolean mainSelection) {
 		'''
-			class "«(e.eContainer as Metamodel).name».«e.name»" «IF mainSelection»<<Selection>>«ENDIF» {
+			class "«IF (e.eContainer as Metamodel).abstract»//«ENDIF»«(e.eContainer as Metamodel).name»«IF (e.eContainer as Metamodel).abstract»//«ENDIF».«e.name»" «IF mainSelection»<<Selection>>«ENDIF» {
 				«FOR literal : e.literals»
 					«literal.name»
 				«ENDFOR»
@@ -357,7 +361,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForClass(MetamodelNodeBlock nb) {
 		val entity = nb.eContainer as Metamodel
-		'''"«entity?.name».«nb?.name»"'''
+		'''"«IF entity.abstract»//«ENDIF»«entity?.name»«IF entity.abstract»//«ENDIF».«nb?.name»"'''
 	}
 
 	/**
@@ -399,7 +403,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		try {
 			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
 			'''
-				package «(entityCopy as Pattern).body.name»«IF mainSelection» <<Selection>> «ENDIF»{
+				package «IF entity.body.abstract»//«ENDIF»«(entityCopy as Pattern).body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
 				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
 					«visualiseNodeBlockInPattern(nb, false)»
 				«ENDFOR»
@@ -470,7 +474,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nb.type !== null && nb.type.name !== null)
 				nbTypeName = nb.type.name
 
-			'''"«entityName».«nbName»:«nbTypeName»"'''
+			'''"«IF (nb.eContainer as AtomicPattern).abstract»//«ENDIF»«entityName»«IF (nb.eContainer as AtomicPattern).abstract»//«ENDIF».«nbName»:«nbTypeName»"'''
 		} else
 			'''"?"'''
 	}	
@@ -485,7 +489,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		try {
 			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
 		'''
-			package «(entityCopy as Rule).name»«IF mainSelection» <<Selection>> «ENDIF»{
+			package «IF entity.abstract»//«ENDIF»«(entityCopy as Rule).name»«IF entity.abstract»//«ENDIF»«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
 				«visualiseNodeBlockInRule(nb, false)»
 			«ENDFOR»
@@ -555,7 +559,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nb.type.name === null)
 				nb.type.name = "?"
 
-			'''"«entity.name».«nb.name»:«nb.type.name»"'''
+			'''"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»"'''
 		} else
 			'''"?"'''
 	}
@@ -566,7 +570,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(GraphGrammar entity, boolean mainSelection) {
 		'''
 			«FOR r : entity.rules»
-				class "«entity.name».«r.name»"
+				class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«r.name»"
 			«ENDFOR»
 		'''
 	}
@@ -587,7 +591,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Constraint entity, boolean mainSelection) {
 		'''
 			legend bottom
-				«getConditionString(entity)»
+				«IF entity.abstract»//«ENDIF»«getConditionString(entity)»«IF entity.abstract»//«ENDIF»
 			endlegend
 			«visualiseCondition(entity)»
 		'''
@@ -802,7 +806,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseTripleRuleNodeBlocks(TripleRule entity, ModelNodeBlock nb, String type) {
 		var sizeOfTypeList = 0
-		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
+		'''class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
 			«FOR link : nb.relations»«{sizeOfTypeList = link.typeList.size - 1;""}»
 				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.target.name»:«link.target.type.name»":"«FOR t : link.typeList»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 			«ENDFOR»
@@ -841,7 +845,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForTripleRuleComponent(ModelNodeBlock nb) {
 		val entity = nb.eContainer as TripleRule
-		'''"«entity.name».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
+		'''"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
 	}
 
 	/**
@@ -869,13 +873,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			together Source {
 				«FOR mm : entity.srcMetamodels»
-					class "«entity.name».«mm.name»"
+					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»"
 				«ENDFOR»
 			}
 			
 			together Target {
 				«FOR mm : entity.trgMetamodels»
-					class "«entity.name».«mm.name»"
+					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»"
 				«ENDFOR»
 			}
 		'''
@@ -1139,6 +1143,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				BackgroundColor White
 				ArrowColor Black
 			}			
+			
+			skinparam rectangle {
+				BackgroundColor<<Abstract>> LavenderBlush
+			}
 		'''
 	}
 }

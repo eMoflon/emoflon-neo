@@ -167,7 +167,7 @@ ConstraintReference:
 	(negated?='!')? reference=[Constraint|QualifiedName];
 
 Constraint:
-	'constraint' name=QualifiedName '=' body=(AtomicConstraint | OrBody);
+	(abstract?='abstract')? 'constraint' name=QualifiedName '=' body=(AtomicConstraint | OrBody);
 
 OrBody:
 	children+=AndBody ('||' children+=AndBody)*;
