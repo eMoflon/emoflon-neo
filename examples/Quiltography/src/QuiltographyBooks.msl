@@ -1,0 +1,43 @@
+import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
+
+abstract model GabisQuiltographyBooks {
+	jambalaya:Book {
+		.title : "Jambalaya Quilts"
+		-location->hd1
+		-authors->wright
+		-classification->strips
+	}
+	
+	pillows:Book {
+		.title : "Pillows"
+		-location->hd1
+		-authors->wells
+		-classification->mixed
+	}
+	
+	hd1:Location {
+		.name : "HD-1"
+	}
+	
+	hd2:Location {
+		.name : "HD-2"
+	}
+	
+	wright:Author {
+		.name : "Jean Ann"
+		.surname : "Wright"
+	}
+	
+	wells:Author {
+		.name : "Jean & Valori"
+		.surname : "Wells"
+	}
+	
+	strips:Classification {
+		.name : "Using Strips"
+	}
+	
+	mixed:Classification {
+		.name : "Mixed"
+	}
+}
