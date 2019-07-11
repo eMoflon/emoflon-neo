@@ -194,6 +194,19 @@ class CypherPatternBuilder {
 	 * Basic Constraint Functions
 	 ****************************/
 	 
+	def static String constraintQuery(Collection<NeoNode> nodes, Collection<String> helperNodes, String matchCond, String whereCond, boolean injective, int limit) {
+		
+		'''«matchQuery(nodes)»
+		«whereQuery(nodes, injective)»
+		«withQuery(nodes)»
+		«matchCond»
+		«constraint_withQuery(helperNodes)»
+		WHERE «whereCond»
+		«constraint_withQuery(helperNodes)»
+		«IF limit>0»«returnQuery(nodes, limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
+		'''
+	} 
+	 
 	def static String constraintQuery_Satisfied(String optionalMatch, String whereClause) {
 		'''«optionalMatch»
 		WHERE «whereClause»
