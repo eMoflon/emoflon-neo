@@ -1,0 +1,18 @@
+import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
+
+// Alle Būcher eines gewissen Authors
+pattern allBooksOfAParticularAuthor {
+	someAuthor:Author
+	
+	book:Book {
+		-authors->someAuthor
+	}
+}
+
+// Alle Būcher einer gewissen Klassifikation
+// Alle Seiten zu einem gewissen Buch
+// alle Seiten zu Quilts oder Pillows mit einem bestimmten Pattern
+// alle Seiten zu Quilts mit einem gewissen Pattern aus Büchern mit einer bestimmten Klassifikation
+// alle Seiten zu Quilts aus  Büchern mit einer gewissen Qualifikation
+// Alle Seiten mit Contents = basics
+// Alle Seiten mit Contents = tips

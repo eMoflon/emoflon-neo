@@ -1,4 +1,7 @@
 import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
+import "platform:/resource/Quiltography/src/QuiltographyBooks.msl"
+import "platform:/resource/Quiltography/src/QuiltographyPatterns.msl"
+import "platform:/resource/Quiltography/src/QuiltographyTypes.msl"
 
 model GabisQuiltographyPages -> GabisQuiltographyBooks, GabisQuiltographyTypes, GabisQuiltographyPatterns {
 	p1:Page {
