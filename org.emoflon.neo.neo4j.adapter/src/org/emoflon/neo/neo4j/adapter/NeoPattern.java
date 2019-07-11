@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
@@ -13,7 +12,6 @@ import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
@@ -51,12 +49,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 		// execute the Pattern flatterer. Needed if the pattern use refinements or other
 		// functions. Returns the complete flattened Pattern.
-		try {
-			this.p = (Pattern) new EMSLFlattener().flattenCopyOfEntity(p, new ArrayList<String>());
-		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the pattern.");
-			e.printStackTrace();
-		}
+		this.p = helper.getFlattenedPattern(p);
 
 		// get all nodes, relations and properties from the pattern
 		extractNodesAndRelations();
@@ -255,7 +248,6 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				logger.info(
 						"Searching matches for Pattern: " + p.getBody().getName() + " ENFORCE " + constraint.getName());
 
-				// TODO Outsource to CypherPatterBuilder
 				// Create Query
 				var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),

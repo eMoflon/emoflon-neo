@@ -40,8 +40,9 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
-		this.ap = ap;
 		this.injective = injective;
+		
+		this.ap = helper.getFlattenedPattern(ap);
 		
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodes = new ArrayList<>();
