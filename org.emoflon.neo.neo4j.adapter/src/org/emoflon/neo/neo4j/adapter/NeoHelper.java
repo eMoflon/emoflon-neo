@@ -72,8 +72,6 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newPatternRelation(String name, int index, String relVar, String toName) {
-		logger.info(EMSLUtil.relationNameConvention(name, relVar, toName, index));
-
 		matchNodes.add(EMSLUtil.relationNameConvention(name, relVar, toName, index));
 		return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 	}

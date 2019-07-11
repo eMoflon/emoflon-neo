@@ -59,14 +59,17 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		if (p.getCondition() != null) {
 
 			if (p.getCondition() instanceof ConstraintReference) {
-				this.c = (Constraint) p.getCondition().eCrossReferences().get(0);
+				ConstraintReference ref = (ConstraintReference) p.getCondition();
+				this.c = ref.getReference();;
 
 			} else if (p.getCondition() instanceof PositiveConstraint) {
-				cond = (new NeoPositiveConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), injective,
+				PositiveConstraint cons = (PositiveConstraint) p.getCondition();
+				cond = (new NeoPositiveConstraint(cons.getPattern(), injective,
 						builder, helper));
 
 			} else if (p.getCondition() instanceof NegativeConstraint) {
-				cond = (new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), injective,
+				NegativeConstraint cons = (NegativeConstraint) p.getCondition();
+				cond = (new NeoNegativeConstraint(cons.getPattern(), injective,
 						builder, helper));
 
 			} else {
