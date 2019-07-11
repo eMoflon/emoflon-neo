@@ -14,6 +14,7 @@ import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
@@ -359,8 +360,11 @@ public class EMSLFlattener {
 		
 		// collect all edges in hashmap; first key is type name, second is target name
 		for (var name : nodeBlocks.keySet()) {
+			var namedEdges = new HashMap<String, ArrayList<ModelRelationStatement>>();
 			var edges = new HashMap<String, HashMap<String, ArrayList<ModelRelationStatement>>>();
 			for (var nb : nodeBlocks.get(name)) {
+				
+				// ----------- simple edges ----------- //
 				for (var rel : nb.getRelations()) {
 					if (rel.getTypeList() == null) {
 						continue;
@@ -384,6 +388,11 @@ public class EMSLFlattener {
 							}
 							edges.get(rel.getTypeList().get(0).getType().getName()).get(rel.getProxyTarget()).add(rel);
 						}
+					} else if (rel.getName() != null) {
+						if (!namedEdges.containsKey(rel.getName())) {
+							namedEdges.put(rel.getName(), new ArrayList<ModelRelationStatement>());
+						}
+						namedEdges.get(rel.getName()).add(rel);
 					}
 				}
 			}
@@ -449,7 +458,7 @@ public class EMSLFlattener {
 					else if (!green && red && !black)
 						newRel.getAction().setOp(ActionOperator.DELETE);
 					else
-						newRel.setAction(null);;
+						newRel.setAction(null);
 					
 					// create new ModelRelationStatementType for the new ModelRelationStatement
 					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
@@ -476,7 +485,112 @@ public class EMSLFlattener {
 				}
 			}
 			
-			// merge named edges -> different process
+			// ------------ edges with multiple types ------------- //
+			
+			for (var n : namedEdges.keySet()) {
+				var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
+				newRel.setName(n);
+				
+				var intersection = new ArrayList<MetamodelRelationStatement>();
+				namedEdges.get(n).get(0).getTypeList().forEach(t -> intersection.add(t.getType()));
+				for (var e : namedEdges.get(n)) {
+					var typesOfOther = new ArrayList<MetamodelRelationStatement>();
+					e.getTypeList().forEach(t -> typesOfOther.add(t.getType()));
+					intersection.retainAll(typesOfOther);
+				}
+				
+				if (intersection.isEmpty()) 
+					throw new FlattenerException(entity, FlattenerErrorType.NO_INTERSECTION_IN_MODEL_RELATION_STATEMENT_TYPE_LIST);
+				
+				for (var t : intersection) {
+					// create new ModelRelationStatementType for each remaining type
+					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+					newRelType.setType(t);
+					newRel.getTypeList().add(newRelType);
+					
+					var typesOfEdges = new ArrayList<ModelRelationStatementType>();
+					for (var e : namedEdges.get(n)) {
+						for (var tmp : e.getTypeList()) {
+							if (t == tmp.getType()) {
+								typesOfEdges.add(tmp);
+							}
+						}
+					}
+					var bounds = mergeModelRelationStatementPathLimits(entity, typesOfEdges);
+					if (bounds != null) {
+						newRelType.setLower(bounds[0].toString());
+						newRelType.setUpper(bounds[1].toString());
+					}
+				}
+				
+				// merge PropertyStatements of Edges
+				var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
+				for (var e : namedEdges.get(n)) {
+					// collect propertyStatements
+					e.getProperties().forEach(p -> {
+						if (!properties.containsKey(p.getType().getName())) {
+							properties.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
+						}
+						properties.get(p.getType().getName()).add(p);
+					});
+				}
+				
+				// merge statements	and check statements for compliance
+				for (var propertyName : properties.keySet()) {
+					var props = properties.get(propertyName);
+					ModelPropertyStatement basis = null;
+					if (properties.size() > 0) {
+						basis = props.get(0);
+					}
+					for (var p : props) {
+						if (p.getType().getType() != basis.getType().getType()) {
+							// incompatible types/operands found
+							if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							} else {
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							}
+						} else if (basis.getOp() != p.getOp()) {
+							if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							} else {
+								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							}
+						}
+						compareValueOfModelPropertyStatement(entity, basis, p);
+					}
+					newRel.getProperties().add(copyModelPropertyStatement(basis));
+				}
+				
+				// check and merge action
+				newRel.setAction(EMSLFactory.eINSTANCE.createAction());
+				boolean green = false;
+				boolean red = false;
+				boolean black = false;
+				for (var e : namedEdges.get(n)) {
+					if (e.getAction() != null && e.getAction().getOp() == ActionOperator.CREATE)
+						green = true;
+					else if (e.getAction() != null && e.getAction().getOp() == ActionOperator.DELETE)
+						red = true;
+					else
+						black = true;
+				}
+				if (green && !red && !black)
+					newRel.getAction().setOp(ActionOperator.CREATE);
+				else if (!green && red && !black)
+					newRel.getAction().setOp(ActionOperator.DELETE);
+				else
+					newRel.setAction(null);
+				
+				mergedNodes.forEach(nb -> {
+					if (nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
+						newRel.setTarget(nb);
+					}
+					if (nb.getName().equals(name)) {
+						nb.getRelations().add(newRel);
+					}
+				});
+			}
 		}
 		
 		return mergedNodes;
@@ -641,6 +755,7 @@ public class EMSLFlattener {
 		// add relations to new nodeblock
 		for (var rel : nb.getRelations()) {
 			var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
+			newRel.setName(rel.getName());
 			if (rel.getAction() != null) {
 				newRel.setAction(EMSLFactory.eINSTANCE.createAction());
 				newRel.getAction().setOp(rel.getAction().getOp());
