@@ -40,8 +40,9 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
-		this.ap = ap;
 		this.injective = injective;
+		
+		this.ap = helper.getFlattenedPattern(ap);
 		
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodes = new ArrayList<>();
@@ -83,10 +84,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchConstraint() {
-		return "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes) 
-				+ CypherPatternBuilder.whereQuery(nodes,injective)
-				+ "\n" + CypherPatternBuilder.withCountQuery(nodes, uuid)
-				+ "\n";
+		return CypherPatternBuilder.constraint_matchQuery(nodes, injective, uuid);
 	}
 
 	/**
@@ -97,8 +95,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchCondition() {
-		return "\nOPTIONAL " + CypherPatternBuilder.matchQuery(nodes) 
-				+ CypherPatternBuilder.whereQuery(nodes,injective) + "\n";
+		return CypherPatternBuilder.condition_matchQuery(nodes, injective);
 	}
 
 	/**

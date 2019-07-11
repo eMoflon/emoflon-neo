@@ -7,7 +7,6 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanGUIFunctionality extends ENeoTest {
@@ -19,7 +18,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("//TODO[Jannik] Please fix")
 	public void testExactlyOneSokoban() {
 		assertTrue(entities.getConstraint_ExactlyOneSokoban().isSatisfied());
 	}
