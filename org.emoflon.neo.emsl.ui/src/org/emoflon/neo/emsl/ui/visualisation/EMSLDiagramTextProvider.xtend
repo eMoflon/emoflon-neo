@@ -99,7 +99,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	def String getDiagramBody(IEditorPart editor, ISelection selection) {
-		val EMSL_Spec root = getRoot(editor) as EMSL_Spec
+		val EMSL_Spec root = getRoot(editor).get() as EMSL_Spec
 		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
 		val Optional<ModelNodeBlock> selectedNodeBlock = selectedEntity.flatMap([ e |
 			determineSelectedNodeBlock(selection, e)
@@ -1082,12 +1082,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	override boolean supportsEditor(IEditorPart editor) {
-		getRoot(editor) instanceof EMSL_Spec
+		getRoot(editor).map([it instanceof EMSL_Spec]).orElse(false)
 	}
 
 	def getRoot(IEditorPart editor) {
 		if (editor instanceof XtextEditor) {
-			return editor.document.readOnly([res|res.contents.get(0)])
+			return editor.document.readOnly([res|
+				if(!res.contents.empty) 
+					return Optional.of(res.contents.get(0))
+				else
+					return Optional.empty
+			])
+		} else {
+			return Optional.empty
 		}
 	}
 
