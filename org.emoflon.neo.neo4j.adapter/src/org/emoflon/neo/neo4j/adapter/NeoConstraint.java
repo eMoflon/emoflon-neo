@@ -1,6 +1,7 @@
 package org.emoflon.neo.neo4j.adapter;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Implication;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
@@ -160,9 +161,9 @@ public class NeoConstraint implements IConstraint {
 	public boolean isSatisfied() {
 
 		if (c.getBody() instanceof Implication) {
-            var implication = (Implication) c.getBody();
-            var apIf = implication.getPremise();
-            var apThen = implication.getConclusion();
+			var implication = (Implication) c.getBody();
+			var apIf = implication.getPremise();
+			var apThen = implication.getConclusion();
 			apIf = helper.getFlattenedPattern(apIf);
 			apThen = helper.getFlattenedPattern(apThen);
 			var co = new NeoImplication(apIf, apThen, injective, builder, helper);
