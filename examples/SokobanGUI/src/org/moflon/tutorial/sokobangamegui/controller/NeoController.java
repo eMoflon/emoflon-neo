@@ -17,7 +17,6 @@ import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
 
 public class NeoController implements IController {
-	@SuppressWarnings("unused")
 	private View view;
 	private API_SokobanGUIPatterns api;
 	private NeoCoreBuilder builder;
@@ -84,15 +83,26 @@ public class NeoController implements IController {
 			view.updateStatus("You must have exactly one Sokoban!");
 			return false;
 		}
+					
+		if(api.getConstraint_OneEndField().isViolated()) {
+			view.updateStatus("You must have exactly one end field!");
+			return false;
+		}
+		
+		if(api.getPattern_Block().matcher().countMatches() != api.getPattern_EndField().matcher().countMatches()) {
+			view.updateStatus("You must have the same amout of blocks as end fields!");
+			return false;
+		}
 			
-			
-		//TODO At least one EndField
+		if(api.getConstraint_NoBlockedEndField().isViolated()) {
+			view.updateStatus("One of your end fields is blocked by a boulder!");
+			return false;
+		}
 		
-		//TODO As many endfields as blocks
-		
-		//TODO Endfields blocked with boulders
-		
-		//TODO A block in a corner
+		if(api.getPattern_BlockNotOnEndFieldInCorner().matcher().determineOneMatch().isPresent()) {
+			view.updateStatus("One of your blocks is in a corner (which is not an end field)!");
+			return false;
+		}
 		
 		view.updateStatus("Everything seems to be ok...");
 		return true;
