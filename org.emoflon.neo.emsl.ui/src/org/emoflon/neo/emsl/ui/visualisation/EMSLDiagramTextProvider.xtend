@@ -438,7 +438,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»«{sizeOfTypeList = link.typeList.size - 1;""}»
-				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«FOR t : link.typeList»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
+				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»:«ENDIF»«FOR t : link.typeList»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
 				«labelForPatternComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
@@ -820,7 +820,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var sizeOfTypeList = 0
 		var sizeOfIncomingRefTypeList = 0		
 		'''
-			class «labelForTripleRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			class «labelForTripleRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»«{sizeOfTypeList = link.typeList.size - 1;""}»
 				«IF link.action !== null»
 					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target)» : "«FOR t : link.typeList»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
@@ -828,7 +828,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForTripleRuleComponent(nb)» : «attr.type.name» = «attr.value»
+				«labelForTripleRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as TripleRule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.typeList.size - 1;""}»

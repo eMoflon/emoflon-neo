@@ -359,11 +359,93 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 * an error message is shown.
 	 */
 	@Check
-	def void forbidOperatorsInModelNodeBlocks(Model m) {
-		for (nb : m.nodeBlocks) {
-			if (nb.action !== null) {
-				error("Actions are not allowed in Models.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__ACTION)
+	def void forbidOperatorsInModelNodeBlocks(ModelNodeBlock m) {
+		if (!(m.eContainer instanceof Rule) && !(m.eContainer instanceof TripleRule)) {
+			if (m.action !== null) {
+				error("Actions are not allowed here.", m, EMSLPackage.Literals.MODEL_NODE_BLOCK__ACTION)
 			}
+			for (r : m.relations) {
+				if (r.action !== null) {
+					error("Actions are not allowed here.", r, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__ACTION)
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks if multiple nodeBlocks in a model have the same name. If so, an error is produced.
+	 */
+	@Check
+	def void forbidNodeBlocksWithSameNameInModel(Model m) {
+		var namesList = new ArrayList<String>()
+		for (nb : m.nodeBlocks) {
+			if (!namesList.contains(nb.name))
+				namesList.add(nb.name)
+			else
+				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+		}
+	}
+	
+	/**
+	 * Checks if multiple nodeBlocks in a metamodel have the same name. If so, an error is produced.
+	 */
+	@Check
+	def void forbidNodeBlocksWithSameNameInMetamodel(Metamodel m) {
+		var namesList = new ArrayList<String>()
+		for (nb : m.nodeBlocks) {
+			if (!namesList.contains(nb.name))
+				namesList.add(nb.name)
+			else
+				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)
+		}
+	}
+	
+	/**
+	 * Checks if multiple nodeBlocks in a Pattern have the same name. If so, an error is produced.
+	 */
+	@Check
+	def void forbidNodeBlocksWithSameNameInPattern(Pattern p) {
+		var namesList = new ArrayList<String>()
+		for (nb : p.body.nodeBlocks) {
+			if (!namesList.contains(nb.name))
+				namesList.add(nb.name)
+			else
+				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+		}
+	}
+	
+	/**
+	 * Checks if multiple nodeBlocks in a Rule have the same name. If so, an error is produced.
+	 */
+	@Check
+	def void forbidNodeBlocksWithSameNameInRule(Rule r) {
+		var namesList = new ArrayList<String>()
+		for (nb : r.nodeBlocks) {
+			if (!namesList.contains(nb.name))
+				namesList.add(nb.name)
+			else
+				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+		}
+	}
+	
+	/**
+	 * Checks if multiple nodeBlocks in a tripleRule have the same name. If so, an error is produced.
+	 */
+	@Check
+	def void forbidNodeBlocksWithSameNameInTripleRule(TripleRule r) {
+		var namesList = new ArrayList<String>()
+		for (nb : r.srcNodeBlocks) {
+			if (!namesList.contains(nb.name))
+				namesList.add(nb.name)
+			else
+				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+		}
+		namesList.clear
+		for (nb : r.trgNodeBlocks) {
+			if (!namesList.contains(nb.name))
+				namesList.add(nb.name)
+			else
+				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
 		}
 	}
 }

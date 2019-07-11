@@ -18,6 +18,7 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
@@ -361,26 +362,29 @@ public class EMSLFlattener {
 			var edges = new HashMap<String, HashMap<String, ArrayList<ModelRelationStatement>>>();
 			for (var nb : nodeBlocks.get(name)) {
 				for (var rel : nb.getRelations()) {
-					/*if (rel.getType() == null) {
+					if (rel.getTypeList() == null) {
 						continue;
 					}
-					if (rel.getTarget() != null) {
-						if (!edges.containsKey(rel.getType().getName())) {
-							edges.put(rel.getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
+					// collect edges that have no names -> simple edges (only one type) => merging does not change
+					if (rel.getName() == null) {
+						if (rel.getTarget() != null) {
+							if (!edges.containsKey(rel.getTypeList().get(0).getType().getName())) {
+								edges.put(rel.getTypeList().get(0).getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
+							}
+							if (!edges.get(rel.getTypeList().get(0).getType().getName()).containsKey(rel.getTarget().getName())) {
+								edges.get(rel.getTypeList().get(0).getType().getName()).put(rel.getTarget().getName(), new ArrayList<ModelRelationStatement>());
+							}
+							edges.get(rel.getTypeList().get(0).getType().getName()).get(rel.getTarget().getName()).add(rel);
+						} else if (rel.getProxyTarget() != null) {
+							if (!edges.containsKey(rel.getTypeList().get(0).getType().getName())) {
+								edges.put(rel.getTypeList().get(0).getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
+							}
+							if (!edges.get(rel.getTypeList().get(0).getType().getName()).containsKey(rel.getProxyTarget())) {
+								edges.get(rel.getTypeList().get(0).getType().getName()).put(rel.getProxyTarget(), new ArrayList<ModelRelationStatement>());
+							}
+							edges.get(rel.getTypeList().get(0).getType().getName()).get(rel.getProxyTarget()).add(rel);
 						}
-						if (!edges.get(rel.getType().getName()).containsKey(rel.getTarget().getName())) {
-							edges.get(rel.getType().getName()).put(rel.getTarget().getName(), new ArrayList<ModelRelationStatement>());
-						}
-						edges.get(rel.getType().getName()).get(rel.getTarget().getName()).add(rel);
-					} else if (rel.getProxyTarget() != null) {
-						if (!edges.containsKey(rel.getType().getName())) {
-							edges.put(rel.getType().getName(), new HashMap<String, ArrayList<ModelRelationStatement>>());
-						}
-						if (!edges.get(rel.getType().getName()).containsKey(rel.getProxyTarget())) {
-							edges.get(rel.getType().getName()).put(rel.getProxyTarget(), new ArrayList<ModelRelationStatement>());
-						}
-						edges.get(rel.getType().getName()).get(rel.getProxyTarget()).add(rel);
-					}*/
+					}
 				}
 			}
 			
@@ -447,8 +451,20 @@ public class EMSLFlattener {
 					else
 						newRel.setAction(null);;
 					
-					
-					//newRel.setType(edges.get(typename).get(targetname).get(0).getType());
+					// create new ModelRelationStatementType for the new ModelRelationStatement
+					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+					newRelType.setType((edges.get(typename).get(targetname).get(0).getTypeList().get(0).getType()));
+					// collect all types of the edges that are to be merged (should be one type each in this case) to merge the bounds
+					var typesOfEdges = new ArrayList<ModelRelationStatementType>();
+					for (var e : edges.get(typename).get(targetname)) {
+						typesOfEdges.addAll(e.getTypeList());
+					}
+					var bounds = mergeModelRelationStatementPathLimits(entity, typesOfEdges);
+					if (bounds != null) {
+						newRelType.setLower(bounds[0].toString());
+						newRelType.setUpper(bounds[1].toString()); 
+					}
+					newRel.getTypeList().add(newRelType);
 					mergedNodes.forEach(nb -> {
 						if (nb.getName().equals(targetname)) {
 							newRel.setTarget(nb);
@@ -459,9 +475,68 @@ public class EMSLFlattener {
 					});
 				}
 			}
+			
+			// merge named edges -> different process
 		}
 		
 		return mergedNodes;
+	}
+	
+	/**
+	 * This method merges the lower and upper lengths of simple paths in ModelRelationStatementTypes.
+	 * The result is the maximum of the lower and the minimum of the upper limits.
+	 * @param entity that is to be flattened.
+	 * @param types whose lower and upper limits must be merged.
+	 * @return Array of two values representing the new lower and upper path lengths.
+	 * @throws FlattenerException is thrown if the lower limit of the path length is greater than the upper limit (does not make sense).
+	 */
+	private Object[] mergeModelRelationStatementPathLimits(Entity entity, ArrayList<ModelRelationStatementType> types) throws FlattenerException {
+		var bounds = new Object[2];
+		bounds[0] = 1;
+		bounds[1] = "*";
+		
+		boolean empty = true;
+		for (var t : types) {
+			if (t.getLower() != null && t.getUpper() != null) {
+				empty = false;
+			}
+		}
+		if (empty)
+			return null;
+		
+		for (var t : types) {
+			if (t.getLower() != null && t.getUpper() != null) {
+				try {
+					if (Integer.parseInt(t.getLower()) > Integer.parseInt(bounds[0].toString())) {
+						bounds[0] = Integer.parseInt(t.getLower());
+					}
+				} catch (NumberFormatException e) {
+					if (t.getLower().equals("*") && !bounds[0].equals("*")) {
+						bounds[0] = "*";
+					}
+				}
+				try {
+					if (Integer.parseInt(t.getUpper()) < Integer.parseInt(bounds[1].toString())) {
+						bounds[1] = Integer.parseInt(t.getUpper());
+					}
+				} catch (NumberFormatException e) {
+					if (!t.getUpper().equals("*") && bounds[1].equals("*")) {
+						bounds[1] = Integer.parseInt(t.getUpper());
+					}
+				}
+			}
+		}
+		
+		if (bounds[0] instanceof Integer) {
+			if (bounds[1] instanceof Integer && (int) bounds[0] > (int) bounds[1]) {
+				// lower bound is greater than upper => does not make sense => exception
+				throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE);
+			}
+		} else if (bounds[0].equals("*") && !bounds[1].equals("*")) {
+			throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE);
+		}
+		
+		return bounds;
 	}
 	
 	/**
@@ -573,7 +648,13 @@ public class EMSLFlattener {
 			for (var prop : rel.getProperties()) {
 				newRel.getProperties().add(copyModelPropertyStatement(prop));
 			}
-			//newRel.setType(rel.getType());
+			rel.getTypeList().forEach(t -> {
+				var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+				newRelType.setLower(t.getLower());
+				newRelType.setUpper(t.getUpper());
+				newRelType.setType(t.getType());
+				newRel.getTypeList().add(newRelType);
+			});
 			newRel.setTarget(rel.getTarget());			
 			newNb.getRelations().add(newRel);
 		}

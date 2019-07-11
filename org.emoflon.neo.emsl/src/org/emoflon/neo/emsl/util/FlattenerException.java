@@ -38,6 +38,12 @@ public class FlattenerException extends Exception {
 		this.errorType = type;
 		this.alreadyRefinedPatternNames = alreadyRefinedPatternNames;
 	}
+	
+	// very basic constructor, used for ModelRelationStatement path limits
+	public FlattenerException(Entity entity, FlattenerErrorType type) {
+		this.entity = entity;
+		this.errorType = type;
+	}
 
 	// for not mergeable property statements
 	public FlattenerException(Entity entity, FlattenerErrorType type, ModelPropertyStatement property1,
