@@ -405,7 +405,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			'''
 				package «IF entity.body.abstract»//«ENDIF»«(entityCopy as Pattern).body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
 				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
-					«visualiseNodeBlockInPattern(nb, false)»
+					«visualiseNodeBlockInPattern2(entityCopy as Pattern, nb, false)»
 				«ENDFOR»
 				}
 				«IF (entityCopy as Pattern).condition !== null »
@@ -428,6 +428,42 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def String visualiseNodeBlockInPattern(ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
 		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer.eContainer as Entity, new ArrayList<String>()))))) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
+		
+		var sizeOfTypeList = 0
+		var sizeOfIncomingRefTypeList = 0
+		'''
+			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			«FOR link : nb.relations»«{sizeOfTypeList = link.typeList.size - 1;""}»
+				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»:«ENDIF»«FOR t : link.typeList»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
+			«ENDFOR»
+			«FOR attr : nb.properties»
+				«labelForPatternComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+			«ENDFOR»
+			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
+				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.typeList.size - 1;""}»
+					«IF incomingRef.target == nb && mainSelection»
+						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : "«FOR t : incomingRef.typeList»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»"
+					«ENDIF»
+				«ENDFOR»
+			«ENDFOR»
+			«IF (nb.eContainer.eContainer as Pattern).condition !== null »
+				legend bottom
+					«getConditionString((nb.eContainer.eContainer as Pattern))»
+				endlegend
+			«ENDIF»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for a NodeBlock in a Pattern.
+	 */
+	def String visualiseNodeBlockInPattern2(Pattern entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 			if (nodeBlock.name.equals(n.name))
 				node = n
 		}

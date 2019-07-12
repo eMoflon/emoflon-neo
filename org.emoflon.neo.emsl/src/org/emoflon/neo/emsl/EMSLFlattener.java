@@ -593,6 +593,33 @@ public class EMSLFlattener {
 			}
 		}
 		
+		// ----------------- remove double edges ----------------- //
+		
+		for (var nb : mergedNodes) {
+			var duplicates = new ArrayList<ModelRelationStatement>();
+			for (var relation : nb.getRelations()) {
+				if (relation.getTypeList().size() > 1)
+					continue;
+				for (var other : nb.getRelations()) {
+					if (other.getTypeList().size() > 1 || relation == other)
+						continue;
+					if (relation.getTypeList().get(0).getType() == other.getTypeList().get(0).getType()	
+							&& relation.getTarget() == other.getTarget()
+							&& relation.getTypeList().get(0).getLower() == other.getTypeList().get(0).getLower()
+							&& relation.getTypeList().get(0).getUpper() == other.getTypeList().get(0).getUpper()) {
+						if (!duplicates.contains(other)) {
+							duplicates.add(other);
+						}
+					}
+				}
+			}
+			nb.getRelations().stream().filter(r -> duplicates.contains(r));
+			for (var relation : nb.getRelations()) {
+				if (relation.getTypeList().size() == 1 && relation.getName() != null)
+					relation.setName(null);
+			}
+		}
+		
 		return mergedNodes;
 	}
 	
@@ -639,16 +666,17 @@ public class EMSLFlattener {
 					}
 				}
 			}
+			if (bounds[0] instanceof Integer) {
+				if (bounds[1] instanceof Integer && (int) bounds[0] > (int) bounds[1]) {
+					// lower bound is greater than upper => does not make sense => exception
+					throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, t);
+				}
+			} else if (bounds[0].equals("*") && !bounds[1].equals("*")) {
+				throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, t);
+			}
 		}
 		
-		if (bounds[0] instanceof Integer) {
-			if (bounds[1] instanceof Integer && (int) bounds[0] > (int) bounds[1]) {
-				// lower bound is greater than upper => does not make sense => exception
-				throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE);
-			}
-		} else if (bounds[0].equals("*") && !bounds[1].equals("*")) {
-			throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE);
-		}
+		
 		
 		return bounds;
 	}
@@ -755,7 +783,16 @@ public class EMSLFlattener {
 		// add relations to new nodeblock
 		for (var rel : nb.getRelations()) {
 			var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			newRel.setName(rel.getName());
+			
+			// apply relabeling
+			for (var relabeling : refinement.getRelabeling()) {
+				if (relabeling.getOldLabel().equals(rel.getName()))
+					newRel.setName(relabeling.getNewLabel());
+			}
+			if (newRel.getName() == null)
+				newRel.setName(rel.getName());
+			
+			// copy action, properties target etc.
 			if (rel.getAction() != null) {
 				newRel.setAction(EMSLFactory.eINSTANCE.createAction());
 				newRel.getAction().setOp(rel.getAction().getOp());

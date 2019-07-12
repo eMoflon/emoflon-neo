@@ -28,10 +28,20 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		if ((entity as RefinementCommand).referencedType.eContainer instanceof Pattern) {
 			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern, new ArrayList<String>()))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
+				for (relation : nb.relations){
+					if (relation.name !== null) {
+						acceptor.accept(createCompletionProposal(relation.name, context))
+					}
+				}
 			}
 		} else {
 			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType) as Entity, new ArrayList<String>()))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
+				for (relation : nb.relations){
+					if (relation.name !== null) {
+						acceptor.accept(createCompletionProposal(relation.name, context))
+					}
+				}
 			}
 		}
 	}

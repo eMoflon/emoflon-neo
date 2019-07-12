@@ -6,6 +6,7 @@ import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 
 public class FlattenerException extends Exception {
@@ -23,6 +24,7 @@ public class FlattenerException extends Exception {
 	private ModelNodeBlock nodeBlock;
 	
 	private ModelRelationStatement relation;
+	private ModelRelationStatementType statementType;
 
 	/**
 	 * Constructor for the case of a detected infinite loop.
@@ -39,7 +41,14 @@ public class FlattenerException extends Exception {
 		this.alreadyRefinedPatternNames = alreadyRefinedPatternNames;
 	}
 	
-	// very basic constructor, used for ModelRelationStatement path limits
+	// for ModelRelationStatement path limits
+	public FlattenerException(Entity entity, FlattenerErrorType type, ModelRelationStatementType statementType) {
+		this.entity = entity;
+		this.errorType = type;
+		this.statementType = statementType;
+	}
+	
+	// for not mergeable complex edges
 	public FlattenerException(Entity entity, FlattenerErrorType type) {
 		this.entity = entity;
 		this.errorType = type;
@@ -106,6 +115,10 @@ public class FlattenerException extends Exception {
 	
 	public ModelRelationStatement getRelation() {
 		return relation;
+	}
+	
+	public ModelRelationStatementType getStatementType() {
+		return statementType;
 	}
 
 }

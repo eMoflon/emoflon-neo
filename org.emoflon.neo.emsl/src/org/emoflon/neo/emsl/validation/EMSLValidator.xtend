@@ -42,6 +42,7 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
 import java.util.function.Consumer
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 
 /**
  * This class contains custom validation rules. 
@@ -109,20 +110,20 @@ class EMSLValidator extends AbstractEMSLValidator {
 				new EMSLFlattener().flattenCopyOfEntity(entity as Entity, new ArrayList);
 			}
 		} catch (FlattenerException e) {
-			if (entity instanceof AtomicPattern) {
+			if (entity instanceof Pattern) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 					var index = 0
-					for (s : entity.superRefinementTypes) {
-						if (e.alreadyRefinedPatternNames.contains((s.referencedType as AtomicPattern).name))
+					for (s : new EntityAttributeDispatcher().getSuperRefinementTypes(entity)) {
+						if (e.alreadyRefinedPatternNames.contains(((s as RefinementCommand).referencedType as AtomicPattern).name))
 							error(
 								REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
-								entity, EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+								entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
 
 				} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
 					var index = 0
-					for (nb : entity.nodeBlocks) {
+					for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 						if (nb.type.name.equals(e.nodeBlock.type.name)) {
 							error("The type " + e.nodeBlock.type.name +
 								" in your refinements cannot be merged into a common subtype.", nb,
@@ -133,9 +134,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 				} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
 					var index = 0
-					for (s : entity.superRefinementTypes) {
-						if ((s.referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name))
-							error(CONDITION_IN_SUPER_ENTITY, entity,
+					for (s : new EntityAttributeDispatcher().getSuperRefinementTypes(entity)) {
+						if (((s as RefinementCommand).referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name))
+							error(CONDITION_IN_SUPER_ENTITY, entity.body,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						index++
 					}
@@ -147,16 +148,22 @@ class EMSLValidator extends AbstractEMSLValidator {
 						if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
-							error(NOT_SUPPORTED_ENTITY, entity,
+							error(NOT_SUPPORTED_ENTITY, entity.body,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 							dispatcher.getSuperTypeName(e.superEntity).equals(
 								dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
-							error(NOT_SUPPORTED_ENTITY, entity,
+							error(NOT_SUPPORTED_ENTITY, entity.body,
 								EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
 						}
 						index++
 					}
+				} else if (e.errorType == FlattenerErrorType.PATH_LENGTHS_NONSENSE) {
+					error("Some path limits in your refinements do not make sense.", 
+						entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+				} else if (e.errorType == FlattenerErrorType.NO_INTERSECTION_IN_MODEL_RELATION_STATEMENT_TYPE_LIST) {
+					error("There has to be at least one common type of edges in your refinements of complex edges.", 
+						entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
 				}
 			} else if (entity instanceof Rule) {
 				if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
@@ -373,79 +380,64 @@ class EMSLValidator extends AbstractEMSLValidator {
 	}
 	
 	/**
-	 * Checks if multiple nodeBlocks in a model have the same name. If so, an error is produced.
-	 */
-	@Check
-	def void forbidNodeBlocksWithSameNameInModel(Model m) {
-		var namesList = new ArrayList<String>()
-		for (nb : m.nodeBlocks) {
-			if (!namesList.contains(nb.name))
-				namesList.add(nb.name)
-			else
-				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
-		}
-	}
-	
-	/**
 	 * Checks if multiple nodeBlocks in a metamodel have the same name. If so, an error is produced.
 	 */
-	@Check
-	def void forbidNodeBlocksWithSameNameInMetamodel(Metamodel m) {
+	@Check(NORMAL)
+	def void forbidNodeBlocksWithSameNameInMetamodel(Entity entity) {
 		var namesList = new ArrayList<String>()
-		for (nb : m.nodeBlocks) {
-			if (!namesList.contains(nb.name))
-				namesList.add(nb.name)
-			else
-				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)
+		if (entity instanceof Metamodel) {
+			for (nb : entity.nodeBlocks) {
+				if (!namesList.contains(nb.name))
+					namesList.add(nb.name)
+				else
+					error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)		
+			}
 		}
 	}
 	
 	/**
-	 * Checks if multiple nodeBlocks in a Pattern have the same name. If so, an error is produced.
+	 * Checks if multiple nodeBlocks and/or edges in an entity have the same name.
+	 * This is forbidden because Relabeling of nodeBlocks and/or edges would no longer work.
 	 */
 	@Check
-	def void forbidNodeBlocksWithSameNameInPattern(Pattern p) {
-		var namesList = new ArrayList<String>()
-		for (nb : p.body.nodeBlocks) {
-			if (!namesList.contains(nb.name))
-				namesList.add(nb.name)
-			else
-				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+	def void forbidNodeBlockAndEdgeWithSameName(Entity entity) {
+		var dispatcher = new EntityAttributeDispatcher()
+		var namesList = new ArrayList
+		if (!(entity instanceof Metamodel)) {
+			for (nb : dispatcher.getNodeBlocks(entity)) {
+				if (!namesList.contains(nb.name)) {
+					namesList.add(nb.name)
+				} else {
+					error("Using the same name multiple times in one Entity is not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+				}
+				for (rel : nb.relations) {
+					if (rel.name !== null && !namesList.contains(rel.name)) {
+						namesList.add(rel.name)
+					} else if (rel.name !== null) {
+						error("Using the same name multiple times in one Entity is not allowed.", rel, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
+					}
+				}
+			}
 		}
 	}
 	
 	/**
-	 * Checks if multiple nodeBlocks in a Rule have the same name. If so, an error is produced.
+	 * Checks if a normal edge (edges that has only one given type) has a name. If so, an error is produced.
 	 */
 	@Check
-	def void forbidNodeBlocksWithSameNameInRule(Rule r) {
-		var namesList = new ArrayList<String>()
-		for (nb : r.nodeBlocks) {
-			if (!namesList.contains(nb.name))
-				namesList.add(nb.name)
-			else
-				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+	def void forbidNamesInNormalEdges(ModelRelationStatement relation) {
+		if (relation.typeList.size == 1 && relation.name !== null) {
+			error("Names in normale edges (only one type) are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
 		}
 	}
 	
 	/**
-	 * Checks if multiple nodeBlocks in a tripleRule have the same name. If so, an error is produced.
+	 * Checks if a complex edge has a name. If not, an error is produced.
 	 */
 	@Check
-	def void forbidNodeBlocksWithSameNameInTripleRule(TripleRule r) {
-		var namesList = new ArrayList<String>()
-		for (nb : r.srcNodeBlocks) {
-			if (!namesList.contains(nb.name))
-				namesList.add(nb.name)
-			else
-				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
-		}
-		namesList.clear
-		for (nb : r.trgNodeBlocks) {
-			if (!namesList.contains(nb.name))
-				namesList.add(nb.name)
-			else
-				error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+	def void enforceNamesInComplexEdges(ModelRelationStatement relation) {
+		if (relation.typeList.size > 1 && relation.name === null) {
+			error("Complex edges must have a name.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE_LIST)
 		}
 	}
 }
