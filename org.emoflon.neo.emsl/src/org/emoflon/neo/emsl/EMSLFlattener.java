@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.AttributeCondition;
@@ -777,8 +778,8 @@ public class EMSLFlattener {
 		if (newNb.getName() == null)
 			newNb.setName(nb.getName());
 		
-		newNb.setType(nb.getType());
-		newNb.setAction(nb.getAction());
+		newNb.setType(nb.getType()); 
+		newNb.setAction(EcoreUtil.copy(nb.getAction()));
 		
 		// add relations to new nodeblock
 		for (var rel : nb.getRelations()) {

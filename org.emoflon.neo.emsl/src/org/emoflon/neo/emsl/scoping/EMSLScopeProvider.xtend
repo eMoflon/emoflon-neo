@@ -356,7 +356,6 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 	protected def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(HashSet<ModelNodeBlock> allNodeBlocks,
 		ModelRelationStatement statement) {
-		//allNodeBlocks.filter[nb|thisAndAllSuperTypes(nb?.type).contains(statement?.type?.target)]
 		var filteredNodeBlocks = new HashSet()
 		for (nb : allNodeBlocks) {
 			for (t : statement.typeList) {

@@ -183,11 +183,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						
 					}
 				«ENDIF»
-				««««IF entity instanceof Enum»
-				«««	rectangle "Enum: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
-				«««		
-				«««	}
-				««««ENDIF»
 				«IF entity instanceof Constraint»
 					rectangle "Constraint: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
