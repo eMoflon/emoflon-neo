@@ -403,7 +403,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void forbidNodeBlockAndEdgeWithSameName(Entity entity) {
 		var dispatcher = new EntityAttributeDispatcher()
 		var namesList = new ArrayList
-		if (!(entity instanceof Metamodel)) {
+		if (entity instanceof Model || entity instanceof Pattern || entity instanceof Rule || entity instanceof TripleRule) {
 			for (nb : dispatcher.getNodeBlocks(entity)) {
 				if (!namesList.contains(nb.name)) {
 					namesList.add(nb.name)
