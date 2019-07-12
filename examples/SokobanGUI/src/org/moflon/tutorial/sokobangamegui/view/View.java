@@ -203,7 +203,7 @@ public class View extends JFrame {
 	}
 
 	public void updateStatus(String status) {
-		statusBar.append(status);
+		statusBar.append("\n" + status);
 		statusBar.setCaretPosition(statusBar.getDocument().getLength());
 	}
 

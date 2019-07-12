@@ -36,6 +36,11 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 	private List<NeoNode> nodes;
 
+	public NeoPattern(Pattern p, NeoCoreBuilder builder, NeoMask mask) {
+		// TODO[Jannik]
+		this(p, builder);
+	}
+
 	/**
 	 * 
 	 * @param p       the given pattern from the model

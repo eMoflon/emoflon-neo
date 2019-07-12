@@ -14,8 +14,10 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.BuiltInType;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
+import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumLiteral;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
@@ -27,6 +29,7 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.emsl.util.FlattenerException;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -208,13 +211,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 		driver.close();
 	}
 
-	public void exportModelToNeo4j(Model m) {
+	private void exportModelToNeo4j(Model m) {
 		bootstrapNeoCoreIfNecessary();
 
 		ResourceSet rs = m.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
 
 		var models = collectReferencedModels(m);
+		models.add(m);
+
 		var metamodels = models.stream()//
 				.flatMap(model -> collectDependentMetamodels(m).stream())//
 				.collect(Collectors.toSet());
@@ -306,7 +311,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	public void exportMetamodelToNeo4j(Metamodel m) {
+	private void exportMetamodelToNeo4j(Metamodel m) {
 		bootstrapNeoCoreIfNecessary();
 		ResourceSet rs = m.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
@@ -743,5 +748,20 @@ public class NeoCoreBuilder implements AutoCloseable {
 				.findAny();
 
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
+	}
+
+	public void exportEMSLEntityToNeo4j(Entity entity) {
+		try {
+			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
+			if (flattenedEntity instanceof Model)
+				exportModelToNeo4j((Model) flattenedEntity);
+			else if (flattenedEntity instanceof Metamodel)
+				exportMetamodelToNeo4j((Metamodel) flattenedEntity);
+			else
+				throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
+		} catch (FlattenerException e) {
+			logger.error("EMSL Flattener was unable to process the entity.");
+			e.printStackTrace();
+		}
 	}
 }
