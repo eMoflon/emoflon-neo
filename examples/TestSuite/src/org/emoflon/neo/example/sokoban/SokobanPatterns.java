@@ -10,6 +10,7 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanPatterns extends ENeoTest {
@@ -173,7 +174,10 @@ public class SokobanPatterns extends ENeoTest {
 		assertThat(entities.getPattern_All3x3Fields().matcher().countMatches(), is(4));
 	}
 	
+	// Test sometimes fails (return 0 matches) due to a bug in Neo4j.
+	// See: https://github.com/neo4j/neo4j/issues/12247
 	@Test
+	@Disabled
 	public void test_One3x3FieldsLimit() {
 		assertThat(entities.getPattern_All3x3Fields().matcher().determineMatches(1).size(), is(1));
 	}
