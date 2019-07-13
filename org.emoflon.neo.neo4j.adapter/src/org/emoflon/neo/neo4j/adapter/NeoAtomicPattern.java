@@ -144,28 +144,25 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public Collection<NeoMatch> determineMatches() {
-		logger.info("Searching matches for Pattern: " + ap.getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
-		logger.debug(cypherQuery);
-
-		var result = builder.executeQuery(cypherQuery);
-
-		var matches = new ArrayList<NeoMatch>();
-		while (result.hasNext()) {
-			var record = result.next();
-			matches.add(new NeoMatch(null, record));
-		}
-
-		if (matches.isEmpty()) {
-			logger.debug("NO MATCHES FOUND");
-		}
-		return matches;
+		return determineMatches(0);
 	}
 
+	/**
+	 * Creates the specific Cypher query and executes it in the database, analyze
+	 * the results and return the specific results
+	 * 
+	 * @param limit number of matches, that should be returned - 0 if infinite
+	 * @return Collection<IMatch> List of Matches of the pattern matching process
+	 */
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 		logger.info("Searching matches for Pattern: " + ap.getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+		var cypherQuery = "";
+		if(limit > 0)
+			cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+		else
+			cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
+		
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);

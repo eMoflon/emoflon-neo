@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 
 public interface IController {
+	public String BOULDER = "Boulder";
+	public String BLOCK = "Block";
+	public String SOKOBAN = "Sokoban";
 	int getWidth();
 	int getHeight();
 

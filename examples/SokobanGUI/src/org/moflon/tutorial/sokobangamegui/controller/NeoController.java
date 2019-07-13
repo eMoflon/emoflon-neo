@@ -12,14 +12,16 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
+import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
+import org.emoflon.neo.engine.api.rules.RuleApplicationSemantics;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
 
 public class NeoController implements IController {
-	@SuppressWarnings("unused")
 	private View view;
-	private API_SokobanGUIPatterns api;
+	private API_SokobanGUIPatterns api1;
+	private API_SokobanPatternsRulesConstraints api2;
 	private NeoCoreBuilder builder;
 
 	private int width = 0;
@@ -32,7 +34,9 @@ public class NeoController implements IController {
 
 	public NeoController(Function<IController, View> createView) {
 		builder = API_Common.createBuilder();
-		api = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+		api1 = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+		api2 = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI,
+				API_Common.PLATFORM_PLUGIN_URI);
 		defaultBoard();
 		view = createView.apply(this);
 	}
@@ -54,7 +58,7 @@ public class NeoController implements IController {
 
 	@Override
 	public List<String> getFigureTypes() {
-		var access = api.getPattern_FigureTypes();
+		var access = api1.getPattern_FigureTypes();
 		return access.matcher().determineMatches()//
 				.stream().map(m -> {
 					var data = access.data(m);
@@ -64,7 +68,7 @@ public class NeoController implements IController {
 
 	@Override
 	public Optional<Field> getSelectedField() {
-		var access = api.getPattern_SelectedFigure(); 
+		var access = api1.getPattern_SelectedFigure();
 		return access.matcher().determineOneMatch().flatMap(m -> {
 			var data = access.data(m);
 			return fields.stream()//
@@ -80,23 +84,98 @@ public class NeoController implements IController {
 
 	@Override
 	public boolean boardIsValid() {
-		// TODO: Check all kind of constraints
+		if (api1.getConstraint_ExactlyOneSokoban().isViolated()) {
+			view.updateStatus("You must have exactly one Sokoban!");
+			return false;
+		}
+
+		if (api1.getConstraint_OneEndField().isViolated()) {
+			view.updateStatus("You must have exactly one end field!");
+			return false;
+		}
+
+		if (api1.getPattern_Block().matcher().countMatches() != api1.getPattern_EndField().matcher().countMatches()) {
+			view.updateStatus("You must have the same number of blocks as end fields!");
+			return false;
+		}
+
+		if (api1.getConstraint_NoBlockedEndField().isViolated()) {
+			view.updateStatus("One of your end fields is blocked by a boulder!");
+			return false;
+		}
+
+		if (api2.getPattern_BlockNotOnEndFieldInCorner().matcher().determineOneMatch().isPresent()) {
+			view.updateStatus("One of your blocks is in a corner (which is not an end field)!");
+			return false;
+		}
+
+		view.updateStatus("Everything seems to be ok...");
 		return true;
 	}
 
 	@Override
 	public void setFigure(Field field, String figureType) {
-		// TODO: Use a rule to set the figure
+		switch (figureType) {
+		case SOKOBAN: {
+			var access = api1.getRule_CreateSokoban();
+			var mask = access.mask();
+			mask.setB_fields_0_fCol(field.getCol());
+			mask.setB_fields_0_fRow(field.getRow());
+			access.rule(mask).apply();
+			break;
+		}
+		case BLOCK: {
+			var access = api1.getRule_CreateBlock();
+			var mask = access.mask();
+			mask.setB_fields_0_fCol(field.getCol());
+			mask.setB_fields_0_fRow(field.getRow());
+			access.rule(mask).apply();
+			break;
+		}
+		case BOULDER: {
+			var access = api1.getRule_CreateBoulder();
+			var mask = access.mask();
+			mask.setB_fields_0_fCol(field.getCol());
+			mask.setB_fields_0_fRow(field.getRow());
+			access.rule(mask).apply();
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
 	@Override
 	public void selectField(Field field) {
-		// TODO: Use a rule to select the field
+		// If the board has a selected figure, try to move figure to this field
+		var mask = api2.getRule_MoveSokobanDownWithCondition().mask();
+		mask.setB_fields_0_toCol(field.getCol());
+		mask.setB_fields_0_toRow(field.getRow());
+		var comatch = api2.getRule_MoveSokobanDownWithCondition().rule(mask).apply();
+
+		// If the movement failed, try to select the figure on the field
+		if (!comatch.isPresent()) {
+			api1.getRule_SelectFigure().rule(//
+					api1.getRule_SelectFigure().mask()//
+							.setB_fields_0_fCol(field.getCol())//
+							.setB_fields_0_fRow(field.getRow()))//
+					.apply();
+		}
 	}
 
 	@Override
 	public void setEndPos(Field field, boolean b) {
-		// TODO: Use a rule to set the field as an end position
+		if (b) {
+			var mask = api1.getRule_SetEndField().mask();
+			mask.setB_fields_0_fCol(field.getCol());
+			mask.setB_fields_0_fRow(field.getRow());
+			api1.getRule_SetEndField().rule(mask).apply();
+		} else {
+			var mask = api1.getRule_SetNotEndField().mask();
+			mask.setB_fields_0_fCol(field.getCol());
+			mask.setB_fields_0_fRow(field.getRow());
+			api1.getRule_SetNotEndField().rule(mask).apply();
+		}
 	}
 
 	@Override
@@ -105,54 +184,59 @@ public class NeoController implements IController {
 	}
 
 	private void defaultBoard() {
-		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI,
+				API_Common.PLATFORM_PLUGIN_URI);
 		var board = exampleBoard.getModel_SokobanSimpleTestField();
-		builder.exportModelToNeo4j(board);
+		builder.exportEMSLEntityToNeo4j(board);
 		extractFields();
 	}
 
-	private void extractFields() {	
-		var accessBoard = api.getPattern_Board();
+	private void extractFields() {
+		var accessBoard = api1.getPattern_Board();
 		accessBoard.matcher().determineOneMatch().ifPresent(m -> {
 			var mData = accessBoard.data(m);
 			this.width = mData.board.width;
 			this.height = mData.board.height;
 
 			fields = new ArrayList<Field>();
-			var accessEmptyFields = api.getPattern_EmptyFields();
+			var accessEmptyFields = api1.getPattern_EmptyFields();
 			accessEmptyFields.matcher().determineMatches().forEach(f -> {
 				var fData = accessEmptyFields.data(f);
 				fields.add(new Field(//
 						fData.board_fields_0_field.row, //
 						fData.board_fields_0_field.col, //
 						fData.field.endPos, //
-						null));
+						Optional.empty()));
 			});
 
-			var accessOccupiedFields = api.getPattern_OccupiedFields();
+			var accessOccupiedFields = api1.getPattern_OccupiedFields();
 			accessOccupiedFields.matcher().determineMatches().forEach(f -> {
 				var data = accessOccupiedFields.data(f);
 				fields.add(new Field(//
 						data.board_fields_0_field.row, //
 						data.board_fields_0_field.col, //
 						data.field.endPos, //
-						data.type.ename));
+						Optional.of(data.type.ename)));
 			});
 		});
 	}
 
 	@Override
-	public void loadSOKFile(String filePath) {
-		// TODO: Populate database from sok file
+	public void clearBoard() {
+		var access = api1.getRule_DeleteFigure();
+
+		access.rule().determineMatches().forEach(m -> {
+			access.rule().apply(m, RuleApplicationSemantics.SinglePushOut);
+		});
 	}
 
 	@Override
-	public void clearBoard() {
-		// TODO: Remove all figures on the board
+	public void loadSOKFile(String filePath) {
+		// Populate database from sok file
 	}
 
 	@Override
 	public void saveSOKFile(String filePath) {
-		// TODO: Write out board to a sok file
+		// Write out board to a sok file
 	}
 }

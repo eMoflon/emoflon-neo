@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.neo4j.adapter.NeoAccess;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.NeoPatternAccess;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -59,7 +59,7 @@ public abstract class ENeoTest {
 	}
 
 	protected static void initDB(Model model) {
-		builder.exportModelToNeo4j(model);
+		builder.exportEMSLEntityToNeo4j(model);
 		logger.info("-----------------------------\n" + "Database initialised.");
 	}
 	
@@ -76,15 +76,15 @@ public abstract class ENeoTest {
 	}
 	
 	
-	protected void expectMatches(NeoAccess p, Number no) {
+	protected void expectMatches(NeoPatternAccess<?,?> p, Number no) {
 		assertThat(p.matcher().countMatches(), is(no));
 	}
 	
-	protected void expectSingleMatch(NeoAccess p) {
+	protected void expectSingleMatch(NeoPatternAccess<?,?> p) {
 		expectMatches(p, 1);
 	}
 	
-	protected void expectNoMatch(NeoAccess p) {
+	protected void expectNoMatch(NeoPatternAccess<?,?> p) {
 		expectMatches(p, 0);
 	}
 	

@@ -302,6 +302,10 @@ abstract rule moveSokoban {
 		-- -field-> from
 		++ -field-> to
 	}
+	
+	b:SokobanLanguage.Board {
+		-fields->to
+	}
 }
 
 abstract rule pushBlock {
@@ -315,7 +319,7 @@ abstract rule pushBlock {
 	}
 }
 
-rule moveSokobanUp -> moveSokoban {
+abstract rule moveSokobanUp -> moveSokoban {
 	to : Field {
 		-bottom-> from
 	}
@@ -330,7 +334,7 @@ rule pushBlockUp -> pushBlock, moveSokobanUp {
 	}
 } when forbid occupiedNext
 
-rule moveSokobanDown -> moveSokoban {
+abstract rule moveSokobanDown -> moveSokoban {
 	from : Field {
 		-bottom-> to
 	}
@@ -365,6 +369,7 @@ pattern twoField {
 	f:Field
 	f2:Field
 }
+
 pattern fourField {
 	f1:Field
 	f2:Field

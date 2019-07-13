@@ -6,8 +6,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.emsl.EMSLFlattener;
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.emsl.util.FlattenerException;
 
 /**
  * Helper class for managing nodes, relations and their unique names in queries.
@@ -187,6 +191,31 @@ public class NeoHelper {
 		}
 
 		return tempNodes;
+	}
+
+	public AtomicPattern getFlattenedPattern(AtomicPattern ap) {
+
+		try {
+			return ((Pattern) new EMSLFlattener().flattenCopyOfEntity(((Pattern) (ap.eContainer())),
+					new ArrayList<String>())).getBody();
+		} catch (FlattenerException e) {
+			logger.error("EMSL Flattener was unable to process the pattern.");
+			e.printStackTrace();
+			return ap;
+		}
+
+	}
+
+	public Pattern getFlattenedPattern(Pattern p) {
+
+		try {
+			return (Pattern) new EMSLFlattener().flattenCopyOfEntity(p, new ArrayList<String>());
+		} catch (FlattenerException e) {
+			logger.error("EMSL Flattener was unable to process the pattern.");
+			e.printStackTrace();
+			return p;
+		}
+
 	}
 
 }

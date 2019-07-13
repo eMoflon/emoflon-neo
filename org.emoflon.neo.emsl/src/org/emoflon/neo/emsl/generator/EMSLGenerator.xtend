@@ -3,6 +3,7 @@
  */
 package org.emoflon.neo.emsl.generator
 
+import java.net.URI
 import java.util.ArrayList
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
@@ -13,7 +14,7 @@ import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 import org.emoflon.neo.emsl.EMSLFlattener
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.Entity
@@ -25,7 +26,6 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.util.EMSLUtil
-import java.net.URI
 
 /**
  * Generates code from your model files on save.
@@ -103,6 +103,8 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.util.EMSLUtil;
 			import org.emoflon.neo.engine.api.rules.IPattern;
 			import org.emoflon.neo.engine.api.rules.IRule;
+			import org.emoflon.neo.neo4j.adapter.NeoRule;
+			import org.emoflon.neo.neo4j.adapter.NeoRuleAccess;
 			import org.emoflon.neo.neo4j.adapter.NeoPattern;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
@@ -110,8 +112,11 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
-			import org.emoflon.neo.neo4j.adapter.NeoAccess;
-			
+			import org.emoflon.neo.neo4j.adapter.NeoPatternAccess;
+			import org.emoflon.neo.neo4j.adapter.NeoMask;
+			import org.emoflon.neo.neo4j.adapter.NeoData;
+			import java.util.HashMap;
+			import java.util.Map;
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
@@ -150,29 +155,50 @@ class EMSLGenerator extends AbstractGenerator {
 			val rootName = namingConvention(patternBody.name)
 			val dataClassName = rootName + "Data"
 			val accessClassName = rootName + "Access"
+			val maskClassName = rootName + "Mask"
 			'''
 				public «accessClassName» getPattern_«rootName»() {
 					return new «accessClassName»();
 				}
 				
-				public class «accessClassName» extends NeoAccess {
+				public class «accessClassName» extends NeoPatternAccess<«dataClassName»,«maskClassName»> {
 					@Override
 					public NeoPattern matcher(){
 						var p = (Pattern) spec.getEntities().get(«index»);
 						return new NeoPattern(p, builder);
 					}
 					
+					@Override
+					public NeoPattern matcher(«maskClassName» mask) {
+						var p = (Pattern) spec.getEntities().get(«index»);
+						return new NeoPattern(p, builder, mask);
+					}
+					
+					@Override
 					public «dataClassName» data(NeoMatch m) {
 						return new «dataClassName»(m);
 					}
+					
+					@Override
+					public «maskClassName» mask() {
+						return new «maskClassName»();
+					}
 				}
 				
-				public class «dataClassName» {
-					«classMembers(patternBody)»
+				public class «dataClassName» extends NeoData {
+					«classMembers(patternBody.nodeBlocks)»
 					
-					«constructor(dataClassName, patternBody)»
+					«constructor(dataClassName, patternBody.nodeBlocks)»
 					
-					«helperClasses(patternBody)»
+					«helperClasses(patternBody.nodeBlocks)»
+				}
+				
+				public class «maskClassName» extends NeoMask {
+				
+					«maskClassMembers()»
+				
+					«maskMethods(patternBody.nodeBlocks, maskClassName)»
+				
 				}
 			'''
 		} catch (Exception e) {
@@ -180,9 +206,27 @@ class EMSLGenerator extends AbstractGenerator {
 			'''//FIXME Unable to generate API: «e.toString»  */ '''
 		}
 	}
+	
+	private def CharSequence maskClassMembers()
+		'''
+			private HashMap<String, Long> nodeMask = new HashMap<>();
+			private HashMap<String, Object> attributeMask = new HashMap<>();
+			
+			@Override
+			public Map<String, Long> getMaskedNodes() {
+				return nodeMask;
+			}
+			
+			@Override
+			public Map<String, Object> getMaskedAttributes() {
+				return attributeMask;
+			}
+			
+		'''
+	
 
-	protected def CharSequence helperClasses(AtomicPattern patternBody) '''
-		«FOR node : patternBody.nodeBlocks»
+	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks) '''
+		«FOR node : nodeBlocks»
 			«helperNodeClass(node)»
 			
 			«FOR rel : node.relations»
@@ -202,8 +246,8 @@ class EMSLGenerator extends AbstractGenerator {
 			
 				public «relName.toFirstUpper»Rel(Value «relName») {
 					«FOR prop : rel.type.properties»
-					if(!«relName».get("«prop.name»").isNull())
-						this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
+						if(!«relName».get("«prop.name»").isNull())
+							this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
 					«ENDFOR»
 				}
 			}
@@ -225,10 +269,10 @@ class EMSLGenerator extends AbstractGenerator {
 		}
 	'''
 
-	protected def CharSequence constructor(String fileName, AtomicPattern patternBody) '''
+	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks) '''
 		public «fileName»(NeoMatch m) {
 			var data = m.getData();
-			«FOR node : patternBody.nodeBlocks»
+			«FOR node : nodeBlocks»
 				var «node.name» = data.get("«node.name»");
 				this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
 				«FOR rel : node.relations»
@@ -245,9 +289,9 @@ class EMSLGenerator extends AbstractGenerator {
 		
 	'''
 
-	protected def CharSequence classMembers(AtomicPattern patternBody) {
+	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks) {
 		'''
-			«FOR node : patternBody.nodeBlocks»
+			«FOR node : nodeBlocks»
 				public final «node.name.toFirstUpper»Node «node.name»;
 				«FOR rel : node.relations»
 					«val relName = EMSLUtil.relationNameConvention(//
@@ -261,19 +305,98 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 	}
 
+	def CharSequence maskMethods(Iterable<ModelNodeBlock> nodeBlocks, String maskClassName) {
+		'''
+			«FOR node : nodeBlocks»
+				public «maskClassName» set«node.name.toFirstUpper»(Long value) {
+					nodeMask.put("«node.name»", value);
+					return this;
+				}
+				«FOR prop : allProperties(node.type)»
+					public «maskClassName» set«node.name.toFirstUpper»«prop.name.toFirstUpper»(«EMSLUtil.getJavaType(prop.type)» value) {
+						attributeMask.put("«node.name».«prop.name»", value);
+						return this;
+					}
+				«ENDFOR»
+				«FOR rel : node.relations»
+					«FOR prop : rel.type.properties»
+						«val relName = EMSLUtil.relationNameConvention(//
+											node.name,// 
+											rel.type.name,//
+											rel.target.name,// 
+											node.relations.indexOf(rel))»
+						public «maskClassName» set«relName.toFirstUpper»«prop.name.toFirstUpper»(«EMSLUtil.getJavaType(prop.type)» value) {
+							attributeMask.put("«relName».«prop.name»", value);
+							return this;
+						}
+					«ENDFOR»
+				«ENDFOR»
+			«ENDFOR»
+		'''
+	}
+
 	def allProperties(MetamodelNodeBlock nb) {
 		EMSLUtil.thisAndAllSuperTypes(nb).flatMap[it.properties]
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
 		if(r.abstract) return ""
-		'''
-			public IRule<NeoMatch, NeoCoMatch> getRule_«namingConvention(r.name)»(){
-				var r = (Rule) spec.getEntities().get(«index»);
-				// TODO[Jannik] return new NeoRule(r, builder);
-				return null;
-			}
-		'''
+		try {
+			val rule = new EMSLFlattener().flattenEntity(r, new ArrayList<String>()) as Rule;
+			val rootName = namingConvention(rule.name)
+			val dataClassName = rootName + "Data"
+			val accessClassName = rootName + "Access"
+			val maskClassName = rootName + "Mask"
+			'''
+				public «accessClassName» getRule_«rootName»() {
+					return new «accessClassName»();
+				}
+				
+				public class «accessClassName» extends NeoRuleAccess<«dataClassName»,«maskClassName»> {
+					@Override
+					public NeoRule rule(){
+						var r = (Rule) spec.getEntities().get(«index»);
+						return new NeoRule(r, builder);
+					}
+					
+					@Override
+					public NeoRule rule(«maskClassName» mask) {
+						var r = (Rule) spec.getEntities().get(«index»);
+						return new NeoRule(r, builder, mask);
+					}
+					
+					@Override
+					public «dataClassName» data(NeoMatch m) {
+						return new «dataClassName»(m);
+					}
+					
+					@Override
+					public «maskClassName» mask() {
+						return new «maskClassName»();
+					}
+				}
+				
+				public class «dataClassName» extends NeoData {
+					«val blackAndGreenNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op !== ActionOperator.DELETE]»
+					«val blackAndRedNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op == ActionOperator.DELETE]»
+					«classMembers(blackAndGreenNodeBlocks)»
+					
+					«constructor(dataClassName, blackAndGreenNodeBlocks)»
+					
+					«helperClasses(blackAndGreenNodeBlocks)»
+				}
+				
+				public class «maskClassName» extends NeoMask {
+				
+					«maskClassMembers()»
+				
+					«maskMethods(blackAndRedNodeBlocks, maskClassName)»
+				}
+			'''
+		} catch (Exception e) {
+			e.printStackTrace
+			'''//FIXME Unable to generate API: «e.toString»  */ '''
+		}
 	}
 
 	dispatch def generateAccess(Model m, int index) {

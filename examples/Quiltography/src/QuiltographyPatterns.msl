@@ -1,0 +1,59 @@
+import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
+
+abstract model GabisQuiltographyPatterns {
+	sqInASq:BlockPattern {
+		.name : "Square in a square"
+	}
+	
+	weave:BlockPattern {
+		.name : "Weave"
+	}
+	
+	zigzag:BlockPattern {
+		.name : "Zig-Zag"
+	}
+	
+	stripe:BlockPattern {
+		.name : "Stripe with diagonal seam"
+	}
+	
+	star:BlockPattern {
+		.name : "Star"
+	}
+	
+	hexagon:BlockPattern {
+		.name : "Hexagon"
+	}
+	
+	xblocks:BlockPattern {
+		.name : "\"X\" Blocks"
+	}
+	
+	logcabin:BlockPattern {
+		.name : "Log Cabin"
+	}
+	
+	square:BlockPattern {
+		.name : "Square"
+	}
+	
+	none:BlockPattern {
+		.name : "None"
+	}
+	
+	rectangle:BlockPattern {
+		.name : "Rectangle"
+	}
+	
+	fourPatch:BlockPattern {
+		.name : "Four-Patch"
+	}
+	
+	triangle:BlockPattern {
+		.name : "Triangle"
+	}
+	
+	circle:BlockPattern {
+		.name : "Circle"
+	}
+}

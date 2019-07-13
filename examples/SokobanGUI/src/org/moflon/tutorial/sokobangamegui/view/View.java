@@ -203,7 +203,7 @@ public class View extends JFrame {
 	}
 
 	public void updateStatus(String status) {
-		statusBar.append(status);
+		statusBar.append("\n" + status);
 		statusBar.setCaretPosition(statusBar.getDocument().getLength());
 	}
 
@@ -225,24 +225,11 @@ public class View extends JFrame {
 				/* Get field from field-button */
 				Field f = button.getField();
 
-				/* Temporary memory */
-				String figureName = "";
-				ImageIcon icon = null;
-
 				/* Get figure icon */
-				if (f.getFigureName() != null) {
-					figureName = f.getFigureName();
-					icon = loadIcon(figureName);
-				}
-
-				/* Setup icon and text */
-				if (icon != null) {
-					button.setText("");
-					button.setIcon(icon);
-				} else {
-					button.setIcon(null);
-					button.setText(figureName);
-				}
+				button.setText("");
+				f.getFigureName().ifPresentOrElse(figureName -> {
+					button.setIcon(loadIcon(figureName));
+				}, () -> button.setIcon(null));
 
 				/* Setup border and background color */
 				if (f.isEndPos()) {

@@ -23,6 +23,9 @@ import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.Value
 import org.emoflon.neo.emsl.eMSL.impl.AttributeExpressionImpl
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
+import org.eclipse.emf.ecore.util.EcoreUtil
+import org.eclipse.emf.ecore.EObject
+import java.util.ArrayList
 
 class EMSLUtil {
 	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
@@ -41,6 +44,20 @@ class EMSLUtil {
 		resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE)
 		var Resource resource = resourceSet.getResource(URI.createURI(modelURI), true)
 		var EMSL_Spec spec = (resource.getContents().get(0) as EMSL_Spec)
+		EcoreUtil.resolveAll(resourceSet)
+		
+		val proxies = resourceSet.resources.flatMap[
+			it.allContents.toList.flatMap[
+				var allRefs = new ArrayList<EObject>
+				allRefs.addAll(it.eAllContents.toList)
+				allRefs.addAll(it.eCrossReferences)
+				return allRefs
+			]
+		].filter[it.eIsProxy]
+		
+		if(!proxies.empty)
+			throw new IllegalStateException("Your resource set contains unresolved proxies: " + proxies.toList)
+		
 		return spec
 	}
 

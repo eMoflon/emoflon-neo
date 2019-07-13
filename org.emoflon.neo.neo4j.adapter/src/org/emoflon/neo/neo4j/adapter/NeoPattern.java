@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
@@ -13,7 +12,6 @@ import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
@@ -38,6 +36,11 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 	private List<NeoNode> nodes;
 
+	public NeoPattern(Pattern p, NeoCoreBuilder builder, NeoMask mask) {
+		// TODO[Jannik] Use mask to fix parameters for the query
+		this(p, builder);
+	}
+
 	/**
 	 * 
 	 * @param p       the given pattern from the model
@@ -51,12 +54,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 		// execute the Pattern flatterer. Needed if the pattern use refinements or other
 		// functions. Returns the complete flattened Pattern.
-		try {
-			this.p = (Pattern) new EMSLFlattener().flattenCopyOfEntity(p, new ArrayList<String>());
-		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the pattern.");
-			e.printStackTrace();
-		}
+		this.p = helper.getFlattenedPattern(p);
 
 		// get all nodes, relations and properties from the pattern
 		extractNodesAndRelations();
@@ -139,100 +137,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public Collection<NeoMatch> determineMatches() {
-		// Run a normal pattern matching, if there is no condition
-		if (p.getCondition() == null) {
-			logger.info("Searching matches for Pattern: " + getName());
-			var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
-			logger.debug(cypherQuery);
-
-			var result = builder.executeQuery(cypherQuery);
-
-			var matches = new ArrayList<NeoMatch>();
-			while (result.hasNext()) {
-				var record = result.next();
-				matches.add(new NeoMatch(this, record));
-			}
-
-			if (matches.isEmpty()) {
-				logger.debug("NO MATCHES FOUND");
-			}
-			return matches;
-		}
-		// Create and Run a Condition Matching, if the pattern has a condition
-		else {
-
-			// If the condition is no direct Constraint (instead a Constraint Reference with
-			// a Body, then create a new NeoCondition, with current data and follow the
-			// structure from there for query execution
-			if (p.getCondition() instanceof ConstraintReference) {
-				var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
-				return cond.determineMatches();
-
-			} else if (cond instanceof NeoPositiveConstraint) {
-
-				// Condition is positive Constraint (ENFORCE xyz)
-				logger.info("Searching matches for Pattern: " + p.getBody().getName() + " ENFORCE "
-						+ ((NeoPositiveConstraint) cond).getName());
-
-				// Create Query
-				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
-						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
-						+ CypherPatternBuilder.withQuery(nodes)
-						+ ((NeoPositiveConstraint) cond).getQueryString_MatchCondition()
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
-						+ ((NeoPositiveConstraint) cond).getQueryString_WhereConditon() + "\n"
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
-						+ CypherPatternBuilder.returnQuery(nodes);
-
-				logger.debug(cypherQuery);
-
-				// Execute query
-				var result = builder.executeQuery(cypherQuery);
-
-				// Analyze and return results
-				var matches = new ArrayList<NeoMatch>();
-				while (result.hasNext()) {
-					var record = result.next();
-					matches.add(new NeoMatch(this, record));
-				}
-
-				return matches;
-
-			} else if (cond instanceof NeoNegativeConstraint) {
-
-				// Condition is negative Constraint (FORBID xyz)
-				logger.info("Searching matches for Pattern: " + p.getBody().getName() + " FORBID "
-						+ ((NeoNegativeConstraint) cond).getName());
-
-				// create query
-				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
-						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
-						+ CypherPatternBuilder.withQuery(nodes)
-						+ ((NeoNegativeConstraint) cond).getQueryString_MatchCondition()
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
-						+ ((NeoNegativeConstraint) cond).getQueryString_WhereConditon() + "\n"
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
-						+ CypherPatternBuilder.returnQuery(nodes);
-
-				logger.debug(cypherQuery);
-
-				// execute query
-				var result = builder.executeQuery(cypherQuery);
-
-				// analyze and return results
-				var matches = new ArrayList<NeoMatch>();
-				while (result.hasNext()) {
-					var record = result.next();
-					matches.add(new NeoMatch(this, record));
-				}
-
-				return matches;
-
-			} else {
-				// Note: If/Then conditions are currently not supported
-				throw new UnsupportedOperationException();
-			}
-		}
+		return determineMatches(0);
 	}
 
 	/**
@@ -294,12 +199,24 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		this.injective = injective;
 	}
 
+	/**
+	 * Get the data and nodes from the pattern (and conditions) and runs the query
+	 * in the database, analyze the results and return the matches
+	 * 
+	 * @param limit number of matches, that should be returned - 0 if infinite
+	 * @return Collection<IMatch> return a list of all Matches of the pattern with
+	 *         condition matching
+	 */
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 		// Run a normal pattern matching, if there is no condition
 		if (p.getCondition() == null) {
 			logger.info("Searching matches for Pattern: " + getName());
-			var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+			var cypherQuery = "";
+			if (limit > 0)
+				cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+			else
+				cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
 			logger.debug(cypherQuery);
 
 			var result = builder.executeQuery(cypherQuery);
@@ -323,23 +240,23 @@ public class NeoPattern implements IPattern<NeoMatch> {
 			// structure from there for query execution
 			if (p.getCondition() instanceof ConstraintReference) {
 				var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
-				return cond.determineMatches(limit);
+				if (limit > 0)
+					return cond.determineMatches(limit);
+				else
+					return cond.determineMatches();
 
 			} else if (cond instanceof NeoPositiveConstraint) {
 
+				var constraint = ((NeoPositiveConstraint) cond);
+
 				// Condition is positive Constraint (ENFORCE xyz)
-				logger.info("Searching matches for Pattern: " + p.getBody().getName() + " ENFORCE "
-						+ ((NeoPositiveConstraint) cond).getName());
+				logger.info(
+						"Searching matches for Pattern: " + p.getBody().getName() + " ENFORCE " + constraint.getName());
 
 				// Create Query
-				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
-						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
-						+ CypherPatternBuilder.withQuery(nodes)
-						+ ((NeoPositiveConstraint) cond).getQueryString_MatchCondition()
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
-						+ ((NeoPositiveConstraint) cond).getQueryString_WhereConditon() + "\n"
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
-						+ CypherPatternBuilder.returnQuery(nodes,limit);
+				var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, limit);
 
 				logger.debug(cypherQuery);
 
@@ -357,20 +274,16 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 			} else if (cond instanceof NeoNegativeConstraint) {
 
+				var constraint = ((NeoNegativeConstraint) cond);
+
 				// Condition is negative Constraint (FORBID xyz)
-				logger.info("Searching matches for Pattern: " + p.getBody().getName() + " FORBID "
-						+ ((NeoNegativeConstraint) cond).getName());
+				logger.info(
+						"Searching matches for Pattern: " + p.getBody().getName() + " FORBID " + constraint.getName());
 
 				// create query
-				var cypherQuery = CypherPatternBuilder.matchQuery(nodes)
-						+ CypherPatternBuilder.whereQuery(nodes, injective) + "\n"
-						+ CypherPatternBuilder.withQuery(nodes)
-						+ ((NeoNegativeConstraint) cond).getQueryString_MatchCondition()
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\nWHERE "
-						+ ((NeoNegativeConstraint) cond).getQueryString_WhereConditon() + "\n"
-						+ CypherPatternBuilder.constraint_withQuery(helper.getNodes()) + "\n"
-						+ CypherPatternBuilder.returnQuery(nodes,limit);
-
+				var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, limit);
 				logger.debug(cypherQuery);
 
 				// execute query

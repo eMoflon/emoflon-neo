@@ -42,11 +42,12 @@ public class NeoImplication implements IIfElseConstraint {
 			NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
-		this.apIf = apIf;
-		this.apThen = apThen;
 		this.name = "IF " + apIf.getName() + " THEN " + apThen.getName();
 		this.injective = injective;
-
+		
+		this.apIf = helper.getFlattenedPattern(apIf);
+		this.apThen = helper.getFlattenedPattern(apThen);
+		
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodesIf = new ArrayList<>();
 		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());

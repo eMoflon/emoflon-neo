@@ -75,6 +75,7 @@ public class NeoConstraint implements IConstraint {
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			ap = helper.getFlattenedPattern(ap);
 			var co = new NeoPositiveConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
@@ -83,6 +84,7 @@ public class NeoConstraint implements IConstraint {
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			ap = helper.getFlattenedPattern(ap);
 			var co = new NeoNegativeConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
@@ -116,7 +118,8 @@ public class NeoConstraint implements IConstraint {
 		NeoReturn returnStmt = new NeoReturn();
 
 		if (c.getBody() instanceof PositiveConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var ap = ((PositiveConstraint) c.getBody()).getPattern();
+			ap = helper.getFlattenedPattern(ap);
 			var co = new NeoPositiveConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
@@ -124,7 +127,8 @@ public class NeoConstraint implements IConstraint {
 			returnStmt.addWhereClause(co.getQueryString_WhereConditon());
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
-			var ap = (AtomicPattern) c.getBody().eCrossReferences().get(0);
+			var ap = ((NegativeConstraint) c.getBody()).getPattern();
+			ap = helper.getFlattenedPattern(ap);
 			var co = new NeoNegativeConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
@@ -157,8 +161,11 @@ public class NeoConstraint implements IConstraint {
 	public boolean isSatisfied() {
 
 		if (c.getBody() instanceof Implication) {
-			var apIf = (AtomicPattern) c.getBody().eCrossReferences().get(0);
-			var apThen = (AtomicPattern) c.getBody().eCrossReferences().get(1);
+			var implication = (Implication) c.getBody();
+			var apIf = implication.getPremise();
+			var apThen = implication.getConclusion();
+			apIf = helper.getFlattenedPattern(apIf);
+			apThen = helper.getFlattenedPattern(apThen);
 			var co = new NeoImplication(apIf, apThen, injective, builder, helper);
 
 			return co.isSatisfied();
@@ -170,9 +177,8 @@ public class NeoConstraint implements IConstraint {
 
 			logger.info("Searching matches for Constraint: " + c.getName());
 
-			var cypherQuery = returnStmt.getOptionalMatchString();
-			cypherQuery += "\nWHERE " + returnStmt.getWhereClause();
-			cypherQuery += "\nRETURN TRUE";
+			var cypherQuery = CypherPatternBuilder.constraintQuery_Satisfied(returnStmt.getOptionalMatchString(),
+					returnStmt.getWhereClause());
 
 			logger.debug(cypherQuery);
 			var result = builder.executeQuery(cypherQuery);
@@ -181,7 +187,7 @@ public class NeoConstraint implements IConstraint {
 				logger.info("Found matches! Constraint: " + c.getName() + " is satisfied!");
 				return true;
 			} else {
-				logger.info("Not matches found! Constraint: " + c.getName() + " is NOT satisfied!");				
+				logger.info("Not matches found! Constraint: " + c.getName() + " is NOT satisfied!");
 				return false;
 			}
 		}

@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface IPattern<M extends IMatch> {
+	/**
+	 * @return The name of the pattern.
+	 */
 	String getName();
 
 	/**

@@ -62,7 +62,7 @@ public class BoardGenerator {
 
 			long tic = System.currentTimeMillis();
 			builder.setMaxTransactionSize(nodes, edges);
-			builder.exportModelToNeo4j(model);
+			builder.exportEMSLEntityToNeo4j(model);
 			long toc = System.currentTimeMillis();
 			logger.info("Export took: " + (toc - tic) / 1000.0 + "s");
 			time += (toc - tic) / 1000.0 + "\n";
