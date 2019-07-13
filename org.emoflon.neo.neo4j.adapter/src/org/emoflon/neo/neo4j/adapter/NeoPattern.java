@@ -37,7 +37,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 	private List<NeoNode> nodes;
 
 	public NeoPattern(Pattern p, NeoCoreBuilder builder, NeoMask mask) {
-		// TODO[Jannik]
+		// TODO[Jannik] Use mask to fix parameters for the query
 		this(p, builder);
 	}
 

@@ -1,12 +1,14 @@
 package org.moflon.tutorial.sokobangamegui.view;
 
+import java.util.Optional;
+
 public class Field {
 	private int row;
 	private int col;
 	private boolean endPos;
-	private String figName;
+	private Optional<String> figName;
 	
-	public Field(int row, int col, boolean endPos, String figName) {
+	public Field(int row, int col, boolean endPos, Optional<String> figName) {
 		this.col = col;
 		this.row = row;
 		this.figName = figName;
@@ -25,7 +27,7 @@ public class Field {
 		return endPos;
 	}
 
-	public String getFigureName() {
+	public Optional<String> getFigureName() {
 		return figName;
 	}
 
