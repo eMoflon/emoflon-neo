@@ -49,6 +49,22 @@
         </and>
      </activeWhen>
   </handler>
+  <handler
+        class="org.emoflon.neo.emsl.ui.CreateCypherQuery"
+        commandId="org.eclipse.xtext.ui.editor.createcypherquery.CreateCypherQuery">
+     <activeWhen>
+        <and>
+           <reference
+                 definitionId="org.emoflon.neo.emsl.EMSL.XtextEditor.opened">
+           </reference>
+           <iterate>
+              <adapt
+                    type="org.eclipse.xtext.ui.editor.outline.IOutlineNode">
+              </adapt>
+           </iterate>
+        </and>
+     </activeWhen>
+  </handler>
 	</extension>
 	<extension point="org.eclipse.core.expressions.definitions">
 		<definition id="org.emoflon.neo.emsl.EMSL.Editor.opened">
@@ -133,6 +149,12 @@
        id="org.eclipse.xtext.ui.editor.neo4jexport.Neo4JExport"
        name="Export to Neo4j">
  </command>
+ <command
+       categoryId="org.eclipse.ui.category.edit"
+       description="Adds the Cypher query to the clipboard"
+       id="org.eclipse.xtext.ui.editor.createcypherquery.CreateCypherQuery"
+       name="Copy Cypher Query">
+ </command>
 	</extension>
 	<extension point="org.eclipse.ui.menus">
 		<menuContribution
@@ -154,6 +176,24 @@
            commandId="org.eclipse.xtext.ui.editor.neo4jexport.Neo4JExport"
            style="push"
            tooltip="Export to Neo4j">
+        <visibleWhen
+              checkEnabled="false">
+           <and>
+              <reference
+                    definitionId="org.emoflon.neo.emsl.EMSL.XtextEditor.opened">
+              </reference>
+              <iterate>
+                 <adapt
+                       type="org.eclipse.xtext.ui.editor.outline.IOutlineNode">
+                 </adapt>
+              </iterate>
+           </and>
+        </visibleWhen>
+     </command>
+     <command
+           commandId="org.eclipse.xtext.ui.editor.createcypherquery.CreateCypherQuery"
+           style="push"
+           tooltip="Copy Cypher Query">
         <visibleWhen
               checkEnabled="false">
            <and>

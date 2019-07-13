@@ -22,11 +22,11 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 @SuppressWarnings("restriction")
-public class ExportEntityToNeo4J extends AbstractHandler {
+public class CreateCypherQuery extends AbstractHandler {
 	private Optional<EObjectNode> eobNode = Optional.empty();
 	private NeoCoreBuilder builder;
-
-	private static final Logger logger = Logger.getLogger(ExportEntityToNeo4J.class);
+	
+	private static final Logger logger = Logger.getLogger(CreateCypherQuery.class);
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -49,7 +49,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 			logger.info("Great!  Seems to have worked.");
 
 			logger.info("Now performing export...");
-			exportSelectedEMSLEntity(event, builder);
+			createQueryFromEMSLEntity(event,builder);
 			builder.close();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -60,7 +60,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		return null;
 	}
 
-	private void exportSelectedEMSLEntity(ExecutionEvent event, NeoCoreBuilder builder) throws ExecutionException {
+	private void createQueryFromEMSLEntity(ExecutionEvent event, NeoCoreBuilder builder) throws ExecutionException {
 		IEditorPart editorPart = HandlerUtil.getActiveEditorChecked(event);
 		if (editorPart instanceof XtextEditor) {
 			XtextEditor editor = (XtextEditor) editorPart;
@@ -78,13 +78,13 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 				}
 			});
 			logger.info("002" + emslEntity.getClass().toString());
-			emslEntity.ifPresent(this::exportEMSLEntityToNeo4j);
+			emslEntity.ifPresent(this::createCypherQueryFromEMSLEntity);
 		}
 	}
 
-	private void exportEMSLEntityToNeo4j(Entity entity) {
+	private void createCypherQueryFromEMSLEntity(Entity entity) {
 		logger.info("003" + entity.getClass().toString());
-		builder.exportEMSLEntityToNeo4j(entity);
+		builder.createCypherQuery(entity);
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 					Object o = nodes.get(0);
 					if (o instanceof EObjectNode) {
 						eobNode = Optional.of((EObjectNode) o);
-						eobNode.ifPresent(n -> setBaseEnabled(NeoCoreBuilder.canBeExported(n.getEClass())));
+						eobNode.ifPresent(n -> setBaseEnabled(NeoCoreBuilder.canBeCoppiedToClipboard(n.getEClass())));
 						return;
 					}
 				}

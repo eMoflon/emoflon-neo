@@ -121,6 +121,10 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	public boolean isInjective() {
 		return injective;
 	}
+	
+	public String getQuery() {
+		return CypherPatternBuilder.readQuery(nodes, injective);
+	}
 
 	/**
 	 * Runs the pattern matching and counts size of matches
