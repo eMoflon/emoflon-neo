@@ -341,10 +341,12 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check(NORMAL)
 	def void forbidIfElseAsChild(Pattern p) {
-		forbidIfElseAsChild(p.condition, [o |
-			error('''If/else conditions such as "if «o.premise.name» then «o.conclusion.name»" are currently not supported as part of application conditions''',
-				EMSLPackage.Literals.PATTERN__CONDITION)
-		])
+		if (p.condition !== null) {
+			forbidIfElseAsChild(p.condition, [o |
+				error('''If/else conditions such as "if «o.premise.name» then «o.conclusion.name»" are currently not supported as part of application conditions''',
+					EMSLPackage.Literals.PATTERN__CONDITION)
+			])
+		}
 	}
 
 	private def void forbidIfElseAsChild(Condition c, Consumer<Implication> error) {
@@ -427,7 +429,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check
 	def void forbidNamesInNormalEdges(ModelRelationStatement relation) {
 		if (relation.typeList.size == 1 && relation.name !== null) {
-			error("Names in normale edges (only one type) are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
+			error("Names in normal edges (only one type) are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
 		}
 	}
 	
@@ -438,6 +440,18 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void enforceNamesInComplexEdges(ModelRelationStatement relation) {
 		if (relation.typeList.size > 1 && relation.name === null) {
 			error("Complex edges must have a name.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE_LIST)
+		}
+	}
+	
+	/**
+	 * Checks if edges adjacent to green/red nodes are green/red themselves.
+	 */
+	@Check
+	def void checkOperatorsOfEdgesAdjacentToNodes(ModelRelationStatement relation) {
+		if (relation.eContainer.eContainer instanceof Rule || relation.eContainer.eContainer instanceof TripleRule) {
+			if (relation.action === null && relation.target.action !== null || (relation.action === null && (relation.eContainer as ModelNodeBlock).action !== null)) {
+				error("Edges adjacent to green/red nodes must be green/red", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE_LIST)
+			}
 		}
 	}
 }
