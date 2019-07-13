@@ -1,6 +1,6 @@
 import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
 
-// Alle Būcher eines gewissen Authors
+// Alle Bücher eines gewissen Authors
 pattern allBooksOfAParticularAuthor {
 	someAuthor:Author
 	
