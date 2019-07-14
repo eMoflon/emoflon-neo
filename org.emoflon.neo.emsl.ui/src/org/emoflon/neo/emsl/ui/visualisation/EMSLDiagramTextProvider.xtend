@@ -52,6 +52,7 @@ import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.AttributeCondition
 import org.emoflon.neo.emsl.eMSL.Value
+import org.emoflon.neo.emsl.eMSL.MetamodelRefinementCommand
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -150,43 +151,43 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			left to right direction
 			«FOR entity : root.entities»
 				«IF entity instanceof Metamodel»
-					rectangle "Metamodel: «entity.name»" <<Rectangle>> «IF entity.abstract»<<Abstract>>«ENDIF» «link(entity as Entity)» {
+					rectangle "Metamodel: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" <<Rectangle>> «IF entity.abstract»<<Abstract>>«ENDIF» «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Model»
-					rectangle "Model: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Model: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 					«referenceInstantiatedMetamodel(entity as Model)»
 				«ENDIF»
 				«IF entity instanceof Pattern»
-					rectangle "Pattern: «entity.body.name»" «IF entity.body.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Pattern: «IF entity.body.abstract»//«ENDIF»«entity.body.name»«IF entity.body.abstract»//«ENDIF»" «IF entity.body.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Rule»
-					rectangle "Rule: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Rule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof TripleRule»
-					rectangle "TripleRule: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+					rectangle "TripleRule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
-					rectangle "TripleGrammar: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+					rectangle "TripleGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof GraphGrammar»
-					rectangle "GraphGrammar: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+					rectangle "GraphGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Constraint»
-					rectangle "Constraint: «entity.name»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Constraint: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
@@ -411,7 +412,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					endlegend
 					«visualiseCondition(entityCopy)»
 				«ENDIF»
-				«IF (entityCopy as Pattern).body.attributeConditions !== null»
+				«IF (entityCopy as Pattern).body.attributeConditions !== null && !(entityCopy as Pattern).body.attributeConditions.isEmpty»
 					«visualiseAttributeConditions((entityCopy as Pattern).body.attributeConditions)»
 				«ENDIF»
 			'''
@@ -536,7 +537,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				endlegend
 				«visualiseCondition(entityCopy)»
 			«ENDIF»
-			«IF (entityCopy as Rule).attributeConditions !== null»
+			«IF (entityCopy as Rule).attributeConditions !== null && !(entityCopy as Rule).attributeConditions.empty»
 				«visualiseAttributeConditions((entityCopy as Rule).attributeConditions)»
 			«ENDIF»
 		'''
@@ -1087,29 +1088,65 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
 	 */
 	def String visualiseSuperTypesInEntity(Entity entity) {
-		var superTypeNames = new HashMap<String, ArrayList<String>>()
-		superTypeNames.put("Pattern", new ArrayList<String>())
-		superTypeNames.put("Rule", new ArrayList<String>())
-		superTypeNames.put("Model", new ArrayList<String>())
-		superTypeNames.put("Metamodel", new ArrayList<String>())
-		superTypeNames.put("TripleRule", new ArrayList<String>())
+		var dispatcher = new EntityAttributeDispatcher();
+		var superTypeNames = new HashMap<String, ArrayList<String[]>>()
+		superTypeNames.put("Pattern", new ArrayList<String[]>())
+		superTypeNames.put("Rule", new ArrayList<String[]>())
+		superTypeNames.put("Model", new ArrayList<String[]>())
+		superTypeNames.put("Metamodel", new ArrayList<String[]>())
+		superTypeNames.put("TripleRule", new ArrayList<String[]>())
 		
 		for (st : entity.superRefinementTypes) {
-			if ((st as RefinementCommand).referencedType instanceof AtomicPattern && !superTypeNames.get("Pattern").contains(((st as RefinementCommand).referencedType as AtomicPattern).name))
-				superTypeNames.get("Pattern").add(((st as RefinementCommand).referencedType as AtomicPattern).name)
-			else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name))
-				superTypeNames.get("Rule").add(((st as RefinementCommand).referencedType as Rule).name)
-			else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name))
-				superTypeNames.get("Model").add(((st as RefinementCommand).referencedType as Model).name)
-			else if ((st as RefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as RefinementCommand).referencedType as Metamodel).name))
-				superTypeNames.get("Metamodel").add(((st as RefinementCommand).referencedType as Metamodel).name)
-			else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name))
-				superTypeNames.get("TripleRule").add(((st as RefinementCommand).referencedType as TripleRule).name)
+			if (st instanceof RefinementCommand) {
+				if ((st as RefinementCommand).referencedType instanceof AtomicPattern && !superTypeNames.get("Pattern").contains(((st as RefinementCommand).referencedType as AtomicPattern).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as RefinementCommand).referencedType as AtomicPattern).name)
+					if (((st as RefinementCommand).referencedType as AtomicPattern).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Pattern").add(tmp)
+				} else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, (((st as RefinementCommand).referencedType as Rule).name))
+					if (((st as RefinementCommand).referencedType as Rule).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Rule").add(tmp)
+				} else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as RefinementCommand).referencedType as Model).name)
+					if (((st as RefinementCommand).referencedType as Model).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Model").add(tmp)
+				} else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as RefinementCommand).referencedType as TripleRule).name)
+					if (((st as RefinementCommand).referencedType as TripleRule).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("TripleRule").add(tmp)
+				}
+			} else if (st instanceof MetamodelRefinementCommand) {
+				if ((st as MetamodelRefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as MetamodelRefinementCommand).referencedType as Metamodel).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as MetamodelRefinementCommand).referencedType as Metamodel).name)
+					if (((st as MetamodelRefinementCommand).referencedType as Metamodel).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Metamodel").add(tmp)
+				}
+			}
 		}
 		'''
 			«FOR type : superTypeNames.keySet»
 				«FOR name : superTypeNames.get(type)»
-					"«entity.eClass.name»: «entity.name»"--|>"«type»: «name»"
+					"«entity.eClass.name»: «IF dispatcher.getAbstract(entity)»//«ENDIF»«entity.name»«IF dispatcher.getAbstract(entity)»//«ENDIF»"--|>"«type»: «IF name.get(1).equals("1")»//«ENDIF»«name.get(0)»«IF name.get(1).equals("1")»//«ENDIF»"
 				«ENDFOR»
 			«ENDFOR»
 		'''

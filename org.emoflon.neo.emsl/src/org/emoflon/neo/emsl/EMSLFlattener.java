@@ -817,6 +817,7 @@ public class EMSLFlattener {
 	 * @param val2 second value to be compared.
 	 * @return true if val1 and val2 are equal, else false.
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	private boolean equalValues(Value val1, Value val2) {
 		if (val1.eClass() != val2.eClass())
 			return false;

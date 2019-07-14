@@ -153,4 +153,40 @@ class EntityAttributeDispatcher {
 	def dispatch getAttributeConditions(Model entity) {
 		new ArrayList<AttributeCondition>()
 	}
+	
+	/*-------------------------------------------*/
+	/*-------------- Get Abstract ---------------*/
+	/*-------------------------------------------*/
+	
+	def dispatch getAbstract(Model entity) {
+		entity.abstract
+	}
+	
+	def dispatch getAbstract(Metamodel entity) {
+		entity.abstract
+	}
+	
+	def dispatch getAbstract(Pattern entity) {
+		entity.body.abstract
+	}
+	
+	def dispatch getAbstract(Rule entity) {
+		entity.abstract
+	}
+	
+	def dispatch getAbstract(TripleRule entity) {
+		entity.abstract
+	}
+	
+	def dispatch getAbstract(TripleGrammar entity) {
+		entity.abstract
+	}
+	
+	def dispatch getAbstract(GraphGrammar entity) {
+		entity.abstract
+	}
+	
+	def dispatch getAbstract(Constraint entity) {
+		entity.abstract
+	}
 }
