@@ -161,6 +161,8 @@ public class NeoController implements IController {
 							.setB_fields_0_fRow(field.getRow()))//
 					.apply();
 		}
+		
+		// TODO: Add remaining possibilities for movement
 	}
 
 	@Override
@@ -180,7 +182,7 @@ public class NeoController implements IController {
 
 	@Override
 	public void newBoard(int width, int height) {
-		// TODO: Use a grammar to generate a new board
+		// TODO: Use a grammar and the model generator to generate a new board
 	}
 
 	private void defaultBoard() {
