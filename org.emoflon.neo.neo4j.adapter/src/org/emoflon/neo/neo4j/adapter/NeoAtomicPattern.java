@@ -63,8 +63,10 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 
 			// add the relations to the recently defined NeoNode by adding new NeoRelation
 			// to the NeoNode
+
+			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			for (ModelRelationStatement r : n.getRelations()) {
-				node.addRelation(node.getVarName(), r.getType().getName(), //
+				node.addRelation(node.getVarName(), EMSLUtil.getOnlyType(r).getName(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName() + "_" + ap.hashCode());

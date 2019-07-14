@@ -428,7 +428,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void forbidNamesInNormalEdges(ModelRelationStatement relation) {
-		if (relation.typeList.size == 1 && relation.name !== null) {
+		if (relation.types.size == 1 && relation.name !== null) {
 			error("Names in normal edges (only one type) are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
 		}
 	}
@@ -438,8 +438,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void enforceNamesInComplexEdges(ModelRelationStatement relation) {
-		if (relation.typeList.size > 1 && relation.name === null) {
-			error("Complex edges must have a name.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE_LIST)
+		if (relation.types.size > 1 && relation.name === null) {
+			error("Complex edges must have a name.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 		}
 	}
 	
@@ -450,7 +450,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void checkOperatorsOfEdgesAdjacentToNodes(ModelRelationStatement relation) {
 		if (relation.eContainer.eContainer instanceof Rule || relation.eContainer.eContainer instanceof TripleRule) {
 			if (relation.action === null && relation.target.action !== null || (relation.action === null && (relation.eContainer as ModelNodeBlock).action !== null)) {
-				error("Edges adjacent to green/red nodes must be green/red", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE_LIST)
+				error("Edges adjacent to green/red nodes must be green/red", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 			}
 		}
 	}

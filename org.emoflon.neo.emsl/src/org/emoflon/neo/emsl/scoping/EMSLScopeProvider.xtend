@@ -358,7 +358,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		ModelRelationStatement statement) {
 		var filteredNodeBlocks = new HashSet()
 		for (nb : allNodeBlocks) {
-			for (t : statement.typeList) {
+			for (t : statement.types) {
 				if (thisAndAllSuperTypes(nb.type).contains((t.type as MetamodelRelationStatement).target))
 					filteredNodeBlocks.add(nb)
 			}

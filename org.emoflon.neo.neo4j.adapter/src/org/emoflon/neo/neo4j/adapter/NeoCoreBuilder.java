@@ -645,7 +645,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 				props.add(new NeoProp(ps.getType().getName(), inferType(ps, nb)));
 			});
 
-			cb.createEdgeWithProps(props, rs.getType().getName(), refOwner, typeOfRef);
+			cb.createEdgeWithProps(props, EMSLUtil.getOnlyType(rs).getName(), refOwner, typeOfRef);
 		}
 	}
 
@@ -733,7 +733,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			return inferTypeForNodeAttribute(ps.getValue(), propName, nodeType);
 		} else if (ps.eContainer() instanceof ModelRelationStatement) {
 			ModelRelationStatement rs = (ModelRelationStatement) ps.eContainer();
-			String relName = rs.getType().getName();
+			String relName = EMSLUtil.getOnlyType(rs).getName();
 			return inferTypeForEdgeAttribute(ps.getValue(), relName, propName, nodeType);
 		} else {
 			throw new IllegalArgumentException("Unable to handle: " + ps);
@@ -765,11 +765,9 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	public void exportEMSLEntityToNeo4j(Entity entity) {
 		try {
-			logger.info("004" + entity.getClass().toString());
 			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
-			logger.info(flattenedEntity.getClass());
 			if (flattenedEntity instanceof Model) {
-				// exportModelToNeo4j((Model) flattenedEntity);
+				exportModelToNeo4j((Model) flattenedEntity);
 			} else if (flattenedEntity instanceof Metamodel)
 				exportMetamodelToNeo4j((Metamodel) flattenedEntity);
 			else

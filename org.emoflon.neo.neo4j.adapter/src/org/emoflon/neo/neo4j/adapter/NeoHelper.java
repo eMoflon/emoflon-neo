@@ -176,11 +176,12 @@ public class NeoHelper {
 					p.getType().getName(), //
 					EMSLUtil.handleValue(p.getValue())));
 
+			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			n.getRelations()
 					.forEach(r -> node.addRelation(
 							this.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
-									r.getType().getName(), r.getTarget().getName()),
-							r.getType().getName(), //
+									EMSLUtil.getOnlyType(r).getName(), r.getTarget().getName()),
+							EMSLUtil.getOnlyType(r).getName(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
 							this.newConstraintNode(r.getTarget().getName())));

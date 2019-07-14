@@ -98,11 +98,12 @@ public class NeoPattern implements IPattern<NeoMatch> {
 					p.getType().getName(), //
 					EMSLUtil.handleValue(p.getValue())));
 
+			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			n.getRelations()
 					.forEach(r -> node.addRelation(
 							helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
-									r.getType().getName(), r.getTarget().getName()),
-							r.getType().getName(), //
+									EMSLUtil.getOnlyType(r).getName(), r.getTarget().getName()),
+							EMSLUtil.getOnlyType(r).getName(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
 							r.getTarget().getName()));
