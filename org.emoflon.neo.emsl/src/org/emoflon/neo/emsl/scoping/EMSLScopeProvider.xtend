@@ -36,6 +36,7 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
 
 /**
  * This class contains custom scoping description.
@@ -72,10 +73,17 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
 		}
 
-		if (nameOfRelationStatement(context, reference)) {
-			return handleTypeOfRelationStatementInModelNodeBlock(context as ModelRelationStatement,
+		if (typeOfRelationStatementInModelRelationStatement(context, reference)) {
+			return handleTypeOfRelationStatementInModelRelationStatement(context as ModelRelationStatement,
 				context.eContainer as ModelNodeBlock)
 		}
+		
+		if (typeOfRelationStatementInModelRelationStatementType(context, reference)) {
+			return handleTypeOfRelationStatementInModelRelationStatementType(context.eContainer.eContainer as ModelNodeBlock)
+		}
+		
+		if (typeOfRelationStatementInModelNodeBlock(context, reference))
+			return handleTypeOfRelationStatementInModelRelationStatementType(context as ModelNodeBlock)
 
 		if (nameOfPropertyStatement(context, reference)) {
 			return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement,
@@ -199,20 +207,47 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/**
 	 * Returns whether to build a scope for the name of a RelationStatement.
 	 */
-	def nameOfRelationStatement(EObject context, EReference reference) {
-		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPE
+	def typeOfRelationStatementInModelRelationStatement(EObject context, EReference reference) {
+		context instanceof ModelRelationStatement && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__TYPE
+	}
+	
+	/**
+	 * Returns whether to build a scope for the name of a RelationStatement.
+	 */
+	def typeOfRelationStatementInModelRelationStatementType(EObject context, EReference reference) {
+		context instanceof ModelRelationStatementType && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__TYPE
+	}
+	
+	/**
+	 * Returns whether to build a scope for the name of a RelationStatement.
+	 */
+	def typeOfRelationStatementInModelNodeBlock(EObject context, EReference reference) {
+		context instanceof ModelNodeBlock && reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__TYPE
 	}
 
 	/**
 	 * Returns the scope for the name of a RelationStatement.
 	 */
-	def handleTypeOfRelationStatementInModelNodeBlock(ModelRelationStatement context, ModelNodeBlock container) {
+	def handleTypeOfRelationStatementInModelRelationStatement(ModelRelationStatement context, ModelNodeBlock container) {
 		val nodeBlocks = thisAndAllSuperTypes(container.type)
 		val possibilities = new HashMap
 		for (nb : nodeBlocks) {
 			nb.relations.forEach[r|possibilities.put(r, null)]
 		}
-
+		
+		determineScope(possibilities)
+	}
+	
+	/**
+	 * Returns the scope for the name of a RelationStatement.
+	 */
+	def handleTypeOfRelationStatementInModelRelationStatementType(ModelNodeBlock container) {
+		val nodeBlocks = thisAndAllSuperTypes(container.type)
+		val possibilities = new HashMap
+		for (nb : nodeBlocks) {
+			nb.relations.forEach[r|possibilities.put(r, null)]
+		}
+		
 		determineScope(possibilities)
 	}
 
@@ -321,7 +356,14 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 	protected def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(HashSet<ModelNodeBlock> allNodeBlocks,
 		ModelRelationStatement statement) {
-		allNodeBlocks.filter[nb|thisAndAllSuperTypes(nb?.type).contains(statement?.type?.target)]
+		var filteredNodeBlocks = new HashSet()
+		for (nb : allNodeBlocks) {
+			for (t : statement.typeList) {
+				if (thisAndAllSuperTypes(nb.type).contains((t.type as MetamodelRelationStatement).target))
+					filteredNodeBlocks.add(nb)
+			}
+		}
+		return filteredNodeBlocks
 	}
 
 	/**
