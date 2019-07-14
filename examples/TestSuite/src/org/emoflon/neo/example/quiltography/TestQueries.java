@@ -59,7 +59,7 @@ public class TestQueries extends ENeoTest {
 	
 	@Test
 	@Disabled("//TODO[Jannik]:  Filter matches with mask")
-	public void test_PageOfASomeBook() {
+	public void test_PageOfSomeBook() {
 		var access = queries.getPattern_AllPagesOfAParticularBook();
 		var mask = access.mask().setBookTitle("Jambalaya Quilts");
 		assertEquals(17, access.matcher(mask).countMatches());

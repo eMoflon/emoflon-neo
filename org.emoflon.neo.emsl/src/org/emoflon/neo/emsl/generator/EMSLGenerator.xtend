@@ -117,6 +117,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.neo4j.adapter.NeoData;
 			import java.util.HashMap;
 			import java.util.Map;
+			import java.util.Optional;
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
@@ -425,7 +426,7 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			public IConstraint getConstraint_«namingConvention(c.name)»() {
 				var c = (Constraint) spec.getEntities().get(«index»);
-				return new NeoConstraint(c, builder);
+				return new NeoConstraint(c, Optional.of(builder));
 			}
 		'''
 	}
