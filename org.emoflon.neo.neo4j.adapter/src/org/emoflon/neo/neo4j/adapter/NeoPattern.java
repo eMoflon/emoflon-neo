@@ -3,6 +3,7 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.Constraint;
@@ -64,17 +65,16 @@ public class NeoPattern implements IPattern<NeoMatch> {
 
 			if (p.getCondition() instanceof ConstraintReference) {
 				ConstraintReference ref = (ConstraintReference) p.getCondition();
-				this.c = ref.getReference();;
+				this.c = ref.getReference();
+				;
 
 			} else if (p.getCondition() instanceof PositiveConstraint) {
 				PositiveConstraint cons = (PositiveConstraint) p.getCondition();
-				cond = (new NeoPositiveConstraint(cons.getPattern(), injective,
-						builder, helper));
+				cond = (new NeoPositiveConstraint(cons.getPattern(), injective, builder, helper));
 
 			} else if (p.getCondition() instanceof NegativeConstraint) {
 				NegativeConstraint cons = (NegativeConstraint) p.getCondition();
-				cond = (new NeoNegativeConstraint(cons.getPattern(), injective,
-						builder, helper));
+				cond = (new NeoNegativeConstraint(cons.getPattern(), injective, builder, helper));
 
 			} else {
 				logger.info(p.getCondition().toString());
@@ -241,7 +241,8 @@ public class NeoPattern implements IPattern<NeoMatch> {
 			// a Body, then create a new NeoCondition, with current data and follow the
 			// structure from there for query execution
 			if (p.getCondition() instanceof ConstraintReference) {
-				var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
+				var cond = new NeoCondition(new NeoConstraint(c, Optional.of(builder), helper), this, c.getName(),
+						builder, helper);
 				if (limit > 0)
 					return cond.determineMatches(limit);
 				else

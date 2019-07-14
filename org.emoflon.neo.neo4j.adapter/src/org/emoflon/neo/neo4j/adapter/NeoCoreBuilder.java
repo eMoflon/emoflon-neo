@@ -1,17 +1,21 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.EMSLFlattener;
@@ -39,10 +43,6 @@ import org.neo4j.driver.v1.StatementResult;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
-
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 
 public class NeoCoreBuilder implements AutoCloseable {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -345,9 +345,12 @@ public class NeoCoreBuilder implements AutoCloseable {
 	public static boolean canBeExported(EClass eclass) {
 		return eclass.equals(EMSLPackage.eINSTANCE.getMetamodel()) || eclass.equals(EMSLPackage.eINSTANCE.getModel());
 	}
-	
+
 	public static boolean canBeCoppiedToClipboard(EClass eclass) {
-		return eclass.equals(EMSLPackage.eINSTANCE.getAtomicPattern()) || eclass.equals(EMSLPackage.eINSTANCE.getPattern()) || eclass.equals(EMSLPackage.eINSTANCE.getConstraint()) || eclass.equals(EMSLPackage.eINSTANCE.getCondition());
+		return eclass.equals(EMSLPackage.eINSTANCE.getAtomicPattern())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getPattern())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getConstraint())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition());
 	}
 
 	private void bootstrapNeoCore() {
@@ -766,8 +769,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
 			logger.info(flattenedEntity.getClass());
 			if (flattenedEntity instanceof Model) {
-				//exportModelToNeo4j((Model) flattenedEntity);
-		} else if (flattenedEntity instanceof Metamodel)
+				// exportModelToNeo4j((Model) flattenedEntity);
+			} else if (flattenedEntity instanceof Metamodel)
 				exportMetamodelToNeo4j((Metamodel) flattenedEntity);
 			else
 				throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
@@ -776,25 +779,23 @@ public class NeoCoreBuilder implements AutoCloseable {
 			e.printStackTrace();
 		}
 	}
-	
-	public void createCypherQuery(Entity entity) {
-		logger.info("004" + entity.getClass().toString());
-		if (entity instanceof AtomicPattern) {
-			var pattern = new NeoAtomicPattern((AtomicPattern)entity, this);
+
+	public static void createCypherQuery(EObject selection) {
+		if (selection instanceof AtomicPattern) {
+			var pattern = new NeoAtomicPattern((AtomicPattern) selection, Optional.empty());
 			copyStringToClipboard(pattern.getQuery());
-		} else if (entity instanceof Constraint) {
-			var constraint = new NeoConstraint((Constraint)entity, this);
+		} else if (selection instanceof Constraint) {
+			var constraint = new NeoConstraint((Constraint) selection, Optional.empty());
 			copyStringToClipboard(constraint.getQuery());
 		} else
-			throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
+			throw new IllegalArgumentException("This type of selection cannot be exported: " + selection);
 	}
-	
-	private void copyStringToClipboard(String query) {
-		
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		Clipboard clipboard = toolkit.getSystemClipboard();
-		StringSelection strSel = new StringSelection(query);
+
+	private static void copyStringToClipboard(String query) {
+		var toolkit = Toolkit.getDefaultToolkit();
+		var clipboard = toolkit.getSystemClipboard();
+		var strSel = new StringSelection(query);
 		clipboard.setContents(strSel, null);
-		logger.info("Cyper Query is now available in the clipboard");
+		logger.info("Cyper query is now on your clipboard");
 	}
 }

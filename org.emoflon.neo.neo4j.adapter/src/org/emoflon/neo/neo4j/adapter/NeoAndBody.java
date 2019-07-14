@@ -1,5 +1,7 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.Optional;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
@@ -47,7 +49,7 @@ public class NeoAndBody {
 
 			// if its an constraint body, check if this constraint satisfies
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), Optional.of(builder), helper);
 
 				if (((ConstraintReference) b).isNegated()) {
 					logger.info("Attention: Constraint is negated!");
@@ -95,7 +97,7 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), Optional.of(builder), helper);
 				var consData = consRef.getConstraintData();
 
 				returnStmt.addNodes(consData.getNodes());
@@ -144,7 +146,7 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), Optional.of(builder), helper);
 				var consData = consRef.getConditionData();
 
 				returnStmt.addNodes(consData.getNodes());
