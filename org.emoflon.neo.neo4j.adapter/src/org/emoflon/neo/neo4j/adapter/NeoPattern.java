@@ -3,9 +3,9 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
@@ -64,15 +64,17 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		if (p.getCondition() != null) {
 
 			if (p.getCondition() instanceof ConstraintReference) {
-				this.c = (Constraint) p.getCondition().eCrossReferences().get(0);
+				ConstraintReference ref = (ConstraintReference) p.getCondition();
+				this.c = ref.getReference();
+				;
 
 			} else if (p.getCondition() instanceof PositiveConstraint) {
-				cond = (new NeoPositiveConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), injective,
-						builder, helper));
+				PositiveConstraint cons = (PositiveConstraint) p.getCondition();
+				cond = (new NeoPositiveConstraint(cons.getPattern(), injective, builder, helper));
 
 			} else if (p.getCondition() instanceof NegativeConstraint) {
-				cond = (new NeoNegativeConstraint((AtomicPattern) p.getCondition().eCrossReferences().get(0), injective,
-						builder, helper));
+				NegativeConstraint cons = (NegativeConstraint) p.getCondition();
+				cond = (new NeoNegativeConstraint(cons.getPattern(), injective, builder, helper));
 
 			} else {
 				logger.info(p.getCondition().toString());
@@ -239,7 +241,8 @@ public class NeoPattern implements IPattern<NeoMatch> {
 			// a Body, then create a new NeoCondition, with current data and follow the
 			// structure from there for query execution
 			if (p.getCondition() instanceof ConstraintReference) {
-				var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
+				var cond = new NeoCondition(new NeoConstraint(c, Optional.of(builder), helper), this, c.getName(),
+						builder, helper);
 				if (limit > 0)
 					return cond.determineMatches(limit);
 				else

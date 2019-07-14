@@ -160,4 +160,9 @@ public class NeoImplication implements IIfElseConstraint {
 			return matches;
 		}
 	}
+	
+	public String getQuery() {
+
+		return CypherPatternBuilder.constraint_ifThen_readQuery(nodesIf, nodesThen, helper.getNodes(), injective);
+	}
 }

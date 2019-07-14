@@ -8,6 +8,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.commands.ExpressionContext;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -15,42 +16,22 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
-import org.emoflon.neo.emsl.eMSL.Entity;
-import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
-import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 @SuppressWarnings("restriction")
-public class ExportEntityToNeo4J extends AbstractHandler {
+public class CreateCypherQuery extends AbstractHandler {
 	private Optional<EObjectNode> eobNode = Optional.empty();
-	private NeoCoreBuilder builder;
 
-	private static final Logger logger = Logger.getLogger(ExportEntityToNeo4J.class);
+	private static final Logger logger = Logger.getLogger(CreateCypherQuery.class);
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchPage activePage = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
 		ENeoConsole.setActivePage(activePage);
 
-		logger.info("Trying to connect to your Neo4j database...");
-
-		String uri = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_URI);
-		String userName = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_USER);
-		String password = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_PASSWORD);
-
-		logger.info("Connection URI: " + uri);
-		logger.info("User: " + userName);
-		logger.info("Password: " + password);
-
 		try {
-			builder = new NeoCoreBuilder(uri, userName, password);
-
-			logger.info("Great!  Seems to have worked.");
-
-			logger.info("Now performing export...");
-			exportSelectedEMSLEntity(event, builder);
-			builder.close();
+			createQueryFromEMSLEntity(event);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.info("Sorry, something went wrong.");
@@ -60,31 +41,24 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		return null;
 	}
 
-	private void exportSelectedEMSLEntity(ExecutionEvent event, NeoCoreBuilder builder) throws ExecutionException {
+	private void createQueryFromEMSLEntity(ExecutionEvent event) throws ExecutionException {
 		IEditorPart editorPart = HandlerUtil.getActiveEditorChecked(event);
 		if (editorPart instanceof XtextEditor) {
 			XtextEditor editor = (XtextEditor) editorPart;
-			logger.info("001");
-			var emslEntity = editor.getDocument().readOnly(new IUnitOfWork<Optional<Entity>, XtextResource>() {
+			logger.debug("Extracting selection from editor");
+			var emslEntity = editor.getDocument().readOnly(new IUnitOfWork<Optional<EObject>, XtextResource>() {
 				@Override
-				public Optional<Entity> exec(XtextResource state) throws Exception {
-					return eobNode.map(n -> {
-						var o = n.getEObject(state);
-						if (o instanceof Entity)
-							return (Entity) o;
-						else
-							return null;
-					});
+				public Optional<EObject> exec(XtextResource state) throws Exception {
+					return eobNode.map(n -> n.getEObject(state));
 				}
 			});
-			logger.info("002" + emslEntity.getClass().toString());
-			emslEntity.ifPresent(this::exportEMSLEntityToNeo4j);
+			logger.debug("Extracted: " + emslEntity);
+			emslEntity.ifPresent(this::createCypherQueryFromSelection);
 		}
 	}
 
-	private void exportEMSLEntityToNeo4j(Entity entity) {
-		logger.info("003" + entity.getClass().toString());
-		builder.exportEMSLEntityToNeo4j(entity);
+	private void createCypherQueryFromSelection(EObject selection) {
+		NeoCoreBuilder.createCypherQuery(selection);
 	}
 
 	@Override
@@ -98,7 +72,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 					Object o = nodes.get(0);
 					if (o instanceof EObjectNode) {
 						eobNode = Optional.of((EObjectNode) o);
-						eobNode.ifPresent(n -> setBaseEnabled(NeoCoreBuilder.canBeExported(n.getEClass())));
+						eobNode.ifPresent(n -> setBaseEnabled(NeoCoreBuilder.canBeCoppiedToClipboard(n.getEClass())));
 						return;
 					}
 				}
