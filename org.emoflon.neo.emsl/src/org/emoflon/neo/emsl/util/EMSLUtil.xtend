@@ -26,6 +26,7 @@ import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.ecore.EObject
 import java.util.ArrayList
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 
 class EMSLUtil {
 	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
@@ -135,5 +136,16 @@ class EMSLUtil {
 	
 	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type){
 		thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
+	}
+	
+	def static getOnlyType(ModelRelationStatement rel){
+		if(isOptional(rel))
+			throw new IllegalArgumentException('''«rel» is an optional edge and does not have a single type!''')
+			
+		rel.types.get(0).type
+	}
+	
+	def static isOptional(ModelRelationStatement rel){
+		rel.types.size > 1
 	}
 }

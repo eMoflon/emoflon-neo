@@ -3,6 +3,7 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
@@ -22,7 +23,7 @@ import org.neo4j.driver.v1.StatementResult;
 public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	private NeoCoreBuilder builder;
+	private Optional<NeoCoreBuilder> builder;
 	private AtomicPattern ap;
 	private boolean injective;
 
@@ -31,9 +32,11 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 
 	/**
 	 * @param ap      the current AtomicPattern
-	 * @param builder for creating and running cypher queries
+	 * @param builder for creating and running cypher queries. Supply Optional.empty
+	 *                if no builder is available (some functionality will not be
+	 *                supported).
 	 */
-	public NeoAtomicPattern(AtomicPattern ap, NeoCoreBuilder builder) {
+	public NeoAtomicPattern(AtomicPattern ap, Optional<NeoCoreBuilder> builder) {
 		nodes = new ArrayList<>();
 		this.ap = ap;
 		injective = true;
@@ -42,7 +45,7 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	}
 
 	/**
-	 * Extracts all nessecary information out of the atomic pattern for creating
+	 * Extracts all necessary information out of the atomic pattern for creating
 	 * queries out of it.
 	 */
 	private void extractNodesAndRelations() {
@@ -60,8 +63,10 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 
 			// add the relations to the recently defined NeoNode by adding new NeoRelation
 			// to the NeoNode
+
+			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			for (ModelRelationStatement r : n.getRelations()) {
-				node.addRelation(node.getVarName(), r.getType().getName(), //
+				node.addRelation(node.getVarName(), EMSLUtil.getOnlyType(r).getName(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName() + "_" + ap.hashCode());
@@ -96,10 +101,12 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	 * @return true if the match is still valid or false if not
 	 */
 	public boolean isStillValid(NeoMatch m) {
+		var b = builder.orElseThrow();
+
 		logger.info("Check if match for " + getName() + " is still valid");
 		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
 		logger.debug(cypherQuery);
-		StatementResult result = builder.executeQuery(cypherQuery);
+		StatementResult result = b.executeQuery(cypherQuery);
 		return result.hasNext();
 	}
 
@@ -120,6 +127,10 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	 */
 	public boolean isInjective() {
 		return injective;
+	}
+
+	public String getQuery() {
+		return CypherPatternBuilder.readQuery(nodes, injective);
 	}
 
 	/**
@@ -156,16 +167,18 @@ public class NeoAtomicPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
+		var b = builder.orElseThrow();
+
 		logger.info("Searching matches for Pattern: " + ap.getName());
 		var cypherQuery = "";
-		if(limit > 0)
+		if (limit > 0)
 			cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
 		else
 			cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
-		
+
 		logger.debug(cypherQuery);
 
-		var result = builder.executeQuery(cypherQuery);
+		var result = b.executeQuery(cypherQuery);
 
 		var matches = new ArrayList<NeoMatch>();
 		while (result.hasNext()) {

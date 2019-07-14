@@ -117,6 +117,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.neo4j.adapter.NeoData;
 			import java.util.HashMap;
 			import java.util.Map;
+			import java.util.Optional;
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
@@ -229,29 +230,33 @@ class EMSLGenerator extends AbstractGenerator {
 		«FOR node : nodeBlocks»
 			«helperNodeClass(node)»
 			
-			«FOR rel : node.relations»
+			«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
 				«helperRelClass(node, rel)»
 			«ENDFOR»
 		«ENDFOR»
 	'''
 
 	protected def CharSequence helperRelClass(ModelNodeBlock node, ModelRelationStatement rel) {
-		val relName = EMSLUtil.relationNameConvention(node.name, rel.type.name, rel.target.name,
+		val relName = EMSLUtil.relationNameConvention(node.name, rel.onlyType.name, rel.target.name,
 			node.relations.indexOf(rel))
 		'''
 			public class «relName.toFirstUpper»Rel {
-				«FOR prop : rel.type.properties»
+				«FOR prop : rel.onlyType.properties»
 					public «EMSLUtil.getJavaType(prop.type)» «prop.name»;
 				«ENDFOR»
 			
 				public «relName.toFirstUpper»Rel(Value «relName») {
-					«FOR prop : rel.type.properties»
+					«FOR prop : rel.onlyType.properties»
 						if(!«relName».get("«prop.name»").isNull())
 							this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
 					«ENDFOR»
 				}
 			}
 		'''
+	}
+		
+	def getOnlyType(ModelRelationStatement rel){
+		EMSLUtil.getOnlyType(rel)
 	}
 
 	protected def CharSequence helperNodeClass(ModelNodeBlock node) '''
@@ -275,10 +280,10 @@ class EMSLGenerator extends AbstractGenerator {
 			«FOR node : nodeBlocks»
 				var «node.name» = data.get("«node.name»");
 				this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
-				«FOR rel : node.relations»
+				«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
-						rel.type.name,//
+						rel.onlyType.name,//
 						rel.target.name,// 
 						node.relations.indexOf(rel))»
 					var «relName» = data.get("«relName»");
@@ -293,10 +298,10 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			«FOR node : nodeBlocks»
 				public final «node.name.toFirstUpper»Node «node.name»;
-				«FOR rel : node.relations»
+				«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
-						rel.type.name,//
+						rel.onlyType.name,//
 						rel.target.name,// 
 						node.relations.indexOf(rel))»
 					public final «relName.toFirstUpper»Rel «relName»;
@@ -318,11 +323,11 @@ class EMSLGenerator extends AbstractGenerator {
 						return this;
 					}
 				«ENDFOR»
-				«FOR rel : node.relations»
-					«FOR prop : rel.type.properties»
+				«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
+					«FOR prop : rel.onlyType.properties»
 						«val relName = EMSLUtil.relationNameConvention(//
 											node.name,// 
-											rel.type.name,//
+											rel.onlyType.name,//
 											rel.target.name,// 
 											node.relations.indexOf(rel))»
 						public «maskClassName» set«relName.toFirstUpper»«prop.name.toFirstUpper»(«EMSLUtil.getJavaType(prop.type)» value) {
@@ -421,7 +426,7 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			public IConstraint getConstraint_«namingConvention(c.name)»() {
 				var c = (Constraint) spec.getEntities().get(«index»);
-				return new NeoConstraint(c, builder);
+				return new NeoConstraint(c, Optional.of(builder));
 			}
 		'''
 	}

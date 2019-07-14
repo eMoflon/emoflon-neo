@@ -104,14 +104,18 @@ public class BoardGenerator {
 
 			{
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm, "fields"));
+				var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+				type.setType(retrieveRelType(mm, "fields"));
+				rs.getTypes().add(type);
 				rs.setTarget(rightField);
 				board.getRelations().add(rs);
 			}
 
 			{
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm, "right"));
+				var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+				type.setType(retrieveRelType(mm, "right"));
+				rs.getTypes().add(type);
 				rs.setTarget(rightField);
 				nb.getRelations().add(rs);
 			}
@@ -122,7 +126,9 @@ public class BoardGenerator {
 				var lCol = newLastCol.get(index - 1);
 
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm, "bottom"));
+				var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+				type.setType(retrieveRelType(mm, "bottom"));
+				rs.getTypes().add(type);
 				rs.setTarget(rightField);
 				lCol.getRelations().add(rs);
 			}
@@ -139,14 +145,18 @@ public class BoardGenerator {
 
 			{
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm, "fields"));
+				var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+				type.setType(retrieveRelType(mm, "fields"));
+				rs.getTypes().add(type);
 				rs.setTarget(bottomField);
 				board.getRelations().add(rs);
 			}
 
 			{
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm, "bottom"));
+				var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+				type.setType(retrieveRelType(mm, "bottom"));
+				rs.getTypes().add(type);
 				rs.setTarget(bottomField);
 				nb1.getRelations().add(rs);
 			}
@@ -157,7 +167,9 @@ public class BoardGenerator {
 				var lRow = newLastRow.get(index - 1);
 
 				ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				rs.setType(retrieveRelType(mm, "right"));
+				var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+				type.setType(retrieveRelType(mm, "right"));
+				rs.getTypes().add(type);
 				rs.setTarget(bottomField);
 				lRow.getRelations().add(rs);
 			}
@@ -174,14 +186,18 @@ public class BoardGenerator {
 
 		{
 			ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			rs.setType(retrieveRelType(mm, "fields"));
+			var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+			type.setType(retrieveRelType(mm, "fields"));
+			rs.getTypes().add(type);
 			rs.setTarget(cornerField);
 			board.getRelations().add(rs);
 		}
 
 		{
 			ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			rs.setType(retrieveRelType(mm, "bottom"));
+			var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+			type.setType(retrieveRelType(mm, "bottom"));
+			rs.getTypes().add(type);
 			rs.setTarget(cornerField);
 			lc.getRelations().add(rs);
 
@@ -189,7 +205,9 @@ public class BoardGenerator {
 
 		{
 			ModelRelationStatement rs = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			rs.setType(retrieveRelType(mm, "right"));
+			var type = EMSLFactory.eINSTANCE.createModelRelationStatementType();
+			type.setType(retrieveRelType(mm, "right"));
+			rs.getTypes().add(type);
 			rs.setTarget(cornerField);
 			lr.getRelations().add(rs);
 		}

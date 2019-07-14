@@ -24,16 +24,49 @@ public class TestQueries extends ENeoTest {
 	@Test
 	@Disabled("//TODO[Jannik]:  Filter matches with mask")
 	public void test_BooksOfSomeAuthor() {
-		var mask = queries.getPattern_AllBooksOfAParticularAuthor().mask()//
+		var access = queries.getPattern_AllBooksOfAParticularAuthor();
+		var mask = access.mask()//
 				.setSomeAuthorName("Jean Ann")//
 				.setSomeAuthorSurname("Wright");
-				
-		assertEquals(1, queries.getPattern_AllBooksOfAParticularAuthor().matcher(mask).countMatches());
-	
-		mask = queries.getPattern_AllBooksOfAParticularAuthor().mask()//
+
+		assertEquals(1, access.matcher(mask).countMatches());
+
+		mask = access.mask()//
 				.setSomeAuthorName("Hui")//
 				.setSomeAuthorSurname("Boo");
+
+		assertEquals(0, access.matcher(mask).countMatches());
+	}
+
+	@Test
+	@Disabled("//TODO[Jannik]:  Filter matches with mask")
+	public void test_BooksWithSomeClassification() {
+		var access = queries.getPattern_AllBooksWithAParticularClassification();
+		var mask = access.mask().setClassificationName("Mixed");
+
+		assertEquals(1, access.matcher(mask).countMatches());
 		
-		assertEquals(0, queries.getPattern_AllBooksOfAParticularAuthor().matcher(mask).countMatches());
+		mask = access.mask().setClassificationName("Using Strips");
+		
+		assertEquals(1, access.matcher(mask).countMatches());
+		
+		mask = access.mask().setClassificationName("Rubbish");
+		
+		assertEquals(0, access.matcher(mask).countMatches());
+		
+		assertEquals(2, access.matcher().countMatches());
+	}
+	
+	@Test
+	@Disabled("//TODO[Jannik]:  Filter matches with mask")
+	public void test_PageOfSomeBook() {
+		var access = queries.getPattern_AllPagesOfAParticularBook();
+		var mask = access.mask().setBookTitle("Jambalaya Quilts");
+		assertEquals(17, access.matcher(mask).countMatches());
+		
+		mask = access.mask().setBookTitle("Pillows");
+		assertEquals(37, access.matcher(mask).countMatches());
+		
+		assertEquals(54, access.matcher().countMatches());
 	}
 }

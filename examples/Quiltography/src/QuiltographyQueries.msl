@@ -9,9 +9,29 @@ pattern allBooksOfAParticularAuthor {
 	}
 }
 
-// Alle Būcher einer gewissen Klassifikation
+// Alle Bücher einer gewissen Klassifikation
+pattern allBooksWithAParticularClassification {
+	classification:Classification
+	
+	book:Book {
+		-classification->classification
+	}
+}
+
 // Alle Seiten zu einem gewissen Buch
+pattern allPagesOfAParticularBook {
+	book:Book
+	
+	page:Page {
+		-book->book
+	}
+}
+
 // alle Seiten zu Quilts oder Pillows mit einem bestimmten Pattern
+pattern allPagesOnQuiltsWithACertainPattern {
+	
+}
+
 // alle Seiten zu Quilts mit einem gewissen Pattern aus Büchern mit einer bestimmten Klassifikation
 // alle Seiten zu Quilts aus  Büchern mit einer gewissen Qualifikation
 // Alle Seiten mit Contents = basics
