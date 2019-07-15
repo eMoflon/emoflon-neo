@@ -304,15 +304,17 @@ public class EMSLFlattener {
 		
 		for (var c : corrs) {
 			for (var other : corrs) {
-				if ((c.getAction() == null && other.getAction() == null || c.getAction().equals(other.getAction()))
-						&& c.getSource().getName().equals(other.getSource().getName())
-						&& c.getTarget().getName().equals(other.getTarget().getName())
-						&& c.getType().getName().equals(other.getType().getName())
-						&& c.getType().getSource() == other.getType().getSource()
-						&& c.getType().getTarget() == other.getType().getTarget()) {
+				if (isEqualCorrespondence(c, other)) {
 					continue;
-				} else {
-					mergedCorrespondences.add(EcoreUtil.copy(c));
+				} else if (!(mergedCorrespondences.contains(c))) {
+					boolean alreadyIn = false;
+					for (var mergedCorr : mergedCorrespondences) {
+						if (isEqualCorrespondence(c, mergedCorr)) {
+							alreadyIn = true;
+						}
+					}
+					if (!alreadyIn)
+						mergedCorrespondences.add(EcoreUtil.copy(c));
 				}
 			}
 		}
@@ -320,19 +322,22 @@ public class EMSLFlattener {
 		for (var c : mergedCorrespondences) {
 			// set new src
 			for (var n : srcNodeBlocks) {
-				if (n.getName().equals(c.getSource().getName()))
+				if (n.getName().equals(c.getSource().getName())) {
 					c.setSource(n);
+					break;
+				}
 			}
 			// set new trg
 			for (var n : trgNodeBlocks) {
-				if (n.getName().equals(c.getTarget().getName()))
+				if (n.getName().equals(c.getTarget().getName())) {
 					c.setTarget(n);
+					break;
+				}
 			}
 		}
 		
 		return mergedCorrespondences;
 	}
-	
 	
 	/**
 	 * This method creates all NodeBlocks that have to be imported into the Entity from the SuperEntities.
@@ -1186,5 +1191,20 @@ public class EMSLFlattener {
 		else if (entity instanceof TripleRule && !(superEntity instanceof TripleRule)
 				|| !(entity instanceof TripleRule) && superEntity instanceof TripleRule)
 			throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, superEntity);
+	}
+	
+	/**
+	 * Compares two correspondences.
+	 * @param corr1 first correspondence in comparison.
+	 * @param corr2 second correspondence in comparison.
+	 * @return whether two correspondences are equal or not.
+	 */
+	private boolean isEqualCorrespondence(Correspondence corr1, Correspondence corr2) {
+		return (corr1.getAction() == null && corr2.getAction() == null || (corr1.getAction() != null && corr2.getAction() != null && corr1.getAction().getOp() == corr2.getAction().getOp()))
+				&& corr1.getSource().getName().equals(corr2.getSource().getName())
+				&& corr1.getTarget().getName().equals(corr2.getTarget().getName())
+				&& corr1.getType().getName().equals(corr2.getType().getName())
+				&& corr1.getType().getSource() == corr2.getType().getSource()
+				&& corr1.getType().getTarget() == corr2.getType().getTarget();
 	}
 }
