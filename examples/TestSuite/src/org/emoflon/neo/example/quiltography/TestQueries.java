@@ -69,4 +69,20 @@ public class TestQueries extends ENeoTest {
 		
 		assertEquals(54, access.matcher().countMatches());
 	}
+	
+	@Test
+	@Disabled("//TODO[Jannik]:  Filter matches with mask")
+	public void testAllPagesOnQuiltsWithACertainPattern() {
+		var access = queries.getPattern_AllPagesOnQuiltsWithACertainPattern();
+		var mask = access.mask().setPatName("Weave");
+		assertEquals(1, access.matcher(mask).countMatches());
+	}
+	
+	@Test
+	@Disabled("//TODO[Jannik]:  Filter matches with mask")
+	public void testAllPagesOnPillowsWithACertainPattern() {
+		var access = queries.getPattern_AllPagesOnPillowsWithACertainPattern();
+		var mask = access.mask().setPatName("Rectangle");
+		assertEquals(8, access.matcher(mask).countMatches());
+	}
 }
