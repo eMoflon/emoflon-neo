@@ -16,6 +16,7 @@ import org.neo4j.driver.v1.Record;
  *
  */
 public class NeoMatch implements IMatch {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	private NeoPattern pattern;
@@ -50,8 +51,6 @@ public class NeoMatch implements IMatch {
 					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
 			}
 		}
-
-		logger.debug("Extracted ids: " + ids);
 	}
 
 	/**
