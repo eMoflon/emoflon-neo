@@ -21,9 +21,7 @@ import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
-import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.NeoConstraint;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoPattern;
@@ -37,7 +35,7 @@ public class CreateCypherQuery extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchPage activePage = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
 		ENeoConsole.setActivePage(activePage);
-		
+
 		try {
 			createQueryFromEMSLEntity(event);
 		} catch (Exception e) {
@@ -67,10 +65,10 @@ public class CreateCypherQuery extends AbstractHandler {
 
 	private void createCypherQueryFromSelection(EObject selection) {
 		if (selection instanceof AtomicPattern) {
-			var pattern = (Pattern)(((AtomicPattern) selection).eContainer());
-			var neoPattern = new NeoPattern(pattern, Optional.empty());	
+			var pattern = (Pattern) (((AtomicPattern) selection).eContainer());
+			var neoPattern = new NeoPattern(pattern, Optional.empty());
 			copyStringToClipboard(neoPattern.getQuery());
-			
+
 		} else if (selection instanceof Constraint) {
 			var constraint = new NeoConstraint((Constraint) selection, Optional.empty());
 			copyStringToClipboard(constraint.getQuery());
@@ -98,7 +96,7 @@ public class CreateCypherQuery extends AbstractHandler {
 
 		setBaseEnabled(false);
 	}
-	
+
 	private static void copyStringToClipboard(String query) {
 		var toolkit = Toolkit.getDefaultToolkit();
 		var clipboard = toolkit.getSystemClipboard();
