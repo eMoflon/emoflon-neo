@@ -42,6 +42,12 @@ class CypherPatternBuilder {
 		'''
 		«readQuery(nodes,injective)» LIMIT «limit»'''
 	}
+	def static String readQuery_copyPaste(Collection<NeoNode> nodes, boolean injective) {
+		'''
+		«matchQuery(nodes)»
+		«whereQuery(nodes,injective)»
+		«returnQuery_copyPaste(nodes)»'''
+	}
 	
 	def static String getDataQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective){
 		'''
@@ -115,16 +121,30 @@ class CypherPatternBuilder {
 		'''
 		RETURN «FOR n : nodes SEPARATOR ',\n '»
 				«IF n.relations.size == 0 || n.properties.size > 0»
-					id(«n.varName») AS «n.varName»«IF n.relations.size > 0»,«ENDIF»
+					id(«n.varName») AS «n.varName»«IF n.relations.size > 0», «ENDIF»
 				«ENDIF»
 				«FOR r : n.relations SEPARATOR ',\n  '»
 					id(«r.varName») AS «r.varName»
 				«ENDFOR»
 			«ENDFOR»'''
 	}
+	def static String returnQuery_copyPaste(Collection<NeoNode> nodes) {
+		'''
+		RETURN «FOR n : nodes SEPARATOR ',\n '»
+				«IF n.relations.size == 0 || n.properties.size > 0»
+					«n.varName»«IF n.relations.size > 0», «ENDIF»
+				«ENDIF»
+				«FOR r : n.relations SEPARATOR ',\n  '»
+					«r.varName»
+				«ENDFOR»
+			«ENDFOR»'''
+	}
 	
 	def static String returnQuery(Collection<NeoNode> nodes, int limit) {
 		'''«returnQuery(nodes)» LIMIT «limit»'''
+	}
+	def static String returnQuery_copyPaste(Collection<NeoNode> nodes, int limit) {
+		'''«returnQuery_copyPaste(nodes)» LIMIT «limit»'''
 	}
 	
 	
@@ -206,6 +226,18 @@ class CypherPatternBuilder {
 		«IF limit>0»«returnQuery(nodes, limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
 		'''
 	} 
+	def static String constraintQuery_copyPaste(Collection<NeoNode> nodes, Collection<String> helperNodes, String matchCond, String whereCond, boolean injective, int limit) {
+		
+		'''«matchQuery(nodes)»
+		«whereQuery(nodes, injective)»
+		«withQuery(nodes)»
+		«matchCond»
+		«constraint_withQuery(helperNodes)»
+		WHERE «whereCond»
+		«constraint_withQuery(helperNodes)»
+		«IF limit>0»«returnQuery_copyPaste(nodes, limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»
+		'''
+	} 
 	 
 	def static String constraintQuery_Satisfied(String optionalMatch, String whereClause) {
 		'''«optionalMatch»
@@ -269,6 +301,14 @@ class CypherPatternBuilder {
 	 	«constraint_withQuery(helperNodes)»
 	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
 	 	«IF limit>0»«returnQuery(nodes,limit)»«ELSE»«returnQuery(nodes)»«ENDIF»'''
+	 }
+	 def static String conditionQuery_copyPaste(Collection<NeoNode> nodes, String optionalMatches, String whereClause, Collection<String> helperNodes, boolean isNegated, int limit) {
+	 	'''«matchQuery(nodes)»
+	 	«withQuery(nodes)»
+	 	«optionalMatches»
+	 	«constraint_withQuery(helperNodes)»
+	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+	 	«IF limit>0»«returnQuery_copyPaste(nodes,limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»'''
 	 }
 	 
 	 def static String wherePositiveConstraintQuery(int id) {

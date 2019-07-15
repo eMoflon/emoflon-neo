@@ -204,7 +204,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 	public String getQuery() {
 		
 		if (p.getCondition() == null) {
-			return CypherPatternBuilder.readQuery(nodes, injective);
+			return CypherPatternBuilder.readQuery_copyPaste(nodes, injective);
 		} else {
 
 			if (p.getCondition() instanceof ConstraintReference) {
@@ -215,14 +215,14 @@ public class NeoPattern implements IPattern<NeoMatch> {
 			} else if (cond instanceof NeoPositiveConstraint) {
 
 				var constraint = ((NeoPositiveConstraint) cond);
-				return CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
+				return CypherPatternBuilder.constraintQuery_copyPaste(nodes, helper.getNodes(),
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
 						injective, 0);
 
 			} else if (cond instanceof NeoNegativeConstraint) {
 
 				var constraint = ((NeoNegativeConstraint) cond);
-				return CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
+				return CypherPatternBuilder.constraintQuery_copyPaste(nodes, helper.getNodes(),
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
 						injective, 0);
 			} else {

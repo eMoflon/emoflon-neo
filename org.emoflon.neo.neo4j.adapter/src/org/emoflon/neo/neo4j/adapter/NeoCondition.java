@@ -53,7 +53,7 @@ public class NeoCondition {
 	
 	public String getQuery() {
 		var condData = c.getConditionData();
-		return CypherPatternBuilder.conditionQuery(p.getNodes(), condData.getOptionalMatchString(),
+		return CypherPatternBuilder.conditionQuery_copyPaste(p.getNodes(), condData.getOptionalMatchString(),
 				condData.getWhereClause(), helper.getNodes(), p.isNegated(), 0);
 	}
 
