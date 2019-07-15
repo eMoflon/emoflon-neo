@@ -1,7 +1,5 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.Optional;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Implication;
@@ -20,7 +18,7 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
  */
 public class NeoConstraint implements IConstraint {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private Optional<NeoCoreBuilder> builder;
+	private NeoCoreBuilder builder;
 	private NeoHelper helper;
 	private Constraint c;
 	private final boolean injective = true;
@@ -29,9 +27,9 @@ public class NeoConstraint implements IConstraint {
 	 * Constructor will be executed, if the NeoConstraint is created from the test
 	 * 
 	 * @param c       given Constraint for extracting the data
-	 * @param builder for creating and running Cypher queries
+	 * @param neoCoreBuilder for creating and running Cypher queries
 	 */
-	public NeoConstraint(Constraint c, Optional<NeoCoreBuilder> builder) {
+	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
 		this.builder = builder;
 		this.helper = new NeoHelper();
 		this.c = c;
@@ -46,14 +44,10 @@ public class NeoConstraint implements IConstraint {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoConstraint(Constraint c, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
+	public NeoConstraint(Constraint c, NeoCoreBuilder builder, NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;
-	}
-
-	public NeoConstraint(Constraint c) {
-		this(c, Optional.empty());
 	}
 
 	/**
@@ -73,14 +67,13 @@ public class NeoConstraint implements IConstraint {
 	 *         nested constraints or Or-Bodies
 	 */
 	public NeoReturn getConstraintData() {
-		var b = builder.orElseThrow();
 
 		NeoReturn returnStmt = new NeoReturn();
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = ((PositiveConstraint) c.getBody()).getPattern();
 			ap = helper.getFlattenedPattern(ap);
-			var co = new NeoPositiveConstraint(ap, injective, b, helper);
+			var co = new NeoPositiveConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
@@ -89,7 +82,7 @@ public class NeoConstraint implements IConstraint {
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = ((NegativeConstraint) c.getBody()).getPattern();
 			ap = helper.getFlattenedPattern(ap);
-			var co = new NeoNegativeConstraint(ap, injective, b, helper);
+			var co = new NeoNegativeConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchConstraint());
@@ -98,7 +91,7 @@ public class NeoConstraint implements IConstraint {
 		} else if (c.getBody() instanceof OrBody) {
 
 			var body = (OrBody) c.getBody();
-			var neoBody = new NeoOrBody(body, b, helper);
+			var neoBody = new NeoOrBody(body, builder, helper);
 
 			returnStmt = neoBody.getConstraintData();
 
@@ -118,14 +111,13 @@ public class NeoConstraint implements IConstraint {
 	 *         nested condition or Or-Bodies
 	 */
 	public NeoReturn getConditionData() {
-		var b = builder.orElseThrow();
 
 		NeoReturn returnStmt = new NeoReturn();
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = ((PositiveConstraint) c.getBody()).getPattern();
 			ap = helper.getFlattenedPattern(ap);
-			var co = new NeoPositiveConstraint(ap, injective, b, helper);
+			var co = new NeoPositiveConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
@@ -134,7 +126,7 @@ public class NeoConstraint implements IConstraint {
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = ((NegativeConstraint) c.getBody()).getPattern();
 			ap = helper.getFlattenedPattern(ap);
-			var co = new NeoNegativeConstraint(ap, injective, b, helper);
+			var co = new NeoNegativeConstraint(ap, injective, builder, helper);
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
@@ -143,7 +135,7 @@ public class NeoConstraint implements IConstraint {
 		} else if (c.getBody() instanceof OrBody) {
 
 			var body = (OrBody) c.getBody();
-			var neoBody = new NeoOrBody(body, b, helper);
+			var neoBody = new NeoOrBody(body, builder, helper);
 
 			returnStmt = neoBody.getConditionData();
 
@@ -164,7 +156,6 @@ public class NeoConstraint implements IConstraint {
 	 */
 	@Override
 	public boolean isSatisfied() {
-		var b = builder.orElseThrow();
 
 		if (c.getBody() instanceof Implication) {
 			var implication = (Implication) c.getBody();
@@ -172,7 +163,7 @@ public class NeoConstraint implements IConstraint {
 			var apThen = implication.getConclusion();
 			apIf = helper.getFlattenedPattern(apIf);
 			apThen = helper.getFlattenedPattern(apThen);
-			var co = new NeoImplication(apIf, apThen, injective, b, helper);
+			var co = new NeoImplication(apIf, apThen, injective, builder, helper);
 
 			return co.isSatisfied();
 
@@ -187,7 +178,7 @@ public class NeoConstraint implements IConstraint {
 					returnStmt.getWhereClause());
 
 			logger.debug(cypherQuery);
-			var result = b.executeQuery(cypherQuery);
+			var result = builder.executeQuery(cypherQuery);
 
 			if (result.hasNext()) {
 				logger.info("Found matches! Constraint: " + c.getName() + " is satisfied!");
@@ -201,7 +192,6 @@ public class NeoConstraint implements IConstraint {
 	}
 
 	public String getQuery() {
-		var b = builder.orElseThrow();
 
 		if (c.getBody() instanceof Implication) {
 			var implication = (Implication) c.getBody();
@@ -209,7 +199,7 @@ public class NeoConstraint implements IConstraint {
 			var apThen = implication.getConclusion();
 			apIf = helper.getFlattenedPattern(apIf);
 			apThen = helper.getFlattenedPattern(apThen);
-			var co = new NeoImplication(apIf, apThen, injective, b, helper);
+			var co = new NeoImplication(apIf, apThen, injective, builder, helper);
 
 			return co.getQuery();
 		} else {

@@ -45,6 +45,12 @@ public class NeoCondition {
 	public Collection<NeoMatch> determineMatches() {
 		return determineMatches(0);
 	}
+	
+	public String getQuery() {
+		var condData = c.getConditionData();
+		return CypherPatternBuilder.conditionQuery(p.getNodes(), condData.getOptionalMatchString(),
+				condData.getWhereClause(), helper.getNodes(), p.isNegated(), 0);
+	}
 
 	/**
 	 * Get the data and nodes from the (nested) conditions and runs the query in the

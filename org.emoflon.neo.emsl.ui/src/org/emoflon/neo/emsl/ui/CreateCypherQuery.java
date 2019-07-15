@@ -16,12 +16,15 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
+import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 @SuppressWarnings("restriction")
 public class CreateCypherQuery extends AbstractHandler {
 	private Optional<EObjectNode> eobNode = Optional.empty();
+	private NeoCoreBuilder builder;
 
 	private static final Logger logger = Logger.getLogger(CreateCypherQuery.class);
 
@@ -29,8 +32,23 @@ public class CreateCypherQuery extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchPage activePage = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
 		ENeoConsole.setActivePage(activePage);
+		
+		logger.info("Trying to connect to your Neo4j database...");
+
+		String uri = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_URI);
+		String userName = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_USER);
+		String password = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_PASSWORD);
+
+		logger.info("Connection URI: " + uri);
+		logger.info("User: " + userName);
+		logger.info("Password: " + password);
 
 		try {
+			builder = new NeoCoreBuilder(uri, userName, password);
+
+			logger.info("Great!  Seems to have worked.");
+
+			logger.info("Now performing query creating for export...");
 			createQueryFromEMSLEntity(event);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -58,7 +76,7 @@ public class CreateCypherQuery extends AbstractHandler {
 	}
 
 	private void createCypherQueryFromSelection(EObject selection) {
-		NeoCoreBuilder.createCypherQuery(selection);
+		builder.createCypherQuery(selection);
 	}
 
 	@Override

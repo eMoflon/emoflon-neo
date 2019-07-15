@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -32,6 +31,7 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -778,12 +778,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 		}
 	}
 
-	public static void createCypherQuery(EObject selection) {
+	public void createCypherQuery(EObject selection) {
 		if (selection instanceof AtomicPattern) {
-			var pattern = new NeoAtomicPattern((AtomicPattern) selection, Optional.empty());
-			copyStringToClipboard(pattern.getQuery());
+			var pattern = (Pattern)(((AtomicPattern) selection).eContainer());
+			var neoPattern = new NeoPattern(pattern, this);	
+			copyStringToClipboard(neoPattern.getQuery());
+			
 		} else if (selection instanceof Constraint) {
-			var constraint = new NeoConstraint((Constraint) selection, Optional.empty());
+			var constraint = new NeoConstraint((Constraint) selection, this);
 			copyStringToClipboard(constraint.getQuery());
 		} else
 			throw new IllegalArgumentException("This type of selection cannot be exported: " + selection);
@@ -793,7 +795,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		var toolkit = Toolkit.getDefaultToolkit();
 		var clipboard = toolkit.getSystemClipboard();
 		var strSel = new StringSelection(query);
-		clipboard.setContents(strSel, null);
+		clipboard.setContents(strSel, strSel);
 		logger.info("Cyper query is now on your clipboard");
 	}
 }

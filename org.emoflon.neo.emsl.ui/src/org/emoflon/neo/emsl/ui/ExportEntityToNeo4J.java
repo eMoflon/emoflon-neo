@@ -64,7 +64,6 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		IEditorPart editorPart = HandlerUtil.getActiveEditorChecked(event);
 		if (editorPart instanceof XtextEditor) {
 			XtextEditor editor = (XtextEditor) editorPart;
-			logger.info("001");
 			var emslEntity = editor.getDocument().readOnly(new IUnitOfWork<Optional<Entity>, XtextResource>() {
 				@Override
 				public Optional<Entity> exec(XtextResource state) throws Exception {
@@ -77,13 +76,11 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 					});
 				}
 			});
-			logger.info("002" + emslEntity.getClass().toString());
 			emslEntity.ifPresent(this::exportEMSLEntityToNeo4j);
 		}
 	}
 
 	private void exportEMSLEntityToNeo4j(Entity entity) {
-		logger.info("003" + entity.getClass().toString());
 		builder.exportEMSLEntityToNeo4j(entity);
 	}
 
