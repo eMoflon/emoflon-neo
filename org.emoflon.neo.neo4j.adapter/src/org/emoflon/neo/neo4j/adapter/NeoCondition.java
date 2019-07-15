@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
 public class NeoCondition {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private NeoCoreBuilder builder;
+	private Optional<NeoCoreBuilder> builder;
 	private NeoHelper helper;
 	private NeoConstraint c;
 	private NeoPattern p;
@@ -29,6 +30,10 @@ public class NeoCondition {
 	 *                node storage
 	 */
 	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder, NeoHelper helper) {
+		this(c,p,name,Optional.of(builder),helper);
+	}
+	
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;
@@ -62,6 +67,8 @@ public class NeoCondition {
 	 */
 	public Collection<NeoMatch> determineMatches(int limit) {
 
+		var bld = builder.orElseThrow();
+		
 		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
 
 		// collecting the data
@@ -73,7 +80,7 @@ public class NeoCondition {
 		logger.debug(cypherQuery);
 
 		// run the query
-		var result = builder.executeQuery(cypherQuery);
+		var result = bld.executeQuery(cypherQuery);
 
 		// analyze and return results
 		var matches = new ArrayList<NeoMatch>();

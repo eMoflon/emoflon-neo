@@ -778,24 +778,4 @@ public class NeoCoreBuilder implements AutoCloseable {
 		}
 	}
 
-	public void createCypherQuery(EObject selection) {
-		if (selection instanceof AtomicPattern) {
-			var pattern = (Pattern)(((AtomicPattern) selection).eContainer());
-			var neoPattern = new NeoPattern(pattern, this);	
-			copyStringToClipboard(neoPattern.getQuery());
-			
-		} else if (selection instanceof Constraint) {
-			var constraint = new NeoConstraint((Constraint) selection, this);
-			copyStringToClipboard(constraint.getQuery());
-		} else
-			throw new IllegalArgumentException("This type of selection cannot be exported: " + selection);
-	}
-
-	private static void copyStringToClipboard(String query) {
-		var toolkit = Toolkit.getDefaultToolkit();
-		var clipboard = toolkit.getSystemClipboard();
-		var strSel = new StringSelection(query);
-		clipboard.setContents(strSel, strSel);
-		logger.info("Cyper query is now on your clipboard");
-	}
 }

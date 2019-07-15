@@ -1,5 +1,7 @@
 package org.emoflon.neo.emsl.ui;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,16 +18,19 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.Constraint;
+import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.neo4j.adapter.NeoConstraint;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.NeoPattern;
 
 @SuppressWarnings("restriction")
 public class CreateCypherQuery extends AbstractHandler {
 	private Optional<EObjectNode> eobNode = Optional.empty();
-	private NeoCoreBuilder builder;
-
 	private static final Logger logger = Logger.getLogger(CreateCypherQuery.class);
 
 	@Override
@@ -33,22 +38,7 @@ public class CreateCypherQuery extends AbstractHandler {
 		IWorkbenchPage activePage = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
 		ENeoConsole.setActivePage(activePage);
 		
-		logger.info("Trying to connect to your Neo4j database...");
-
-		String uri = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_URI);
-		String userName = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_USER);
-		String password = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_PASSWORD);
-
-		logger.info("Connection URI: " + uri);
-		logger.info("User: " + userName);
-		logger.info("Password: " + password);
-
 		try {
-			builder = new NeoCoreBuilder(uri, userName, password);
-
-			logger.info("Great!  Seems to have worked.");
-
-			logger.info("Now performing query creating for export...");
 			createQueryFromEMSLEntity(event);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -76,7 +66,16 @@ public class CreateCypherQuery extends AbstractHandler {
 	}
 
 	private void createCypherQueryFromSelection(EObject selection) {
-		builder.createCypherQuery(selection);
+		if (selection instanceof AtomicPattern) {
+			var pattern = (Pattern)(((AtomicPattern) selection).eContainer());
+			var neoPattern = new NeoPattern(pattern, Optional.empty());	
+			copyStringToClipboard(neoPattern.getQuery());
+			
+		} else if (selection instanceof Constraint) {
+			var constraint = new NeoConstraint((Constraint) selection, Optional.empty());
+			copyStringToClipboard(constraint.getQuery());
+		} else
+			throw new IllegalArgumentException("This type of selection cannot be exported: " + selection);
 	}
 
 	@Override
@@ -98,5 +97,13 @@ public class CreateCypherQuery extends AbstractHandler {
 		}
 
 		setBaseEnabled(false);
+	}
+	
+	private static void copyStringToClipboard(String query) {
+		var toolkit = Toolkit.getDefaultToolkit();
+		var clipboard = toolkit.getSystemClipboard();
+		var strSel = new StringSelection(query);
+		clipboard.setContents(strSel, strSel);
+		logger.info("Cyper query is now on your clipboard");
 	}
 }
