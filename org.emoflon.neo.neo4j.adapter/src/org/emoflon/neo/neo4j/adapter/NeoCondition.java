@@ -30,10 +30,11 @@ public class NeoCondition {
 	 *                node storage
 	 */
 	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder, NeoHelper helper) {
-		this(c,p,name,Optional.of(builder),helper);
+		this(c, p, name, Optional.of(builder), helper);
 	}
-	
-	public NeoCondition(NeoConstraint c, NeoPattern p, String name, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
+
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, Optional<NeoCoreBuilder> builder,
+			NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;
@@ -50,10 +51,10 @@ public class NeoCondition {
 	public Collection<NeoMatch> determineMatches() {
 		return determineMatches(0);
 	}
-	
+
 	public String getQuery() {
 		var condData = c.getConditionData();
-		return CypherPatternBuilder.conditionQuery(p.getNodes(), condData.getOptionalMatchString(),
+		return CypherPatternBuilder.conditionQuery_copyPaste(p.getNodes(), condData.getOptionalMatchString(),
 				condData.getWhereClause(), helper.getNodes(), p.isNegated(), 0);
 	}
 
@@ -68,7 +69,7 @@ public class NeoCondition {
 	public Collection<NeoMatch> determineMatches(int limit) {
 
 		var bld = builder.orElseThrow();
-		
+
 		logger.info("Searching matches for Pattern: " + p.getName() + " WHEN " + c.getName());
 
 		// collecting the data
