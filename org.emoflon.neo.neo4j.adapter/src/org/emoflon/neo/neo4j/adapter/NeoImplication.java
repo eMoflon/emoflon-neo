@@ -3,6 +3,8 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.engine.api.constraints.IIfElseConstraint;
@@ -18,7 +20,7 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 public class NeoImplication implements IIfElseConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private NeoCoreBuilder builder;
+	private Optional<NeoCoreBuilder> builder;
 	private NeoHelper helper;
 
 	private AtomicPattern apIf;
@@ -38,7 +40,7 @@ public class NeoImplication implements IIfElseConstraint {
 	 * @param helper    for creating nodes and relation with a unique name and
 	 *                  central node storage
 	 */
-	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, boolean injective, NeoCoreBuilder builder,
+	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, boolean injective, Optional<NeoCoreBuilder> builder,
 			NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
@@ -53,6 +55,10 @@ public class NeoImplication implements IIfElseConstraint {
 		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());
 		this.nodesThen = new ArrayList<>();
 		this.nodesThen = this.helper.extractNodesAndRelations(apThen.getNodeBlocks());
+	}
+	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, boolean injective, NeoCoreBuilder builder,
+			NeoHelper helper) {
+		this(apIf,apThen,injective,Optional.of(builder),helper);
 	}
 
 	/**
@@ -136,6 +142,8 @@ public class NeoImplication implements IIfElseConstraint {
 	 */
 	@Override
 	public Collection<IMatch> getViolations() {
+		
+		var bld = builder.orElseThrow();
 
 		logger.info("Check constraint: " + name);
 
@@ -144,7 +152,7 @@ public class NeoImplication implements IIfElseConstraint {
 		logger.debug(cypherQuery);
 
 		// execute query
-		var result = builder.executeQuery(cypherQuery);
+		var result = bld.executeQuery(cypherQuery);
 
 		// analyze and return results
 		var matches = new ArrayList<IMatch>();

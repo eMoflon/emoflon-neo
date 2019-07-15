@@ -1,5 +1,7 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import java.util.Optional;
+
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 
@@ -13,7 +15,7 @@ import org.emoflon.neo.emsl.eMSL.OrBody;
 public class NeoOrBody {
 
 	private OrBody body;
-	private NeoCoreBuilder builder;
+	private Optional<NeoCoreBuilder> builder;
 	private NeoHelper helper;
 
 	/**
@@ -22,12 +24,13 @@ public class NeoOrBody {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoOrBody(OrBody body, NeoCoreBuilder builder, NeoHelper helper) {
-
+	public NeoOrBody(OrBody body, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
 		this.body = body;
 		this.builder = builder;
 		this.helper = helper;
-
+	}
+	public NeoOrBody(OrBody body, NeoCoreBuilder builder, NeoHelper helper) {
+		this(body,Optional.of(builder),helper);
 	}
 
 	/**

@@ -3,6 +3,8 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
@@ -18,7 +20,7 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 public class NeoNegativeConstraint implements INegativeConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private NeoCoreBuilder builder;
+	private Optional<NeoCoreBuilder> builder;
 	private NeoHelper helper;
 
 	private AtomicPattern ap;
@@ -35,7 +37,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 * @param builder   for creating and running Cypher queries
 	 * @param helper    for creating nodes and
 	 */
-	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, NeoCoreBuilder builder, NeoHelper helper) {
+	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
 		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
@@ -47,6 +49,10 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodes = new ArrayList<>();
 		this.nodes = this.helper.extractNodesAndRelations(ap.getNodeBlocks());
+	}
+	
+	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, NeoCoreBuilder builder, NeoHelper helper) {
+		this(ap,injective,Optional.of(builder),helper);
 	}
 
 	/**
@@ -141,6 +147,8 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 */
 	@Override
 	public Collection<IMatch> getViolations() {
+		
+		var bld = builder.orElseThrow();
 
 		logger.info("Check constraint: FORBID " + ap.getName());
 
@@ -149,7 +157,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 		logger.debug(cypherQuery);
 
 		// execute query
-		var result = builder.executeQuery(cypherQuery);
+		var result = bld.executeQuery(cypherQuery);
 
 		// analyze and return results
 		var matches = new ArrayList<IMatch>();
