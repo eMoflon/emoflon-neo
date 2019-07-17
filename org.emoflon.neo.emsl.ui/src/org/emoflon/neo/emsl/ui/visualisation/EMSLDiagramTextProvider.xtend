@@ -870,21 +870,22 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a TripleRule.
 	 */
 	def dispatch String visualiseEntity(TripleRule entity, boolean mainSelection) {
+		var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>()) as TripleRule
 		'''
 			together {
-				«FOR snb : entity.srcNodeBlocks»
+				«FOR snb : entityCopy.srcNodeBlocks»
 					«visualiseTripleRuleNodeBlocks(entity, snb, "SRC")»
 				«ENDFOR»
 				
-				«FOR tnb : entity.trgNodeBlocks»
+				«FOR tnb : entityCopy.trgNodeBlocks»
 					«visualiseTripleRuleNodeBlocks(entity, tnb, "TRG")»
 				«ENDFOR»
 			
-				«FOR corr : entity.correspondences»
-				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
+				«FOR corr : entityCopy.correspondences»
+				"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
 				«ENDFOR»
 			}
-			«IF entity.nacs.size > 0»
+			«IF entityCopy.nacs.size > 0»
 				«visualiseTripleRuleNACs(entity)»
 			«ENDIF»
 		'''
@@ -906,7 +907,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a TripleRule.
 	 */
-	def String visualiseNodeBlockInTripleRule(TripleRule rule, ModelNodeBlock nb, boolean mainSelection) {
+	def String visualiseNodeBlockInTripleRule(TripleRule rule, ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
+		
 		var sizeOfTypeList = 0
 		var sizeOfIncomingRefTypeList = 0		
 		'''
