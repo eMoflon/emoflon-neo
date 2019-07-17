@@ -1,22 +1,24 @@
 package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.BuiltInType;
-import org.emoflon.neo.emsl.eMSL.DataType;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
+import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumLiteral;
-import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
@@ -24,17 +26,17 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
-import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
-import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
-import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
+import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.emsl.util.FlattenerException;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.StatementResult;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 
 public class NeoCoreBuilder implements AutoCloseable {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -71,15 +73,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private static final String EBOOLEAN = "EBoolean";
 
 	// Attributes
-	private static final String NAME_PROP = "name";
+	private static final String NAME_PROP = "ename";
 	private static final String ABSTRACT_PROP = "abstract";
 
 	// Meta attributes and relations
-	private static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.NeoCore";
 	private static final String CONFORMS_TO_PROP = "conformsTo";
 
 	// Lists of properties and labels for meta types
-	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, ORG_EMOFLON_NEO_CORE));
+	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE));
 	private static final List<String> neoCoreLabels = List.of(METAMODEL, MODEL, EOBJECT);
 
 	private static final List<NeoProp> eclassProps = List.of(new NeoProp(NAME_PROP, ECLASS));
@@ -201,55 +202,149 @@ public class NeoCoreBuilder implements AutoCloseable {
 		st.consume();
 	}
 
+	public void clearDataBase() {
+		executeQueryForSideEffect("MATCH (n) DETACH DELETE n");
+	}
+
 	@Override
 	public void close() throws Exception {
 		driver.close();
 	}
 
-	public void exportEMSLEntityToNeo4j(EObject entity) {
+	private void exportModelToNeo4j(Model m) {
 		bootstrapNeoCoreIfNecessary();
 
-		ResourceSet rs = entity.eResource().getResourceSet();
+		ResourceSet rs = m.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
 
-		var metamodels = new ArrayList<Metamodel>();
-		var models = new ArrayList<Model>();
-		rs.getAllContents().forEachRemaining(c -> {
-			if (c instanceof Metamodel)
-				metamodels.add((Metamodel) c);
-			if (c instanceof Model)
-				models.add((Model) c);
-		});
+		var models = collectReferencedModels(m);
+		models.add(m);
+
+		var metamodels = models.stream()//
+				.flatMap(model -> collectDependentMetamodels(m).stream())//
+				.collect(Collectors.toSet());
 
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
 
+		// Remove abstract metamodels
+		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
+
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.info("Skipping metamodel " + mm.getName() + " as it is already present.");
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
 		}
 
 		if (!newMetamodels.isEmpty())
 			exportMetamodelsToNeo4j(newMetamodels);
-		logger.info("Exported metamodels.");
+		logger.info("Exported metamodels: " + newMetamodels);
 
 		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export models: " + modelNames);
 		var newModels = removeExistingModels(models);
 
-		for (Model m : models) {
-			if (!newModels.contains(m))
-				logger.info("Skipping model " + m.getName() + " as it is already present.");
+		// Remove abstract models
+		newModels = newModels.stream().filter(mod -> !mod.isAbstract()).collect(Collectors.toList());
+
+		for (Model mod : models) {
+			if (!newModels.contains(mod))
+				logger.info("Skipping model " + mod.getName() + " as it is already present or is abstract.");
 		}
 
 		if (!newModels.isEmpty())
 			exportModelsToNeo4j(newModels);
-		logger.info("Exported models.");
+
+		logger.info("Exported models: " + newModels);
+	}
+
+	private Collection<Model> collectReferencedModels(Model m) {
+		var allRefs = new HashSet<Model>();
+		collectReferencedModels(m, allRefs);
+		return allRefs;
+	}
+
+	private void collectReferencedModels(Model m, Set<Model> allRefs) {
+		var directRefs = m.getNodeBlocks().stream()//
+				.flatMap(nb -> nb.getRelations().stream())//
+				.map(rel -> (Model) (rel.getTarget().eContainer()))//
+				.collect(Collectors.toSet());
+
+		directRefs.forEach(ref -> {
+			if (!allRefs.contains(ref)) {
+				allRefs.add(ref);
+				collectReferencedModels(ref, allRefs);
+			}
+		});
+	}
+
+	private Collection<Metamodel> collectDependentMetamodels(Model m) {
+		return m.getNodeBlocks().stream()//
+				.map(nb -> (Metamodel) (nb.getType().eContainer()))//
+				.flatMap(mm -> collectReferencedMetamodels(mm).stream())//
+				.collect(Collectors.toSet());
+	}
+
+	private Collection<Metamodel> collectReferencedMetamodels(Metamodel m) {
+		var allRefs = new HashSet<Metamodel>();
+		collectReferencedMetamodels(m, allRefs);
+		return allRefs;
+	}
+
+	private void collectReferencedMetamodels(Metamodel m, HashSet<Metamodel> allRefs) {
+		var superTypes = m.getNodeBlocks().stream()//
+				.flatMap(nb -> nb.getSuperTypes().stream());
+
+		var referencedTypes = m.getNodeBlocks().stream()//
+				.flatMap(nb -> nb.getRelations().stream())//
+				.map(rel -> rel.getTarget());
+
+		var directRefs = Streams.concat(superTypes, referencedTypes)//
+				.map(nb -> (Metamodel) (nb.eContainer()))//
+				.collect(Collectors.toSet());
+
+		directRefs.forEach(ref -> {
+			if (!allRefs.contains(ref)) {
+				allRefs.add(ref);
+				collectReferencedMetamodels(ref, allRefs);
+			}
+		});
+	}
+
+	private void exportMetamodelToNeo4j(Metamodel m) {
+		bootstrapNeoCoreIfNecessary();
+		ResourceSet rs = m.eResource().getResourceSet();
+		EcoreUtil.resolveAll(rs);
+
+		var metamodels = collectReferencedMetamodels(m);
+
+		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
+		logger.info("Trying to export metamodels: " + metamodelNames);
+		var newMetamodels = removeExistingMetamodels(metamodels);
+
+		// Remove abstract metamodels
+		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
+
+		for (Metamodel mm : metamodels) {
+			if (!newMetamodels.contains(mm))
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
+		}
+
+		if (!newMetamodels.isEmpty())
+			exportMetamodelsToNeo4j(newMetamodels);
+
+		logger.info("Exported metamodels: " + newMetamodels);
 	}
 
 	public static boolean canBeExported(EClass eclass) {
 		return eclass.equals(EMSLPackage.eINSTANCE.getMetamodel()) || eclass.equals(EMSLPackage.eINSTANCE.getModel());
+	}
+
+	public static boolean canBeCoppiedToClipboard(EClass eclass) {
+		return eclass.equals(EMSLPackage.eINSTANCE.getAtomicPattern())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getPattern())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getConstraint())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition());
 	}
 
 	private void bootstrapNeoCore() {
@@ -338,7 +433,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	private boolean ecoreIsNotPresent() {
 		var result = executeActionAsMatchTransaction(cb -> {
-			cb.returnWith(cb.matchNode(List.of(new NeoProp(NAME_PROP, ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
+			cb.returnWith(
+					cb.matchNode(List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
 		});
 
 		return result.stream().count() == 0;
@@ -358,23 +454,17 @@ public class NeoCoreBuilder implements AutoCloseable {
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
-			var eclass = cb.matchNodeWithContainer(eclassProps, eclassLabels, neocore);
-			var eref = cb.matchNodeWithContainer(erefProps, erefLabels, neocore);
-			var edatatype = cb.matchNodeWithContainer(eDataTypeProps, eDataTypeLabels, neocore);
-			var eattribute = cb.matchNodeWithContainer(eattrProps, eattrLabels, neocore);
 			var model = cb.matchNodeWithContainer(modelProps, modelLabels, neocore);
-			var eobject = cb.matchNodeWithContainer(eobjectProps, eobjectLabels, neocore);
 
 			// Create nodes and edges in models
 			var mNodes = new HashMap<Model, NodeCommand>();
 			var blockToCommand = new HashMap<ModelNodeBlock, NodeCommand>();
 			for (var newModel : newModels) {
-				handleNodeBlocksInModel(cb, neocore, eclass, blockToCommand, mNodes, newModel, model, eobject);
+				handleNodeBlocksInModel(cb, blockToCommand, mNodes, newModel, model);
 			}
 			for (var newModel : newModels) {
-				var mNode = mNodes.get(newModel);
 				for (var nb : newModel.getNodeBlocks()) {
-					handleRelationStatementInModel(cb, neocore, eref, edatatype, eattribute, blockToCommand, mNode, nb);
+					handleRelationStatementInModel(cb, blockToCommand, nb);
 				}
 			}
 		});
@@ -434,7 +524,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	private List<Metamodel> removeExistingMetamodels(List<Metamodel> metamodels) {
+	private List<Metamodel> removeExistingMetamodels(Collection<Metamodel> metamodels) {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
@@ -446,7 +536,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return newMetamodels;
 	}
 
-	private List<Model> removeExistingModels(List<Model> models) {
+	private List<Model> removeExistingModels(Collection<Model> models) {
 		var newModels = new ArrayList<Model>();
 		newModels.addAll(models);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
@@ -535,9 +625,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 		}
 	}
 
-	private void handleRelationStatementInModel(CypherCreator cb, NodeCommand neocore, NodeCommand eref,
-			NodeCommand edatatype, NodeCommand eattribute, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
-			NodeCommand mNode, ModelNodeBlock nb) {
+	private void handleRelationStatementInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
+			ModelNodeBlock nb) {
 
 		for (var rs : nb.getRelations()) {
 
@@ -550,7 +639,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 				props.add(new NeoProp(ps.getType().getName(), inferType(ps, nb)));
 			});
 
-			cb.createEdgeWithProps(props, rs.getType().getName(), refOwner, typeOfRef);
+			cb.createEdgeWithProps(props, EMSLUtil.getOnlyType(rs).getName(), refOwner, typeOfRef);
 		}
 	}
 
@@ -581,9 +670,8 @@ public class NeoCoreBuilder implements AutoCloseable {
 		});
 	}
 
-	private void handleNodeBlocksInModel(CypherCreator cb, NodeCommand neocore, NodeCommand eclass,
-			HashMap<ModelNodeBlock, NodeCommand> blockToCommand, HashMap<Model, NodeCommand> mNodes, Model model,
-			NodeCommand nodeCommandForModel, NodeCommand eobject) {
+	private void handleNodeBlocksInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
+			HashMap<Model, NodeCommand> mNodes, Model model, NodeCommand nodeCommandForModel) {
 
 		var mNode = cb.createNode(List.of(new NeoProp(NAME_PROP, model.getName())), List.of(MODEL, EOBJECT));
 
@@ -639,7 +727,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 			return inferTypeForNodeAttribute(ps.getValue(), propName, nodeType);
 		} else if (ps.eContainer() instanceof ModelRelationStatement) {
 			ModelRelationStatement rs = (ModelRelationStatement) ps.eContainer();
-			String relName = rs.getType().getName();
+			String relName = EMSLUtil.getOnlyType(rs).getName();
 			return inferTypeForEdgeAttribute(ps.getValue(), relName, propName, nodeType);
 		} else {
 			throw new IllegalArgumentException("Unable to handle: " + ps);
@@ -653,49 +741,35 @@ public class NeoCoreBuilder implements AutoCloseable {
 				.flatMap(et -> et.getProperties().stream())//
 				.filter(etPs -> etPs.getName().equals(propName))//
 				.map(etPs -> etPs.getType())//
-				.map(t -> parseStringWithType(value, t))//
+				.map(t -> EMSLUtil.parseStringWithType(value, t))//
 				.findAny();
 
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
 	private Object inferTypeForNodeAttribute(Value value, String propName, MetamodelNodeBlock nodeType) {
-		var typedValue = NeoUtil.allPropertiesOf(nodeType).stream()//
+		var typedValue = EMSLUtil.allPropertiesOf(nodeType).stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//
-				.map(t -> parseStringWithType(value, t))//
+				.map(t -> EMSLUtil.parseStringWithType(value, t))//
 				.findAny();
 
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
-	private Object parseStringWithType(Value value, DataType type) {
-		if (type instanceof BuiltInType) {
-			var builtInType = ((BuiltInType) type).getReference();
-
-			switch (builtInType) {
-			case ESTRING:
-				return PrimitiveString.class.cast(value).getLiteral();
-			case EINT:
-				return PrimitiveInt.class.cast(value).getLiteral();
-			case EBOOLEAN:
-				return PrimitiveBoolean.class.cast(value).isTrue();
-			default:
-				throw new IllegalStateException("This literal has to be handled: " + value);
-			}
-		} else if (type instanceof UserDefinedType) {
-			var userDefinedType = (UserDefinedType) type;
-
-			EnumLiteral enumLiteral = EnumValue.class.cast(value).getLiteral();
-
-			if (userDefinedType.getReference().getLiterals().stream()//
-					.anyMatch(literal -> literal.equals(enumLiteral)))
-				return enumLiteral.getName();
-			else {
-				throw new IllegalArgumentException(value + " is not a legal literal of " + type);
-			}
-		} else {
-			throw new IllegalArgumentException("Unable to parse: " + value + " as a " + type);
+	public void exportEMSLEntityToNeo4j(Entity entity) {
+		try {
+			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
+			if (flattenedEntity instanceof Model) {
+				exportModelToNeo4j((Model) flattenedEntity);
+			} else if (flattenedEntity instanceof Metamodel)
+				exportMetamodelToNeo4j((Metamodel) flattenedEntity);
+			else
+				throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
+		} catch (FlattenerException e) {
+			logger.error("EMSL Flattener was unable to process the entity.");
+			e.printStackTrace();
 		}
 	}
+
 }

@@ -1,0 +1,37 @@
+metamodel Quiltography {
+	Book {
+		.title : EString
+		-authors(1..*)->Author
+		-location(1..1)->Location
+		-classification(1..1)->Classification
+	}	
+	
+	Page {
+		.number : EInt
+		.name : EString
+		-type(1..1)->ContentType
+		-blockPattern(0..1)->BlockPattern
+		-book(1..1)->Book
+	}
+	
+	ContentType {
+		.name : EString
+	}
+	
+	BlockPattern {
+		.name : EString
+	}
+	
+	Location {
+		.name : EString
+	}
+	
+	Author {
+		.name : EString
+		.surname : EString
+	}
+	
+	Classification {
+		.name : EString
+	} 
+}

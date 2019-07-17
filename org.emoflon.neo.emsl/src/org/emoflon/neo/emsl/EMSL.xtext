@@ -64,10 +64,17 @@ PrimitiveBoolean:
 ;
 
 ModelRelationStatement:
-	(action=Action)? '-' type=[MetamodelRelationStatement|QualifiedName] '->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
+	(action=Action)? 
+	'-' 
+		(name=ID ":")? types+=ModelRelationStatementType ('|' types+=ModelRelationStatementType)*
+	'->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
+	
+ModelRelationStatementType:
+	type=[MetamodelRelationStatement|QualifiedName] ('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')?
+;
 
 /*-------------------------------------------------*/
 /*----------------- Metamodels --------------------*/
@@ -135,6 +142,7 @@ AtomicPattern:
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
 	nodeBlocks+=ModelNodeBlock*
+	('attributeConditions' '{' attributeConditions+=AttributeCondition* '}')?
 	'}')?;
 
 Pattern:
@@ -159,7 +167,7 @@ ConstraintReference:
 	(negated?='!')? reference=[Constraint|QualifiedName];
 
 Constraint:
-	'constraint' name=QualifiedName '=' body=(AtomicConstraint | OrBody);
+	(abstract?='abstract')? 'constraint' name=QualifiedName '=' body=(AtomicConstraint | OrBody);
 
 OrBody:
 	children+=AndBody ('||' children+=AndBody)*;

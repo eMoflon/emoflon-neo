@@ -1,5 +1,4 @@
 import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
-import "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
 
 pattern board {
 	board:SokobanLanguage.Board
@@ -21,21 +20,27 @@ pattern occupied {
 
 pattern emptyFields -> fields when forbid occupied
 
-pattern ocupiedFields -> fields, occupied
+pattern occupiedFields -> fields, occupied {
+	fig:Figure {
+		-metaType->type
+	}
+	
+	type:EClass
+} 
 
 pattern figureTypes {
 	figClass:EClass {
-		.name : "Figure"
+		.ename : "Figure"
 		-elementOf->mm
 	}
 	
 	eclass:EClass {
 		-elementOf->mm
-		-eSuperType->figClass
+		-eSuperType(1..*)->figClass
 	}
 	
 	mm:MetaModel {
-		.name : "SokobanLanguage"
+		.ename : "SokobanLanguage"
 	}
 }
 
@@ -50,5 +55,87 @@ pattern selectedFigure {
 	}
 	
 	f:Field
+}
+
+pattern oneSokoban { sok:Sokoban }
+pattern twoSokobans -> oneSokoban, oneSokoban[sok->otherSok]
+
+constraint oneSokoban = enforce oneSokoban
+constraint noTwoSokobans = forbid twoSokobans
+constraint exactlyOneSokoban = oneSokoban && noTwoSokobans
+
+pattern endField { 
+	endField:Field { 
+		.endPos : true
+	}
+}
+
+constraint oneEndField = enforce endField
+
+pattern block { b:Block }
+
+pattern endFieldBlockedByBoulder -> endField {
+	boulder : Boulder {
+		-field->endField
+	}
+}
+
+constraint noBlockedEndField = forbid endFieldBlockedByBoulder
+
+rule deleteFigure {
+	-- fig:Figure
+}
+
+abstract rule createFigure -> chooseField {
+	++ fig:Figure {
+		++ -field->f
+	}
+}
+
+rule createSokoban -> createFigure {
+	++ fig:Sokoban
+}
+
+rule createBlock -> createFigure {
+	++ fig:Block
+}
+
+rule createBoulder -> createFigure {
+	++ fig:Boulder
+}
+
+abstract rule chooseField {
+	b:SokobanLanguage.Board {
+		-fields->f
+	}
 	
+	f:Field
+}
+
+rule setEndField -> chooseField {
+	f:Field {
+		.endPos := true	
+	}
+}
+
+rule setNotEndField -> chooseField {
+	f:Field {
+		.endPos := false
+	}
+}
+
+rule selectFigure {
+	f:Field
+	
+	newFig:Figure {
+		-field->f
+	}
+	
+	fig:Figure
+	
+	b:SokobanLanguage.Board {
+		-fields->f
+		-- -selectedFigure->fig
+		++ -selectedFigure->newFig
+	}
 }

@@ -8,7 +8,6 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.commands.ExpressionContext;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -16,6 +15,7 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
+import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -64,18 +64,23 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		IEditorPart editorPart = HandlerUtil.getActiveEditorChecked(event);
 		if (editorPart instanceof XtextEditor) {
 			XtextEditor editor = (XtextEditor) editorPart;
-			var emslEntity = editor.getDocument().readOnly(new IUnitOfWork<Optional<EObject>, XtextResource>() {
+			var emslEntity = editor.getDocument().readOnly(new IUnitOfWork<Optional<Entity>, XtextResource>() {
 				@Override
-				public Optional<EObject> exec(XtextResource state) throws Exception {
-					return eobNode.map(n -> n.getEObject(state));
+				public Optional<Entity> exec(XtextResource state) throws Exception {
+					return eobNode.map(n -> {
+						var o = n.getEObject(state);
+						if (o instanceof Entity)
+							return (Entity) o;
+						else
+							return null;
+					});
 				}
 			});
-
 			emslEntity.ifPresent(this::exportEMSLEntityToNeo4j);
 		}
 	}
 
-	private void exportEMSLEntityToNeo4j(EObject entity) {
+	private void exportEMSLEntityToNeo4j(Entity entity) {
 		builder.exportEMSLEntityToNeo4j(entity);
 	}
 

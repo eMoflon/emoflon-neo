@@ -82,7 +82,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 			for (rs : nb.relations) {
 				rs.interior[indent]
 				rs.regionFor.keyword(KW_HYPHEN).append[noSpace].prepend[newLine]
-				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Type).append[oneSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Types).append[oneSpace]
 				rs.regionFor.keyword(KW_RELATION).append[oneSpace]
 				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Target).append[oneSpace]
 				rs.regionFor.keyword(KW_OPEN_PAR).append[newLine]
@@ -202,7 +202,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 			
 			for (rs : nb.relations) {
 				rs.interior[indent]
-				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Type).append[oneSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Types).append[oneSpace]
 				rs.regionFor.feature(EMSLPackage.eINSTANCE.action_Op).append[oneSpace]
 				rs.regionFor.keyword(KW_HYPHEN).append[noSpace]
 				rs.regionFor.keyword(KW_RELATION).append[oneSpace]
@@ -256,7 +256,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 			
 			for (rs : nb.relations) {
 				rs.interior[indent]
-				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Type).append[oneSpace]
+				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Types).append[oneSpace]
 				rs.regionFor.keyword(KW_RELATION).append[oneSpace]
 				rs.regionFor.keyword(KW_HYPHEN).append[noSpace].prepend[newLine]
 				rs.regionFor.feature(EMSLPackage.eINSTANCE.modelRelationStatement_Target).append[oneSpace]

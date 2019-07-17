@@ -50,6 +50,9 @@ import org.emoflon.neo.emsl.eMSL.OrBody
 import java.util.HashMap
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.eMSL.AttributeCondition
+import org.emoflon.neo.emsl.eMSL.Value
+import org.emoflon.neo.emsl.eMSL.MetamodelRefinementCommand
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -58,15 +61,17 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var Optional<String> diagram = Optional.empty()
 		try {
 			var String d = getDiagramBody(editor, selection)
-			if (d === null || d.split("\n").length > MAX_SIZE)
-				diagram = Optional.of(tooBigDiagram())
+			if(d === null)
+				diagram = Optional.of(errorDiagram)
+			if (d.split("\n").length > MAX_SIZE)
+				diagram = Optional.of(tooBigDiagram)
 			else
 				diagram = Optional.of(d)
 		} catch (Exception e) {
 			e.printStackTrace()
 		}
 
-		return wrapInTags(diagram.orElse(errorDiagram()))
+		return wrapInTags(diagram.orElse(errorDiagram))
 	}
 
 	def String wrapInTags(String body) {
@@ -86,7 +91,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	def String errorDiagram() {
 		'''
-			title I'm having problems visualising the current selection (check your console).
+			title I'm having problems visualising the current selection (check your editor and console).
 		'''
 	}
 
@@ -97,7 +102,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	def String getDiagramBody(IEditorPart editor, ISelection selection) {
-		val EMSL_Spec root = getRoot(editor) as EMSL_Spec
+		val EMSL_Spec root = getRoot(editor).get() as EMSL_Spec
 		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
 		val Optional<ModelNodeBlock> selectedNodeBlock = selectedEntity.flatMap([ e |
 			determineSelectedNodeBlock(selection, e)
@@ -146,48 +151,43 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			left to right direction
 			«FOR entity : root.entities»
 				«IF entity instanceof Metamodel»
-					package "Metamodel: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Metamodel: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" <<Rectangle>> «IF entity.abstract»<<Abstract>>«ENDIF» «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Model»
-					package "Model: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Model: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 					«referenceInstantiatedMetamodel(entity as Model)»
 				«ENDIF»
 				«IF entity instanceof Pattern»
-					package "Pattern: «entity.body.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Pattern: «IF entity.body.abstract»//«ENDIF»«entity.body.name»«IF entity.body.abstract»//«ENDIF»" «IF entity.body.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Rule»
-					package "Rule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Rule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof TripleRule»
-					package "TripleRule: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "TripleRule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
-					package "TripleGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "TripleGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof GraphGrammar»
-					package "GraphGrammar: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
-						
-					}
-				«ENDIF»
-				«IF entity instanceof Enum»
-					package "Enum: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "GraphGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
 				«IF entity instanceof Constraint»
-					package "Constraint: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
+					rectangle "Constraint: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
@@ -205,9 +205,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Model entity, boolean mainSelection) {
 		var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>())
 		'''
+			package "«IF entity.abstract»//«ENDIF»«(entityCopy as Model).name»«IF entity.abstract»//«ENDIF»"«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : entityCopy.nodeBlocks»
 				«visualiseNodeBlockInModel(nb, false)»
 			«ENDFOR»
+			}
 		'''
 	}
 
@@ -221,18 +223,21 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				node = n
 		}
 		val nb = node
+		
+		var sizeOfTypeList = 0
+		var sizeOfIncomingRefTypeList = 0
 		'''
 			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
-			«FOR link : nb.relations»
-				«labelForObject(nb)» --> «IF link.target !== null»«labelForObject(link.target)»«ELSE»"?"«ENDIF» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
+			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
+				«labelForObject(nb)» --> «IF link.target !== null»«labelForObject(link.target)»«ELSE»"?"«ENDIF» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
 				«labelForObject(nb)» : «IF attr.type.name !== null»«attr.type.name»«ELSE»?«ENDIF» = «IF attr.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
-				«FOR incomingRef : incoming.relations»
+				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForObject(incoming)» --> «labelForObject(nb)» : «IF (incomingRef.type.name !== null && incomingRef.type !== null)»«incomingRef.type.name»«ELSE»?«ENDIF»
+						«labelForObject(incoming)» --> «labelForObject(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -248,7 +253,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	dispatch def printTarget(LinkAttributeExpTarget target) {
-		'''-«IF target !== null»«target.link.type»->.«target.attribute.name»«ELSE»?«ENDIF»'''
+		var size = target.link.types.size
+		'''-"«IF target !== null»«FOR t : target.link.types»«t.type.name»«IF size > 0» | «ENDIF»«{size = size - 1;""}»«ENDFOR»"->.«target.attribute.name»«ELSE»?«ENDIF»'''
 	}
 
 	dispatch def printValue(EnumValue value) {
@@ -272,7 +278,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForObject(ModelNodeBlock nb) {
 		val entity = nb.eContainer as Model
-		'''"«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
+		'''"«IF (nb.eContainer as Model).abstract»//«ENDIF»«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF»«IF (nb.eContainer as Model).abstract»//«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
 	}
 	
 	/**
@@ -302,12 +308,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def dispatch String visualiseEntity(Metamodel entity, boolean mainSelection) {
 		'''
+			package "«IF entity.abstract»//«ENDIF»«(entity as Metamodel).name»«IF entity.abstract»//«ENDIF»"«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : entity.nodeBlocks»
 				«visualiseNodeBlockInMetamodel(nb, false)»
 			«ENDFOR»
 			«FOR e : entity.enums»
 				«visualiseEnumInMetamodel(e, false)»
 			«ENDFOR»
+			}
 		'''
 	}
 
@@ -338,7 +346,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	
 	def String visualiseEnumInMetamodel(Enum e, boolean mainSelection) {
 		'''
-			class "«(e.eContainer as Metamodel).name».«e.name»" «IF mainSelection»<<Selection>>«ENDIF» {
+			class "«IF (e.eContainer as Metamodel).abstract»//«ENDIF»«(e.eContainer as Metamodel).name»«IF (e.eContainer as Metamodel).abstract»//«ENDIF».«e.name»" «IF mainSelection»<<Selection>>«ENDIF» {
 				«FOR literal : e.literals»
 					«literal.name»
 				«ENDFOR»
@@ -351,7 +359,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForClass(MetamodelNodeBlock nb) {
 		val entity = nb.eContainer as Metamodel
-		'''"«entity?.name».«nb?.name»"'''
+		'''"«IF entity.abstract»//«ENDIF»«entity?.name»«IF entity.abstract»//«ENDIF».«nb?.name»"'''
 	}
 
 	/**
@@ -393,9 +401,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		try {
 			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
 			'''
-				package «(entityCopy as Pattern).body.name»«IF mainSelection» <<Selection>> «ENDIF»{
+				package «IF entity.body.abstract»//«ENDIF»«(entityCopy as Pattern).body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
 				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
-					«visualiseNodeBlockInPattern(nb, false)»
+					«visualiseNodeBlockInPattern2(entityCopy as Pattern, nb, false)»
 				«ENDFOR»
 				}
 				«IF (entityCopy as Pattern).condition !== null »
@@ -403,6 +411,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						«getConditionString(entityCopy)»
 					endlegend
 					«visualiseCondition(entityCopy)»
+				«ENDIF»
+				«IF (entityCopy as Pattern).body.attributeConditions !== null && !(entityCopy as Pattern).body.attributeConditions.isEmpty»
+					«visualiseAttributeConditions((entityCopy as Pattern).body.attributeConditions)»
 				«ENDIF»
 			'''
 		} catch (AssertionError e) {
@@ -422,18 +433,57 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				node = n
 		}
 		val nb = node
+		
+		var sizeOfTypeList = 0
+		var sizeOfIncomingRefTypeList = 0
 		'''
 			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
-			«FOR link : nb.relations»
-				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
+			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
+				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»:«ENDIF»«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
 				«labelForPatternComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
-				«FOR incomingRef : incoming.relations»
+				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : «IF (incomingRef.type.name !== null && incomingRef.type !== null)»«incomingRef.type.name»«ELSE»?«ENDIF»
+						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»"
+					«ENDIF»
+				«ENDFOR»
+			«ENDFOR»
+			«IF (nb.eContainer.eContainer as Pattern).condition !== null »
+				legend bottom
+					«getConditionString((nb.eContainer.eContainer as Pattern))»
+				endlegend
+			«ENDIF»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for a NodeBlock in a Pattern.
+	 */
+	def String visualiseNodeBlockInPattern2(Pattern entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
+		
+		var sizeOfTypeList = 0
+		var sizeOfIncomingRefTypeList = 0
+		'''
+			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
+				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»:«ENDIF»«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
+			«ENDFOR»
+			«FOR attr : nb.properties»
+				«labelForPatternComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+			«ENDFOR»
+			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
+				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
+					«IF incomingRef.target == nb && mainSelection»
+						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -461,7 +511,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nb.type !== null && nb.type.name !== null)
 				nbTypeName = nb.type.name
 
-			'''"«entityName».«nbName»:«nbTypeName»"'''
+			'''"«IF (nb.eContainer as AtomicPattern).abstract»//«ENDIF»«entityName»«IF (nb.eContainer as AtomicPattern).abstract»//«ENDIF».«nbName»:«nbTypeName»"'''
 		} else
 			'''"?"'''
 	}	
@@ -476,9 +526,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		try {
 			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
 		'''
-			package «(entityCopy as Rule).name»«IF mainSelection» <<Selection>> «ENDIF»{
+			package «IF entity.abstract»//«ENDIF»«(entityCopy as Rule).name»«IF entity.abstract»//«ENDIF»«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
-				«visualiseNodeBlockInRule(nb, false)»
+				«visualiseNodeBlockInRule2(entityCopy as Rule, nb, false)»
 			«ENDFOR»
 			}
 			«IF (entityCopy as Rule).condition !== null»
@@ -486,6 +536,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«getConditionString(entityCopy)»
 				endlegend
 				«visualiseCondition(entityCopy)»
+			«ENDIF»
+			«IF (entityCopy as Rule).attributeConditions !== null && !(entityCopy as Rule).attributeConditions.empty»
+				«visualiseAttributeConditions((entityCopy as Rule).attributeConditions)»
 			«ENDIF»
 		'''
 		} catch (FlattenerException e) {
@@ -504,21 +557,67 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				node = n
 		}
 		val nb = node
+		
+		var sizeOfTypeList = 0
+		var sizeOfIncomingRefTypeList = 0
 		'''
 			class «labelForRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
-			«FOR link : nb.relations»
+			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target)» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
-				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.target)» : «IF (link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
+					«labelForRuleComponent(nb)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
+				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 				«ENDIF»
+				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
 				«labelForRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
-				«FOR incomingRef : incoming.relations»
+				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForRuleComponent(incoming)» --> «labelForRuleComponent(nb)» : «IF (incomingRef.type.name !== null && incomingRef.type !== null)»«incomingRef.type.name»«ELSE»?«ENDIF»
+						class «labelForRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+						«labelForRuleComponent(incoming)» -«IF incomingRef.action !== null &&  incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForRuleComponent(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»"
+					«ENDIF»
+				«ENDFOR»
+			«ENDFOR»
+			«IF (nb.eContainer as Rule).condition !== null »
+				legend bottom
+					«getConditionString((nb.eContainer as Rule))»
+				endlegend
+			«ENDIF»
+		'''
+	}
+	
+	/**
+	 * Returns the diagram text for a NodeBlock in a Rule.
+	 */
+	def String visualiseNodeBlockInRule2(Rule entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
+		var node = nodeBlock
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>()))))) {
+			if (nodeBlock.name.equals(n.name))
+				node = n
+		}
+		val nb = node
+		
+		var sizeOfTypeList = 0
+		var sizeOfIncomingRefTypeList = 0
+		'''
+			class «labelForRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
+			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
+				«IF link.action !== null»
+					«labelForRuleComponent(nb)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
+				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
+				«ENDIF»
+				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+			«ENDFOR»
+			«FOR attr : nb.properties»
+				«labelForRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+			«ENDFOR»
+			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
+				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
+					«IF incomingRef.target == nb && mainSelection»
+						class «labelForRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+						«labelForRuleComponent(incoming)» -«IF incomingRef.action !== null &&  incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForRuleComponent(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -543,7 +642,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nb.type.name === null)
 				nb.type.name = "?"
 
-			'''"«entity.name».«nb.name»:«nb.type.name»"'''
+			'''"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»"'''
 		} else
 			'''"?"'''
 	}
@@ -554,7 +653,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(GraphGrammar entity, boolean mainSelection) {
 		'''
 			«FOR r : entity.rules»
-				class "«entity.name».«r.name»"
+				class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«r.name»"
 			«ENDFOR»
 		'''
 	}
@@ -575,7 +674,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(Constraint entity, boolean mainSelection) {
 		'''
 			legend bottom
-				«getConditionString(entity)»
+				«IF entity.abstract»//«ENDIF»«getConditionString(entity)»«IF entity.abstract»//«ENDIF»
 			endlegend
 			«visualiseCondition(entity)»
 		'''
@@ -757,6 +856,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def List<? extends ConstraintBody> getChildren(ConstraintBody body){
 		return ConstraintTraversalHelper.getChildren(body)
 	}
+	
+	def String visualiseAttributeConditions(List<AttributeCondition> conditions) {
+		'''
+		note "«FOR c : conditions»**«c.operator»**(\n«FOR b : c.bindings»\t«b.name» : «IF b.pre»`«ENDIF»«IF b.value instanceof Value»«printValue(b.value)»«ENDIF»«IF b.post»´«ENDIF»,\n«ENDFOR»)\n«ENDFOR» " as N #WhiteSmoke
+		'''
+	}
 
 	/*-------------------------------------------------*/
 	/*---------------- Triple Rules -------------------*/
@@ -776,7 +881,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			
 				«FOR corr : entity.correspondences»
-				"«entity.name».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«entity.name».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
+				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
 				«ENDFOR»
 			}
 			«IF entity.nacs.size > 0»
@@ -789,9 +894,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for the NodeBlocks of a TripleRule.
 	 */
 	def String visualiseTripleRuleNodeBlocks(TripleRule entity, ModelNodeBlock nb, String type) {
-		'''class "«entity.name».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
-			«FOR link : nb.relations»
-				"«entity.name».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«entity.name».«link.target.name»:«link.target.type.name»":"«IF link.type.name !== null»«link.type.name»«ELSE»?«ENDIF»"
+		var sizeOfTypeList = 0
+		'''class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
+			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
+				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«link.target.name»:«link.target.type.name»":"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 			«ENDFOR»
 		'''
 	}
@@ -800,21 +907,25 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a NodeBlock in a TripleRule.
 	 */
 	def String visualiseNodeBlockInTripleRule(TripleRule rule, ModelNodeBlock nb, boolean mainSelection) {
+		var sizeOfTypeList = 0
+		var sizeOfIncomingRefTypeList = 0		
 		'''
-			class «labelForTripleRuleComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
-			«FOR link : nb.relations»
+			class «labelForTripleRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
+			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
+				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 				«IF link.action !== null»
-					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target)» : «IF (link.type.name !== null && link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
-				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.target)» : «IF (link.type !== null)»«link.type.name»«ELSE»?«ENDIF»
+					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
+				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForTripleRuleComponent(nb)» : «attr.type.name» = «attr.value»
+				«labelForTripleRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as TripleRule).nodeBlocks.filter[n|n != nb]»
-				«FOR incomingRef : incoming.relations»
+				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForTripleRuleComponent(incoming)» --> «labelForTripleRuleComponent(nb)» : «IF (incomingRef.type.name !== null && incomingRef.type !== null)»«incomingRef.type.name»«ELSE»?«ENDIF»
+						class «labelForTripleRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+						«labelForTripleRuleComponent(incoming)» -«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForTripleRuleComponent(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -826,7 +937,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForTripleRuleComponent(ModelNodeBlock nb) {
 		val entity = nb.eContainer as TripleRule
-		'''"«entity.name».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
+		'''"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
 	}
 
 	/**
@@ -854,13 +965,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			together Source {
 				«FOR mm : entity.srcMetamodels»
-					class "«entity.name».«mm.name»"
+					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»"
 				«ENDFOR»
 			}
 			
 			together Target {
 				«FOR mm : entity.trgMetamodels»
-					class "«entity.name».«mm.name»"
+					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»"
 				«ENDFOR»
 			}
 		'''
@@ -977,29 +1088,65 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
 	 */
 	def String visualiseSuperTypesInEntity(Entity entity) {
-		var superTypeNames = new HashMap<String, ArrayList<String>>()
-		superTypeNames.put("Pattern", new ArrayList<String>())
-		superTypeNames.put("Rule", new ArrayList<String>())
-		superTypeNames.put("Model", new ArrayList<String>())
-		superTypeNames.put("Metamodel", new ArrayList<String>())
-		superTypeNames.put("TripleRule", new ArrayList<String>())
+		var dispatcher = new EntityAttributeDispatcher();
+		var superTypeNames = new HashMap<String, ArrayList<String[]>>()
+		superTypeNames.put("Pattern", new ArrayList<String[]>())
+		superTypeNames.put("Rule", new ArrayList<String[]>())
+		superTypeNames.put("Model", new ArrayList<String[]>())
+		superTypeNames.put("Metamodel", new ArrayList<String[]>())
+		superTypeNames.put("TripleRule", new ArrayList<String[]>())
 		
 		for (st : entity.superRefinementTypes) {
-			if ((st as RefinementCommand).referencedType instanceof AtomicPattern && !superTypeNames.get("Pattern").contains(((st as RefinementCommand).referencedType as AtomicPattern).name))
-				superTypeNames.get("Pattern").add(((st as RefinementCommand).referencedType as AtomicPattern).name)
-			else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name))
-				superTypeNames.get("Rule").add(((st as RefinementCommand).referencedType as Rule).name)
-			else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name))
-				superTypeNames.get("Model").add(((st as RefinementCommand).referencedType as Model).name)
-			else if ((st as RefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as RefinementCommand).referencedType as Metamodel).name))
-				superTypeNames.get("Metamodel").add(((st as RefinementCommand).referencedType as Metamodel).name)
-			else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name))
-				superTypeNames.get("TripleRule").add(((st as RefinementCommand).referencedType as TripleRule).name)
+			if (st instanceof RefinementCommand) {
+				if ((st as RefinementCommand).referencedType instanceof AtomicPattern && !superTypeNames.get("Pattern").contains(((st as RefinementCommand).referencedType as AtomicPattern).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as RefinementCommand).referencedType as AtomicPattern).name)
+					if (((st as RefinementCommand).referencedType as AtomicPattern).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Pattern").add(tmp)
+				} else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, (((st as RefinementCommand).referencedType as Rule).name))
+					if (((st as RefinementCommand).referencedType as Rule).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Rule").add(tmp)
+				} else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as RefinementCommand).referencedType as Model).name)
+					if (((st as RefinementCommand).referencedType as Model).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Model").add(tmp)
+				} else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as RefinementCommand).referencedType as TripleRule).name)
+					if (((st as RefinementCommand).referencedType as TripleRule).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("TripleRule").add(tmp)
+				}
+			} else if (st instanceof MetamodelRefinementCommand) {
+				if ((st as MetamodelRefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as MetamodelRefinementCommand).referencedType as Metamodel).name)) {
+					val String[] tmp = #["", ""];
+					tmp.set(0, ((st as MetamodelRefinementCommand).referencedType as Metamodel).name)
+					if (((st as MetamodelRefinementCommand).referencedType as Metamodel).abstract)
+						tmp.set(1, "1")
+					else
+						tmp.set(1, "0")
+					superTypeNames.get("Metamodel").add(tmp)
+				}
+			}
 		}
 		'''
 			«FOR type : superTypeNames.keySet»
 				«FOR name : superTypeNames.get(type)»
-					"«entity.eClass.name»: «entity.name»"--|>"«type»: «name»"
+					"«entity.eClass.name»: «IF dispatcher.getAbstract(entity)»//«ENDIF»«entity.name»«IF dispatcher.getAbstract(entity)»//«ENDIF»"--|>"«type»: «IF name.get(1).equals("1")»//«ENDIF»«name.get(0)»«IF name.get(1).equals("1")»//«ENDIF»"
 				«ENDFOR»
 			«ENDFOR»
 		'''
@@ -1080,12 +1227,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	override boolean supportsEditor(IEditorPart editor) {
-		getRoot(editor) instanceof EMSL_Spec
+		getRoot(editor).map([it instanceof EMSL_Spec]).orElse(false)
 	}
 
 	def getRoot(IEditorPart editor) {
 		if (editor instanceof XtextEditor) {
-			return editor.document.readOnly([res|res.contents.get(0)])
+			return editor.document.readOnly([res|
+				if(!res.contents.empty) 
+					return Optional.of(res.contents.get(0))
+				else
+					return Optional.empty
+			])
+		} else {
+			return Optional.empty
 		}
 	}
 
@@ -1124,6 +1278,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				BackgroundColor White
 				ArrowColor Black
 			}			
+			
+			skinparam rectangle {
+				BackgroundColor<<Abstract>> LavenderBlush
+			}
 		'''
 	}
 }

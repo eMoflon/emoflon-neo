@@ -1,0 +1,23 @@
+import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
+
+abstract model GabisQuiltographyTypes {
+	quilt:ContentType {
+		.name : "Quilt"
+	}
+	
+	technique:ContentType {
+		.name : "Technique"
+	}
+	
+	tip:ContentType {
+		.name : "Tip"
+	}
+	
+	basics:ContentType {
+		.name : "Basics"
+	}
+	
+	pillow:ContentType {
+		.name : "Pillow"
+	}
+}

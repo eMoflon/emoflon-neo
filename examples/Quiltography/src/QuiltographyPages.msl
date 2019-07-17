@@ -1,0 +1,423 @@
+import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
+import "platform:/resource/Quiltography/src/QuiltographyBooks.msl"
+import "platform:/resource/Quiltography/src/QuiltographyPatterns.msl"
+import "platform:/resource/Quiltography/src/QuiltographyTypes.msl"
+
+model GabisQuiltographyPages -> GabisQuiltographyBooks, GabisQuiltographyTypes, GabisQuiltographyPatterns {
+	p1:Page {
+		.number : 6
+		.name : "Baby King Cakes Quilt"
+		-type->quilt
+		-blockPattern->sqInASq
+		-book->jambalaya
+	}
+	
+	p2:Page {
+		.number : 9
+		.name : "Overlapping Seams"
+		-type->technique
+		-book->jambalaya
+	}
+	
+	p3:Page {
+		.number : 10
+		.name : "Streetcars Quilt"
+		-type->quilt
+		-blockPattern->weave
+		-book->jambalaya
+	}
+	
+	p4:Page {
+		.number : 13
+		.name : "Speedy Strip Piecing"
+		-type->technique
+		-book->jambalaya
+	}
+	
+	p5:Page {
+		.number : 13
+		.name : "Rulers"
+		-type->tip
+		-book->jambalaya
+	}
+	
+	p6 : Page {
+		-book -> jambalaya
+		.number : 14
+		-type -> quilt
+		.name : "Bourbon Street Bricks Quilt"
+		-blockPattern -> weave
+	}
+	
+	p7 : Page {
+		-book -> jambalaya
+		.number : 17
+		-type -> technique
+		.name : "Re-Sizing the Quilt"
+	}
+
+	p8 : Page {
+		-book -> jambalaya
+		.number : 18
+		-type -> quilt
+		.name : "The French Quarter Quilt"
+		-blockPattern -> zigzag
+	}
+
+	p9 : Page {
+		-book -> jambalaya
+		.number : 20
+		-type -> quilt
+		.name : "Andouille Quilt"
+		-blockPattern -> stripe
+	}
+
+	p10 : Page {
+		-book -> jambalaya
+		.number : 23
+		-type -> technique
+		.name : "Diagonal Seams"
+	}
+
+	p11 : Page {
+		-book -> jambalaya
+		.number : 24
+		-type -> quilt
+		.name : "Remoulade Stars Quilt"
+		-blockPattern -> star
+	}
+
+	p12 : Page {
+		-book -> jambalaya
+		.number : 28
+		-type -> quilt
+		.name : "Mardi Gras Throws Quilt"
+		-blockPattern -> hexagon
+	}
+
+	p13 : Page {
+		-book -> jambalaya
+		.number : 34
+		-type -> technique
+		.name : "Cutting Hexagons and 60-degree Triangles"
+	}
+
+	p14 : Page {
+		-book -> jambalaya
+		.number : 36
+		-type -> quilt
+		.name : "Beignet Bed Runner"
+		-blockPattern -> xblocks
+	}
+
+	p15 : Page {
+		-book -> jambalaya
+		.number : 39
+		-type -> technique
+		.name : "\"X\" Blocks or Album Blocks"
+	}
+
+	p16 : Page {
+		-book -> jambalaya
+		.number : 40
+		-type -> quilt
+		.name : "Lagniappe Log Cabin Quilt"
+		-blockPattern -> logcabin
+	}
+
+	p17 : Page {
+		-book -> jambalaya
+		.number : 44
+		-type -> quilt
+		.name : "Carnival Confetti Quilt"
+		-blockPattern -> square
+	}
+	
+	
+	p18 : Page {
+		-book -> pillows
+		.number : 12
+		-type -> basics
+		.name : "The Pillow’s Fabric Cover"
+	}
+
+	p19 : Page {
+		-book -> pillows
+		.number : 14
+		-type -> basics
+		.name : "The Pillow Form"
+	}
+
+	p20 : Page {
+		-book -> pillows
+		.number : 14
+		-type -> basics
+		.name : "Basic How-Tos"
+	}
+
+	p21 : Page {
+		-book -> pillows
+		.number : 20
+		-type -> technique
+		.name : "Flange"
+	}
+
+	p22 : Page {
+		-book -> pillows
+		.number : 21
+		-type -> technique
+		.name : "Ruffle"
+	}
+
+	p23 : Page {
+		-book -> pillows
+		.number : 22
+		-type -> technique
+		.name : "Cording"
+	}
+
+	p24 : Page {
+		-book -> pillows
+		.number : 23
+		-type -> technique
+		.name : "Piping"
+	}
+
+	p25 : Page {
+		-book -> pillows
+		.number : 24
+		-type -> technique
+		.name : "Stitching"
+	}
+
+	p26 : Page {
+		-book -> pillows
+		.number : 25
+		-type -> technique
+		.name : "Buttons"
+	}
+
+	p27 : Page {
+		-book -> pillows
+		.number : 28
+		-type -> pillow
+		.name : "Basic Square"
+		-blockPattern -> none
+	}
+
+	p28 : Page {
+		-book -> pillows
+		.number : 28
+		-type -> pillow
+		.name : "Vertical Panels"
+		-blockPattern -> rectangle
+	}
+
+	p29 : Page {
+		-book -> pillows
+		.number : 29
+		-type -> pillow
+		.name : "Stitched Panel"
+		-blockPattern -> rectangle
+	}
+
+	p30 : Page {
+		-book -> pillows
+		.number : 29
+		-type -> pillow
+		.name : "Horizontal Panels"
+		-blockPattern -> rectangle
+	}
+
+	p31 : Page {
+		-book -> pillows
+		.number : 30
+		-type -> pillow
+		.name : "Medaillon"
+		-blockPattern -> square
+	}
+
+	p32 : Page {
+		-book -> pillows
+		.number : 31
+		-type -> pillow
+		.name : "Sashed Four-Patch I"
+		-blockPattern -> fourPatch
+	}
+
+	p33 : Page {
+		-book -> pillows
+		.number : 32
+		-type -> pillow
+		.name : "Sashed Four-Patch II"
+		-blockPattern -> fourPatch
+	}
+
+	p34 : Page {
+		-book -> pillows
+		.number : 33
+		-type -> pillow
+		.name : "Pieced Border I"
+		-blockPattern -> square
+	}
+
+	p35 : Page {
+		-book -> pillows
+		.number : 34
+		-type -> pillow
+		.name : "Pieced Border II"
+		-blockPattern -> square
+	}
+
+	p36 : Page {
+		-book -> pillows
+		.number : 35
+		-type -> pillow
+		.name : "Triangles I"
+		-blockPattern -> triangle
+	}
+
+	p37 : Page {
+		-book -> pillows
+		.number : 37
+		-type -> pillow
+		.name : "Basic Rectangle"
+		-blockPattern -> rectangle
+	}
+
+	p38 : Page {
+		-book -> pillows
+		.number : 38
+		-type -> pillow
+		.name : "Envelope"
+		-blockPattern -> triangle
+	}
+
+	p39 : Page {
+		-book -> pillows
+		.number : 39
+		-type -> pillow
+		.name : "Double Ruffle"
+		-blockPattern -> square
+	}
+
+	p40 : Page {
+		-book -> pillows
+		.number : 40
+		-type -> pillow
+		.name : "Framed Squares I"
+		-blockPattern -> square
+	}
+
+	p41 : Page {
+		-book -> pillows
+		.number : 41
+		-type -> pillow
+		.name : "Framed Squares II"
+		-blockPattern -> square
+	}
+
+	p42 : Page {
+		-book -> pillows
+		.number : 42
+		-type -> pillow
+		.name : "Flanged Four-Patch"
+		-blockPattern -> fourPatch
+	}
+
+	p43 : Page {
+		-book -> pillows
+		.number : 43
+		-type -> pillow
+		.name : "Framed Panels"
+		-blockPattern -> rectangle
+	}
+
+	p44 : Page {
+		-book -> pillows
+		.number : 44
+		-type -> pillow
+		.name : "Easy Patchwork"
+		-blockPattern -> square
+	}
+
+	p45 : Page {
+		-book -> pillows
+		.number : 45
+		-type -> pillow
+		.name : "Two-for-One"
+		-blockPattern -> sqInASq
+	}
+
+	p46 : Page {
+		-book -> pillows
+		.number : 46
+		-type -> pillow
+		.name : "Pieced Rectangle"
+		-blockPattern -> rectangle
+	}
+
+	p47 : Page {
+		-book -> pillows
+		.number : 47
+		-type -> pillow
+		.name : "Log Cabin I"
+		-blockPattern -> logcabin
+	}
+
+	p48 : Page {
+		-book -> pillows
+		.number : 48
+		-type -> pillow
+		.name : "Log Cabin II"
+		-blockPattern -> logcabin
+	}
+
+	p49 : Page {
+		-book -> pillows
+		.number : 50
+		-type -> pillow
+		.name : "Wool Circles"
+		-blockPattern -> circle
+	}
+
+	p50 : Page {
+		-book -> pillows
+		.number : 51
+		-type -> pillow
+		.name : "Buttons"
+		-blockPattern -> rectangle
+	}
+
+	p51 : Page {
+		-book -> pillows
+		.number : 52
+		-type -> pillow
+		.name : "Whipstitched Squares"
+		-blockPattern -> square
+	}
+
+	p52 : Page {
+		-book -> pillows
+		.number : 53
+		-type -> pillow
+		.name : "Whipstitched Pincushion"
+		-blockPattern -> square
+	}
+
+	p53 : Page {
+		-book -> pillows
+		.number : 53
+		-type -> pillow
+		.name : "Silk Pincushion"
+		-blockPattern -> square
+	}
+
+	p54 : Page {
+		-book -> pillows
+		.number : 54
+		-type -> pillow
+		.name : "Pillowcase"
+		-blockPattern -> rectangle
+	}
+}

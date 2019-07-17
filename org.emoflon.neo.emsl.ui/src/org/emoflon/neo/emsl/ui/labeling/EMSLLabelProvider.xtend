@@ -5,6 +5,10 @@ package org.emoflon.neo.emsl.ui.labeling
 
 import com.google.inject.Inject
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
+import org.eclipse.jface.resource.JFaceResources
+import org.eclipse.jface.viewers.StyledString
+import org.eclipse.jface.viewers.StyledString.Styler
+import org.eclipse.swt.graphics.TextStyle
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeCondition
@@ -46,8 +50,29 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 		'metamodel.gif'
 	}
 	
+	def text(Metamodel m){
+		if(m.isAbstract)
+			setItalicStyle(m.name)
+	}
+	
+	protected def setItalicStyle(String label) {
+		val ss = new StyledString(label)
+		ss.setStyle(0, ss.length, new Styler(){
+			override applyStyles(TextStyle textStyle) {
+				textStyle.font = JFaceResources.fontRegistry.getItalic(JFaceResources.DEFAULT_FONT)
+			}
+		})
+		
+		return ss
+	}
+	
 	def image(AtomicPattern p){
 		'gt-pattern.gif'
+	}
+	
+	def text(AtomicPattern p){
+		if(p.isAbstract)
+			setItalicStyle(p.name)
 	}
 	
 	def image(Constraint c){
@@ -58,8 +83,18 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 		'gt-rule.gif'
 	}
 	
+	def text(Rule r){
+		if(r.isAbstract)
+			setItalicStyle(r.name)
+	}
+	
 	def image(Model m){
 		'model.gif'
+	}
+	
+	def text(Model m){
+		if(m.isAbstract)
+			setItalicStyle(m.name)
 	}
 	
 	def image(ModelNodeBlock n){
@@ -91,10 +126,13 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 	}
 	
 	def text(ModelPropertyStatement p){
-		p.type.name + " " + p.op + " " + p.value.print
+		p?.type?.name + " " + p?.op + " " + p?.value?.print
 	}
 		
 	dispatch def String print(PrimitiveInt value){
+		if(value === null)
+			return "?"
+		
 		value.literal.toString
 	}
 	
