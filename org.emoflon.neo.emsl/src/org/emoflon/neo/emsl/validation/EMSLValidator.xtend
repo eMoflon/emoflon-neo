@@ -55,7 +55,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String WRONG_PROPERTY_TYPE = "The value of this property must be of type "
 	static final String CONDITION_IN_SUPER_ENTITY = "Entities with conditions cannot be refined."
 	static final String NOT_SUPPORTED_ENTITY = "The type of entity you are trying to refine is not yet supported."
+	static final String SAME_NAMES_OF_OBJECTS_IN_ENTITY = "Using the same name multiple times in one Entity is not allowed."
 	static final def String REFINEMENT_LOOP(String refinement) '''You have created an infinite loop in your refinements. "«refinement»" appears multiple times.'''
+	static final def String SAME_NAMES_OF_ENTITIES(String className) '''Two «className»s with the same name are not allowed.'''
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -294,29 +296,21 @@ class EMSLValidator extends AbstractEMSLValidator {
 				namelistsOfEntities.get(entity.eClass.name).add(dispatcher.getName(entity))
 			} else {
 				if (entity instanceof Rule)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity,
-						EMSLPackage.Literals.RULE__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.RULE__NAME)
 				else if (entity instanceof Model)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity,
-						EMSLPackage.Literals.MODEL__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.MODEL__NAME)
 				else if (entity instanceof Metamodel)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity,
-						EMSLPackage.Literals.METAMODEL__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.METAMODEL__NAME)
 				else if (entity instanceof TripleRule)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity,
-						EMSLPackage.Literals.TRIPLE_RULE__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.TRIPLE_RULE__NAME)
 				else if (entity instanceof TripleGrammar)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity,
-						EMSLPackage.Literals.TRIPLE_GRAMMAR__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.TRIPLE_GRAMMAR__NAME)
 				else if (entity instanceof GraphGrammar)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity,
-						EMSLPackage.Literals.GRAPH_GRAMMAR__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.GRAPH_GRAMMAR__NAME)
 				else if (entity instanceof Constraint)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity,
-						EMSLPackage.Literals.CONSTRAINT__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.CONSTRAINT__NAME)
 				else if (entity instanceof Pattern)
-					error("Two " + entity.eClass.name + "s with the same name are not allowed.", entity.body,
-						EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
 			}
 		}
 	}
@@ -405,18 +399,47 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void forbidNodeBlockAndEdgeWithSameName(Entity entity) {
 		var dispatcher = new EntityAttributeDispatcher()
 		var namesList = new ArrayList
-		if (entity instanceof Model || entity instanceof Pattern || entity instanceof Rule || entity instanceof TripleRule) {
+		if (entity instanceof Model || entity instanceof Pattern || entity instanceof Rule) {
 			for (nb : dispatcher.getNodeBlocks(entity)) {
 				if (!namesList.contains(nb.name)) {
 					namesList.add(nb.name)
 				} else {
-					error("Using the same name multiple times in one Entity is not allowed.", nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+					error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
 				}
 				for (rel : nb.relations) {
 					if (rel.name !== null && !namesList.contains(rel.name)) {
 						namesList.add(rel.name)
 					} else if (rel.name !== null) {
-						error("Using the same name multiple times in one Entity is not allowed.", rel, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
+						error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, rel, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
+					}
+				}
+			}
+		} else if (entity instanceof TripleRule) {
+			for (nb : entity.srcNodeBlocks) {
+				if (!namesList.contains(nb.name)) {
+					namesList.add(nb.name)
+				} else {
+					error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+				}
+				for (rel : nb.relations) {
+					if (rel.name !== null && !namesList.contains(rel.name)) {
+						namesList.add(rel.name)
+					} else if (rel.name !== null) {
+						error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, rel, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
+					}
+				}
+			}
+			for (nb : entity.trgNodeBlocks) {
+				if (!namesList.contains(nb.name)) {
+					namesList.add(nb.name)
+				} else {
+					error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME)
+				}
+				for (rel : nb.relations) {
+					if (rel.name !== null && !namesList.contains(rel.name)) {
+						namesList.add(rel.name)
+					} else if (rel.name !== null) {
+						error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, rel, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__NAME)
 					}
 				}
 			}
