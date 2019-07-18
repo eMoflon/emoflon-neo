@@ -909,8 +909,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInTripleRule(TripleRule rule, ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
-			if (nodeBlock.name.equals(n.name))
+		val entityCopy = new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>())
+		for (n : (entityCopy as TripleRule).srcNodeBlocks) {
+			if (nodeBlock.name.equals(n.name) && (nodeBlock.eContainer as TripleRule).srcNodeBlocks.contains(nodeBlock))
+				node = n
+		}
+		for (n : (entityCopy as TripleRule).trgNodeBlocks) {
+			if (nodeBlock.name.equals(n.name) && (nodeBlock.eContainer as TripleRule).trgNodeBlocks.contains(nodeBlock))
 				node = n
 		}
 		val nb = node
@@ -929,7 +934,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR attr : nb.properties»
 				«labelForTripleRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
 			«ENDFOR»
-			«FOR incoming : (nb.eContainer as TripleRule).nodeBlocks.filter[n|n != nb]»
+			«FOR incoming : getTripleRuleNodeBlocks(entityCopy as TripleRule).filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
 					«IF incomingRef.target == nb && mainSelection»
 						class «labelForTripleRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
@@ -1015,14 +1020,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch getNodeBlocks(Rule entity) {
 		entity.nodeBlocks
 	}
-
-	/**
-	 * Returns all NodeBlocks of a TripleRule.
-	 */
-	def dispatch getNodeBlocks(TripleRule entity) {
-		val nodeBlocks = entity.srcNodeBlocks
-		nodeBlocks.addAll(entity.trgNodeBlocks)
-		return nodeBlocks
+	
+	def getTripleRuleNodeBlocks(TripleRule entity) {
+		var nodes = entity.srcNodeBlocks
+		nodes.addAll(entity.trgNodeBlocks)
+		return nodes
 	}
 	
 	
@@ -1178,13 +1180,29 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			val selectionStart = selection.getStartLine() + 1;
 			val selectionEnd = selection.getEndLine() + 1;
 			if (!(entity instanceof GraphGrammar || entity instanceof TripleGrammar || entity instanceof Metamodel ||
-				entity instanceof Enum || entity instanceof Constraint))
-				for (nodeBlock : entity.nodeBlocks) {
-					val object = NodeModelUtils.getNode(nodeBlock);
-					if (object !== null && selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
-						return Optional.of(nodeBlock)
+				entity instanceof Enum || entity instanceof Constraint)) {
+				if (entity instanceof TripleRule) {
+					for (srcNodeBlock : entity.srcNodeBlocks) {
+						val srcObject = NodeModelUtils.getNode(srcNodeBlock);
+						if (srcObject !== null && selectionStart >= srcObject.getStartLine() && selectionEnd <= srcObject.getEndLine()) {
+							return Optional.of(srcNodeBlock)
+						}
+					}
+					for (trgNodeBlock : entity.trgNodeBlocks) {
+						val trgObject = NodeModelUtils.getNode(trgNodeBlock);
+						if (trgObject !== null && selectionStart >= trgObject.getStartLine() && selectionEnd <= trgObject.getEndLine()) {
+							return Optional.of(trgNodeBlock)
+						}
+					}
+				} else {
+					for (nodeBlock : entity.nodeBlocks) {
+						val object = NodeModelUtils.getNode(nodeBlock);
+						if (object !== null && selectionStart >= object.getStartLine() && selectionEnd <= object.getEndLine()) {
+							return Optional.of(nodeBlock)
+						}
 					}
 				}
+			}
 		}
 
 		Optional.empty()

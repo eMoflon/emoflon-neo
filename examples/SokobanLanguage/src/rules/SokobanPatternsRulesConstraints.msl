@@ -432,7 +432,7 @@ pattern sokOnField {
 }
 pattern blockOnField {
 	b:Block {
-		-field -> f
+		-field-> f
 	}
 	f:Field
 }
