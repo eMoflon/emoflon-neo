@@ -277,9 +277,11 @@ public class EMSLFlattener {
 				}
 				
 				if (flattenedSuperEntity != null) {
-					var nodeBlocksOfFlattenedSuperEntity = dispatcher.getNodeBlocks((Entity) flattenedSuperEntity);
+					EList<ModelNodeBlock> nodeBlocksOfFlattenedSuperEntity = null;
 					
-					if (entity instanceof TripleRule && isSrc)
+					if (!(entity instanceof TripleRule)) {
+						nodeBlocksOfFlattenedSuperEntity = dispatcher.getNodeBlocks((Entity) flattenedSuperEntity);
+					} else if (entity instanceof TripleRule && isSrc)
 						nodeBlocksOfFlattenedSuperEntity = ((TripleRule) flattenedSuperEntity).getSrcNodeBlocks();
 					else if (entity instanceof TripleRule && !isSrc) {
 						nodeBlocksOfFlattenedSuperEntity = ((TripleRule) flattenedSuperEntity).getTrgNodeBlocks();
@@ -519,7 +521,7 @@ public class EMSLFlattener {
 							}
 							compareValueOfModelPropertyStatement(entity, basis, p);
 						}
-						newRel.getProperties().add(copyModelPropertyStatement(basis));
+						newRel.getProperties().add((ModelPropertyStatement) new EntityCloner().cloneEntity(basis));
 					}
 					
 					// check and merge action
@@ -641,7 +643,7 @@ public class EMSLFlattener {
 						}
 						compareValueOfModelPropertyStatement(entity, basis, p);
 					}
-					newRel.getProperties().add(copyModelPropertyStatement(basis));
+					newRel.getProperties().add((ModelPropertyStatement) new EntityCloner().cloneEntity(basis));
 				}
 				
 				// check and merge action
@@ -813,7 +815,7 @@ public class EMSLFlattener {
 					}
 					compareValueOfModelPropertyStatement(entity, basis, p);
 				}
-				newProperties.add(copyModelPropertyStatement(basis));
+				newProperties.add((ModelPropertyStatement) new EntityCloner().cloneEntity(basis));
 			}
 			
 			// add merged properties to the new nodeblock
@@ -918,8 +920,8 @@ public class EMSLFlattener {
 	 * @param newLabel New name of the NodeBlock, must not be present if no relabeling is to be done.
 	 * @return The newly created NodeBlock based on the NodeBlock passed as parameter.
 	 */
-	private ModelNodeBlock copyModelNodeBlock(ModelNodeBlock nb, RefinementCommand refinement) {
-		var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
+	private ModelNodeBlock copyModelNodeBlock(ModelNodeBlock nb, RefinementCommand refinement) {		
+		var newNb = (ModelNodeBlock) new EntityCloner().cloneEntity(nb);		
 		
 		// apply relabeling
 		if (refinement.getRelabeling() != null) {
@@ -932,81 +934,23 @@ public class EMSLFlattener {
 			}
 		}
 		
-		if (newNb.getName() == null)
-			newNb.setName(nb.getName());
-		
-		newNb.setType(nb.getType()); 
-		newNb.setAction(EcoreUtil.copy(nb.getAction()));
-		
 		// add relations to new nodeblock
 		for (var rel : nb.getRelations()) {
-			var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
-			
+			var newRel = (ModelRelationStatement) new EntityCloner().cloneEntity(rel);
 			// apply relabeling
 			for (var relabeling : refinement.getRelabeling()) {
 				if (relabeling.getOldLabel().equals(rel.getName()))
 					newRel.setName(relabeling.getNewLabel());
-			}
-			if (newRel.getName() == null)
-				newRel.setName(rel.getName());
-			
-			// copy action, properties target etc.
-			if (rel.getAction() != null) {
-				newRel.setAction(EMSLFactory.eINSTANCE.createAction());
-				newRel.getAction().setOp(rel.getAction().getOp());
-			}
-			for (var prop : rel.getProperties()) {
-				newRel.getProperties().add(copyModelPropertyStatement(prop));
-			}
-			rel.getTypes().forEach(t -> {
-				var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
-				newRelType.setLower(t.getLower());
-				newRelType.setUpper(t.getUpper());
-				newRelType.setType(t.getType());
-				newRel.getTypes().add(newRelType);
-			});
-			newRel.setTarget(rel.getTarget());			
+			}			
 			newNb.getRelations().add(newRel);
 		}
 		
 		// add properties to new nodeblock
 		for (var prop : nb.getProperties()) {
-			newNb.getProperties().add(copyModelPropertyStatement(prop));
+			newNb.getProperties().add((ModelPropertyStatement) new EntityCloner().cloneEntity(prop));
 		}
 		
 		return newNb;
-	}
-	
-	/**
-	 * Creates a new ModelPropertyStatement that is equal to the one that is given.
-	 * @param oldStatement that is to be copied.
-	 * @return a new ModelPropertyStatement with equal attributes of the given one.
-	 */
-	private ModelPropertyStatement copyModelPropertyStatement(ModelPropertyStatement oldStatement) {
-		var newProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
-		newProp.setOp(oldStatement.getOp());
-		newProp.setType(oldStatement.getType());
-		
-		// create new Value for Property
-		if (oldStatement.getValue() instanceof PrimitiveBoolean) {
-			newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveBoolean());
-			if (((PrimitiveBoolean) oldStatement.getValue()).isTrue())
-				((PrimitiveBoolean) newProp.getValue()).setTrue(true);
-			else 
-				((PrimitiveBoolean) newProp.getValue()).setTrue(false);
-		} else if (oldStatement.getValue() instanceof PrimitiveInt) {
-			newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveInt());
-			((PrimitiveInt) newProp.getValue()).setLiteral(((PrimitiveInt) oldStatement.getValue()).getLiteral());
-		} else if (oldStatement.getValue() instanceof PrimitiveString) {
-			newProp.setValue(EMSLFactory.eINSTANCE.createPrimitiveString());
-			((PrimitiveString) newProp.getValue()).setLiteral(((PrimitiveString) oldStatement.getValue()).getLiteral());
-		} else if (oldStatement.getValue() instanceof EnumValue) {
-			oldStatement.getValue();
-			newProp.setValue(EMSLFactory.eINSTANCE.createEnumValue());
-			((EnumValue) newProp.getValue()).setLiteral(((EnumValue) oldStatement.getValue()).getLiteral());
-		}
-		
-		return newProp;
 	}
 	
 	/**
@@ -1062,10 +1006,28 @@ public class EMSLFlattener {
 	 * 							  flattening.
 	 */
 	private void checkForResolvedProxies(Entity entity) throws FlattenerException {
-		for (var nb : dispatcher.getNodeBlocks(entity)) {
-			for (var relation : nb.getRelations()) {
-				if (!(relation.getTarget() instanceof ModelNodeBlock)) {
-					throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
+		if (entity instanceof TripleRule) {
+			for (var nb : ((TripleRule) entity).getSrcNodeBlocks()) {
+				for (var relation : nb.getRelations()) {
+					if (!(relation.getTarget() instanceof ModelNodeBlock)) {
+						throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
+					}
+				}
+			}
+			for (var nb : ((TripleRule) entity).getTrgNodeBlocks()) {
+				for (var relation : nb.getRelations()) {
+					if (!(relation.getTarget() instanceof ModelNodeBlock)) {
+						throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
+					}
+				}
+			}
+		}
+		else {
+			for (var nb : dispatcher.getNodeBlocks(entity)) {
+				for (var relation : nb.getRelations()) {
+					if (!(relation.getTarget() instanceof ModelNodeBlock)) {
+						throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
+					}
 				}
 			}
 		}
