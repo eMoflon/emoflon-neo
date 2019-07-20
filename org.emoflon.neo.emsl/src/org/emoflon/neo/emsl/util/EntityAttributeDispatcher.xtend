@@ -124,15 +124,6 @@ class EntityAttributeDispatcher {
 	def dispatch getNodeBlocks(Rule entity) {
 		entity.nodeBlocks
 	}
-
-	/**
-	 * Returns all NodeBlocks of a TripleRule.
-	 */
-	def dispatch getNodeBlocks(TripleRule entity) {
-		val nodeBlocks = entity.srcNodeBlocks
-		nodeBlocks.addAll(entity.trgNodeBlocks)
-		return nodeBlocks
-	}
 	
 	/*-------------------------------------------*/
 	/*--------- Get AttributeConditions ---------*/
