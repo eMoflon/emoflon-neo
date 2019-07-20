@@ -21,10 +21,6 @@ constraint twoSokobans = enforce twoSokoban
 
 constraint hasOneSokoban = oneSokobans && !twoSokobans
 
-pattern sokobanMustBeSelectedFigure {
-	sokoban:Sokoban
-} 
-
 constraint sokobanIsSelectedFigure = if oneSokoban then selectedFigureRequired
 
 pattern selectedFigureRequired {

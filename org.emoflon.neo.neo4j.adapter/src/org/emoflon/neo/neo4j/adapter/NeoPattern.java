@@ -26,7 +26,7 @@ import org.neo4j.driver.v1.StatementResult;
 public class NeoPattern implements IPattern<NeoMatch> {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	private NeoCoreBuilder builder;
+	private Optional<NeoCoreBuilder> builder;
 	private NeoHelper helper;
 
 	private Pattern p;
@@ -41,12 +41,16 @@ public class NeoPattern implements IPattern<NeoMatch> {
 		this(p, builder);
 	}
 
+	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
+		this(p, Optional.of(builder));
+	}
+
 	/**
 	 * 
 	 * @param p       the given pattern from the model
 	 * @param builder for creating and running Cypher queries
 	 */
-	public NeoPattern(Pattern p, NeoCoreBuilder builder) {
+	public NeoPattern(Pattern p, Optional<NeoCoreBuilder> builder) {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.builder = builder;
@@ -66,7 +70,6 @@ public class NeoPattern implements IPattern<NeoMatch> {
 			if (p.getCondition() instanceof ConstraintReference) {
 				ConstraintReference ref = (ConstraintReference) p.getCondition();
 				this.c = ref.getReference();
-				;
 
 			} else if (p.getCondition() instanceof PositiveConstraint) {
 				PositiveConstraint cons = (PositiveConstraint) p.getCondition();
@@ -150,10 +153,13 @@ public class NeoPattern implements IPattern<NeoMatch> {
 	 * @return true if the match is still valid or false if not
 	 */
 	public boolean isStillValid(NeoMatch m) {
+
+		var bld = builder.orElseThrow();
+
 		logger.info("Check if match for " + getName() + " is still valid");
 		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
 		logger.debug(cypherQuery);
-		var result = builder.executeQuery(cypherQuery);
+		var result = bld.executeQuery(cypherQuery);
 
 		// Query is id-based and must be unique
 		var results = result.list();
@@ -178,10 +184,13 @@ public class NeoPattern implements IPattern<NeoMatch> {
 	}
 
 	public Record getData(NeoMatch m) {
+
+		var bld = builder.orElseThrow();
+
 		logger.info("Extract data from " + getName());
 		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, m, injective);
 		logger.debug(cypherQuery);
-		StatementResult result = builder.executeQuery(cypherQuery);
+		StatementResult result = bld.executeQuery(cypherQuery);
 
 		// Query is id-based and must be unique
 		var results = result.list();
@@ -190,6 +199,37 @@ public class NeoPattern implements IPattern<NeoMatch> {
 					+ "There should be only one record but found: " + results.size());
 		}
 		return results.get(0);
+	}
+
+	public String getQuery() {
+
+		if (p.getCondition() == null) {
+			return CypherPatternBuilder.readQuery_copyPaste(nodes, injective);
+		} else {
+
+			if (p.getCondition() instanceof ConstraintReference) {
+				var cond = new NeoCondition(new NeoConstraint(c, Optional.empty(), helper), this, c.getName(),
+						Optional.empty(), helper);
+				return cond.getQuery();
+
+			} else if (cond instanceof NeoPositiveConstraint) {
+
+				var constraint = ((NeoPositiveConstraint) cond);
+				return CypherPatternBuilder.constraintQuery_copyPaste(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, 0);
+
+			} else if (cond instanceof NeoNegativeConstraint) {
+
+				var constraint = ((NeoNegativeConstraint) cond);
+				return CypherPatternBuilder.constraintQuery_copyPaste(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, 0);
+			} else {
+				// Note: If/Then conditions are currently not supported
+				throw new UnsupportedOperationException();
+			}
+		}
 	}
 
 	/**
@@ -212,6 +252,9 @@ public class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
+
+		var bld = builder.orElseThrow();
+
 		// Run a normal pattern matching, if there is no condition
 		if (p.getCondition() == null) {
 			logger.info("Searching matches for Pattern: " + getName());
@@ -222,7 +265,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
 			logger.debug(cypherQuery);
 
-			var result = builder.executeQuery(cypherQuery);
+			var result = bld.executeQuery(cypherQuery);
 
 			var matches = new ArrayList<NeoMatch>();
 			while (result.hasNext()) {
@@ -242,8 +285,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 			// a Body, then create a new NeoCondition, with current data and follow the
 			// structure from there for query execution
 			if (p.getCondition() instanceof ConstraintReference) {
-				var cond = new NeoCondition(new NeoConstraint(c, Optional.of(builder), helper), this, c.getName(),
-						builder, helper);
+				var cond = new NeoCondition(new NeoConstraint(c, bld, helper), this, c.getName(), bld, helper);
 				if (limit > 0)
 					return cond.determineMatches(limit);
 				else
@@ -265,7 +307,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				logger.debug(cypherQuery);
 
 				// Execute query
-				var result = builder.executeQuery(cypherQuery);
+				var result = bld.executeQuery(cypherQuery);
 
 				// Analyze and return results
 				var matches = new ArrayList<NeoMatch>();
@@ -291,7 +333,7 @@ public class NeoPattern implements IPattern<NeoMatch> {
 				logger.debug(cypherQuery);
 
 				// execute query
-				var result = builder.executeQuery(cypherQuery);
+				var result = bld.executeQuery(cypherQuery);
 
 				// analyze and return results
 				var matches = new ArrayList<NeoMatch>();

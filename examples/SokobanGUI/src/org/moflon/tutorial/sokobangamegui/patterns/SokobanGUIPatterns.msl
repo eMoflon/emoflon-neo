@@ -36,8 +36,7 @@ pattern figureTypes {
 	
 	eclass:EClass {
 		-elementOf->mm
-		// TODO: Should be transitive, i.e., -eSuperType(1..*)->
-		-eSuperType->figClass
+		-eSuperType(1..*)->figClass
 	}
 	
 	mm:MetaModel {

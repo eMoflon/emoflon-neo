@@ -28,11 +28,72 @@ pattern allPagesOfAParticularBook {
 }
 
 // alle Seiten zu Quilts oder Pillows mit einem bestimmten Pattern
-pattern allPagesOnQuiltsWithACertainPattern {
+abstract pattern allPagesWithACertainType {
+	page:Page {
+		-type->type
+	}
 	
+	type:ContentType
+}
+
+abstract pattern allPagesWithACertainPattern {
+	page:Page {
+		-blockPattern->pat
+	}
+	
+	pat:BlockPattern
+}
+
+abstract pattern allPagesWithTypeQuilt {
+	type:ContentType {
+		.name : "Quilt"
+    }
+}
+
+pattern allPagesOnQuiltsWithACertainPattern -> 
+	allPagesWithACertainPattern, 
+	allPagesWithACertainType, 
+	allPagesWithTypeQuilt
+
+pattern allPagesOnPillowsWithACertainPattern -> allPagesWithACertainPattern, allPagesWithACertainType {
+	type:ContentType {
+		.name : "Pillow"
+	}
 }
 
 // alle Seiten zu Quilts mit einem gewissen Pattern aus Büchern mit einer bestimmten Klassifikation
+abstract pattern allPagesWithACertainClassification {
+	page:Page {
+		-book->b
+	}
+	
+	b:Book {
+		-classification->c
+	}
+	
+	c:Classification	
+}
+
+pattern allPagesOnQuiltsWithACertainPatternWithACertainBook -> 
+	allPagesOnQuiltsWithACertainPattern,
+	allPagesWithACertainClassification
+
 // alle Seiten zu Quilts aus  Büchern mit einer gewissen Qualifikation
+pattern allPagesOnQuiltsWithACertainBook -> 
+	allPagesWithTypeQuilt, 
+	allPagesWithACertainClassification, 
+	allPagesWithACertainType
+
 // Alle Seiten mit Contents = basics
+pattern allPagesWithBasicContents -> allPagesWithACertainType {
+	type:ContentType {
+		.name : "Basic"
+	}
+}
+
 // Alle Seiten mit Contents = tips
+pattern allPagesWithTipContents -> allPagesWithACertainType {
+	type:ContentType {
+		.name : "Tip"
+	}
+}

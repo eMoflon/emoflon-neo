@@ -17,7 +17,8 @@ import org.neo4j.driver.v1.Record;
  *
  */
 public class NeoConstraintMatch implements IMatch {
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(NeoConstraintMatch.class);
 
 	private Collection<NeoNode> pNodes;
 	private Map<String, Long> ids;
@@ -51,8 +52,6 @@ public class NeoConstraintMatch implements IMatch {
 					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
 			}
 		}
-
-		logger.debug("Extracted ids: " + ids);
 	}
 
 	/**

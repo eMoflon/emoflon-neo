@@ -19,7 +19,7 @@ public class NeoAndBody {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private AndBody body;
-	private NeoCoreBuilder builder;
+	private Optional<NeoCoreBuilder> builder;
 	private NeoHelper helper;
 
 	/**
@@ -28,11 +28,13 @@ public class NeoAndBody {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoAndBody(AndBody body, NeoCoreBuilder builder, NeoHelper helper) {
-
+	public NeoAndBody(AndBody body, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
 		this.body = body;
 		this.builder = builder;
 		this.helper = helper;
+	}
+	public NeoAndBody(AndBody body, NeoCoreBuilder builder, NeoHelper helper) {
+		this(body,Optional.of(builder),helper);
 	}
 
 	/**
@@ -49,7 +51,7 @@ public class NeoAndBody {
 
 			// if its an constraint body, check if this constraint satisfies
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), Optional.of(builder), helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
 
 				if (((ConstraintReference) b).isNegated()) {
 					logger.info("Attention: Constraint is negated!");
@@ -97,7 +99,7 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), Optional.of(builder), helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
 				var consData = consRef.getConstraintData();
 
 				returnStmt.addNodes(consData.getNodes());
@@ -146,7 +148,7 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), Optional.of(builder), helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
 				var consData = consRef.getConditionData();
 
 				returnStmt.addNodes(consData.getNodes());
