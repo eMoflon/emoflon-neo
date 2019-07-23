@@ -150,7 +150,7 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(Pattern p, int index) {
 		if(p.body.abstract) return ""
 		try {
-			val pattern = new EMSLFlattener().flattenEntity(p) as Pattern;
+			val pattern = EMSLFlattener.flatten(p) as Pattern;
 			val patternBody = pattern.body
 			val rootName = namingConvention(patternBody.name)
 			val dataClassName = rootName + "Data"
@@ -346,7 +346,7 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(Rule r, int index) {
 		if(r.abstract) return ""
 		try {
-			val rule = new EMSLFlattener().flattenEntity(r) as Rule;
+			val rule = EMSLFlattener.flatten(r) as Rule;
 			val rootName = namingConvention(rule.name)
 			val dataClassName = rootName + "Data"
 			val accessClassName = rootName + "Access"

@@ -4,16 +4,16 @@
 package org.emoflon.neo.emsl.ui.contentassist
 
 import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.Assignment
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
 import org.emoflon.neo.emsl.EMSLFlattener
-import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.util.EntityCloner
-import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.Entity
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -25,7 +25,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			EObject entity, Assignment assignment, 
   			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		if ((entity as RefinementCommand).referencedType.eContainer instanceof Pattern) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(EcoreUtil.copy((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 				for (relation : nb.relations){
 					if (relation.name !== null) {
@@ -34,7 +34,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 				}
 			}
 		} else {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType) as Entity))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(EcoreUtil.copy((entity as RefinementCommand).referencedType) as Entity))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 				for (relation : nb.relations){
 					if (relation.name !== null) {
@@ -82,11 +82,11 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		
 		super.completeModelNodeBlock_Name(entity, assignment, context, acceptor)
 		if (entity instanceof AtomicPattern) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity.eContainer as Pattern) as Pattern))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(entity.eContainer as Entity))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 			}
 		} else {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity) as Entity))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(entity as Entity))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 			}
 		}

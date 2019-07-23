@@ -195,7 +195,7 @@ public class NeoHelper {
 	public AtomicPattern getFlattenedPattern(AtomicPattern ap) {
 
 		try {
-			return ((Pattern) new EMSLFlattener().flattenCopyOfEntity(((Pattern) (ap.eContainer())))).getBody();
+			return EMSLFlattener.flatten(((Pattern) (ap.eContainer()))).getBody();
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();
@@ -207,7 +207,7 @@ public class NeoHelper {
 	public Pattern getFlattenedPattern(Pattern p) {
 
 		try {
-			return (Pattern) new EMSLFlattener().flattenCopyOfEntity(p);
+			return EMSLFlattener.flatten(p);
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();

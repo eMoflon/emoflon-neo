@@ -35,16 +35,37 @@ import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.eMSL.Value;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
-import org.emoflon.neo.emsl.util.EntityCloner;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
 public class EMSLFlattener {
+	private EntityAttributeDispatcher dispatcher;
 
-	EntityAttributeDispatcher dispatcher;
-
-	public EMSLFlattener() {
+	private EMSLFlattener() {
 		dispatcher = new EntityAttributeDispatcher();
+	}
+
+	/**
+	 * Returns a flattened copy of the given entity.
+	 * 
+	 * @param originalEntity that is to be copied and flattened.
+	 * @return flattened copy of given entity.
+	 * @throws FlattenerException is thrown if the entity could not be flattened.
+	 */
+	public static <T extends Entity> T flatten(T originalEntity) throws FlattenerException {
+		return new EMSLFlattener().flattenCopyOfEntity(originalEntity);
+	}
+
+	/**
+	 * Returns a flattened copy of the given Entity.
+	 * 
+	 * @param originalEntity that is to be copied and flattened.
+	 * @return flattened copy of given Entity.
+	 * @throws FlattenerException is thrown if the entity could not be flattened.
+	 */
+	private <T extends Entity> T flattenCopyOfEntity(T originalEntity) throws FlattenerException {
+		var entity = EcoreUtil.copy(originalEntity);
+		return flattenEntity(entity);
 	}
 
 	/**
@@ -54,7 +75,7 @@ public class EMSLFlattener {
 	 * @return the flattened entity.
 	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	public Entity flattenEntity(Entity entity) throws FlattenerException {
+	private <T extends Entity> T flattenEntity(T entity) throws FlattenerException {
 		return flattenEntity(entity, new ArrayList<String>());
 	}
 
@@ -68,7 +89,8 @@ public class EMSLFlattener {
 	 * @return the flattened entity.
 	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	private Entity flattenEntity(Entity entity, ArrayList<String> alreadyRefinedEntityNames) throws FlattenerException {
+	private <T extends Entity> T flattenEntity(T entity, ArrayList<String> alreadyRefinedEntityNames)
+			throws FlattenerException {
 		if (entity != null) {
 			@SuppressWarnings("unchecked")
 			EList<RefinementCommand> refinements = (EList<RefinementCommand>) dispatcher
@@ -178,18 +200,6 @@ public class EMSLFlattener {
 		}
 
 		return entity;
-	}
-
-	/**
-	 * Returns a flattened copy of the given Entity.
-	 * 
-	 * @param originalEntity that is to be copied and flattened.
-	 * @return flattened copy of given Entity.
-	 * @throws FlattenerException is thrown if the entity could not be flattened.
-	 */
-	public Entity flattenCopyOfEntity(Entity originalEntity) throws FlattenerException {
-		var entity = (Entity) new EntityCloner().cloneEntity(originalEntity);
-		return flattenEntity(entity);
 	}
 
 	/**
@@ -578,7 +588,7 @@ public class EMSLFlattener {
 							}
 							compareValueOfModelPropertyStatement(entity, basis, p);
 						}
-						newRel.getProperties().add((ModelPropertyStatement) new EntityCloner().cloneEntity(basis));
+						newRel.getProperties().add(EcoreUtil.copy(basis));
 					}
 
 					// check and merge action
@@ -706,7 +716,7 @@ public class EMSLFlattener {
 						}
 						compareValueOfModelPropertyStatement(entity, basis, p);
 					}
-					newRel.getProperties().add((ModelPropertyStatement) new EntityCloner().cloneEntity(basis));
+					newRel.getProperties().add(EcoreUtil.copy(basis));
 				}
 
 				// check and merge action
@@ -894,7 +904,7 @@ public class EMSLFlattener {
 					}
 					compareValueOfModelPropertyStatement(entity, basis, p);
 				}
-				newProperties.add((ModelPropertyStatement) new EntityCloner().cloneEntity(basis));
+				newProperties.add(EcoreUtil.copy(basis));
 			}
 
 			// add merged properties to the new nodeblock
@@ -1016,7 +1026,7 @@ public class EMSLFlattener {
 	 *         parameter.
 	 */
 	private ModelNodeBlock copyModelNodeBlock(ModelNodeBlock nb, RefinementCommand refinement) {
-		var newNb = (ModelNodeBlock) new EntityCloner().cloneEntity(nb);
+		var newNb = EcoreUtil.copy(nb);
 
 		// apply relabeling
 		if (refinement.getRelabeling() != null) {
@@ -1030,7 +1040,7 @@ public class EMSLFlattener {
 
 		// add relations to new nodeblock
 		for (var rel : nb.getRelations()) {
-			var newRel = (ModelRelationStatement) new EntityCloner().cloneEntity(rel);
+			var newRel = EcoreUtil.copy(rel);
 			// apply relabeling
 			for (var relabeling : refinement.getRelabeling()) {
 				if (relabeling.getOldLabel().equals(rel.getName()))
@@ -1041,7 +1051,7 @@ public class EMSLFlattener {
 
 		// add properties to new nodeblock
 		for (var prop : nb.getProperties()) {
-			newNb.getProperties().add((ModelPropertyStatement) new EntityCloner().cloneEntity(prop));
+			newNb.getProperties().add(EcoreUtil.copy(prop));
 		}
 
 		return newNb;
