@@ -28,6 +28,7 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.compiler.TGGCompiler
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.eclipse.core.resources.ResourcesPlugin
 
 /**
  * Generates code from your model files on save.
@@ -49,7 +50,7 @@ class EMSLGenerator extends AbstractGenerator {
 		.join("/");
 		var emslSpec = resource.contents.get(0) as EMSL_Spec
 		
-		val TGGCompiler compiler = new TGGCompiler()
+		val TGGCompiler compiler = new TGGCompiler(ResourcesPlugin.getWorkspace().getRoot().getProject(resource.URI.segment(1)))
 		emslSpec.entities.filter[it instanceof TripleGrammar].map[it as TripleGrammar].forEach[compiler.compile(it)]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
