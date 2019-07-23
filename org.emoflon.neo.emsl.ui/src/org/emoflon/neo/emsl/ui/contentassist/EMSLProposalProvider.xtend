@@ -15,7 +15,11 @@ import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.Entity
-
+import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.resources.IResourceVisitor
+import org.eclipse.core.resources.IResource
+import org.eclipse.core.runtime.CoreException
+import org.eclipse.core.resources.IFile
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
  * on how to customize the content assistant.
@@ -93,5 +97,27 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		}
 	}
 	
-	
+	override completeImportStatement_Value(
+			EObject model, Assignment assignment, 
+			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		
+		super.completeImportStatement_Value(model, assignment, context, acceptor)
+		var prep = "\"platform:/resoure"
+		val files = new ArrayList<IResource>()
+		var root = ResourcesPlugin.workspace.root
+		root.accept(new IResourceVisitor() {
+			override visit(IResource resource) throws CoreException {
+				if (resource.type === IResource.FILE) {
+					if (resource.name.contains(".msl")) {
+						files.add(resource as IFile);
+					}
+				}
+				return true;
+			}
+		})
+		val filteredFiles = files.filter[f | !f.fullPath.toString.contains("/bin/")]
+		for (f : filteredFiles) {
+			acceptor.accept(createCompletionProposal(prep + f.fullPath.toString + "\"", context))
+		}
+	}	
 }

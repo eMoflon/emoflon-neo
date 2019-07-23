@@ -58,6 +58,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String SAME_NAMES_OF_OBJECTS_IN_ENTITY = "Using the same name multiple times in one Entity is not allowed."
 	static final def String REFINEMENT_LOOP(String refinement) '''You have created an infinite loop in your refinements. "«refinement»" appears multiple times.'''
 	static final def String SAME_NAMES_OF_ENTITIES(String className) '''Two «className»s with the same name are not allowed.'''
+	static final String GREEN_NODE_OF_ABSTRACT_TYPES = "Green Nodes of abstract types are not allowed";
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -475,6 +476,20 @@ class EMSLValidator extends AbstractEMSLValidator {
 			if (relation.action === null && relation.target.action !== null || (relation.action === null && (relation.eContainer as ModelNodeBlock).action !== null)) {
 				error("Edges adjacent to green/red nodes must be green/red", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 			}
+		}
+	}
+	
+	/**
+	 * Checks if a green node in a Rule or TripleRule is of abstract type.
+	 * Because abstract types cannot be created in a rule or TripleRule this is
+	 * forbidden by the editor.
+	 */
+	@Check
+	def void forbidGreenNodesOfAbstractTypesInRule(ModelNodeBlock nb) {
+		if ((nb.eContainer instanceof Rule && !(nb.eContainer as Rule).abstract 
+					|| nb.eContainer instanceof TripleRule && !(nb.eContainer as TripleRule).abstract) 
+				&& nb.action !== null && nb.type.abstract) {
+			error(GREEN_NODE_OF_ABSTRACT_TYPES, nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__ACTION)
 		}
 	}
 }
