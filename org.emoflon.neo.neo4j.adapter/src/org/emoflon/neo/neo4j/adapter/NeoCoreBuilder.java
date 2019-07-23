@@ -759,7 +759,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 
 	public void exportEMSLEntityToNeo4j(Entity entity) {
 		try {
-			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
+			var flattenedEntity = new EMSLFlattener().flattenEntity(entity);
 			if (flattenedEntity instanceof Model) {
 				exportModelToNeo4j((Model) flattenedEntity);
 			} else if (flattenedEntity instanceof Metamodel)

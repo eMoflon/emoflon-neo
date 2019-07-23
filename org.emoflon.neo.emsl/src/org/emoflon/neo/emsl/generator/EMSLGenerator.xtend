@@ -4,7 +4,6 @@
 package org.emoflon.neo.emsl.generator
 
 import java.net.URI
-import java.util.ArrayList
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
 import org.eclipse.core.runtime.preferences.InstanceScope
@@ -151,7 +150,7 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(Pattern p, int index) {
 		if(p.body.abstract) return ""
 		try {
-			val pattern = new EMSLFlattener().flattenEntity(p, new ArrayList<String>()) as Pattern;
+			val pattern = new EMSLFlattener().flattenEntity(p) as Pattern;
 			val patternBody = pattern.body
 			val rootName = namingConvention(patternBody.name)
 			val dataClassName = rootName + "Data"
@@ -347,7 +346,7 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(Rule r, int index) {
 		if(r.abstract) return ""
 		try {
-			val rule = new EMSLFlattener().flattenEntity(r, new ArrayList<String>()) as Rule;
+			val rule = new EMSLFlattener().flattenEntity(r) as Rule;
 			val rootName = namingConvention(rule.name)
 			val dataClassName = rootName + "Data"
 			val accessClassName = rootName + "Access"

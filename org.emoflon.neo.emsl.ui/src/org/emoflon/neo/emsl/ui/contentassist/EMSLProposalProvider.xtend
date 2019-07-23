@@ -8,7 +8,6 @@ import org.eclipse.xtext.Assignment
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
 import org.emoflon.neo.emsl.EMSLFlattener
-import java.util.ArrayList
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.util.EntityCloner
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
@@ -26,7 +25,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			EObject entity, Assignment assignment, 
   			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		if ((entity as RefinementCommand).referencedType.eContainer instanceof Pattern) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern, new ArrayList<String>()))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 				for (relation : nb.relations){
 					if (relation.name !== null) {
@@ -35,7 +34,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 				}
 			}
 		} else {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType) as Entity, new ArrayList<String>()))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity((entity as RefinementCommand).referencedType) as Entity))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 				for (relation : nb.relations){
 					if (relation.name !== null) {
@@ -83,11 +82,11 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		
 		super.completeModelNodeBlock_Name(entity, assignment, context, acceptor)
 		if (entity instanceof AtomicPattern) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity.eContainer as Pattern) as Pattern, new ArrayList<String>()))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity.eContainer as Pattern) as Pattern))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 			}
 		} else {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity) as Entity, new ArrayList<String>()))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(new EMSLFlattener().flattenEntity(new EntityCloner().cloneEntity(entity) as Entity))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 			}
 		}

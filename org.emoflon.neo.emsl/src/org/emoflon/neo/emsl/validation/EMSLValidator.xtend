@@ -107,9 +107,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def checkFlattening(Entity entity) {
 		try {
 			if (entity instanceof Pattern) {
-				new EMSLFlattener().flattenCopyOfEntity(entity as Pattern, new ArrayList);
+				new EMSLFlattener().flattenCopyOfEntity(entity as Pattern);
 			} else if (entity instanceof Rule) {
-				new EMSLFlattener().flattenCopyOfEntity(entity as Entity, new ArrayList);
+				new EMSLFlattener().flattenCopyOfEntity(entity as Entity);
 			}
 		} catch (FlattenerException e) {
 			if (entity instanceof Pattern) {
