@@ -277,8 +277,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for the name of an object in a Model.
 	 */
 	private def labelForObject(ModelNodeBlock nb) {
-		val entity = nb.eContainer as Model
-		'''"«IF (nb.eContainer as Model).abstract»//«ENDIF»«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF»«IF (nb.eContainer as Model).abstract»//«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
+		val entity = nb?.eContainer as Model
+		'''"«IF entity !== null && entity.abstract»//«ENDIF»«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF»«IF entity !== null && entity.abstract»//«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
 	}
 	
 	/**
@@ -358,8 +358,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for the name of a class in a Metamodel.
 	 */
 	private def labelForClass(MetamodelNodeBlock nb) {
-		val entity = nb.eContainer as Metamodel
-		'''"«IF entity.abstract»//«ENDIF»«entity?.name»«IF entity.abstract»//«ENDIF».«nb?.name»"'''
+		val entity = nb?.eContainer as Metamodel
+		'''"«IF entity !== null && entity.abstract»//«ENDIF»«entity?.name»«IF entity !== null && entity.abstract»//«ENDIF».«nb?.name»"'''
 	}
 
 	/**
