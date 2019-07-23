@@ -1,9 +1,11 @@
-package org.emoflon.neo.emsl;
+package org.emoflon.neo.emsl.refinement;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -38,45 +40,11 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-public class EMSLFlattener {
+public class AbstractEntityFlattener implements IEntityFlattener {
 	private EntityAttributeDispatcher dispatcher;
 
-	private EMSLFlattener() {
+	AbstractEntityFlattener() {
 		dispatcher = new EntityAttributeDispatcher();
-	}
-
-	/**
-	 * Returns a flattened copy of the given entity.
-	 * 
-	 * @param originalEntity that is to be copied and flattened.
-	 * @return flattened copy of given entity.
-	 * @throws FlattenerException is thrown if the entity could not be flattened.
-	 */
-	public static <T extends Entity> T flatten(T originalEntity) throws FlattenerException {
-		return new EMSLFlattener().flattenCopyOfEntity(originalEntity);
-	}
-
-	/**
-	 * Returns a flattened copy of the given Entity.
-	 * 
-	 * @param originalEntity that is to be copied and flattened.
-	 * @return flattened copy of given Entity.
-	 * @throws FlattenerException is thrown if the entity could not be flattened.
-	 */
-	private <T extends Entity> T flattenCopyOfEntity(T originalEntity) throws FlattenerException {
-		var entity = EcoreUtil.copy(originalEntity);
-		return flattenEntity(entity);
-	}
-
-	/**
-	 * Returns the flattened Entity.
-	 * 
-	 * @param entity that should be flattened.
-	 * @return the flattened entity.
-	 * @throws FlattenerException is thrown if the entity could not be flattened.
-	 */
-	private <T extends Entity> T flattenEntity(T entity) throws FlattenerException {
-		return flattenEntity(entity, new ArrayList<String>());
 	}
 
 	/**
@@ -89,8 +57,8 @@ public class EMSLFlattener {
 	 * @return the flattened entity.
 	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	private <T extends Entity> T flattenEntity(T entity, ArrayList<String> alreadyRefinedEntityNames)
-			throws FlattenerException {
+	@Override
+	public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		if (entity != null) {
 			@SuppressWarnings("unchecked")
 			EList<RefinementCommand> refinements = (EList<RefinementCommand>) dispatcher
@@ -267,7 +235,7 @@ public class EMSLFlattener {
 	 *                            nodes, like an infinite loop is detected
 	 */
 	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Entity entity,
-			EList<RefinementCommand> refinementList, ArrayList<String> alreadyRefinedEntityNames, boolean isSrc)
+			EList<RefinementCommand> refinementList, Set<String> alreadyRefinedEntityNames, boolean isSrc)
 			throws FlattenerException {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
 
@@ -282,7 +250,7 @@ public class EMSLFlattener {
 			checkSuperEntityTypeForCompliance(entity, r.getReferencedType());
 
 			// add current entity to list of names
-			var alreadyRefinedEntityNamesCopy = new ArrayList<String>();
+			var alreadyRefinedEntityNamesCopy = new HashSet<String>();
 			alreadyRefinedEntityNames.forEach(n -> alreadyRefinedEntityNamesCopy.add(n));
 			alreadyRefinedEntityNamesCopy.add(dispatcher.getName(entity));
 
@@ -293,11 +261,10 @@ public class EMSLFlattener {
 
 				Entity flattenedSuperEntity;
 				if (r.getReferencedType() instanceof AtomicPattern) {
-					flattenedSuperEntity = (flattenEntity((Entity) r.getReferencedType().eContainer(),
+					flattenedSuperEntity = (flatten((Entity) r.getReferencedType().eContainer(),
 							alreadyRefinedEntityNamesCopy));
 				} else {
-					flattenedSuperEntity = (flattenEntity((Entity) r.getReferencedType(),
-							alreadyRefinedEntityNamesCopy));
+					flattenedSuperEntity = (flatten((Entity) r.getReferencedType(), alreadyRefinedEntityNamesCopy));
 				}
 
 				// check if a superEntity possesses a condition block

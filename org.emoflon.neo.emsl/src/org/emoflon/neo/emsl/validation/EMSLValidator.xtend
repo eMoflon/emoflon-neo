@@ -7,7 +7,7 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
-import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes

@@ -1,6 +1,6 @@
 package org.emoflon.neo.emsl.util;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -16,13 +16,13 @@ public class FlattenerException extends Exception {
 
 	private FlattenerErrorType errorType;
 
-	private ArrayList<String> alreadyRefinedPatternNames;
+	private Collection<String> alreadyRefinedPatternNames;
 
 	private ModelPropertyStatement property1;
 	private ModelPropertyStatement property2;
 
 	private ModelNodeBlock nodeBlock;
-	
+
 	private ModelRelationStatement relation;
 	private ModelRelationStatementType statementType;
 
@@ -35,19 +35,19 @@ public class FlattenerException extends Exception {
 	 * @param alreadyRefinedPatternNames names of patterns that were already
 	 *                                   defined.
 	 */
-	public FlattenerException(Entity entity, FlattenerErrorType type, ArrayList<String> alreadyRefinedPatternNames) {
+	public FlattenerException(Entity entity, FlattenerErrorType type, Collection<String> alreadyRefinedPatternNames) {
 		this.entity = entity;
 		this.errorType = type;
 		this.alreadyRefinedPatternNames = alreadyRefinedPatternNames;
 	}
-	
+
 	// for ModelRelationStatement path limits
 	public FlattenerException(Entity entity, FlattenerErrorType type, ModelRelationStatementType statementType) {
 		this.entity = entity;
 		this.errorType = type;
 		this.statementType = statementType;
 	}
-	
+
 	// for not mergeable complex edges
 	public FlattenerException(Entity entity, FlattenerErrorType type) {
 		this.entity = entity;
@@ -77,7 +77,7 @@ public class FlattenerException extends Exception {
 		this.errorType = type;
 		this.superEntity = superEntity;
 	}
-	
+
 	// for non-resolvable proxies of relation statements
 	public FlattenerException(Entity entity, FlattenerErrorType type, ModelRelationStatement relation) {
 		this.entity = entity;
@@ -101,7 +101,7 @@ public class FlattenerException extends Exception {
 		return entity;
 	}
 
-	public ArrayList<String> getAlreadyRefinedPatternNames() {
+	public Collection<String> getAlreadyRefinedPatternNames() {
 		return alreadyRefinedPatternNames;
 	}
 
@@ -112,11 +112,11 @@ public class FlattenerException extends Exception {
 	public SuperType getSuperEntity() {
 		return superEntity;
 	}
-	
+
 	public ModelRelationStatement getRelation() {
 		return relation;
 	}
-	
+
 	public ModelRelationStatementType getStatementType() {
 		return statementType;
 	}
