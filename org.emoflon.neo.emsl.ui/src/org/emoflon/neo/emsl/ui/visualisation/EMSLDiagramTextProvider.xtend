@@ -306,7 +306,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a Metamodel.
 	 */
-	def dispatch String visualiseEntity(Metamodel entity, boolean mainSelection) {
+	def dispatch String visualiseEntity(Metamodel mm, boolean mainSelection) {
+		var entity = EMSLFlattener.flatten(mm)
 		'''
 			package "«IF entity.abstract»//«ENDIF»«(entity as Metamodel).name»«IF entity.abstract»//«ENDIF»"«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : entity.nodeBlocks»

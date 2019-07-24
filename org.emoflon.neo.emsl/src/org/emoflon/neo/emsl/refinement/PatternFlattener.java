@@ -1,9 +1,9 @@
 package org.emoflon.neo.emsl.refinement;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
@@ -16,7 +16,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 	public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		if (entity != null) {
 			@SuppressWarnings("unchecked")
-			var refinements = (EList<RefinementCommand>) dispatcher.getSuperRefinementTypes(entity);
+			var refinements = (List<RefinementCommand>) dispatcher.getSuperRefinementTypes(entity);
 
 			// check for loop in refinements
 
@@ -29,13 +29,12 @@ public class PatternFlattener extends AbstractEntityFlattener {
 				return entity;
 
 			// 1. step: collect nodes with edges
-			var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(entity, refinements,
-					alreadyRefinedEntityNames, true);
+			var collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedEntityNames, true);
 			dispatcher.getNodeBlocks(entity).forEach(nb -> {
 				if (collectedNodeBlocks.keySet().contains(nb.getName())) {
 					collectedNodeBlocks.get(nb.getName()).add(nb);
 				} else {
-					var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
+					var tmp = new ArrayList<ModelNodeBlock>();
 					tmp.add(nb);
 					collectedNodeBlocks.put(nb.getName(), tmp);
 				}

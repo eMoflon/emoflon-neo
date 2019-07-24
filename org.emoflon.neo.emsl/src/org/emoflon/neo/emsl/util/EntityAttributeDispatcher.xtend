@@ -112,6 +112,13 @@ class EntityAttributeDispatcher {
 	}
 
 	/**
+	 * Returns all NodeBlocks of a Metamodel.
+	 */
+	def getMetamodelNodeBlocks(Metamodel entity) {
+		entity.nodeBlocks
+	}
+
+	/**
 	 * Returns all NodeBlocks of a Pattern.
 	 */
 	def dispatch getNodeBlocks(Pattern entity) {

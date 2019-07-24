@@ -1,6 +1,7 @@
 package org.emoflon.neo.emsl.refinement;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
@@ -100,8 +101,8 @@ public class TripleRuleFlattener extends AbstractEntityFlattener {
 	 * @param trgNodeBlocks nodes of the new entity.
 	 * @return List containing the merged correspondences.
 	 */
-	private ArrayList<Correspondence> mergeCorrespondences(ArrayList<Correspondence> corrs,
-			ArrayList<ModelNodeBlock> srcNodeBlocks, ArrayList<ModelNodeBlock> trgNodeBlocks) {
+	private List<Correspondence> mergeCorrespondences(List<Correspondence> corrs, List<ModelNodeBlock> srcNodeBlocks,
+			List<ModelNodeBlock> trgNodeBlocks) {
 		var mergedCorrespondences = new ArrayList<Correspondence>();
 
 		for (var c : corrs) {

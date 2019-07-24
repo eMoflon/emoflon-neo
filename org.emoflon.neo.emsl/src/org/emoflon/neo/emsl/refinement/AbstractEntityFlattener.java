@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
@@ -75,10 +77,9 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if an error occurs during collecting the
 	 *                            nodes, like an infinite loop is detected
 	 */
-	protected HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Entity entity,
-			EList<RefinementCommand> refinementList, Set<String> alreadyRefinedEntityNames, boolean isSrc)
-			throws FlattenerException {
-		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
+	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
+			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
+		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
 
 		for (var r : refinementList) {
 
@@ -152,18 +153,20 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 		}
 		return nodeBlocks;
 	}
-	
+
 	/**
 	 * This method sets the targets of ModelRelationStatements of the given Nodes
-	 * such that they reference the nodes created in the calling method (collectNodes)
-	 * and no longer reference the nodes of the real superEntity.
-	 * @param nodeBlocksOfSuperEntity list of nodes that need their relations' targets
-	 * 		  						  adjusted.
-	 * @param r RefinementCommand that includes any new labels for nodes.
+	 * such that they reference the nodes created in the calling method
+	 * (collectNodes) and no longer reference the nodes of the real superEntity.
+	 * 
+	 * @param nodeBlocksOfSuperEntity list of nodes that need their relations'
+	 *                                targets adjusted.
+	 * @param r                       RefinementCommand that includes any new labels
+	 *                                for nodes.
 	 * @return list of nodes with their relations' targets correctly referenced.
 	 */
-	private ArrayList<ModelNodeBlock> reAdjustTargetsOfEdges(
-			ArrayList<ModelNodeBlock> nodeBlocksOfSuperEntity, RefinementCommand r) {
+	private ArrayList<ModelNodeBlock> reAdjustTargetsOfEdges(ArrayList<ModelNodeBlock> nodeBlocksOfSuperEntity,
+			RefinementCommand r) {
 		for (var nb : nodeBlocksOfSuperEntity) {
 			for (var rel : nb.getRelations()) {
 				boolean targetSet = false;
@@ -173,8 +176,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					if (targetSet)
 						break;
 					if ((rel.getTarget() != null && ref.getOldLabel().equals(rel.getTarget().getName()))
-							|| rel.getProxyTarget() != null
-									&& ref.getOldLabel().equals(rel.getProxyTarget())) {
+							|| rel.getProxyTarget() != null && ref.getOldLabel().equals(rel.getProxyTarget())) {
 						for (var node : nodeBlocksOfSuperEntity) {
 							if (ref.getNewLabel() != null && ref.getNewLabel().equals(node.getName())) {
 								rel.setTarget(node);
@@ -185,8 +187,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					} else {
 						for (var node : nodeBlocksOfSuperEntity) {
 							if (rel.getTarget() != null && rel.getTarget().getName().equals(node.getName())
-									|| (rel.getProxyTarget() != null
-											&& rel.getProxyTarget().equals(node.getName()))) {
+									|| (rel.getProxyTarget() != null && rel.getProxyTarget().equals(node.getName()))) {
 								rel.setTarget(node);
 								break;
 							}
@@ -213,9 +214,9 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	protected ArrayList<ModelNodeBlock> mergeNodes(Entity entity, EList<RefinementCommand> refinementList,
-			HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) throws FlattenerException {
-		var<ModelNodeBlock> mergedNodes = new ArrayList<ModelNodeBlock>();
+	protected List<ModelNodeBlock> mergeNodes(Entity entity, List<RefinementCommand> refinementList,
+			Map<String, List<ModelNodeBlock>> nodeBlocks) throws FlattenerException {
+		var mergedNodes = new ArrayList<ModelNodeBlock>();
 
 		// take all nodeBlocks with the same name/key out of the HashMap and merge
 		for (var name : nodeBlocks.keySet()) {
@@ -281,11 +282,13 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	}
 
 	/**
-	 * Takes a list of nodes and merges their actions with the "black wins" principle.
+	 * Takes a list of nodes and merges their actions with the "black wins"
+	 * principle.
+	 * 
 	 * @param nodes list of nodes that provide actions must be merged
 	 * @return an action if a merged action can be determined, null if not
 	 */
-	private Action mergeActionOfNodes(ArrayList<ModelNodeBlock> nodes) {
+	private Action mergeActionOfNodes(List<ModelNodeBlock> nodes) {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -308,7 +311,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 
 		return action;
 	}
-	
+
 	/**
 	 * This method takes a list of collected NodeBlocks that were collected from all
 	 * the refinements, and a list of merged nodes and adds the merged
@@ -321,9 +324,8 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	private ArrayList<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity,
-			HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes)
-			throws FlattenerException {
+	private List<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, Map<String, List<ModelNodeBlock>> nodeBlocks,
+			List<ModelNodeBlock> mergedNodes) throws FlattenerException {
 
 		// collect all edges in hashmap; first key is type name, second is target name
 		for (var name : nodeBlocks.keySet()) {
@@ -379,11 +381,11 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
 
 					// merge statements and check statements for compliance
-					newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity));
+					newRel.getProperties().addAll(
+							collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity));
 
 					// check and merge action
 					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname)));
-					
 
 					// create new ModelRelationStatementType for the new ModelRelationStatement
 					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
@@ -496,10 +498,11 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 
 		return mergedNodes;
 	}
-	
+
 	/**
 	 * Collects and merges the property statements of the given edges.
-	 * @param edges whose properties will be merged.
+	 * 
+	 * @param edges  whose properties will be merged.
 	 * @param entity that contains the properties (directly or indirectly).
 	 * @return HashSet containing the merged ModelPropertyStatements.
 	 * @throws FlattenerException is thrown if two properties are not mergeable.
@@ -508,7 +511,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 			ArrayList<ModelRelationStatement> edges, Entity entity) throws FlattenerException {
 		var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
 		var mergedProperties = new HashSet<ModelPropertyStatement>();
-		
+
 		// collect PropertyStatements of Edges
 		if (edges != null) {
 			for (var e : edges) {
@@ -520,8 +523,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					properties.get(p.getType().getName()).add(p);
 				});
 			}
-	
-			
+
 			for (var propertyName : properties.keySet()) {
 				var props = properties.get(propertyName);
 				ModelPropertyStatement basis = null;
@@ -552,20 +554,22 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 				mergedProperties.add(EcoreUtil.copy(basis));
 			}
 		}
-		
+
 		return mergedProperties;
 	}
-	
+
 	/**
-	 * Takes a list of nodes and merges their actions with the "black wins" principle.
-	 * @param edges HashMap containing the edges whose actions are merged.
-	 * @param typename parameter to decide which edges have to be merged.
+	 * Takes a list of nodes and merges their actions with the "black wins"
+	 * principle.
+	 * 
+	 * @param edges      HashMap containing the edges whose actions are merged.
+	 * @param typename   parameter to decide which edges have to be merged.
 	 * @param targetname parameter to decide which edges have to be merged.
 	 * @return Action that is the result of the merging of all edges' actions.
 	 */
 	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges) {
 		var action = EMSLFactory.eINSTANCE.createAction();
-		
+
 		boolean green = false;
 		boolean red = false;
 		boolean black = false;
@@ -662,9 +666,8 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	private ArrayList<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(Entity entity,
-			HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks, ArrayList<ModelNodeBlock> mergedNodes)
-			throws FlattenerException {
+	private List<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(Entity entity,
+			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes) throws FlattenerException {
 		for (var name : nodeBlocks.keySet()) {
 			var nodeBlocksWithKey = nodeBlocks.get(name);
 			var newProperties = new ArrayList<ModelPropertyStatement>();
@@ -945,7 +948,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 		}
 	}
 
-	protected <T extends Entity> void mergeAttributeConditions(T entity, EList<RefinementCommand> refinements) {
+	protected <T extends Entity> void mergeAttributeConditions(T entity, List<RefinementCommand> refinements) {
 		var collectedAttributeConditions = new ArrayList<AttributeCondition>();
 		collectedAttributeConditions.addAll(dispatcher.getAttributeConditions(entity));
 		for (var s : refinements) {
@@ -970,7 +973,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if the type of superEntity is not
 	 *                            supported.
 	 */
-	private void checkSuperEntityTypeForCompliance(Entity entity, SuperType superEntity) throws FlattenerException {
+	protected void checkSuperEntityTypeForCompliance(Entity entity, SuperType superEntity) throws FlattenerException {
 		if (entity instanceof Metamodel && !(superEntity instanceof Metamodel)
 				|| !(entity instanceof Metamodel) && superEntity instanceof Metamodel)
 			throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, superEntity);
