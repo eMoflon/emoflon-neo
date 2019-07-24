@@ -14,12 +14,13 @@ import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
-import org.emoflon.neo.emsl.eMSL.Entity
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.resources.IResourceVisitor
 import org.eclipse.core.resources.IResource
 import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.resources.IFile
+import java.util.HashSet
+
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
  * on how to customize the content assistant.
@@ -103,7 +104,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		
 		super.completeImportStatement_Value(model, assignment, context, acceptor)
 		var prep = "\"platform:/resoure"
-		val files = new ArrayList<IResource>()
+		val files = new HashSet<IResource>()
 		var root = ResourcesPlugin.workspace.root
 		root.accept(new IResourceVisitor() {
 			override visit(IResource resource) throws CoreException {

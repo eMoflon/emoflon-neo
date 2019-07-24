@@ -7,6 +7,7 @@ import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
@@ -24,6 +25,8 @@ public class EMSLFlattener<T extends Entity> {
 			flattener = new PatternFlattener();
 		else if (entity instanceof Metamodel)
 			flattener = new MetamodelFlattener();
+		else if (entity instanceof Rule)
+			flattener = new RuleFlattener();
 		else
 			throw new IllegalArgumentException(
 					"I don't know how to flatten entities of type " + entity.eClass().getName());

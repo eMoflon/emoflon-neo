@@ -10,7 +10,7 @@ pattern twoSokoban {
 	sokoban: Sokoban
 	sokoban2: Sokoban
 }
-
+ 
 pattern oneSokobanSelectedFigureRequired {
 	sokoban : Sokoban
 } when enforce selectedFigureRequired
@@ -325,8 +325,11 @@ rule moveSokobanUpWithCondition -> moveSokobanUp
 	when forbid occupiedField
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
-	from : Field {
-		-bottom-> next
+	next : Field {
+		-bottom-> to
+	}
+	to : Field {
+		-bottom-> $from
 	}
 } when forbid occupiedNext
 
