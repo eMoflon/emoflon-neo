@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.neo.emsl.eMSL.Action;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.AttributeCondition;
@@ -89,7 +90,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 			}
 			checkSuperEntityTypeForCompliance(entity, r.getReferencedType());
 
-			// add current entity to list of names
+			// add current entity to list of names to detect infinite loop
 			var alreadyRefinedEntityNamesCopy = new HashSet<String>();
 			alreadyRefinedEntityNames.forEach(n -> alreadyRefinedEntityNamesCopy.add(n));
 			alreadyRefinedEntityNamesCopy.add(dispatcher.getName(entity));
@@ -145,42 +146,57 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 						nodeBlocksOfSuperEntity.add(newNb);
 					}
 
-					// re-set targets of edges
-					for (var nb : nodeBlocksOfSuperEntity) {
-						for (var rel : nb.getRelations()) {
-							boolean targetSet = false;
-							if (targetSet)
+					reAdjustTargetsOfEdges(nodeBlocksOfSuperEntity, r);
+				}
+			}
+		}
+		return nodeBlocks;
+	}
+	
+	/**
+	 * This method sets the targets of ModelRelationStatements of the given Nodes
+	 * such that they reference the nodes created in the calling method (collectNodes)
+	 * and no longer reference the nodes of the real superEntity.
+	 * @param nodeBlocksOfSuperEntity list of nodes that need their relations' targets
+	 * 		  						  adjusted.
+	 * @param r RefinementCommand that includes any new labels for nodes.
+	 * @return list of nodes with their relations' targets correctly referenced.
+	 */
+	private ArrayList<ModelNodeBlock> reAdjustTargetsOfEdges(
+			ArrayList<ModelNodeBlock> nodeBlocksOfSuperEntity, RefinementCommand r) {
+		for (var nb : nodeBlocksOfSuperEntity) {
+			for (var rel : nb.getRelations()) {
+				boolean targetSet = false;
+				if (targetSet)
+					break;
+				for (var ref : r.getRelabeling()) {
+					if (targetSet)
+						break;
+					if ((rel.getTarget() != null && ref.getOldLabel().equals(rel.getTarget().getName()))
+							|| rel.getProxyTarget() != null
+									&& ref.getOldLabel().equals(rel.getProxyTarget())) {
+						for (var node : nodeBlocksOfSuperEntity) {
+							if (ref.getNewLabel() != null && ref.getNewLabel().equals(node.getName())) {
+								rel.setTarget(node);
+								targetSet = true;
 								break;
-							for (var ref : r.getRelabeling()) {
-								if (targetSet)
-									break;
-								if ((rel.getTarget() != null && ref.getOldLabel().equals(rel.getTarget().getName()))
-										|| rel.getProxyTarget() != null
-												&& ref.getOldLabel().equals(rel.getProxyTarget())) {
-									for (var node : nodeBlocksOfSuperEntity) {
-										if (ref.getNewLabel() != null && ref.getNewLabel().equals(node.getName())) {
-											rel.setTarget(node);
-											targetSet = true;
-											break;
-										}
-									}
-								} else {
-									for (var node : nodeBlocksOfSuperEntity) {
-										if (rel.getTarget() != null && rel.getTarget().getName().equals(node.getName())
-												|| (rel.getProxyTarget() != null
-														&& rel.getProxyTarget().equals(node.getName()))) {
-											rel.setTarget(node);
-											break;
-										}
-									}
-								}
+							}
+						}
+					} else {
+						for (var node : nodeBlocksOfSuperEntity) {
+							if (rel.getTarget() != null && rel.getTarget().getName().equals(node.getName())
+									|| (rel.getProxyTarget() != null
+											&& rel.getProxyTarget().equals(node.getName()))) {
+								rel.setTarget(node);
+								break;
 							}
 						}
 					}
 				}
 			}
 		}
-		return nodeBlocks;
+
+		return nodeBlocksOfSuperEntity;
 	}
 
 	/**
@@ -255,26 +271,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 			newNb.setType(nodeBlockTypeQueue.peek());
 			newNb.setName(name);
-			newNb.setAction(EMSLFactory.eINSTANCE.createAction());
-
-			// check and merge action
-			boolean green = false;
-			boolean red = false;
-			boolean black = false;
-			for (var nb : blocksWithKey) {
-				if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.CREATE)
-					green = true;
-				else if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.DELETE)
-					red = true;
-				else
-					black = true;
-			}
-			if (green && !red && !black)
-				newNb.getAction().setOp(ActionOperator.CREATE);
-			else if (!green && red && !black)
-				newNb.getAction().setOp(ActionOperator.DELETE);
-			else
-				newNb.setAction(null);
+			newNb.setAction(mergeActionOfNodes(blocksWithKey));
 
 			mergedNodes.add(newNb);
 		}
@@ -283,6 +280,35 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 				mergePropertyStatementsOfNodeBlocks(entity, nodeBlocks, mergedNodes));
 	}
 
+	/**
+	 * Takes a list of nodes and merges their actions with the "black wins" principle.
+	 * @param nodes list of nodes that provide actions must be merged
+	 * @return an action if a merged action can be determined, null if not
+	 */
+	private Action mergeActionOfNodes(ArrayList<ModelNodeBlock> nodes) {
+		var action = EMSLFactory.eINSTANCE.createAction();
+
+		boolean green = false;
+		boolean red = false;
+		boolean black = false;
+		for (var nb : nodes) {
+			if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.CREATE)
+				green = true;
+			else if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.DELETE)
+				red = true;
+			else
+				black = true;
+		}
+		if (green && !red && !black)
+			action.setOp(ActionOperator.CREATE);
+		else if (!green && red && !black)
+			action.setOp(ActionOperator.DELETE);
+		else
+			action = null;
+
+		return action;
+	}
+	
 	/**
 	 * This method takes a list of collected NodeBlocks that were collected from all
 	 * the refinements, and a list of merged nodes and adds the merged
@@ -352,71 +378,12 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 				for (var targetname : edges.get(typename).keySet()) {
 					var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
 
-					// merge PropertyStatements of Edges
-					var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
-					for (var e : edges.get(typename).get(targetname)) {
-						// collect propertyStatements
-						e.getProperties().forEach(p -> {
-							if (!properties.containsKey(p.getType().getName())) {
-								properties.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
-							}
-							properties.get(p.getType().getName()).add(p);
-						});
-					}
 					// merge statements and check statements for compliance
-					for (var propertyName : properties.keySet()) {
-						var props = properties.get(propertyName);
-						ModelPropertyStatement basis = null;
-						if (properties.size() > 0) {
-							basis = props.get(0);
-						}
-						for (var p : props) {
-							if (p.getType().getType() != basis.getType().getType()) {
-								// incompatible types/operands found
-								if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
-									throw new FlattenerException(entity,
-											FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p,
-											(SuperType) p.eContainer().eContainer().eContainer());
-								} else {
-									throw new FlattenerException(entity,
-											FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES, basis, p,
-											(SuperType) p.eContainer().eContainer().eContainer());
-								}
-							} else if (basis.getOp() != p.getOp()) {
-								if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
-									throw new FlattenerException(entity,
-											FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p,
-											(SuperType) p.eContainer().eContainer().eContainer());
-								} else {
-									throw new FlattenerException(entity,
-											FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS, basis, p,
-											(SuperType) p.eContainer().eContainer().eContainer());
-								}
-							}
-							compareValueOfModelPropertyStatement(entity, basis, p);
-						}
-						newRel.getProperties().add(EcoreUtil.copy(basis));
-					}
+					newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity));
 
 					// check and merge action
-					newRel.setAction(EMSLFactory.eINSTANCE.createAction());
-					boolean green = false;
-					boolean red = false;
-					boolean black = false;
-					for (var e : edges.get(typename).get(targetname)) {
-						if (e.getAction() != null && e.getAction().getOp() == ActionOperator.CREATE)
-							green = true;
-						else if (e.getAction() != null && e.getAction().getOp() == ActionOperator.DELETE)
-							red = true;
-						else
-							black = true;
-					}
-					if (green && !red && !black)
-						newRel.getAction().setOp(ActionOperator.CREATE);
-					else if (!green && red && !black)
-						newRel.getAction().setOp(ActionOperator.DELETE);
-					else
-						newRel.setAction(null);
+					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname)));
+					
 
 					// create new ModelRelationStatementType for the new ModelRelationStatement
 					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
@@ -483,68 +450,11 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					}
 				}
 
-				// merge PropertyStatements of Edges
-				var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
-				for (var e : namedEdges.get(n)) {
-					// collect propertyStatements
-					e.getProperties().forEach(p -> {
-						if (!properties.containsKey(p.getType().getName())) {
-							properties.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
-						}
-						properties.get(p.getType().getName()).add(p);
-					});
-				}
-
 				// merge statements and check statements for compliance
-				for (var propertyName : properties.keySet()) {
-					var props = properties.get(propertyName);
-					ModelPropertyStatement basis = null;
-					if (properties.size() > 0) {
-						basis = props.get(0);
-					}
-					for (var p : props) {
-						if (p.getType().getType() != basis.getType().getType()) {
-							// incompatible types/operands found
-							if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
-								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
-							} else {
-								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
-							}
-						} else if (basis.getOp() != p.getOp()) {
-							if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
-								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
-							} else {
-								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
-							}
-						}
-						compareValueOfModelPropertyStatement(entity, basis, p);
-					}
-					newRel.getProperties().add(EcoreUtil.copy(basis));
-				}
+				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity));
 
 				// check and merge action
-				newRel.setAction(EMSLFactory.eINSTANCE.createAction());
-				boolean green = false;
-				boolean red = false;
-				boolean black = false;
-				for (var e : namedEdges.get(n)) {
-					if (e.getAction() != null && e.getAction().getOp() == ActionOperator.CREATE)
-						green = true;
-					else if (e.getAction() != null && e.getAction().getOp() == ActionOperator.DELETE)
-						red = true;
-					else
-						black = true;
-				}
-				if (green && !red && !black)
-					newRel.getAction().setOp(ActionOperator.CREATE);
-				else if (!green && red && !black)
-					newRel.getAction().setOp(ActionOperator.DELETE);
-				else
-					newRel.setAction(null);
+				newRel.setAction(mergeActionOfRelations(namedEdges.get(n)));
 
 				mergedNodes.forEach(nb -> {
 					if (nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
@@ -585,6 +495,96 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 		}
 
 		return mergedNodes;
+	}
+	
+	/**
+	 * Collects and merges the property statements of the given edges.
+	 * @param edges whose properties will be merged.
+	 * @param entity that contains the properties (directly or indirectly).
+	 * @return HashSet containing the merged ModelPropertyStatements.
+	 * @throws FlattenerException is thrown if two properties are not mergeable.
+	 */
+	private HashSet<ModelPropertyStatement> collectAndMergePropertyStatementsOfRelations(
+			ArrayList<ModelRelationStatement> edges, Entity entity) throws FlattenerException {
+		var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
+		var mergedProperties = new HashSet<ModelPropertyStatement>();
+		
+		// collect PropertyStatements of Edges
+		if (edges != null) {
+			for (var e : edges) {
+				// collect propertyStatements
+				e.getProperties().forEach(p -> {
+					if (!properties.containsKey(p.getType().getName())) {
+						properties.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
+					}
+					properties.get(p.getType().getName()).add(p);
+				});
+			}
+	
+			
+			for (var propertyName : properties.keySet()) {
+				var props = properties.get(propertyName);
+				ModelPropertyStatement basis = null;
+				if (properties.size() > 0) {
+					basis = props.get(0);
+				}
+				for (var p : props) {
+					if (p.getType().getType() != basis.getType().getType()) {
+						// incompatible types/operands found
+						if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+						} else {
+							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+						}
+					} else if (basis.getOp() != p.getOp()) {
+						if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+						} else {
+							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+						}
+					}
+					compareValueOfModelPropertyStatement(entity, basis, p);
+				}
+				mergedProperties.add(EcoreUtil.copy(basis));
+			}
+		}
+		
+		return mergedProperties;
+	}
+	
+	/**
+	 * Takes a list of nodes and merges their actions with the "black wins" principle.
+	 * @param edges HashMap containing the edges whose actions are merged.
+	 * @param typename parameter to decide which edges have to be merged.
+	 * @param targetname parameter to decide which edges have to be merged.
+	 * @return Action that is the result of the merging of all edges' actions.
+	 */
+	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges) {
+		var action = EMSLFactory.eINSTANCE.createAction();
+		
+		boolean green = false;
+		boolean red = false;
+		boolean black = false;
+		for (var e : edges) {
+			if (e.getAction() != null && e.getAction().getOp() == ActionOperator.CREATE)
+				green = true;
+			else if (e.getAction() != null && e.getAction().getOp() == ActionOperator.DELETE)
+				red = true;
+			else
+				black = true;
+		}
+		if (green && !red && !black)
+			action.setOp(ActionOperator.CREATE);
+		else if (!green && red && !black)
+			action.setOp(ActionOperator.DELETE);
+		else
+			return null;
+
+		return action;
 	}
 
 	/**

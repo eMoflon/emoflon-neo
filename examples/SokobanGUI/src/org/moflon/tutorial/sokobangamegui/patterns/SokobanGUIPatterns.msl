@@ -83,7 +83,7 @@ pattern endFieldBlockedByBoulder -> endField {
 constraint noBlockedEndField = forbid endFieldBlockedByBoulder
 
 rule deleteFigure {
-	-- fig:Figure
+	//-- fig:Figure
 }
 
 abstract rule createFigure -> chooseField {
