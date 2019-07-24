@@ -13,7 +13,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-public class TripleRuleFlattener extends AbstractEntityFlattener implements IEntityFlattener {
+public class TripleRuleFlattener extends AbstractEntityFlattener {
 
 	@Override
 	@SuppressWarnings("unchecked")

@@ -10,7 +10,7 @@ import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-public class PatternFlattener extends AbstractEntityFlattener implements IEntityFlattener {
+public class PatternFlattener extends AbstractEntityFlattener {
 
 	@Override
 	public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {

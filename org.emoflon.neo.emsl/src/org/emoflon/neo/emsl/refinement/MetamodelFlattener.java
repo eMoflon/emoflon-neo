@@ -9,7 +9,7 @@ public class MetamodelFlattener extends AbstractEntityFlattener implements IEnti
 
 	@Override
 	public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
-		// TODO Auto-generated method stub
+		// TODO[Anjorin]
 		return entity;
 	}
 
