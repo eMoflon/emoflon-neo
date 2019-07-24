@@ -13,7 +13,6 @@ import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.AttributeCondition;
 import org.emoflon.neo.emsl.eMSL.AttributeExpression;
-import org.emoflon.neo.emsl.eMSL.Correspondence;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
@@ -40,8 +39,8 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-public class AbstractEntityFlattener implements IEntityFlattener {
-	private EntityAttributeDispatcher dispatcher;
+public abstract class AbstractEntityFlattener implements IEntityFlattener {
+	protected EntityAttributeDispatcher dispatcher;
 
 	AbstractEntityFlattener() {
 		dispatcher = new EntityAttributeDispatcher();
@@ -58,167 +57,8 @@ public class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
 	@Override
-	public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
-		if (entity != null) {
-			@SuppressWarnings("unchecked")
-			EList<RefinementCommand> refinements = (EList<RefinementCommand>) dispatcher
-					.getSuperRefinementTypes(entity);
-
-			// check for loop in refinements
-
-			if (alreadyRefinedEntityNames.contains(dispatcher.getName(entity)))
-				throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedEntityNames);
-			// if none has been found, add current name to list
-
-			// check if anything has to be done, if not return
-			if (refinements.isEmpty())
-				return entity;
-			if (!(entity instanceof TripleRule)) {
-				// 1. step: collect nodes with edges
-				var<String, ArrayList<ModelNodeBlock>> collectedNodeBlocks = collectNodes(entity, refinements,
-						alreadyRefinedEntityNames, true);
-				dispatcher.getNodeBlocks(entity).forEach(nb -> {
-					if (collectedNodeBlocks.keySet().contains(nb.getName())) {
-						collectedNodeBlocks.get(nb.getName()).add(nb);
-					} else {
-						var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
-						tmp.add(nb);
-						collectedNodeBlocks.put(nb.getName(), tmp);
-					}
-				});
-
-				// 2. step: merge nodes and edges
-				var mergedNodes = mergeNodes(entity, refinements, collectedNodeBlocks);
-
-				// 3. step: add merged nodeBlocks to entity
-				dispatcher.getNodeBlocks(entity).clear();
-				dispatcher.getNodeBlocks(entity).addAll((mergedNodes));
-			} else if (entity instanceof TripleRule) {
-				// --------------- Source ------------------ //
-				// 1. step: collect nodes with edges
-				var<String, ArrayList<ModelNodeBlock>> collectedSrcNodeBlocks = collectNodes(entity, refinements,
-						alreadyRefinedEntityNames, true);
-				((TripleRule) entity).getSrcNodeBlocks().forEach(nb -> {
-					if (collectedSrcNodeBlocks.keySet().contains(nb.getName())) {
-						collectedSrcNodeBlocks.get(nb.getName()).add(nb);
-					} else {
-						var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
-						tmp.add(nb);
-						collectedSrcNodeBlocks.put(nb.getName(), tmp);
-					}
-				});
-				// 2. step: merge nodes and edges
-				var mergedSrcNodes = mergeNodes(entity, refinements, collectedSrcNodeBlocks);
-
-				// 3. step: add merged nodeBlocks to entity
-				((TripleRule) entity).getSrcNodeBlocks().clear();
-				((TripleRule) entity).getSrcNodeBlocks().addAll((mergedSrcNodes));
-
-				// --------------- Target ------------------ //
-				// 1. step: collect nodes with edges
-				var<String, ArrayList<ModelNodeBlock>> collectedTrgNodeBlocks = collectNodes(entity, refinements,
-						alreadyRefinedEntityNames, false);
-				((TripleRule) entity).getTrgNodeBlocks().forEach(nb -> {
-					if (collectedTrgNodeBlocks.keySet().contains(nb.getName())) {
-						collectedTrgNodeBlocks.get(nb.getName()).add(nb);
-					} else {
-						var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
-						tmp.add(nb);
-						collectedTrgNodeBlocks.put(nb.getName(), tmp);
-					}
-				});
-				// 2. step: merge nodes and edges
-				var mergedTrgNodes = mergeNodes(entity, refinements, collectedTrgNodeBlocks);
-
-				// 3. step: add merged nodeBlocks to entity
-				((TripleRule) entity).getTrgNodeBlocks().clear();
-				((TripleRule) entity).getTrgNodeBlocks().addAll((mergedTrgNodes));
-
-				// -------------- Correspondences ---------------- //
-				var corrs = new ArrayList<Correspondence>();
-				corrs.addAll(((TripleRule) entity).getCorrespondences());
-				((TripleRule) entity).getSuperRefinementTypes().forEach(s -> corrs
-						.addAll(EcoreUtil.copyAll(((TripleRule) s.getReferencedType()).getCorrespondences())));
-				((TripleRule) entity).getCorrespondences().clear();
-				((TripleRule) entity).getCorrespondences()
-						.addAll(mergeCorrespondences(corrs, mergedSrcNodes, mergedTrgNodes));
-			}
-			// 4. step: merge attribute conditions in rules/patterns(/tripleRules)
-			var collectedAttributeConditions = new ArrayList<AttributeCondition>();
-			collectedAttributeConditions.addAll(dispatcher.getAttributeConditions(entity));
-			for (var s : refinements) {
-				if (s.getReferencedType() instanceof AtomicPattern) {
-					((AtomicPattern) s.getReferencedType()).getAttributeConditions()
-							.forEach(c -> collectedAttributeConditions.add(EcoreUtil.copy(c)));
-				} else {
-					collectedAttributeConditions
-							.addAll(dispatcher.getAttributeConditions((Entity) s.getReferencedType()));
-				}
-			}
-			var mergedAttributeConditions = mergeAttributeConditions(collectedAttributeConditions);
-			dispatcher.getAttributeConditions(entity).clear();
-			mergedAttributeConditions.forEach(c -> dispatcher.getAttributeConditions(entity).add(EcoreUtil.copy(c)));
-
-			if (entity instanceof Pattern) {
-				var atomicPattern = ((Pattern) entity).getBody();
-				((Pattern) entity).setBody(atomicPattern);
-			}
-
-			checkForResolvedProxies(entity);
-		}
-
-		return entity;
-	}
-
-	/**
-	 * Merges the correspondences given in corrs and re-sets the sources and targets
-	 * such that they are the ones from the merging process.
-	 * 
-	 * @param corrs         that have to be merged.
-	 * @param srcNodeBlocks nodes of the new entity.
-	 * @param trgNodeBlocks nodes of the new entity.
-	 * @return List containing the merged correspondences.
-	 */
-	private ArrayList<Correspondence> mergeCorrespondences(ArrayList<Correspondence> corrs,
-			ArrayList<ModelNodeBlock> srcNodeBlocks, ArrayList<ModelNodeBlock> trgNodeBlocks) {
-		var mergedCorrespondences = new ArrayList<Correspondence>();
-
-		for (var c : corrs) {
-			for (var other : corrs) {
-				if (isEqualCorrespondence(c, other)) {
-					continue;
-				} else if (!(mergedCorrespondences.contains(c))) {
-					boolean alreadyIn = false;
-					for (var mergedCorr : mergedCorrespondences) {
-						if (isEqualCorrespondence(c, mergedCorr)) {
-							alreadyIn = true;
-						}
-					}
-					if (!alreadyIn)
-						mergedCorrespondences.add(EcoreUtil.copy(c));
-				}
-			}
-		}
-
-		for (var c : mergedCorrespondences) {
-			// set new src
-			for (var n : srcNodeBlocks) {
-				if (n.getName().equals(c.getSource().getName())) {
-					c.setSource(n);
-					break;
-				}
-			}
-			// set new trg
-			for (var n : trgNodeBlocks) {
-				if (n.getName().equals(c.getTarget().getName())) {
-					c.setTarget(n);
-					break;
-				}
-			}
-		}
-
-		return mergedCorrespondences;
-	}
+	abstract public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames)
+			throws FlattenerException;
 
 	/**
 	 * This method creates all NodeBlocks that have to be imported into the Entity
@@ -234,7 +74,7 @@ public class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if an error occurs during collecting the
 	 *                            nodes, like an infinite loop is detected
 	 */
-	private HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Entity entity,
+	protected HashMap<String, ArrayList<ModelNodeBlock>> collectNodes(Entity entity,
 			EList<RefinementCommand> refinementList, Set<String> alreadyRefinedEntityNames, boolean isSrc)
 			throws FlattenerException {
 		var<String, ArrayList<ModelNodeBlock>> nodeBlocks = new HashMap<String, ArrayList<ModelNodeBlock>>();
@@ -357,7 +197,7 @@ public class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	private ArrayList<ModelNodeBlock> mergeNodes(Entity entity, EList<RefinementCommand> refinementList,
+	protected ArrayList<ModelNodeBlock> mergeNodes(Entity entity, EList<RefinementCommand> refinementList,
 			HashMap<String, ArrayList<ModelNodeBlock>> nodeBlocks) throws FlattenerException {
 		var<ModelNodeBlock> mergedNodes = new ArrayList<ModelNodeBlock>();
 
@@ -892,7 +732,7 @@ public class AbstractEntityFlattener implements IEntityFlattener {
 	 * @param conditionList list of conditions that are to be merged.
 	 * @return list of merged attribute conditions.
 	 */
-	private ArrayList<AttributeCondition> mergeAttributeConditions(ArrayList<AttributeCondition> conditionList) {
+	protected ArrayList<AttributeCondition> mergeAttributeConditions(ArrayList<AttributeCondition> conditionList) {
 		var mergedConditions = new ArrayList<AttributeCondition>();
 
 		for (var c : conditionList) {
@@ -1078,7 +918,7 @@ public class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if a proxy was not resolved during
 	 *                            flattening.
 	 */
-	private void checkForResolvedProxies(Entity entity) throws FlattenerException {
+	protected void checkForResolvedProxies(Entity entity) throws FlattenerException {
 		if (entity instanceof TripleRule) {
 			for (var nb : ((TripleRule) entity).getSrcNodeBlocks()) {
 				for (var relation : nb.getRelations()) {
@@ -1105,6 +945,22 @@ public class AbstractEntityFlattener implements IEntityFlattener {
 		}
 	}
 
+	protected <T extends Entity> void mergeAttributeConditions(T entity, EList<RefinementCommand> refinements) {
+		var collectedAttributeConditions = new ArrayList<AttributeCondition>();
+		collectedAttributeConditions.addAll(dispatcher.getAttributeConditions(entity));
+		for (var s : refinements) {
+			if (s.getReferencedType() instanceof AtomicPattern) {
+				((AtomicPattern) s.getReferencedType()).getAttributeConditions()
+						.forEach(c -> collectedAttributeConditions.add(EcoreUtil.copy(c)));
+			} else {
+				collectedAttributeConditions.addAll(dispatcher.getAttributeConditions((Entity) s.getReferencedType()));
+			}
+		}
+		var mergedAttributeConditions = mergeAttributeConditions(collectedAttributeConditions);
+		dispatcher.getAttributeConditions(entity).clear();
+		mergedAttributeConditions.forEach(c -> dispatcher.getAttributeConditions(entity).add(EcoreUtil.copy(c)));
+	}
+
 	/**
 	 * Checks if the type of a superEntity matches the type of the entity that is to
 	 * be flattened.
@@ -1121,22 +977,5 @@ public class AbstractEntityFlattener implements IEntityFlattener {
 		else if (entity instanceof TripleRule && !(superEntity instanceof TripleRule)
 				|| !(entity instanceof TripleRule) && superEntity instanceof TripleRule)
 			throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, superEntity);
-	}
-
-	/**
-	 * Compares two correspondences.
-	 * 
-	 * @param corr1 first correspondence in comparison.
-	 * @param corr2 second correspondence in comparison.
-	 * @return whether two correspondences are equal or not.
-	 */
-	private boolean isEqualCorrespondence(Correspondence corr1, Correspondence corr2) {
-		return (corr1.getAction() == null && corr2.getAction() == null || (corr1.getAction() != null
-				&& corr2.getAction() != null && corr1.getAction().getOp() == corr2.getAction().getOp()))
-				&& corr1.getSource().getName().equals(corr2.getSource().getName())
-				&& corr1.getTarget().getName().equals(corr2.getTarget().getName())
-				&& corr1.getType().getName().equals(corr2.getType().getName())
-				&& corr1.getType().getSource() == corr2.getType().getSource()
-				&& corr1.getType().getTarget() == corr2.getType().getTarget();
 	}
 }
