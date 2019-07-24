@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.BuiltInType;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
 import org.emoflon.neo.emsl.eMSL.Entity;
@@ -28,6 +27,7 @@ import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
+import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.neo4j.driver.v1.AuthTokens;
@@ -451,6 +451,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) {
+		var flattenedModels = newModels.stream().map(m -> {
+			try {
+				return EMSLFlattener.flatten(m);
+			} catch (FlattenerException e) {
+				e.printStackTrace();
+				return m;
+			}
+		}).collect(Collectors.toList());
+
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
@@ -459,10 +468,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 			// Create nodes and edges in models
 			var mNodes = new HashMap<Model, NodeCommand>();
 			var blockToCommand = new HashMap<ModelNodeBlock, NodeCommand>();
-			for (var newModel : newModels) {
+			for (var newModel : flattenedModels) {
 				handleNodeBlocksInModel(cb, blockToCommand, mNodes, newModel, model);
 			}
-			for (var newModel : newModels) {
+			for (var newModel : flattenedModels) {
 				for (var nb : newModel.getNodeBlocks()) {
 					handleRelationStatementInModel(cb, blockToCommand, nb);
 				}
@@ -471,6 +480,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
+		var flattenedMetamodels = newMetamodels.stream().map(mm -> {
+			try {
+				return EMSLFlattener.flatten(mm);
+			} catch (FlattenerException e) {
+				e.printStackTrace();
+				return mm;
+			}
+		}).collect(Collectors.toList());
+
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
@@ -486,14 +504,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 			// Create metamodel nodes and handle node blocks for all metamodels
 			var mmNodes = new HashMap<Metamodel, NodeCommand>();
 			var blockToCommand = new HashMap<Object, NodeCommand>();
-			for (var metamodel : newMetamodels) {
+			for (var metamodel : flattenedMetamodels) {
 				handleNodeBlocksInMetaModel(cb, neocore, eclass, blockToCommand, mmNodes, metamodel, mmodel, eobject);
 				var mmNode = mmNodes.get(metamodel);
 				handleEnumsInMetamodel(cb, metamodel, mmNode, eenum, eenumLiteral, blockToCommand);
 			}
 
 			// Handle all other features of node blocks
-			for (var metamodel : newMetamodels) {
+			for (var metamodel : flattenedMetamodels) {
 				var mmNode = mmNodes.get(metamodel);
 				for (var nb : metamodel.getNodeBlocks()) {
 					handleRelationStatementInMetaModel(cb, neocore, eref, edatatype, eattribute, blockToCommand, mmNode,
@@ -758,18 +776,12 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	public void exportEMSLEntityToNeo4j(Entity entity) {
-		try {
-			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
-			if (flattenedEntity instanceof Model) {
-				exportModelToNeo4j((Model) flattenedEntity);
-			} else if (flattenedEntity instanceof Metamodel)
-				exportMetamodelToNeo4j((Metamodel) flattenedEntity);
-			else
-				throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
-		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the entity.");
-			e.printStackTrace();
-		}
+		if (entity instanceof Model) {
+			exportModelToNeo4j((Model) entity);
+		} else if (entity instanceof Metamodel)
+			exportMetamodelToNeo4j((Metamodel) entity);
+		else
+			throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
 	}
 
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList
 import java.util.HashMap
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
-import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
@@ -108,9 +108,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def checkFlattening(Entity entity) {
 		try {
 			if (entity instanceof Pattern) {
-				new EMSLFlattener().flattenCopyOfEntity(entity as Pattern, new ArrayList);
+				EMSLFlattener.flatten(entity as Pattern);
 			} else if (entity instanceof Rule) {
-				new EMSLFlattener().flattenCopyOfEntity(entity as Entity, new ArrayList);
+				EMSLFlattener.flatten(entity as Entity);
 			}
 		} catch (FlattenerException e) {
 			if (entity instanceof Pattern) {

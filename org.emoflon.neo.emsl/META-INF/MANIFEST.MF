@@ -21,13 +21,14 @@ Export-Package: org.emoflon.neo.emsl,
  org.emoflon.neo.emsl.eMSL,
  org.emoflon.neo.emsl.eMSL.impl,
  org.emoflon.neo.emsl.eMSL.util,
+ org.emoflon.neo.emsl.formatting2,
  org.emoflon.neo.emsl.generator,
  org.emoflon.neo.emsl.parser.antlr,
  org.emoflon.neo.emsl.parser.antlr.internal,
+ org.emoflon.neo.emsl.refinement,
  org.emoflon.neo.emsl.scoping,
  org.emoflon.neo.emsl.serializer,
  org.emoflon.neo.emsl.services,
  org.emoflon.neo.emsl.util,
- org.emoflon.neo.emsl.validation,
- org.emoflon.neo.emsl.formatting2
+ org.emoflon.neo.emsl.validation
 Import-Package: org.apache.log4j

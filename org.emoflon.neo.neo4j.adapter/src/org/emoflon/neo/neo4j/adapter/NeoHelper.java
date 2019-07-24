@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
-import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
@@ -195,8 +195,7 @@ public class NeoHelper {
 	public AtomicPattern getFlattenedPattern(AtomicPattern ap) {
 
 		try {
-			return ((Pattern) new EMSLFlattener().flattenCopyOfEntity(((Pattern) (ap.eContainer())),
-					new ArrayList<String>())).getBody();
+			return EMSLFlattener.flatten(((Pattern) (ap.eContainer()))).getBody();
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();
@@ -208,7 +207,7 @@ public class NeoHelper {
 	public Pattern getFlattenedPattern(Pattern p) {
 
 		try {
-			return (Pattern) new EMSLFlattener().flattenCopyOfEntity(p, new ArrayList<String>());
+			return EMSLFlattener.flatten(p);
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();

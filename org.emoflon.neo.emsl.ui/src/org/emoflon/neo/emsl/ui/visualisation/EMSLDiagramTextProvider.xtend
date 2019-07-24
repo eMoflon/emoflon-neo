@@ -10,7 +10,7 @@ import org.eclipse.ui.IEditorPart
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.ui.editor.XtextEditor
-import org.emoflon.neo.emsl.EMSLFlattener
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
@@ -203,7 +203,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Model.
 	 */
 	def dispatch String visualiseEntity(Model entity, boolean mainSelection) {
-		var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>())
+		var entityCopy = EMSLFlattener.flatten(entity)
 		'''
 			package "«IF entity.abstract»//«ENDIF»«(entityCopy as Model).name»«IF entity.abstract»//«ENDIF»"«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : entityCopy.nodeBlocks»
@@ -218,7 +218,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInModel(ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((EMSLFlattener.flatten(nodeBlock.eContainer as Entity))))) {
 			if (nodeBlock.name.equals(n.name))
 				node = n
 		}
@@ -399,7 +399,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def dispatch String visualiseEntity(Pattern entity, boolean mainSelection) {
 		try {
-			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
+			var entityCopy = EMSLFlattener.flatten(entity)
 			'''
 				package «IF entity.body.abstract»//«ENDIF»«(entityCopy as Pattern).body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
 				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
@@ -428,7 +428,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInPattern(ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer.eContainer as Entity, new ArrayList<String>()))))) {
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((EMSLFlattener.flatten(nodeBlock.eContainer.eContainer as Entity))))) {
 			if (nodeBlock.name.equals(n.name))
 				node = n
 		}
@@ -524,7 +524,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def dispatch String visualiseEntity(Rule entity, boolean mainSelection) {
 		try {
-			var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, newArrayList)
+			var entityCopy = EMSLFlattener.flatten(entity)
 		'''
 			package «IF entity.abstract»//«ENDIF»«(entityCopy as Rule).name»«IF entity.abstract»//«ENDIF»«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
@@ -552,7 +552,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInRule(ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>()))))) {
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((EMSLFlattener.flatten(nodeBlock.eContainer as Entity))))) {
 			if (nodeBlock.name.equals(n.name))
 				node = n
 		}
@@ -593,7 +593,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInRule2(Rule entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		for (n : (new EntityAttributeDispatcher().getNodeBlocks((new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>()))))) {
+		for (n : (new EntityAttributeDispatcher().getNodeBlocks((EMSLFlattener.flatten(entity))))) {
 			if (nodeBlock.name.equals(n.name))
 				node = n
 		}
@@ -687,7 +687,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
 		var copiesOfConditionPatterns = newArrayList
 		for (p : conditionPattern) {
-			copiesOfConditionPatterns.add(new EMSLFlattener().flattenCopyOfEntity(p.eContainer as Pattern, new ArrayList<String>()))
+			copiesOfConditionPatterns.add(EMSLFlattener.flatten(p.eContainer as Pattern))
 		}
 		'''
 			«FOR c : copiesOfConditionPatterns»
@@ -870,7 +870,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a TripleRule.
 	 */
 	def dispatch String visualiseEntity(TripleRule entity, boolean mainSelection) {
-		var entityCopy = new EMSLFlattener().flattenCopyOfEntity(entity, new ArrayList<String>()) as TripleRule
+		var entityCopy = EMSLFlattener.flatten(entity) as TripleRule
 		'''
 			together {
 				«FOR snb : entityCopy.srcNodeBlocks»
@@ -909,7 +909,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseNodeBlockInTripleRule(TripleRule rule, ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
-		val entityCopy = new EMSLFlattener().flattenCopyOfEntity(nodeBlock.eContainer as Entity, new ArrayList<String>())
+		val entityCopy = EMSLFlattener.flatten(nodeBlock.eContainer as Entity)
 		for (n : (entityCopy as TripleRule).srcNodeBlocks) {
 			if (nodeBlock.name.equals(n.name) && (nodeBlock.eContainer as TripleRule).srcNodeBlocks.contains(nodeBlock))
 				node = n
