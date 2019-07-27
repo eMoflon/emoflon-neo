@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.Action;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
@@ -22,14 +21,11 @@ import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
-import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType;
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget;
-import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
@@ -79,79 +75,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 */
 	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
 			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
-		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
-
-		for (var r : refinementList) {
-
-			if (entity.eClass() != r.getReferencedType().eClass()) {
-				if (!(entity instanceof Pattern && r.getReferencedType() instanceof AtomicPattern)) {
-					throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY,
-							r.getReferencedType());
-				}
-			}
-			checkSuperEntityTypeForCompliance(entity, r.getReferencedType());
-
-			// add current entity to list of names to detect infinite loop
-			var alreadyRefinedEntityNamesCopy = new HashSet<String>();
-			alreadyRefinedEntityNames.forEach(n -> alreadyRefinedEntityNamesCopy.add(n));
-			alreadyRefinedEntityNamesCopy.add(dispatcher.getName(entity));
-
-			// recursively flatten superEntities
-			if (!(r.getReferencedType() instanceof AtomicPattern)
-					|| (r.getReferencedType() instanceof AtomicPattern && r.getReferencedType().eContainer() != null)) {
-				var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
-
-				Entity flattenedSuperEntity;
-				if (r.getReferencedType() instanceof AtomicPattern) {
-					flattenedSuperEntity = (flatten((Entity) r.getReferencedType().eContainer(),
-							alreadyRefinedEntityNamesCopy));
-				} else {
-					flattenedSuperEntity = (flatten((Entity) r.getReferencedType(), alreadyRefinedEntityNamesCopy));
-				}
-
-				// check if a superEntity possesses a condition block
-				if (r.getReferencedType() instanceof AtomicPattern
-						&& ((Pattern) r.getReferencedType().eContainer()).getCondition() != null
-						|| r.getReferencedType() instanceof Rule
-								&& ((Rule) r.getReferencedType()).getCondition() != null
-						|| r.getReferencedType() instanceof TripleRule
-								&& !((TripleRule) r.getReferencedType()).getNacs().isEmpty()) {
-					throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION,
-							r.getReferencedType());
-				}
-
-				if (flattenedSuperEntity != null) {
-					EList<ModelNodeBlock> nodeBlocksOfFlattenedSuperEntity = null;
-
-					if (!(entity instanceof TripleRule)) {
-						nodeBlocksOfFlattenedSuperEntity = dispatcher.getNodeBlocks(flattenedSuperEntity);
-					} else if (entity instanceof TripleRule && isSrc)
-						nodeBlocksOfFlattenedSuperEntity = ((TripleRule) flattenedSuperEntity).getSrcNodeBlocks();
-					else if (entity instanceof TripleRule && !isSrc) {
-						nodeBlocksOfFlattenedSuperEntity = ((TripleRule) flattenedSuperEntity).getTrgNodeBlocks();
-					}
-
-					for (var nb : nodeBlocksOfFlattenedSuperEntity) {
-
-						// create new NodeBlock
-						var newNb = copyModelNodeBlock(nb, r);
-
-						// add nodeBlock to list according to its name
-						if (!nodeBlocks.containsKey(newNb.getName())) {
-							var<ModelNodeBlock> newList = new ArrayList<ModelNodeBlock>();
-							newList.add(newNb);
-							nodeBlocks.put(newNb.getName(), newList);
-						} else {
-							nodeBlocks.get(newNb.getName()).add(newNb);
-						}
-						nodeBlocksOfSuperEntity.add(newNb);
-					}
-
-					reAdjustTargetsOfEdges(nodeBlocksOfSuperEntity, r);
-				}
-			}
-		}
-		return nodeBlocks;
+		return null;
 	}
 
 	/**
@@ -165,7 +89,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 *                                for nodes.
 	 * @return list of nodes with their relations' targets correctly referenced.
 	 */
-	private ArrayList<ModelNodeBlock> reAdjustTargetsOfEdges(ArrayList<ModelNodeBlock> nodeBlocksOfSuperEntity,
+	protected ArrayList<ModelNodeBlock> reAdjustTargetsOfEdges(ArrayList<ModelNodeBlock> nodeBlocksOfSuperEntity,
 			RefinementCommand r) {
 		for (var nb : nodeBlocksOfSuperEntity) {
 			for (var rel : nb.getRelations()) {
@@ -272,7 +196,6 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 			newNb.setType(nodeBlockTypeQueue.peek());
 			newNb.setName(name);
-			newNb.setAction(mergeActionOfNodes(blocksWithKey));
 
 			mergedNodes.add(newNb);
 		}
@@ -288,7 +211,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @param nodes list of nodes that provide actions must be merged
 	 * @return an action if a merged action can be determined, null if not
 	 */
-	private Action mergeActionOfNodes(List<ModelNodeBlock> nodes) {
+	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes) {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -324,7 +247,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	private List<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, Map<String, List<ModelNodeBlock>> nodeBlocks,
+	protected List<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, Map<String, List<ModelNodeBlock>> nodeBlocks,
 			List<ModelNodeBlock> mergedNodes) throws FlattenerException {
 
 		// collect all edges in hashmap; first key is type name, second is target name
@@ -392,15 +315,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					newRelType.setType((edges.get(typename).get(targetname).get(0).getTypes().get(0).getType()));
 					// collect all types of the edges that are to be merged (should be one type each
 					// in this case) to merge the bounds
-					var typesOfEdges = new ArrayList<ModelRelationStatementType>();
-					for (var e : edges.get(typename).get(targetname)) {
-						typesOfEdges.addAll(e.getTypes());
-					}
-					var bounds = mergeModelRelationStatementPathLimits(entity, typesOfEdges);
-					if (bounds != null) {
-						newRelType.setLower(bounds[0].toString());
-						newRelType.setUpper(bounds[1].toString());
-					}
+					
 					newRel.getTypes().add(newRelType);
 					mergedNodes.forEach(nb -> {
 						if (nb.getName().equals(targetname)) {
@@ -412,65 +327,18 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					});
 				}
 			}
-
-			// ------------ edges with multiple types ------------- //
-
-			for (var n : namedEdges.keySet()) {
-				var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
-				newRel.setName(n);
-
-				var intersection = new ArrayList<MetamodelRelationStatement>();
-				namedEdges.get(n).get(0).getTypes().forEach(t -> intersection.add(t.getType()));
-				for (var e : namedEdges.get(n)) {
-					var typesOfOther = new ArrayList<MetamodelRelationStatement>();
-					e.getTypes().forEach(t -> typesOfOther.add(t.getType()));
-					intersection.retainAll(typesOfOther);
-				}
-
-				if (intersection.isEmpty())
-					throw new FlattenerException(entity,
-							FlattenerErrorType.NO_INTERSECTION_IN_MODEL_RELATION_STATEMENT_TYPE_LIST);
-
-				for (var t : intersection) {
-					// create new ModelRelationStatementType for each remaining type
-					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
-					newRelType.setType(t);
-					newRel.getTypes().add(newRelType);
-
-					var typesOfEdges = new ArrayList<ModelRelationStatementType>();
-					for (var e : namedEdges.get(n)) {
-						for (var tmp : e.getTypes()) {
-							if (t == tmp.getType()) {
-								typesOfEdges.add(tmp);
-							}
-						}
-					}
-					var bounds = mergeModelRelationStatementPathLimits(entity, typesOfEdges);
-					if (bounds != null) {
-						newRelType.setLower(bounds[0].toString());
-						newRelType.setUpper(bounds[1].toString());
-					}
-				}
-
-				// merge statements and check statements for compliance
-				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity));
-
-				// check and merge action
-				newRel.setAction(mergeActionOfRelations(namedEdges.get(n)));
-
-				mergedNodes.forEach(nb -> {
-					if (nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
-						newRel.setTarget(nb);
-					}
-					if (nb.getName().equals(name)) {
-						nb.getRelations().add(newRel);
-					}
-				});
-			}
 		}
 
-		// ----------------- remove double edges ----------------- //
-
+		return removeDuplicateEdges(mergedNodes);
+	}
+	
+	/**
+	 * Iterates over all NodeBlocks given in mergedNodes and removes any
+	 * edges that appear twice in a node.
+	 * @param mergedNodes that are to be checked for duplicate edges.
+	 * @return list with nodes with their edges removed.
+	 */
+	protected List<ModelNodeBlock> removeDuplicateEdges(List<ModelNodeBlock> mergedNodes) {
 		for (var nb : mergedNodes) {
 			var duplicates = new ArrayList<ModelRelationStatement>();
 			for (var relation : nb.getRelations()) {
@@ -495,7 +363,6 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					relation.setName(null);
 			}
 		}
-
 		return mergedNodes;
 	}
 
@@ -507,7 +374,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @return HashSet containing the merged ModelPropertyStatements.
 	 * @throws FlattenerException is thrown if two properties are not mergeable.
 	 */
-	private HashSet<ModelPropertyStatement> collectAndMergePropertyStatementsOfRelations(
+	protected HashSet<ModelPropertyStatement> collectAndMergePropertyStatementsOfRelations(
 			ArrayList<ModelRelationStatement> edges, Entity entity) throws FlattenerException {
 		var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
 		var mergedProperties = new HashSet<ModelPropertyStatement>();
@@ -567,7 +434,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @param targetname parameter to decide which edges have to be merged.
 	 * @return Action that is the result of the merging of all edges' actions.
 	 */
-	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges) {
+	protected Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges) {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -592,68 +459,6 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	}
 
 	/**
-	 * This method merges the lower and upper lengths of simple paths in
-	 * ModelRelationStatementTypes. The result is the maximum of the lower and the
-	 * minimum of the upper limits.
-	 * 
-	 * @param entity that is to be flattened.
-	 * @param types  whose lower and upper limits must be merged.
-	 * @return Array of two values representing the new lower and upper path
-	 *         lengths.
-	 * @throws FlattenerException is thrown if the lower limit of the path length is
-	 *                            greater than the upper limit (does not make
-	 *                            sense).
-	 */
-	private Object[] mergeModelRelationStatementPathLimits(Entity entity, ArrayList<ModelRelationStatementType> types)
-			throws FlattenerException {
-		var bounds = new Object[2];
-		bounds[0] = 1;
-		bounds[1] = "*";
-
-		boolean empty = true;
-		for (var t : types) {
-			if (t.getLower() != null && t.getUpper() != null) {
-				empty = false;
-			}
-		}
-		if (empty)
-			return null;
-
-		for (var t : types) {
-			if (t.getLower() != null && t.getUpper() != null) {
-				try {
-					if (Integer.parseInt(t.getLower()) > Integer.parseInt(bounds[0].toString())) {
-						bounds[0] = Integer.parseInt(t.getLower());
-					}
-				} catch (NumberFormatException e) {
-					if (t.getLower().equals("*") && !bounds[0].equals("*")) {
-						bounds[0] = "*";
-					}
-				}
-				try {
-					if (Integer.parseInt(t.getUpper()) < Integer.parseInt(bounds[1].toString())) {
-						bounds[1] = Integer.parseInt(t.getUpper());
-					}
-				} catch (NumberFormatException e) {
-					if (!t.getUpper().equals("*") && bounds[1].equals("*")) {
-						bounds[1] = Integer.parseInt(t.getUpper());
-					}
-				}
-			}
-			if (bounds[0] instanceof Integer) {
-				if (bounds[1] instanceof Integer && (int) bounds[0] > (int) bounds[1]) {
-					// lower bound is greater than upper => does not make sense => exception
-					throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, t);
-				}
-			} else if (bounds[0].equals("*") && !bounds[1].equals("*")) {
-				throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, t);
-			}
-		}
-
-		return bounds;
-	}
-
-	/**
 	 * This method merges the ModelPropertyStatements of NodeBlocks. Throws an error
 	 * if the operator, value or type of the statements that are to merged are not
 	 * equal.
@@ -666,7 +471,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	private List<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(Entity entity,
+	protected List<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(Entity entity,
 			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes) throws FlattenerException {
 		for (var name : nodeBlocks.keySet()) {
 			var nodeBlocksWithKey = nodeBlocks.get(name);
@@ -835,7 +640,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @return The newly created NodeBlock based on the NodeBlock passed as
 	 *         parameter.
 	 */
-	private ModelNodeBlock copyModelNodeBlock(ModelNodeBlock nb, RefinementCommand refinement) {
+	protected ModelNodeBlock copyModelNodeBlock(ModelNodeBlock nb, RefinementCommand refinement) {
 		var newNb = EcoreUtil.copy(nb);
 
 		// apply relabeling
