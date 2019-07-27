@@ -12,7 +12,7 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 
 public class EMSLFlattener<T extends Entity> {
 	private T entity;
-	private IEntityFlattener flattener;
+	private AbstractEntityFlattener flattener;
 
 	private EMSLFlattener(T originalEntity) {
 		entity = EcoreUtil.copy(originalEntity);

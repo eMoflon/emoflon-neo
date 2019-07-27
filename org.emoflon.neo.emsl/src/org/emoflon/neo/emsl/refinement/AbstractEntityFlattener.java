@@ -19,7 +19,6 @@ import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget;
-import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -38,7 +37,7 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-public abstract class AbstractEntityFlattener implements IEntityFlattener {
+public abstract class AbstractEntityFlattener {
 	protected EntityAttributeDispatcher dispatcher;
 
 	AbstractEntityFlattener() {
@@ -55,7 +54,6 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	 * @return the flattened entity.
 	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	@Override
 	abstract public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames)
 			throws FlattenerException;
 
@@ -718,23 +716,5 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 		var mergedAttributeConditions = mergeAttributeConditions(collectedAttributeConditions);
 		dispatcher.getAttributeConditions(entity).clear();
 		mergedAttributeConditions.forEach(c -> dispatcher.getAttributeConditions(entity).add(EcoreUtil.copy(c)));
-	}
-
-	/**
-	 * Checks if the type of a superEntity matches the type of the entity that is to
-	 * be flattened.
-	 * 
-	 * @param entity      that is to be flattened.
-	 * @param superEntity that is to be refined.
-	 * @throws FlattenerException is thrown if the type of superEntity is not
-	 *                            supported.
-	 */
-	protected void checkSuperEntityTypeForCompliance(Entity entity, SuperType superEntity) throws FlattenerException {
-		if (entity instanceof Metamodel && !(superEntity instanceof Metamodel)
-				|| !(entity instanceof Metamodel) && superEntity instanceof Metamodel)
-			throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, superEntity);
-		else if (entity instanceof TripleRule && !(superEntity instanceof TripleRule)
-				|| !(entity instanceof TripleRule) && superEntity instanceof TripleRule)
-			throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY, superEntity);
 	}
 }
