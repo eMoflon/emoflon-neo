@@ -474,15 +474,6 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private void exportMetamodelsToNeo4j(List<Metamodel> newMetamodels) {
-		var flattenedMetamodels = newMetamodels.stream().map(mm -> {
-			try {
-				return EMSLFlattener.flatten(mm);
-			} catch (FlattenerException e) {
-				e.printStackTrace();
-				return mm;
-			}
-		}).collect(Collectors.toList());
-
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
@@ -498,14 +489,14 @@ public class NeoCoreBuilder implements AutoCloseable {
 			// Create metamodel nodes and handle node blocks for all metamodels
 			var mmNodes = new HashMap<Metamodel, NodeCommand>();
 			var blockToCommand = new HashMap<Object, NodeCommand>();
-			for (var metamodel : flattenedMetamodels) {
+			for (var metamodel : newMetamodels) {
 				handleNodeBlocksInMetaModel(cb, neocore, eclass, blockToCommand, mmNodes, metamodel, mmodel, eobject);
 				var mmNode = mmNodes.get(metamodel);
 				handleEnumsInMetamodel(cb, metamodel, mmNode, eenum, eenumLiteral, blockToCommand);
 			}
 
 			// Handle all other features of node blocks
-			for (var metamodel : flattenedMetamodels) {
+			for (var metamodel : newMetamodels) {
 				var mmNode = mmNodes.get(metamodel);
 				for (var nb : metamodel.getNodeBlocks()) {
 					handleRelationStatementInMetaModel(cb, neocore, eref, edatatype, eattribute, blockToCommand, mmNode,
