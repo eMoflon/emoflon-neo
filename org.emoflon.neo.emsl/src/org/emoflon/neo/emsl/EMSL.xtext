@@ -105,7 +105,7 @@ MultiplicityValue:
 	INT | "*";
 
 enum RelationKind:
-	REFERENCE='-' | AGGREGATION='<>-' | KOMPOSITION='<+>-';
+	REFERENCE='-' | AGGREGATION='<>-' | COMPOSITION='<+>-';
 
 Enum:
 	'enum' name=QualifiedName '{'

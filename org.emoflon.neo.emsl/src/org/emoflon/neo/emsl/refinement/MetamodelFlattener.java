@@ -1,18 +1,21 @@
 package org.emoflon.neo.emsl.refinement;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.MetamodelRefinementCommand;
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
@@ -21,154 +24,173 @@ public class MetamodelFlattener extends AbstractEntityFlattener implements IEnti
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Entity> T flatten(T t, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
-		Metamodel entity = (Metamodel) t;
-		if (entity != null) {
+		// Sanity checks
+		forbidNullEntity(t);
+		forbidRefinementLoops(t, alreadyRefinedEntityNames);
 
-			var refinements = (EList<MetamodelRefinementCommand>) dispatcher.getSuperRefinementTypes(entity);
+		// 0. Make a copy
+		Metamodel entity = (Metamodel) EcoreUtil.copy(t);
 
-			// check for loop in refinements
-			// if none has been found, add current name to list
-			if (alreadyRefinedEntityNames.contains(dispatcher.getName(entity)))
-				throw new FlattenerException(entity, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedEntityNames);
+		// 1. Recursively flatten all parents
+		var allFlattenedParents = flattenTransitiveParents(entity, alreadyRefinedEntityNames);
 
-			// check if anything has to be done, if not return
-			if (refinements.isEmpty())
-				return (T) entity;
+		// 2. Build a union of all inherited elements
+		var union = union(allFlattenedParents, entity);
 
-			// 1. step: collect nodes with edges
-			var collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedEntityNames);
-			dispatcher.getMetamodelNodeBlocks(entity).forEach(nb -> {
-				if (collectedNodeBlocks.keySet().contains(nb.getName())) {
-					collectedNodeBlocks.get(nb.getName()).add(nb);
-				} else {
-					var tmp = new ArrayList<MetamodelNodeBlock>();
-					tmp.add(nb);
-					collectedNodeBlocks.put(nb.getName(), tmp);
-				}
-			});
+		// 3. step: merge nodes and edges
+		var merge = merge(union);
 
-			// 2. step: merge nodes and edges
-			var mergedNodes = mergeNodes(entity, refinements, collectedNodeBlocks);
-
-			// 3. step: add merged nodeBlocks to entity
-			dispatcher.getMetamodelNodeBlocks(entity).clear();
-			dispatcher.getMetamodelNodeBlocks(entity).addAll((mergedNodes));
-
-			// TODO: This has to be implemented for metamodels
-			checkForResolvedProxies(entity);
-		}
-
-		return (T) entity;
+		return (T) merge;
 	}
 
-	private Map<String, List<MetamodelNodeBlock>> collectNodes(Metamodel entity,
-			EList<MetamodelRefinementCommand> refinementList, Set<String> alreadyRefinedEntityNames)
+	private <T extends Entity> void forbidNullEntity(T t) {
+		if (t == null)
+			throw new IllegalArgumentException("I can't flatten a null entity!");
+	}
+
+	private <T extends Entity> void forbidRefinementLoops(T t, Set<String> alreadyRefinedEntityNames)
 			throws FlattenerException {
-		var nodeBlocks = new HashMap<String, List<MetamodelNodeBlock>>();
-
-		for (var r : refinementList) {
-			checkSuperEntityTypeForCompliance(entity, r.getReferencedType());
-
-			// add current entity to list of names
-			var alreadyRefinedEntityNamesCopy = new HashSet<String>();
-			alreadyRefinedEntityNames.forEach(n -> alreadyRefinedEntityNamesCopy.add(n));
-			alreadyRefinedEntityNamesCopy.add(dispatcher.getName(entity));
-
-			// recursively flatten superEntities
-			var nodeBlocksOfSuperEntity = new ArrayList<MetamodelNodeBlock>();
-
-			Metamodel flattenedSuperEntity = flatten((Metamodel) r.getReferencedType(), alreadyRefinedEntityNamesCopy);
-
-			if (flattenedSuperEntity != null) {
-				var nodeBlocksOfFlattenedSuperEntity = dispatcher.getMetamodelNodeBlocks(flattenedSuperEntity);
-
-				for (var nb : nodeBlocksOfFlattenedSuperEntity) {
-					// create new NodeBlock
-					var newNb = copyMetamodelNodeBlock(nb, r);
-
-					// add nodeBlock to list according to its name
-					if (!nodeBlocks.containsKey(newNb.getName())) {
-						var newList = new ArrayList<MetamodelNodeBlock>();
-						newList.add(newNb);
-						nodeBlocks.put(newNb.getName(), newList);
-					} else {
-						nodeBlocks.get(newNb.getName()).add(newNb);
-					}
-					nodeBlocksOfSuperEntity.add(newNb);
-				}
-
-				// re-set targets of edges
-				for (var nb : nodeBlocksOfSuperEntity) {
-					for (var rel : nb.getRelations()) {
-						boolean targetSet = false;
-						if (targetSet)
-							break;
-						for (var ref : r.getRelabeling()) {
-							if (targetSet)
-								break;
-							if ((rel.getTarget() != null && ref.getOldLabel().equals(rel.getTarget().getName()))
-									|| rel.getProxyTarget() != null && ref.getOldLabel().equals(rel.getProxyTarget())) {
-								for (var node : nodeBlocksOfSuperEntity) {
-									if (ref.getNewLabel() != null && ref.getNewLabel().equals(node.getName())) {
-										rel.setTarget(node);
-										targetSet = true;
-										break;
-									}
-								}
-							} else {
-								for (var node : nodeBlocksOfSuperEntity) {
-									if (rel.getTarget() != null && rel.getTarget().getName().equals(node.getName())
-											|| (rel.getProxyTarget() != null
-													&& rel.getProxyTarget().equals(node.getName()))) {
-										rel.setTarget(node);
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return nodeBlocks;
+		if (alreadyRefinedEntityNames.contains(dispatcher.getName(t)))
+			throw new FlattenerException(t, FlattenerErrorType.INFINITE_LOOP, alreadyRefinedEntityNames);
 	}
 
-	private MetamodelNodeBlock copyMetamodelNodeBlock(MetamodelNodeBlock nb, MetamodelRefinementCommand refinement) {
-		var newNb = EcoreUtil.copy(nb);
+	private Map<MetamodelRefinementCommand, Metamodel> flattenTransitiveParents(Metamodel entity,
+			Set<String> alreadyRefinedEntityNames) {
+		var refComandToParent = new HashMap<MetamodelRefinementCommand, Metamodel>();
+		for (var refinementCommand : entity.getSuperRefinementTypes()) {
+			try {
+				alreadyRefinedEntityNames.add(entity.getName());
+				var flatParent = flatten((Metamodel) refinementCommand.getReferencedType(),
+						new HashSet<String>(alreadyRefinedEntityNames));
+				refComandToParent.put(refinementCommand, flatParent);
+			} catch (FlattenerException e) {
+				e.printStackTrace();
+			}
+		}
 
-		// apply relabeling
-		if (refinement.getRelabeling() != null) {
-			for (var r : refinement.getRelabeling()) {
-				if (r.getOldLabel() != null && nb.getName().equals(r.getOldLabel())) {
-					newNb.setName(r.getNewLabel());
-					break;
+		return refComandToParent;
+	}
+
+	private Metamodel union(Map<MetamodelRefinementCommand, Metamodel> allFlattenedParents, Metamodel entity) {
+		for (var flatParent : allFlattenedParents.entrySet()) {
+			applyRelabeling(flatParent.getKey(), flatParent.getValue());
+			entity.getNodeBlocks().addAll(flatParent.getValue().getNodeBlocks());
+			entity.getEnums().addAll(flatParent.getValue().getEnums());
+		}
+
+		return entity;
+	}
+
+	private void applyRelabeling(MetamodelRefinementCommand command, Metamodel metamodel) {
+		for (var nodeBlock : metamodel.getNodeBlocks()) {
+			for (var relabelling : command.getRelabeling()) {
+				if (relabelling.getOldLabel().equals(nodeBlock.getName())) {
+					nodeBlock.setName(relabelling.getNewLabel());
+				}
+			}
+		}
+	}
+
+	private Metamodel merge(Metamodel union) throws FlattenerException {
+		return mergeReferences(mergeInheritanceEdges(mergeNodes(union)));
+	}
+
+	private Metamodel mergeNodes(Metamodel union) {
+		var merge = EMSLFactory.eINSTANCE.createMetamodel();
+		merge.setName(union.getName());
+		merge.setAbstract(union.isAbstract());
+		merge.getEnums().addAll(union.getEnums());
+
+		var nameToBlocks = new HashMap<String, List<MetamodelNodeBlock>>();
+		union.getNodeBlocks().forEach(nb -> {
+			nameToBlocks.putIfAbsent(nb.getName(), new ArrayList<>());
+			nameToBlocks.get(nb.getName()).add(nb);
+		});
+
+		for (var entry : nameToBlocks.entrySet()) {
+			var newBlock = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
+			merge.getNodeBlocks().add(newBlock);
+			newBlock.setName(entry.getKey());
+			newBlock.setAbstract(entry.getValue().stream()//
+					.anyMatch(nb -> nb.isAbstract() != true));
+			for (var nb : entry.getValue()) {
+				newBlock.getProperties().addAll(nb.getProperties());
+				newBlock.getRelations().addAll(nb.getRelations());
+				newBlock.getSuperTypes().addAll(nb.getSuperTypes());
+			}
+		}
+
+		return merge;
+	}
+
+	private Metamodel mergeInheritanceEdges(Metamodel union) {
+		for (var nb : union.getNodeBlocks()) {
+			var superTypes = nb.getSuperTypes().stream()//
+					.map(st -> st.getName())//
+					.collect(Collectors.toSet());
+			nb.getSuperTypes().clear();
+			for (var ref : superTypes) {
+				for (var snb : union.getNodeBlocks()) {
+					if (snb.getName().equals(ref))
+						nb.getSuperTypes().add(snb);
 				}
 			}
 		}
 
-		// add relations to new nodeblock
-		for (var rel : nb.getRelations()) {
-			var newRel = EcoreUtil.copy(rel);
-			// apply relabeling
-			for (var relabeling : refinement.getRelabeling()) {
-				if (relabeling.getOldLabel().equals(rel.getName()))
-					newRel.setName(relabeling.getNewLabel());
-			}
-			newNb.getRelations().add(newRel);
-		}
-
-		// add properties to new nodeblock
-		for (var prop : nb.getProperties()) {
-			newNb.getProperties().add(EcoreUtil.copy(prop));
-		}
-
-		return newNb;
+		return union;
 	}
 
-	private List<MetamodelNodeBlock> mergeNodes(Metamodel entity, List<MetamodelRefinementCommand> refinements,
-			Map<String, List<MetamodelNodeBlock>> collectedNodeBlocks) {
-		// TODO Auto-generated method stub
-		return null;
+	private Metamodel mergeReferences(Metamodel union) throws FlattenerException {
+		for (var nb : union.getNodeBlocks()) {
+			var nameToRelations = new HashMap<String, List<MetamodelRelationStatement>>();
+			for (var rel : nb.getRelations()) {
+				nameToRelations.putIfAbsent(rel.getName(), new ArrayList<MetamodelRelationStatement>());
+				nameToRelations.get(rel.getName()).add(rel);
+			}
+			nb.getRelations().clear();
+			for (var relations : nameToRelations.entrySet()) {
+				var mergedRel = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
+				mergedRel.setName(relations.getKey());
+
+				var lower = relations.getValue().stream()//
+						.map(r -> r.getLower())//
+						.max(Comparator.comparingInt(v -> Integer.valueOf(v)));
+
+				mergedRel.setLower(lower.orElseThrow());
+
+				var upper = relations.getValue().stream()//
+						.map(r -> r.getUpper())//
+						.min(Comparator.comparingInt(v -> Integer.valueOf(v)));
+
+				mergedRel.setUpper(upper.orElseThrow());
+
+				var targets = relations.getValue().stream()//
+						.map(r -> r.getTarget().getName())//
+						.collect(Collectors.toSet());
+
+				if (targets.size() != 1) {
+					throw new FlattenerException(union, FlattenerErrorType.CONFLICTING_REFERENCES);
+				} else {
+					for (var target : union.getNodeBlocks()) {
+						if (targets.contains(target.getName()))
+							mergedRel.setTarget(target);
+					}
+				}
+
+				var kind = relations.getValue().stream()//
+						.map(r -> r.getKind())//
+						.max(Comparator.comparingInt(k -> k.getValue()));
+
+				mergedRel.setKind(kind.orElseThrow());
+
+				for (var r : relations.getValue()) {
+					mergedRel.getProperties().addAll(r.getProperties());
+				}
+
+				nb.getRelations().add(mergedRel);
+			}
+		}
+
+		return union;
 	}
 }

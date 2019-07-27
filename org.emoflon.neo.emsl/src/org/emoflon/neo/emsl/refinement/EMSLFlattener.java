@@ -16,7 +16,10 @@ public class EMSLFlattener<T extends Entity> {
 	private IEntityFlattener flattener;
 
 	private EMSLFlattener(T originalEntity) {
+		// FIXME[Anjorin] No need to copy if this is done in flatteners
+		// entity = originalEntity;
 		entity = EcoreUtil.copy(originalEntity);
+
 		if (entity instanceof TripleRule)
 			flattener = new TripleRuleFlattener();
 		else if (entity instanceof Model)

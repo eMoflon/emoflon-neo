@@ -330,12 +330,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForClass(sup)» <|-- «labelForClass(nb)»
 			«ENDFOR»
 			«FOR ref : nb.relations»
-				«labelForClass(nb)» «IF ref.kind == RelationKind.KOMPOSITION»*«ENDIF»«IF ref.kind == RelationKind.AGGREGATION»o«ENDIF»--> «IF ref.lower !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.target !== null»«labelForClass(ref.target)»«ELSE»"?"«ENDIF» : «IF ref.name !== null»«ref.name»«ELSE»?«ENDIF»
+				«labelForClass(nb)» «IF ref.kind == RelationKind.COMPOSITION»*«ENDIF»«IF ref.kind == RelationKind.AGGREGATION»o«ENDIF»--> «IF ref.lower !== null»«visualiseMultiplicity(ref)»«ENDIF» «IF ref.target !== null»«labelForClass(ref.target)»«ELSE»"?"«ENDIF» : «IF ref.name !== null»«ref.name»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Metamodel).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForClass(incoming)» «IF incomingRef.kind == RelationKind.KOMPOSITION»*«ENDIF»«IF incomingRef.kind == RelationKind.AGGREGATION»o«ENDIF»--> «IF incomingRef.lower !== null»«visualiseMultiplicity(incomingRef)»«ENDIF» «labelForClass(nb)» : «IF (incomingRef.name !== null)»«incomingRef.name»«ELSE»?«ENDIF»
+						«labelForClass(incoming)» «IF incomingRef.kind == RelationKind.COMPOSITION»*«ENDIF»«IF incomingRef.kind == RelationKind.AGGREGATION»o«ENDIF»--> «IF incomingRef.lower !== null»«visualiseMultiplicity(incomingRef)»«ENDIF» «labelForClass(nb)» : «IF (incomingRef.name !== null)»«incomingRef.name»«ELSE»?«ENDIF»
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
