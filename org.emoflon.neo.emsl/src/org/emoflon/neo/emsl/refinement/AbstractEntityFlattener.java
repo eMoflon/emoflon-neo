@@ -31,7 +31,6 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.eMSL.SuperType;
-import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.eMSL.Value;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
@@ -676,27 +675,10 @@ public abstract class AbstractEntityFlattener {
 	 *                            flattening.
 	 */
 	protected void checkForResolvedProxies(Entity entity) throws FlattenerException {
-		if (entity instanceof TripleRule) {
-			for (var nb : ((TripleRule) entity).getSrcNodeBlocks()) {
-				for (var relation : nb.getRelations()) {
-					if (!(relation.getTarget() instanceof ModelNodeBlock)) {
-						throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
-					}
-				}
-			}
-			for (var nb : ((TripleRule) entity).getTrgNodeBlocks()) {
-				for (var relation : nb.getRelations()) {
-					if (!(relation.getTarget() instanceof ModelNodeBlock)) {
-						throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
-					}
-				}
-			}
-		} else {
-			for (var nb : dispatcher.getNodeBlocks(entity)) {
-				for (var relation : nb.getRelations()) {
-					if (!(relation.getTarget() instanceof ModelNodeBlock)) {
-						throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
-					}
+		for (var nb : dispatcher.getNodeBlocks(entity)) {
+			for (var relation : nb.getRelations()) {
+				if (!(relation.getTarget() instanceof ModelNodeBlock)) {
+					throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
 				}
 			}
 		}

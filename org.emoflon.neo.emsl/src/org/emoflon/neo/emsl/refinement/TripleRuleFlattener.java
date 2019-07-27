@@ -291,4 +291,24 @@ public class TripleRuleFlattener extends RuleFlattener {
 				&& corr1.getType().getSource() == corr2.getType().getSource()
 				&& corr1.getType().getTarget() == corr2.getType().getTarget();
 	}
+
+	@Override
+	protected void checkForResolvedProxies(Entity entity) throws FlattenerException {
+		var tripleRule = (TripleRule) entity;
+		for (var nb : tripleRule.getSrcNodeBlocks()) {
+			for (var relation : nb.getRelations()) {
+				if (!(relation.getTarget() instanceof ModelNodeBlock)) {
+					throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
+				}
+			}
+		}
+
+		for (var nb : tripleRule.getTrgNodeBlocks()) {
+			for (var relation : nb.getRelations()) {
+				if (!(relation.getTarget() instanceof ModelNodeBlock)) {
+					throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_PROXY, relation);
+				}
+			}
+		}
+	}
 }
