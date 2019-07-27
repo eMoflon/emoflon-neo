@@ -2,7 +2,7 @@ package org.emoflon.neo.emsl.refinement;
 
 import java.util.Set;
 
-import org.emoflon.neo.emsl.eMSL.Entity;
+import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
 public abstract class AbstractEntityFlattener {
@@ -16,6 +16,6 @@ public abstract class AbstractEntityFlattener {
 	 * @return the flattened entity.
 	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	abstract public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames)
+	abstract public SuperType flatten(SuperType entity, Set<String> alreadyRefinedEntityNames)
 			throws FlattenerException;
 }

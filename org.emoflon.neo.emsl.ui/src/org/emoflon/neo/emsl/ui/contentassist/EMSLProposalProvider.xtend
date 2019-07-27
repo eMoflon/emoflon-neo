@@ -3,23 +3,23 @@
  */
 package org.emoflon.neo.emsl.ui.contentassist
 
+import java.util.HashSet
+import org.eclipse.core.resources.IFile
+import org.eclipse.core.resources.IResource
+import org.eclipse.core.resources.IResourceVisitor
+import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.CoreException
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.Assignment
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
-import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.SuperType
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
-import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.resources.IResourceVisitor
-import org.eclipse.core.resources.IResource
-import org.eclipse.core.runtime.CoreException
-import org.eclipse.core.resources.IFile
-import java.util.HashSet
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -31,7 +31,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			EObject entity, Assignment assignment, 
   			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		if ((entity as RefinementCommand).referencedType.eContainer instanceof Pattern) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(EcoreUtil.copy((entity as RefinementCommand).referencedType.eContainer as Pattern) as Pattern))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(EcoreUtil.copy((entity as RefinementCommand).referencedType)))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 				for (relation : nb.relations){
 					if (relation.name !== null) {
@@ -40,7 +40,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 				}
 			}
 		} else {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(EcoreUtil.copy((entity as RefinementCommand).referencedType) as Entity))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(EcoreUtil.copy((entity as RefinementCommand).referencedType)))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 				for (relation : nb.relations){
 					if (relation.name !== null) {
@@ -68,13 +68,13 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			
 		super.completeModelRelationStatement_Target(entity, assignment, context, acceptor)
 		if (entity.eContainer.eContainer instanceof AtomicPattern) {
-			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer.eContainer as Entity)) {
+			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer as SuperType)) {
 				for (relabeling : (refinement as RefinementCommand).relabeling) {
 					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
 				}
 			}
 		} else {
-			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer as Entity)) {
+			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer as SuperType)) {
 				for (relabeling : (refinement as RefinementCommand).relabeling) {
 					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
 				}
@@ -88,11 +88,11 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		
 		super.completeModelNodeBlock_Name(entity, assignment, context, acceptor)
 		if (entity instanceof AtomicPattern) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(entity.eContainer as Entity))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(entity))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 			}
 		} else {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(entity as Entity))) {
+			for (nb : new EntityAttributeDispatcher().getNodeBlocks(EMSLFlattener.flatten(entity as SuperType))) {
 				acceptor.accept(createCompletionProposal(nb.name, context))
 			}
 		}

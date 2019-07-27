@@ -447,7 +447,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 	private void exportModelsToNeo4j(List<Model> newModels) {
 		var flattenedModels = newModels.stream().map(m -> {
 			try {
-				return EMSLFlattener.flatten(m);
+				return (Model) EMSLFlattener.flatten(m);
 			} catch (FlattenerException e) {
 				e.printStackTrace();
 				return m;

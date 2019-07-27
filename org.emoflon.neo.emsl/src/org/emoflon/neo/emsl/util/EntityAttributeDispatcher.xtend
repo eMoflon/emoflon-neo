@@ -21,36 +21,12 @@ class EntityAttributeDispatcher {
 	/*------ Get SuperRefinementTypes ---------*/
 	/*-----------------------------------------*/
 
-	def dispatch List<RefinementCommand> getSuperRefinementTypes(Model entity) {
-		entity.superRefinementTypes
+	def List<RefinementCommand> getSuperRefinementTypes(SuperType st){
+		st.superRefinementTypes
 	}
 	
-	def dispatch getSuperRefinementTypes(Metamodel entity) {
-		return newArrayList
-	}
-	
-	def dispatch getSuperRefinementTypes(Pattern entity) {
-		entity.body.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(Rule entity) {
-		entity.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(TripleRule entity) {
-		entity.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(Constraint entity) {
-		return newArrayList
-	}
-	
-	def dispatch getSuperRefinementTypes(TripleGrammar entity) {
-		return newArrayList
-	}
-	
-	def dispatch getSuperRefinementTypes(GraphGrammar entity) {
-		return newArrayList
+	def List<RefinementCommand> getSuperRefinementTypes(Pattern p){
+		p.body.superRefinementTypes
 	}
 	
 	
@@ -123,8 +99,15 @@ class EntityAttributeDispatcher {
 	/**
 	 * Returns all NodeBlocks of a Pattern.
 	 */
-	def dispatch getNodeBlocks(Pattern entity) {
+	def getPatternNodeBlocks(Pattern entity) {
 		entity.body.nodeBlocks
+	}
+	
+	/**
+	 * Returns all NodeBlocks of an AtomicPattern.
+	 */
+	def dispatch getNodeBlocks(AtomicPattern entity) {
+		entity.nodeBlocks
 	}
 
 	/**
@@ -138,8 +121,8 @@ class EntityAttributeDispatcher {
 	/*--------- Get AttributeConditions ---------*/
 	/*-------------------------------------------*/
 	
-	def dispatch getAttributeConditions(Pattern entity) {
-		entity.body.attributeConditions
+	def dispatch getAttributeConditions(AtomicPattern entity) {
+		entity.attributeConditions
 	}
 	
 	def dispatch getAttributeConditions(Rule entity) {

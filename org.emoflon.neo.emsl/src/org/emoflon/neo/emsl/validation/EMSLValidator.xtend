@@ -5,9 +5,9 @@ package org.emoflon.neo.emsl.validation
 
 import java.util.ArrayList
 import java.util.HashMap
+import java.util.function.Consumer
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
-import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
@@ -28,6 +28,7 @@ import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
@@ -35,14 +36,14 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
-import java.util.function.Consumer
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 
 /**
  * This class contains custom validation rules. 
@@ -109,7 +110,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check(NORMAL)
 	def checkFlatteningOfPattern(Pattern entity) {
 		try {
-			EMSLFlattener.flatten(entity as Pattern);
+			EMSLFlattener.flatten(entity.body);
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				var index = 0
@@ -123,7 +124,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
 				var index = 0
-				for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+				for (nb : new EntityAttributeDispatcher().getPatternNodeBlocks(entity)) {
 					if (nb.type.name.equals(e.nodeBlock.type.name)) {
 						error(NON_MERGABLE_TYPES(e.nodeBlock.type.name), nb,
 							EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
@@ -164,7 +165,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				error("There has to be at least one common type of edges in your refinements of complex edges.", 
 					entity.body, EMSLPackage.Literals.SUPER_TYPE__NAME)
 			} else {
-				handleCommonFlattenerExceptions(e, entity)
+				handleCommonFlattenerExceptions(e, entity.body)
 			}
 		}
 	}
@@ -172,7 +173,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check(NORMAL)
 	def checkFlatteningOfRules(Rule entity) {
 		try {
-			EMSLFlattener.flatten(entity as Entity);
+			EMSLFlattener.flatten(entity);
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				var index = 0
@@ -232,7 +233,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	/**
 	 * Helper method to handle Exceptions that are not entity specific.
 	 */
-	def handleCommonFlattenerExceptions(FlattenerException e, Entity entity) {
+	def handleCommonFlattenerExceptions(FlattenerException e, SuperType entity) {
 		if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
 			for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
 				for (propertyStatement : nb.properties) {
@@ -412,8 +413,15 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void forbidNodeBlockAndEdgeWithSameName(Entity entity) {
 		var dispatcher = new EntityAttributeDispatcher()
 		var namesList = new ArrayList
-		if (entity instanceof Model || entity instanceof Pattern || entity instanceof Rule) {
-			for (nb : dispatcher.getNodeBlocks(entity)) {
+		
+		var listOfNodeBlocks = new ArrayList;
+		if(entity instanceof Pattern)
+			listOfNodeBlocks.addAll(dispatcher.getPatternNodeBlocks(entity))
+		else if(entity instanceof SuperType)
+			listOfNodeBlocks.addAll(dispatcher.getNodeBlocks(entity))
+		
+		if (!(entity instanceof TripleRule)) {
+			for (nb : listOfNodeBlocks) {
 				if (!namesList.contains(nb.name)) {
 					namesList.add(nb.name)
 				} else {

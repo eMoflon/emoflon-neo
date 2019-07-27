@@ -12,8 +12,8 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.Entity
@@ -24,6 +24,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EMSLUtil
 
 /**
@@ -150,8 +151,7 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(Pattern p, int index) {
 		if(p.body.abstract) return ""
 		try {
-			val pattern = EMSLFlattener.flatten(p) as Pattern;
-			val patternBody = pattern.body
+			val patternBody = EMSLFlattener.flatten(p.body) as AtomicPattern
 			val rootName = namingConvention(patternBody.name)
 			val dataClassName = rootName + "Data"
 			val accessClassName = rootName + "Access"

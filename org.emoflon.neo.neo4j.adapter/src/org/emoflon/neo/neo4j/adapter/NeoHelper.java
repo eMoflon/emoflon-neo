@@ -32,7 +32,6 @@ public class NeoHelper {
 	 * initialize Helper
 	 */
 	public NeoHelper() {
-
 		this.matchNodes = new ArrayList<String>();
 		this.optionalNodes = new ArrayList<String>();
 		this.cCount = 0;
@@ -193,9 +192,8 @@ public class NeoHelper {
 	}
 
 	public AtomicPattern getFlattenedPattern(AtomicPattern ap) {
-
 		try {
-			return EMSLFlattener.flatten(((Pattern) (ap.eContainer()))).getBody();
+			return (AtomicPattern) EMSLFlattener.flatten(ap);
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();
@@ -205,9 +203,8 @@ public class NeoHelper {
 	}
 
 	public Pattern getFlattenedPattern(Pattern p) {
-
 		try {
-			return EMSLFlattener.flatten(p);
+			return EMSLFlattener.flattenPattern(p);
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();

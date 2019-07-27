@@ -3,23 +3,23 @@ package org.emoflon.neo.emsl.refinement;
 import java.util.HashSet;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.neo.emsl.eMSL.Entity;
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-public class EMSLFlattener<T extends Entity> {
-	private T entity;
+public class EMSLFlattener {
+	private SuperType entity;
 	private AbstractEntityFlattener flattener;
 
-	private EMSLFlattener(T originalEntity) {
+	private EMSLFlattener(SuperType originalEntity) {
 		EcoreUtil.resolveAll(originalEntity);
 		entity = EcoreUtil.copy(originalEntity);
 
 		if (entity instanceof TripleRule)
 			flattener = new TripleRuleFlattener();
-		else if (entity instanceof SuperType || entity instanceof Pattern)
+		else if (entity instanceof SuperType)
 			flattener = new RuleFlattener();
 		else
 			throw new IllegalArgumentException(
@@ -33,11 +33,18 @@ public class EMSLFlattener<T extends Entity> {
 	 * @return flattened copy of given entity.
 	 * @throws FlattenerException is thrown if the entity could not be flattened.
 	 */
-	public static <T extends Entity> T flatten(T originalEntity) throws FlattenerException {
-		return new EMSLFlattener<T>(originalEntity).flattenEntity();
+	public static SuperType flatten(SuperType originalEntity) throws FlattenerException {
+		return new EMSLFlattener(originalEntity).flattenEntity();
 	}
 
-	private T flattenEntity() throws FlattenerException {
+	private SuperType flattenEntity() throws FlattenerException {
 		return flattener.flatten(entity, new HashSet<String>());
+	}
+
+	public static Pattern flattenPattern(Pattern p) throws FlattenerException {
+		var flattenedBody = (AtomicPattern) flatten(p.getBody());
+		var pattern = EcoreUtil.copy(p);
+		pattern.setBody(flattenedBody);
+		return pattern;
 	}
 }

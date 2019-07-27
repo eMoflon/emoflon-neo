@@ -17,7 +17,6 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.AttributeCondition;
 import org.emoflon.neo.emsl.eMSL.AttributeExpression;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
-import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
@@ -48,7 +47,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	}
 
 	@Override
-	public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
+	public SuperType flatten(SuperType entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		if (entity != null) {
 			var refinements = dispatcher.getSuperRefinementTypes(entity);
 
@@ -90,42 +89,41 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		return entity;
 	}
 
-	private Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
+	private Map<String, List<ModelNodeBlock>> collectNodes(SuperType entity, List<RefinementCommand> refinementList,
 			Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
-	
+
 		for (var r : refinementList) {
-	
-			if (!(r.getReferencedType() instanceof AtomicPattern)) {
+
+			if (!r.getReferencedType().eClass().equals(entity.eClass())) {
 				throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY,
 						r.getReferencedType());
 			}
-	
+
 			// add current entity to list of names to detect infinite loop
 			var alreadyRefinedEntityNamesCopy = new HashSet<String>(alreadyRefinedEntityNames);
 			alreadyRefinedEntityNamesCopy.add(dispatcher.getName(entity));
-	
+
 			// recursively flatten superEntities
 			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
-	
-			var flattenedSuperEntity = (flatten((Entity) r.getReferencedType().eContainer(),
-					alreadyRefinedEntityNamesCopy));
-	
+
+			var flattenedSuperEntity = flatten(r.getReferencedType(), alreadyRefinedEntityNamesCopy);
+
 			// check if a superEntity possesses a condition block
 			if (r.getReferencedType() instanceof AtomicPattern
 					&& ((Pattern) r.getReferencedType().eContainer()).getCondition() != null) {
 				throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION,
 						r.getReferencedType());
 			}
-	
+
 			if (flattenedSuperEntity != null) {
 				EList<ModelNodeBlock> nodeBlocksOfFlattenedSuperEntity = dispatcher.getNodeBlocks(flattenedSuperEntity);
-	
+
 				for (var nb : nodeBlocksOfFlattenedSuperEntity) {
-	
+
 					// create new NodeBlock
 					var newNb = copyModelNodeBlock(nb, r);
-	
+
 					// add nodeBlock to list according to its name
 					if (!nodeBlocks.containsKey(newNb.getName())) {
 						var newList = new ArrayList<ModelNodeBlock>();
@@ -136,7 +134,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					}
 					nodeBlocksOfSuperEntity.add(newNb);
 				}
-	
+
 				reAdjustTargetsOfEdges(nodeBlocksOfSuperEntity, r);
 			}
 		}
@@ -203,7 +201,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	protected List<ModelNodeBlock> mergeNodes(Entity entity, List<RefinementCommand> refinementList,
+	protected List<ModelNodeBlock> mergeNodes(SuperType entity, List<RefinementCommand> refinementList,
 			Map<String, List<ModelNodeBlock>> nodeBlocks) throws FlattenerException {
 		var mergedNodes = new ArrayList<ModelNodeBlock>();
 
@@ -345,7 +343,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @throws FlattenerException is thrown if two properties are not mergeable.
 	 */
 	private HashSet<ModelPropertyStatement> collectAndMergePropertyStatementsOfRelations(
-			ArrayList<ModelRelationStatement> edges, Entity entity) throws FlattenerException {
+			ArrayList<ModelRelationStatement> edges, SuperType entity) throws FlattenerException {
 		var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
 		var mergedProperties = new HashSet<ModelPropertyStatement>();
 
@@ -441,7 +439,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @throws FlattenerException is thrown if something went wrong during the
 	 *                            merging process.
 	 */
-	protected List<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(Entity entity,
+	protected List<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(SuperType entity,
 			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes) throws FlattenerException {
 		for (var name : nodeBlocks.keySet()) {
 			var nodeBlocksWithKey = nodeBlocks.get(name);
@@ -652,7 +650,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @throws FlattenerException is thrown if the values of the two statements are
 	 *                            not equal.
 	 */
-	private void compareValueOfModelPropertyStatement(Entity entity, ModelPropertyStatement p1,
+	private void compareValueOfModelPropertyStatement(SuperType entity, ModelPropertyStatement p1,
 			ModelPropertyStatement p2) throws FlattenerException {
 
 		if (p1.getValue() instanceof PrimitiveBoolean && p2.getValue() instanceof PrimitiveBoolean
@@ -696,7 +694,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @throws FlattenerException is thrown if a proxy was not resolved during
 	 *                            flattening.
 	 */
-	protected void checkForResolvedProxies(Entity entity) throws FlattenerException {
+	protected void checkForResolvedProxies(SuperType entity) throws FlattenerException {
 		for (var nb : dispatcher.getNodeBlocks(entity)) {
 			for (var relation : nb.getRelations()) {
 				if (!(relation.getTarget() instanceof ModelNodeBlock)) {
@@ -706,7 +704,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		}
 	}
 
-	protected <T extends Entity> void mergeAttributeConditions(T entity, List<RefinementCommand> refinements) {
+	protected void mergeAttributeConditions(SuperType entity, List<RefinementCommand> refinements) {
 		var collectedAttributeConditions = new ArrayList<AttributeCondition>();
 		collectedAttributeConditions.addAll(dispatcher.getAttributeConditions(entity));
 		for (var s : refinements) {
@@ -714,7 +712,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				((AtomicPattern) s.getReferencedType()).getAttributeConditions()
 						.forEach(c -> collectedAttributeConditions.add(EcoreUtil.copy(c)));
 			} else {
-				collectedAttributeConditions.addAll(dispatcher.getAttributeConditions((Entity) s.getReferencedType()));
+				collectedAttributeConditions.addAll(dispatcher.getAttributeConditions(s.getReferencedType()));
 			}
 		}
 		var mergedAttributeConditions = mergeAttributeConditions(collectedAttributeConditions);
@@ -722,8 +720,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		mergedAttributeConditions.forEach(c -> dispatcher.getAttributeConditions(entity).add(EcoreUtil.copy(c)));
 	}
 
-	protected List<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, Map<String, List<ModelNodeBlock>> nodeBlocks,
-			List<ModelNodeBlock> mergedNodes) throws FlattenerException {
+	protected List<ModelNodeBlock> mergeEdgesOfNodeBlocks(SuperType entity,
+			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes) throws FlattenerException {
 
 		// collect all edges in hashmap; first key is type name, second is target name
 		for (var name : nodeBlocks.keySet()) {
@@ -883,8 +881,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 *                            greater than the upper limit (does not make
 	 *                            sense).
 	 */
-	protected Object[] mergeModelRelationStatementPathLimits(Entity entity, ArrayList<ModelRelationStatementType> types)
-			throws FlattenerException {
+	protected Object[] mergeModelRelationStatementPathLimits(SuperType entity,
+			ArrayList<ModelRelationStatementType> types) throws FlattenerException {
 		var bounds = new Object[2];
 		bounds[0] = 1;
 		bounds[1] = "*";

@@ -13,10 +13,10 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.Correspondence;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
-import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
+import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -24,8 +24,7 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 public class TripleRuleFlattener extends RuleFlattener {
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T extends Entity> T flatten(T t, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
+	public SuperType flatten(SuperType t, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		var entity = (TripleRule) t;
 
 		if (entity != null) {
@@ -40,7 +39,7 @@ public class TripleRuleFlattener extends RuleFlattener {
 
 			// check if anything has to be done, if not return
 			if (refinements.isEmpty())
-				return (T) entity;
+				return entity;
 
 			// --------------- Source ------------------ //
 			// 1. step: collect nodes with edges
@@ -96,10 +95,10 @@ public class TripleRuleFlattener extends RuleFlattener {
 			checkForResolvedProxies(entity);
 		}
 
-		return (T) entity;
+		return entity;
 	}
 
-	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
+	protected Map<String, List<ModelNodeBlock>> collectNodes(SuperType entity, List<RefinementCommand> refinementList,
 			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
 		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
 
@@ -117,7 +116,7 @@ public class TripleRuleFlattener extends RuleFlattener {
 			// recursively flatten superEntities
 			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 
-			Entity flattenedSuperEntity = (flatten((Entity) r.getReferencedType(), alreadyRefinedEntityNamesCopy));
+			var flattenedSuperEntity = flatten(r.getReferencedType(), alreadyRefinedEntityNamesCopy);
 
 			// check if a superEntity possesses a condition block
 			if (r.getReferencedType() instanceof TripleRule
@@ -158,7 +157,7 @@ public class TripleRuleFlattener extends RuleFlattener {
 	}
 
 	@Override
-	protected List<ModelNodeBlock> mergeNodes(Entity entity, List<RefinementCommand> refinementList,
+	protected List<ModelNodeBlock> mergeNodes(SuperType entity, List<RefinementCommand> refinementList,
 			Map<String, List<ModelNodeBlock>> nodeBlocks) throws FlattenerException {
 		var mergedNodes = new ArrayList<ModelNodeBlock>();
 
@@ -293,7 +292,7 @@ public class TripleRuleFlattener extends RuleFlattener {
 	}
 
 	@Override
-	protected void checkForResolvedProxies(Entity entity) throws FlattenerException {
+	protected void checkForResolvedProxies(SuperType entity) throws FlattenerException {
 		var tripleRule = (TripleRule) entity;
 		for (var nb : tripleRule.getSrcNodeBlocks()) {
 			for (var relation : nb.getRelations()) {

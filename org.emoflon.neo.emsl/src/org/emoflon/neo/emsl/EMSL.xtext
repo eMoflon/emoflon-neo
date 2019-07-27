@@ -12,7 +12,7 @@ ImportStatement:
 
 /* EMSL entities cover metamodelling and graph transformation */
 Entity:
-	Model | Metamodel | Pattern | Constraint | Rule | GraphGrammar | TripleRule | TripleGrammar;
+	Metamodel | Pattern | Constraint | GraphGrammar | TripleGrammar | Model | Rule | TripleRule;
 
 /*-------------------------------------------------*/
 /*------------------- Models ----------------------*/
