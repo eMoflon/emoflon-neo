@@ -60,25 +60,6 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 			throws FlattenerException;
 
 	/**
-	 * This method creates all NodeBlocks that have to be imported into the Entity
-	 * from the SuperEntities.
-	 * 
-	 * @param refinementList            List of RefinementCommands holding all
-	 *                                  entities that should be refined.
-	 * @param alreadyRefinedEntityNames List of entity names that have already
-	 *                                  appeared in the refinement path (against
-	 *                                  loops).
-	 * @return HashMap of NodeBlocks mapped to their name that have to be added to
-	 *         the refining Entity.
-	 * @throws FlattenerException is thrown if an error occurs during collecting the
-	 *                            nodes, like an infinite loop is detected
-	 */
-	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
-			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
-		return null;
-	}
-
-	/**
 	 * This method sets the targets of ModelRelationStatements of the given Nodes
 	 * such that they reference the nodes created in the calling method
 	 * (collectNodes) and no longer reference the nodes of the real superEntity.
@@ -205,37 +186,6 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 	}
 
 	/**
-	 * Takes a list of nodes and merges their actions with the "black wins"
-	 * principle.
-	 * 
-	 * @param nodes list of nodes that provide actions must be merged
-	 * @return an action if a merged action can be determined, null if not
-	 */
-	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes) {
-		var action = EMSLFactory.eINSTANCE.createAction();
-
-		boolean green = false;
-		boolean red = false;
-		boolean black = false;
-		for (var nb : nodes) {
-			if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.CREATE)
-				green = true;
-			else if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.DELETE)
-				red = true;
-			else
-				black = true;
-		}
-		if (green && !red && !black)
-			action.setOp(ActionOperator.CREATE);
-		else if (!green && red && !black)
-			action.setOp(ActionOperator.DELETE);
-		else
-			action = null;
-
-		return action;
-	}
-
-	/**
 	 * This method takes a list of collected NodeBlocks that were collected from all
 	 * the refinements, and a list of merged nodes and adds the merged
 	 * RelationStatements to the mergedNodes which are then returned.
@@ -315,7 +265,7 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 					newRelType.setType((edges.get(typename).get(targetname).get(0).getTypes().get(0).getType()));
 					// collect all types of the edges that are to be merged (should be one type each
 					// in this case) to merge the bounds
-					
+
 					newRel.getTypes().add(newRelType);
 					mergedNodes.forEach(nb -> {
 						if (nb.getName().equals(targetname)) {
@@ -331,10 +281,11 @@ public abstract class AbstractEntityFlattener implements IEntityFlattener {
 
 		return removeDuplicateEdges(mergedNodes);
 	}
-	
+
 	/**
-	 * Iterates over all NodeBlocks given in mergedNodes and removes any
-	 * edges that appear twice in a node.
+	 * Iterates over all NodeBlocks given in mergedNodes and removes any edges that
+	 * appear twice in a node.
+	 * 
 	 * @param mergedNodes that are to be checked for duplicate edges.
 	 * @return list with nodes with their edges removed.
 	 */

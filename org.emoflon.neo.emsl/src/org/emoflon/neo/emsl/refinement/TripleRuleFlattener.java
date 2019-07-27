@@ -21,7 +21,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-public class TripleRuleFlattener extends AbstractEntityFlattener {
+public class TripleRuleFlattener extends RuleFlattener {
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -98,8 +98,7 @@ public class TripleRuleFlattener extends AbstractEntityFlattener {
 
 		return (T) entity;
 	}
-	
-	@Override
+
 	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
 			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
 		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
@@ -157,7 +156,7 @@ public class TripleRuleFlattener extends AbstractEntityFlattener {
 		}
 		return nodeBlocks;
 	}
-	
+
 	@Override
 	protected List<ModelNodeBlock> mergeNodes(Entity entity, List<RefinementCommand> refinementList,
 			Map<String, List<ModelNodeBlock>> nodeBlocks) throws FlattenerException {

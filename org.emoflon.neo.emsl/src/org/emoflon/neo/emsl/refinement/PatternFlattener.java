@@ -38,7 +38,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 				return entity;
 
 			// 1. step: collect nodes with edges
-			var collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedEntityNames, true);
+			var collectedNodeBlocks = collectNodes(entity, refinements, alreadyRefinedEntityNames);
 			dispatcher.getNodeBlocks(entity).forEach(nb -> {
 				if (collectedNodeBlocks.keySet().contains(nb.getName())) {
 					collectedNodeBlocks.get(nb.getName()).add(nb);
@@ -65,9 +65,8 @@ public class PatternFlattener extends AbstractEntityFlattener {
 		return entity;
 	}
 
-	@Override
 	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
-			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
+			Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
 
 		for (var r : refinementList) {

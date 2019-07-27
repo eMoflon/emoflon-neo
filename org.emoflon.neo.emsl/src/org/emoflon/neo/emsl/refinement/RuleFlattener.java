@@ -10,6 +10,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.emsl.eMSL.Action;
+import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
@@ -23,7 +25,7 @@ public class RuleFlattener extends PatternFlattener {
 
 	@Override
 	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
-			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
+			Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
 
 		for (var r : refinementList) {
@@ -43,8 +45,7 @@ public class RuleFlattener extends PatternFlattener {
 			Entity flattenedSuperEntity = (flatten((Entity) r.getReferencedType(), alreadyRefinedEntityNamesCopy));
 
 			// check if a superEntity possesses a condition block
-			if (r.getReferencedType() instanceof Rule
-					&& ((Rule) r.getReferencedType()).getCondition() != null) {
+			if (r.getReferencedType() instanceof Rule && ((Rule) r.getReferencedType()).getCondition() != null) {
 				throw new FlattenerException(entity, FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION,
 						r.getReferencedType());
 			}
@@ -73,7 +74,7 @@ public class RuleFlattener extends PatternFlattener {
 		}
 		return nodeBlocks;
 	}
-	
+
 	@Override
 	protected List<ModelNodeBlock> mergeNodes(Entity entity, List<RefinementCommand> refinementList,
 			Map<String, List<ModelNodeBlock>> nodeBlocks) throws FlattenerException {
@@ -140,5 +141,36 @@ public class RuleFlattener extends PatternFlattener {
 
 		return mergeEdgesOfNodeBlocks(entity, nodeBlocks,
 				mergePropertyStatementsOfNodeBlocks(entity, nodeBlocks, mergedNodes));
+	}
+
+	/**
+	 * Takes a list of nodes and merges their actions with the "black wins"
+	 * principle.
+	 * 
+	 * @param nodes list of nodes that provide actions must be merged
+	 * @return an action if a merged action can be determined, null if not
+	 */
+	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes) {
+		var action = EMSLFactory.eINSTANCE.createAction();
+
+		boolean green = false;
+		boolean red = false;
+		boolean black = false;
+		for (var nb : nodes) {
+			if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.CREATE)
+				green = true;
+			else if (nb.getAction() != null && nb.getAction().getOp() == ActionOperator.DELETE)
+				red = true;
+			else
+				black = true;
+		}
+		if (green && !red && !black)
+			action.setOp(ActionOperator.CREATE);
+		else if (!green && red && !black)
+			action.setOp(ActionOperator.DELETE);
+		else
+			action = null;
+
+		return action;
 	}
 }

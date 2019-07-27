@@ -19,7 +19,7 @@ public class ModelFlattener extends PatternFlattener {
 
 	@Override
 	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
-			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
+			Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
 
 		for (var r : refinementList) {
