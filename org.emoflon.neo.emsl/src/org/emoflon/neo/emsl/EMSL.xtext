@@ -80,8 +80,7 @@ ModelRelationStatementType:
 /*----------------- Metamodels --------------------*/
 /*-------------------------------------------------*/
 Metamodel:
-	(abstract?='abstract')? 'metamodel' name=QualifiedName 
-	('->' (superRefinementTypes+=MetamodelRefinementCommand (',' superRefinementTypes+=MetamodelRefinementCommand)*))?
+	'metamodel' name=QualifiedName 
 	('{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}')?;
 
 MetamodelNodeBlock:
@@ -276,17 +275,11 @@ TripleGrammar:
 RefinementCommand:
 	referencedType=[SuperType|QualifiedName] ('[' relabeling+=ModelRelabelingCommand (',' relabeling+=ModelRelabelingCommand)* ']')?;
 
-MetamodelRefinementCommand:
-	referencedType=[SuperType|QualifiedName] ('[' relabeling+=MetamodelRelabelingCommand (',' relabeling+=MetamodelRelabelingCommand)* ']')?;
-
 ModelRelabelingCommand returns RelabelingCommand:
-	oldLabel=ID '->' newLabel=ID;
-	
-MetamodelRelabelingCommand returns RelabelingCommand:
 	oldLabel=ID '->' newLabel=ID;
 
 SuperType:
-	Metamodel | Model | AtomicPattern | Rule | TripleRule;
+	Model | AtomicPattern | Rule | TripleRule;
 
 QualifiedName:
 	ID ('.' ID)*;

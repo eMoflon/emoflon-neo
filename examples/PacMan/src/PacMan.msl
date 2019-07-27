@@ -1,4 +1,4 @@
-abstract metamodel PlayingBoard {
+metamodel PacMan {
 	Figure {
 		-standsOn(1..1)-> Field
 	}
@@ -7,9 +7,7 @@ abstract metamodel PlayingBoard {
 		-right(1..1)-> Field
 		-bottom(1..1)-> Field
 	}
-}
-
-metamodel PacMan -> PlayingBoard {
+	
 	Marble {
 		-liesOn(1..1)-> Field
 	}

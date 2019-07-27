@@ -228,12 +228,9 @@ public class NeoCoreBuilder implements AutoCloseable {
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
 
-		// Remove abstract metamodels
-		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
-
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present.");
 		}
 
 		if (!newMetamodels.isEmpty())
@@ -322,12 +319,9 @@ public class NeoCoreBuilder implements AutoCloseable {
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
 
-		// Remove abstract metamodels
-		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
-
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present.");
 		}
 
 		if (!newMetamodels.isEmpty())

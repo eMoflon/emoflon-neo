@@ -386,13 +386,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	private def handleValueOfRelationStatementInMetamodel(MetamodelRelationStatement statement, EReference reference) {
 		val metaModel = statement.eContainer.eContainer as Metamodel
-		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = metaModel.superRefinementTypes.filter [ st |
-			st.referencedType instanceof Metamodel
-		].flatMap[r|(r.referencedType as Metamodel).nodeBlocks]
-
-		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-		allNodeBlocks.addAll(metaModel.nodeBlocks)
+		val allNodeBlocks = new HashSet(metaModel.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
 	}
 

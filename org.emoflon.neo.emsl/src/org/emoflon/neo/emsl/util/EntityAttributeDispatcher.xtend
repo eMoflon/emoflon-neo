@@ -1,17 +1,19 @@
 package org.emoflon.neo.emsl.util
 
-import org.emoflon.neo.emsl.eMSL.Model
-import org.emoflon.neo.emsl.eMSL.Metamodel
-import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.eMSL.Rule
-import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.Constraint
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.eMSL.GraphGrammar
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.SuperType
 import java.util.ArrayList
+import java.util.List
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeCondition
+import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.SuperType
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 class EntityAttributeDispatcher {
 	
@@ -19,12 +21,12 @@ class EntityAttributeDispatcher {
 	/*------ Get SuperRefinementTypes ---------*/
 	/*-----------------------------------------*/
 
-	def dispatch getSuperRefinementTypes(Model entity) {
+	def dispatch List<RefinementCommand> getSuperRefinementTypes(Model entity) {
 		entity.superRefinementTypes
 	}
 	
 	def dispatch getSuperRefinementTypes(Metamodel entity) {
-		entity.superRefinementTypes
+		return newArrayList
 	}
 	
 	def dispatch getSuperRefinementTypes(Pattern entity) {
@@ -157,10 +159,6 @@ class EntityAttributeDispatcher {
 	/*-------------------------------------------*/
 	
 	def dispatch getAbstract(Model entity) {
-		entity.abstract
-	}
-	
-	def dispatch getAbstract(Metamodel entity) {
 		entity.abstract
 	}
 	

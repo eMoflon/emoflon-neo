@@ -117,7 +117,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 					if (e.alreadyRefinedPatternNames.contains(((s as RefinementCommand).referencedType as AtomicPattern).name))
 						error(
 							REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
-							entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+							entity.body, EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					index++
 				}
 
@@ -136,7 +136,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				for (s : new EntityAttributeDispatcher().getSuperRefinementTypes(entity)) {
 					if (((s as RefinementCommand).referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name))
 						error(CONDITION_IN_SUPER_ENTITY, entity.body,
-							EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					index++
 				}
 
@@ -148,21 +148,21 @@ class EMSLValidator extends AbstractEMSLValidator {
 						dispatcher.getSuperTypeName(e.superEntity).equals(
 							dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
 						error(NOT_SUPPORTED_ENTITY, entity.body,
-							EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 						dispatcher.getSuperTypeName(e.superEntity).equals(
 							dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
 						error(NOT_SUPPORTED_ENTITY, entity.body,
-							EMSLPackage.Literals.ATOMIC_PATTERN__SUPER_REFINEMENT_TYPES, index)
+							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					}
 					index++
 				}
 			} else if (e.errorType == FlattenerErrorType.PATH_LENGTHS_NONSENSE) {
 				error("Some path limits in your refinements do not make sense.", 
-					entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+					entity.body, EMSLPackage.Literals.SUPER_TYPE__NAME)
 			} else if (e.errorType == FlattenerErrorType.NO_INTERSECTION_IN_MODEL_RELATION_STATEMENT_TYPE_LIST) {
 				error("There has to be at least one common type of edges in your refinements of complex edges.", 
-					entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+					entity.body, EMSLPackage.Literals.SUPER_TYPE__NAME)
 			} else {
 				handleCommonFlattenerExceptions(e, entity)
 			}
@@ -180,7 +180,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 					if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name))
 						error(
 							REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
-							EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					index++
 				}
 
@@ -198,7 +198,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				var index = 0
 				for (s : entity.superRefinementTypes) {
 					if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name))
-						error(CONDITION_IN_SUPER_ENTITY, EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+						error(CONDITION_IN_SUPER_ENTITY, EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					index++
 				}
 
@@ -211,14 +211,14 @@ class EMSLValidator extends AbstractEMSLValidator {
 							dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
 
 						error("The type of entity you are trying to refine is not supported yet.", entity,
-							EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 
 					} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 						dispatcher.getSuperTypeName(e.superEntity).equals(
 							dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
 
 						error("The type of entity you are trying to refine is not yet supported.", entity,
-							EMSLPackage.Literals.RULE__SUPER_REFINEMENT_TYPES, index)
+							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 
 					}
 					index++
@@ -309,13 +309,13 @@ class EMSLValidator extends AbstractEMSLValidator {
 				namelistsOfEntities.get(entity.eClass.name).add(dispatcher.getName(entity))
 			} else {
 				if (entity instanceof Rule)
-					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.RULE__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
 				else if (entity instanceof Model)
-					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.MODEL__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
 				else if (entity instanceof Metamodel)
 					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.METAMODEL__NAME)
 				else if (entity instanceof TripleRule)
-					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.TRIPLE_RULE__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
 				else if (entity instanceof TripleGrammar)
 					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.TRIPLE_GRAMMAR__NAME)
 				else if (entity instanceof GraphGrammar)
@@ -323,7 +323,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				else if (entity instanceof Constraint)
 					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.CONSTRAINT__NAME)
 				else if (entity instanceof Pattern)
-					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity.body, EMSLPackage.Literals.ATOMIC_PATTERN__NAME)
+					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity.body, EMSLPackage.Literals.SUPER_TYPE__NAME)
 			}
 		}
 	}

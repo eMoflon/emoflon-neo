@@ -1,6 +1,7 @@
 package org.emoflon.neo.emsl.ui.visualisation
 
 import java.util.ArrayList
+import java.util.HashMap
 import java.util.List
 import java.util.Optional
 import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider
@@ -10,9 +11,10 @@ import org.eclipse.ui.IEditorPart
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.ui.editor.XtextEditor
-import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.AndBody
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeCondition
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.Constraint
@@ -32,27 +34,24 @@ import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.OrBody
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.RelationKind
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.SourceNAC
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
-import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
-import org.emoflon.neo.emsl.util.FlattenerException
-import org.emoflon.neo.emsl.eMSL.AndBody
-import org.emoflon.neo.emsl.eMSL.OrBody
-import java.util.HashMap
-import org.emoflon.neo.emsl.eMSL.RefinementCommand
-import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
-import org.emoflon.neo.emsl.eMSL.AttributeCondition
 import org.emoflon.neo.emsl.eMSL.Value
-import org.emoflon.neo.emsl.eMSL.MetamodelRefinementCommand
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
+import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.util.FlattenerException
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -151,7 +150,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			left to right direction
 			«FOR entity : root.entities»
 				«IF entity instanceof Metamodel»
-					rectangle "Metamodel: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" <<Rectangle>> «IF entity.abstract»<<Abstract>>«ENDIF» «link(entity as Entity)» {
+					rectangle "Metamodel: «entity.name»" <<Rectangle>> «link(entity as Entity)» {
 						
 					}
 				«ENDIF»
@@ -307,13 +306,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Metamodel.
 	 */
 	def dispatch String visualiseEntity(Metamodel mm, boolean mainSelection) {
-		var entity = EMSLFlattener.flatten(mm)
 		'''
-			package "«IF entity.abstract»//«ENDIF»«(entity as Metamodel).name»«IF entity.abstract»//«ENDIF»"«IF mainSelection» <<Selection>> «ENDIF»{
-			«FOR nb : entity.nodeBlocks»
+			package "«(mm as Metamodel).name»"«IF mainSelection» <<Selection>> «ENDIF»{
+			«FOR nb : mm.nodeBlocks»
 				«visualiseNodeBlockInMetamodel(nb, false)»
 			«ENDFOR»
-			«FOR e : entity.enums»
+			«FOR e : mm.enums»
 				«visualiseEnumInMetamodel(e, false)»
 			«ENDFOR»
 			}
@@ -347,7 +345,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	
 	def String visualiseEnumInMetamodel(Enum e, boolean mainSelection) {
 		'''
-			class "«IF (e.eContainer as Metamodel).abstract»//«ENDIF»«(e.eContainer as Metamodel).name»«IF (e.eContainer as Metamodel).abstract»//«ENDIF».«e.name»" «IF mainSelection»<<Selection>>«ENDIF» {
+			class "«(e.eContainer as Metamodel).name».«e.name»" «IF mainSelection»<<Selection>>«ENDIF» {
 				«FOR literal : e.literals»
 					«literal.name»
 				«ENDFOR»
@@ -360,11 +358,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForClass(MetamodelNodeBlock nb) {
 		val entity = nb?.eContainer as Metamodel
-		'''"«IF entity !== null && entity.abstract»//«ENDIF»«entity?.name»«IF entity !== null && entity.abstract»//«ENDIF».«nb?.name»"'''
+		'''"«entity?.name».«nb?.name»"'''
 	}
 
 	/**
-	 * Returns the diagram text for Mulitplicities in a Metamodel.
+	 * Returns the diagram text for multiplicities in a Metamodel.
 	 */
 	def visualiseMultiplicity(MetamodelRelationStatement link) {
 		'''"«link.lower»«IF link.upper !== null»..«link.upper»«ENDIF»"'''
@@ -1033,11 +1031,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/*------ Get SuperRefinementTypes ---------*/
 	/*-----------------------------------------*/
 
-	def dispatch getSuperRefinementTypes(Model entity) {
-		entity.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(Metamodel entity) {
+	def dispatch List<RefinementCommand> getSuperRefinementTypes(Model entity) {
 		entity.superRefinementTypes
 	}
 	
@@ -1141,16 +1135,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					else
 						tmp.set(1, "0")
 					superTypeNames.get("TripleRule").add(tmp)
-				}
-			} else if (st instanceof MetamodelRefinementCommand) {
-				if ((st as MetamodelRefinementCommand).referencedType instanceof Metamodel && !superTypeNames.get("Metamodel").contains(((st as MetamodelRefinementCommand).referencedType as Metamodel).name)) {
-					val String[] tmp = #["", ""];
-					tmp.set(0, ((st as MetamodelRefinementCommand).referencedType as Metamodel).name)
-					if (((st as MetamodelRefinementCommand).referencedType as Metamodel).abstract)
-						tmp.set(1, "1")
-					else
-						tmp.set(1, "0")
-					superTypeNames.get("Metamodel").add(tmp)
 				}
 			}
 		}

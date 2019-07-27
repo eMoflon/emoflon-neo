@@ -413,7 +413,6 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Metamodel m, int index) {
-		if(m.abstract) return "// No API for abstract metamodels"
 		'''
 			public Metamodel getMetamodel_«namingConvention(m.name)»(){
 				return (Metamodel) spec.getEntities().get(«index»);

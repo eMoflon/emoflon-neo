@@ -55,7 +55,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 	def dispatch void format(Model mod, extension IFormattableDocument document) {
 		mod.interior[indent]
 		mod.regionFor.keyword(KW_MODEL).append[oneSpace]
-		mod.regionFor.feature(EMSLPackage.eINSTANCE.model_Name).append[oneSpace]
+		mod.regionFor.feature(EMSLPackage.eINSTANCE.superType_Name).append[oneSpace]
 		mod.regionFor.keyword(KW_OPEN_PAR).append[newLine]
 		mod.regionFor.keyword(KW_CLOSE_PAR).append[newLines=Spacing]
 		
@@ -107,7 +107,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 	def dispatch void format(Metamodel mod, extension IFormattableDocument document) {
 		mod.interior[indent]
 		mod.regionFor.keyword(KW_METAMODEL).append[oneSpace]
-		mod.regionFor.feature(EMSLPackage.eINSTANCE.model_Name).append[oneSpace]
+		mod.regionFor.feature(EMSLPackage.eINSTANCE.superType_Name).append[oneSpace]
 		mod.regionFor.keyword(KW_CLOSE_PAR).append[newLines=2].prepend[newLines=Spacing]
 		for (nb : mod.nodeBlocks) {
 			nb.interior[indent]
@@ -177,7 +177,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 		} else {
 				rule.regionFor.keyword(KW_RULE).append[oneSpace].prepend[newLines=Spacing]
 		}
-		rule.regionFor.feature(EMSLPackage.eINSTANCE.rule_Name).append[oneSpace]
+		rule.regionFor.feature(EMSLPackage.eINSTANCE.superType_Name).append[oneSpace]
 		rule.regionFor.keyword(KW_RELATION).append[oneSpace]
 		rule.regionFor.keyword(KW_OPEN_PAR).append[newLines=2].prepend[oneSpace]
 		rule.regionFor.keyword(KW_CLOSE_PAR).prepend[newLines=2].prepend[noIndentation]
@@ -222,7 +222,7 @@ class EMSLFormatter extends AbstractFormatter2 {
 	
 	def dispatch void format(Pattern pat, extension IFormattableDocument document) {
 		pat.interior[indent]
-		pat.regionFor.feature(EMSLPackage.eINSTANCE.atomicPattern_Name).append[oneSpace]
+		pat.regionFor.feature(EMSLPackage.eINSTANCE.superType_Name).append[oneSpace]
 		pat.regionFor.keyword(KW_OPEN_PAR).append[newLine].prepend[oneSpace]
 		pat.regionFor.keyword(KW_CLOSE_PAR).prepend[newLine]
 		pat.regionFor.keyword(KW_PATTERN).append[oneSpace].prepend[newLines=Spacing]

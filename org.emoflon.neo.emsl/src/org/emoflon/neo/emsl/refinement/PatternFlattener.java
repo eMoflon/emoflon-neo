@@ -25,8 +25,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 	@Override
 	public <T extends Entity> T flatten(T entity, Set<String> alreadyRefinedEntityNames) throws FlattenerException {
 		if (entity != null) {
-			@SuppressWarnings("unchecked")
-			var refinements = (List<RefinementCommand>) dispatcher.getSuperRefinementTypes(entity);
+			var refinements = dispatcher.getSuperRefinementTypes(entity);
 
 			// check for loop in refinements
 
@@ -65,7 +64,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 
 		return entity;
 	}
-	
+
 	@Override
 	protected Map<String, List<ModelNodeBlock>> collectNodes(Entity entity, List<RefinementCommand> refinementList,
 			Set<String> alreadyRefinedEntityNames, boolean isSrc) throws FlattenerException {
@@ -86,7 +85,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 
 			var flattenedSuperEntity = (flatten((Entity) r.getReferencedType().eContainer(),
-						alreadyRefinedEntityNamesCopy));
+					alreadyRefinedEntityNamesCopy));
 
 			// check if a superEntity possesses a condition block
 			if (r.getReferencedType() instanceof AtomicPattern
@@ -96,8 +95,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 			}
 
 			if (flattenedSuperEntity != null) {
-				EList<ModelNodeBlock> nodeBlocksOfFlattenedSuperEntity = dispatcher.
-						getNodeBlocks(flattenedSuperEntity);
+				EList<ModelNodeBlock> nodeBlocksOfFlattenedSuperEntity = dispatcher.getNodeBlocks(flattenedSuperEntity);
 
 				for (var nb : nodeBlocksOfFlattenedSuperEntity) {
 
@@ -120,7 +118,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 		}
 		return nodeBlocks;
 	}
-	
+
 	@Override
 	protected List<ModelNodeBlock> mergeEdgesOfNodeBlocks(Entity entity, Map<String, List<ModelNodeBlock>> nodeBlocks,
 			List<ModelNodeBlock> mergedNodes) throws FlattenerException {
@@ -269,7 +267,7 @@ public class PatternFlattener extends AbstractEntityFlattener {
 
 		return removeDuplicateEdges(mergedNodes);
 	}
-	
+
 	/**
 	 * This method merges the lower and upper lengths of simple paths in
 	 * ModelRelationStatementTypes. The result is the maximum of the lower and the

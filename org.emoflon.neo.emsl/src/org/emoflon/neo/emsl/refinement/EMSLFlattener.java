@@ -4,7 +4,6 @@ import java.util.HashSet;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.Entity;
-import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.Rule;
@@ -16,8 +15,6 @@ public class EMSLFlattener<T extends Entity> {
 	private IEntityFlattener flattener;
 
 	private EMSLFlattener(T originalEntity) {
-		// FIXME[Anjorin] No need to copy if this is done in flatteners
-		// entity = originalEntity;
 		entity = EcoreUtil.copy(originalEntity);
 
 		if (entity instanceof TripleRule)
@@ -26,8 +23,6 @@ public class EMSLFlattener<T extends Entity> {
 			flattener = new ModelFlattener();
 		else if (entity instanceof Pattern)
 			flattener = new PatternFlattener();
-		else if (entity instanceof Metamodel)
-			flattener = new MetamodelFlattener();
 		else if (entity instanceof Rule)
 			flattener = new RuleFlattener();
 		else
