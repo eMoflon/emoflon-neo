@@ -4,9 +4,8 @@ import java.util.HashSet;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.Entity;
-import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.emsl.eMSL.Rule;
+import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
@@ -20,11 +19,7 @@ public class EMSLFlattener<T extends Entity> {
 
 		if (entity instanceof TripleRule)
 			flattener = new TripleRuleFlattener();
-		else if (entity instanceof Model)
-			flattener = new ModelFlattener();
-		else if (entity instanceof Pattern)
-			flattener = new PatternFlattener();
-		else if (entity instanceof Rule)
+		else if (entity instanceof SuperType || entity instanceof Pattern)
 			flattener = new RuleFlattener();
 		else
 			throw new IllegalArgumentException(
