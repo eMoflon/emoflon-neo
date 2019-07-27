@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.Action;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
@@ -117,7 +116,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			}
 
 			if (flattenedSuperEntity != null) {
-				EList<ModelNodeBlock> nodeBlocksOfFlattenedSuperEntity = dispatcher.getNodeBlocks(flattenedSuperEntity);
+				List<ModelNodeBlock> nodeBlocksOfFlattenedSuperEntity = dispatcher.getNodeBlocks(flattenedSuperEntity);
 
 				for (var nb : nodeBlocksOfFlattenedSuperEntity) {
 

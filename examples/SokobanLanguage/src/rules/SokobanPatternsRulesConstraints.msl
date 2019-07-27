@@ -326,7 +326,7 @@ rule moveSokobanUpWithCondition -> moveSokobanUp
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
 	next : Field {
-		-bottom-> to 
+		-bottom-> to
 	}
 	to : Field {
 		-bottom-> $from

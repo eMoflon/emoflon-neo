@@ -89,6 +89,13 @@ class EntityAttributeDispatcher {
 		entity.nodeBlocks
 	}
 
+	def dispatch getNodeBlocks(TripleRule entity) {
+		var nodeBlocks = new ArrayList
+		nodeBlocks.addAll(entity.srcNodeBlocks)
+		nodeBlocks.addAll(entity.trgNodeBlocks)
+		return nodeBlocks
+	}
+
 	/**
 	 * Returns all NodeBlocks of a Metamodel.
 	 */
