@@ -15,6 +15,7 @@ public class EMSLFlattener<T extends Entity> {
 	private AbstractEntityFlattener flattener;
 
 	private EMSLFlattener(T originalEntity) {
+		EcoreUtil.resolveAll(originalEntity);
 		entity = EcoreUtil.copy(originalEntity);
 
 		if (entity instanceof TripleRule)
