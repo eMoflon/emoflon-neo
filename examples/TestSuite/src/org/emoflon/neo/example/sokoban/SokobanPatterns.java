@@ -360,4 +360,16 @@ public class SokobanPatterns extends ENeoTest {
 	public void testNoBlockedBlocks() {
 		assertFalse(entities.getPattern_BlockNotOnEndFieldInCorner().matcher().determineOneMatch().isPresent());
 	}
+	
+	@Test
+	public void testSokobanOnFieldOfBoard() {
+		assertThat(entities.getPattern_SokobanOnFieldOfBoard().matcher().countMatches(), is(1));
+	}
+	
+	@Test
+	public void testSokobanOnFieldOfBoard_StillValid() {
+		var p = entities.getPattern_SokobanOnFieldOfBoard();
+		var matches = p.matcher().determineMatches();
+		expectValidMatches(matches, matches.size());
+	}
 }

@@ -150,8 +150,8 @@ class CypherPatternBuilder {
 	
 	def static String isStillValidQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective) {
 		'''
-		«isStillValid_matchQuery(nodes, match)»
-		«isStillValid_whereQuery(nodes, match, injective)»
+		«matchQuery(nodes)»
+		«isStillValid_whereQuery(nodes, match)»
 		«isStillValid_returnQuery()»'''
 	}
 	
@@ -169,19 +169,7 @@ class CypherPatternBuilder {
 		'''RETURN «FOR n : nodesMap SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
 	}
 	
-	def static String isStillValid_matchQuery(Collection<NeoNode> nodes, NeoMatch match) {
-		'''
-		MATCH «FOR n : nodes SEPARATOR ', '»
-				«IF n.relations.size == 0 || n.properties.size > 0»
-					«queryNode(n)»«IF n.relations.size > 0»", "«ENDIF»
-				«ENDIF»
-				«FOR r : n.relations SEPARATOR ', '»
-					(:«n.classType»)-[«r.varName»]->(:«r.toNodeLabel»)
-				«ENDFOR»
-			«ENDFOR»'''
-	}
-	
-	def static String isStillValid_whereQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective) {
+	def static String isStillValid_whereQuery(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
 			«nodeIdBlock(nodes, match)»
 		'''
@@ -190,13 +178,12 @@ class CypherPatternBuilder {
 	def static String nodeIdBlock(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
 		WHERE «FOR n : nodes SEPARATOR " AND "»
-				«IF n.relations.size == 0 || n.properties.size > 0»
-					id(«n.varName») = «match.getIdForNode(n)»
-					«IF n.relations.size > 0» AND«ENDIF»
+				id(«n.varName») = «match.getIdForNode(n)»
+				«IF n.relations.size > 0»
+					«FOR r : n.relations BEFORE " AND " SEPARATOR " AND "»
+						id(«r.varName») = «match.getIdForRelation(r)»
+					«ENDFOR»
 				«ENDIF»
-				«FOR r : n.relations SEPARATOR " AND "»
-					id(«r.varName») = «match.getIdForRelation(r)»
-				«ENDFOR»
 			«ENDFOR»'''
 	}
 	
