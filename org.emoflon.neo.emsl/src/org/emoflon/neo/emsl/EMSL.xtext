@@ -95,7 +95,7 @@ MetamodelPropertyStatement:
 
 MetamodelRelationStatement:
 	kind=RelationKind name=ID
-	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
+	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName])
 	('{'
 	properties+=MetamodelPropertyStatement*
 	'}')?;

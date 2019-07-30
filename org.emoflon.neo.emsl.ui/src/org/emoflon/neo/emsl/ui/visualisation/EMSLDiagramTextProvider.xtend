@@ -687,7 +687,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
 		var copiesOfConditionPatterns = newArrayList
 		for (p : conditionPattern) {
-			copiesOfConditionPatterns.add(EMSLFlattener.flatten(p))
+			copiesOfConditionPatterns.add(EMSLFlattener.flattenPattern(p.eContainer as Pattern))
 		}
 		'''
 			«FOR c : copiesOfConditionPatterns»
@@ -745,7 +745,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			else if ((entity as Rule).condition instanceof PositiveConstraint)
 				return '''**enforce** «((entity as Rule).condition as PositiveConstraint).pattern.name» '''
 			else if ((entity as Rule).condition instanceof Implication) {
-				return '''**if** «((entity as Rule).condition as Implication).premise.name» **then** «((entity as Rule).condition as Implication).conclusion.name» '''
+				return '''**if** «((entity as Rule).condition as Implication).premise.name»  **then** «((entity as Rule).condition as Implication).conclusion.name» '''
 			} 	
 			// return the String for ConstraintReference
 			else if (entity.condition instanceof ConstraintReference) {
@@ -764,7 +764,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			else if ((entity as Pattern).condition instanceof PositiveConstraint)
 				return '''**enforce** «((entity as Pattern).condition as PositiveConstraint).pattern.name» '''
 			else if ((entity as Pattern).condition instanceof Implication) {
-				return '''**if** «((entity as Pattern).condition as Implication).premise.name» **then** «((entity as Pattern).condition as Implication).conclusion.name» '''
+				return '''**if** «((entity as Pattern).condition as Implication).premise.name»  **then** «((entity as Pattern).condition as Implication).conclusion.name» '''
 			} 
 			// return the String for ConstraintReference
 			else if (entity.condition instanceof ConstraintReference) {
@@ -783,7 +783,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			else if ((entity as Constraint).body instanceof PositiveConstraint)
 				return '''**enforce** «((entity as Constraint).body as PositiveConstraint).pattern.name» '''
 			else if ((entity as Constraint).body instanceof Implication) {
-				return '''**if** «((entity as Constraint).body as Implication).premise.name» **then** «((entity as Constraint).body as Implication).conclusion.name» '''
+				return '''**if** «((entity as Constraint).body as Implication).premise.name»  **then** «((entity as Constraint).body as Implication).conclusion.name» '''
 			} 
 			// return for OrBody
 			else if ((entity as Constraint).body instanceof OrBody) {

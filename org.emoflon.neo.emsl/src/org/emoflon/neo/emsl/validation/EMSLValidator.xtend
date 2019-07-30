@@ -62,6 +62,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String GREEN_NODE_OF_ABSTRACT_TYPES = "Green Nodes of abstract types are not allowed"
 	static final String NON_RESOLVABLE_PROXY = "A proxy target you defined could not be resolved."
 	static final def String NON_MERGABLE_TYPES(String typeName) '''The type «typeName»  in your refinements cannot be merged into a common subtype.'''
+	static final String FORBIDDING_COMPLEX_EDGES = "Complex Edges in Models are not allowed."
+	static final String ENTITY_TYPE_NOT_SUPPORTED = "The type of entity you are trying to refine is not supported yet."
+	static final String INSTANTIATING_ABSTRACT_TYPE_IN_NON_ABSTRACT_MODEL = "Instantiating an abstract type in a non-abstract model is not allowed."
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -211,14 +214,14 @@ class EMSLValidator extends AbstractEMSLValidator {
 						dispatcher.getSuperTypeName(e.superEntity).equals(
 							dispatcher.getName((s as RefinementCommand).referencedType as Entity))) {
 
-						error("The type of entity you are trying to refine is not supported yet.", entity,
+						error(ENTITY_TYPE_NOT_SUPPORTED, entity,
 							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 
 					} else if ((s as RefinementCommand).referencedType instanceof AtomicPattern &&
 						dispatcher.getSuperTypeName(e.superEntity).equals(
 							dispatcher.getName((s as RefinementCommand).referencedType as AtomicPattern))) {
 
-						error("The type of entity you are trying to refine is not yet supported.", entity,
+						error(ENTITY_TYPE_NOT_SUPPORTED, entity,
 							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 
 					}
@@ -510,6 +513,30 @@ class EMSLValidator extends AbstractEMSLValidator {
 					|| nb.eContainer instanceof TripleRule && !(nb.eContainer as TripleRule).abstract) 
 				&& nb.action !== null && nb.type.abstract) {
 			error(GREEN_NODE_OF_ABSTRACT_TYPES, nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__ACTION)
+		}
+	}
+	
+	/**
+	 * Checks if a non-abstract model instantiates abstract classes.
+	 */
+	@Check
+	def void forbidInstancesOfAbstractTypesInNonAbstractModels(Model model) {
+		for (nb : model.nodeBlocks) {
+			if (!(model.abstract) && nb.type.abstract) {
+				error(INSTANTIATING_ABSTRACT_TYPE_IN_NON_ABSTRACT_MODEL, 
+					nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+			}
+		}
+	}
+	
+	/**
+	 * Checks if a model contains complex edges (edges with multiple types). Since they have
+	 * no meaning in models, it is forbidden.
+	 */
+	@Check
+	def void forbidComplexEdgesInModels(ModelRelationStatement relation) {
+		if (relation.types.size > 1 && relation.eContainer.eContainer instanceof Model) {
+			error(FORBIDDING_COMPLEX_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 		}
 	}
 }
