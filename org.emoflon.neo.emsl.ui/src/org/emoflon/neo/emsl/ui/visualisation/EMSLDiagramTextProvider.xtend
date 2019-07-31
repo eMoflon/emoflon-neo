@@ -408,7 +408,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				}
 				«IF (entityCopy as Pattern).condition !== null »
 					legend bottom
-						«getConditionString(entityCopy)»
+						«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»**!**(«ENDIF»«getConditionString(entityCopy)»«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»)«ENDIF»
 					endlegend
 					«visualiseCondition(entityCopy)»
 				«ENDIF»
@@ -533,7 +533,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			}
 			«IF (entityCopy as Rule).condition !== null»
 				legend bottom
-					«getConditionString(entityCopy)»
+					«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»**!**(«ENDIF»«getConditionString(entityCopy)»«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»)«ENDIF»
 				endlegend
 				«visualiseCondition(entityCopy)»
 			«ENDIF»
