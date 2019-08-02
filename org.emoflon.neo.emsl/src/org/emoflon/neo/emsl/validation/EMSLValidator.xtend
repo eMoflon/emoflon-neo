@@ -45,6 +45,8 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
 import java.util.HashSet
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 
 /**
  * This class contains custom validation rules. 
@@ -72,6 +74,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String FORBIDDING_COMPLEX_EDGES = "Complex Edges in Models are not allowed."
 	static final String ENTITY_TYPE_NOT_SUPPORTED = "The type of entity you are trying to refine is not supported yet."
 	static final String INSTANTIATING_ABSTRACT_TYPE_IN_NON_ABSTRACT_MODEL = "Instantiating an abstract type in a non-abstract model is not allowed."
+	static final def String REDEFINITION_OF_CLASS_FEATURES(String feature, String superclass) '''Redefinition of features is not allowed: The feature "«feature»" is already defined in super class "«superclass»".'''
+	static final def String TRIPLE_RULE_INSTANTIATION_ERROR(String section) '''The class you want to instantiate must be from a metamodel that is given in the TripleGrammar's «section» part.'''
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -543,6 +547,67 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void forbidComplexEdgesInModels(ModelRelationStatement relation) {
 		if (relation.types.size > 1 && relation.eContainer.eContainer instanceof Model) {
 			error(FORBIDDING_COMPLEX_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
+		}
+	}
+	
+	/**
+	 * Checks if a class of a metamodel redefines a property of its superclasses
+	 */
+	@Check
+	def void forbidRedefinitionOfClassFeatures(Metamodel entity) {
+		for (nb : entity.nodeBlocks) {
+			if (!nb.superTypes.isEmpty) {
+				nb.properties.forEach[p |
+					nb.superTypes.forEach[st |
+						findPropertyRedefinitions(p, st)
+					]
+				]
+				nb.relations.forEach[r |
+					nb.superTypes.forEach[st |
+						findRelationRedefinitions(r, st)
+					]
+				]
+			}
+		}
+	}
+	
+	/**
+	 * Helper method to find redefinitions of properties recursively.
+	 */
+	def void findPropertyRedefinitions(MetamodelPropertyStatement property, MetamodelNodeBlock superclass) {
+		if (superclass.properties.map[sp | sp.name].contains(property.name)) {
+			error(REDEFINITION_OF_CLASS_FEATURES(property.name, superclass.name), property, EMSLPackage.Literals.METAMODEL_PROPERTY_STATEMENT__NAME)
+		}
+		superclass.superTypes.forEach[s | findPropertyRedefinitions(property, s)]
+	}
+	
+	/**
+	 * Helper method to find redefinitions of relations recursively.
+	 */
+	def void findRelationRedefinitions(MetamodelRelationStatement relation, MetamodelNodeBlock superclass) {
+		if (superclass.relations.map[sr | sr.name].contains(relation.name)) {
+			error(REDEFINITION_OF_CLASS_FEATURES(relation.name, superclass.name), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__NAME)
+		}
+		superclass.superTypes.forEach[s | findRelationRedefinitions(relation, s)]
+	}
+	
+	/**
+	 * Checks if the nodeblocks of a tripleRule instantiate only classes that are contained in the metamodels
+	 * that are specified in the rule's grammar.
+	 */
+	@Check
+	def void checkInstantiationOfMetamodelsInTripleRule(TripleRule tripleRule) {
+		for (nb : tripleRule.srcNodeBlocks) {
+			tripleRule.type.srcMetamodels.map[m | m.nodeBlocks].forEach[l | 
+				if (!l.contains(nb.type))
+					error(TRIPLE_RULE_INSTANTIATION_ERROR("source"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+			]
+		}
+		for (nb : tripleRule.trgNodeBlocks) {
+			tripleRule.type.trgMetamodels.map[m | m.nodeBlocks].forEach[l | 
+				if (!l.contains(nb.type))
+					error(TRIPLE_RULE_INSTANTIATION_ERROR("target"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+			]
 		}
 	}
 }
