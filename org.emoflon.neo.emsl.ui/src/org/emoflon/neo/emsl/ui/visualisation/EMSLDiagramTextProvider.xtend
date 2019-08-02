@@ -451,7 +451,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
-			«IF (nb.eContainer.eContainer as Pattern).condition !== null »
+			«IF (nb.eContainer.eContainer as Pattern)?.condition !== null »
 				legend bottom
 					«getConditionString((nb.eContainer.eContainer as Pattern))»
 				endlegend
@@ -487,7 +487,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
-			«IF (nb.eContainer.eContainer as Pattern).condition !== null »
+			«IF (nb.eContainer.eContainer as Pattern)?.condition !== null »
 				legend bottom
 					«getConditionString((nb.eContainer.eContainer as Pattern))»
 				endlegend
@@ -639,7 +639,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				entity.name = "?"
 			if (nb.name === null)
 				nb.name = "?"
-			if (nb.type.name === null)
+			if (nb.type?.name === null)
 				nb.type.name = "?"
 
 			'''"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»"'''

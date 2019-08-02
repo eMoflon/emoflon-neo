@@ -20,6 +20,7 @@ import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -51,35 +52,37 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		}
 	}
 	
-	override completeModelRelationStatement_ProxyTarget(
-			EObject entity, Assignment assignemnt,
-			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-			
-		for (refinement : (entity.eContainer.eContainer as AtomicPattern).superRefinementTypes) {
-			for (relabeling : refinement.relabeling) {
-				acceptor.accept(createCompletionProposal(relabeling.newLabel, context))
-			}
-		}
-	}
-	
 	override completeModelRelationStatement_Target(
 			EObject entity, Assignment assignment,
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-			
 		super.completeModelRelationStatement_Target(entity, assignment, context, acceptor)
-		if (entity.eContainer.eContainer instanceof AtomicPattern) {
-			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer as SuperType)) {
-				for (relabeling : (refinement as RefinementCommand).relabeling) {
-					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
+		for (nb : collectPossibleTargets(entity as ModelRelationStatement)) {
+			acceptor.accept(createCompletionProposal("$" + nb.name, context))
+		}
+	}
+	
+	/**
+	 * Helper method for collecting possible targets of a ModelRelationStatement.
+	 */
+	def collectPossibleTargets(ModelRelationStatement entity) {
+		var nodes = new HashSet()
+		var dispatcher = new EntityAttributeDispatcher()
+		for (refinement : dispatcher.getSuperRefinementTypes(entity.eContainer.eContainer as SuperType)) {
+			for (nb : dispatcher.getNodeBlocks(EMSLFlattener.flatten(refinement.referencedType))) {
+				refinement.relabeling.forEach[rel |
+					if (rel.oldLabel.equals(nb.name))
+						nb.name = rel.newLabel
+				]
+				var needed = true
+				for (other : dispatcher.getNodeBlocks(entity.eContainer.eContainer as SuperType)) {
+					if (nb.name.equals(other.name))
+						needed = false
 				}
-			}
-		} else {
-			for (refinement : new EntityAttributeDispatcher().getSuperRefinementTypes(entity.eContainer.eContainer as SuperType)) {
-				for (relabeling : (refinement as RefinementCommand).relabeling) {
-					acceptor.accept(createCompletionProposal("$" + relabeling.newLabel, context))
-				}
+				if (needed && entity.types.map[t | t.type.target].contains(nb.type))
+					nodes.add(nb)
 			}
 		}
+		return nodes
 	}
 	
 	override completeModelNodeBlock_Name(

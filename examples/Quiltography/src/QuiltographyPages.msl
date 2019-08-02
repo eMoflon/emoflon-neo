@@ -7,417 +7,417 @@ model GabisQuiltographyPages -> GabisQuiltographyBooks, GabisQuiltographyTypes, 
 	p1:Page {
 		.number : 6
 		.name : "Baby King Cakes Quilt"
-		-type->quilt
-		-blockPattern->sqInASq
-		-book->jambalaya
+		-type->$quilt
+		-blockPattern->$sqInASq
+		-book->$jambalaya
 	}
 	
 	p2:Page {
 		.number : 9
 		.name : "Overlapping Seams"
-		-type->technique
-		-book->jambalaya
+		-type->$technique
+		-book->$jambalaya
 	}
 	
 	p3:Page {
 		.number : 10
 		.name : "Streetcars Quilt"
-		-type->quilt
-		-blockPattern->weave
-		-book->jambalaya
+		-type->$quilt
+		-blockPattern->$weave
+		-book->$jambalaya
 	}
 	
 	p4:Page {
 		.number : 13
 		.name : "Speedy Strip Piecing"
-		-type->technique
-		-book->jambalaya
+		-type->$technique
+		-book->$jambalaya
 	}
 	
 	p5:Page {
 		.number : 13
 		.name : "Rulers"
-		-type->tip
-		-book->jambalaya
+		-type->$tip
+		-book->$jambalaya
 	}
 	
 	p6 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 14
-		-type -> quilt
+		-type -> $quilt
 		.name : "Bourbon Street Bricks Quilt"
-		-blockPattern -> weave
+		-blockPattern -> $weave
 	}
 	
 	p7 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 17
-		-type -> technique
+		-type -> $technique
 		.name : "Re-Sizing the Quilt"
 	}
 
 	p8 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 18
-		-type -> quilt
+		-type -> $quilt
 		.name : "The French Quarter Quilt"
-		-blockPattern -> zigzag
+		-blockPattern -> $zigzag
 	}
 
 	p9 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 20
-		-type -> quilt
+		-type -> $quilt
 		.name : "Andouille Quilt"
-		-blockPattern -> stripe
+		-blockPattern -> $stripe
 	}
 
 	p10 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 23
-		-type -> technique
+		-type -> $technique
 		.name : "Diagonal Seams"
 	}
 
 	p11 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 24
-		-type -> quilt
+		-type -> $quilt
 		.name : "Remoulade Stars Quilt"
-		-blockPattern -> star
+		-blockPattern -> $star
 	}
 
 	p12 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 28
-		-type -> quilt
+		-type -> $quilt
 		.name : "Mardi Gras Throws Quilt"
-		-blockPattern -> hexagon
+		-blockPattern -> $hexagon
 	}
 
 	p13 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 34
-		-type -> technique
+		-type -> $technique
 		.name : "Cutting Hexagons and 60-degree Triangles"
 	}
 
 	p14 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 36
-		-type -> quilt
+		-type -> $quilt
 		.name : "Beignet Bed Runner"
-		-blockPattern -> xblocks
+		-blockPattern -> $xblocks
 	}
 
 	p15 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 39
-		-type -> technique
+		-type -> $technique
 		.name : "\"X\" Blocks or Album Blocks"
 	}
 
 	p16 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 40
-		-type -> quilt
+		-type -> $quilt
 		.name : "Lagniappe Log Cabin Quilt"
-		-blockPattern -> logcabin
+		-blockPattern -> $logcabin
 	}
 
 	p17 : Page {
-		-book -> jambalaya
+		-book -> $jambalaya
 		.number : 44
-		-type -> quilt
+		-type -> $quilt
 		.name : "Carnival Confetti Quilt"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 	
 	
 	p18 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 12
-		-type -> basics
+		-type -> $basics
 		.name : "The Pillow’s Fabric Cover"
 	}
 
 	p19 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 14
-		-type -> basics
+		-type -> $basics
 		.name : "The Pillow Form"
 	}
 
 	p20 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 14
-		-type -> basics
+		-type -> $basics
 		.name : "Basic How-Tos"
 	}
 
 	p21 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 20
-		-type -> technique
+		-type -> $technique
 		.name : "Flange"
 	}
 
 	p22 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 21
-		-type -> technique
+		-type -> $technique
 		.name : "Ruffle"
 	}
 
 	p23 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 22
-		-type -> technique
+		-type -> $technique
 		.name : "Cording"
 	}
 
 	p24 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 23
-		-type -> technique
+		-type -> $technique
 		.name : "Piping"
 	}
 
 	p25 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 24
-		-type -> technique
+		-type -> $technique
 		.name : "Stitching"
 	}
 
 	p26 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 25
-		-type -> technique
+		-type -> $technique
 		.name : "Buttons"
 	}
 
 	p27 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 28
-		-type -> pillow
+		-type -> $pillow
 		.name : "Basic Square"
-		-blockPattern -> none
+		-blockPattern -> $none
 	}
 
 	p28 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 28
-		-type -> pillow
+		-type -> $pillow
 		.name : "Vertical Panels"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 
 	p29 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 29
-		-type -> pillow
+		-type -> $pillow
 		.name : "Stitched Panel"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 
 	p30 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 29
-		-type -> pillow
+		-type -> $pillow
 		.name : "Horizontal Panels"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 
 	p31 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 30
-		-type -> pillow
+		-type -> $pillow
 		.name : "Medaillon"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p32 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 31
-		-type -> pillow
+		-type -> $pillow
 		.name : "Sashed Four-Patch I"
-		-blockPattern -> fourPatch
+		-blockPattern -> $fourPatch
 	}
 
 	p33 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 32
-		-type -> pillow
+		-type -> $pillow
 		.name : "Sashed Four-Patch II"
-		-blockPattern -> fourPatch
+		-blockPattern -> $fourPatch
 	}
 
 	p34 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 33
-		-type -> pillow
+		-type -> $pillow
 		.name : "Pieced Border I"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p35 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 34
-		-type -> pillow
+		-type -> $pillow
 		.name : "Pieced Border II"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p36 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 35
-		-type -> pillow
+		-type -> $pillow
 		.name : "Triangles I"
-		-blockPattern -> triangle
+		-blockPattern -> $triangle
 	}
 
 	p37 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 37
-		-type -> pillow
+		-type -> $pillow
 		.name : "Basic Rectangle"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 
 	p38 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 38
-		-type -> pillow
+		-type -> $pillow
 		.name : "Envelope"
-		-blockPattern -> triangle
+		-blockPattern -> $triangle
 	}
 
 	p39 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 39
-		-type -> pillow
+		-type -> $pillow
 		.name : "Double Ruffle"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p40 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 40
-		-type -> pillow
+		-type -> $pillow
 		.name : "Framed Squares I"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p41 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 41
-		-type -> pillow
+		-type -> $pillow
 		.name : "Framed Squares II"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p42 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 42
-		-type -> pillow
+		-type -> $pillow
 		.name : "Flanged Four-Patch"
-		-blockPattern -> fourPatch
+		-blockPattern -> $fourPatch
 	}
 
 	p43 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 43
-		-type -> pillow
+		-type -> $pillow
 		.name : "Framed Panels"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 
 	p44 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 44
-		-type -> pillow
+		-type -> $pillow
 		.name : "Easy Patchwork"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p45 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 45
-		-type -> pillow
+		-type -> $pillow
 		.name : "Two-for-One"
-		-blockPattern -> sqInASq
+		-blockPattern -> $sqInASq
 	}
 
 	p46 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 46
-		-type -> pillow
+		-type -> $pillow
 		.name : "Pieced Rectangle"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 
 	p47 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 47
-		-type -> pillow
+		-type -> $pillow
 		.name : "Log Cabin I"
-		-blockPattern -> logcabin
+		-blockPattern -> $logcabin
 	}
 
 	p48 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 48
-		-type -> pillow
+		-type -> $pillow
 		.name : "Log Cabin II"
-		-blockPattern -> logcabin
+		-blockPattern -> $logcabin
 	}
 
 	p49 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 50
-		-type -> pillow
+		-type -> $pillow
 		.name : "Wool Circles"
-		-blockPattern -> circle
+		-blockPattern -> $circle
 	}
 
 	p50 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 51
-		-type -> pillow
+		-type -> $pillow
 		.name : "Buttons"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 
 	p51 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 52
-		-type -> pillow
+		-type -> $pillow
 		.name : "Whipstitched Squares"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p52 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 53
-		-type -> pillow
+		-type -> $pillow
 		.name : "Whipstitched Pincushion"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p53 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 53
-		-type -> pillow
+		-type -> $pillow
 		.name : "Silk Pincushion"
-		-blockPattern -> square
+		-blockPattern -> $square
 	}
 
 	p54 : Page {
-		-book -> pillows
+		-book -> $pillows
 		.number : 54
-		-type -> pillow
+		-type -> $pillow
 		.name : "Pillowcase"
-		-blockPattern -> rectangle
+		-blockPattern -> $rectangle
 	}
 }

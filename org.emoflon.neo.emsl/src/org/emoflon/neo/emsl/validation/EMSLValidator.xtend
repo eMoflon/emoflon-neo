@@ -44,6 +44,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
+import java.util.HashSet
 
 /**
  * This class contains custom validation rules. 
@@ -51,6 +52,12 @@ import org.emoflon.neo.emsl.util.FlattenerException
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class EMSLValidator extends AbstractEMSLValidator {
+	
+	EntityAttributeDispatcher dispatcher
+	
+	new() {
+		dispatcher = new EntityAttributeDispatcher()
+	}
 
 	// Error and info messages
 	static final String WRONG_PROPERTY_TYPE = "The value of this property must be of type "
@@ -117,17 +124,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				var index = 0
-				for (s : new EntityAttributeDispatcher().getSuperRefinementTypes(entity)) {
+				for (s : dispatcher.getSuperRefinementTypes(entity)) {
 					if (e.alreadyRefinedPatternNames.contains(((s as RefinementCommand).referencedType as AtomicPattern).name))
 						error(
-							REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
+							REFINEMENT_LOOP(dispatcher.getName(entity)),
 							entity.body, EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					index++
 				}
 
 			} else if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_NODES) {
 				var index = 0
-				for (nb : new EntityAttributeDispatcher().getPatternNodeBlocks(entity)) {
+				for (nb : dispatcher.getPatternNodeBlocks(entity)) {
 					if (nb.type.name.equals(e.nodeBlock.type.name)) {
 						error(NON_MERGABLE_TYPES(e.nodeBlock.type.name), nb,
 							EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
@@ -137,7 +144,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 			} else if (e.errorType == FlattenerErrorType.REFINE_ENTITY_WITH_CONDITION) {
 				var index = 0
-				for (s : new EntityAttributeDispatcher().getSuperRefinementTypes(entity)) {
+				for (s : dispatcher.getSuperRefinementTypes(entity)) {
 					if (((s as RefinementCommand).referencedType as AtomicPattern).name.equals((e.superEntity as AtomicPattern).name))
 						error(CONDITION_IN_SUPER_ENTITY, entity.body,
 							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
@@ -145,7 +152,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				}
 
 			} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
-				var dispatcher = new EntityAttributeDispatcher()
+				var dispatcher = dispatcher
 				var index = 0
 				for (s : dispatcher.getSuperRefinementTypes(entity)) {
 					if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
@@ -183,7 +190,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				for (s : entity.superRefinementTypes) {
 					if ((s.referencedType as Rule).name.equals((e.superEntity as Rule).name))
 						error(
-							REFINEMENT_LOOP(new EntityAttributeDispatcher().getName(entity)),
+							REFINEMENT_LOOP(dispatcher.getName(entity)),
 							EMSLPackage.Literals.SUPER_TYPE__SUPER_REFINEMENT_TYPES, index)
 					index++
 				}
@@ -207,7 +214,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				}
 
 			} else if (e.errorType == FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY) {
-				var dispatcher = new EntityAttributeDispatcher()
+				var dispatcher = dispatcher
 				var index = 0
 				for (s : dispatcher.getSuperRefinementTypes(entity)) {
 					if (!((s as RefinementCommand).referencedType instanceof AtomicPattern) &&
@@ -238,7 +245,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	def handleCommonFlattenerExceptions(FlattenerException e, SuperType entity) {
 		if (e.errorType == FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+			for (nb : dispatcher.getNodeBlocks(entity)) {
 				for (propertyStatement : nb.properties) {
 					if (propertyStatement.type.name.equals(e.property1.type.name))
 						error(
@@ -249,7 +256,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				}
 			}
 		} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+			for (nb : dispatcher.getNodeBlocks(entity)) {
 				for (propertyStatement : nb.properties) {
 					if (propertyStatement.type.name.equals(e.property1.type.name))
 						error("The operators of the properties you are trying to refine are not compatible.",
@@ -265,7 +272,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				}
 			}
 		} else if (e.errorType == FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+			for (nb : dispatcher.getNodeBlocks(entity)) {
 				for (propertyStatement : nb.properties) {
 					if (propertyStatement.type.name.equals(e.property1.type.name)) {
 						error("The value of " + e.property2.type.name + " does not match your other refinements",
@@ -283,7 +290,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				}
 			}
 		} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_PROXY) {
-			for (nb : new EntityAttributeDispatcher().getNodeBlocks(entity)) {
+			for (nb : dispatcher.getNodeBlocks(entity)) {
 				if (nb.name.equals((e.relation.eContainer as ModelNodeBlock).name)) {
 					error(
 						NON_RESOLVABLE_PROXY,
@@ -308,7 +315,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 		namelistsOfEntities.put("Constraint", new ArrayList<String>())
 
 		for (entity : spec.entities) {
-			var dispatcher = new EntityAttributeDispatcher()
+			var dispatcher = dispatcher
 			if (!namelistsOfEntities.get(entity.eClass.name).contains(dispatcher.getName(entity))) {
 				namelistsOfEntities.get(entity.eClass.name).add(dispatcher.getName(entity))
 			} else {
@@ -396,15 +403,13 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 * Checks if multiple nodeBlocks in a metamodel have the same name. If so, an error is produced.
 	 */
 	@Check(NORMAL)
-	def void forbidNodeBlocksWithSameNameInMetamodel(Entity entity) {
-		var namesList = new ArrayList<String>()
-		if (entity instanceof Metamodel) {
-			for (nb : entity.nodeBlocks) {
-				if (!namesList.contains(nb.name))
-					namesList.add(nb.name)
-				else
-					error("Multiple Node Blocks with the same name are not allowed.", nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)		
-			}
+	def void forbidNodeBlocksWithSameNameInMetamodel(Metamodel entity) {
+		var namesList = new HashSet<String>()
+		for (nb : entity.nodeBlocks) {
+			if (!namesList.contains(nb.name))
+				namesList.add(nb.name)
+			else
+				error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)		
 		}
 	}
 	
@@ -414,7 +419,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void forbidNodeBlockAndEdgeWithSameName(Entity entity) {
-		var dispatcher = new EntityAttributeDispatcher()
+		var dispatcher = dispatcher
 		var namesList = new ArrayList
 		
 		var listOfNodeBlocks = new ArrayList;
@@ -496,7 +501,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check
 	def void checkOperatorsOfEdgesAdjacentToNodes(ModelRelationStatement relation) {
 		if (relation.eContainer.eContainer instanceof Rule || relation.eContainer.eContainer instanceof TripleRule) {
-			if (relation.action === null && relation.target.action !== null || (relation.action === null && (relation.eContainer as ModelNodeBlock).action !== null)) {
+			if (relation.action === null && relation.target?.action !== null 
+					|| (relation.action === null && (relation.eContainer as ModelNodeBlock).action !== null)) {
 				error("Edges adjacent to green/red nodes must be green/red", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 			}
 		}

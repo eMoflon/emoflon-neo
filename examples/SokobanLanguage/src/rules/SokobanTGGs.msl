@@ -167,17 +167,17 @@ abstract tripleRule FirstRowAllCols:SokobanImportExport {
 tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {
 	source {
 		r: sokobanExchangeFormat.Row {
-			-firstEntry->e
-			++ -next->nr
+			-firstEntry-> $e
+			++ -next-> nr
 		}
 		
 		++ nr:sokobanExchangeFormat.Row {
-			++ -firstEntry->ne
+			++ -firstEntry-> $ne
 		}
 	}
 	target {
 		f: SokobanLanguage.Field {
-			++ -bottom->nf {
+			++ -bottom-> nf {
 				.col : 0	
 			}
 		}

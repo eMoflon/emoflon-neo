@@ -29,8 +29,6 @@ import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
-import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
@@ -270,14 +268,9 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns the scope for the value of a RelationStatement in a Rule.
 	 */
 	def handleValueOfRelationStatementInRule(ModelRelationStatement statement, EReference reference) {
-		val rule = statement.eContainer.eContainer as Rule
-		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = rule.superRefinementTypes.filter [ st |
-			(st as RefinementCommand).referencedType instanceof Rule
-		].flatMap[r|((r as RefinementCommand).referencedType as Rule).nodeBlocks]
-		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-		allNodeBlocks.addAll(rule.nodeBlocks)
-		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
+		return Scopes.scopeFor(filterForCompatibleSuperTypes(
+				new HashSet((statement.eContainer.eContainer as Rule).nodeBlocks), statement
+		))
 	}
 
 	/**
@@ -295,18 +288,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	private def handleValueOfRelationStatementInTripleRule(ModelRelationStatement statement, EReference reference) {
 		val tripleRule = statement.eContainer.eContainer as TripleRule
 		val allNodeBlocks = new HashSet()
-
-		var nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter [ st |
-			(st as RefinementCommand).referencedType instanceof TripleRule
-		].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).trgNodeBlocks]
-		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-		nodeBlocksInSuperTypes = tripleRule.superRefinementTypes.filter [ st |
-			(st as RefinementCommand).referencedType instanceof TripleRule
-		].flatMap[r|((r as RefinementCommand).referencedType as TripleRule).srcNodeBlocks]
-		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-
-		allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
-		allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
+		if ((statement.eContainer.eContainer as TripleRule).srcNodeBlocks.contains(statement.eContainer))
+			allNodeBlocks.addAll(tripleRule.srcNodeBlocks)
+		else
+			allNodeBlocks.addAll(tripleRule.trgNodeBlocks)
 
 		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
 	}
@@ -324,15 +309,9 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns a scope for the value of a RelationStatement in a Pattern.
 	 */
 	private def handleValueOfRelationStatementInPattern(ModelRelationStatement statement, EReference reference) {
-		val pattern = statement.eContainer.eContainer.eContainer as Pattern
-		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = pattern.body.superRefinementTypes.filter [ st |
-			(st as RefinementCommand).referencedType instanceof AtomicPattern
-		].flatMap[r|((r as RefinementCommand).referencedType as AtomicPattern).nodeBlocks]
-
-		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-		allNodeBlocks.addAll(pattern.body.nodeBlocks)
-		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
+		return Scopes.scopeFor(filterForCompatibleSuperTypes(
+				new HashSet((statement.eContainer.eContainer as AtomicPattern).nodeBlocks), statement
+		))
 	}
 
 	/**
@@ -348,16 +327,9 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns a scope for the value of a RelationStatement in a Model.
 	 */
 	private def handleValueOfRelationStatementInModel(ModelRelationStatement statement, EReference reference) {
-		val model = statement.eContainer.eContainer as Model
-		val allNodeBlocks = new HashSet()
-		val nodeBlocksInSuperTypes = model.superRefinementTypes.filter [ st |
-			(st as RefinementCommand).referencedType instanceof Model
-		].flatMap[r|((r as RefinementCommand).referencedType as Model).nodeBlocks]
-
-		allNodeBlocks.addAll(nodeBlocksInSuperTypes.toList)
-		allNodeBlocks.addAll(model.nodeBlocks)
-
-		return Scopes.scopeFor(filterForCompatibleSuperTypes(allNodeBlocks, statement))
+		return Scopes.scopeFor(filterForCompatibleSuperTypes(
+				new HashSet((statement.eContainer.eContainer as Model).nodeBlocks), statement
+		))
 	}
 
 	private def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(HashSet<ModelNodeBlock> allNodeBlocks,
