@@ -29,6 +29,8 @@ import java.util.ArrayList
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 
 class EMSLUtil {
+	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
+	
 	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
 	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/" + ORG_EMOFLON_NEO_CORE + "/model/NeoCore.msl"
 	
