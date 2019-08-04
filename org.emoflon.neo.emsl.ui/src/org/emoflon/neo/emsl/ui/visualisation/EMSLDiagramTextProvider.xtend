@@ -401,19 +401,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		try {
 			var entityCopy = EMSLFlattener.flattenPattern(entity)
 			'''
-				package «IF entity.body.abstract»//«ENDIF»«(entityCopy as Pattern).body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
+				package «IF entity.body.abstract»//«ENDIF»«entityCopy.body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
 				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy.body)»
-					«visualiseNodeBlockInPattern2(entityCopy as Pattern, nb, false)»
+					«visualiseNodeBlockInPattern2(entityCopy, nb, false)»
 				«ENDFOR»
 				}
-				«IF (entityCopy as Pattern).condition !== null »
+				«IF entityCopy.condition !== null »
 					legend bottom
 						«getConditionString(entityCopy)»
 					endlegend
 					«visualiseCondition(entityCopy)»
 				«ENDIF»
-				«IF (entityCopy as Pattern).body.attributeConditions !== null && !(entityCopy as Pattern).body.attributeConditions.isEmpty»
-					«visualiseAttributeConditions((entityCopy as Pattern).body.attributeConditions)»
+				«IF entityCopy.body.attributeConditions !== null && !entityCopy.body.attributeConditions.isEmpty»
+					«visualiseAttributeConditions(entityCopy.body.attributeConditions)»
 				«ENDIF»
 			'''
 		} catch (AssertionError e) {
@@ -687,11 +687,11 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
 		var copiesOfConditionPatterns = newArrayList
 		for (p : conditionPattern) {
-			copiesOfConditionPatterns.add(EMSLFlattener.flatten(p))
+			copiesOfConditionPatterns.add(EMSLFlattener.flattenToPattern(p))
 		}
 		'''
 			«FOR c : copiesOfConditionPatterns»
-				«visualiseEntity(c as Pattern, false)»
+				«visualiseEntity(c, false)»
 			«ENDFOR»
 			«IF entity instanceof Rule || entity instanceof Pattern»
 				«FOR nb : entity.nodeBlocksOfEntity»

@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
@@ -44,6 +45,13 @@ public class EMSLFlattener {
 	public static Pattern flattenPattern(Pattern p) throws FlattenerException {
 		var flattenedBody = (AtomicPattern) flatten(p.getBody());
 		var pattern = EcoreUtil.copy(p);
+		pattern.setBody(flattenedBody);
+		return pattern;
+	}
+
+	public static Pattern flattenToPattern(AtomicPattern ap) throws FlattenerException {
+		var flattenedBody = (AtomicPattern) flatten(ap);
+		var pattern = EMSLFactory.eINSTANCE.createPattern();
 		pattern.setBody(flattenedBody);
 		return pattern;
 	}
