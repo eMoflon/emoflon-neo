@@ -76,6 +76,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String INSTANTIATING_ABSTRACT_TYPE_IN_NON_ABSTRACT_MODEL = "Instantiating an abstract type in a non-abstract model is not allowed."
 	static final def String REDEFINITION_OF_CLASS_FEATURES(String feature, String superclass) '''Redefinition of features is not allowed: The feature "«feature»" is already defined in super class "«superclass»".'''
 	static final def String TRIPLE_RULE_INSTANTIATION_ERROR(String section) '''The class you want to instantiate must be from a metamodel that is given in the TripleGrammar's «section» part.'''
+	static final String COMPLEX_EDGE_WITH_OPERATOR = "Green/Red edges with multiple types are not allowed"
+	static final String EDGE_WITH_OPERATOR_AND_PATH_LENGTH = "Green/Red edges with path lengths are not allowed"
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -608,6 +610,21 @@ class EMSLValidator extends AbstractEMSLValidator {
 				if (!l.contains(nb.type))
 					error(TRIPLE_RULE_INSTANTIATION_ERROR("target"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
 			]
+		}
+	}
+	
+	/**
+	 * Checks if a red/green edge (inside rule/tripleRule) is a complex edge.
+	 * Since this can not be handled it is forbidden.
+	 */
+	@Check (NORMAL)
+	def void forbidComplexEdgesInGreenRedEdges (ModelRelationStatement relation) {
+		if (relation.action !== null) {
+			if (relation.types.size > 1) {
+				error(COMPLEX_EDGE_WITH_OPERATOR, relation.types.get(1), EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__TYPE)
+			} else if (relation.types.get(0)?.lower !== null) {
+				error(EDGE_WITH_OPERATOR_AND_PATH_LENGTH, relation.types.get(0), EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__LOWER)
+			}
 		}
 	}
 }

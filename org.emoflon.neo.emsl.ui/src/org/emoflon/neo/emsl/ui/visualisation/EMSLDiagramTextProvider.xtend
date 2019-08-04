@@ -442,7 +442,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»:«ENDIF»«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForPatternComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+				«labelForPatternComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
@@ -478,7 +478,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»:«ENDIF»«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF (t.lower !== null && t.upper !== null)»(«t.lower»..«t.upper»)«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForPatternComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+				«labelForPatternComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
@@ -570,7 +570,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+				«labelForRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
@@ -611,7 +611,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+				«labelForRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
@@ -932,7 +932,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForTripleRuleComponent(nb)» : «attr.type.name» = «printValue(attr.value)»
+				«labelForTripleRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : getTripleRuleNodeBlocks(entityCopy as TripleRule).filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
