@@ -191,7 +191,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						
 					}
 				«ENDIF»
-				«visualiseSuperTypesInEntity(entity)»
+				«IF entity instanceof SuperType»
+					«visualiseSuperTypesInEntity(entity)»
+				«ENDIF»
 			«ENDFOR»
 		'''
 	}
@@ -1104,56 +1106,59 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
 	 */
-	def String visualiseSuperTypesInEntity(Entity entity) {
+	def String visualiseSuperTypesInEntity(SuperType entity) {
 		var dispatcher = new EntityAttributeDispatcher();
 		var superTypeNames = new HashMap<String, ArrayList<String[]>>()
 		superTypeNames.put("Pattern", new ArrayList<String[]>())
 		superTypeNames.put("Rule", new ArrayList<String[]>())
 		superTypeNames.put("Model", new ArrayList<String[]>())
-		superTypeNames.put("Metamodel", new ArrayList<String[]>())
 		superTypeNames.put("TripleRule", new ArrayList<String[]>())
-		
+
 		for (st : entity.superRefinementTypes) {
-			if (st instanceof RefinementCommand) {
-				if ((st as RefinementCommand).referencedType instanceof AtomicPattern && !superTypeNames.get("Pattern").contains(((st as RefinementCommand).referencedType as AtomicPattern).name)) {
-					val String[] tmp = #["", ""];
-					tmp.set(0, ((st as RefinementCommand).referencedType as AtomicPattern).name)
-					if (((st as RefinementCommand).referencedType as AtomicPattern).abstract)
-						tmp.set(1, "1")
-					else
-						tmp.set(1, "0")
-					superTypeNames.get("Pattern").add(tmp)
-				} else if ((st as RefinementCommand).referencedType instanceof Rule && !superTypeNames.get("Rule").contains(((st as RefinementCommand).referencedType as Rule).name)) {
-					val String[] tmp = #["", ""];
-					tmp.set(0, (((st as RefinementCommand).referencedType as Rule).name))
-					if (((st as RefinementCommand).referencedType as Rule).abstract)
-						tmp.set(1, "1")
-					else
-						tmp.set(1, "0")
-					superTypeNames.get("Rule").add(tmp)
-				} else if ((st as RefinementCommand).referencedType instanceof Model && !superTypeNames.get("Model").contains(((st as RefinementCommand).referencedType as Model).name)) {
-					val String[] tmp = #["", ""];
-					tmp.set(0, ((st as RefinementCommand).referencedType as Model).name)
-					if (((st as RefinementCommand).referencedType as Model).abstract)
-						tmp.set(1, "1")
-					else
-						tmp.set(1, "0")
-					superTypeNames.get("Model").add(tmp)
-				} else if ((st as RefinementCommand).referencedType instanceof TripleRule && !superTypeNames.get("TripleRule").contains(((st as RefinementCommand).referencedType as TripleRule).name)) {
-					val String[] tmp = #["", ""];
-					tmp.set(0, ((st as RefinementCommand).referencedType as TripleRule).name)
-					if (((st as RefinementCommand).referencedType as TripleRule).abstract)
-						tmp.set(1, "1")
-					else
-						tmp.set(1, "0")
-					superTypeNames.get("TripleRule").add(tmp)
-				}
+			if (st.referencedType instanceof AtomicPattern &&
+				!superTypeNames.get("Pattern").contains(
+					(st.referencedType as AtomicPattern).name)) {
+				val String[] tmp = #["", ""];
+				tmp.set(0, (st.referencedType as AtomicPattern).name)
+				if ((st.referencedType as AtomicPattern).abstract)
+					tmp.set(1, "1")
+				else
+					tmp.set(1, "0")
+				superTypeNames.get("Pattern").add(tmp)
+			} else if (st.referencedType instanceof Rule &&
+				!superTypeNames.get("Rule").contains((st.referencedType as Rule).name)) {
+				val String[] tmp = #["", ""];
+				tmp.set(0, ((st.referencedType as Rule).name))
+				if ((st.referencedType as Rule).abstract)
+					tmp.set(1, "1")
+				else
+					tmp.set(1, "0")
+				superTypeNames.get("Rule").add(tmp)
+			} else if (st.referencedType instanceof Model &&
+				!superTypeNames.get("Model").contains((st.referencedType as Model).name)) {
+				val String[] tmp = #["", ""];
+				tmp.set(0, (st.referencedType as Model).name)
+				if ((st.referencedType as Model).abstract)
+					tmp.set(1, "1")
+				else
+					tmp.set(1, "0")
+				superTypeNames.get("Model").add(tmp)
+			} else if (st.referencedType instanceof TripleRule &&
+				!superTypeNames.get("TripleRule").contains(
+					(st.referencedType as TripleRule).name)) {
+				val String[] tmp = #["", ""];
+				tmp.set(0, (st.referencedType as TripleRule).name)
+				if ((st.referencedType as TripleRule).abstract)
+					tmp.set(1, "1")
+				else
+					tmp.set(1, "0")
+				superTypeNames.get("TripleRule").add(tmp)
 			}
 		}
 		'''
 			«FOR type : superTypeNames.keySet»
 				«FOR name : superTypeNames.get(type)»
-					"«entity.eClass.name»: «IF dispatcher.getAbstract(entity)»//«ENDIF»«entity.name»«IF dispatcher.getAbstract(entity)»//«ENDIF»"--|>"«type»: «IF name.get(1).equals("1")»//«ENDIF»«name.get(0)»«IF name.get(1).equals("1")»//«ENDIF»"
+					"«entity.eClass.name»: «IF dispatcher.getAbstract(entity as Entity)»//«ENDIF»«entity.name»«IF dispatcher.getAbstract(entity as Entity)»//«ENDIF»"--|>"«type»: «IF name.get(1).equals("1")»//«ENDIF»«name.get(0)»«IF name.get(1).equals("1")»//«ENDIF»"
 				«ENDFOR»
 			«ENDFOR»
 		'''
