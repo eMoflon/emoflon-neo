@@ -103,7 +103,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		
 		super.completeImportStatement_Value(model, assignment, context, acceptor)
-		var prep = "\"platform:/resoure"
+		var prep = "\"platform:/resource"
 		val files = new HashSet<IResource>()
 		var root = ResourcesPlugin.workspace.root
 		root.accept(new IResourceVisitor() {
