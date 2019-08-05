@@ -1,0 +1,111 @@
+metamodel FruitGarden {
+	FruitGarden {
+		<>-crow(1..1)->Crow
+		<>-basket(1..1)->FruitBasket
+		<>-trees(0..*)->FruitTree
+		<>-pathWay(1..1)->PathWay
+	}
+	
+	abstract FruitTree {
+		<+>-fruits(0..*)->Fruit	
+	}
+	
+	PearTree : FruitTree {
+		<+>-pears(0..*)->Pear
+	}
+	
+	AppleTree : FruitTree  {
+		<+>-apples(0..*)->Apple
+	}
+	
+	PlumTree : FruitTree  {
+		<+>-plums(0..*)->Plum
+	}
+	
+	LemonTree : FruitTree  {
+		<+>-lemons(0..*)->Lemon
+	}
+	
+	Crow {
+		-on(1..1)->PathSegment
+	}
+	
+	abstract Fruit
+	Pear : Fruit
+	Apple : Fruit
+	Plum : Fruit
+	Lemon : Fruit
+	
+	PathWay {
+		<+>-segments(1..*)->PathSegment
+	}
+	
+	PathSegment {
+		-next(0..1)->PathSegment
+	}
+	
+	FruitBasket {
+		<+>-fruits(0..*)->Fruit
+	}
+}
+
+model SampleGarden {
+	sample:FruitGarden {
+		-crow->crow
+		-pathWay->pathWay
+		-basket->basket
+		-trees->apples
+		-trees->plums
+		-trees->lemons
+		-trees->pears
+	}
+	
+	crow:Crow {
+		-on->seg1
+	}
+	
+	basket:FruitBasket
+	
+	pathWay:PathWay {
+		-segments->seg1
+		-segments->seg2
+		-segments->seg3
+		-segments->seg4
+	}
+	
+	seg1:PathSegment {
+		-next->seg2
+	}
+	seg2:PathSegment {
+		-next->seg3
+	}
+	seg3:PathSegment {
+		-next->seg4
+	}	
+	seg4:PathSegment
+	
+	pears:PearTree {
+		-fruits->pear
+		-pears->pear
+	}
+	
+	plums:PlumTree {
+		-fruits->plum
+		-plums->plum
+	}
+	
+	apples:AppleTree {
+		-fruits->apple
+		-apples->apple
+	}
+	
+	lemons:LemonTree {
+		-fruits->lemon
+		-lemons->lemon
+	}
+	
+	pear:Pear
+	apple:Apple
+	lemon:Lemon
+	plum:Plum			
+}

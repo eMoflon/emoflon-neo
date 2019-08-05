@@ -1,0 +1,29 @@
+import "platform:/resource/FruitGardenLanguage/src/org/eneo/fruitgarden/FruitGardenLanguage.msl"
+
+constraint GameIsLost = enforce GameLost
+
+pattern GameLost {
+	crow:Crow {
+		-on->lastseg
+	}
+	
+	lastseg:PathSegment
+} when forbid NotLastSeg
+
+pattern NotLastSeg {
+	lastseg:PathSegment {
+		-next->seg
+	}
+	seg:PathSegment
+}
+
+
+constraint GameWon = forbid OneFruitOnTree
+
+pattern OneFruitOnTree {
+	tree:FruitTree {
+		-fruits->f
+	}
+	
+	f:Fruit
+}

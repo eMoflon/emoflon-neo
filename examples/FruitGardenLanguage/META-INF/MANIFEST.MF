@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FruitGardenLanguage
+Bundle-SymbolicName: FruitGardenLanguage
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: FruitGardenLanguage
+Bundle-RequiredExecutionEnvironment: JavaSE-10
+Export-Package: org.eneo.fruitgarden
+Require-Bundle: org.emoflon.neo.neo4j.adapter
