@@ -78,7 +78,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	def generateCommon() {
-		val store = new ScopedPreferenceStore(InstanceScope.INSTANCE, EMSLUtil.PLUGIN_ID)
+		val store = new ScopedPreferenceStore(InstanceScope.INSTANCE, EMSLUtil.UI_PLUGIN_ID)
 
 		val uri = store.getString(EMSLUtil.P_URI);
 		val userName = store.getString(EMSLUtil.P_USER);

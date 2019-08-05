@@ -1,6 +1,10 @@
 import "platform:/resource/FruitGardenLanguage/src/org/eneo/fruitgarden/FruitGardenLanguage.msl"
 
+// When is the game over?
+
 constraint GameIsLost = enforce GameLost
+constraint GameIsWon = forbid OneFruitOnTree
+constraint GameOver = GameIsLost || GameIsWon
 
 pattern GameLost {
 	crow:Crow {
@@ -17,9 +21,6 @@ pattern NotLastSeg {
 	seg:PathSegment
 }
 
-
-constraint GameWon = forbid OneFruitOnTree
-
 pattern OneFruitOnTree {
 	tree:FruitTree {
 		-fruits->f
@@ -27,3 +28,9 @@ pattern OneFruitOnTree {
 	
 	f:Fruit
 }
+
+// Rules of the game (actions)
+
+//TODO: Move crow forward
+
+//TODO: Pick a fruit (for all types of fruits)
