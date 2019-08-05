@@ -258,7 +258,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 			newNb.setType(nodeBlockTypeQueue.peek());
 			newNb.setName(name);
-			newNb.setAction(mergeActionOfNodes(blocksWithKey));
+			newNb.setAction(mergeActionOfNodes(blocksWithKey, entity));
 
 			mergedNodes.add(newNb);
 		}
@@ -273,8 +273,9 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * 
 	 * @param nodes list of nodes that provide actions must be merged
 	 * @return an action if a merged action can be determined, null if not
+	 * @throws FlattenerException 
 	 */
-	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes) {
+	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes, SuperType entity) throws FlattenerException {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -292,6 +293,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			action.setOp(ActionOperator.CREATE);
 		else if (!green && red && !black)
 			action.setOp(ActionOperator.DELETE);
+		else if (green && red && !black)
+			throw new FlattenerException(entity, FlattenerErrorType.ONLY_RED_AND_GREEN_NODES, nodes);
 		else
 			action = null;
 
@@ -400,8 +403,9 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @param typename   parameter to decide which edges have to be merged.
 	 * @param targetname parameter to decide which edges have to be merged.
 	 * @return Action that is the result of the merging of all edges' actions.
+	 * @throws FlattenerException 
 	 */
-	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges) {
+	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges, SuperType entity) throws FlattenerException {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -419,6 +423,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			action.setOp(ActionOperator.CREATE);
 		else if (!green && red && !black)
 			action.setOp(ActionOperator.DELETE);
+		else if (green && red && !black)
+			throw new FlattenerException(entity, FlattenerErrorType.ONLY_RED_AND_GREEN_EDGES, edges);
 		else
 			return null;
 
@@ -780,7 +786,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 							collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity));
 
 					// check and merge action
-					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname)));
+					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname), entity));
 
 					// create new ModelRelationStatementType for the new ModelRelationStatement
 					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
@@ -851,7 +857,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity));
 
 				// check and merge action
-				newRel.setAction(mergeActionOfRelations(namedEdges.get(n)));
+				newRel.setAction(mergeActionOfRelations(namedEdges.get(n), entity));
 
 				mergedNodes.forEach(nb -> {
 					if (nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {

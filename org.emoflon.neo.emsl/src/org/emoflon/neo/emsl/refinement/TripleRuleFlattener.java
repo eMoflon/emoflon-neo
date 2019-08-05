@@ -215,7 +215,7 @@ public class TripleRuleFlattener extends RuleFlattener {
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 			newNb.setType(nodeBlockTypeQueue.peek());
 			newNb.setName(name);
-			newNb.setAction(mergeActionOfNodes(blocksWithKey));
+			newNb.setAction(mergeActionOfNodes(blocksWithKey, entity));
 
 			mergedNodes.add(newNb);
 		}

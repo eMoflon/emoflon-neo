@@ -83,6 +83,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String FORBIDDEN_ACTIONS = "Actions are not allowed here."
 	static final String FORBIDDEN_NAMES_IN_EDGES = "Names in normal edges (only one type) are not allowed."
 	static final String COLORED_EDGES_ADJACENT_TO_COLORED_NODES = "Edges adjacent to green/red nodes must be green/red"
+	static final def String ONLY_RED_AND_GREEN_ELEMENTS(String type, String name) '''The «type»s called "«name»" in your refinements appear only red and green which is not allowed. To fix this, repeat this «type» without an operator.'''
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -129,7 +130,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 * If an error occurs, an appropriate error message is shown.
 	 */	
 	@Check(NORMAL)
-	def checkFlatteningOfRules(SuperType entity) {
+	def checkFlatteningOfSuperType(SuperType entity) {
 		try {
 			EMSLFlattener.flatten(entity);
 		} catch (FlattenerException e) {
@@ -217,6 +218,11 @@ class EMSLValidator extends AbstractEMSLValidator {
 						)
 					}
 				}
+			} else if (e.errorType == FlattenerErrorType.ONLY_RED_AND_GREEN_NODES) {
+				error(ONLY_RED_AND_GREEN_ELEMENTS("node", (e.elements.get(0) as ModelNodeBlock).name), entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
+			} else if (e.errorType == FlattenerErrorType.ONLY_RED_AND_GREEN_EDGES) {
+				error(ONLY_RED_AND_GREEN_ELEMENTS("edge", (e.elements.get(0) as ModelRelationStatement).types.get(0).type.name), 
+						entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
 			}
 		}
 	}
