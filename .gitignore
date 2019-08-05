@@ -61,3 +61,6 @@ examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangameg
 examples/SokobanGUI/src-gen/org/emoflon/neo/api/org/moflon/tutorial/sokobangamegui/patterns/EmptyFieldsData.java
 examples/SokobanGUI/SokobanGUI.launch
 examples/TestSuite/out/org.emoflon.neo.neocore.ecore
+examples/FruitGardenLanguage/src-gen/org/emoflon/neo/api/org/eneo/fruitgarden/API_PatternsAndRules.java
+examples/FruitGardenLanguage/src-gen/org/emoflon/neo/api/org/eneo/fruitgarden/API_FruitGardenLanguage.java
+examples/FruitGardenLanguage/src-gen/org/emoflon/neo/api/API_Common.java
