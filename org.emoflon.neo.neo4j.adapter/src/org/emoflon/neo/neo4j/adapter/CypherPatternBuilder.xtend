@@ -225,13 +225,12 @@ class CypherPatternBuilder {
 	def static String constraintQuery_isStillValid(Collection<NeoNode> nodes, Collection<String> helperNodes, String matchCond, String whereCond, boolean injective, NeoMatch match) {
 		
 		'''«matchQuery(nodes)»
-		«whereQuery(nodes, injective)»
+		WHERE «nodeIdBlock(nodes, match)»
 		«withQuery(nodes)»
 		«matchCond»
 		«constraint_withQuery(helperNodes)»
 		WHERE «whereCond»
 		«constraint_withQuery(helperNodes)»
-		WHERE «nodeIdBlock(nodes, match)»
 		RETURN TRUE
 		'''
 	} 
@@ -310,11 +309,11 @@ class CypherPatternBuilder {
 	 
 	 def static String conditionQuery_isStillValid(Collection<NeoNode> nodes, String optionalMatches, String whereClause, Collection<String> helperNodes, boolean isNegated, NeoMatch match) {
 	 	'''«matchQuery(nodes)»
+	 	WHERE «nodeIdBlock(nodes,match)»
 	 	«withQuery(nodes)»
 	 	«optionalMatches»
 	 	«constraint_withQuery(helperNodes)»
 	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-		WHERE «nodeIdBlock(nodes,match)»
 	 	RETURN TRUE'''
 	 }
 	 
