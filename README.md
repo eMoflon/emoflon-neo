@@ -1,7 +1,7 @@
-[![codebeat badge](https://codebeat.co/badges/3c0e1804-9cfb-4551-ac76-6456a2e06c6d)](https://codebeat.co/projects/github-com-emoflon-emoflon-neo-master)
-
 # emoflon-neo
 A Neo4j-based implementation of eMoflon
+
+[![codebeat badge](https://codebeat.co/badges/3c0e1804-9cfb-4551-ac76-6456a2e06c6d)](https://codebeat.co/projects/github-com-emoflon-emoflon-neo-master)
 
 # Steps required to run the development workspace:
 1. Download the latest Eclipse IDE for Java and DSL Developers from https://www.eclipse.org/downloads/packages/
