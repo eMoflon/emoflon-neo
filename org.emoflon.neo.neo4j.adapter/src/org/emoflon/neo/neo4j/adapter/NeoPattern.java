@@ -153,21 +153,77 @@ public class NeoPattern implements IPattern<NeoMatch> {
 	 * @return true if the match is still valid or false if not
 	 */
 	public boolean isStillValid(NeoMatch m) {
-
+		
 		var bld = builder.orElseThrow();
+		
+		// Run a normal pattern matching, if there is no condition
+		if (p.getCondition() == null) {
+	
+			logger.info("Check if match for " + getName() + " is still valid");
+			var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
+			logger.debug(cypherQuery);
+			var result = bld.executeQuery(cypherQuery);
+	
+			// Query is id-based and must be unique
+			var results = result.list();
+			if (results.size() > 1) {
+				throw new IllegalStateException("There should be at most one record found not " + results.size());
+			}
+	
+			return results.size() == 1;
+			
+		} else {
+			
+			//throw new UnsupportedOperationException();
+			
+			// If the condition is no direct Constraint (instead a Constraint Reference with
+			// a Body, then create a new NeoCondition, with current data and follow the
+			// structure from there for query execution
+			if (p.getCondition() instanceof ConstraintReference) {
+				var cond = new NeoCondition(new NeoConstraint(c, bld, helper), this, c.getName(), bld, helper);
+				return cond.isStillValid(m);
 
-		logger.info("Check if match for " + getName() + " is still valid");
-		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
-		logger.debug(cypherQuery);
-		var result = bld.executeQuery(cypherQuery);
+			} else if (cond instanceof NeoPositiveConstraint) {
 
-		// Query is id-based and must be unique
-		var results = result.list();
-		if (results.size() > 1) {
-			throw new IllegalStateException("There should be at most one record found not " + results.size());
+				var constraint = ((NeoPositiveConstraint) cond);
+
+				// Condition is positive Constraint (ENFORCE xyz)
+				logger.info("Check if match for " + p.getBody().getName() + " WHEN " + constraint.getName() + " is still valid");
+
+				// Create Query
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, m);
+
+				logger.debug(cypherQuery);
+
+				// Execute query
+				var result = bld.executeQuery(cypherQuery);
+				return result.hasNext();
+
+			} else if (cond instanceof NeoNegativeConstraint) {
+
+				var constraint = ((NeoNegativeConstraint) cond);
+
+				// Condition is positive Constraint (ENFORCE xyz)
+				logger.info("Check if match for " + p.getBody().getName() + " WHEN " + constraint.getName() + " is still valid");
+
+				// Create Query
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, m);
+
+				logger.debug(cypherQuery);
+
+				// Execute query
+				var result = bld.executeQuery(cypherQuery);
+				return result.hasNext();
+
+			} else {
+				// Note: If/Then conditions are currently not supported
+				throw new UnsupportedOperationException();
+			}
 		}
-
-		return results.size() == 1;
 	}
 
 	/**

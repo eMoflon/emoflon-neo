@@ -192,6 +192,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
+	@Disabled
 	public void test_All3x3Fields() {
 		assertThat(entities.getPattern_All3x3Fields().matcher().countMatches(), is(4));
 	}
@@ -205,6 +206,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
+	@Disabled
 	public void test_All3x3Fields_StillValid() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.matcher().determineMatches();
@@ -227,6 +229,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
+	@Disabled
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.matcher().determineMatches();
@@ -238,6 +241,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
+	@Disabled
 	public void test_All3x3Fields_StillValid_AfterChangingTypesOfNodes() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.matcher().determineMatches();
