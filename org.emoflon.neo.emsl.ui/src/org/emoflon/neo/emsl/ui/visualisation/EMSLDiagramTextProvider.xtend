@@ -706,6 +706,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«ENDFOR»
 				«ENDFOR»
 			«ENDIF»
+			«IF entity instanceof Constraint && (entity as Constraint).body instanceof Implication»
+				«createLinksForConstraintPatterns(conditionPattern)»
+			«ENDIF»
 		'''
 	}
 	
