@@ -93,4 +93,39 @@ public class NeoCondition {
 		return matches;
 	}
 
+	/**
+	 * Get the data and nodes from the (nested) conditions and runs the query in the
+	 * database, analyze the results and return the matches
+	 * 
+	 * @param limit number of matches, that should be returned - 0 if infinite
+	 * @return Collection<IMatch> return a list of all Matches of the pattern with
+	 *         condition matching
+	 */
+	public boolean isStillValid(NeoMatch m) {
+
+		var bld = builder.orElseThrow();
+
+		logger.info("Check if match for " + p.getName() + " WHEN " + c.getName() + " is still valid");
+
+		// collecting the data
+		var condData = c.getConditionData();
+
+		// creating the query string
+		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(p.getNodes(), condData.getOptionalMatchString(),
+				condData.getWhereClause(), helper.getNodes(), p.isNegated(), m);
+		logger.debug(cypherQuery);
+
+		// run the query
+		var result = bld.executeQuery(cypherQuery);
+
+		// analyze and return results
+		var matches = new ArrayList<NeoMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			matches.add(new NeoMatch(p, record));
+		}
+
+		return matches.size() == 1;
+	}
+	
 }
