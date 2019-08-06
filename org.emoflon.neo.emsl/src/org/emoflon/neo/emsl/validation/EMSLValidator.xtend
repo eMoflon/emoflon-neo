@@ -28,6 +28,8 @@ import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
@@ -283,6 +285,54 @@ class EMSLValidator extends AbstractEMSLValidator {
 			error('''If/else conditions such as "if «o.premise.name» then «o.conclusion.name»" cannot be referenced from other constraints.''',
 				EMSLPackage.Literals.CONSTRAINT__BODY)
 		])
+	}
+
+	/**
+	 * We currently do not support arbitrarily deep nesting
+	 */
+	@Check(NORMAL)
+	def void forbidNesting(NegativeConstraint np) {
+		val atomicPattern = np.pattern
+		val parentPattern = atomicPattern.eContainer as Pattern
+		if(parentPattern !== null && parentPattern.condition !== null){
+			error('''Forbidden patterns cannot have conditions as arbitrary nesting is not supported.''',
+					EMSLPackage.Literals.NEGATIVE_CONSTRAINT__PATTERN)
+		}
+	}
+
+	/**
+	 * We currently do not support arbitrarily deep nesting
+	 */
+	@Check(NORMAL)
+	def void forbidNesting(PositiveConstraint pp) {
+		val atomicPattern = pp.pattern
+		val parentPattern = atomicPattern.eContainer as Pattern
+		if(parentPattern !== null && parentPattern.condition !== null){
+			error('''Enforced patterns cannot have conditions as arbitrary nesting is not supported.''',
+					EMSLPackage.Literals.POSITIVE_CONSTRAINT__PATTERN)
+		}
+	}
+
+	/**
+	 * We currently do not support arbitrarily deep nesting
+	 */
+	@Check(NORMAL)
+	def void forbidNesting(Implication ip) {
+		val premise = ip.premise
+		val conclusion = ip.conclusion
+
+		val premisePattern = premise.eContainer as Pattern
+		val conclusionPattern = conclusion.eContainer as Pattern
+
+		if (premisePattern !== null && premisePattern.condition !== null) {
+			error('''Patterns used as premise cannot have conditions as arbitrary nesting is not supported.''',
+				EMSLPackage.Literals.IMPLICATION__PREMISE)
+		}
+
+		if (conclusionPattern !== null && conclusionPattern.condition !== null) {
+			error('''Patterns used as conclusion cannot have conditions as arbitrary nesting is not supported.''',
+				EMSLPackage.Literals.IMPLICATION__CONCLUSION)
+		}
 	}
 
 	/**
