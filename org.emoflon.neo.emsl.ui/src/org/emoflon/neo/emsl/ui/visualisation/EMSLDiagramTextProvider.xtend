@@ -689,7 +689,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
 		var copiesOfConditionPatterns = newArrayList
 		for (p : conditionPattern) {
-			copiesOfConditionPatterns.add(EMSLFlattener.flattenToPattern(p))
+			var copiedPattern = EMSLFlattener.flattenToPattern(p)
+			copiedPattern.condition = EcoreUtil2.copy((p.eContainer as Pattern).condition)
+			copiesOfConditionPatterns.add(copiedPattern)
 		}
 		'''
 			«FOR c : copiesOfConditionPatterns»
@@ -703,9 +705,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						«ENDFOR»
 					«ENDFOR»
 				«ENDFOR»
-			«ENDIF»
-			«IF entity instanceof Constraint»
-				«createLinksForConstraintPatterns(conditionPattern)»
 			«ENDIF»
 		'''
 	}
@@ -887,6 +886,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
 				«ENDFOR»
 			}
+			«IF (entityCopy as TripleRule).attributeConditions !== null && !(entityCopy as TripleRule).attributeConditions.empty»
+				«visualiseAttributeConditions((entityCopy as TripleRule).attributeConditions)»
+			«ENDIF»
 			«IF entityCopy.nacs.size > 0»
 				«visualiseTripleRuleNACs(entity)»
 			«ENDIF»
