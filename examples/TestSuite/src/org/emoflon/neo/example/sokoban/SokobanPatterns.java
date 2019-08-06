@@ -45,6 +45,28 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
+	public void test_OneSokobanSelectedFigureRequired() {
+		expectSingleMatch(entities.getPattern_OneSokobanSelectedFigureRequired());
+	}
+	
+	@Test
+	public void test_OneSokobanSelectedFigureRequired_StillValid() {
+		var p = entities.getPattern_OneSokobanSelectedFigureRequired();
+		var matches = p.matcher().determineMatches();
+		expectValidMatches(matches, matches.size());
+	}
+	
+	@Test
+	// TODO implement isStillValid for conditions
+	public void test_OneSokobanSelectedFigureRequired_StillValid_AfterDeletedEdge() {
+		var p = entities.getPattern_OneSokobanSelectedFigureRequired();
+		var matches = p.matcher().determineMatches();
+		
+		builder.executeQueryForSideEffect("MATCH (:Board)-[rel:selectedFigure]->(:Sokoban) DELETE rel");
+		expectValidMatches(matches, matches.size()-1);
+	}
+	
+	@Test
 	public void test_OneSokoban_StillValid_AfterChangeSokobanToBlock() {
 		var p = entities.getPattern_OneSokoban();
 		var matches = p.matcher().determineMatches();
