@@ -5,5 +5,6 @@ Bundle-SymbolicName: FruitGardenLanguage
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: FruitGardenLanguage
 Bundle-RequiredExecutionEnvironment: JavaSE-10
-Export-Package: org.eneo.fruitgarden
+Export-Package: org.emoflon.neo.api.org.eneo.fruitgarden,
+ org.eneo.fruitgarden
 Require-Bundle: org.emoflon.neo.neo4j.adapter
