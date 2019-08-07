@@ -130,7 +130,8 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.rules.IRule;
 			import org.emoflon.neo.neo4j.adapter.NeoRule;
 			import org.emoflon.neo.neo4j.adapter.NeoRuleAccess;
-			import org.emoflon.neo.neo4j.adapter.NeoPattern;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
 			import org.emoflon.neo.neo4j.adapter.NeoConstraint;
@@ -190,13 +191,13 @@ class EMSLGenerator extends AbstractGenerator {
 					@Override
 					public NeoPattern matcher(){
 						var p = (Pattern) spec.getEntities().get(«index»);
-						return new NeoPattern(p, builder);
+						return NeoPatternFactory.createNeoPattern(p, builder);
 					}
 					
 					@Override
 					public NeoPattern matcher(«maskClassName» mask) {
 						var p = (Pattern) spec.getEntities().get(«index»);
-						return new NeoPattern(p, builder, mask);
+						return NeoPatternFactory.createNeoPattern(p, builder, mask);
 					}
 					
 					@Override

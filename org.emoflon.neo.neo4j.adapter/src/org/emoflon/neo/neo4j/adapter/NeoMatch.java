@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
 import org.neo4j.driver.v1.Record;
 
 /**
@@ -91,7 +92,7 @@ public class NeoMatch implements IMatch {
 	 * specific query in the database and return if this is still valid or not
 	 * 
 	 * @return true if the given Match is still valid (existing in the database) or
-	 *         false if ot
+	 *         false if not
 	 */
 	@Override
 	public boolean isStillValid() {

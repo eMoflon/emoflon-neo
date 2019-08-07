@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
 
 /**
  * Class created, when a pattern has a condition. Runs relevant pattern and

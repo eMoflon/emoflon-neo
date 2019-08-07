@@ -1,5 +1,7 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
+
 public abstract class NeoPatternAccess<Data extends NeoData, Mask extends NeoMask> {
 	public abstract NeoPattern matcher();
 

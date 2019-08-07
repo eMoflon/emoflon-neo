@@ -4,8 +4,6 @@ import java.util.Collection;
 
 import org.emoflon.neo.engine.api.rules.IMatch;
 
-public interface INegativeConstraint {
+public interface INegativeConstraint extends IConstraint {
 	Collection<IMatch> getViolations();
-
-	boolean isSatisfied();
 }
