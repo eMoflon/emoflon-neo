@@ -19,7 +19,7 @@ public class NeoAndBody {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private AndBody body;
-	private Optional<NeoCoreBuilder> builder;
+	private Optional<IBuilder> builder;
 	private NeoHelper helper;
 
 	/**
@@ -28,13 +28,14 @@ public class NeoAndBody {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoAndBody(AndBody body, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
+	public NeoAndBody(AndBody body, Optional<IBuilder> builder, NeoHelper helper) {
 		this.body = body;
 		this.builder = builder;
 		this.helper = helper;
 	}
+
 	public NeoAndBody(AndBody body, NeoCoreBuilder builder, NeoHelper helper) {
-		this(body,Optional.of(builder),helper);
+		this(body, Optional.of(builder), helper);
 	}
 
 	/**

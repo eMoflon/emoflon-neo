@@ -138,7 +138,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
-			import org.emoflon.neo.neo4j.adapter.NeoPatternAccess;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 			import org.emoflon.neo.neo4j.adapter.NeoMask;
 			import org.emoflon.neo.neo4j.adapter.NeoData;
 			import java.util.HashMap;

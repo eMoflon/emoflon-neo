@@ -38,7 +38,7 @@ import org.neo4j.driver.v1.StatementResult;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 
-public class NeoCoreBuilder implements AutoCloseable {
+public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	public static final String META_TYPE = "metaType";

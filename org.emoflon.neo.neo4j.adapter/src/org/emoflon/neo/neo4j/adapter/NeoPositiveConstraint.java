@@ -20,7 +20,7 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 public class NeoPositiveConstraint implements IPositiveConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private Optional<NeoCoreBuilder> builder;
+	private Optional<IBuilder> builder;
 	private NeoHelper helper;
 
 	private AtomicPattern ap;
@@ -37,22 +37,22 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	 * @param builder   for creating and running Cypher queries
 	 * @param helper    for creating nodes and
 	 */
-	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
+	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, Optional<IBuilder> builder, NeoHelper helper) {
 		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
 		this.injective = injective;
-		
+
 		this.ap = helper.getFlattenedPattern(ap);
-		
+
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodes = new ArrayList<>();
 		this.nodes = this.helper.extractNodesAndRelations(ap.getNodeBlocks());
 	}
-	
+
 	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, NeoCoreBuilder builder, NeoHelper helper) {
-		this(ap,injective,Optional.of(builder),helper);
+		this(ap, injective, Optional.of(builder), helper);
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	public IMatch getMatch() {
 
 		var bld = builder.orElseThrow();
-		
+
 		logger.info("Check constraint: ENFORCE " + ap.getName());
 
 		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);

@@ -20,7 +20,7 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
  */
 public class NeoConstraint implements IConstraint {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private Optional<NeoCoreBuilder> builder;
+	private Optional<IBuilder> builder;
 	private NeoHelper helper;
 	private Constraint c;
 	private final boolean injective = true;
@@ -28,16 +28,17 @@ public class NeoConstraint implements IConstraint {
 	/**
 	 * Constructor will be executed, if the NeoConstraint is created from the test
 	 * 
-	 * @param c       given Constraint for extracting the data
+	 * @param c              given Constraint for extracting the data
 	 * @param neoCoreBuilder for creating and running Cypher queries
 	 */
-	public NeoConstraint(Constraint c, Optional<NeoCoreBuilder> builder) {
+	public NeoConstraint(Constraint c, Optional<IBuilder> builder) {
 		this.builder = builder;
 		this.helper = new NeoHelper();
 		this.c = c;
 	}
-	public NeoConstraint(Constraint c, NeoCoreBuilder builder) {
-		this(c,Optional.of(builder));
+
+	public NeoConstraint(Constraint c, IBuilder builder) {
+		this(c, Optional.of(builder));
 	}
 
 	/**
@@ -49,13 +50,14 @@ public class NeoConstraint implements IConstraint {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoConstraint(Constraint c, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
+	public NeoConstraint(Constraint c, Optional<IBuilder> builder, NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;
 	}
-	public NeoConstraint(Constraint c, NeoCoreBuilder builder, NeoHelper helper) {
-		this(c,Optional.of(builder),helper);
+
+	public NeoConstraint(Constraint c, IBuilder builder, NeoHelper helper) {
+		this(c, Optional.of(builder), helper);
 	}
 
 	/**
@@ -164,7 +166,7 @@ public class NeoConstraint implements IConstraint {
 	 */
 	@Override
 	public boolean isSatisfied() {
-		
+
 		var bld = builder.orElseThrow();
 
 		if (c.getBody() instanceof Implication) {

@@ -1,27 +1,23 @@
 package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.neo4j.adapter.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoCondition;
-import org.emoflon.neo.neo4j.adapter.NeoConstraint;
+import org.emoflon.neo.neo4j.adapter.IBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoHelper;
 import org.emoflon.neo.neo4j.adapter.NeoMask;
 import org.emoflon.neo.neo4j.adapter.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoNegativeConstraint;
 import org.emoflon.neo.neo4j.adapter.NeoNode;
-import org.emoflon.neo.neo4j.adapter.NeoPositiveConstraint;
 import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.v1.StatementResult;
 
 /**
  * Class for representing an in EMSL defined pattern for creating pattern
@@ -33,21 +29,21 @@ import org.neo4j.driver.v1.Record;
 public abstract class NeoPattern implements IPattern<NeoMatch> {
 	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	protected Optional<NeoMask> mask = Optional.empty();
-
-	protected NeoHelper helper;
-
-	protected Pattern p;
-	protected Constraint c;
-	protected IConstraint cond;
-	protected boolean injective;
-
 	protected List<NeoNode> nodes;
+	protected boolean injective;
+	protected NeoHelper helper;
+	protected Pattern p;
 
-	protected NeoPattern(Pattern p) {
+	protected IBuilder builder;
+	protected NeoMask mask;
+
+	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask) {
 		nodes = new ArrayList<>();
 		injective = true;
-		this.helper = new NeoHelper();
+		helper = new NeoHelper();
+
+		this.builder = builder;
+		this.mask = mask;
 
 		// execute the Pattern flatterer. Needed if the pattern use refinements or other
 		// functions. Returns the complete flattened Pattern.
@@ -63,9 +59,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * Relations and Properties and save them to the node in an node list.
 	 */
 	private void extractNodesAndRelations() {
-
 		for (var n : p.getBody().getNodeBlocks()) {
-
 			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
 
 			n.getProperties().forEach(p -> node.addProperty(//
@@ -83,38 +77,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 							r.getTarget().getName()));
 
 			nodes.add(node);
-		}
-	}
-
-	public abstract Record getData(NeoMatch m);
-
-	public String getQuery() {
-		if (p.getCondition() == null) {
-			return CypherPatternBuilder.readQuery_copyPaste(nodes, injective);
-		} else {
-
-			if (p.getCondition() instanceof ConstraintReference) {
-				var cond = new NeoCondition(new NeoConstraint(c, Optional.empty(), helper), this, c.getName(),
-						Optional.empty(), helper);
-				return cond.getQuery();
-
-			} else if (cond instanceof NeoPositiveConstraint) {
-
-				var constraint = ((NeoPositiveConstraint) cond);
-				return CypherPatternBuilder.constraintQuery_copyPaste(nodes, helper.getNodes(),
-						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
-						injective, 0);
-
-			} else if (cond instanceof NeoNegativeConstraint) {
-
-				var constraint = ((NeoNegativeConstraint) cond);
-				return CypherPatternBuilder.constraintQuery_copyPaste(nodes, helper.getNodes(),
-						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
-						injective, 0);
-			} else {
-				// Note: If/Then conditions are currently not supported
-				throw new UnsupportedOperationException();
-			}
 		}
 	}
 
@@ -174,6 +136,12 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			return 0;
 	}
 
+	/**
+	 * Checks if a specify match is still valid, is still correctly in the database
+	 * 
+	 * @param m NeoMatch the match that should be checked
+	 * @return true if the match is still valid or false if not
+	 */
 	public abstract boolean isStillValid(NeoMatch neoMatch);
 
 	/**
@@ -187,5 +155,44 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			return ((ConstraintReference) (p.getCondition())).isNegated();
 		else
 			return false;
+	}
+
+	public abstract String getQuery();
+
+	protected String getQuery(String matchCond, String whereCond) {
+		return CypherPatternBuilder.constraintQuery_copyPaste(//
+				nodes, //
+				helper.getNodes(), //
+				matchCond, //
+				whereCond, //
+				injective, //
+				0);
+	}
+
+	/**
+	 * Get the data and nodes from the pattern (and conditions) and runs the query
+	 * in the database, analyze the results and return the matches
+	 * 
+	 * @return Collection<IMatch> return a list of all Matches of the pattern with
+	 *         condition matching
+	 */
+	@Override
+	public Collection<NeoMatch> determineMatches() {
+		return determineMatches(0);
+	}
+
+	public Record getData(NeoMatch m) {
+		logger.info("Extract data from " + getName());
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, m, injective);
+		logger.debug(cypherQuery);
+		StatementResult result = builder.executeQuery(cypherQuery);
+
+		// Query is id-based and must be unique
+		var results = result.list();
+		if (results.size() != 1) {
+			throw new IllegalStateException("Unable to extract data from match.\n"
+					+ "There should be only one record but found: " + results.size());
+		}
+		return results.get(0);
 	}
 }

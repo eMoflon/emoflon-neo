@@ -17,7 +17,7 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
 public class NeoCondition {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private Optional<NeoCoreBuilder> builder;
+	private Optional<IBuilder> builder;
 	private NeoHelper helper;
 	private NeoConstraint c;
 	private NeoPattern p;
@@ -30,12 +30,11 @@ public class NeoCondition {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder, NeoHelper helper) {
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, IBuilder builder, NeoHelper helper) {
 		this(c, p, name, Optional.of(builder), helper);
 	}
 
-	public NeoCondition(NeoConstraint c, NeoPattern p, String name, Optional<NeoCoreBuilder> builder,
-			NeoHelper helper) {
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, Optional<IBuilder> builder, NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;
@@ -112,8 +111,8 @@ public class NeoCondition {
 		var condData = c.getConditionData();
 
 		// creating the query string
-		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(p.getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), helper.getNodes(), p.isNegated(), m);
+		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(p.getNodes(),
+				condData.getOptionalMatchString(), condData.getWhereClause(), helper.getNodes(), p.isNegated(), m);
 		logger.debug(cypherQuery);
 
 		// run the query
@@ -128,5 +127,5 @@ public class NeoCondition {
 
 		return matches.size() == 1;
 	}
-	
+
 }
