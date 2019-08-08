@@ -54,21 +54,14 @@ public class NeoMatch implements IMatch {
 		}
 	}
 
-	/**
-	 * Return the ID of matched nodes as a result list
-	 * 
-	 * @return list of ID in regards to the variable name of matched nodes
-	 */
 	public long getIdForNode(NeoNode node) {
 		return ids.get(node.getVarName());
 	}
 
-	/**
-	 * Return the ID of a specific node in regards to the given node variable name
-	 * 
-	 * @param node NeoNode define the node name search for in the ID HashMap
-	 * @return id of the NeoNode in the Result
-	 */
+	public long getIdForNode(String varName) {
+		return ids.get(varName);
+	}
+
 	public long getIdForRelation(NeoRelation rel) {
 		return ids.get(rel.getVarName());
 	}
@@ -78,7 +71,7 @@ public class NeoMatch implements IMatch {
 	}
 
 	/**
-	 * Return the correspondong pattern of the match
+	 * Return the corresponding pattern of the match
 	 * 
 	 * @return NeoPattern corresponding to the match
 	 */

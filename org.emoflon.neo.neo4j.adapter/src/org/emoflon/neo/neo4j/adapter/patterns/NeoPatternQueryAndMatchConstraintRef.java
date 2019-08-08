@@ -23,10 +23,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 		var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
-		if (limit > 0)
-			return cond.determineMatches(limit);
-		else
-			return cond.determineMatches();
+		return cond.determineMatches(limit);
 	}
 
 	@Override

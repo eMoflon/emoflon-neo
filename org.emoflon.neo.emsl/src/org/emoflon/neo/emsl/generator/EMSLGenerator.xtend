@@ -188,6 +188,10 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «accessClassName» extends NeoPatternAccess<«dataClassName»,«maskClassName»> {
+					«FOR node : patternBody.nodeBlocks»
+						public final String «node.name» = "«node.name»";
+					«ENDFOR»
+					
 					@Override
 					public NeoPattern matcher(){
 						var p = (Pattern) spec.getEntities().get(«index»);

@@ -137,6 +137,11 @@ class EMSLUtil {
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
 	
+	def static String handleValue(Object value) {
+		if(value instanceof String) return "\"" + value + "\""
+		else return value.toString;
+	}
+	
 	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type){
 		thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
 	}

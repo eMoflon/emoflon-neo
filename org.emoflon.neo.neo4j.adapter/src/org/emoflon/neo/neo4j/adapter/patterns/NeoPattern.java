@@ -54,7 +54,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	}
 
 	/**
-	 * Creates and extracts all necessary information data from the flattend
+	 * Creates and extracts all necessary information data from the flattened
 	 * Pattern. Create new NeoNode for any AtomicPattern node and corresponding add
 	 * Relations and Properties and save them to the node in an node list.
 	 */
@@ -65,6 +65,8 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
 					EMSLUtil.handleValue(p.getValue())));
+
+			extractPropertiesFromMask(node);
 
 			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			n.getRelations()
@@ -77,6 +79,17 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 							r.getTarget().getName()));
 
 			nodes.add(node);
+		}
+	}
+
+	protected void extractPropertiesFromMask(NeoNode node) {
+		for (var propMask : mask.getMaskedAttributes().entrySet()) {
+			var nodeName = mask.getNodeName(propMask.getKey());
+			if (node.getVarName().equals(nodeName)) {
+				node.addProperty(//
+						mask.getAttributeName(propMask.getKey()), //
+						EMSLUtil.handleValue(propMask.getValue()));
+			}
 		}
 	}
 

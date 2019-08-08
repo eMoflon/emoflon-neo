@@ -7,7 +7,6 @@ import org.emoflon.neo.api.API_QuiltographyPages;
 import org.emoflon.neo.api.API_QuiltographyQueries;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class TestQueries extends ENeoTest {
@@ -22,7 +21,6 @@ public class TestQueries extends ENeoTest {
 	}
 
 	@Test
-	@Disabled("//TODO[Jannik]:  Filter matches with mask")
 	public void test_BooksOfSomeAuthor() {
 		var access = queries.getPattern_AllBooksOfAParticularAuthor();
 		var mask = access.mask()//
@@ -30,6 +28,12 @@ public class TestQueries extends ENeoTest {
 				.setSomeAuthorSurname("Wright");
 
 		assertEquals(1, access.matcher(mask).countMatches());
+		
+		access.matcher(mask).determineOneMatch().ifPresent(m -> {
+			var authorId = m.getIdForNode(access.someAuthor);
+			var newMask = access.mask().setSomeAuthor(authorId);
+			assertEquals(1, access.matcher(newMask).countMatches());
+		});
 
 		mask = access.mask()//
 				.setSomeAuthorName("Hui")//
@@ -39,7 +43,6 @@ public class TestQueries extends ENeoTest {
 	}
 
 	@Test
-	@Disabled("//TODO[Jannik]:  Filter matches with mask")
 	public void test_BooksWithSomeClassification() {
 		var access = queries.getPattern_AllBooksWithAParticularClassification();
 		var mask = access.mask().setClassificationName("Mixed");
@@ -58,7 +61,6 @@ public class TestQueries extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("//TODO[Jannik]:  Filter matches with mask")
 	public void test_PageOfSomeBook() {
 		var access = queries.getPattern_AllPagesOfAParticularBook();
 		var mask = access.mask().setBookTitle("Jambalaya Quilts");
@@ -71,15 +73,13 @@ public class TestQueries extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("//TODO[Jannik]:  Filter matches with mask")
 	public void testAllPagesOnQuiltsWithACertainPattern() {
 		var access = queries.getPattern_AllPagesOnQuiltsWithACertainPattern();
 		var mask = access.mask().setPatName("Weave");
-		assertEquals(1, access.matcher(mask).countMatches());
+		assertEquals(2, access.matcher(mask).countMatches());
 	}
 	
 	@Test
-	@Disabled("//TODO[Jannik]:  Filter matches with mask")
 	public void testAllPagesOnPillowsWithACertainPattern() {
 		var access = queries.getPattern_AllPagesOnPillowsWithACertainPattern();
 		var mask = access.mask().setPatName("Rectangle");
