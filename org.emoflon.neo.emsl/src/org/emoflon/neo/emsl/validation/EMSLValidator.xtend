@@ -86,7 +86,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String COLORED_EDGES_ADJACENT_TO_COLORED_NODES = "Edges adjacent to green/red nodes must be green/red"
 	static final def String ONLY_RED_AND_GREEN_ELEMENTS(String type, String name) '''The «type»s called "«name»" in your refinements appear only red and green which is not allowed. To fix this, repeat this «type» without an operator.'''
 	final static String SAME_NAME_ENUMS_CLASSES = "Using the same name twice for enums and/or classes is not allowed."
-	static final String SENSELESS_MULTIPLICITIES = "The upper bound in your multiplicities must be at least as big as your lower bound."
+	static final def String SENSELESS_MULTIPLICITIES(String type) '''The upper bound in your «type» must be at least as big as your lower bound.'''
+	static final String ENFORCING_NAMES_IN_EDGES = "Complex edges (more than one type) must have a name."
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -226,6 +227,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 			} else if (e.errorType == FlattenerErrorType.ONLY_RED_AND_GREEN_EDGES) {
 				error(ONLY_RED_AND_GREEN_ELEMENTS("edge", (e.elements.get(0) as ModelRelationStatement).types.get(0).type.name), 
 						entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
+			} else if (e.errorType == FlattenerErrorType.PATH_LENGTHS_NONSENSE) {
+				error(SENSELESS_MULTIPLICITIES("multiplicities"), EMSLPackage.Literals.SUPER_TYPE__NAME)
 			}
 		}
 	}
@@ -498,7 +501,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check
 	def void enforceNamesInComplexEdges(ModelRelationStatement relation) {
 		if (relation.types.size > 1 && relation.name === null) {
-			error(FORBIDDEN_NAMES_IN_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
+			error(ENFORCING_NAMES_IN_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 		}
 	}
 	
@@ -623,8 +626,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 		if (relation.action !== null) {
 			if (relation.types.size > 1) {
 				error(COMPLEX_EDGE_WITH_OPERATOR, relation.types.get(1), EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__TYPE)
-			} else if (relation.types.get(0)?.lower !== null) {
-				error(EDGE_WITH_OPERATOR_AND_PATH_LENGTH, relation.types.get(0), EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__LOWER)
+			} else if (relation.lower !== null) {
+				error(EDGE_WITH_OPERATOR_AND_PATH_LENGTH, relation.types.get(0), EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
 			}
 		}
 	}
@@ -697,13 +700,13 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void checkMultiplicities(MetamodelRelationStatement relation) {
 		try {
 			if (Integer.parseInt(relation.lower) > Integer.parseInt(relation.upper)) {
-				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
-				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
+				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
+				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
 				}
 		} catch (NumberFormatException e) {
 			if (!(relation.upper.equals("*"))) {
-				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
-				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
+				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
+				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
 			}
 		}
 	}

@@ -44,13 +44,6 @@ public class FlattenerException extends Exception {
 		this.alreadyRefinedPatternNames = alreadyRefinedPatternNames;
 	}
 
-	// for ModelRelationStatement path limits
-	public FlattenerException(SuperType entity, FlattenerErrorType type, ModelRelationStatementType statementType) {
-		this.entity = entity;
-		this.errorType = type;
-		this.statementType = statementType;
-	}
-
 	// for not mergeable complex edges
 	public FlattenerException(SuperType entity, FlattenerErrorType type) {
 		this.entity = entity;
@@ -81,7 +74,7 @@ public class FlattenerException extends Exception {
 		this.superEntity = superEntity;
 	}
 
-	// for non-resolvable proxies of relation statements
+	// for non-resolvable proxies of relation statements/relation path limits
 	public FlattenerException(SuperType entity, FlattenerErrorType type, ModelRelationStatement relation) {
 		this.entity = entity;
 		this.errorType = type;
