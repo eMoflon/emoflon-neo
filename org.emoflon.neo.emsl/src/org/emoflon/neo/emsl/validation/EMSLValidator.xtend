@@ -17,7 +17,6 @@ import org.emoflon.neo.emsl.eMSL.ConstraintReference
 import org.emoflon.neo.emsl.eMSL.DataType
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
-import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.Implication
@@ -86,6 +85,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String FORBIDDEN_NAMES_IN_EDGES = "Names in normal edges (only one type) are not allowed."
 	static final String COLORED_EDGES_ADJACENT_TO_COLORED_NODES = "Edges adjacent to green/red nodes must be green/red"
 	static final def String ONLY_RED_AND_GREEN_ELEMENTS(String type, String name) '''The «type»s called "«name»" in your refinements appear only red and green which is not allowed. To fix this, repeat this «type» without an operator.'''
+	final static String SAME_NAME_ENUMS_CLASSES = "Using the same name twice for enums and/or classes is not allowed."
+	static final String SENSELESS_MULTIPLICITIES = "The upper bound in your multiplicities must be at least as big as your lower bound."
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -384,14 +385,38 @@ class EMSLValidator extends AbstractEMSLValidator {
 	/**
 	 * Checks if multiple nodeBlocks in a metamodel have the same name. If so, an error is produced.
 	 */
-	@Check(NORMAL)
+	@Check
 	def void forbidNodeBlocksWithSameNameInMetamodel(Metamodel entity) {
 		var namesList = new HashSet<String>()
 		for (nb : entity.nodeBlocks) {
 			if (!namesList.contains(nb.name))
 				namesList.add(nb.name)
-			else
-				error(SAME_NAMES_OF_OBJECTS_IN_ENTITY, nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)		
+			else {
+				error(SAME_NAME_ENUMS_CLASSES, nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)
+				for (other : entity.enums) {
+					if (other.name.equals(nb.name))
+						error(SAME_NAME_ENUMS_CLASSES, other, EMSLPackage.Literals.ENUM__NAME)
+				}
+				for (other : entity.nodeBlocks) {
+					if (other.name.equals(nb.name))
+						error(SAME_NAME_ENUMS_CLASSES, other, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)
+				}	
+			}
+		}
+		for (e : entity.enums) {
+			if (!namesList.contains(e.name))
+				namesList.add(e.name)
+			else {
+				error(SAME_NAME_ENUMS_CLASSES, e, EMSLPackage.Literals.ENUM__NAME)
+				for (other : entity.enums) {
+					if (other.name.equals(e.name))
+						error(SAME_NAME_ENUMS_CLASSES, other, EMSLPackage.Literals.ENUM__NAME)
+				}
+				for (other : entity.nodeBlocks) {
+					if (other.name.equals(e.name))
+						error(SAME_NAME_ENUMS_CLASSES, other, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__NAME)
+				}
+			}
 		}
 	}
 	
@@ -400,7 +425,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 * This is forbidden because Relabeling of nodeBlocks and/or edges would no longer work.
 	 */
 	@Check
-	def void forbidNodeBlockAndEdgeWithSameName(Entity entity) {
+	def void forbidNodeBlockAndEdgeWithSameName(SuperType entity) {
 		var dispatcher = dispatcher
 		var namesList = new ArrayList
 		
@@ -600,6 +625,85 @@ class EMSLValidator extends AbstractEMSLValidator {
 				error(COMPLEX_EDGE_WITH_OPERATOR, relation.types.get(1), EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__TYPE)
 			} else if (relation.types.get(0)?.lower !== null) {
 				error(EDGE_WITH_OPERATOR_AND_PATH_LENGTH, relation.types.get(0), EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__LOWER)
+			}
+		}
+	}
+	
+	/**
+	 * Searches for cycles in the inheritance hierarchy of classes in a metamodel.
+	 */
+	@Check (NORMAL)
+	def void forbidInheritanceCyclesOfClasses(Metamodel metamodel) {
+		for (nb : metamodel.nodeBlocks)
+			inheritanceCycleHelper(nb, new HashSet)
+	}
+	
+	/**
+	 * Helper method to find cycles in the inheritance hierarchy in a metamodel recursively.
+	 */
+	def void inheritanceCycleHelper(MetamodelNodeBlock nb, HashSet<MetamodelNodeBlock> superclasses) {
+		var index = 0
+		for (sc : nb.superTypes) {
+			if (superclasses.contains(sc))
+				error("You have a cycle in your inheritance", nb, EMSLPackage.Literals.METAMODEL_NODE_BLOCK__SUPER_TYPES, index)
+			var superCloned = superclasses.clone as HashSet<MetamodelNodeBlock>
+			superCloned.add(sc)
+			inheritanceCycleHelper(sc, superCloned)
+			index++
+		}
+	}
+	
+	/**
+	 * Two attributes in a class can not have the same name.
+	 */
+	@Check (NORMAL)
+	def void forbidSameNameOfAttributes(MetamodelNodeBlock nb) {
+		var attrNames = new HashSet<String>
+		for (attr : nb.properties) {
+			if (attrNames.contains(attr.name)) {
+				error(SAME_NAMES_OF_ENTITIES("attribute"), attr, EMSLPackage.Literals.METAMODEL_PROPERTY_STATEMENT__NAME)
+				for (other : nb.properties) {
+					if (other.name.equals(attr.name))
+						error(SAME_NAMES_OF_ENTITIES("attribute"), other, EMSLPackage.Literals.METAMODEL_PROPERTY_STATEMENT__NAME)
+				}
+			}
+			attrNames.add(attr.name)
+		}
+	}
+	
+	/**
+	 * Two references in a class can not have the same name.
+	 */
+	@Check (NORMAL)
+	def void forbidSameNameOfReferences(MetamodelNodeBlock nb) {
+		var refNames = new HashSet<String>
+		for (ref : nb.relations) {
+			if (refNames.contains(ref.name)) {
+				error(SAME_NAMES_OF_ENTITIES("reference"), ref, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__NAME)
+				for (other : nb.relations) {
+					if (other.name.equals(ref.name))
+						error(SAME_NAMES_OF_ENTITIES("reference"), other, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__NAME)
+				}
+			}
+			refNames.add(ref.name)
+		}
+	}
+
+	/**
+	 * Checks the multiplicities of MetamodelRelationStatements if they are valid.
+	 * (E.g. nothing like (5..1) ).
+	 */
+	@Check
+	def void checkMultiplicities(MetamodelRelationStatement relation) {
+		try {
+			if (Integer.parseInt(relation.lower) > Integer.parseInt(relation.upper)) {
+				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
+				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
+				}
+		} catch (NumberFormatException e) {
+			if (!(relation.upper.equals("*"))) {
+				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
+				error(SENSELESS_MULTIPLICITIES, relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
 			}
 		}
 	}
