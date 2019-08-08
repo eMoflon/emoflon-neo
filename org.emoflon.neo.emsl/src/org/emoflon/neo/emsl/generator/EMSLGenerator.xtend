@@ -452,7 +452,7 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			public IConstraint getConstraint_«namingConvention(c.name)»() {
 				var c = (Constraint) spec.getEntities().get(«index»);
-				return new NeoConstraint(c, Optional.of(builder));
+				return new NeoConstraint(c, builder);
 			}
 		'''
 	}

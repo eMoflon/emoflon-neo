@@ -30,21 +30,21 @@ class CypherPatternBuilder {
 	/*****************************
 	 * Standard Matching Functions
 	 ****************************/
-	def static String readQuery(Collection<NeoNode> nodes, boolean injective, int limit) {
+	def static String readQuery(Collection<NeoNode> nodes, boolean injective, int limit, NeoMask mask) {
 		'''
 		«matchQuery(nodes)»
-		«whereQuery(nodes, injective)»
+		«whereQuery(nodes, injective, mask)»
 		«returnQuery(nodes)» «IF limit > 0»LIMIT «limit»«ENDIF»'''
 	}
 	
-	def static String readQuery(Collection<NeoNode> nodes, boolean injective){
-		readQuery(nodes, injective, 0)
+	def static String readQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask){
+		readQuery(nodes, injective, 0, mask)
 	}
 
 	def static String readQuery_copyPaste(Collection<NeoNode> nodes, boolean injective) {
 		'''
 		«matchQuery(nodes)»
-		«whereQuery(nodes,injective)»
+		«whereQuery(nodes,injective, new EmptyMask)»
 		«returnQuery_copyPaste(nodes)»'''
 	}
 
@@ -64,18 +64,27 @@ class CypherPatternBuilder {
 		«ENDFOR»'''
 	}
 
-	def static String whereQuery(Collection<NeoNode> nodes, boolean injective) {
+	def static String whereQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask) {
 		var injBlock = "";
 		if(injective && nodes.size > 1){
 			injBlock = injectiveBlock(nodes);
 		}
 		
-		//TODO handle mask for nodes
-				
-		if(injBlock.length > 0)
-			'''WHERE «injBlock»'''
+		var maskBlock = maskBlock(nodes, mask)
+						
+		if(injBlock.length > 0 || maskBlock.length > 0)
+			'''WHERE «injBlock» «maskBlock»'''
 		else	
 			''''''
+	}
+
+	private def static String maskBlock(Collection<NeoNode> nodes, NeoMask mask) {
+		var relevantEntries = mask.maskedNodes.filter [ node, id |
+			nodes.map[it.varName].exists[it == node]
+		]
+
+		'''«FOR entry : relevantEntries.entrySet SEPARATOR 'AND'»
+				id(«entry.key») = «entry.value»«ENDFOR»'''
 	}
 
 	def static String matchQueryForIsStillValid(Collection<NeoNode> nodes, NeoMatch match) {
@@ -195,10 +204,10 @@ class CypherPatternBuilder {
 	 * Basic Constraint Functions
 	 ****************************/
 	def static String constraintQuery(Collection<NeoNode> nodes, Collection<String> helperNodes, String matchCond,
-		String whereCond, boolean injective, int limit) {
+		String whereCond, boolean injective, int limit, NeoMask mask) {
 
 		'''«matchQuery(nodes)»
-		«whereQuery(nodes, injective)»
+		«whereQuery(nodes, injective, mask)»
 		«withQuery(nodes)»
 		«matchCond»
 		«constraint_withQuery(helperNodes)»
@@ -212,7 +221,7 @@ class CypherPatternBuilder {
 		String matchCond, String whereCond, boolean injective, int limit) {
 
 		'''«matchQuery(nodes)»
-		«whereQuery(nodes, injective)»
+		«whereQuery(nodes, injective, new EmptyMask)»
 		«withQuery(nodes)»
 		«matchCond»
 		«constraint_withQuery(helperNodes)»
@@ -242,18 +251,18 @@ class CypherPatternBuilder {
 		RETURN TRUE'''
 	}
 
-	def static String constraint_matchQuery(Collection<NeoNode> nodes, boolean injective, int uuid) {
+	def static String constraint_matchQuery(Collection<NeoNode> nodes, boolean injective, int idForScope, NeoMask mask) {
 		'''
 			 OPTIONAL «matchQuery(nodes)»
-			«whereQuery(nodes,injective)»
-			«withCountQuery(nodes, uuid)»
+			«whereQuery(nodes,injective, mask)»
+			«withCountQuery(nodes, idForScope)»
 		'''
 	}
 
-	def static String condition_matchQuery(Collection<NeoNode> nodes, boolean injective) {
+	def static String condition_matchQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask) {
 		'''
 			 OPTIONAL «matchQuery(nodes)»
-			«whereQuery(nodes,injective)»
+			«whereQuery(nodes,injective, mask)»
 		'''
 	}
 
@@ -262,21 +271,21 @@ class CypherPatternBuilder {
 	}
 
 	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<String> nodesMap, boolean injective) {
+		Collection<String> nodesMap, boolean injective, NeoMask mask) {
 		'''
-		«constraint_ifThen_matchQuery(nodes,nodes2,injective)»
+		«constraint_ifThen_matchQuery(nodes,nodes2,injective, mask)»
 		«constraint_withQuery(nodesMap)»
 		WHERE «whereNegativeConditionQuery(nodes2)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
 
 	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		boolean injective) {
+		boolean injective, NeoMask mask) {
 		'''«matchQuery(nodes)»
-		«whereQuery(nodes,injective)»
+		«whereQuery(nodes,injective, mask)»
 		«withQuery(nodes)»
 		OPTIONAL «matchQuery(nodes2)»
-		«whereQuery(nodes2,injective)»
+		«whereQuery(nodes2, injective, mask)»
 		'''
 	}
 

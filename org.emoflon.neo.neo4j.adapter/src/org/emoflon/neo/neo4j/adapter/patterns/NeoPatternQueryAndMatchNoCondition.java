@@ -23,7 +23,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 		logger.info("Searching matches for Pattern: " + getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit, mask);
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);

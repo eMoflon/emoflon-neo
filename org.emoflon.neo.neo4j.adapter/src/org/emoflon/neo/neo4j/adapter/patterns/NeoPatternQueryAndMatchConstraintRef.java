@@ -22,13 +22,13 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
-		var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
+		var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
 		return cond.determineMatches(limit);
 	}
 
 	@Override
 	public boolean isStillValid(NeoMatch m) {
-		var cond = new NeoCondition(new NeoConstraint(c, builder, helper), this, c.getName(), builder, helper);
+		var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
 		return cond.isStillValid(m);
 	}
 
@@ -37,7 +37,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	@Override
 	public String getQuery() {
 		var cond = new NeoCondition(//
-				new NeoConstraint(c, Optional.empty(), helper), //
+				new NeoConstraint(c, builder, helper, mask), //
 				this, //
 				c.getName(), //
 				Optional.empty(), //

@@ -2,7 +2,6 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
@@ -18,7 +17,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 	public NeoPatternQueryAndMatchNegativeConstraint(Pattern p, IBuilder builder, NeoMask mask) {
 		super(p, builder, mask);
 		var cons = (NegativeConstraint) p.getCondition();
-		ncond = new NeoNegativeConstraint(cons.getPattern(), injective, Optional.empty(), helper);
+		ncond = new NeoNegativeConstraint(cons.getPattern(), injective, builder, helper, mask);
 	}
 
 	@Override
@@ -33,7 +32,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 
 		// create query
 		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereConditon(), injective, limit);
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereConditon(), injective, limit, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
