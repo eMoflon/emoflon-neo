@@ -13,4 +13,12 @@ public abstract class NeoMask {
 	 *         labels are of the form <node label>.<attribute name>
 	 */
 	public abstract Map<String, Object> getMaskedAttributes();
+
+	public String getAttributeName(String label) {
+		return label.split("\\.")[1];
+	}
+
+	public String getVarName(String label) {
+		return label.split("\\.")[0];
+	}
 }

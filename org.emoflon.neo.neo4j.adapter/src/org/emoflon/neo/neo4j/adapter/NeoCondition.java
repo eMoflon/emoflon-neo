@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
 
 /**
  * Class created, when a pattern has a condition. Runs relevant pattern and
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
 public class NeoCondition {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private Optional<NeoCoreBuilder> builder;
+	private Optional<IBuilder> builder;
 	private NeoHelper helper;
 	private NeoConstraint c;
 	private NeoPattern p;
@@ -29,12 +30,11 @@ public class NeoCondition {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoCondition(NeoConstraint c, NeoPattern p, String name, NeoCoreBuilder builder, NeoHelper helper) {
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, IBuilder builder, NeoHelper helper) {
 		this(c, p, name, Optional.of(builder), helper);
 	}
 
-	public NeoCondition(NeoConstraint c, NeoPattern p, String name, Optional<NeoCoreBuilder> builder,
-			NeoHelper helper) {
+	public NeoCondition(NeoConstraint c, NeoPattern p, String name, Optional<IBuilder> builder, NeoHelper helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;
@@ -91,6 +91,41 @@ public class NeoCondition {
 		}
 
 		return matches;
+	}
+
+	/**
+	 * Get the data and nodes from the (nested) conditions and runs the query in the
+	 * database, analyze the results and return the matches
+	 * 
+	 * @param limit number of matches, that should be returned - 0 if infinite
+	 * @return Collection<IMatch> return a list of all Matches of the pattern with
+	 *         condition matching
+	 */
+	public boolean isStillValid(NeoMatch m) {
+
+		var bld = builder.orElseThrow();
+
+		logger.info("Check if match for " + p.getName() + " WHEN " + c.getName() + " is still valid");
+
+		// collecting the data
+		var condData = c.getConditionData();
+
+		// creating the query string
+		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(p.getNodes(),
+				condData.getOptionalMatchString(), condData.getWhereClause(), helper.getNodes(), p.isNegated(), m);
+		logger.debug(cypherQuery);
+
+		// run the query
+		var result = bld.executeQuery(cypherQuery);
+
+		// analyze and return results
+		var matches = new ArrayList<NeoMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			matches.add(new NeoMatch(p, record));
+		}
+
+		return matches.size() == 1;
 	}
 
 }

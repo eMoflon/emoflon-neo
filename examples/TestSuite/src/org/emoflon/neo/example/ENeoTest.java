@@ -15,7 +15,7 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoPatternAccess;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

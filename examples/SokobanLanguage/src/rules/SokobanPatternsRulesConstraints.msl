@@ -2,6 +2,34 @@ import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 // BoardPattern.gt
 
+pattern sokobanOnFieldOfBoard {
+	
+	b:SokobanLanguage.Board {
+		-selectedFigure->sokoban
+		-fields->f1 {
+			.col: 0
+			.row: 0
+		}
+		-fields->f2 {
+			.col: 1
+			.row: 0
+		}
+	}
+	f1:Field {
+		-right->f2
+		.endPos: false
+	}
+	f2:Field {
+		.endPos: false
+	}
+	sokoban:Sokoban {
+		-field->f1
+	}
+	
+}
+
+
+
 pattern oneSokoban {
 	sokoban : Sokoban
 }
@@ -326,7 +354,7 @@ rule moveSokobanUpWithCondition -> moveSokobanUp
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
 	next : Field {
-		-bottom-> to
+		-bottom-> to 
 	}
 	to : Field {
 		-bottom-> $from

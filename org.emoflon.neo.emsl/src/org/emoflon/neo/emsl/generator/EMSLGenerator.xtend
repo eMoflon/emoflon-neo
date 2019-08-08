@@ -130,14 +130,15 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.rules.IRule;
 			import org.emoflon.neo.neo4j.adapter.NeoRule;
 			import org.emoflon.neo.neo4j.adapter.NeoRuleAccess;
-			import org.emoflon.neo.neo4j.adapter.NeoPattern;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
 			import org.emoflon.neo.neo4j.adapter.NeoConstraint;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
-			import org.emoflon.neo.neo4j.adapter.NeoPatternAccess;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 			import org.emoflon.neo.neo4j.adapter.NeoMask;
 			import org.emoflon.neo.neo4j.adapter.NeoData;
 			import java.util.HashMap;
@@ -187,16 +188,20 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «accessClassName» extends NeoPatternAccess<«dataClassName»,«maskClassName»> {
+					«FOR node : patternBody.nodeBlocks»
+						public final String «node.name» = "«node.name»";
+					«ENDFOR»
+					
 					@Override
 					public NeoPattern matcher(){
 						var p = (Pattern) spec.getEntities().get(«index»);
-						return new NeoPattern(p, builder);
+						return NeoPatternFactory.createNeoPattern(p, builder);
 					}
 					
 					@Override
 					public NeoPattern matcher(«maskClassName» mask) {
 						var p = (Pattern) spec.getEntities().get(«index»);
-						return new NeoPattern(p, builder, mask);
+						return NeoPatternFactory.createNeoPattern(p, builder, mask);
 					}
 					
 					@Override
@@ -447,7 +452,7 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			public IConstraint getConstraint_«namingConvention(c.name)»() {
 				var c = (Constraint) spec.getEntities().get(«index»);
-				return new NeoConstraint(c, Optional.of(builder));
+				return new NeoConstraint(c, builder);
 			}
 		'''
 	}

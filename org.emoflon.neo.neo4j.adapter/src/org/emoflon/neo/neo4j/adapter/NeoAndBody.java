@@ -1,7 +1,5 @@
 package org.emoflon.neo.neo4j.adapter;
 
-import java.util.Optional;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
@@ -19,8 +17,9 @@ public class NeoAndBody {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private AndBody body;
-	private Optional<NeoCoreBuilder> builder;
+	private IBuilder builder;
 	private NeoHelper helper;
+	private NeoMask mask;
 
 	/**
 	 * @param body    of the current AndBody
@@ -28,13 +27,11 @@ public class NeoAndBody {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoAndBody(AndBody body, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
+	public NeoAndBody(AndBody body, IBuilder builder, NeoHelper helper, NeoMask mask) {
 		this.body = body;
 		this.builder = builder;
 		this.helper = helper;
-	}
-	public NeoAndBody(AndBody body, NeoCoreBuilder builder, NeoHelper helper) {
-		this(body,Optional.of(builder),helper);
+		this.mask = mask;
 	}
 
 	/**
@@ -51,7 +48,7 @@ public class NeoAndBody {
 
 			// if its an constraint body, check if this constraint satisfies
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper, mask);
 
 				if (((ConstraintReference) b).isNegated()) {
 					logger.info("Attention: Constraint is negated!");
@@ -68,7 +65,7 @@ public class NeoAndBody {
 			}
 			// if its an nested body, check if this nested body and its constraint satisfy
 			else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper);
+				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask);
 
 				if (!orbody.isSatisfied()) {
 					return false;
@@ -99,7 +96,7 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper, mask);
 				var consData = consRef.getConstraintData();
 
 				returnStmt.addNodes(consData.getNodes());
@@ -114,7 +111,7 @@ public class NeoAndBody {
 				}
 
 			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper);
+				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask);
 				var consData = orbody.getConstraintData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
@@ -148,7 +145,7 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper);
+				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper, mask);
 				var consData = consRef.getConditionData();
 
 				returnStmt.addNodes(consData.getNodes());
@@ -163,7 +160,7 @@ public class NeoAndBody {
 				}
 
 			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper);
+				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask);
 				var consData = orbody.getConditionData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());

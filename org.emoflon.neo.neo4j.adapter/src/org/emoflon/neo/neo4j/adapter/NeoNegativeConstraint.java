@@ -3,7 +3,6 @@ package org.emoflon.neo.neo4j.adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
@@ -20,7 +19,7 @@ import org.emoflon.neo.engine.api.rules.IMatch;
 public class NeoNegativeConstraint implements INegativeConstraint {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private Optional<NeoCoreBuilder> builder;
+	private IBuilder builder;
 	private NeoHelper helper;
 
 	private AtomicPattern ap;
@@ -30,6 +29,8 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	private boolean injective;
 	private int uuid;
 
+	private NeoMask mask;
+
 	/**
 	 * 
 	 * @param ap        AtomicPattern of the FORBID constraint
@@ -37,22 +38,20 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 * @param builder   for creating and running Cypher queries
 	 * @param helper    for creating nodes and
 	 */
-	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, Optional<NeoCoreBuilder> builder, NeoHelper helper) {
+	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
+			NeoMask mask) {
 		this.uuid = helper.addConstraint();
 		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
 		this.injective = injective;
-		
+		this.mask = mask;
+
 		this.ap = helper.getFlattenedPattern(ap);
-		
+
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodes = new ArrayList<>();
 		this.nodes = this.helper.extractNodesAndRelations(ap.getNodeBlocks());
-	}
-	
-	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, NeoCoreBuilder builder, NeoHelper helper) {
-		this(ap,injective,Optional.of(builder),helper);
 	}
 
 	/**
@@ -90,7 +89,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchConstraint() {
-		return CypherPatternBuilder.constraint_matchQuery(nodes, injective, uuid);
+		return CypherPatternBuilder.constraint_matchQuery(nodes, injective, uuid, mask);
 	}
 
 	/**
@@ -101,7 +100,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchCondition() {
-		return CypherPatternBuilder.condition_matchQuery(nodes, injective);
+		return CypherPatternBuilder.condition_matchQuery(nodes, injective, mask);
 	}
 
 	/**
@@ -147,17 +146,14 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 */
 	@Override
 	public Collection<IMatch> getViolations() {
-		
-		var bld = builder.orElseThrow();
-
 		logger.info("Check constraint: FORBID " + ap.getName());
 
 		// create query
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
-		var result = bld.executeQuery(cypherQuery);
+		var result = builder.executeQuery(cypherQuery);
 
 		// analyze and return results
 		var matches = new ArrayList<IMatch>();
