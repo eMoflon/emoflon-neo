@@ -18,7 +18,7 @@ public abstract class NeoMask {
 		return label.split("\\.")[1];
 	}
 
-	public String getNodeName(String label) {
+	public String getVarName(String label) {
 		return label.split("\\.")[0];
 	}
 }
