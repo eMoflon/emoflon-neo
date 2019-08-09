@@ -104,7 +104,6 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newConstraintReference(String name, int index, String relVar, String toName) {
-
 		if (matchNodes.contains(EMSLUtil.relationNameConvention(name, relVar, toName, index))) {
 			return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 		} else {
@@ -178,12 +177,12 @@ public class NeoHelper {
 			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			n.getRelations()
 					.forEach(r -> node.addRelation(
-							this.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
+							newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
 									EMSLUtil.getOnlyType(r).getName(), r.getTarget().getName()),
 							EMSLUtil.getOnlyType(r).getName(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
-							this.newConstraintNode(r.getTarget().getName())));
+							newConstraintNode(r.getTarget().getName())));
 
 			tempNodes.add(node);
 		}
