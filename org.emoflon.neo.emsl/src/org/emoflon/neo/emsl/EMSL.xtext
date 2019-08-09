@@ -48,7 +48,7 @@ NodeAttributeExpTarget:
 ;
 
 EnumValue:
-	'enum::' literal=[EnumLiteral|ID]
+	literal=[EnumLiteral|ID]
 ;
 
 PrimitiveInt:
