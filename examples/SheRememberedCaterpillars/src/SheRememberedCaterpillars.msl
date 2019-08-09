@@ -28,19 +28,19 @@ metamodel SheRememberedCaterpillars {
 
 model SimpleGame {
 	a:Character {
-		.colour : enum::BLUE
+		.colour : BLUE
 		 
 		-on->p1
 	}
 	
 	w:Wall {
-		.colour : enum::RED
+		.colour : RED
 		
 		-on->p2
 	}
 	
 	b:Bridge {
-		.colour : enum::BLUE
+		.colour : BLUE
 		
 		-feet->p1
 		-feet->p2
@@ -56,7 +56,7 @@ pattern canCrossBridge {
 	}
 	
 	b:Bridge {
-		.colour : enum::BLUE  
+		.colour : BLUE  
 		
 		-feet->p1
 		-feet->p2
@@ -68,12 +68,12 @@ pattern canCrossBridge {
 
 pattern everythingBlue {
 	a:Character {
-		.colour : enum::BLUE
+		.colour : BLUE
 		-on->p1
 	}
 	
 	b:Bridge {
-		.colour : enum::BLUE
+		.colour : BLUE
 		
 		-feet->p1
 		-feet->p2

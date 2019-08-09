@@ -258,7 +258,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			var newNb = EMSLFactory.eINSTANCE.createModelNodeBlock();
 			newNb.setType(nodeBlockTypeQueue.peek());
 			newNb.setName(name);
-			newNb.setAction(mergeActionOfNodes(blocksWithKey));
+			newNb.setAction(mergeActionOfNodes(blocksWithKey, entity));
 
 			mergedNodes.add(newNb);
 		}
@@ -273,8 +273,9 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * 
 	 * @param nodes list of nodes that provide actions must be merged
 	 * @return an action if a merged action can be determined, null if not
+	 * @throws FlattenerException 
 	 */
-	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes) {
+	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes, SuperType entity) throws FlattenerException {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -292,6 +293,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			action.setOp(ActionOperator.CREATE);
 		else if (!green && red && !black)
 			action.setOp(ActionOperator.DELETE);
+		else if (green && red && !black)
+			throw new FlattenerException(entity, FlattenerErrorType.ONLY_RED_AND_GREEN_NODES, nodes);
 		else
 			action = null;
 
@@ -316,8 +319,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						continue;
 					if (relation.getTypes().get(0).getType() == other.getTypes().get(0).getType()
 							&& relation.getTarget() == other.getTarget()
-							&& relation.getTypes().get(0).getLower() == other.getTypes().get(0).getLower()
-							&& relation.getTypes().get(0).getUpper() == other.getTypes().get(0).getUpper()) {
+							&& relation.getLower().equals(other.getLower())
+							&& relation.getUpper().equals(other.getUpper())) {
 						if (!duplicates.contains(other)) {
 							duplicates.add(other);
 						}
@@ -400,8 +403,9 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @param typename   parameter to decide which edges have to be merged.
 	 * @param targetname parameter to decide which edges have to be merged.
 	 * @return Action that is the result of the merging of all edges' actions.
+	 * @throws FlattenerException 
 	 */
-	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges) {
+	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges, SuperType entity) throws FlattenerException {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -419,6 +423,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			action.setOp(ActionOperator.CREATE);
 		else if (!green && red && !black)
 			action.setOp(ActionOperator.DELETE);
+		else if (green && red && !black)
+			throw new FlattenerException(entity, FlattenerErrorType.ONLY_RED_AND_GREEN_EDGES, edges);
 		else
 			return null;
 
@@ -780,7 +786,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 							collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity));
 
 					// check and merge action
-					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname)));
+					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname), entity));
 
 					// create new ModelRelationStatementType for the new ModelRelationStatement
 					var newRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
@@ -791,12 +797,15 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					for (var e : edges.get(typename).get(targetname)) {
 						typesOfEdges.addAll(e.getTypes());
 					}
-					var bounds = mergeModelRelationStatementPathLimits(entity, typesOfEdges);
-					if (bounds != null) {
-						newRelType.setLower(bounds[0].toString());
-						newRelType.setUpper(bounds[1].toString());
-					}
 					newRel.getTypes().add(newRelType);
+					// TODO merge path lengths
+					
+					var bounds = mergeModelRelationStatementPathLimits(entity, edges.get(typename).get(targetname));
+					if (bounds == null)
+						throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, newRel);
+					newRel.setLower(bounds[1]);
+					newRel.setUpper(bounds[1]);
+					
 					mergedNodes.forEach(nb -> {
 						if (nb.getName().equals(targetname)) {
 							newRel.setTarget(nb);
@@ -840,21 +849,29 @@ public class RuleFlattener extends AbstractEntityFlattener {
 							}
 						}
 					}
-					var bounds = mergeModelRelationStatementPathLimits(entity, typesOfEdges);
-					if (bounds != null) {
-						newRelType.setLower(bounds[0].toString());
-						newRelType.setUpper(bounds[1].toString());
-					}
+				}
+				var bounds = mergeModelRelationStatementPathLimits(entity, namedEdges.get(n));
+				if (bounds == null) {
+					throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, newRel);
+				}
+				else {
+					if (bounds[0] != null)
+						newRel.setLower(bounds[0].toString());
+					if (bounds[1] != null)
+						newRel.setUpper(bounds[1].toString());
 				}
 
 				// merge statements and check statements for compliance
 				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity));
 
 				// check and merge action
-				newRel.setAction(mergeActionOfRelations(namedEdges.get(n)));
+				newRel.setAction(mergeActionOfRelations(namedEdges.get(n), entity));
 
 				mergedNodes.forEach(nb -> {
-					if (nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
+					if (namedEdges.get(n).get(0).getTarget() != null && nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
+						newRel.setTarget(nb);
+					} else if (namedEdges.get(n).get(0).getProxyTarget() != null 
+							&& nb.getName().equals(namedEdges.get(n).get(0).getProxyTarget())) {
 						newRel.setTarget(nb);
 					}
 					if (nb.getName().equals(name)) {
@@ -880,52 +897,71 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 *                            greater than the upper limit (does not make
 	 *                            sense).
 	 */
-	protected Object[] mergeModelRelationStatementPathLimits(SuperType entity,
-			ArrayList<ModelRelationStatementType> types) throws FlattenerException {
-		var bounds = new Object[2];
-		bounds[0] = 1;
-		bounds[1] = "*";
-
-		boolean empty = true;
-		for (var t : types) {
-			if (t.getLower() != null && t.getUpper() != null) {
-				empty = false;
-			}
-		}
-		if (empty)
-			return null;
-
-		for (var t : types) {
-			if (t.getLower() != null && t.getUpper() != null) {
+	protected String[] mergeModelRelationStatementPathLimits(SuperType entity,
+			ArrayList<ModelRelationStatement> edges) throws FlattenerException {
+		var bounds = new String[2];
+		var lowerComparator = new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
 				try {
-					if (Integer.parseInt(t.getLower()) > Integer.parseInt(bounds[0].toString())) {
-						bounds[0] = Integer.parseInt(t.getLower());
+					if (o1 == null) {
+						return -1;
+					}
+					else if (Integer.parseInt(o1) < Integer.parseInt(o2)) {
+						return 1;
+					} else {
+						return -1;
 					}
 				} catch (NumberFormatException e) {
-					if (t.getLower().equals("*") && !bounds[0].equals("*")) {
-						bounds[0] = "*";
-					}
+					if (o1.equals("*")) return -1;
+					else if (o2.equals("*")) return 1;
 				}
+				return 0;
+			}
+
+		};
+		
+		var upperComparator = new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
 				try {
-					if (Integer.parseInt(t.getUpper()) < Integer.parseInt(bounds[1].toString())) {
-						bounds[1] = Integer.parseInt(t.getUpper());
+					if (o1 == null) {
+						return 1;
+					}
+					else if (Integer.parseInt(o1) < Integer.parseInt(o2)) {
+						return -1;
+					} else {
+						return 1;
 					}
 				} catch (NumberFormatException e) {
-					if (!t.getUpper().equals("*") && bounds[1].equals("*")) {
-						bounds[1] = Integer.parseInt(t.getUpper());
-					}
+					if (o1.equals("*")) return 1;
+					else if (o2.equals("*")) return -1;
 				}
+				return 0;
 			}
-			if (bounds[0] instanceof Integer) {
-				if (bounds[1] instanceof Integer && (int) bounds[0] > (int) bounds[1]) {
-					// lower bound is greater than upper => does not make sense => exception
-					throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, t);
-				}
-			} else if (bounds[0].equals("*") && !bounds[1].equals("*")) {
-				throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, t);
-			}
-		}
 
+		};
+
+		var lowerBoundQueue = new PriorityQueue<String>(lowerComparator);
+		var upperBoundQueue = new PriorityQueue<String>(upperComparator);
+		
+		for (var rel : edges) {
+			if (rel.getLower() != null)
+				lowerBoundQueue.add(rel.getLower());
+			if (rel.getUpper() != null)
+				upperBoundQueue.add(rel.getUpper());
+		}
+		bounds[0] = lowerBoundQueue.peek();
+		bounds[1] = upperBoundQueue.peek();
+		
+		try {
+			if (Integer.parseInt(bounds[0]) > Integer.parseInt(bounds[1]))
+				return null;
+		} catch (NumberFormatException e) {
+			if (bounds[1] != null && !bounds[1].equals("*"))
+				return null;
+		}
+		
 		return bounds;
 	}
 }
