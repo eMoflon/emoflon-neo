@@ -12,6 +12,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.Model;
+import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.NeoMatch;
@@ -59,8 +60,12 @@ public abstract class ENeoTest {
 	}
 
 	protected static void initDB(Model model) {
-		builder.exportEMSLEntityToNeo4j(model);
-		logger.info("-----------------------------\n" + "Database initialised.");
+		try {
+			builder.exportEMSLEntityToNeo4j(model);
+			logger.info("-----------------------------\n" + "Database initialised.");
+		} catch (FlattenerException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@AfterAll

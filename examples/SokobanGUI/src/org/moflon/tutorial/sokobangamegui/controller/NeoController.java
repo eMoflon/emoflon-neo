@@ -13,6 +13,7 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
+import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.RuleApplicationSemantics;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.moflon.tutorial.sokobangamegui.view.Field;
@@ -37,7 +38,11 @@ public class NeoController implements IController {
 		api1 = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		api2 = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI,
 				API_Common.PLATFORM_PLUGIN_URI);
-		defaultBoard();
+		try {
+			defaultBoard();
+		} catch (FlattenerException e) {
+			e.printStackTrace();
+		}
 		view = createView.apply(this);
 	}
 
@@ -185,7 +190,7 @@ public class NeoController implements IController {
 		// TODO: Use a grammar and the model generator to generate a new board
 	}
 
-	private void defaultBoard() {
+	private void defaultBoard() throws FlattenerException {
 		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI,
 				API_Common.PLATFORM_PLUGIN_URI);
 		var board = exampleBoard.getModel_SokobanSimpleTestField();
