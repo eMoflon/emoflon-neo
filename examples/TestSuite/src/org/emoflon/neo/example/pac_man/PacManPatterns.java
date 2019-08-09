@@ -1,6 +1,7 @@
 package org.emoflon.neo.example.pac_man;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.emoflon.neo.api.API_Common;
@@ -35,5 +36,10 @@ public class PacManPatterns extends ENeoTest {
 	@Test
 	public void test_TwoPacManOnBoard() {
 		expectNoMatch(entities.getPattern_TwoPacManOnBoard());
+	}
+	
+	@Test
+	public void test_Paths() {
+		assertEquals(3, entities.getPattern_RelatedFields().matcher().countMatches());
 	}
 }

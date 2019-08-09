@@ -10,7 +10,6 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 
@@ -28,7 +27,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("//TODO[Jannik] Test for path expression")
 	public void testFigureTypes() {
 		var access = entities.getPattern_FigureTypes();
 		var types = access.matcher().determineMatches().stream()//
