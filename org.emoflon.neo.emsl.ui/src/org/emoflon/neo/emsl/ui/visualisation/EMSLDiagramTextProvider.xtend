@@ -846,7 +846,12 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				return '''**enforce** «(constraintBody.reference.body as PositiveConstraint).pattern.name» '''
 			else if (constraintBody.reference.body instanceof Implication)
 				return '''**if** «(constraintBody.reference.body as Implication).premise.name» **then** «(constraintBody.reference.body as Implication).conclusion.name» '''
-		}		
+		} if (constraintBody instanceof NegativeConstraint)
+				return '''**forbid** «(constraintBody as NegativeConstraint).pattern.name» '''
+		else if (constraintBody instanceof PositiveConstraint)
+			return '''**enforce** «(constraintBody as PositiveConstraint).pattern.name» '''
+		else if (constraintBody instanceof Implication)
+			return '''**if** «constraintBody.premise.name» **then** «constraintBody.conclusion.name» '''
 	}
 	
 	def List<? extends ConstraintBody> getChildren(ConstraintBody body){

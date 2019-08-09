@@ -854,9 +854,11 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				if (bounds == null) {
 					throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, newRel);
 				}
-				if (bounds != null) {
-					newRel.setLower(bounds[0].toString());
-					newRel.setUpper(bounds[1].toString());
+				else {
+					if (bounds[0] != null)
+						newRel.setLower(bounds[0].toString());
+					if (bounds[1] != null)
+						newRel.setUpper(bounds[1].toString());
 				}
 
 				// merge statements and check statements for compliance
@@ -866,7 +868,10 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				newRel.setAction(mergeActionOfRelations(namedEdges.get(n), entity));
 
 				mergedNodes.forEach(nb -> {
-					if (nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
+					if (namedEdges.get(n).get(0).getTarget() != null && nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
+						newRel.setTarget(nb);
+					} else if (namedEdges.get(n).get(0).getProxyTarget() != null 
+							&& nb.getName().equals(namedEdges.get(n).get(0).getProxyTarget())) {
 						newRel.setTarget(nb);
 					}
 					if (nb.getName().equals(name)) {
