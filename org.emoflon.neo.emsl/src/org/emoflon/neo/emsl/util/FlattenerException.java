@@ -1,6 +1,7 @@
 package org.emoflon.neo.emsl.util;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
@@ -24,6 +25,8 @@ public class FlattenerException extends Exception {
 
 	private ModelRelationStatement relation;
 	private ModelRelationStatementType statementType;
+	
+	private List elements;
 
 	/**
 	 * Constructor for the case of a detected infinite loop.
@@ -39,13 +42,6 @@ public class FlattenerException extends Exception {
 		this.entity = entity;
 		this.errorType = type;
 		this.alreadyRefinedPatternNames = alreadyRefinedPatternNames;
-	}
-
-	// for ModelRelationStatement path limits
-	public FlattenerException(SuperType entity, FlattenerErrorType type, ModelRelationStatementType statementType) {
-		this.entity = entity;
-		this.errorType = type;
-		this.statementType = statementType;
 	}
 
 	// for not mergeable complex edges
@@ -78,11 +74,17 @@ public class FlattenerException extends Exception {
 		this.superEntity = superEntity;
 	}
 
-	// for non-resolvable proxies of relation statements
+	// for non-resolvable proxies of relation statements/relation path limits
 	public FlattenerException(SuperType entity, FlattenerErrorType type, ModelRelationStatement relation) {
 		this.entity = entity;
 		this.errorType = type;
 		this.relation = relation;
+	}
+	
+	public FlattenerException(SuperType entity, FlattenerErrorType type, List elements) {
+		this.entity = entity;
+		this.errorType = type;
+		this.elements = elements;
 	}
 
 	public ModelPropertyStatement getProperty1() {
@@ -119,6 +121,10 @@ public class FlattenerException extends Exception {
 
 	public ModelRelationStatementType getStatementType() {
 		return statementType;
+	}
+	
+	public List getElements() {
+		return elements;
 	}
 
 }

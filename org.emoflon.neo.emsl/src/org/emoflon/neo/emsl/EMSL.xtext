@@ -48,7 +48,7 @@ NodeAttributeExpTarget:
 ;
 
 EnumValue:
-	'enum::' literal=[EnumLiteral|ID]
+	literal=[EnumLiteral|ID]
 ;
 
 PrimitiveInt:
@@ -67,13 +67,14 @@ ModelRelationStatement:
 	(action=Action)? 
 	'-' 
 		(name=ID ":")? types+=ModelRelationStatementType ('|' types+=ModelRelationStatementType)*
+		('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')?
 	'->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
 	
 ModelRelationStatementType:
-	type=[MetamodelRelationStatement|QualifiedName] ('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')?
+	type=[MetamodelRelationStatement|QualifiedName]
 ;
 
 /*-------------------------------------------------*/
@@ -95,7 +96,7 @@ MetamodelPropertyStatement:
 
 MetamodelRelationStatement:
 	kind=RelationKind name=ID
-	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
+	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName])
 	('{'
 	properties+=MetamodelPropertyStatement*
 	'}')?;
