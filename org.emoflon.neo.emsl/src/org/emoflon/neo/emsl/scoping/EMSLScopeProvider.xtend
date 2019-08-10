@@ -33,6 +33,8 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.SuperType
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
 
 /**
  * This class contains custom scoping description.
@@ -99,6 +101,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (valueOfNodeAttributeExpression(context, reference)) {
 			return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
 		}
+		
+		if (nameOfSuperRefinementTypeOfSuperType(context, reference))
+			return handleNameOfSuperRefinementTypeOfSuperType(context, reference)
+			
+		if (nameOfSuperRefinementTypeOfInRefinementCommand(context, reference))
+			return handleNameOfSuperRefinementTypeOfModelInRefinementCommand(context, reference)
 
 		return super.getScope(context, reference)
 	}
@@ -112,6 +120,29 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 	private def handleNodeBlockSuperTypesInMetamodel(MetamodelNodeBlock context, EReference reference) {
 		handleNodeBlockTypesInRule(context, reference)
+	}
+	
+	
+	
+	/*------------------------------------------*/
+	/*----------- SuperRefinementType ----------*/
+	/*------------------------------------------*/
+	private def nameOfSuperRefinementTypeOfSuperType(EObject context, EReference reference) {
+		context instanceof SuperType &&	reference == EMSLPackage.Literals.REFINEMENT_COMMAND__REFERENCED_TYPE
+	}
+	
+	private def nameOfSuperRefinementTypeOfInRefinementCommand(EObject context, EReference reference) {
+		context instanceof RefinementCommand &&	reference == EMSLPackage.Literals.REFINEMENT_COMMAND__REFERENCED_TYPE
+	}
+	
+	private def handleNameOfSuperRefinementTypeOfSuperType(EObject context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		determineScope(allTypesInAllImportedMetamodels(root, context.class))
+	}
+	
+	private def handleNameOfSuperRefinementTypeOfModelInRefinementCommand(EObject context, EReference reference) {
+		val root = EcoreUtil2.getRootContainer(context)
+		determineScope(allTypesInAllImportedMetamodels(root, context.eContainer.class))
 	}
 
 	/*----------------------------------------*/

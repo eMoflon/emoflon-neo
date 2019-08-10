@@ -136,7 +136,32 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check(NORMAL)
 	def checkFlatteningOfSuperType(SuperType entity) {
 		try {
-			EMSLFlattener.flatten(entity);
+			var flattenedEntity = EMSLFlattener.flatten(entity);
+			if (entity instanceof Model && !entity.abstract)
+			dispatcher.getNodeBlocks(flattenedEntity).forEach[n |
+				n.type.properties.forEach[p |
+					var initialized = false
+					for (otherP : n.properties) {
+						if (otherP.type == p)
+							initialized = true
+					}
+					if (!initialized)
+						warning('''The property "«p.name»" of the class "«n.type.name»" in the object "«n.name»" has no value assigned.''', entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
+				]
+				n.relations.forEach[r |
+					r.types.forEach[t |
+						t.type.properties.forEach[p |
+							var initialized = false
+							for (otherP : r.properties) {
+								if (otherP.type == p)
+									initialized = true
+							}
+							if (!initialized)
+								warning('''The property "«p.name»" of the relation "«r.types.get(0).type.name»" in the object "«n.name»" has no value assigned.''', entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
+						]
+					]
+				]
+			]
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				error(REFINEMENT_LOOP(dispatcher.getName(entity)),
