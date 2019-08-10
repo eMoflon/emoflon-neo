@@ -27,8 +27,8 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertTrue(entities.getConstraint_ExactlyOneSokoban().isSatisfied());
 	}
 	
+	@Disabled("Requires paths")
 	@Test
-	@Disabled("//TODO[Jannik] Test for path expression")
 	public void testFigureTypes() {
 		var access = entities.getPattern_FigureTypes();
 		var types = access.matcher().determineMatches().stream()//

@@ -79,6 +79,14 @@ pattern pacManAndGhostOnNeighbouringFields -> pacManAndGhostOnFields {
 	}
 }
 
+pattern relatedFields {
+	f1:Field {
+		-related:bottom|right(3..5)->f2
+	}
+	
+	f2:Field
+}
+
 pattern twoPacManOnBoard -> 
 	pacManAndGhostOnFields, 
 	pacManOnField [fig -> p2, field -> f01]

@@ -193,6 +193,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return driver;
 	}
 
+	@Override
 	public StatementResult executeQuery(String cypherStatement) {
 		return driver.session().run(cypherStatement.trim());
 	}
@@ -211,17 +212,19 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		driver.close();
 	}
 
-	private void exportModelToNeo4j(Model m) {
+	private void exportModelToNeo4j(Model model) throws FlattenerException {
 		bootstrapNeoCoreIfNecessary();
 
-		ResourceSet rs = m.eResource().getResourceSet();
+		ResourceSet rs = model.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
+
+		var m = (Model) EMSLFlattener.flatten(model);
 
 		var models = collectReferencedModels(m);
 		models.add(m);
 
 		var metamodels = models.stream()//
-				.flatMap(model -> collectDependentMetamodels(m).stream())//
+				.flatMap(_m -> collectDependentMetamodels(_m).stream())//
 				.collect(Collectors.toSet());
 
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
@@ -760,7 +763,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
-	public void exportEMSLEntityToNeo4j(Entity entity) {
+	public void exportEMSLEntityToNeo4j(Entity entity) throws FlattenerException {
 		if (entity instanceof Model) {
 			exportModelToNeo4j((Model) entity);
 		} else if (entity instanceof Metamodel)

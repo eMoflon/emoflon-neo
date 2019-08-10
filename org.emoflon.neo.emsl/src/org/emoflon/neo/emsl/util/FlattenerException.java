@@ -25,8 +25,8 @@ public class FlattenerException extends Exception {
 
 	private ModelRelationStatement relation;
 	private ModelRelationStatementType statementType;
-	
-	private List elements;
+
+	private List<?> elements;
 
 	/**
 	 * Constructor for the case of a detected infinite loop.
@@ -80,8 +80,8 @@ public class FlattenerException extends Exception {
 		this.errorType = type;
 		this.relation = relation;
 	}
-	
-	public FlattenerException(SuperType entity, FlattenerErrorType type, List elements) {
+
+	public FlattenerException(SuperType entity, FlattenerErrorType type, List<?> elements) {
 		this.entity = entity;
 		this.errorType = type;
 		this.elements = elements;
@@ -122,8 +122,8 @@ public class FlattenerException extends Exception {
 	public ModelRelationStatementType getStatementType() {
 		return statementType;
 	}
-	
-	public List getElements() {
+
+	public List<?> getElements() {
 		return elements;
 	}
 

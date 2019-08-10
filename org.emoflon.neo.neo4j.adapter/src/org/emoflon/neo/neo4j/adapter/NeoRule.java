@@ -21,31 +21,31 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
+		// TODO[Jannik]
 		return null;
 	}
 
 	@Override
 	public void setMatchInjectively(Boolean injective) {
-		// TODO Auto-generated method stub
+		// TODO[Jannik]
 
 	}
 
 	@Override
 	public Collection<NeoMatch> determineMatches() {
-		// TODO Auto-generated method stub
+		// TODO[Jannik]
 		return null;
 	}
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
-		// TODO Auto-generated method stub
+		// TODO[Jannik]
 		return null;
 	}
 
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch match, RuleApplicationSemantics ras) {
-		// TODO Auto-generated method stub
+		// TODO[Jannik]
 		return null;
 	}
 
