@@ -132,6 +132,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	/**
 	 * Tries to flatten the given Entity to find out if there are non-mergeable objects/statements etc.
 	 * If an error occurs, an appropriate error message is shown.
+	 * Also checks if the number of edges in the nodes is in accordance with the limits defined in the
+	 * metamodel and if all properties have values assigned.
 	 */	
 	@Check(NORMAL)
 	def checkFlatteningOfSuperType(SuperType entity) {
@@ -162,6 +164,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 					]
 				]
 			]
+			if (entity instanceof Model)
+				checkNumberOfEdges(entity)
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				error(REFINEMENT_LOOP(dispatcher.getName(entity)),
@@ -733,6 +737,24 @@ class EMSLValidator extends AbstractEMSLValidator {
 				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
 				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
 			}
+		}
+	}
+	
+	/**
+	 * Checks if the number of edges in a nodeBlock is consistent with the number of
+	 * edges defined in the metamodel.
+	 */
+	def void checkNumberOfEdges(Model entity) {
+		for (nb : entity.nodeBlocks) {
+			nb.type.relations.forEach[r |
+				var numberOfInstances = nb.relations.filter[instance |
+					instance.types.get(0).type == r
+				].size
+				if (!r.lower.equals("*") && !(numberOfInstances >= Integer.parseInt(r.lower)))
+					error('''You need at least «Integer.parseInt(r.lower)» edges of type "«r.name»" in your nodeBlock.''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
+				if (!r.upper.equals("*") && !(numberOfInstances <= Integer.parseInt(r.upper)))
+					error('''You can create at most «Integer.parseInt(r.upper)» edges of type "«r.name»" in your nodeBlock.''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
+			]
 		}
 	}
 }
