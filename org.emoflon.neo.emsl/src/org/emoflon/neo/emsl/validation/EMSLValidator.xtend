@@ -69,7 +69,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final def String SAME_NAMES_OF_ENTITIES(String className) '''Two «className»s with the same name are not allowed.'''
 	static final String GREEN_NODE_OF_ABSTRACT_TYPES = "Green Nodes of abstract types are not allowed"
 	static final String NON_RESOLVABLE_PROXY = "A proxy target you defined could not be resolved."
-	static final def String NON_MERGABLE_TYPES(String typeName) '''The type «typeName»  in your refinements cannot be merged into a common subtype.'''
+	static final def String NON_MERGABLE_TYPES(String typeName) '''The type "«typeName»" in your refinements cannot be merged into a common subtype.'''
 	static final String FORBIDDING_COMPLEX_EDGES = "Complex Edges in Models are not allowed."
 	static final String ENTITY_TYPE_NOT_SUPPORTED = "Mixing entities in refinements is not allowed."
 	static final String INSTANTIATING_ABSTRACT_TYPE_IN_NON_ABSTRACT_MODEL = "Instantiating an abstract type in a non-abstract model is not allowed."
@@ -77,9 +77,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final def String TRIPLE_RULE_INSTANTIATION_ERROR(String section) '''The class you want to instantiate must be from a metamodel that is given in the TripleGrammar's «section» part.'''
 	static final String COMPLEX_EDGE_WITH_OPERATOR = "Green/Red edges with multiple types are not allowed"
 	static final String EDGE_WITH_OPERATOR_AND_PATH_LENGTH = "Green/Red edges with path lengths are not allowed"
-	static final def String NO_COMMON_SUBTYPE(String name) '''The type «name» in your refinements cannot be merged into a common subtype.'''
-	static final def String NON_MATCHING_ATTR_VALUES(String name) '''The value of «name» does not match your other refinements'''
-	static final def String DIFFERENT_TYPES_OF_ATTRIBUTES(String type1, String type2) '''The types of the properties you are trying to refine are not compatible. The types «type1» and «type2» must be the same.'''
+	static final def String NO_COMMON_SUBTYPE(String name) '''The type "«name»" in your refinements cannot be merged into a common subtype.'''
+	static final def String NON_MATCHING_ATTR_VALUES(String name) '''The value of "«name»" does not match your other refinements'''
+	static final def String DIFFERENT_TYPES_OF_ATTRIBUTES(String type1, String type2) '''The types of the properties you are trying to refine are not compatible. The types "«type1»" and "«type2»" must be the same.'''
 	static final String DIFFERENT_OPERATORS_OF_PROPERTIES = "The operators of the properties you are trying to refine are not compatible."
 	static final String FORBIDDEN_ACTIONS = "Actions are not allowed here."
 	static final String FORBIDDEN_NAMES_IN_EDGES = "Names in normal edges (only one type) are not allowed."

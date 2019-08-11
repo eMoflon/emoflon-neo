@@ -996,13 +996,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 	}
 
-	/**
-	 * Returns the diagram text for the Metamodels in the source and target parts of a TripleGrammar.
-	 */
-	def String visualiseMetamodelsOfTripleGrammar(TripleGrammar tg, boolean mainSelection) {
-		// TODO [Maximilian]
-	}
-
 	/*----------------------------------*/
 	/*--------- Get NodeBlocks ---------*/
 	/*----------------------------------*/
