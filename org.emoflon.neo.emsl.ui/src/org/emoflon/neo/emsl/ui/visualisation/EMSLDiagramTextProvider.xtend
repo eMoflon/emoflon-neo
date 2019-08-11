@@ -164,17 +164,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					rectangle "Rule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as rule«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleRule»
-					rectangle "TripleRule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as tripleRule«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					rectangle "TripleRule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as triplerule«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
 				«ENDIF»
 				«IF entity instanceof TripleGrammar»
-					rectangle "TripleGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as tripleGrammar«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					rectangle "TripleGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as triplegrammar«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
 				«ENDIF»
 				«IF entity instanceof GraphGrammar»
-					rectangle "GraphGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as graphGrammar«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					rectangle "GraphGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as graphgrammar«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
 				«ENDIF»
 				«IF entity instanceof Constraint»
 					rectangle "Constraint: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as constraint«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
 				«ENDIF»
+			«ENDFOR»
+			«FOR entity : root.entities»
 				«IF entity instanceof SuperType»
 					«visualiseSuperTypesInEntity(entity)»
 				«ENDIF»
@@ -960,17 +962,37 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def dispatch String visualiseEntity(TripleGrammar entity, boolean mainSelection) {
 		'''
-			together Source {
+			set namespaceSeparator none
+			
+			left to right direction
+		
+			package "Source Metamodels" {
 				«FOR mm : entity.srcMetamodels»
-					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»"
+					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»" «link(mm)»
 				«ENDFOR»
 			}
 			
-			together Target {
+			package "Target Metamodels" {
 				«FOR mm : entity.trgMetamodels»
-					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»"
+					class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«mm.name»" «link(mm)»
 				«ENDFOR»
 			}
+			«IF !entity.correspondences.empty»
+			package Correspondences {
+				«FOR c : entity.correspondences»
+					class "«(c.source.eContainer as Entity).name».«c.source.name»"
+					class "«(c.target.eContainer as Entity).name».«c.target.name»"
+					"«(c.source.eContainer as Entity).name».«c.source.name»" .. "«(c.target.eContainer as Entity).name».«c.target.name»" : «c.name»
+				«ENDFOR»
+			}
+			«ENDIF»
+			«IF !entity.rules.empty»
+			package Rules {
+				«FOR r : entity.rules»
+					class "«r.name»" «link(r)»
+				«ENDFOR»
+			}
+			«ENDIF»
 		'''
 	}
 
@@ -1106,7 +1128,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		superTypeNames.put("pattern", new ArrayList<String>())
 		superTypeNames.put("rule", new ArrayList<String>())
 		superTypeNames.put("model", new ArrayList<String>())
-		superTypeNames.put("tripleRule", new ArrayList<String>())
+		superTypeNames.put("triplerule", new ArrayList<String>())
 
 		for (st : entity.superRefinementTypes) {
 			if (st.referencedType instanceof AtomicPattern &&
@@ -1122,9 +1144,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						(st.referencedType as Model).name)) {
 				superTypeNames.get("model").add(st.referencedType.name)
 			} else if (st.referencedType instanceof TripleRule &&
-					!superTypeNames.get("tripleRule").contains(
+					!superTypeNames.get("triplerule").contains(
 						(st.referencedType as TripleRule).name)) {
-				superTypeNames.get("tripleRule").add(st.referencedType.name)
+				superTypeNames.get("triplerule").add(st.referencedType.name)
 			}
 		}
 		'''
