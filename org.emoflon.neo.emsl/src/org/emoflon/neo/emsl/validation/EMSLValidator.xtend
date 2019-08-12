@@ -47,6 +47,7 @@ import org.emoflon.neo.emsl.util.FlattenerException
 import java.util.HashSet
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.Correspondence
 
 /**
  * This class contains custom validation rules. 
@@ -258,6 +259,16 @@ class EMSLValidator extends AbstractEMSLValidator {
 						entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
 			} else if (e.errorType == FlattenerErrorType.PATH_LENGTHS_NONSENSE) {
 				error(SENSELESS_MULTIPLICITIES("multiplicities"), EMSLPackage.Literals.SUPER_TYPE__NAME)
+			} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_CORR_PROXY_SOURCE) {
+				for (c : (entity as TripleRule).correspondences) {
+					if (c.type == e.corr.type && c.proxySource.equals(e.proxyName))
+						error('''The proxy "«c.proxySource»" could not be resolved during flattening.''', c, EMSLPackage.Literals.CORRESPONDENCE__PROXY_SOURCE)
+				}
+			} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_CORR_PROXY_TARGET) {
+				for (c : (entity as TripleRule).correspondences) {
+					if (c.type == e.corr.type && c.proxyTarget.equals(e.proxyName))
+						error('''The proxy "«c.proxyTarget»" could not be resolved during flattening.''', c, EMSLPackage.Literals.CORRESPONDENCE__PROXY_TARGET)
+				}
 			}
 		}
 	}
@@ -633,16 +644,22 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check
 	def void checkInstantiationOfMetamodelsInTripleRule(TripleRule tripleRule) {
 		for (nb : tripleRule.srcNodeBlocks) {
-			tripleRule.type.srcMetamodels.map[m | m.nodeBlocks].forEach[l | 
-				if (!l.contains(nb.type))
-					error(TRIPLE_RULE_INSTANTIATION_ERROR("source"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+			val wrapper = new Object() {var correct = false;}
+			tripleRule.type.srcMetamodels.map[m | m.nodeBlocks].forEach[m |
+				if (m.contains(nb.type))
+					wrapper.correct = true
 			]
+			if (!wrapper.correct)
+				error(TRIPLE_RULE_INSTANTIATION_ERROR("source"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
 		}
 		for (nb : tripleRule.trgNodeBlocks) {
-			tripleRule.type.trgMetamodels.map[m | m.nodeBlocks].forEach[l | 
-				if (!l.contains(nb.type))
-					error(TRIPLE_RULE_INSTANTIATION_ERROR("target"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+			val wrapper = new Object() {var correct = false;}
+			tripleRule.type.trgMetamodels.map[m | m.nodeBlocks].toSet.forEach[m |
+				if (m.contains(nb.type))
+					wrapper.correct = true
 			]
+			if (!wrapper.correct)
+					error(TRIPLE_RULE_INSTANTIATION_ERROR("target"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
 		}
 	}
 	
@@ -755,6 +772,51 @@ class EMSLValidator extends AbstractEMSLValidator {
 				if (!r.upper.equals("*") && !(numberOfInstances <= Integer.parseInt(r.upper)))
 					error('''You can create at most «Integer.parseInt(r.upper)» edges of type "«r.name»" in your nodeBlock.''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
 			]
+		}
+	}
+	
+	/**
+	 * Checks if the names of correspondences defined in the TripleGrammar are unique.
+	 */
+	@Check
+	def void checkForUniqueNamesOfCorrespondences(TripleGrammar entity) {
+		var corrNames = new HashSet<String>
+		for (corr : entity.correspondences) {
+			if (corrNames.contains(corr.name)) {
+				error(SAME_NAMES_OF_ENTITIES("correspondence"), corr, EMSLPackage.Literals.CORRESPONDENCE_TYPE__NAME)
+				for (other : entity.correspondences) {
+					if (other.name.equals(corr.name))
+						error(SAME_NAMES_OF_ENTITIES("correspondence"), other, EMSLPackage.Literals.CORRESPONDENCE_TYPE__NAME)
+				}
+			}
+			corrNames.add(corr.name)
+		}
+	}
+	
+	/**
+	 * Checks if a correspondence that is adjacent to red/green nodes is also red/green.
+	 */
+	@Check
+	def void correspondencesAdjacentToRedGreenNodes(Correspondence corr) {
+		if (corr.action === null && corr.source?.action !== null) {
+			error("Correspondences adjacent to red/green nodes must also be red/green", corr, EMSLPackage.Literals.CORRESPONDENCE__SOURCE)
+		}
+		if (corr.action === null && corr.target?.action !== null) {
+			error("Correspondences adjacent to red/green nodes must also be red/green", corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
+		}
+	}
+	
+	/**
+	 * Checks if the types of source and target of a correspondence match those defined in the
+	 * TripleGrammar for this correspondence.
+	 */
+	@Check
+	def void typeOfSourceTargetInCorrespondence(Correspondence corr) {
+		if (corr.source?.type != corr.type.source) {
+			error('''The source argument must be of type "«corr.type.source.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__SOURCE)
+		}
+		if (corr.target?.type != corr.type.target) {
+			error('''The target argument must be of type "«corr.type.target.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
 		}
 	}
 }

@@ -35,6 +35,7 @@ import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.Correspondence
 
 /**
  * This class contains custom scoping description.
@@ -56,6 +57,8 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 				return handleNodeBlockTypesInPattern(context as ModelNodeBlock, reference)
 			else if (isInRule(context as ModelNodeBlock))
 				return handleNodeBlockTypesInRule(context as ModelNodeBlock, reference)
+			else if (isInTripleRule(context as ModelNodeBlock))
+				return handleNodeBlockTypesInTripleRule(context as ModelNodeBlock, reference)
 		}
 
 		if (valueOfRelationStatementInModel(context, reference))
@@ -107,6 +110,15 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			
 		if (nameOfSuperRefinementTypeOfInRefinementCommand(context, reference))
 			return handleNameOfSuperRefinementTypeOfModelInRefinementCommand(context, reference)
+			
+		if (sourceOfCorrespondence(context, reference))
+			return handleSourceOfCorrespondence(context, reference)
+			
+		if (targetOfCorrespondence(context, reference))
+			return handleTargetOfCorrespondence(context as Correspondence, reference)
+		
+		if (typeOfCorrespondence(context, reference))
+			return handleTypeOfCorrespondence(context as Correspondence, reference)
 
 		return super.getScope(context, reference)
 	}
@@ -392,6 +404,65 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val allNodeBlocks = new HashSet(metaModel.nodeBlocks)
 		return Scopes.scopeFor(allNodeBlocks)
 	}
+	
+	/*-------------------------------------*/
+	/*---------- Correspondences ----------*/
+	/*-------------------------------------*/
+	
+	/**
+	 * Returns whether to create a scope for the source of a Correspondence in a TripleRule.
+	 */
+	private def sourceOfCorrespondence(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.CORRESPONDENCE__SOURCE
+	}
+	
+	/**
+	 * Returns the scope for the source of a Correspondence in a TripleRule.
+	 */
+	private def handleSourceOfCorrespondence(EObject context, EReference reference) {
+		var possibilities = new HashSet
+		if (context instanceof TripleRule) {
+			possibilities.addAll(context.srcNodeBlocks)
+			possibilities.addAll(context.trgNodeBlocks)
+		} else if (context instanceof Correspondence) {
+			possibilities.addAll((context.eContainer as TripleRule).srcNodeBlocks)
+			possibilities.addAll((context.eContainer as TripleRule).trgNodeBlocks)
+		}
+		Scopes.scopeFor(possibilities)
+	}
+	
+	/**
+	 * Returns whether to create a scope for the type of a Correspondence in a TripleRule.
+	 */
+	private def typeOfCorrespondence(EObject context, EReference reference) {
+		context instanceof Correspondence && reference == EMSLPackage.Literals.CORRESPONDENCE__TYPE
+	}
+	
+	/**
+	 * Returns the scope for the type of a Correspondence in a TripleRule.
+	 */
+	private def handleTypeOfCorrespondence(Correspondence context, EReference reference) {
+		Scopes.scopeFor((context.eContainer as TripleRule).type.correspondences)
+	}
+	
+	/**
+	 * Returns whether to create a scope for the target of a Correspondence in a TripleRule.
+	 */
+	private def targetOfCorrespondence(EObject context, EReference reference) {
+		context instanceof Correspondence && reference == EMSLPackage.Literals.CORRESPONDENCE__TARGET
+	}
+	
+	/**
+	 * Returns the scope for the target of a Correspondence in a TripleRule.
+	 */
+	private def handleTargetOfCorrespondence(Correspondence context, EReference reference) {
+		var possibilities = new HashSet()
+		possibilities.addAll((context.eContainer as TripleRule).srcNodeBlocks.filter[n | n.type == context.type.target])
+		possibilities.addAll((context.eContainer as TripleRule).trgNodeBlocks.filter[n | n.type == context.type.target])
+		Scopes.scopeFor(possibilities)
+	}
+	
+	
 
 	/*--------------------------------*/
 	/*---------- NodeBlocks ----------*/
@@ -431,6 +502,21 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		possibilities.putAll(allNodeBlocksInAllImportedMetamodels(root))
 
 		determineScope(possibilities)
+	}
+	
+	/**
+	 * Returns the scope for the type of a NodeBlock in a TripleRule.
+	 */
+	private def handleNodeBlockTypesInTripleRule(EObject context, EReference reference) {
+		if ((context.eContainer as TripleRule).srcNodeBlocks.contains(context)) {
+			return determineScope(allNodeBlocksInAllImportedMetamodels(EcoreUtil2.getRootContainer(context)).filter[p1, p2|
+				(context.eContainer as TripleRule).type.srcMetamodels.contains(p1.eContainer)
+			])
+		} else if ((context.eContainer as TripleRule).trgNodeBlocks.contains(context)) {
+			return determineScope(allNodeBlocksInAllImportedMetamodels(EcoreUtil2.getRootContainer(context)).filter[p1, p2|
+				(context.eContainer as TripleRule).type.trgMetamodels.contains(p1.eContainer)
+			])
+		}
 	}
 
 	/**
@@ -506,6 +592,13 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	private def isInRule(ModelNodeBlock context) {
 		context.eContainer instanceof Rule
+	}
+	
+	/**
+	 * Returns whether the ModelNodeBlock is part of a TripleRule.
+	 */
+	private def isInTripleRule(ModelNodeBlock context) {
+		context.eContainer instanceof TripleRule
 	}
 
 	/*--------------------------*/

@@ -855,13 +855,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def dispatch String visualiseEntity(TripleRule entity, boolean mainSelection) {
 		var entityCopy = EMSLFlattener.flatten(entity) as TripleRule
 		'''
-			together {
+			package «IF entity.abstract»//«ENDIF»«entityCopy.name»«IF entity.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF» {
 				«FOR snb : entityCopy.srcNodeBlocks»
-					«visualiseTripleRuleNodeBlocks(entity, snb, "SRC")»
+					«visualiseTripleRuleNodeBlocks(entityCopy, snb, "SRC")»
 				«ENDFOR»
 				
 				«FOR tnb : entityCopy.trgNodeBlocks»
-					«visualiseTripleRuleNodeBlocks(entity, tnb, "TRG")»
+					«visualiseTripleRuleNodeBlocks(entityCopy, tnb, "TRG")»
 				«ENDFOR»
 			
 				«FOR corr : entityCopy.correspondences»

@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.xtext.EcoreUtil2;
 import org.emoflon.neo.emsl.eMSL.Correspondence;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
@@ -85,9 +86,17 @@ public class TripleRuleFlattener extends RuleFlattener {
 			var corrs = new ArrayList<Correspondence>();
 			corrs.addAll(entity.getCorrespondences());
 			entity.getSuperRefinementTypes().forEach(
-					s -> corrs.addAll(EcoreUtil.copyAll(((TripleRule) s.getReferencedType()).getCorrespondences())));
+					s -> {
+						EcoreUtil.resolveAll(s.getReferencedType());
+						TripleRule tmpCopy = (TripleRule) EcoreUtil.copy(s.getReferencedType());
+						try {
+							corrs.addAll(EcoreUtil.copyAll(((TripleRule) flatten(tmpCopy, new HashSet<String>())).getCorrespondences()));
+						} catch (FlattenerException e) {
+							// nothing to do here because recursive errors must have already appeared
+						}
+					});
 			entity.getCorrespondences().clear();
-			entity.getCorrespondences().addAll(mergeCorrespondences(corrs, mergedSrcNodes, mergedTrgNodes));
+			entity.getCorrespondences().addAll(mergeCorrespondences(entity, corrs, mergedSrcNodes, mergedTrgNodes));
 
 			// 4. step: merge attribute conditions
 			mergeAttributeConditions(entity, refinements);
@@ -234,9 +243,10 @@ public class TripleRuleFlattener extends RuleFlattener {
 	 * @param srcNodeBlocks nodes of the new entity.
 	 * @param trgNodeBlocks nodes of the new entity.
 	 * @return List containing the merged correspondences.
+	 * @throws FlattenerException if the proxy target cannot be resolved.
 	 */
-	private List<Correspondence> mergeCorrespondences(List<Correspondence> corrs, List<ModelNodeBlock> srcNodeBlocks,
-			List<ModelNodeBlock> trgNodeBlocks) {
+	private List<Correspondence> mergeCorrespondences(SuperType entity, List<Correspondence> corrs, List<ModelNodeBlock> srcNodeBlocks,
+			List<ModelNodeBlock> trgNodeBlocks) throws FlattenerException {
 		var mergedCorrespondences = new ArrayList<Correspondence>();
 
 		for (var c : corrs) {
@@ -251,24 +261,33 @@ public class TripleRuleFlattener extends RuleFlattener {
 						}
 					}
 					if (!alreadyIn)
-						mergedCorrespondences.add(EcoreUtil.copy(c));
+						mergedCorrespondences.add(EcoreUtil2.copy(c));
 				}
 			}
 		}
-
-		for (var c : mergedCorrespondences) {
-			// set new src
-			for (var n : srcNodeBlocks) {
-				if (n.getName().equals(c.getSource().getName())) {
-					c.setSource(n);
-					break;
+		if (!mergedCorrespondences.isEmpty()) {
+			for (var c : mergedCorrespondences) {
+				// set new src
+				for (var n : srcNodeBlocks) {
+					if (c.getSource() != null && n.getName().equals(c.getSource().getName())
+							|| c.getProxySource() != null && n.getName().equals(c.getProxySource())) {
+						c.setSource(n);
+						break;
+					}
 				}
-			}
-			// set new trg
-			for (var n : trgNodeBlocks) {
-				if (n.getName().equals(c.getTarget().getName())) {
-					c.setTarget(n);
-					break;
+				// set new trg
+				for (var n : trgNodeBlocks) {
+					if (c.getTarget() != null && n.getName().equals(c.getTarget().getName())
+							|| c.getProxyTarget() != null && n.getName().equals(c.getProxyTarget())) {
+						c.setTarget(n);
+						break;
+					}
+				}
+				if (c.getSource() == null) {
+					throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_CORR_PROXY_SOURCE, c.getProxySource(), c);
+				}
+				if (c.getTarget() == null) {
+					throw new FlattenerException(entity, FlattenerErrorType.NON_RESOLVABLE_CORR_PROXY_TARGET, c.getProxyTarget(), c);
 				}
 			}
 		}
@@ -286,8 +305,14 @@ public class TripleRuleFlattener extends RuleFlattener {
 	private boolean isEqualCorrespondence(Correspondence corr1, Correspondence corr2) {
 		return (corr1.getAction() == null && corr2.getAction() == null || (corr1.getAction() != null
 				&& corr2.getAction() != null && corr1.getAction().getOp() == corr2.getAction().getOp()))
-				&& corr1.getSource().getName().equals(corr2.getSource().getName())
-				&& corr1.getTarget().getName().equals(corr2.getTarget().getName())
+				&& (corr1.getSource() != null && corr2.getSource() != null && corr1.getSource().getName().equals(corr2.getSource().getName())
+						|| corr1.getSource() != null && corr2.getSource() == null && corr1.getSource().getName().equals(corr2.getProxySource())
+						|| corr1.getSource() == null && corr2.getSource() != null && corr1.getProxySource().equals(corr2.getSource().getName())
+						|| corr1.getSource() == null && corr2.getSource() == null && corr1.getProxySource().equals(corr2.getProxySource()))
+				&& (corr1.getTarget() != null && corr2.getTarget() != null && corr1.getTarget().getName().equals(corr2.getTarget().getName())
+						|| corr1.getTarget() != null && corr2.getTarget() == null && corr1.getTarget().getName().equals(corr2.getProxyTarget())
+						|| corr1.getTarget() == null && corr2.getTarget() != null && corr1.getProxyTarget().equals(corr2.getTarget().getName())
+						|| corr1.getTarget() == null && corr2.getTarget() == null && corr1.getProxyTarget().equals(corr2.getProxyTarget()))	
 				&& corr1.getType().getName().equals(corr2.getType().getName())
 				&& corr1.getType().getSource() == corr2.getType().getSource()
 				&& corr1.getType().getTarget() == corr2.getType().getTarget();
@@ -303,7 +328,6 @@ public class TripleRuleFlattener extends RuleFlattener {
 				}
 			}
 		}
-
 		for (var nb : tripleRule.getTrgNodeBlocks()) {
 			for (var relation : nb.getRelations()) {
 				if (!(relation.getTarget() instanceof ModelNodeBlock)) {
