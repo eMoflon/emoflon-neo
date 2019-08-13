@@ -111,7 +111,7 @@ class CypherPatternBuilder {
 		MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 			«FOR r : n.relations SEPARATOR ', '»
-				(«n.varName»:«n.classType»)-[«r.varName»]->(«r.toNodeVar»:«r.toNodeLabel»)
+				(«n.varName»:«n.classType»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
 			«ENDFOR»
 			«ENDFOR»'''
 	}
@@ -138,7 +138,7 @@ class CypherPatternBuilder {
 	}
 	
 	private def static removePaths(Collection<NeoRelation> relations){
-		relations.filter[r | r.relTypes.size == 1]
+		relations.filter[r | !r.isPath]
 	}
 
 	def static String returnQuery_copyPaste(Collection<NeoNode> nodes) {
@@ -179,10 +179,6 @@ class CypherPatternBuilder {
 			«ENDFOR»'''
 	}
 
-	def static String returnQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2, Collection<String> nodesMap) {
-		'''RETURN «FOR n : nodesMap SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
-	}
-
 	def static String isStillValid_whereQuery(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
 			WHERE «nodeIdBlock(nodes, match)»
@@ -194,7 +190,7 @@ class CypherPatternBuilder {
 		«FOR n : nodes SEPARATOR " AND "»
 			id(«n.varName») = «match.getIdForNode(n)»
 			«IF n.relations.size > 0»
-				«FOR r : n.relations BEFORE " AND " SEPARATOR " AND "»
+				«FOR r : removePaths(n.relations) BEFORE " AND " SEPARATOR " AND "»
 					id(«r.varName») = «match.getIdForRelation(r)»
 				«ENDFOR»
 			«ENDIF»
@@ -298,7 +294,7 @@ class CypherPatternBuilder {
 		''' WITH «FOR n : nodes SEPARATOR ', '»«n»«ENDFOR»'''
 	}
 
-	def static String constraint_returnQuery(Collection<String> nodes) {
+	private def static String constraint_returnQuery(Collection<String> nodes) {
 		''' RETURN «FOR n : nodes SEPARATOR ', '»id(«n») AS «n»«ENDFOR» LIMIT 1'''
 	}
 
