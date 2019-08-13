@@ -47,6 +47,7 @@ import org.emoflon.neo.emsl.util.FlattenerException
 import java.util.HashSet
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.Correspondence
 
 /**
  * This class contains custom validation rules. 
@@ -69,7 +70,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final def String SAME_NAMES_OF_ENTITIES(String className) '''Two «className»s with the same name are not allowed.'''
 	static final String GREEN_NODE_OF_ABSTRACT_TYPES = "Green Nodes of abstract types are not allowed"
 	static final String NON_RESOLVABLE_PROXY = "A proxy target you defined could not be resolved."
-	static final def String NON_MERGABLE_TYPES(String typeName) '''The type «typeName»  in your refinements cannot be merged into a common subtype.'''
+	static final def String NON_MERGABLE_TYPES(String typeName) '''The type "«typeName»" in your refinements cannot be merged into a common subtype.'''
 	static final String FORBIDDING_COMPLEX_EDGES = "Complex Edges in Models are not allowed."
 	static final String ENTITY_TYPE_NOT_SUPPORTED = "Mixing entities in refinements is not allowed."
 	static final String INSTANTIATING_ABSTRACT_TYPE_IN_NON_ABSTRACT_MODEL = "Instantiating an abstract type in a non-abstract model is not allowed."
@@ -77,9 +78,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final def String TRIPLE_RULE_INSTANTIATION_ERROR(String section) '''The class you want to instantiate must be from a metamodel that is given in the TripleGrammar's «section» part.'''
 	static final String COMPLEX_EDGE_WITH_OPERATOR = "Green/Red edges with multiple types are not allowed"
 	static final String EDGE_WITH_OPERATOR_AND_PATH_LENGTH = "Green/Red edges with path lengths are not allowed"
-	static final def String NO_COMMON_SUBTYPE(String name) '''The type «name» in your refinements cannot be merged into a common subtype.'''
-	static final def String NON_MATCHING_ATTR_VALUES(String name) '''The value of «name» does not match your other refinements'''
-	static final def String DIFFERENT_TYPES_OF_ATTRIBUTES(String type1, String type2) '''The types of the properties you are trying to refine are not compatible. The types «type1» and «type2» must be the same.'''
+	static final def String NO_COMMON_SUBTYPE(String name) '''The type "«name»" in your refinements cannot be merged into a common subtype.'''
+	static final def String NON_MATCHING_ATTR_VALUES(String name) '''The value of "«name»" does not match your other refinements'''
+	static final def String DIFFERENT_TYPES_OF_ATTRIBUTES(String type1, String type2) '''The types of the properties you are trying to refine are not compatible. The types "«type1»" and "«type2»" must be the same.'''
 	static final String DIFFERENT_OPERATORS_OF_PROPERTIES = "The operators of the properties you are trying to refine are not compatible."
 	static final String FORBIDDEN_ACTIONS = "Actions are not allowed here."
 	static final String FORBIDDEN_NAMES_IN_EDGES = "Names in normal edges (only one type) are not allowed."
@@ -132,11 +133,40 @@ class EMSLValidator extends AbstractEMSLValidator {
 	/**
 	 * Tries to flatten the given Entity to find out if there are non-mergeable objects/statements etc.
 	 * If an error occurs, an appropriate error message is shown.
+	 * Also checks if the number of edges in the nodes is in accordance with the limits defined in the
+	 * metamodel and if all properties have values assigned.
 	 */	
 	@Check(NORMAL)
 	def checkFlatteningOfSuperType(SuperType entity) {
 		try {
-			EMSLFlattener.flatten(entity);
+			var flattenedEntity = EMSLFlattener.flatten(entity);
+			if (entity instanceof Model && !entity.abstract)
+			dispatcher.getNodeBlocks(flattenedEntity).forEach[n |
+				n.type.properties.forEach[p |
+					var initialized = false
+					for (otherP : n.properties) {
+						if (otherP.type == p)
+							initialized = true
+					}
+					if (!initialized)
+						warning('''The property "«p.name»" of the class "«n.type.name»" in the object "«n.name»" has no value assigned.''', entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
+				]
+				n.relations.forEach[r |
+					r.types.forEach[t |
+						t.type.properties.forEach[p |
+							var initialized = false
+							for (otherP : r.properties) {
+								if (otherP.type == p)
+									initialized = true
+							}
+							if (!initialized)
+								warning('''The property "«p.name»" of the relation "«r.types.get(0).type.name»" in the object "«n.name»" has no value assigned.''', entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
+						]
+					]
+				]
+			]
+			if (entity instanceof Model)
+				checkNumberOfEdges(entity)
 		} catch (FlattenerException e) {
 			if (e.errorType == FlattenerErrorType.INFINITE_LOOP) {
 				error(REFINEMENT_LOOP(dispatcher.getName(entity)),
@@ -229,6 +259,16 @@ class EMSLValidator extends AbstractEMSLValidator {
 						entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
 			} else if (e.errorType == FlattenerErrorType.PATH_LENGTHS_NONSENSE) {
 				error(SENSELESS_MULTIPLICITIES("multiplicities"), EMSLPackage.Literals.SUPER_TYPE__NAME)
+			} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_CORR_PROXY_SOURCE) {
+				for (c : (entity as TripleRule).correspondences) {
+					if (c.type == e.corr.type && c.proxySource.equals(e.proxyName))
+						error('''The proxy "«c.proxySource»" could not be resolved during flattening.''', c, EMSLPackage.Literals.CORRESPONDENCE__PROXY_SOURCE)
+				}
+			} else if (e.errorType == FlattenerErrorType.NON_RESOLVABLE_CORR_PROXY_TARGET) {
+				for (c : (entity as TripleRule).correspondences) {
+					if (c.type == e.corr.type && c.proxyTarget.equals(e.proxyName))
+						error('''The proxy "«c.proxyTarget»" could not be resolved during flattening.''', c, EMSLPackage.Literals.CORRESPONDENCE__PROXY_TARGET)
+				}
 			}
 		}
 	}
@@ -604,16 +644,22 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check
 	def void checkInstantiationOfMetamodelsInTripleRule(TripleRule tripleRule) {
 		for (nb : tripleRule.srcNodeBlocks) {
-			tripleRule.type.srcMetamodels.map[m | m.nodeBlocks].forEach[l | 
-				if (!l.contains(nb.type))
-					error(TRIPLE_RULE_INSTANTIATION_ERROR("source"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+			val wrapper = new Object() {var correct = false;}
+			tripleRule.type.srcMetamodels.map[m | m.nodeBlocks].forEach[m |
+				if (m.contains(nb.type))
+					wrapper.correct = true
 			]
+			if (!wrapper.correct)
+				error(TRIPLE_RULE_INSTANTIATION_ERROR("source"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
 		}
 		for (nb : tripleRule.trgNodeBlocks) {
-			tripleRule.type.trgMetamodels.map[m | m.nodeBlocks].forEach[l | 
-				if (!l.contains(nb.type))
-					error(TRIPLE_RULE_INSTANTIATION_ERROR("target"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
+			val wrapper = new Object() {var correct = false;}
+			tripleRule.type.trgMetamodels.map[m | m.nodeBlocks].toSet.forEach[m |
+				if (m.contains(nb.type))
+					wrapper.correct = true
 			]
+			if (!wrapper.correct)
+					error(TRIPLE_RULE_INSTANTIATION_ERROR("target"), nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__TYPE)
 		}
 	}
 	
@@ -708,6 +754,69 @@ class EMSLValidator extends AbstractEMSLValidator {
 				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__LOWER)
 				error(SENSELESS_MULTIPLICITIES("path lengths"), relation, EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__UPPER)
 			}
+		}
+	}
+	
+	/**
+	 * Checks if the number of edges in a nodeBlock is consistent with the number of
+	 * edges defined in the metamodel.
+	 */
+	def void checkNumberOfEdges(Model entity) {
+		for (nb : entity.nodeBlocks) {
+			nb.type.relations.forEach[r |
+				var numberOfInstances = nb.relations.filter[instance |
+					instance.types.get(0).type == r
+				].size
+				if (!r.lower.equals("*") && !(numberOfInstances >= Integer.parseInt(r.lower)))
+					error('''You need at least «Integer.parseInt(r.lower)» edges of type "«r.name»" in your nodeBlock.''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
+				if (!r.upper.equals("*") && !(numberOfInstances <= Integer.parseInt(r.upper)))
+					error('''You can create at most «Integer.parseInt(r.upper)» edges of type "«r.name»" in your nodeBlock.''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
+			]
+		}
+	}
+	
+	/**
+	 * Checks if the names of correspondences defined in the TripleGrammar are unique.
+	 */
+	@Check
+	def void checkForUniqueNamesOfCorrespondences(TripleGrammar entity) {
+		var corrNames = new HashSet<String>
+		for (corr : entity.correspondences) {
+			if (corrNames.contains(corr.name)) {
+				error(SAME_NAMES_OF_ENTITIES("correspondence"), corr, EMSLPackage.Literals.CORRESPONDENCE_TYPE__NAME)
+				for (other : entity.correspondences) {
+					if (other.name.equals(corr.name))
+						error(SAME_NAMES_OF_ENTITIES("correspondence"), other, EMSLPackage.Literals.CORRESPONDENCE_TYPE__NAME)
+				}
+			}
+			corrNames.add(corr.name)
+		}
+	}
+	
+	/**
+	 * Checks if a correspondence that is adjacent to red/green nodes is also red/green.
+	 */
+	@Check
+	def void correspondencesAdjacentToRedGreenNodes(Correspondence corr) {
+		if (corr.action === null && corr.source?.action !== null) {
+			error("Correspondences adjacent to red/green nodes must also be red/green", corr, EMSLPackage.Literals.CORRESPONDENCE__SOURCE)
+		}
+		if (corr.action === null && corr.target?.action !== null) {
+			error("Correspondences adjacent to red/green nodes must also be red/green", corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
+		}
+	}
+	
+	/**
+	 * Checks if the types of source and target of a correspondence match those defined in the
+	 * TripleGrammar for this correspondence.
+	 */
+	@Check
+	def void typeOfSourceTargetInCorrespondence(Correspondence corr) {
+		if (corr.source?.type != corr.type.source) {
+			error('''The source argument must be of type "«corr.type.source.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__SOURCE)
+		}
+		if (corr.target?.type != corr.type.target) {
+			error('''The target argument must be of type "«corr.type.target.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
 		}
 	}
 }

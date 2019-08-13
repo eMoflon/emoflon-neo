@@ -21,6 +21,8 @@ import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -123,5 +125,72 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		for (f : filteredFiles) {
 			acceptor.accept(createCompletionProposal(prep + f.fullPath.toString + "\"", context))
 		}
-	}	
+	}
+	
+	override completeCorrespondence_Source(
+			EObject model, Assignment assignment, 
+			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		super.completeCorrespondence_Source(model, assignment, context, acceptor)
+		var nodes = new HashSet()
+		var dispatcher = new EntityAttributeDispatcher()
+		var refinements = new HashSet()
+		if (model instanceof TripleRule) {
+			refinements.addAll(dispatcher.getSuperRefinementTypes(model))
+		} else if (model instanceof Correspondence) {
+			refinements.addAll(dispatcher.getSuperRefinementTypes(model.eContainer as TripleRule))
+		}
+		for (refinement : refinements) {
+			for (nb : (EMSLFlattener.flatten(refinement.referencedType) as TripleRule).srcNodeBlocks) {
+				refinement.relabeling.forEach[rel |
+					if (rel.oldLabel.equals(nb.name))
+						nb.name = rel.newLabel
+				]
+				var needed = true
+				for (other : (model as TripleRule).srcNodeBlocks) {
+					if (nb.name.equals(other.name))
+						needed = false
+				}
+				if (needed)
+					nodes.add(nb)
+			}
+			for (nb : (EMSLFlattener.flatten(refinement.referencedType) as TripleRule).trgNodeBlocks) {
+				refinement.relabeling.forEach[rel |
+					if (rel.oldLabel.equals(nb.name))
+						nb.name = rel.newLabel
+				]
+				var needed = true
+				for (other : (model as TripleRule).trgNodeBlocks) {
+					if (nb.name.equals(other.name))
+						needed = false
+				}
+				if (needed)
+					nodes.add(nb)
+			}
+		}
+		nodes.forEach[n | acceptor.accept(createCompletionProposal("$" + n.name, context))]				
+	}
+	
+	override completeCorrespondence_Target(
+			EObject model, Assignment assignment, 
+			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		super.completeCorrespondence_Target(model, assignment, context, acceptor)
+		var nodes = new HashSet()
+		var dispatcher = new EntityAttributeDispatcher()
+		for (refinement : dispatcher.getSuperRefinementTypes(model.eContainer as SuperType)) {
+			for (nb : dispatcher.getNodeBlocks(EMSLFlattener.flatten(refinement.referencedType))) {
+				refinement.relabeling.forEach[rel |
+					if (rel.oldLabel.equals(nb.name))
+						nb.name = rel.newLabel
+				]
+				var needed = true
+				for (other : dispatcher.getNodeBlocks(model.eContainer as SuperType)) {
+					if (nb.name.equals(other.name))
+						needed = false
+				}
+				if (needed && nb.type == (model as Correspondence).type.target)
+					nodes.add(nb)
+			}
+		}
+		nodes.forEach[n | acceptor.accept(createCompletionProposal("$" + n.name, context))]				
+	}
 }
