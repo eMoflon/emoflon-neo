@@ -2,6 +2,34 @@ import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 // BoardPattern.gt
 
+pattern sokobanOnFieldOfBoard {
+	
+	b:SokobanLanguage.Board {
+		-selectedFigure->sokoban
+		-fields->f1 {
+			.col: 0
+			.row: 0
+		}
+		-fields->f2 {
+			.col: 1
+			.row: 0
+		}
+	}
+	f1:Field {
+		-right->f2
+		.endPos: false
+	}
+	f2:Field {
+		.endPos: false
+	}
+	sokoban:Sokoban {
+		-field->f1
+	}
+	
+}
+
+
+
 pattern oneSokoban {
 	sokoban : Sokoban
 }
@@ -10,7 +38,7 @@ pattern twoSokoban {
 	sokoban: Sokoban
 	sokoban2: Sokoban
 }
-
+ 
 pattern oneSokobanSelectedFigureRequired {
 	sokoban : Sokoban
 } when enforce selectedFigureRequired
@@ -103,13 +131,13 @@ abstract pattern fieldsInARow {
 
 pattern allNotBorderFieldsInARow -> fieldsInARow {
 	b : SokobanLanguage.Board {
-		-fields -> field {
+		-fields -> $field {
 			.row : 1
 		}
-		-fields -> fieldL {
+		-fields -> $fieldL {
 			.row : 1
 		}
-		-fields -> fieldR {
+		-fields -> $fieldR {
 			.row : 1
 		}
 	}
@@ -117,15 +145,15 @@ pattern allNotBorderFieldsInARow -> fieldsInARow {
 
 pattern allNotBorderFieldsInARowAndCol -> fieldsInARow {
 	b : SokobanLanguage.Board {
-		-fields -> field{
+		-fields -> $field {
 			.row : 1
 			.col : 2
 		}
-		-fields -> fieldL {
+		-fields -> $fieldL {
 			.row : 1
 			.col : 1
 		}
-		-fields -> fieldR {
+		-fields -> $fieldR {
 			.row : 1
 			.col : 3
 		}
@@ -134,14 +162,14 @@ pattern allNotBorderFieldsInARowAndCol -> fieldsInARow {
 
 pattern allNotBorderFieldsInDiffRows -> fieldsInARow {
 	b : SokobanLanguage.Board {
-		-fields -> field {
+		-fields -> $field {
 			.row : 4
 			.col : 2
 		}
-		-fields -> fieldL {
+		-fields -> $fieldL {
 			.row : 1
 		}
-		-fields -> fieldR {
+		-fields -> $fieldR {
 			.row : 1
 		}
 	}
@@ -317,7 +345,7 @@ abstract rule pushBlock {
 
 abstract rule moveSokobanUp -> moveSokoban {
 	to : Field {
-		-bottom-> from
+		-bottom-> $from
 	}
 }
 
@@ -325,14 +353,17 @@ rule moveSokobanUpWithCondition -> moveSokobanUp
 	when forbid occupiedField
 
 rule pushBlockUp -> pushBlock, moveSokobanUp {
-	from : Field {
-		-bottom-> next
+	next : Field {
+		-bottom-> to 
+	}
+	to : Field {
+		-bottom-> $from
 	}
 } when forbid occupiedNext
 
 abstract rule moveSokobanDown -> moveSokoban {
 	from : Field {
-		-bottom-> to
+		-bottom-> $to
 	}
 }
 
@@ -341,7 +372,7 @@ rule moveSokobanDownWithCondition -> moveSokobanDown
 
 rule pushBlockDown -> pushBlock, moveSokobanDown {
 	to : Field {
-		-bottom-> next
+		-bottom-> $next
 	}
 } when forbid occupiedNext
 

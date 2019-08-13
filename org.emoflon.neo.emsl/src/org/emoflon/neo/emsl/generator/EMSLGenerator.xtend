@@ -4,7 +4,9 @@
 package org.emoflon.neo.emsl.generator
 
 import java.net.URI
-import java.util.ArrayList
+import java.util.Arrays
+import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
 import org.eclipse.core.runtime.preferences.InstanceScope
@@ -13,8 +15,8 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.emoflon.neo.emsl.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.Entity
@@ -25,10 +27,15 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
+import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.compiler.TGGCompiler
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.eclipse.core.resources.ResourcesPlugin
+import org.emoflon.neo.emsl.util.LogUtils
+import org.emoflon.neo.emsl.util.ManifestFileUpdater
+import org.apache.log4j.Logger
 
 /**
  * Generates code from your model files on save.
@@ -37,7 +44,7 @@ import org.eclipse.core.resources.ResourcesPlugin
  */
 class EMSLGenerator extends AbstractGenerator {
 
-	String UI_PLUGIN_ID = "org.emoflon.neo.emsl.ui"
+	static final Logger logger = Logger.getLogger(EMSLGenerator)
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val segments = resource.URI.trimFileExtension.segmentsList
@@ -58,8 +65,26 @@ class EMSLGenerator extends AbstractGenerator {
 			generateAPIFor(apiName, apiPath, emslSpec, resource))
 	}
 
+	override void afterGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		val segments = resource.URI.trimFileExtension.segmentsList
+		val projectName = segments.get(1)
+		val project = ResourcesPlugin.workspace.root.getProject(projectName)
+		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder("src-gen"))
+
+		try {
+			new ManifestFileUpdater().processManifest(project, [ manifest |
+				return ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
+					// eNeo Deps
+					"org.emoflon.neo.neo4j.adapter"
+				))
+			])
+		} catch (CoreException e) {
+			LogUtils.error(logger, e);
+		}
+	}
+
 	def generateCommon() {
-		val store = new ScopedPreferenceStore(InstanceScope.INSTANCE, UI_PLUGIN_ID)
+		val store = new ScopedPreferenceStore(InstanceScope.INSTANCE, EMSLUtil.UI_PLUGIN_ID)
 
 		val uri = store.getString(EMSLUtil.P_URI);
 		val userName = store.getString(EMSLUtil.P_USER);
@@ -111,14 +136,15 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.rules.IRule;
 			import org.emoflon.neo.neo4j.adapter.NeoRule;
 			import org.emoflon.neo.neo4j.adapter.NeoRuleAccess;
-			import org.emoflon.neo.neo4j.adapter.NeoPattern;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
 			import org.emoflon.neo.neo4j.adapter.NeoConstraint;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
-			import org.emoflon.neo.neo4j.adapter.NeoPatternAccess;
+			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 			import org.emoflon.neo.neo4j.adapter.NeoMask;
 			import org.emoflon.neo.neo4j.adapter.NeoData;
 			import java.util.HashMap;
@@ -157,8 +183,7 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(Pattern p, int index) {
 		if(p.body.abstract) return ""
 		try {
-			val pattern = new EMSLFlattener().flattenEntity(p, new ArrayList<String>()) as Pattern;
-			val patternBody = pattern.body
+			val patternBody = EMSLFlattener.flatten(p.body) as AtomicPattern
 			val rootName = namingConvention(patternBody.name)
 			val dataClassName = rootName + "Data"
 			val accessClassName = rootName + "Access"
@@ -169,16 +194,20 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «accessClassName» extends NeoPatternAccess<«dataClassName»,«maskClassName»> {
+					«FOR node : patternBody.nodeBlocks»
+						public final String «node.name» = "«node.name»";
+					«ENDFOR»
+					
 					@Override
 					public NeoPattern matcher(){
 						var p = (Pattern) spec.getEntities().get(«index»);
-						return new NeoPattern(p, builder);
+						return NeoPatternFactory.createNeoPattern(p, builder);
 					}
 					
 					@Override
 					public NeoPattern matcher(«maskClassName» mask) {
 						var p = (Pattern) spec.getEntities().get(«index»);
-						return new NeoPattern(p, builder, mask);
+						return NeoPatternFactory.createNeoPattern(p, builder, mask);
 					}
 					
 					@Override
@@ -213,24 +242,22 @@ class EMSLGenerator extends AbstractGenerator {
 			'''//FIXME Unable to generate API: «e.toString»  */ '''
 		}
 	}
-	
-	private def CharSequence maskClassMembers()
-		'''
-			private HashMap<String, Long> nodeMask = new HashMap<>();
-			private HashMap<String, Object> attributeMask = new HashMap<>();
-			
-			@Override
-			public Map<String, Long> getMaskedNodes() {
-				return nodeMask;
-			}
-			
-			@Override
-			public Map<String, Object> getMaskedAttributes() {
-				return attributeMask;
-			}
-			
-		'''
-	
+
+	private def CharSequence maskClassMembers() '''
+		private HashMap<String, Long> nodeMask = new HashMap<>();
+		private HashMap<String, Object> attributeMask = new HashMap<>();
+		
+		@Override
+		public Map<String, Long> getMaskedNodes() {
+			return nodeMask;
+		}
+		
+		@Override
+		public Map<String, Object> getMaskedAttributes() {
+			return attributeMask;
+		}
+		
+	'''
 
 	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks) '''
 		«FOR node : nodeBlocks»
@@ -260,8 +287,8 @@ class EMSLGenerator extends AbstractGenerator {
 			}
 		'''
 	}
-		
-	def getOnlyType(ModelRelationStatement rel){
+
+	def getOnlyType(ModelRelationStatement rel) {
 		EMSLUtil.getOnlyType(rel)
 	}
 
@@ -353,7 +380,7 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(Rule r, int index) {
 		if(r.abstract) return ""
 		try {
-			val rule = new EMSLFlattener().flattenEntity(r, new ArrayList<String>()) as Rule;
+			val rule = EMSLFlattener.flatten(r) as Rule;
 			val rootName = namingConvention(rule.name)
 			val dataClassName = rootName + "Data"
 			val accessClassName = rootName + "Access"
@@ -420,7 +447,6 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(Metamodel m, int index) {
-		if(m.abstract) return "// No API for abstract metamodels"
 		'''
 			public Metamodel getMetamodel_«namingConvention(m.name)»(){
 				return (Metamodel) spec.getEntities().get(«index»);
@@ -432,7 +458,7 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			public IConstraint getConstraint_«namingConvention(c.name)»() {
 				var c = (Constraint) spec.getEntities().get(«index»);
-				return new NeoConstraint(c, Optional.of(builder));
+				return new NeoConstraint(c, builder);
 			}
 		'''
 	}

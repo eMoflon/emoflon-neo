@@ -47,7 +47,7 @@ class EMFExporter {
 	private def generateEMFMetamodel(Metamodel m) {
 		val r = output.createResource(URI.createURI(uriPrefix + m.name + uriPostfix))
 		val root = EcoreFactory.eINSTANCE.createEPackage
-		root.name = m.name
+		root.name = m.name.replace(".", "_")
 		root.nsURI = m.name
 		root.nsPrefix = m.name
 		r.contents.add(root)

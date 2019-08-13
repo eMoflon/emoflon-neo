@@ -19,6 +19,7 @@ import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 
 @SuppressWarnings("restriction")
@@ -60,7 +61,8 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 		return null;
 	}
 
-	private void exportSelectedEMSLEntity(ExecutionEvent event, NeoCoreBuilder builder) throws ExecutionException {
+	private void exportSelectedEMSLEntity(ExecutionEvent event, NeoCoreBuilder builder)
+			throws ExecutionException, FlattenerException {
 		IEditorPart editorPart = HandlerUtil.getActiveEditorChecked(event);
 		if (editorPart instanceof XtextEditor) {
 			XtextEditor editor = (XtextEditor) editorPart;
@@ -76,11 +78,13 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 					});
 				}
 			});
-			emslEntity.ifPresent(this::exportEMSLEntityToNeo4j);
+
+			if (emslEntity.isPresent())
+				exportEMSLEntityToNeo4j(emslEntity.get());
 		}
 	}
 
-	private void exportEMSLEntityToNeo4j(Entity entity) {
+	private void exportEMSLEntityToNeo4j(Entity entity) throws FlattenerException {
 		builder.exportEMSLEntityToNeo4j(entity);
 	}
 

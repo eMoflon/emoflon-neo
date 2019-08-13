@@ -76,19 +76,19 @@ pattern block { b:Block }
 
 pattern endFieldBlockedByBoulder -> endField {
 	boulder : Boulder {
-		-field->endField
+		-field-> $endField
 	}
 }
 
 constraint noBlockedEndField = forbid endFieldBlockedByBoulder
 
 rule deleteFigure {
-	-- fig:Figure
+	//-- fig:Figure
 }
 
 abstract rule createFigure -> chooseField {
 	++ fig:Figure {
-		++ -field->f
+		++ -field-> $f
 	}
 }
 

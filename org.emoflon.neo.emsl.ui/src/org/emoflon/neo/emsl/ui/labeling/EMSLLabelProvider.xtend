@@ -50,11 +50,6 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 		'metamodel.gif'
 	}
 	
-	def text(Metamodel m){
-		if(m.isAbstract)
-			setItalicStyle(m.name)
-	}
-	
 	protected def setItalicStyle(String label) {
 		val ss = new StyledString(label)
 		ss.setStyle(0, ss.length, new Styler(){

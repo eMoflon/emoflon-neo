@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.BuiltInType;
 import org.emoflon.neo.emsl.eMSL.EMSLPackage;
 import org.emoflon.neo.emsl.eMSL.Entity;
@@ -28,6 +27,7 @@ import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
+import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.neo4j.driver.v1.AuthTokens;
@@ -38,7 +38,7 @@ import org.neo4j.driver.v1.StatementResult;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 
-public class NeoCoreBuilder implements AutoCloseable {
+public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	public static final String META_TYPE = "metaType";
@@ -193,6 +193,7 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return driver;
 	}
 
+	@Override
 	public StatementResult executeQuery(String cypherStatement) {
 		return driver.session().run(cypherStatement.trim());
 	}
@@ -211,29 +212,28 @@ public class NeoCoreBuilder implements AutoCloseable {
 		driver.close();
 	}
 
-	private void exportModelToNeo4j(Model m) {
+	private void exportModelToNeo4j(Model model) throws FlattenerException {
 		bootstrapNeoCoreIfNecessary();
 
-		ResourceSet rs = m.eResource().getResourceSet();
+		ResourceSet rs = model.eResource().getResourceSet();
 		EcoreUtil.resolveAll(rs);
+
+		var m = (Model) EMSLFlattener.flatten(model);
 
 		var models = collectReferencedModels(m);
 		models.add(m);
 
 		var metamodels = models.stream()//
-				.flatMap(model -> collectDependentMetamodels(m).stream())//
+				.flatMap(_m -> collectDependentMetamodels(_m).stream())//
 				.collect(Collectors.toSet());
 
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
 
-		// Remove abstract metamodels
-		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
-
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present.");
 		}
 
 		if (!newMetamodels.isEmpty())
@@ -322,12 +322,9 @@ public class NeoCoreBuilder implements AutoCloseable {
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
 
-		// Remove abstract metamodels
-		newMetamodels = newMetamodels.stream().filter(mm -> !mm.isAbstract()).collect(Collectors.toList());
-
 		for (Metamodel mm : metamodels) {
 			if (!newMetamodels.contains(mm))
-				logger.info("Skipping metamodel " + mm.getName() + " as it is already present or is abstract.");
+				logger.info("Skipping metamodel " + mm.getName() + " as it is already present.");
 		}
 
 		if (!newMetamodels.isEmpty())
@@ -451,6 +448,15 @@ public class NeoCoreBuilder implements AutoCloseable {
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) {
+		var flattenedModels = newModels.stream().map(m -> {
+			try {
+				return (Model) EMSLFlattener.flatten(m);
+			} catch (FlattenerException e) {
+				e.printStackTrace();
+				return m;
+			}
+		}).collect(Collectors.toList());
+
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
@@ -459,10 +465,10 @@ public class NeoCoreBuilder implements AutoCloseable {
 			// Create nodes and edges in models
 			var mNodes = new HashMap<Model, NodeCommand>();
 			var blockToCommand = new HashMap<ModelNodeBlock, NodeCommand>();
-			for (var newModel : newModels) {
+			for (var newModel : flattenedModels) {
 				handleNodeBlocksInModel(cb, blockToCommand, mNodes, newModel, model);
 			}
-			for (var newModel : newModels) {
+			for (var newModel : flattenedModels) {
 				for (var nb : newModel.getNodeBlocks()) {
 					handleRelationStatementInModel(cb, blockToCommand, nb);
 				}
@@ -757,19 +763,13 @@ public class NeoCoreBuilder implements AutoCloseable {
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
-	public void exportEMSLEntityToNeo4j(Entity entity) {
-		try {
-			var flattenedEntity = new EMSLFlattener().flattenEntity(entity, new ArrayList<String>());
-			if (flattenedEntity instanceof Model) {
-				exportModelToNeo4j((Model) flattenedEntity);
-			} else if (flattenedEntity instanceof Metamodel)
-				exportMetamodelToNeo4j((Metamodel) flattenedEntity);
-			else
-				throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
-		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the entity.");
-			e.printStackTrace();
-		}
+	public void exportEMSLEntityToNeo4j(Entity entity) throws FlattenerException {
+		if (entity instanceof Model) {
+			exportModelToNeo4j((Model) entity);
+		} else if (entity instanceof Metamodel)
+			exportMetamodelToNeo4j((Metamodel) entity);
+		else
+			throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
 	}
 
 }

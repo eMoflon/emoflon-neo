@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
-import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
@@ -32,7 +32,6 @@ public class NeoHelper {
 	 * initialize Helper
 	 */
 	public NeoHelper() {
-
 		this.matchNodes = new ArrayList<String>();
 		this.optionalNodes = new ArrayList<String>();
 		this.cCount = 0;
@@ -105,7 +104,6 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newConstraintReference(String name, int index, String relVar, String toName) {
-
 		if (matchNodes.contains(EMSLUtil.relationNameConvention(name, relVar, toName, index))) {
 			return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 		} else {
@@ -179,12 +177,12 @@ public class NeoHelper {
 			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			n.getRelations()
 					.forEach(r -> node.addRelation(
-							this.newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
+							newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
 									EMSLUtil.getOnlyType(r).getName(), r.getTarget().getName()),
 							EMSLUtil.getOnlyType(r).getName(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
-							this.newConstraintNode(r.getTarget().getName())));
+							newConstraintNode(r.getTarget().getName())));
 
 			tempNodes.add(node);
 		}
@@ -193,10 +191,8 @@ public class NeoHelper {
 	}
 
 	public AtomicPattern getFlattenedPattern(AtomicPattern ap) {
-
 		try {
-			return ((Pattern) new EMSLFlattener().flattenCopyOfEntity(((Pattern) (ap.eContainer())),
-					new ArrayList<String>())).getBody();
+			return (AtomicPattern) EMSLFlattener.flatten(ap);
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();
@@ -206,9 +202,8 @@ public class NeoHelper {
 	}
 
 	public Pattern getFlattenedPattern(Pattern p) {
-
 		try {
-			return (Pattern) new EMSLFlattener().flattenCopyOfEntity(p, new ArrayList<String>());
+			return EMSLFlattener.flattenPattern(p);
 		} catch (FlattenerException e) {
 			logger.error("EMSL Flattener was unable to process the pattern.");
 			e.printStackTrace();

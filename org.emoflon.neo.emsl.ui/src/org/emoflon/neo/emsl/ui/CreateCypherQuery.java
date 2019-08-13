@@ -22,9 +22,11 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
+import org.emoflon.neo.neo4j.adapter.EmptyBuilder;
+import org.emoflon.neo.neo4j.adapter.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.NeoConstraint;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoPattern;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 
 @SuppressWarnings("restriction")
 public class CreateCypherQuery extends AbstractHandler {
@@ -66,11 +68,11 @@ public class CreateCypherQuery extends AbstractHandler {
 	private void createCypherQueryFromSelection(EObject selection) {
 		if (selection instanceof AtomicPattern) {
 			var pattern = (Pattern) (((AtomicPattern) selection).eContainer());
-			var neoPattern = new NeoPattern(pattern, Optional.empty());
+			var neoPattern = NeoPatternFactory.createNeoPattern(pattern);
 			copyStringToClipboard(neoPattern.getQuery());
 
 		} else if (selection instanceof Constraint) {
-			var constraint = new NeoConstraint((Constraint) selection, Optional.empty());
+			var constraint = new NeoConstraint((Constraint) selection, new EmptyBuilder(), new EmptyMask());
 			copyStringToClipboard(constraint.getQuery());
 		} else
 			throw new IllegalArgumentException("This type of selection cannot be exported: " + selection);

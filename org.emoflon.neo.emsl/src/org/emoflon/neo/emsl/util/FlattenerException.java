@@ -1,8 +1,8 @@
 package org.emoflon.neo.emsl.util;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import org.emoflon.neo.emsl.eMSL.Entity;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
@@ -11,20 +11,22 @@ import org.emoflon.neo.emsl.eMSL.SuperType;
 
 public class FlattenerException extends Exception {
 	private static final long serialVersionUID = -9007303619385845276L;
-	private Entity entity;
+	private SuperType entity;
 	private SuperType superEntity;
 
 	private FlattenerErrorType errorType;
 
-	private ArrayList<String> alreadyRefinedPatternNames;
+	private Collection<String> alreadyRefinedPatternNames;
 
 	private ModelPropertyStatement property1;
 	private ModelPropertyStatement property2;
 
 	private ModelNodeBlock nodeBlock;
-	
+
 	private ModelRelationStatement relation;
 	private ModelRelationStatementType statementType;
+
+	private List<?> elements;
 
 	/**
 	 * Constructor for the case of a detected infinite loop.
@@ -35,27 +37,21 @@ public class FlattenerException extends Exception {
 	 * @param alreadyRefinedPatternNames names of patterns that were already
 	 *                                   defined.
 	 */
-	public FlattenerException(Entity entity, FlattenerErrorType type, ArrayList<String> alreadyRefinedPatternNames) {
+	public FlattenerException(SuperType entity, FlattenerErrorType type,
+			Collection<String> alreadyRefinedPatternNames) {
 		this.entity = entity;
 		this.errorType = type;
 		this.alreadyRefinedPatternNames = alreadyRefinedPatternNames;
 	}
-	
-	// for ModelRelationStatement path limits
-	public FlattenerException(Entity entity, FlattenerErrorType type, ModelRelationStatementType statementType) {
-		this.entity = entity;
-		this.errorType = type;
-		this.statementType = statementType;
-	}
-	
+
 	// for not mergeable complex edges
-	public FlattenerException(Entity entity, FlattenerErrorType type) {
+	public FlattenerException(SuperType entity, FlattenerErrorType type) {
 		this.entity = entity;
 		this.errorType = type;
 	}
 
 	// for not mergeable property statements
-	public FlattenerException(Entity entity, FlattenerErrorType type, ModelPropertyStatement property1,
+	public FlattenerException(SuperType entity, FlattenerErrorType type, ModelPropertyStatement property1,
 			ModelPropertyStatement property2, SuperType superEntity) {
 		this.entity = entity;
 		this.errorType = type;
@@ -65,24 +61,30 @@ public class FlattenerException extends Exception {
 	}
 
 	// for not mergeable nodeblocks
-	public FlattenerException(Entity entity, FlattenerErrorType type, ModelNodeBlock nodeBlock) {
+	public FlattenerException(SuperType entity, FlattenerErrorType type, ModelNodeBlock nodeBlock) {
 		this.entity = entity;
 		this.errorType = type;
 		this.nodeBlock = nodeBlock;
 	}
 
 	// for superEntities with when condition
-	public FlattenerException(Entity entity, FlattenerErrorType type, SuperType superEntity) {
+	public FlattenerException(SuperType entity, FlattenerErrorType type, SuperType superEntity) {
 		this.entity = entity;
 		this.errorType = type;
 		this.superEntity = superEntity;
 	}
-	
-	// for non-resolvable proxies of relation statements
-	public FlattenerException(Entity entity, FlattenerErrorType type, ModelRelationStatement relation) {
+
+	// for non-resolvable proxies of relation statements/relation path limits
+	public FlattenerException(SuperType entity, FlattenerErrorType type, ModelRelationStatement relation) {
 		this.entity = entity;
 		this.errorType = type;
 		this.relation = relation;
+	}
+
+	public FlattenerException(SuperType entity, FlattenerErrorType type, List<?> elements) {
+		this.entity = entity;
+		this.errorType = type;
+		this.elements = elements;
 	}
 
 	public ModelPropertyStatement getProperty1() {
@@ -97,11 +99,11 @@ public class FlattenerException extends Exception {
 		return errorType;
 	}
 
-	public Entity getEntity() {
+	public SuperType getEntity() {
 		return entity;
 	}
 
-	public ArrayList<String> getAlreadyRefinedPatternNames() {
+	public Collection<String> getAlreadyRefinedPatternNames() {
 		return alreadyRefinedPatternNames;
 	}
 
@@ -112,13 +114,17 @@ public class FlattenerException extends Exception {
 	public SuperType getSuperEntity() {
 		return superEntity;
 	}
-	
+
 	public ModelRelationStatement getRelation() {
 		return relation;
 	}
-	
+
 	public ModelRelationStatementType getStatementType() {
 		return statementType;
+	}
+
+	public List<?> getElements() {
+		return elements;
 	}
 
 }

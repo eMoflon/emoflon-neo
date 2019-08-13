@@ -31,5 +31,6 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  Organigram;bundle-version="1.0.0",
  NetworkTopology;bundle-version="1.0.0",
  SokobanGUI,
- Quiltography;bundle-version="1.0.0"
+ Quiltography;bundle-version="1.0.0",
+ FruitGardenLanguage;bundle-version="1.0.0"
 Automatic-Module-Name: TestSuite

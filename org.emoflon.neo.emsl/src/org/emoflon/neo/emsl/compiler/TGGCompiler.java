@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.emoflon.neo.emsl.EMSLFlattener;
 import org.emoflon.neo.emsl.eMSL.TripleGrammar;
 
 public class TGGCompiler {
@@ -17,11 +16,9 @@ public class TGGCompiler {
 	public final static String FILE_ENDING = ".msl";
 
 	private IProject project;
-	private EMSLFlattener flattener;
 
 	public TGGCompiler(IProject pProject) {
 		project = pProject;
-		flattener = new EMSLFlattener();
 	}
 
 	public void compile(TripleGrammar pTGG) {

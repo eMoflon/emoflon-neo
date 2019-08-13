@@ -12,7 +12,7 @@ ImportStatement:
 
 /* EMSL entities cover metamodelling and graph transformation */
 Entity:
-	Model | Metamodel | Pattern | Constraint | Rule | GraphGrammar | TripleRule | TripleGrammar;
+	Metamodel | Pattern | Constraint | GraphGrammar | TripleGrammar | Model | Rule | TripleRule;
 
 /*-------------------------------------------------*/
 /*------------------- Models ----------------------*/
@@ -48,7 +48,7 @@ NodeAttributeExpTarget:
 ;
 
 EnumValue:
-	'enum::' literal=[EnumLiteral|ID]
+	literal=[EnumLiteral|ID]
 ;
 
 PrimitiveInt:
@@ -67,21 +67,21 @@ ModelRelationStatement:
 	(action=Action)? 
 	'-' 
 		(name=ID ":")? types+=ModelRelationStatementType ('|' types+=ModelRelationStatementType)*
+		('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')?
 	'->' (target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
 	('{'
 	properties+=ModelPropertyStatement*
 	'}')?;
 	
 ModelRelationStatementType:
-	type=[MetamodelRelationStatement|QualifiedName] ('(' lower=MultiplicityValue '..' upper=MultiplicityValue ')')?
+	type=[MetamodelRelationStatement|QualifiedName]
 ;
 
 /*-------------------------------------------------*/
 /*----------------- Metamodels --------------------*/
 /*-------------------------------------------------*/
 Metamodel:
-	(abstract?='abstract')? 'metamodel' name=QualifiedName 
-	('->' (superRefinementTypes+=MetamodelRefinementCommand (',' superRefinementTypes+=MetamodelRefinementCommand)*))?
+	'metamodel' name=QualifiedName 
 	('{' (nodeBlocks+=MetamodelNodeBlock | enums+=Enum)* '}')?;
 
 MetamodelNodeBlock:
@@ -96,7 +96,7 @@ MetamodelPropertyStatement:
 
 MetamodelRelationStatement:
 	kind=RelationKind name=ID
-	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName] | '$' proxyTarget=ID)
+	'(' lower=MultiplicityValue '..' upper=MultiplicityValue ')' '->' (target=[MetamodelNodeBlock|QualifiedName])
 	('{'
 	properties+=MetamodelPropertyStatement*
 	'}')?;
@@ -105,7 +105,7 @@ MultiplicityValue:
 	INT | "*";
 
 enum RelationKind:
-	REFERENCE='-' | AGGREGATION='<>-' | KOMPOSITION='<+>-';
+	REFERENCE='-' | AGGREGATION='<>-' | COMPOSITION='<+>-';
 
 Enum:
 	'enum' name=QualifiedName '{'
@@ -276,17 +276,11 @@ TripleGrammar:
 RefinementCommand:
 	referencedType=[SuperType|QualifiedName] ('[' relabeling+=ModelRelabelingCommand (',' relabeling+=ModelRelabelingCommand)* ']')?;
 
-MetamodelRefinementCommand:
-	referencedType=[SuperType|QualifiedName] ('[' relabeling+=MetamodelRelabelingCommand (',' relabeling+=MetamodelRelabelingCommand)* ']')?;
-
 ModelRelabelingCommand returns RelabelingCommand:
-	oldLabel=ID '->' newLabel=ID;
-	
-MetamodelRelabelingCommand returns RelabelingCommand:
 	oldLabel=ID '->' newLabel=ID;
 
 SuperType:
-	Metamodel | Model | AtomicPattern | Rule | TripleRule;
+	Model | AtomicPattern | Rule | TripleRule;
 
 QualifiedName:
 	ID ('.' ID)*;

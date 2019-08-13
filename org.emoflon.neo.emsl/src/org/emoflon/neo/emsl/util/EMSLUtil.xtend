@@ -29,6 +29,9 @@ import java.util.ArrayList
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 
 class EMSLUtil {
+	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
+	public static final String UI_PLUGIN_ID = "org.emoflon.neo.emsl.ui"
+	
 	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
 	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/" + ORG_EMOFLON_NEO_CORE + "/model/NeoCore.msl"
 	
@@ -132,6 +135,11 @@ class EMSLUtil {
 												allPropertiesOf(AttributeExpressionImpl.cast(value).node.type).get(0).name.toString
 		
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
+	}
+	
+	def static String handleValue(Object value) {
+		if(value instanceof String) return "\"" + value + "\""
+		else return value.toString;
 	}
 	
 	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type){

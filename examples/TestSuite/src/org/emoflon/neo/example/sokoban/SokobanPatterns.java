@@ -45,6 +45,28 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
+	public void test_OneSokobanSelectedFigureRequired() {
+		expectSingleMatch(entities.getPattern_OneSokobanSelectedFigureRequired());
+	}
+	
+	@Test
+	public void test_OneSokobanSelectedFigureRequired_StillValid() {
+		var p = entities.getPattern_OneSokobanSelectedFigureRequired();
+		var matches = p.matcher().determineMatches();
+		expectValidMatches(matches, matches.size());
+	}
+	
+	@Test
+	// TODO implement isStillValid for conditions
+	public void test_OneSokobanSelectedFigureRequired_StillValid_AfterDeletedEdge() {
+		var p = entities.getPattern_OneSokobanSelectedFigureRequired();
+		var matches = p.matcher().determineMatches();
+		
+		builder.executeQueryForSideEffect("MATCH (:Board)-[rel:selectedFigure]->(:Sokoban) DELETE rel");
+		expectValidMatches(matches, matches.size()-1);
+	}
+	
+	@Test
 	public void test_OneSokoban_StillValid_AfterChangeSokobanToBlock() {
 		var p = entities.getPattern_OneSokoban();
 		var matches = p.matcher().determineMatches();
@@ -170,6 +192,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
+	@Disabled
 	public void test_All3x3Fields() {
 		assertThat(entities.getPattern_All3x3Fields().matcher().countMatches(), is(4));
 	}
@@ -183,6 +206,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
+	@Disabled
 	public void test_All3x3Fields_StillValid() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.matcher().determineMatches();
@@ -205,6 +229,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
+	@Disabled
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.matcher().determineMatches();
@@ -216,6 +241,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
+	@Disabled
 	public void test_All3x3Fields_StillValid_AfterChangingTypesOfNodes() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.matcher().determineMatches();
@@ -359,5 +385,17 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void testNoBlockedBlocks() {
 		assertFalse(entities.getPattern_BlockNotOnEndFieldInCorner().matcher().determineOneMatch().isPresent());
+	}
+	
+	@Test
+	public void testSokobanOnFieldOfBoard() {
+		assertThat(entities.getPattern_SokobanOnFieldOfBoard().matcher().countMatches(), is(1));
+	}
+	
+	@Test
+	public void testSokobanOnFieldOfBoard_StillValid() {
+		var p = entities.getPattern_SokobanOnFieldOfBoard();
+		var matches = p.matcher().determineMatches();
+		expectValidMatches(matches, matches.size());
 	}
 }

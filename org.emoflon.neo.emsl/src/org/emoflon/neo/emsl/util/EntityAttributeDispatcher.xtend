@@ -1,17 +1,19 @@
 package org.emoflon.neo.emsl.util
 
-import org.emoflon.neo.emsl.eMSL.Model
-import org.emoflon.neo.emsl.eMSL.Metamodel
-import org.emoflon.neo.emsl.eMSL.Pattern
-import org.emoflon.neo.emsl.eMSL.Rule
-import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.Constraint
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.eMSL.GraphGrammar
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.SuperType
 import java.util.ArrayList
+import java.util.List
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeCondition
+import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.Model
+import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
+import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.SuperType
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 class EntityAttributeDispatcher {
 	
@@ -19,36 +21,12 @@ class EntityAttributeDispatcher {
 	/*------ Get SuperRefinementTypes ---------*/
 	/*-----------------------------------------*/
 
-	def dispatch getSuperRefinementTypes(Model entity) {
-		entity.superRefinementTypes
+	def List<RefinementCommand> getSuperRefinementTypes(SuperType st){
+		st.superRefinementTypes
 	}
 	
-	def dispatch getSuperRefinementTypes(Metamodel entity) {
-		entity.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(Pattern entity) {
-		entity.body.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(Rule entity) {
-		entity.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(TripleRule entity) {
-		entity.superRefinementTypes
-	}
-	
-	def dispatch getSuperRefinementTypes(Constraint entity) {
-		return newArrayList
-	}
-	
-	def dispatch getSuperRefinementTypes(TripleGrammar entity) {
-		return newArrayList
-	}
-	
-	def dispatch getSuperRefinementTypes(GraphGrammar entity) {
-		return newArrayList
+	def List<RefinementCommand> getSuperRefinementTypes(Pattern p){
+		p.body.superRefinementTypes
 	}
 	
 	
@@ -111,11 +89,32 @@ class EntityAttributeDispatcher {
 		entity.nodeBlocks
 	}
 
+	def dispatch getNodeBlocks(TripleRule entity) {
+		var nodeBlocks = new ArrayList
+		nodeBlocks.addAll(entity.srcNodeBlocks)
+		nodeBlocks.addAll(entity.trgNodeBlocks)
+		return nodeBlocks
+	}
+
+	/**
+	 * Returns all NodeBlocks of a Metamodel.
+	 */
+	def getMetamodelNodeBlocks(Metamodel entity) {
+		entity.nodeBlocks
+	}
+
 	/**
 	 * Returns all NodeBlocks of a Pattern.
 	 */
-	def dispatch getNodeBlocks(Pattern entity) {
+	def getPatternNodeBlocks(Pattern entity) {
 		entity.body.nodeBlocks
+	}
+	
+	/**
+	 * Returns all NodeBlocks of an AtomicPattern.
+	 */
+	def dispatch getNodeBlocks(AtomicPattern entity) {
+		entity.nodeBlocks
 	}
 
 	/**
@@ -129,8 +128,8 @@ class EntityAttributeDispatcher {
 	/*--------- Get AttributeConditions ---------*/
 	/*-------------------------------------------*/
 	
-	def dispatch getAttributeConditions(Pattern entity) {
-		entity.body.attributeConditions
+	def dispatch getAttributeConditions(AtomicPattern entity) {
+		entity.attributeConditions
 	}
 	
 	def dispatch getAttributeConditions(Rule entity) {
@@ -150,10 +149,6 @@ class EntityAttributeDispatcher {
 	/*-------------------------------------------*/
 	
 	def dispatch getAbstract(Model entity) {
-		entity.abstract
-	}
-	
-	def dispatch getAbstract(Metamodel entity) {
 		entity.abstract
 	}
 	

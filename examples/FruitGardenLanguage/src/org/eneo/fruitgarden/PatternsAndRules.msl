@@ -1,0 +1,94 @@
+import "platform:/resource/FruitGardenLanguage/src/org/eneo/fruitgarden/FruitGardenLanguage.msl"
+
+// When is the game over?
+
+constraint GameIsLost = forbid CrowNotOnLastSegment
+constraint GameIsWon = forbid OneFruitOnTree
+constraint GameOver = GameIsLost || GameIsWon
+
+pattern CrowNotOnLastSegment {
+	garden:FruitGarden {
+		-crow->crow
+	}
+	
+	crow:Crow {
+		-on->seg
+	}
+	
+	seg:PathSegment {
+		-next->next
+	}
+	
+	next:PathSegment
+}
+
+pattern OneFruitOnTree {
+	garden:FruitGarden {
+		-trees->tree
+	}
+	
+	tree:FruitTree {
+		-fruits->f
+	}
+	
+	f:Fruit
+}
+
+// Rules of the game (actions)
+
+rule MoveCrowForward {
+	crow:Crow {
+		-- -on->seg
+		++ -on->next
+	}
+	
+	seg:PathSegment {
+		-next->next
+	}
+	
+	next:PathSegment
+}
+
+abstract rule PickAFruit {
+	fruitToPick:Fruit
+	
+	tree:FruitTree {
+		-- -fruits->fruitToPick
+	}
+	
+	basket:FruitBasket {
+		++ -fruits->fruitToPick	
+	}
+}
+
+rule PickAnApple -> PickAFruit {
+	fruitToPick:Apple
+	
+	tree:AppleTree {
+		-- -apples->fruitToPick
+	}	
+}
+
+rule PickAPlum -> PickAFruit {
+	fruitToPick:Plum
+	
+	tree:PlumTree {
+		-- -plums->fruitToPick
+	}	
+}
+
+rule PickALemon -> PickAFruit {
+	fruitToPick:Lemon
+	
+	tree:LemonTree {
+		-- -lemons->fruitToPick
+	}	
+}
+
+rule PickAPear -> PickAFruit {
+	fruitToPick:Pear
+	
+	tree:PearTree {
+		-- -pears->fruitToPick
+	}	
+}
