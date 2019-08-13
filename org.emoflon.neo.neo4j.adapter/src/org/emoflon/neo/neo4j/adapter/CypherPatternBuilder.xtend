@@ -1,7 +1,7 @@
 package org.emoflon.neo.neo4j.adapter
 
-import java.util.Collection
 import java.util.ArrayList
+import java.util.Collection
 
 class CypherPatternBuilder {
 
@@ -13,7 +13,14 @@ class CypherPatternBuilder {
 	}
 
 	def static String directedRelation(NeoRelation r) {
-		'''-[«r.varName»:«r.relType»«properties(r.properties)»]->'''
+		if(r.isPath())
+			path(r)
+		else
+			'''-[«r.varName»:«r.relTypes.join("|")»«properties(r.properties)»]->'''
+	}
+
+	def static String path(NeoRelation r){
+		'''-[«r.varName»:«r.relTypes.join("|")»*«r.lower»..«r.upper»«properties(r.properties)»]->'''
 	}
 
 	def static String targetNode(NeoRelation r) {
@@ -96,7 +103,7 @@ class CypherPatternBuilder {
 						«FOR r : n.relations SEPARATOR ', '»
 							(:«n.classType»)-[«r.varName»]->(:«r.toNodeLabel»)
 						«ENDFOR»
-			«ENDFOR»'''
+		«ENDFOR»'''
 	}
 
 	def static String matchQueryForData(Collection<NeoNode> nodes, NeoMatch match) {
@@ -123,18 +130,22 @@ class CypherPatternBuilder {
 	def static String returnQuery(Collection<NeoNode> nodes) {
 		'''
 		RETURN «FOR n : nodes SEPARATOR ',\n '»
-			id(«n.varName») AS «n.varName»«IF n.relations.size > 0», «ENDIF»
-			«FOR r : n.relations SEPARATOR ', '»
+			id(«n.varName») AS «n.varName»«IF removePaths(n.relations).size > 0», «ENDIF»
+			«FOR r : removePaths(n.relations) SEPARATOR ', '»
 				id(«r.varName») AS «r.varName»
 			«ENDFOR»
 			«ENDFOR»'''
+	}
+	
+	private def static removePaths(Collection<NeoRelation> relations){
+		relations.filter[r | r.relTypes.size == 1]
 	}
 
 	def static String returnQuery_copyPaste(Collection<NeoNode> nodes) {
 		'''
 		RETURN «FOR n : nodes SEPARATOR ',\n '»
-			«n.varName»«IF n.relations.size > 0», «ENDIF»
-			«FOR r : n.relations SEPARATOR ', '»
+			«n.varName»«IF removePaths(n.relations).size > 0», «ENDIF»
+			«FOR r : removePaths(n.relations) SEPARATOR ', '»
 				«r.varName»
 			«ENDFOR»
 			«ENDFOR»'''
@@ -161,8 +172,8 @@ class CypherPatternBuilder {
 	def static String returnDataQuery(Collection<NeoNode> nodes) {
 		'''
 		RETURN «FOR n : nodes SEPARATOR ',\n '»
-			«n.varName» AS «n.varName»«IF n.relations.size > 0»,«ENDIF»
-			«FOR r : n.relations SEPARATOR ',\n  '»
+			«n.varName» AS «n.varName»«IF removePaths(n.relations).size > 0»,«ENDIF»
+			«FOR r : removePaths(n.relations) SEPARATOR ',\n  '»
 				«r.varName» AS «r.varName»
 			«ENDFOR»
 			«ENDFOR»'''

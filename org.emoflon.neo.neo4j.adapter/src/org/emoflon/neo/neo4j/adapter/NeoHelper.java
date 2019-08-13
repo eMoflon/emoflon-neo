@@ -70,7 +70,7 @@ public class NeoHelper {
 	 * @param toName of the target node of the relation
 	 * @return name of the new relation variable for including in queries
 	 */
-	public String newPatternRelation(String name, int index, String relVar, String toName) {
+	public String newPatternRelation(String name, int index, List<String> relVar, String toName) {
 		matchNodes.add(EMSLUtil.relationNameConvention(name, relVar, toName, index));
 		return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 	}
@@ -103,7 +103,7 @@ public class NeoHelper {
 	 * @param toName of the target node of the relation
 	 * @return name of the new relation variable for including in queries
 	 */
-	public String newConstraintReference(String name, int index, String relVar, String toName) {
+	public String newConstraintReference(String name, int index, List<String> relVar, String toName) {
 		if (matchNodes.contains(EMSLUtil.relationNameConvention(name, relVar, toName, index))) {
 			return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 		} else {
@@ -174,12 +174,12 @@ public class NeoHelper {
 					p.getType().getName(), //
 					EMSLUtil.handleValue(p.getValue())));
 
-			// TODO[Jannik] Think of how to handle optional edges with multiple types
 			n.getRelations()
 					.forEach(r -> node.addRelation(
 							newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
-									EMSLUtil.getOnlyType(r).getName(), r.getTarget().getName()),
-							EMSLUtil.getOnlyType(r).getName(), //
+									EMSLUtil.getAllTypes(r), r.getTarget().getName()),
+							EMSLUtil.getAllTypes(r), //
+							r.getLower(), r.getUpper(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
 							newConstraintNode(r.getTarget().getName())));

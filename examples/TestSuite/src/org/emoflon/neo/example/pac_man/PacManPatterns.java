@@ -8,7 +8,6 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_PacMan;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PacManPatterns extends ENeoTest {
@@ -39,9 +38,8 @@ public class PacManPatterns extends ENeoTest {
 		expectNoMatch(entities.getPattern_TwoPacManOnBoard());
 	}
 	
-	@Disabled("Requires paths")
 	@Test
 	public void test_Paths() {
-		assertEquals(3, entities.getPattern_RelatedFields().matcher().countMatches());
+		assertEquals(2, entities.getPattern_RelatedFields().matcher().countMatches());
 	}
 }

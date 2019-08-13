@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.ecore.EObject
 import java.util.ArrayList
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import java.util.List
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -74,8 +75,8 @@ class EMSLUtil {
 		return blocks
 	}
 
-	def static String relationNameConvention(String from, String relType, String to, int index) {
-		'''«from»_«relType»_«index»_«to»'''
+	def static String relationNameConvention(String from, List<String> relType, String to, int index) {
+		'''«from»_«relType.join("_")»_«index»_«to»'''
 	}
 
 	def static Object parseStringWithType(Value value, DataType type) {
@@ -146,14 +147,18 @@ class EMSLUtil {
 		thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
 	}
 	
-	def static getOnlyType(ModelRelationStatement rel){
-		if(isOptional(rel))
-			throw new IllegalArgumentException('''«rel» is an optional edge and does not have a single type!''')
-			
-		rel.types.get(0).type
+	def static getAllTypes(ModelRelationStatement rel){
+		rel.types.sortBy[t | t.type.name].map[t | t.type.name]
 	}
 	
-	def static isOptional(ModelRelationStatement rel){
+	def static isVariableLink(ModelRelationStatement rel){
 		rel.types.size > 1
+	}
+	
+	def static getOnlyType(ModelRelationStatement rel){
+		if(org.emoflon.neo.emsl.util.EMSLUtil.isVariableLink(rel))
+			throw new IllegalArgumentException('''«rel» is a variable link and does not have a single type!''')
+			
+		rel.types.get(0).type
 	}
 }
