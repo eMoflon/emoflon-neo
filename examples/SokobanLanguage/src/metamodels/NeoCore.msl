@@ -25,7 +25,7 @@ metamodel org.emoflon.neo.neocore {
 	EClassifier : EObject
 
 	EObject {
-		.name : EString
+		.ename : EString
 		-elementOf(1..1)-> Model
 		-metaType(1..1)-> EObject
 		-corr(0..*)->EObject {
