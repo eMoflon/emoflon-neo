@@ -1,6 +1,6 @@
 metamodel NetworkTopology {
 	Node {
-		-connected(2..2)->Node
+		-connected(1..2)->Node
 	}
 	
 	TopNode : Node

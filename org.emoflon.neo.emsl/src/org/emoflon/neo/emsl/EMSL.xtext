@@ -233,9 +233,9 @@ TripleRule:
 
 Correspondence:
 	((action=Action)?
-	source=[ModelNodeBlock|QualifiedName]
+	(source=[ModelNodeBlock|QualifiedName] | '$' proxySource=ID)
 	'<-' ':' type=[CorrespondenceType|QualifiedName] '->'
-	target=[ModelNodeBlock|QualifiedName]);
+	(target=[ModelNodeBlock|QualifiedName] | '$' proxyTarget=ID));
 
 CorrespondenceType:
 	source=[MetamodelNodeBlock|QualifiedName] '<-' name=QualifiedName '->' target=[MetamodelNodeBlock|QualifiedName];
