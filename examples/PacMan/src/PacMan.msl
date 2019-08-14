@@ -81,7 +81,7 @@ pattern pacManAndGhostOnNeighbouringFields -> pacManAndGhostOnFields {
 
 pattern relatedFields {
 	f1:Field {
-		-related:bottom|right(3..5)->f2
+		-related:bottom|right(2..*)->f2
 	}
 	
 	f2:Field

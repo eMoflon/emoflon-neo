@@ -14,10 +14,12 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
  *
  */
 public class NeoRelation {
-	private String relType;
+	private List<String> relTypes;
 	private String toNodeVar;
 	private String toNodeLabel;
 	private String varName;
+	private String upper;
+	private String lower;
 	private Collection<NeoProperty> properties;
 
 	/**
@@ -28,15 +30,31 @@ public class NeoRelation {
 	 * @param toNodelLabel the label/class of the target node
 	 * @param toNodeVar    the variable used in cypher of the target node
 	 */
-	public NeoRelation(NeoNode from, String varName, String relType, List<ModelPropertyStatement> props,
-			String toNodeLabel, String toNodeVar) {
-		this.relType = relType;
+	public NeoRelation(NeoNode from, String varName, List<String> relTypes, String lower, String upper,
+			List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
+		this.relTypes = new ArrayList<String>(relTypes);
 		this.toNodeVar = toNodeVar;
 		this.toNodeLabel = toNodeLabel;
 		this.varName = varName;
+		this.upper = convertUpper(upper);
+		this.lower = convertLower(lower);
 
 		properties = new ArrayList<>();
 		props.forEach(prop -> addProperty(prop.getType().getName(), EMSLUtil.handleValue(prop.getValue())));
+	}
+
+	private String convertUpper(String length) {
+		if ("*".equals(length)) {
+			return "";
+		} else
+			return convertLower(length);
+	}
+
+	private String convertLower(String length) {
+		if ("".equals(length) || length == null) {
+			return "1";
+		} else
+			return length;
 	}
 
 	/**
@@ -49,13 +67,16 @@ public class NeoRelation {
 		properties.add(new NeoProperty(name, value));
 	}
 
-	/**
-	 * Return the Relation Type (the Label)
-	 * 
-	 * @return type of the relation (label)
-	 */
-	public String getRelType() {
-		return relType;
+	public List<String> getRelTypes() {
+		return relTypes;
+	}
+
+	public String getUpper() {
+		return upper;
+	}
+
+	public String getLower() {
+		return lower;
 	}
 
 	/**
@@ -91,6 +112,13 @@ public class NeoRelation {
 	 * @return variable name of the source node
 	 */
 	public String getVarName() {
-		return varName;
+		if (isPath())
+			return "";
+		else
+			return varName;
+	}
+
+	public boolean isPath() {
+		return !("1".equals(lower) && "1".equals(upper));
 	}
 }

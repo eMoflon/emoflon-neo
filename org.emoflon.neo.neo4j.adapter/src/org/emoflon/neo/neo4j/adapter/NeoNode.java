@@ -77,8 +77,9 @@ public class NeoNode {
 		this.properties.add(new NeoProperty(name, value));
 	}
 
-	public void addRelation(String varName, String relType, List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
-		this.relations.add(new NeoRelation(this, varName, relType, props, toNodeLabel, toNodeVar));
+	public void addRelation(String varName, List<String> relTypes, String lower, String upper,
+			List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
+		this.relations.add(new NeoRelation(this, varName, relTypes, lower, upper, props, toNodeLabel, toNodeVar));
 	}
 
 }
