@@ -186,9 +186,9 @@ public class NeoImplication implements IIfElseConstraint {
 
     /**
      * Return the query for outline copy to clipboard function
-     * @return String query for ouline copy to clipboard
+     * @return String query for outline copy to clipboard
      */
 	public String getQuery() {
-		return CypherPatternBuilder.constraint_ifThen_readQuery(nodesIf, nodesThen, helper.getNodes(), injective, mask);
+		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf, helper.getNodes(), injective, mask);
 	}
 }
