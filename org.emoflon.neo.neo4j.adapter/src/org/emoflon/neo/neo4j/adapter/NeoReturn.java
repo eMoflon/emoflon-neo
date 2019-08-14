@@ -36,7 +36,7 @@ public class NeoReturn {
 
 	/**
 	 * Add new nodes to the NeoNode list, used in the result return set (but add
-	 * nodes an relation only, if they are not present in the list already)
+     * nodes an relations only, if they are not present in the list already)
 	 * 
 	 * @param nodes NeoNodes that should be added to the results set
 	 */

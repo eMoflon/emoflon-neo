@@ -130,6 +130,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	 *         false
 	 */
 	@Override
+	@Deprecated
 	public boolean isSatisfied() {
 
 		if (getMatch() != null)
@@ -146,6 +147,7 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	 * @return NeoMatches return a list of found Matches of the constraint
 	 */
 	@Override
+	@Deprecated
 	public IMatch getMatch() {
 		logger.info("Check constraint: ENFORCE " + ap.getName());
 

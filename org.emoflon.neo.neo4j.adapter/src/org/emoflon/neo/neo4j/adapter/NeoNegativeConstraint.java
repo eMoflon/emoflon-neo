@@ -129,6 +129,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 *         else false
 	 */
 	@Override
+	@Deprecated
 	public boolean isSatisfied() {
 
 		if (getViolations() == null)
@@ -145,6 +146,7 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 * @return NeoMatches return a list of violating Matches of the constraint
 	 */
 	@Override
+	@Deprecated
 	public Collection<IMatch> getViolations() {
 		logger.info("Check constraint: FORBID " + ap.getName());
 

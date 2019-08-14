@@ -189,6 +189,29 @@ public class NeoHelper {
 
 		return tempNodes;
 	}
+    
+    public List<String> extractElementsOnlyInConclusionPattern(Collection<NeoNode> ifPattern, Collection<NeoNode> thenPattern) {
+        
+        List<String> temp = new ArrayList<String>();
+        List<String> only = new ArrayList<String>();
+        
+        for(NeoNode n: ifPattern) {
+            temp.add(n.getVarName());
+            for(NeoRelation r: n.getRelations()) {
+                temp.add(r.getVarName());
+            }
+        }
+        for(NeoNode n:thenPattern) {
+            if(!temp.contains(n.getVarName()))
+                only.add(n.getVarName());
+            for(NeoRelation r: n.getRelations()) {
+                if(!temp.contains(r.getVarName())) {
+                    only.add(r.getVarName());
+                }
+            }
+        }
+        return only;
+    }
 
 	public AtomicPattern getFlattenedPattern(AtomicPattern ap) {
 		try {

@@ -28,7 +28,28 @@ pattern sokobanOnFieldOfBoard {
 	
 }
 
+pattern blockOnEndField {
+    b:Block {
+        -field->f
+    }
+    f:Field {
+        .endPos:true
+    }
+}
+pattern blockOnNoEndField {
+    b:Block {
+        -field->f
+    }
+    f:Field {
+        .endPos:false
+    }
+}
 
+constraint enforceBlockOnEndField = enforce blockOnEndField
+constraint enforceBlockOnNoEndField = enforce blockOnNoEndField
+constraint forbidBlockOnNoEndField = forbid blockOnNoEndField
+
+constraint gameFinished = forbidBlockOnNoEndField || (enforceBlockOnNoEndField && enforceBlockOnEndField)
 
 pattern oneSokoban {
 	sokoban : Sokoban
