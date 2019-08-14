@@ -28,6 +28,9 @@ metamodel org.emoflon.neo.neocore {
 		.name : EString
 		-elementOf(1..1)-> Model
 		-metaType(1..1)-> EObject
+		-corr(0..*)->EObject {
+			._type_:EString
+		}	
 	}
 	
 	Model : EObject {
