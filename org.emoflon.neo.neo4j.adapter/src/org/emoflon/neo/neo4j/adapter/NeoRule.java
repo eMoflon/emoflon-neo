@@ -7,12 +7,19 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
+import org.emoflon.neo.emsl.eMSL.ConstraintReference;
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.api.rules.RuleApplicationSemantics;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchConstraintRef;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchNegativeConstraint;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchNoCondition;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchPositiveConstraint;
 
 // TODO [Jannik]
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
@@ -180,23 +187,88 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
-		logger.info("Searching matches for Pattern: " + getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit, mask);
-		logger.debug(cypherQuery);
+		
+		if (r.getCondition() == null) {
+			
+			logger.info("Searching matches for Pattern: " + getName());
+			var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit, mask);
+			logger.debug(cypherQuery);
+	
+			var result = builder.executeQuery(cypherQuery);
+	
+			var matches = new ArrayList<NeoMatch>();
+			while (result.hasNext()) {
+				var record = result.next();
+				logger.info("MATCH FOUND");
+				matches.add(new NeoMatch(this, record));
+			}
+	
+			if (matches.isEmpty()) {
+				logger.debug("NO MATCHES FOUND");
+			}
+			return matches;
+			
+		} else if (r.getCondition() instanceof ConstraintReference) {
+			
+			var constr = (ConstraintReference) r.getCondition();
+			constr.getReference();
+			var cond = new NeoCondition(new NeoConstraint(constr.getReference(), builder, helper, mask), this, constr.getReference().getName(), builder, helper);
+			return cond.determineMatchesRule(limit);
+			
+		} else if (r.getCondition() instanceof PositiveConstraint) {
+			
+			PositiveConstraint cons = (PositiveConstraint) r.getCondition();
+			NeoPositiveConstraint pcond = new NeoPositiveConstraint(cons.getPattern(), injective, builder, helper, mask);
 
-		var result = builder.executeQuery(cypherQuery);
+			// Condition is positive Constraint (ENFORCE xyz)
+			logger.info("Searching matches for Pattern: " + pcond.getName() + " ENFORCE " + pcond.getName());
 
-		var matches = new ArrayList<NeoMatch>();
-		while (result.hasNext()) {
-			var record = result.next();
-			logger.info("MATCH FOUND");
-			matches.add(new NeoMatch(this, record));
+			// Create Query
+			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
+					pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereConditon(), injective, limit, mask);
+
+			logger.debug(cypherQuery);
+
+			// Execute query
+			var result = builder.executeQuery(cypherQuery);
+
+			// Analyze and return results
+			var matches = new ArrayList<NeoMatch>();
+			while (result.hasNext()) {
+				var record = result.next();
+				matches.add(new NeoMatch(this, record));
+			}
+
+			return matches;
+			
+		} else if (r.getCondition() instanceof NegativeConstraint) {
+			NegativeConstraint cons = (NegativeConstraint) r.getCondition();
+			NeoNegativeConstraint ncond = new NeoNegativeConstraint(cons.getPattern(), injective, builder, helper, mask);
+			
+			// Condition is positive Constraint (ENFORCE xyz)
+			logger.info("Searching matches for Pattern: " + ncond.getName() + " ENFORCE " + ncond.getName());
+
+			// Create Query
+			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
+					ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereConditon(), injective, limit, mask);
+
+			logger.debug(cypherQuery);
+
+			// Execute query
+			var result = builder.executeQuery(cypherQuery);
+
+			// Analyze and return results
+			var matches = new ArrayList<NeoMatch>();
+			while (result.hasNext()) {
+				var record = result.next();
+				matches.add(new NeoMatch(this, record));
+			}
+
+			return matches;
+			
+		} else {
+			throw new IllegalArgumentException("Unknown type of r:" + r);
 		}
-
-		if (matches.isEmpty()) {
-			logger.debug("NO MATCHES FOUND");
-		}
-		return matches;
 	}
 
 	@Override
@@ -211,6 +283,13 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	
 	public Collection<NeoNode> getNodes() {
 		return nodes;
+	}
+	
+	public boolean isNegated() {
+		if (r.getCondition() != null)
+			return ((ConstraintReference) (r.getCondition())).isNegated();
+		else
+			return false;
 	}
 
 }
