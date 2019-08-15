@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
+import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
@@ -36,6 +37,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected boolean spoSemantics; // if false: DPO; if true SPO semantics
 	protected NeoHelper helper;
 	protected Rule r;
+	protected Constraint c;
+	protected Object cond;
 
 	protected IBuilder builder;
 	protected NeoMask mask;
@@ -59,11 +62,26 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 		extractNodesAndRelations();
 		
-		logger.debug(nodes.toString());
-		logger.debug(nodesL.toString());
-		logger.debug(nodesR.toString());
-		logger.debug(relL.toString());
-		logger.debug(relR.toString());
+		if (r.getCondition() != null) {
+
+			if (r.getCondition() instanceof ConstraintReference) {
+				ConstraintReference ref = (ConstraintReference) r.getCondition();
+				this.c = ref.getReference();
+
+			} else if (r.getCondition() instanceof PositiveConstraint) {
+				PositiveConstraint cons = (PositiveConstraint) r.getCondition();
+				cond = (new NeoPositiveConstraint(cons.getPattern(), injective, builder, helper, mask));
+
+			} else if (r.getCondition() instanceof NegativeConstraint) {
+				NegativeConstraint cons = (NegativeConstraint) r.getCondition();
+				cond = (new NeoNegativeConstraint(cons.getPattern(), injective, builder, helper, mask));
+
+			} else {
+				logger.info(r.getCondition().toString());
+				throw new UnsupportedOperationException();
+			}
+		}
+		
 	}
 
 	public NeoRule(Rule r, NeoCoreBuilder builder) {
@@ -87,6 +105,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				case CREATE:
 					nodesR.add(node);
 					logger.info("New ++ node: " + node.getVarName() + ":" + n.getType().getName());
+					helper.removeMatchElement(node.getVarName());
 					break;
 				case DELETE:
 					nodesL.add(node);
@@ -125,6 +144,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						logger.info("New ++ relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
 								+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":"
 								+ rel.getToNodeLabel() + ")");
+						helper.removeMatchElement(rel.getVarName());
 						break;
 					case DELETE:
 						relL.add(rel);
@@ -210,22 +230,19 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			
 		} else if (r.getCondition() instanceof ConstraintReference) {
 			
-			var constr = (ConstraintReference) r.getCondition();
-			constr.getReference();
-			var cond = new NeoCondition(new NeoConstraint(constr.getReference(), builder, helper, mask), this, constr.getReference().getName(), builder, helper);
+			var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
 			return cond.determineMatchesRule(limit);
 			
 		} else if (r.getCondition() instanceof PositiveConstraint) {
 			
-			PositiveConstraint cons = (PositiveConstraint) r.getCondition();
-			NeoPositiveConstraint pcond = new NeoPositiveConstraint(cons.getPattern(), injective, builder, helper, mask);
+			var constraint = ((NeoPositiveConstraint) cond);
 
 			// Condition is positive Constraint (ENFORCE xyz)
-			logger.info("Searching matches for Pattern: " + pcond.getName() + " ENFORCE " + pcond.getName());
+			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
 
 			// Create Query
 			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
-					pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereConditon(), injective, limit, mask);
+					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(), injective, limit, mask);
 
 			logger.debug(cypherQuery);
 
@@ -242,15 +259,14 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			return matches;
 			
 		} else if (r.getCondition() instanceof NegativeConstraint) {
-			NegativeConstraint cons = (NegativeConstraint) r.getCondition();
-			NeoNegativeConstraint ncond = new NeoNegativeConstraint(cons.getPattern(), injective, builder, helper, mask);
+			var constraint = ((NeoNegativeConstraint) cond);
 			
 			// Condition is positive Constraint (ENFORCE xyz)
-			logger.info("Searching matches for Pattern: " + ncond.getName() + " ENFORCE " + ncond.getName());
+			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
 
 			// Create Query
 			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
-					ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereConditon(), injective, limit, mask);
+					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(), injective, limit, mask);
 
 			logger.debug(cypherQuery);
 

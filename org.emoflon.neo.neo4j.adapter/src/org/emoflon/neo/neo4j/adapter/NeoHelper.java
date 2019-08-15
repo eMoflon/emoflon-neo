@@ -234,5 +234,17 @@ public class NeoHelper {
 		}
 
 	}
+	
+	public void removeMatchElement(String name) {
+		if(matchElements.contains(name)) {
+			matchElements.remove(name);
+		}
+	}
+	
+	public void removeOptionalElement(String name) {
+		if(optionalElements.contains(name)) {
+			optionalElements.remove(name);
+		}
+	}
 
 }
