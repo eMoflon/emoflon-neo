@@ -3,6 +3,7 @@ package org.emoflon.neo.emsl.util;
 import java.util.Collection;
 import java.util.List;
 
+import org.emoflon.neo.emsl.eMSL.Correspondence;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
@@ -27,6 +28,9 @@ public class FlattenerException extends Exception {
 	private ModelRelationStatementType statementType;
 
 	private List<?> elements;
+	
+	private String proxyName;
+	private Correspondence corr;
 
 	/**
 	 * Constructor for the case of a detected infinite loop.
@@ -85,6 +89,21 @@ public class FlattenerException extends Exception {
 		this.entity = entity;
 		this.errorType = type;
 		this.elements = elements;
+	}
+
+	public FlattenerException(SuperType entity, FlattenerErrorType nonResolvableCorrProxy, String proxySource, Correspondence corr) {
+		this.entity = entity;
+		this.errorType = nonResolvableCorrProxy;
+		this.proxyName = proxySource;
+		this.corr = corr;
+	}
+
+	public String getProxyName() {
+		return proxyName;
+	}
+
+	public Correspondence getCorr() {
+		return corr;
 	}
 
 	public ModelPropertyStatement getProperty1() {

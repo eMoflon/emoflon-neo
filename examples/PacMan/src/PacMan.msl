@@ -4,8 +4,8 @@ metamodel PacMan {
 	}
 	
 	Field {
-		-right(1..1)-> Field
-		-bottom(1..1)-> Field
+		-right(0..1)-> Field
+		-bottom(0..1)-> Field
 	}
 	
 	Marble {

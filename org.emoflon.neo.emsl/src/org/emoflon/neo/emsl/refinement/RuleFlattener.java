@@ -106,7 +106,9 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			// recursively flatten superEntities
 			var nodeBlocksOfSuperEntity = new ArrayList<ModelNodeBlock>();
 
-			var flattenedSuperEntity = flatten(r.getReferencedType(), alreadyRefinedEntityNamesCopy);
+			EcoreUtil.resolveAll(r.getReferencedType());
+			var tmpCopy = EcoreUtil.copy(r.getReferencedType());
+			var flattenedSuperEntity = flatten(tmpCopy, alreadyRefinedEntityNamesCopy);
 
 			// check if a superEntity possesses a condition block
 			if (r.getReferencedType() instanceof AtomicPattern
