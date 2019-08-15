@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
-import org.emoflon.neo.engine.api.rules.IMatch;
 
 /**
  * Class representing an FORBID constraint, storing all relevant data, creates
@@ -16,10 +13,8 @@ import org.emoflon.neo.engine.api.rules.IMatch;
  * @author Jannik Hinz
  *
  */
-public class NeoNegativeConstraint implements INegativeConstraint {
+public class NeoNegativeConstraint {
 
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private IBuilder builder;
 	private NeoHelper helper;
 
 	private AtomicPattern ap;
@@ -41,7 +36,6 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
 			NeoMask mask) {
 		this.uuid = helper.addConstraint();
-		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
 		this.injective = injective;
@@ -119,56 +113,6 @@ public class NeoNegativeConstraint implements INegativeConstraint {
 	 */
 	public String getQueryString_WhereConditon() {
 		return CypherPatternBuilder.whereNegativeConditionQuery(nodes);
-	}
-
-	/**
-	 * Runs the Matching Query for negative constraint and checks if the constraints
-	 * is satisfied
-	 * 
-	 * @return true if the pattern matcher not find any violation in the clause and
-	 *         else false
-	 */
-	@Override
-	public boolean isSatisfied() {
-
-		if (getViolations() == null)
-			return true;
-		else
-			return false;
-
-	}
-
-	/**
-	 * Creates and runs the Query in the database for checking the negative
-	 * constraint violations
-	 * 
-	 * @return NeoMatches return a list of violating Matches of the constraint
-	 */
-	@Override
-	public Collection<IMatch> getViolations() {
-		logger.info("Check constraint: FORBID " + ap.getName());
-
-		// create query
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, mask);
-		logger.debug(cypherQuery);
-
-		// execute query
-		var result = builder.executeQuery(cypherQuery);
-
-		// analyze and return results
-		var matches = new ArrayList<IMatch>();
-		while (result.hasNext()) {
-			matches.add(new NeoMatch(null, result.next()));
-		}
-
-		if (!matches.isEmpty()) {
-			logger.info("Found match(es). Constraint: FORBID " + ap.getName() + " is NOT complied!");
-			return matches;
-		} else {
-			logger.info("Not matches found. Constraint: FORBID " + ap.getName() + " is complied!");
-			return null;
-		}
-
 	}
 
 }

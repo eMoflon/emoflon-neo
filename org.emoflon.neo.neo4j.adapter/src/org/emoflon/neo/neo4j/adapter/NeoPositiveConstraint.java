@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.constraints.IPositiveConstraint;
-import org.emoflon.neo.engine.api.rules.IMatch;
 
 /**
  * Class representing an ENFORCE constraint, storing all relevant data, creates
@@ -16,10 +13,8 @@ import org.emoflon.neo.engine.api.rules.IMatch;
  * @author Jannik Hinz
  *
  */
-public class NeoPositiveConstraint implements IPositiveConstraint {
+public class NeoPositiveConstraint {
 
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private IBuilder builder;
 	private NeoHelper helper;
 
 	private AtomicPattern ap;
@@ -41,7 +36,6 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
 			NeoMask mask) {
 		this.uuid = helper.addConstraint();
-		this.builder = builder;
 		this.helper = helper;
 		this.name = ap.getName();
 		this.injective = injective;
@@ -120,46 +114,6 @@ public class NeoPositiveConstraint implements IPositiveConstraint {
 	 */
 	public String getQueryString_WhereConditon() {
 		return CypherPatternBuilder.wherePositiveConditionQuery(nodes);
-	}
-
-	/**
-	 * Runs the Matching Query for positive constraint and checks if the constraints
-	 * is satisfied
-	 * 
-	 * @return true if the pattern matcher find any match in the clause and else
-	 *         false
-	 */
-	@Override
-	public boolean isSatisfied() {
-
-		if (getMatch() != null)
-			return true;
-		else
-			return false;
-
-	}
-
-	/**
-	 * Creates and runs the Query in the database for checking the positive
-	 * constraint violations
-	 * 
-	 * @return NeoMatches return a list of found Matches of the constraint
-	 */
-	@Override
-	public IMatch getMatch() {
-		logger.info("Check constraint: ENFORCE " + ap.getName());
-
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, mask);
-		logger.debug(cypherQuery);
-
-		var result = builder.executeQuery(cypherQuery);
-
-		if (result.hasNext()) {
-			logger.info("Found match(es). Constraint: ENFORCE " + ap.getName() + " is complied!");
-			return new NeoMatch(null, result.next());
-		}
-		logger.info("Not matches found. Constraint: ENFORCE " + ap.getName() + " is NOT complied!");
-		return null;
 	}
 
 }

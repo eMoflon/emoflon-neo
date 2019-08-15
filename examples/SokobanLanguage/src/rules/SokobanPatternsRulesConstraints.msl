@@ -28,7 +28,28 @@ pattern sokobanOnFieldOfBoard {
 	
 }
 
+pattern blockOnEndField {
+    b:Block {
+        -field->f
+    }
+    f:Field {
+        .endPos:true
+    }
+}
+pattern blockOnNoEndField {
+    b:Block {
+        -field->f
+    }
+    f:Field {
+        .endPos:false
+    }
+}
 
+constraint enforceBlockOnEndField = enforce blockOnEndField
+constraint enforceBlockOnNoEndField = enforce blockOnNoEndField
+constraint forbidBlockOnNoEndField = forbid blockOnNoEndField
+
+constraint gameFinished = forbidBlockOnNoEndField || (enforceBlockOnNoEndField && enforceBlockOnEndField)
 
 pattern oneSokoban {
 	sokoban : Sokoban
@@ -261,10 +282,23 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 
 } when noCorner
 
+pattern blockOnFieldCond {
+	field: Field {
+		.endPos : false
+	}
+	fig: Block {
+		-field->field
+	}
+} when hasLeftNeighbor
+
 constraint forbidLeftSide = forbid hasLeft
 constraint forbidTopSide = forbid hasTop
 constraint forbidRightSide = forbid hasRight
 constraint forbidBottomSide = forbid hasBottom
+
+constraint enforceHasLeft = enforce hasLeft
+constraint forbidHasTop = forbid hasTop
+constraint hasLeftNeighbor = enforceHasLeft || (!enforceHasLeft && forbidHasTop)
 
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide

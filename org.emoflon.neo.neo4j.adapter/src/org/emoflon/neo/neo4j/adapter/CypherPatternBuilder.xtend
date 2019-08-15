@@ -279,6 +279,15 @@ class CypherPatternBuilder {
 		WHERE «whereNegativeConditionQuery(nodes2)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
+	
+	def static String constraint_ifThen_readQuery_satisfy(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen, Collection<String> nodesThenButNotIf, Collection<String> nodesMap,
+        boolean injective, NeoMask mask) {
+        '''
+        «constraint_ifThen_matchQuery(nodesIf,nodesThen,injective, mask)»
+        «constraint_withQuery(nodesMap)»
+        WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
+        RETURN FALSE'''
+    }
 
 	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
 		boolean injective, NeoMask mask) {
@@ -331,6 +340,10 @@ class CypherPatternBuilder {
 	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
 	 	RETURN TRUE'''
 	}
+	
+	def static String whereNegativeConditionQuery_String(Collection<String> nodes) {
+        '''«FOR n:nodes SEPARATOR ' OR '»«n» IS NULL«ENDFOR»'''
+    }
 
 	def static String wherePositiveConstraintQuery(int id) {
 		'''m_«id» > 0'''
