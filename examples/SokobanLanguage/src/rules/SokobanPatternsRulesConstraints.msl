@@ -377,7 +377,7 @@ abstract rule pushBlock {
 	}
 }
 
-abstract rule moveSokobanUp -> moveSokoban {
+rule moveSokobanUp -> moveSokoban {
 	to : Field {
 		-bottom-> $from
 	}
@@ -395,7 +395,7 @@ rule pushBlockUp -> pushBlock, moveSokobanUp {
 	}
 } when forbid occupiedNext
 
-abstract rule moveSokobanDown -> moveSokoban {
+rule moveSokobanDown -> moveSokoban {
 	from : Field {
 		-bottom-> $to
 	}

@@ -25,8 +25,25 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled("TODO[Jannik] Implement rules")
+	//@Disabled("TODO[Jannik] Implement rules")
 	public void testMoveSokobanDown() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDown().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 1);
+		var onlyMatch = matches.iterator().next();
+		rule.apply(onlyMatch);
+		assertFalse(onlyMatch.isStillValid());
+		
+		Optional<NeoCoMatch> result = rule.apply();
+		assertTrue(result.isPresent());
+		
+		Optional<NeoCoMatch> notPossible = rule.apply();
+		assertFalse(notPossible.isPresent());
+	}
+	
+	@Test
+	@Disabled("TODO[Jannik] Implement rules")
+	public void testMoveSokobanDownWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownWithCondition().rule();
 		var matches = rule.determineMatches();
 		assertTrue(matches.size() == 1);
