@@ -43,6 +43,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		injective = true;
 		spoSemantics = false;
 		helper = new NeoHelper();
+		this.mask = mask;
 		this.builder = builder;
 		try {
 			this.r = (Rule) EMSLFlattener.flatten(r);
@@ -93,8 +94,10 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			}
 
 			for (var p : n.getProperties()) {
-				node.addProperty(p.getType().getName(), p.getValue().toString());
+				node.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 			}
+			
+			extractPropertiesFromMask(node);
 
 			for (var r : n.getRelations()) {
 
@@ -177,7 +180,23 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
-		return null;
+		logger.info("Searching matches for Pattern: " + getName());
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit, mask);
+		logger.debug(cypherQuery);
+
+		var result = builder.executeQuery(cypherQuery);
+
+		var matches = new ArrayList<NeoMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			logger.info("MATCH FOUND");
+			matches.add(new NeoMatch(this, record));
+		}
+
+		if (matches.isEmpty()) {
+			logger.debug("NO MATCHES FOUND");
+		}
+		return matches;
 	}
 
 	@Override
@@ -188,6 +207,10 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	public void setSPOSemantics(boolean spoSemantics) {
 		this.spoSemantics = spoSemantics;
+	}
+	
+	public Collection<NeoNode> getNodes() {
+		return nodes;
 	}
 
 }

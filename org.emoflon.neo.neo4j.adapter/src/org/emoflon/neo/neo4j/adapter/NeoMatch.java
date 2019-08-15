@@ -21,6 +21,7 @@ public class NeoMatch implements IMatch {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	private NeoPattern pattern;
+	private NeoRule rule;
 	private Map<String, Long> ids;
 
 	/**
@@ -31,7 +32,14 @@ public class NeoMatch implements IMatch {
 		this.pattern = pattern;
 
 		ids = new HashMap<>();
-		extractIds(record);
+		extractIdsPattern(record);
+	}
+	
+	public NeoMatch(NeoRule rule, Record record) {
+		this.rule = rule;
+
+		ids = new HashMap<>();
+		extractIdsRule(record);
 	}
 
 	/**
@@ -40,10 +48,23 @@ public class NeoMatch implements IMatch {
 	 * 
 	 * @param record of the query execution
 	 */
-	private void extractIds(Record record) {
+	private void extractIdsPattern(Record record) {
 		var recMap = record.asMap();
 
 		for (var n : pattern.getNodes()) {
+			if (recMap.containsKey(n.getVarName()))
+				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
+
+			for (var r : n.getRelations()) {
+				if (recMap.containsKey(r.getVarName()))
+					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
+			}
+		}
+	}
+	private void extractIdsRule(Record record) {
+		var recMap = record.asMap();
+
+		for (var n : rule.getNodes()) {
 			if (recMap.containsKey(n.getVarName()))
 				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
 
