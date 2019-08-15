@@ -6,17 +6,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.constraints.IIfElseConstraint;
 import org.emoflon.neo.engine.api.rules.IMatch;
 
 /**
- * Class representing an Implaction (if/then) constraint, storing all relevant
+ * Class representing an Implication (if/then) constraint, storing all relevant
  * data, creates and runs the query for checking the constraint
  * 
  * @author Jannik Hinz
  *
  */
-public class NeoImplication implements IIfElseConstraint {
+public class NeoImplication {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private IBuilder builder;
@@ -123,7 +122,6 @@ public class NeoImplication implements IIfElseConstraint {
 	 * @return true if the pattern matcher not find any violation in the then clause
 	 *         and else false
 	 */
-	@Override
 	public boolean isSatisfied() {
 
 		logger.info("Check constraint: " + name);
@@ -150,39 +148,6 @@ public class NeoImplication implements IIfElseConstraint {
 		}
 	}
 
-	/**
-	 * Creates and runs the Query in the database for checking the if/then
-	 * constraint violation
-	 * 
-	 * @return NeoMatches return a list of violating Matches of the constraint
-	 */
-	@Override
-	@Deprecated
-	public Collection<IMatch> getViolations() {
-		logger.info("Check constraint: " + name);
-
-		// create query
-		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery(nodesIf, nodesThen, helper.getNodes(),
-				injective, mask);
-		logger.debug(cypherQuery);
-
-		// execute query
-		var result = builder.executeQuery(cypherQuery);
-
-		// analyze and return results
-		var matches = new ArrayList<IMatch>();
-		while (result.hasNext()) {
-			matches.add(new NeoConstraintMatch(nodesIf, result.next()));
-		}
-
-		if (matches.isEmpty()) {
-			logger.info("No invalid matches found. Constraint: " + name + " is complied!");
-			return null;
-		} else {
-			logger.info("Invalid matches found. Constraint: " + name + " is NOT complied!");
-			return matches;
-		}
-	}
 
     /**
      * Return the query for outline copy to clipboard function
