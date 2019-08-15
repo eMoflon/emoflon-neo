@@ -282,10 +282,23 @@ pattern blockNotOnEndFieldInCorner -> anOccupiedField {
 
 } when noCorner
 
+pattern blockOnFieldCond {
+	field: Field {
+		.endPos : false
+	}
+	fig: Block {
+		-field->field
+	}
+} when hasLeftNeighbor
+
 constraint forbidLeftSide = forbid hasLeft
 constraint forbidTopSide = forbid hasTop
 constraint forbidRightSide = forbid hasRight
 constraint forbidBottomSide = forbid hasBottom
+
+constraint enforceHasLeft = enforce hasLeft
+constraint forbidHasTop = forbid hasTop
+constraint hasLeftNeighbor = enforceHasLeft || (!enforceHasLeft && forbidHasTop)
 
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide
