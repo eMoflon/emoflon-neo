@@ -263,23 +263,23 @@ class EMSLGenerator extends AbstractGenerator {
 		«FOR node : nodeBlocks»
 			«helperNodeClass(node)»
 			
-			«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
+			«FOR rel : node.relations.filter[!EMSLUtil.isVariableLink(it)]»
 				«helperRelClass(node, rel)»
 			«ENDFOR»
 		«ENDFOR»
 	'''
 
 	protected def CharSequence helperRelClass(ModelNodeBlock node, ModelRelationStatement rel) {
-		val relName = EMSLUtil.relationNameConvention(node.name, rel.onlyType.name, rel.target.name,
+		val relName = EMSLUtil.relationNameConvention(node.name, rel.allTypes, rel.target.name,
 			node.relations.indexOf(rel))
 		'''
 			public class «relName.toFirstUpper»Rel {
-				«FOR prop : rel.onlyType.properties»
+				«FOR prop : rel.types.flatMap[it.type.properties]»
 					public «EMSLUtil.getJavaType(prop.type)» «prop.name»;
 				«ENDFOR»
 			
 				public «relName.toFirstUpper»Rel(Value «relName») {
-					«FOR prop : rel.onlyType.properties»
+					«FOR prop : rel.types.flatMap[it.type.properties]»
 						if(!«relName».get("«prop.name»").isNull())
 							this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
 					«ENDFOR»
@@ -288,8 +288,8 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 	}
 
-	def getOnlyType(ModelRelationStatement rel) {
-		EMSLUtil.getOnlyType(rel)
+	def getAllTypes(ModelRelationStatement rel) {
+		EMSLUtil.getAllTypes(rel)
 	}
 
 	protected def CharSequence helperNodeClass(ModelNodeBlock node) '''
@@ -313,10 +313,10 @@ class EMSLGenerator extends AbstractGenerator {
 			«FOR node : nodeBlocks»
 				var «node.name» = data.get("«node.name»");
 				this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
-				«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
+				«FOR rel : node.relations.filter[!EMSLUtil.isVariableLink(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
-						rel.onlyType.name,//
+						rel.allTypes,//
 						rel.target.name,// 
 						node.relations.indexOf(rel))»
 					var «relName» = data.get("«relName»");
@@ -331,10 +331,10 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			«FOR node : nodeBlocks»
 				public final «node.name.toFirstUpper»Node «node.name»;
-				«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
+				«FOR rel : node.relations.filter[!EMSLUtil.isVariableLink(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
-						rel.onlyType.name,//
+						rel.allTypes,//
 						rel.target.name,// 
 						node.relations.indexOf(rel))»
 					public final «relName.toFirstUpper»Rel «relName»;
@@ -356,11 +356,11 @@ class EMSLGenerator extends AbstractGenerator {
 						return this;
 					}
 				«ENDFOR»
-				«FOR rel : node.relations.filter[!EMSLUtil.isOptional(it)]»
-					«FOR prop : rel.onlyType.properties»
+				«FOR rel : node.relations.filter[!EMSLUtil.isVariableLink(it)]»
+					«FOR prop : rel.types.flatMap[it.type.properties]»
 						«val relName = EMSLUtil.relationNameConvention(//
 											node.name,// 
-											rel.onlyType.name,//
+											rel.allTypes,//
 											rel.target.name,// 
 											node.relations.indexOf(rel))»
 						public «maskClassName» set«relName.toFirstUpper»«prop.name.toFirstUpper»(«EMSLUtil.getJavaType(prop.type)» value) {

@@ -43,6 +43,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	public static final String META_TYPE = "metaType";
 	public static final String META_EL_OF = "elementOf";
+	public static final String CORR = "corr";
 
 	// EClasses
 	private static final String ECLASSIFIER = "EClassifier";
@@ -75,6 +76,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	// Attributes
 	private static final String NAME_PROP = "ename";
 	private static final String ABSTRACT_PROP = "abstract";
+	private static final String _TYPE_PROP = "_type_";
 
 	// Meta attributes and relations
 	private static final String CONFORMS_TO_PROP = "conformsTo";
@@ -120,6 +122,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final List<NeoProp> nameProps = List.of(new NeoProp(NAME_PROP, NAME_PROP));
 	private static final List<String> nameLabels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
 
+	private static final List<NeoProp> _type_Props = List.of(new NeoProp(NAME_PROP, _TYPE_PROP));
+	private static final List<String> _type_Labels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
+
 	private static final List<NeoProp> eDataTypeProps = List.of(new NeoProp(NAME_PROP, EDATA_TYPE));
 	private static final List<String> eDataTypeLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
 
@@ -148,6 +153,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private static final List<NeoProp> metaTypeProps = List.of(new NeoProp(NAME_PROP, META_TYPE));
 	private static final List<String> metaTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
+			ETYPED_ELEMENT, EOBJECT);
+
+	private static final List<NeoProp> corrProps = List.of(new NeoProp(NAME_PROP, CORR));
+	private static final List<String> corrLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
 			ETYPED_ELEMENT, EOBJECT);
 
 	private static final List<NeoProp> eAttributesProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTES));
@@ -358,6 +367,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			var eRefType = cb.createNodeWithContAndType(eRefTypeProps, eRefTypeLabels, eref, neocore);
 			var eattr = cb.createNodeWithContAndType(eattrProps, eattrLabels, eclass, neocore);
 			var name = cb.createNodeWithContAndType(nameProps, nameLabels, eattr, neocore);
+			var _type_ = cb.createNodeWithContAndType(_type_Props, _type_Labels, eattr, neocore);
 			var eDataType = cb.createNodeWithContAndType(eDataTypeProps, eDataTypeLabels, eclass, neocore);
 			var eAttrEle = cb.createNodeWithContAndType(eAttrEleProps, eAttrEleLabels, eclass, neocore);
 			var eString = cb.createNodeWithContAndType(eStringProps, eStringLabels, eDataType, neocore);
@@ -375,6 +385,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			var eenum = cb.createNodeWithContAndType(eenumProps, eenumLabels, eclass, neocore);
 			var eenumLiteral = cb.createNodeWithContAndType(eenumLiteralProps, eenumLabels, eclass, neocore);
 			var eLiterals = cb.createNodeWithContAndType(eLiteralsProps, eLiteralsLabels, eref, neocore);
+			var corr = cb.createNodeWithContAndType(corrProps, corrLabels, eref, neocore);
 
 			cb.createEdge(CONFORMS_TO_PROP, neocore, neocore);
 			cb.createEdge(META_TYPE, neocore, mmodel);
@@ -386,6 +397,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			cb.createEdge(EREFERENCE_TYPE, eSupType, eclass);
 			cb.createEdge(EATTRIBUTES, eobject, name);
 			cb.createEdge(EATTRIBUTE_TYPE, name, eString);
+			cb.createEdge(EATTRIBUTES, corr, _type_);
+			cb.createEdge(EATTRIBUTE_TYPE, _type_, eString);
 			cb.createEdge(EREFERENCES, eattr, eAttrType);
 			cb.createEdge(EREFERENCE_TYPE, eAttrType, eDataType);
 			cb.createEdge(EREFERENCES, eobject, metaType);
@@ -413,6 +426,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			cb.createEdge(ESUPER_TYPE, eclassifier, eobject);
 			cb.createEdge(ESUPER_TYPE, model, eobject);
 			cb.createEdge(ESUPER_TYPE, eAttrEle, eobject);
+			cb.createEdge(EREFERENCES, eobject, corr);
+			cb.createEdge(EREFERENCE_TYPE, corr, eobject);
 		});
 	}
 
@@ -733,8 +748,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			return inferTypeForNodeAttribute(ps.getValue(), propName, nodeType);
 		} else if (ps.eContainer() instanceof ModelRelationStatement) {
 			ModelRelationStatement rs = (ModelRelationStatement) ps.eContainer();
-			String relName = EMSLUtil.getOnlyType(rs).getName();
-			return inferTypeForEdgeAttribute(ps.getValue(), relName, propName, nodeType);
+			return inferTypeForEdgeAttribute(ps.getValue(), EMSLUtil.getOnlyType(rs).getName(), propName, nodeType);
 		} else {
 			throw new IllegalArgumentException("Unable to handle: " + ps);
 		}
