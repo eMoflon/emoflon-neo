@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
+import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
 import org.neo4j.driver.v1.Record;
 
@@ -100,6 +101,10 @@ public class NeoMatch implements IMatch {
 	public IPattern<NeoMatch> getPattern() {
 		return pattern;
 	}
+	
+	public IRule<NeoMatch, NeoCoMatch> getRule() {
+		return rule;
+	}
 
 	/**
 	 * Checks if the given match is still valid in the database by running a
@@ -110,6 +115,11 @@ public class NeoMatch implements IMatch {
 	 */
 	@Override
 	public boolean isStillValid() {
-		return pattern.isStillValid(this);
+		if(pattern != null)
+			return pattern.isStillValid(this);
+		else if(rule != null)
+			return rule.isStillApplicable(this);
+		else
+			return false;
 	}
 }

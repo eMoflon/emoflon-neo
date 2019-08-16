@@ -29,10 +29,12 @@ public class SokobanRules extends ENeoTest {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDown().rule();
 		var matches = rule.determineMatches();
 		assertTrue(matches.size() == 1);
-		/*var onlyMatch = matches.iterator().next();
-		rule.apply(onlyMatch);
-		assertFalse(onlyMatch.isStillValid());
 		
+		var onlyMatch = matches.iterator().next();
+		assertTrue(onlyMatch.isStillValid());
+		
+		/* rule.apply(onlyMatch);
+		assertFalse(onlyMatch.isStillValid());
 		Optional<NeoCoMatch> result = rule.apply();
 		assertTrue(result.isPresent());
 		
@@ -47,7 +49,11 @@ public class SokobanRules extends ENeoTest {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownWithCondition().rule();
 		var matches = rule.determineMatches();
 		assertTrue(matches.size() == 1);
-		/*var onlyMatch = matches.iterator().next();
+		
+		var onlyMatch = matches.iterator().next();
+		assertTrue(onlyMatch.isStillValid());
+		
+		/*
 		rule.apply(onlyMatch);
 		assertFalse(onlyMatch.isStillValid());
 		

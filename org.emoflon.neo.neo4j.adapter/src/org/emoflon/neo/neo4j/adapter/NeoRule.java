@@ -17,10 +17,6 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.api.rules.RuleApplicationSemantics;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchConstraintRef;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchNegativeConstraint;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchNoCondition;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternQueryAndMatchPositiveConstraint;
 
 // TODO [Jannik]
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
@@ -51,7 +47,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		relR = new ArrayList<>();
 
 		injective = true;
-		spoSemantics = false;
+		spoSemantics = true;
 		helper = new NeoHelper();
 		this.mask = mask;
 		this.builder = builder;
@@ -285,6 +281,78 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		} else {
 			throw new IllegalArgumentException("Unknown type of r:" + r);
 		}
+	}
+	
+	public boolean isStillApplicable(NeoMatch m) {
+		
+		if (r.getCondition() == null) {
+			
+			logger.info("Check if match for " + getName() + " is still valid");
+			var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
+			logger.debug(cypherQuery);
+			var result = builder.executeQuery(cypherQuery);
+	
+			// Query is id-based and must be unique
+			var results = result.list();
+			if (results.size() > 1) {
+				throw new IllegalStateException("There should be at most one record found not " + results.size());
+			}
+	
+			return results.size() == 1;
+			
+		} else {
+			
+			//throw new UnsupportedOperationException();
+			
+			// If the condition is no direct Constraint (instead a Constraint Reference with
+			// a Body, then create a new NeoCondition, with current data and follow the
+			// structure from there for query execution
+			if (r.getCondition() instanceof ConstraintReference) {
+				var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
+				return cond.isStillValid(m);
+
+			} else if (cond instanceof NeoPositiveConstraint) {
+
+				var constraint = ((NeoPositiveConstraint) cond);
+
+				// Condition is positive Constraint (ENFORCE xyz)
+				logger.info("Check if match for " + r.getName() + " WHEN " + constraint.getName() + " is still valid");
+
+				// Create Query
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, m);
+
+				logger.debug(cypherQuery);
+
+				// Execute query
+				var result = builder.executeQuery(cypherQuery);
+				return result.hasNext();
+
+			} else if (cond instanceof NeoNegativeConstraint) {
+
+				var constraint = ((NeoNegativeConstraint) cond);
+
+				// Condition is positive Constraint (ENFORCE xyz)
+				logger.info("Check if match for " + r.getName() + " WHEN " + constraint.getName() + " is still valid");
+
+				// Create Query
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						injective, m);
+
+				logger.debug(cypherQuery);
+
+				// Execute query
+				var result = builder.executeQuery(cypherQuery);
+				return result.hasNext();
+
+			} else {
+				// Note: If/Then conditions are currently not supported
+				throw new UnsupportedOperationException();
+			}
+		}
+		
 	}
 
 	@Override
