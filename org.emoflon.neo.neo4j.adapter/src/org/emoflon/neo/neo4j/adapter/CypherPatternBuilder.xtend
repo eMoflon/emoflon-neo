@@ -375,5 +375,31 @@ class CypherPatternBuilder {
 
 		'''WITH «ret» count(«nodes.get(0).varName») as m_«id»'''
 	}
+	
+	/*****************************
+	 * Basic Rule Functions
+	 ****************************/
+	 
+	 
+	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoRelation> refL, Collection<NeoRelation> refR) {
+	 	
+	 	'''
+	 	«matchQuery(nodes)»
+	 	«isStillValid_whereQuery(nodes, match)»
+	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
+	 	«ruleExecution_createQuery(nodesR,refR)»
+	 	'''
+	 	
+	 }
+	 
+	 def static String ruleExecution_deleteQuery(boolean spo, Collection<NeoNode> nodesL, Collection<NeoRelation> refL) {
+	 	'''«IF nodesL.size > 0 || refL.size > 0»«IF spo»DETACH «ENDIF»DELETE «FOR r: refL SEPARATOR ', '»«r.varName»«ENDFOR»
+	 			«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«ENDFOR»«ENDIF»'''
+	 }
+	 
+	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
+	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
+	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»«queryNode(r.fromNode)»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDIF»'''
+	 }
 
 }

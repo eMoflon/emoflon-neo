@@ -33,7 +33,9 @@ public class SokobanRules extends ENeoTest {
 		var onlyMatch = matches.iterator().next();
 		assertTrue(onlyMatch.isStillValid());
 		
-		/* rule.apply(onlyMatch);
+		rule.apply(onlyMatch); 
+		
+		/*
 		assertFalse(onlyMatch.isStillValid());
 		Optional<NeoCoMatch> result = rule.apply();
 		assertTrue(result.isPresent());
@@ -53,8 +55,10 @@ public class SokobanRules extends ENeoTest {
 		var onlyMatch = matches.iterator().next();
 		assertTrue(onlyMatch.isStillValid());
 		
-		/*
 		rule.apply(onlyMatch);
+		
+		/*
+		
 		assertFalse(onlyMatch.isStillValid());
 		
 		Optional<NeoCoMatch> result = rule.apply();

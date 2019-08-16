@@ -16,9 +16,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IRule;
-import org.emoflon.neo.engine.api.rules.RuleApplicationSemantics;
 
-// TODO [Jannik]
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -32,6 +30,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected boolean injective;
 	protected boolean spoSemantics; // if false: DPO; if true SPO semantics
 	protected NeoHelper helper;
+	
 	protected Rule r;
 	protected Constraint c;
 	protected Object cond;
@@ -94,27 +93,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		for (var n : r.getNodeBlocks()) {
 
 			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
-
-			if (n.getAction() != null) {
-
-				switch (n.getAction().getOp()) {
-				case CREATE:
-					nodesR.add(node);
-					logger.info("New ++ node: " + node.getVarName() + ":" + n.getType().getName());
-					helper.removeMatchElement(node.getVarName());
-					break;
-				case DELETE:
-					nodesL.add(node);
-					logger.info("New -- node: " + node.getVarName() + ":" + n.getType().getName());
-					break;
-				default:
-					throw new UnsupportedOperationException("Undefined Operator.");
-				}
-
-			} else {
-				logger.info("New klebegraph node: " + node.getVarName() + ":" + n.getType().getName());
-			}
-
 			for (var p : n.getProperties()) {
 				node.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 			}
@@ -160,9 +138,27 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 							+ ")");
 				}
 			}
+			
+			if (n.getAction() != null) {
 
-			if(n.getAction() == null || (n.getAction() != null && n.getAction().getOp() == ActionOperator.DELETE)) {				
+				switch (n.getAction().getOp()) {
+				case CREATE:
+					nodesR.add(node);
+					logger.info("New ++ node: " + node.getVarName() + ":" + n.getType().getName());
+					helper.removeMatchElement(node.getVarName());
+					break;
+				case DELETE:
+					nodesL.add(node);
+					nodes.add(node);
+					logger.info("New -- node: " + node.getVarName() + ":" + n.getType().getName());
+					break;
+				default:
+					throw new UnsupportedOperationException("Undefined Operator.");
+				}
+
+			} else {
 				nodes.add(node);
+				logger.info("New klebegraph node: " + node.getVarName() + ":" + n.getType().getName());
 			}
 		}
 	}
@@ -356,11 +352,21 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	@Override
-	public Optional<NeoCoMatch> apply(NeoMatch match, RuleApplicationSemantics ras) {
-		// TODO[Jannik]
-		return null;
+	public Optional<NeoCoMatch> apply(NeoMatch match) {
+		if(!isStillApplicable(match)) {
+			return null;
+		} else {
+			
+			logger.info("Execute Rule " + getName());
+			var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, relL, relR);
+			logger.debug(cypherQuery);
+			var result = builder.executeQuery(cypherQuery);
+			
+			return null;
+		}
 	}
 
+	// RuleApplicationSemantics.DoublePushOut
 	public void setSPOSemantics(boolean spoSemantics) {
 		this.spoSemantics = spoSemantics;
 	}
