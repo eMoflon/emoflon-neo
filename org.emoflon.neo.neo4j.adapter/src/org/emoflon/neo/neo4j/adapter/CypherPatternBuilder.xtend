@@ -397,13 +397,14 @@ class CypherPatternBuilder {
 	 ) {
 	 	
 	 	'''
-	 	«matchQuery(nodes)»
-	 	«ruleExecution_matchModelNodes(nodesR)»
+	 	«matchQuery(nodes)»«ruleExecution_matchModelNodes(nodesR)»
 	 	«isStillValid_whereQuery(nodes, match)»
 	 	«conditionQuery»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR)»
+	 	«ruleExecution_createModelNodes(nodesR)»
 	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
+	 	
 	 	'''
 	 	
 	 }
@@ -425,10 +426,10 @@ class CypherPatternBuilder {
 	 }
 	 
 	 def static String ruleExecution_matchModelNodes(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»(«n.varName»_eclass:EClass {ename: "«n.classType»"}), «ENDFOR»'''
+	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»(«n.varName»_eclass:EClass {ename: "«n.classType»"})«ENDFOR»'''
 	 }
 	 def static String ruleExecution_createModelNodes(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»(«n.varName»)-[:metaType](«n.varName»_eclass), «ENDFOR»'''
+	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»(«n.varName»)-[:metaType]->(«n.varName»_eclass)«ENDFOR»'''
 	 }
 
 }
