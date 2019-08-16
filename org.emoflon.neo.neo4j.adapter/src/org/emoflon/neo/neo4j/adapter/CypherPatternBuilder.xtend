@@ -388,6 +388,7 @@ class CypherPatternBuilder {
 	 	«isStillValid_whereQuery(nodes, match)»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR)»
+	 	«ruleExecution_returnQuery(nodesR,refR)»
 	 	'''
 	 	
 	 }
@@ -399,7 +400,12 @@ class CypherPatternBuilder {
 	 
 	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
 	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
-	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»«queryNode(r.fromNode)»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDIF»'''
+	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»'''
+	 }
+	 
+	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
+	 	'''«IF nodesR.size > 0 || refR.size > 0»RETURN «FOR n: nodesR SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
+	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»«ENDIF»'''
 	 }
 
 }
