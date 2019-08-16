@@ -21,7 +21,7 @@ import org.neo4j.driver.v1.StatementResult;
 
 /**
  * Class for representing an in EMSL defined pattern for creating pattern
- * matching or condtion queries
+ * matching or condition queries
  * 
  * @author Jannik Hinz
  *

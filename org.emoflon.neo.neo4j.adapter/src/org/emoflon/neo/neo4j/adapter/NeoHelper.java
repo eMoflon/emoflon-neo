@@ -22,8 +22,8 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 public class NeoHelper {
 
 	// Note: nodes and relations are stored in one list at a time
-	private Collection<String> matchNodes;
-	private Collection<String> optionalNodes;
+	private Collection<String> matchElements;
+	private Collection<String> optionalElements;
 
 	private int cCount;
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -32,8 +32,8 @@ public class NeoHelper {
 	 * initialize Helper
 	 */
 	public NeoHelper() {
-		this.matchNodes = new ArrayList<String>();
-		this.optionalNodes = new ArrayList<String>();
+		this.matchElements = new ArrayList<String>();
+		this.optionalElements = new ArrayList<String>();
 		this.cCount = 0;
 	}
 
@@ -55,8 +55,8 @@ public class NeoHelper {
 	 * @return name of the new node variable for including in queries
 	 */
 	public String newPatternNode(String name) {
-		if (!matchNodes.contains(name))
-			matchNodes.add(name);
+		if (!matchElements.contains(name))
+			matchElements.add(name);
 		return name;
 	}
 
@@ -71,7 +71,7 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newPatternRelation(String name, int index, List<String> relVar, String toName) {
-		matchNodes.add(EMSLUtil.relationNameConvention(name, relVar, toName, index));
+		matchElements.add(EMSLUtil.relationNameConvention(name, relVar, toName, index));
 		return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 	}
 
@@ -84,10 +84,10 @@ public class NeoHelper {
 	 */
 	public String newConstraintNode(String name) {
 
-		if (matchNodes.contains(name)) {
+		if (matchElements.contains(name)) {
 			return name;
 		} else {
-			optionalNodes.add(name + "_" + cCount);
+			optionalElements.add(name + "_" + cCount);
 			return name + "_" + cCount;
 		}
 
@@ -104,10 +104,10 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newConstraintReference(String name, int index, List<String> relVar, String toName) {
-		if (matchNodes.contains(EMSLUtil.relationNameConvention(name, relVar, toName, index))) {
+		if (matchElements.contains(EMSLUtil.relationNameConvention(name, relVar, toName, index))) {
 			return EMSLUtil.relationNameConvention(name, relVar, toName, index);
 		} else {
-			optionalNodes.add(EMSLUtil.relationNameConvention(name, relVar, toName, index) + "_" + cCount);
+			optionalElements.add(EMSLUtil.relationNameConvention(name, relVar, toName, index) + "_" + cCount);
 			return EMSLUtil.relationNameConvention(name, relVar, toName, index) + "_" + cCount;
 		}
 	}
@@ -119,8 +119,8 @@ public class NeoHelper {
 	 * @return all Nodes from pattern and constraints
 	 */
 	public Collection<String> getNodes() {
-		var list = matchNodes;
-		for (String node : optionalNodes) {
+		var list = matchElements;
+		for (String node : optionalElements) {
 			if (!list.contains(node))
 				list.add(node);
 		}
@@ -133,8 +133,8 @@ public class NeoHelper {
 	 * @return all Nodes from the pattern
 	 */
 	public Collection<String> getMatchNodes() {
-		var list = matchNodes;
-		for (String node : matchNodes) {
+		var list = matchElements;
+		for (String node : matchElements) {
 			list.add(node);
 		}
 		return list;
@@ -146,8 +146,8 @@ public class NeoHelper {
 	 * @return all Nodes from the constraints
 	 */
 	public Collection<String> getOptionalMatchNodes() {
-		var list = optionalNodes;
-		for (String node : optionalNodes) {
+		var list = optionalElements;
+		for (String node : optionalElements) {
 			list.add(node);
 		}
 		return list;
@@ -233,6 +233,18 @@ public class NeoHelper {
 			return p;
 		}
 
+	}
+	
+	public void removeMatchElement(String name) {
+		if(matchElements.contains(name)) {
+			matchElements.remove(name);
+		}
+	}
+	
+	public void removeOptionalElement(String name) {
+		if(optionalElements.contains(name)) {
+			optionalElements.remove(name);
+		}
 	}
 
 }

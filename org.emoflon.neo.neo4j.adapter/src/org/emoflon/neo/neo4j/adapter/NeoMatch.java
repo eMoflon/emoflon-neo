@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IPattern;
+import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
 import org.neo4j.driver.v1.Record;
 
@@ -21,6 +22,7 @@ public class NeoMatch implements IMatch {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	private NeoPattern pattern;
+	private NeoRule rule;
 	private Map<String, Long> ids;
 
 	/**
@@ -31,7 +33,14 @@ public class NeoMatch implements IMatch {
 		this.pattern = pattern;
 
 		ids = new HashMap<>();
-		extractIds(record);
+		extractIdsPattern(record);
+	}
+	
+	public NeoMatch(NeoRule rule, Record record) {
+		this.rule = rule;
+
+		ids = new HashMap<>();
+		extractIdsRule(record);
 	}
 
 	/**
@@ -40,10 +49,23 @@ public class NeoMatch implements IMatch {
 	 * 
 	 * @param record of the query execution
 	 */
-	private void extractIds(Record record) {
+	private void extractIdsPattern(Record record) {
 		var recMap = record.asMap();
 
 		for (var n : pattern.getNodes()) {
+			if (recMap.containsKey(n.getVarName()))
+				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
+
+			for (var r : n.getRelations()) {
+				if (recMap.containsKey(r.getVarName()))
+					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
+			}
+		}
+	}
+	private void extractIdsRule(Record record) {
+		var recMap = record.asMap();
+
+		for (var n : rule.getNodes()) {
 			if (recMap.containsKey(n.getVarName()))
 				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
 
@@ -79,6 +101,10 @@ public class NeoMatch implements IMatch {
 	public IPattern<NeoMatch> getPattern() {
 		return pattern;
 	}
+	
+	public IRule<NeoMatch, NeoCoMatch> getRule() {
+		return rule;
+	}
 
 	/**
 	 * Checks if the given match is still valid in the database by running a
@@ -89,6 +115,14 @@ public class NeoMatch implements IMatch {
 	 */
 	@Override
 	public boolean isStillValid() {
-		return pattern.isStillValid(this);
+		if(pattern != null) {
+			return pattern.isStillValid(this);
+		} else if(rule != null) {
+			var result = rule.isStillApplicable(this);
+			logger.debug(result);
+			return result;
+		} else {
+			return false;
+		}
 	}
 }
