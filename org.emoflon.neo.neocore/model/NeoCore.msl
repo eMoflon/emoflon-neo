@@ -5,6 +5,7 @@ metamodel org.emoflon.neo.neocore {
 	}
 	
 	EReference : EStructuralFeature, EAttributedElement {
+		.isComposition : EBoolean
 		-eReferenceType(1..1)-> EClass
 	}
 	
@@ -30,6 +31,9 @@ metamodel org.emoflon.neo.neocore {
 		-metaType(1..1)-> EObject
 		-corr(0..*)->EObject {
 			._type_:EString
+		}
+		-eContainer(0..1)->EObject {
+			.isComposition:EBoolean
 		}	
 	}
 	
