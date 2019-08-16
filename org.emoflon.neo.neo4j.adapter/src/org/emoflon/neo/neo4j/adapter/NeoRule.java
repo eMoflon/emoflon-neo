@@ -359,22 +359,19 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch match) {
-		if(!isStillApplicable(match)) {
-			return null;
+
+		logger.info("Execute Rule " + getName());
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK);
+		logger.debug(cypherQuery);
+		var result = builder.executeQuery(cypherQuery);
+		
+		if (result.hasNext()) {
+			var record = result.next();
+			return Optional.of(new NeoCoMatch(this, record));
 		} else {
-			
-			logger.info("Execute Rule " + getName());
-			var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK);
-			logger.debug(cypherQuery);
-			var result = builder.executeQuery(cypherQuery);
-			
-			if (result.hasNext()) {
-				var record = result.next();
-				return Optional.of(new NeoCoMatch(this, record));
-			} else {
-				return Optional.empty();
-			}
+			return Optional.empty();
 		}
+
 	}
 
 	// RuleApplicationSemantics.DoublePushOut
