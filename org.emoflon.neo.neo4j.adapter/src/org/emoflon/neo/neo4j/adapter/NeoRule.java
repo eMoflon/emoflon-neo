@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
@@ -24,8 +23,10 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected List<NeoNode> nodes;
 	protected List<NeoNode> nodesL;
 	protected List<NeoNode> nodesR;
+	protected List<NeoNode> nodesK;
 	protected List<NeoRelation> relL;
 	protected List<NeoRelation> relR;
+	protected List<NeoRelation> relK;
 
 	protected boolean injective;
 	protected boolean spoSemantics; // if false: DPO; if true SPO semantics
@@ -42,8 +43,10 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		nodes = new ArrayList<>();
 		nodesL = new ArrayList<>();
 		nodesR = new ArrayList<>();
+		nodesK = new ArrayList<>();
 		relL = new ArrayList<>();
 		relR = new ArrayList<>();
+		relK = new ArrayList<>();
 
 		injective = true;
 		spoSemantics = true;
@@ -115,6 +118,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 					switch (r.getAction().getOp()) {
 					case CREATE:
 						relR.add(rel);
+						relK.add(rel);
 						logger.info("New ++ relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
 								+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":"
 								+ rel.getToNodeLabel() + ")");
@@ -133,6 +137,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 				} else {
 					node.addRelation(rel);
+					relK.add(rel);
 					logger.info("New klebegraph relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
 							+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":" + rel.getToNodeLabel()
 							+ ")");
@@ -158,6 +163,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 			} else {
 				nodes.add(node);
+				nodesK.add(node);
 				logger.info("New klebegraph node: " + node.getVarName() + ":" + n.getType().getName());
 			}
 		}
@@ -358,11 +364,16 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		} else {
 			
 			logger.info("Execute Rule " + getName());
-			var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, relL, relR);
+			var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK);
 			logger.debug(cypherQuery);
 			var result = builder.executeQuery(cypherQuery);
 			
-			return null;
+			if (result.hasNext()) {
+				var record = result.next();
+				return Optional.of(new NeoCoMatch(this, record));
+			} else {
+				return Optional.empty();
+			}
 		}
 	}
 

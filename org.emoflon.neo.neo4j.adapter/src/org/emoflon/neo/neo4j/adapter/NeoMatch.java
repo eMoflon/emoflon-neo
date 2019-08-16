@@ -115,11 +115,14 @@ public class NeoMatch implements IMatch {
 	 */
 	@Override
 	public boolean isStillValid() {
-		if(pattern != null)
+		if(pattern != null) {
 			return pattern.isStillValid(this);
-		else if(rule != null)
-			return rule.isStillApplicable(this);
-		else
+		} else if(rule != null) {
+			var result = rule.isStillApplicable(this);
+			logger.debug(result);
+			return result;
+		} else {
 			return false;
+		}
 	}
 }

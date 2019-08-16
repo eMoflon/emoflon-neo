@@ -381,14 +381,17 @@ class CypherPatternBuilder {
 	 ****************************/
 	 
 	 
-	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoRelation> refL, Collection<NeoRelation> refR) {
+	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, 
+	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
+	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK
+	 ) {
 	 	
 	 	'''
 	 	«matchQuery(nodes)»
 	 	«isStillValid_whereQuery(nodes, match)»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR)»
-	 	«ruleExecution_returnQuery(nodesR,refR)»
+	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
 	 	'''
 	 	
 	 }
@@ -403,9 +406,12 @@ class CypherPatternBuilder {
 	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»'''
 	 }
 	 
-	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
-	 	'''«IF nodesR.size > 0 || refR.size > 0»RETURN «FOR n: nodesR SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
-	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»«ENDIF»'''
+	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesK, Collection<NeoRelation> refK, Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
+	 	'''RETURN «FOR n: nodesK SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
+	 	«IF refK.size > 0 », «ENDIF»«FOR r: refK SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»
+	 	'''
+	 	/* «IF nodesR.size > 0 || refR.size > 0», «FOR n: nodesR SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
+	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»«ENDIF»*/
 	 }
 
 }
