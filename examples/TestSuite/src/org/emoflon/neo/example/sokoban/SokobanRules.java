@@ -43,7 +43,6 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 	@Test
-	//@Disabled("TODO[Jannik] Implement rules")
 	public void testMoveSokobanDownWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownWithCondition().rule();
 		var matches = rule.determineMatches();

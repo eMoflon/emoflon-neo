@@ -245,6 +245,15 @@ class CypherPatternBuilder {
 		RETURN TRUE
 		'''
 	}
+	
+		def static String constraintQuery_rule(Collection<String> helperNodes, String matchCond, String whereCond) {
+
+		'''«matchCond»
+		«constraint_withQuery(helperNodes)»
+		WHERE «whereCond»
+		«constraint_withQuery(helperNodes)»
+		'''
+	}
 
 	def static String constraintQuery_Satisfied(String optionalMatch, String whereClause) {
 		'''«optionalMatch»
@@ -383,12 +392,15 @@ class CypherPatternBuilder {
 	 
 	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, 
 	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
-	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK
+	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
+	 	String conditionQuery
 	 ) {
 	 	
 	 	'''
 	 	«matchQuery(nodes)»
+	 	«ruleExecution_matchModelNodes(nodesR)»
 	 	«isStillValid_whereQuery(nodes, match)»
+	 	«conditionQuery»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR)»
 	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
@@ -410,8 +422,13 @@ class CypherPatternBuilder {
 	 	'''RETURN «FOR n: nodesK SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
 	 	«IF refK.size > 0 », «ENDIF»«FOR r: refK SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»
 	 	'''
-	 	/* «IF nodesR.size > 0 || refR.size > 0», «FOR n: nodesR SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
-	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»«ENDIF»*/
+	 }
+	 
+	 def static String ruleExecution_matchModelNodes(Collection<NeoNode> nodes) {
+	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»(«n.varName»_eclass:EClass {ename: "«n.classType»"}), «ENDFOR»'''
+	 }
+	 def static String ruleExecution_createModelNodes(Collection<NeoNode> nodes) {
+	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»(«n.varName»)-[:metaType](«n.varName»_eclass), «ENDFOR»'''
 	 }
 
 }

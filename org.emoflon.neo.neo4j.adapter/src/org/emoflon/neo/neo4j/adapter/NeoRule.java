@@ -359,9 +359,28 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch match) {
+		
+		var additionalQuery = "";
+		
+		if(r.getCondition() != null) {
+			if(r.getCondition() instanceof ConstraintReference) {
+				
+			} else if(cond instanceof NeoPositiveConstraint) {
+				var constraint = ((NeoPositiveConstraint) cond);
+				additionalQuery = CypherPatternBuilder.constraintQuery_rule(helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon());
+			} else if(cond instanceof NeoNegativeConstraint) {
+				var constraint = ((NeoNegativeConstraint) cond);
+				additionalQuery = CypherPatternBuilder.constraintQuery_rule(helper.getNodes(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon());
+			} else {
+				// Note: If/Then conditions are currently not supported
+				throw new UnsupportedOperationException();
+			}
+		}
 
 		logger.info("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK);
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK, additionalQuery);
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 		
