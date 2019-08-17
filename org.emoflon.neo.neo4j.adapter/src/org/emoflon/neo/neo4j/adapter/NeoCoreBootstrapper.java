@@ -129,7 +129,7 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> corrProps = List.of(new NeoProp(NAME_PROP, CORR));
 	private static final List<String> corrLabels = LABELS_FOR_AN_EREFERENCE;
 
-	private static final List<NeoProp> econtainerProps = List.of(new NeoProp(NAME_PROP, CORR));
+	private static final List<NeoProp> econtainerProps = List.of(new NeoProp(NAME_PROP, ECONTAINER));
 	private static final List<String> econtainerLabels = LABELS_FOR_AN_EREFERENCE;
 
 	private static final List<NeoProp> eAttributesProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTES));
