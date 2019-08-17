@@ -591,8 +591,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void forbidComplexEdgesInModels(ModelRelationStatement relation) {
-		if (relation.types.size > 1 && relation.eContainer.eContainer instanceof Model) {
-			error(FORBIDDING_COMPLEX_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
+		if (relation.eContainer.eContainer instanceof Model) {
+			if (relation.types.size > 1) {
+				error(FORBIDDING_COMPLEX_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
+			}
+			if (relation.lower !== null || relation.upper !== null) {
+				try {
+					error("Path lengths in models are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
+				} catch (Exception e) {
+					error("Path lengths in models are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__UPPER)
+				}
+			}
 		}
 	}
 	
@@ -817,6 +826,34 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}
 		if (corr.target?.type != corr.type.target) {
 			error('''The target argument must be of type "«corr.type.target.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
+		}
+	}
+	
+	/**
+	 * Checks if the types given in an edge are transitively reachable and their
+	 * target types make sense, i.e. are helping in reaching the desired target.
+	 */
+	@Check
+	def void checkTypesUsedInRelationStatements(ModelRelationStatement relation) {
+		if (relation.types.size > 1) {
+			var index = 0
+			for (t : relation.types) {
+				if (!(t.type.eContainer == (relation.eContainer as ModelNodeBlock).type)) {
+					var reachable = false
+					var usefulTarget = false
+					for (other : relation.types) {
+						if (t.type.eContainer == other.type.target)
+							reachable = true
+						if (t.type.target == other.type.eContainer)
+							usefulTarget = true
+					}
+					if (!reachable)
+						error('''The edge-type "«t.type.name»" is not allowed here because it is not transitively reachable.''', relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES, index)
+					if (!usefulTarget)
+						error('''The edge-type "«t.type.name»" is not allowed here because its target makes no sense.''', relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES, index)
+				}
+				index++
+			}
 		}
 	}
 }

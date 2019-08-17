@@ -20,7 +20,6 @@ import org.emoflon.neo.emsl.eMSL.EnumValue;
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
-import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
@@ -31,7 +30,6 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
-import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.Value;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
@@ -676,20 +674,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				&& ((EnumValue) p1.getValue()).getLiteral() == ((EnumValue) p2.getValue()).getLiteral()) {
 			return;
 		}
-		if (p2.eContainer().eContainer() instanceof AtomicPattern) {
-			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2,
-					(SuperType) p2.eContainer().eContainer().eContainer());
-		} else if (p2.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
-			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2,
-					(SuperType) p2.eContainer().eContainer().eContainer());
-		} else if (p2.eContainer().eContainer() instanceof Rule || p2.eContainer().eContainer() instanceof Model) {
-			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2,
-					(SuperType) p2.eContainer().eContainer());
-		} else if (p2.eContainer().eContainer().eContainer() instanceof Rule
-				|| p2.eContainer().eContainer().eContainer() instanceof Model) {
-			throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2,
-					(SuperType) p2.eContainer().eContainer().eContainer());
-		}
+		throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2, null);
 	}
 
 	/**
@@ -805,7 +790,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					var bounds = mergeModelRelationStatementPathLimits(entity, edges.get(typename).get(targetname));
 					if (bounds == null)
 						throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, newRel);
-					newRel.setLower(bounds[1]);
+					newRel.setLower(bounds[0]);
 					newRel.setUpper(bounds[1]);
 					
 					mergedNodes.forEach(nb -> {

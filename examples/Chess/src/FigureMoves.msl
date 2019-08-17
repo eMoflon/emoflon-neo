@@ -1,0 +1,112 @@
+import "platform:/resource/Chess/src/ChessLanguage.msl"
+
+pattern byOwnColourOccupiedField {
+	blockingFig : Figure {
+		-standsOn-> to
+	}
+	
+	fig : Figure
+	
+	to : Field
+	
+	attributeConditions {
+		eq( c1 : blockingFig::colour,
+			c2 : fig::colour
+		)
+	}
+}
+
+pattern bottomLeftReference {
+	f : Field {
+		-bottomLeft-> f2
+	}
+	f2 : Field
+}
+
+pattern bottomRightReference {
+	f : Field {
+		-bottomRight-> f2
+	}
+	f2 : Field
+}
+
+rule moveFig {
+	fig : Figure {
+		-- -standsOn-> from
+		++ -standsOn-> to
+	}
+	from : Field
+	to : Field
+}
+
+rule movePawn -> moveFig {
+	fig : Pawn
+}
+
+rule moveWhitePawn -> movePawn {
+	to : Field {
+		-bottom(1..2)-> $from
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveBlackPawn -> movePawn {
+	from : Field {
+		-bottom(1..2)-> $to
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveRook -> moveFig {
+	fig : Rook
+}
+
+rule moveRookUp -> moveRook {
+	to : Field {
+		-bottom(1..*)-> $from
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveRookRight -> moveRook {
+	from : Field {
+		-right(1..*)-> $to
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveRookDown -> moveRook {
+	from : Field {
+		-bottom(1..*)-> $to
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveRookLeft -> moveRook {
+	to : Field {
+		-right(1..*)-> $from
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveBishop -> moveFig {
+	fig : Bishop
+}
+
+rule moveBishopUpLeft -> moveBishop {
+	to : Field {
+		-bottomRight(1..*)-> $from
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveBishopUpRight -> moveBishop {
+	to : Field {
+		-bottomLeft(1..*)-> $from
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveBishopDownLeft -> moveBishop {
+	from : Field {
+		-bottomLeft(1..*)-> $to
+	}
+} when forbid byOwnColourOccupiedField
+
+rule moveBishopDownRight -> moveBishop {
+	from : Field {
+		-bottomRight(1..*)-> $to
+	}
+} when forbid byOwnColourOccupiedField
