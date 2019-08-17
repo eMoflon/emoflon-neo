@@ -44,8 +44,7 @@ public class NeoNegativeConstraint {
 		this.ap = helper.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodes = new ArrayList<>();
-		this.nodes = this.helper.extractNodesAndRelations(ap.getNodeBlocks());
+		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(ap.getNodeBlocks()));
 	}
 
 	/**

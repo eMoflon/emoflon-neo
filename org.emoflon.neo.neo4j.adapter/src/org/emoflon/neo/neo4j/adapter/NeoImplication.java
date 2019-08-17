@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -110,8 +111,8 @@ public class NeoImplication {
 	 * @return NeoNode collection of all nodes from the If- and the Then-Clause
 	 */
 	public Collection<NeoNode> getNodes() {
-		var list = nodesIf;
-		nodesThen.forEach(elem -> list.add(elem));
+		var list = new HashSet<>(nodesIf);
+		list.addAll(nodesThen);
 		return list;
 	}
 
@@ -123,7 +124,6 @@ public class NeoImplication {
 	 *         and else false
 	 */
 	public boolean isSatisfied() {
-
 		logger.info("Check constraint: " + name);
 
 		// create query
