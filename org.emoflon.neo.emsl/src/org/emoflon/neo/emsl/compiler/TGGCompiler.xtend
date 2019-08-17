@@ -14,19 +14,19 @@ import java.util.stream.Collectors
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import java.util.HashMap
-import java.util.Map
+import java.util.Collection
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
+import java.util.HashSet
 
 class TGGCompiler {
-	Map<MetamodelNodeBlock, String> typeMap;
+	BiMap<MetamodelNodeBlock, String> typeMap;
 	
 	def String compile(TripleGrammar pTGG) {
 		val allMetamodels = pTGG.srcMetamodels
 		allMetamodels.addAll(pTGG.trgMetamodels)
-		
-		typeMap = new HashMap();
-		for(Metamodel metamodel : allMetamodels)
-			for(MetamodelNodeBlock type : metamodel.nodeBlocks)
-				typeMap.put(type, metamodel.name + type.name);
+
+		mapTypeNames(allMetamodels)
 					
 		'''
 			«FOR uri : allMetamodels.map[it.eResource.URI].stream.distinct.collect(Collectors.toList())»
@@ -39,9 +39,31 @@ class TGGCompiler {
 		'''
 	}
 	
+	private def mapTypeNames(Collection<Metamodel> pMetamodels) {
+		
+		typeMap = HashBiMap.create()
+
+		val allTypes = new HashMap
+		for(Metamodel metamodel : pMetamodels)
+			for(MetamodelNodeBlock type : metamodel.nodeBlocks)
+				allTypes.put(type, metamodel);
+		
+		val duplicateNames = new HashSet
+		for(MetamodelNodeBlock type : allTypes.keySet) {
+			if(typeMap.containsValue(type.name)) {
+				val otherType = typeMap.inverse.get(type.name)
+				typeMap.put(otherType, allTypes.get(otherType).name + "." + otherType.name)
+				duplicateNames.add(type.name)
+			}
+			
+			if(duplicateNames.contains(type.name))
+				typeMap.put(type, allTypes.get(type).name + "." + type.name)
+			else
+				typeMap.put(type, type.name)
+		}
+	}
+	
 	private def compileRule(TripleRule pRule) {
-		val types = pRule.srcNodeBlocks.map[it.type]
-		types.addAll(pRule.trgNodeBlocks.map[it.type])
 		
 		'''
 			rule «pRule.name» {
