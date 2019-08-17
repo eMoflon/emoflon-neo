@@ -2,7 +2,6 @@ package org.emoflon.neo.neo4j.adapter;
 
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ABSTRACT_PROP;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.CONFORMS_TO_PROP;
-import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTE;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTED_ELEMENT;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTES;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTE_TYPE;
@@ -13,12 +12,9 @@ import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EENUM;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EENUM_LITERAL;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ELITERALS;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EOBJECT;
-import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EREFERENCE;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EREFERENCES;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EREFERENCE_TYPE;
-import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ESTRUCTURAL_FEATURE;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ESUPER_TYPE;
-import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ETYPED_ELEMENT;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.METAMODEL;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.META_TYPE;
 import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.MODEL;
@@ -69,6 +65,7 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
@@ -402,7 +399,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		for (var ps : nb.getProperties()) {
 			var attr = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, ps.getName())), //
-					List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT), eattribute, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, eattribute, mmNode);
 			var attrOwner = blockToCommand.get(nb);
 			var nameOfTypeofAttr = inferType(ps);
 
@@ -411,7 +408,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			if (dataType instanceof BuiltInType) {
 				typeofattr = cb.matchNodeWithContainer(//
 						List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr)), //
-						List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT), neocore);
+						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore);
 			} else if (dataType instanceof UserDefinedType) {
 				typeofattr = blockToCommand.get(((UserDefinedType) dataType).getReference());
 			}
@@ -445,10 +442,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			NodeCommand edatatype, NodeCommand eattribute, HashMap<Object, NodeCommand> blockToCommand,
 			NodeCommand mmNode, MetamodelNodeBlock nb) {
 		for (var rs : nb.getRelations()) {
+			var isCompProp = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
+					rs.getKind().equals(RelationKind.COMPOSITION));
+
+			var isContainmentProp = new NeoProp(NeoCoreBootstrapper.ISCONTAINMENT_PROP,
+					rs.getKind().equals(RelationKind.COMPOSITION) || rs.getKind().equals(RelationKind.AGGREGATION));
+
 			var ref = cb.createNodeWithContAndType(//
-					List.of(new NeoProp(NAME_PROP, rs.getName())), //
-					List.of(EREFERENCE, EOBJECT, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT), eref,
-					mmNode);
+					List.of(new NeoProp(NAME_PROP, rs.getName()), isCompProp, isContainmentProp), //
+					NeoCoreBootstrapper.LABELS_FOR_AN_EREFERENCE, eref, mmNode);
 
 			var refOwner = blockToCommand.get(nb);
 			var typeOfRef = blockToCommand.get(rs.getTarget());
@@ -460,13 +462,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			rs.getProperties().forEach(ps -> {
 				var attr = cb.createNodeWithContAndType(//
 						List.of(new NeoProp(NAME_PROP, ps.getName())), //
-						List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT), eattribute, mmNode);
+						NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, eattribute, mmNode);
 
 				var nameOfTypeofAttr = inferType(ps);
 
 				var typeofattr = cb.matchNodeWithContainer(//
 						List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr)), //
-						List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT), neocore);
+						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore);
 
 				cb.createEdge(EATTRIBUTES, ref, attr);
 				cb.createEdge(EATTRIBUTE_TYPE, attr, typeofattr);
@@ -476,9 +478,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private void handleRelationStatementInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
 			ModelNodeBlock nb) {
-
 		for (var rs : nb.getRelations()) {
-
 			var refOwner = blockToCommand.get(nb);
 			var typeOfRef = blockToCommand.get(rs.getTarget());
 
@@ -489,7 +489,23 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			});
 
 			cb.createEdgeWithProps(props, EMSLUtil.getOnlyType(rs).getName(), refOwner, typeOfRef);
+
+			if (isContainment(rs)) {
+				createContainerEdge(cb, rs, typeOfRef, refOwner);
+			}
 		}
+	}
+
+	private void createContainerEdge(CypherCreator cb, ModelRelationStatement rs, NodeCommand container,
+			NodeCommand containee) {
+		var prop = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
+				EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.COMPOSITION));
+		cb.createEdgeWithProps(List.of(prop), NeoCoreBootstrapper.ECONTAINER, container, containee);
+	}
+
+	private boolean isContainment(ModelRelationStatement rs) {
+		return EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.AGGREGATION)
+				|| EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.COMPOSITION);
 	}
 
 	private void handleNodeBlocksInMetaModel(CypherCreator cb, NodeCommand neocore, NodeCommand eclass,
@@ -509,7 +525,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			var nbNode = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, nb.getName()), //
 							new NeoProp(ABSTRACT_PROP, nb.isAbstract())),
-					eclassLabels, eclass, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, eclass, mmNode);
 
 			if (nb.getSuperTypes().isEmpty()) {
 				cb.createEdge(ESUPER_TYPE, nbNode, eobject);
