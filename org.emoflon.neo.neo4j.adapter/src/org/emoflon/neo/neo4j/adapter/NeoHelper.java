@@ -155,7 +155,7 @@ public class NeoHelper {
 		List<NeoNode> tempNodes = new ArrayList<NeoNode>();
 
 		for (var n : mnb) {
-			var node = new NeoNode(n.getType().getName(), this.newConstraintNode(n.getName()));
+			var node = new NeoNode(n.getType().getName(), newConstraintNode(n.getName()));
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -177,7 +177,7 @@ public class NeoHelper {
 		return tempNodes;
 	}
     
-    public List<String> extractElementsOnlyInConclusionPattern(Collection<NeoNode> ifPattern, Collection<NeoNode> thenPattern) {
+    public static List<String> extractElementsOnlyInConclusionPattern(Collection<NeoNode> ifPattern, Collection<NeoNode> thenPattern) {
         List<String> temp = new ArrayList<String>();
         List<String> only = new ArrayList<String>();
         
@@ -199,7 +199,7 @@ public class NeoHelper {
         return only;
     }
 
-	public AtomicPattern getFlattenedPattern(AtomicPattern ap) {
+	public static AtomicPattern getFlattenedPattern(AtomicPattern ap) {
 		try {
 			return (AtomicPattern) EMSLFlattener.flatten(ap);
 		} catch (FlattenerException e) {
@@ -210,7 +210,7 @@ public class NeoHelper {
 
 	}
 
-	public Pattern getFlattenedPattern(Pattern p) {
+	public static Pattern getFlattenedPattern(Pattern p) {
 		try {
 			return EMSLFlattener.flattenPattern(p);
 		} catch (FlattenerException e) {

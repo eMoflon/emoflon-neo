@@ -51,13 +51,13 @@ public class NeoImplication {
 
 		this.mask = mask;
 
-		this.apIf = helper.getFlattenedPattern(apIf);
-		this.apThen = helper.getFlattenedPattern(apThen);
+		this.apIf = NeoHelper.getFlattenedPattern(apIf);
+		this.apThen = NeoHelper.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());
 		this.nodesThen = this.helper.extractNodesAndRelations(apThen.getNodeBlocks());
-        this.nodesThenButNotIf = this.helper.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
+        this.nodesThenButNotIf = NeoHelper.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
 
 	/**

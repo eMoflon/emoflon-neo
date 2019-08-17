@@ -80,7 +80,7 @@ public class NeoConstraint implements IConstraint {
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = ((PositiveConstraint) c.getBody()).getPattern();
-			ap = helper.getFlattenedPattern(ap);
+			ap = NeoHelper.getFlattenedPattern(ap);
 			var co = new NeoPositiveConstraint(ap, injective, builder, helper, mask);
 
 			returnStmt.addNodes(co.getNodes());
@@ -89,7 +89,7 @@ public class NeoConstraint implements IConstraint {
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = ((NegativeConstraint) c.getBody()).getPattern();
-			ap = helper.getFlattenedPattern(ap);
+			ap = NeoHelper.getFlattenedPattern(ap);
 			var co = new NeoNegativeConstraint(ap, injective, builder, helper, mask);
 
 			returnStmt.addNodes(co.getNodes());
@@ -124,7 +124,7 @@ public class NeoConstraint implements IConstraint {
 
 		if (c.getBody() instanceof PositiveConstraint) {
 			var ap = ((PositiveConstraint) c.getBody()).getPattern();
-			ap = helper.getFlattenedPattern(ap);
+			ap = NeoHelper.getFlattenedPattern(ap);
 			var co = new NeoPositiveConstraint(ap, injective, builder, helper, mask);
 
 			returnStmt.addNodes(co.getNodes());
@@ -133,7 +133,7 @@ public class NeoConstraint implements IConstraint {
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = ((NegativeConstraint) c.getBody()).getPattern();
-			ap = helper.getFlattenedPattern(ap);
+			ap = NeoHelper.getFlattenedPattern(ap);
 			var co = new NeoNegativeConstraint(ap, injective, builder, helper, mask);
 
 			returnStmt.addNodes(co.getNodes());
@@ -168,8 +168,8 @@ public class NeoConstraint implements IConstraint {
 			var implication = (Implication) c.getBody();
 			var apIf = implication.getPremise();
 			var apThen = implication.getConclusion();
-			apIf = helper.getFlattenedPattern(apIf);
-			apThen = helper.getFlattenedPattern(apThen);
+			apIf = NeoHelper.getFlattenedPattern(apIf);
+			apThen = NeoHelper.getFlattenedPattern(apThen);
 			var co = new NeoImplication(apIf, apThen, injective, builder, helper, mask);
 
 			return co.isSatisfied();
@@ -204,8 +204,8 @@ public class NeoConstraint implements IConstraint {
 			var implication = (Implication) c.getBody();
 			var apIf = implication.getPremise();
 			var apThen = implication.getConclusion();
-			apIf = helper.getFlattenedPattern(apIf);
-			apThen = helper.getFlattenedPattern(apThen);
+			apIf = NeoHelper.getFlattenedPattern(apIf);
+			apThen = NeoHelper.getFlattenedPattern(apThen);
 			var co = new NeoImplication(apIf, apThen, injective, builder, helper, mask);
 
 			return co.getQuery();

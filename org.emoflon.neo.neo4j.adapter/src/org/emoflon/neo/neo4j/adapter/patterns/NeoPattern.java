@@ -47,7 +47,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 		// execute the Pattern flatterer. Needed if the pattern use refinements or other
 		// functions. Returns the complete flattened Pattern.
-		this.p = helper.getFlattenedPattern(p);
+		this.p = NeoHelper.getFlattenedPattern(p);
 
 		// get all nodes, relations and properties from the pattern
 		extractNodesAndRelations();

@@ -41,7 +41,7 @@ public class NeoPositiveConstraint {
 		this.injective = injective;
 		this.mask = mask;
 
-		this.ap = helper.getFlattenedPattern(ap);
+		this.ap = NeoHelper.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(ap.getNodeBlocks()));
