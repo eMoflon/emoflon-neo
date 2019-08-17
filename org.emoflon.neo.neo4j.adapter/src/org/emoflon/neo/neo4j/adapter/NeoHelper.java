@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -32,8 +33,8 @@ public class NeoHelper {
 	 * initialize Helper
 	 */
 	public NeoHelper() {
-		this.matchElements = new ArrayList<String>();
-		this.optionalElements = new ArrayList<String>();
+		this.matchElements = new HashSet<String>();
+		this.optionalElements = new HashSet<String>();
 		this.cCount = 0;
 	}
 
@@ -55,8 +56,7 @@ public class NeoHelper {
 	 * @return name of the new node variable for including in queries
 	 */
 	public String newPatternNode(String name) {
-		if (!matchElements.contains(name))
-			matchElements.add(name);
+		matchElements.add(name);
 		return name;
 	}
 
@@ -71,8 +71,9 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newPatternRelation(String name, int index, List<String> relVar, String toName) {
-		matchElements.add(EMSLUtil.relationNameConvention(name, relVar, toName, index));
-		return EMSLUtil.relationNameConvention(name, relVar, toName, index);
+		var relName = EMSLUtil.relationNameConvention(name, relVar, toName, index);
+		matchElements.add(relName);
+		return relName;
 	}
 
 	/**
@@ -83,14 +84,12 @@ public class NeoHelper {
 	 * @return name of the new node variable for including in queries
 	 */
 	public String newConstraintNode(String name) {
-
 		if (matchElements.contains(name)) {
 			return name;
 		} else {
 			optionalElements.add(name + "_" + cCount);
 			return name + "_" + cCount;
 		}
-
 	}
 
 	/**
@@ -104,11 +103,12 @@ public class NeoHelper {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String newConstraintReference(String name, int index, List<String> relVar, String toName) {
-		if (matchElements.contains(EMSLUtil.relationNameConvention(name, relVar, toName, index))) {
-			return EMSLUtil.relationNameConvention(name, relVar, toName, index);
+		var relName = EMSLUtil.relationNameConvention(name, relVar, toName, index);
+		if (matchElements.contains(relName)) {
+			return relName;
 		} else {
-			optionalElements.add(EMSLUtil.relationNameConvention(name, relVar, toName, index) + "_" + cCount);
-			return EMSLUtil.relationNameConvention(name, relVar, toName, index) + "_" + cCount;
+			optionalElements.add(relName + "_" + cCount);
+			return relName + "_" + cCount;
 		}
 	}
 
@@ -119,11 +119,8 @@ public class NeoHelper {
 	 * @return all Nodes from pattern and constraints
 	 */
 	public Collection<String> getNodes() {
-		var list = matchElements;
-		for (String node : optionalElements) {
-			if (!list.contains(node))
-				list.add(node);
-		}
+		var list = new HashSet<>(matchElements);
+		list.addAll(optionalElements);
 		return list;
 	}
 
@@ -133,11 +130,7 @@ public class NeoHelper {
 	 * @return all Nodes from the pattern
 	 */
 	public Collection<String> getMatchNodes() {
-		var list = matchElements;
-		for (String node : matchElements) {
-			list.add(node);
-		}
-		return list;
+		return matchElements;
 	}
 
 	/**
@@ -146,11 +139,7 @@ public class NeoHelper {
 	 * @return all Nodes from the constraints
 	 */
 	public Collection<String> getOptionalMatchNodes() {
-		var list = optionalElements;
-		for (String node : optionalElements) {
-			list.add(node);
-		}
-		return list;
+		return optionalElements;
 	}
 
 	/**
@@ -163,11 +152,9 @@ public class NeoHelper {
 	 *         the AtomicPattern
 	 */
 	public List<NeoNode> extractNodesAndRelations(EList<ModelNodeBlock> mnb) {
-
 		List<NeoNode> tempNodes = new ArrayList<NeoNode>();
 
 		for (var n : mnb) {
-
 			var node = new NeoNode(n.getType().getName(), this.newConstraintNode(n.getName()));
 
 			n.getProperties().forEach(p -> node.addProperty(//
@@ -191,7 +178,6 @@ public class NeoHelper {
 	}
     
     public List<String> extractElementsOnlyInConclusionPattern(Collection<NeoNode> ifPattern, Collection<NeoNode> thenPattern) {
-        
         List<String> temp = new ArrayList<String>();
         List<String> only = new ArrayList<String>();
         
@@ -246,5 +232,4 @@ public class NeoHelper {
 			optionalElements.remove(name);
 		}
 	}
-
 }

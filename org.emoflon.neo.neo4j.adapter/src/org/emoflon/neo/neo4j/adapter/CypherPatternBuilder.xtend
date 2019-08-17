@@ -39,9 +39,10 @@ class CypherPatternBuilder {
 	 ****************************/
 	def static String readQuery(Collection<NeoNode> nodes, boolean injective, int limit, NeoMask mask) {
 		'''
-		«matchQuery(nodes)»
-		«whereQuery(nodes, injective, mask)»
-		«returnQuery(nodes)» «IF limit > 0»LIMIT «limit»«ENDIF»'''
+			«matchQuery(nodes)»
+			«whereQuery(nodes, injective, mask)»
+			«returnQuery(nodes)» «IF limit > 0»LIMIT «limit»«ENDIF»
+		'''
 	}
 	
 	def static String readQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask){
@@ -50,32 +51,37 @@ class CypherPatternBuilder {
 
 	def static String readQuery_copyPaste(Collection<NeoNode> nodes, boolean injective) {
 		'''
-		«matchQuery(nodes)»
-		«whereQuery(nodes,injective, new EmptyMask)»
-		«returnQuery_copyPaste(nodes)»'''
+			«matchQuery(nodes)»
+			«whereQuery(nodes,injective, new EmptyMask)»
+			«returnQuery_copyPaste(nodes)»
+		'''
 	}
 
 	def static String getDataQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective) {
 		'''
-		«matchQueryForData(nodes, match)»
-		«isStillValid_whereQuery(nodes, match)»
-		«returnDataQuery(nodes)»'''
+			«matchQueryForData(nodes, match)»
+			«isStillValid_whereQuery(nodes, match)»
+			«returnDataQuery(nodes)»
+		'''
 	}
 
 	def static String matchQuery(Collection<NeoNode> nodes) {
-		'''MATCH «FOR n : nodes SEPARATOR ', '»
-			«IF n.relations.size > 0 »
-				«FOR r:n.relations SEPARATOR ', '»«sourceNode(n)»«directedRelation(r)»«targetNode(r)»«ENDFOR»
-			«ELSE»«queryNode(n)»
-			«ENDIF»
-		«ENDFOR»'''
+		'''
+			MATCH 
+			«FOR n : nodes SEPARATOR ', '»
+				«IF n.relations.size > 0 »
+					«FOR r:n.relations SEPARATOR ', '»«sourceNode(n)»«directedRelation(r)»«targetNode(r)»«ENDFOR»
+				«ELSE»
+					«queryNode(n)»
+				«ENDIF»
+			«ENDFOR»
+		'''
 	}
 
 	def static String whereQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask) {
 		var injBlock = "";
-		if(injective && nodes.size > 1){
+		if(injective && nodes.size > 1)
 			injBlock = injectiveBlock(nodes);
-		}
 		
 		var maskBlock = maskBlock(nodes, mask)
 						
@@ -96,24 +102,26 @@ class CypherPatternBuilder {
 
 	def static String matchQueryForIsStillValid(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
-		MATCH «FOR n : nodes SEPARATOR ', '»
-						«IF n.relations.size == 0 || n.properties.size > 0»
-							«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
-						«ENDIF»
-						«FOR r : n.relations SEPARATOR ', '»
-							(:«n.classType»)-[«r.varName»]->(:«r.toNodeLabel»)
-						«ENDFOR»
-		«ENDFOR»'''
+			MATCH «FOR n : nodes SEPARATOR ', '»
+			«IF n.relations.size == 0 || n.properties.size > 0»
+				«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
+			«ENDIF»
+			«FOR r : n.relations SEPARATOR ', '»
+				(:«n.classType»)-[«r.varName»]->(:«r.toNodeLabel»)
+			«ENDFOR»
+			«ENDFOR»
+		'''
 	}
-
+ 
 	def static String matchQueryForData(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
-		MATCH «FOR n : nodes SEPARATOR ', '»
+			MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 			«FOR r : n.relations SEPARATOR ', '»
 				(«n.varName»:«n.classType»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
 			«ENDFOR»
-			«ENDFOR»'''
+			«ENDFOR»
+		'''
 	}
 
 	def static String injectiveBlock(Collection<NeoNode> nodes) {
@@ -129,12 +137,13 @@ class CypherPatternBuilder {
 
 	def static String returnQuery(Collection<NeoNode> nodes) {
 		'''
-		RETURN «FOR n : nodes SEPARATOR ',\n '»
+			RETURN «FOR n : nodes SEPARATOR ',\n '»
 			id(«n.varName») AS «n.varName»«IF removePaths(n.relations).size > 0», «ENDIF»
 			«FOR r : removePaths(n.relations) SEPARATOR ', '»
 				id(«r.varName») AS «r.varName»
 			«ENDFOR»
-			«ENDFOR»'''
+			«ENDFOR»
+		'''
 	}
 	
 	private def static removePaths(Collection<NeoRelation> relations){
@@ -143,12 +152,13 @@ class CypherPatternBuilder {
 
 	def static String returnQuery_copyPaste(Collection<NeoNode> nodes) {
 		'''
-		RETURN «FOR n : nodes SEPARATOR ',\n '»
+			RETURN «FOR n : nodes SEPARATOR ',\n '»
 			«n.varName»«IF removePaths(n.relations).size > 0», «ENDIF»
 			«FOR r : removePaths(n.relations) SEPARATOR ', '»
 				«r.varName»
 			«ENDFOR»
-			«ENDFOR»'''
+			«ENDFOR»
+		'''
 	}
 
 	def static String returnQuery(Collection<NeoNode> nodes, int limit) {
@@ -164,19 +174,21 @@ class CypherPatternBuilder {
 	 ****************************/
 	def static String isStillValidQuery(Collection<NeoNode> nodes, NeoMatch match, boolean injective) {
 		'''
-		«matchQuery(nodes)»
-		«isStillValid_whereQuery(nodes, match)»
-		«isStillValid_returnQuery()»'''
+			«matchQuery(nodes)»
+			«isStillValid_whereQuery(nodes, match)»
+			«isStillValid_returnQuery()»
+		'''
 	}
 
 	def static String returnDataQuery(Collection<NeoNode> nodes) {
 		'''
-		RETURN «FOR n : nodes SEPARATOR ',\n '»
+			RETURN «FOR n : nodes SEPARATOR ',\n '»
 			«n.varName» AS «n.varName»«IF removePaths(n.relations).size > 0»,«ENDIF»
 			«FOR r : removePaths(n.relations) SEPARATOR ',\n  '»
 				«r.varName» AS «r.varName»
 			«ENDFOR»
-			«ENDFOR»'''
+			«ENDFOR»
+		'''
 	}
 
 	def static String isStillValid_whereQuery(Collection<NeoNode> nodes, NeoMatch match) {
@@ -187,14 +199,15 @@ class CypherPatternBuilder {
 
 	def static String nodeIdBlock(Collection<NeoNode> nodes, NeoMatch match) {
 		'''
-		«FOR n : nodes SEPARATOR " AND "»
+			«FOR n : nodes SEPARATOR " AND "»
 			id(«n.varName») = «match.getIdForNode(n)»
 			«IF n.relations.size > 0»
 				«FOR r : removePaths(n.relations) BEFORE " AND " SEPARATOR " AND "»
 					id(«r.varName») = «match.getIdForRelation(r)»
 				«ENDFOR»
 			«ENDIF»
-			«ENDFOR»'''
+			«ENDFOR»
+		'''
 	}
 
 	def static String isStillValid_returnQuery() {
@@ -207,49 +220,53 @@ class CypherPatternBuilder {
 	def static String constraintQuery(Collection<NeoNode> nodes, Collection<String> helperNodes, String matchCond,
 		String whereCond, boolean injective, int limit, NeoMask mask) {
 
-		'''«matchQuery(nodes)»
-		«whereQuery(nodes, injective, mask)»
-		«withQuery(nodes)»
-		«matchCond»
-		«constraint_withQuery(helperNodes)»
-		WHERE «whereCond»
-		«constraint_withQuery(helperNodes)»
-		«IF limit>0»«returnQuery(nodes, limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
+		'''
+			«matchQuery(nodes)»
+			«whereQuery(nodes, injective, mask)»
+			«withQuery(nodes)»
+			«matchCond»
+			«constraint_withQuery(helperNodes)»
+			WHERE «whereCond»
+			«constraint_withQuery(helperNodes)»
+			«IF limit>0»«returnQuery(nodes, limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
 		'''
 	}
 
 	def static String constraintQuery_copyPaste(Collection<NeoNode> nodes, Collection<String> helperNodes,
 		String matchCond, String whereCond, boolean injective, int limit) {
 
-		'''«matchQuery(nodes)»
-		«whereQuery(nodes, injective, new EmptyMask)»
-		«withQuery(nodes)»
-		«matchCond»
-		«constraint_withQuery(helperNodes)»
-		WHERE «whereCond»
-		«constraint_withQuery(helperNodes)»
-		«IF limit>0»«returnQuery_copyPaste(nodes, limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»
+		'''
+			«matchQuery(nodes)»
+			«whereQuery(nodes, injective, new EmptyMask)»
+			«withQuery(nodes)»
+			«matchCond»
+			«constraint_withQuery(helperNodes)»
+			WHERE «whereCond»
+			«constraint_withQuery(helperNodes)»
+			«IF limit>0»«returnQuery_copyPaste(nodes, limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»
 		'''
 	}
 
 	def static String constraintQuery_isStillValid(Collection<NeoNode> nodes, Collection<String> helperNodes,
 		String matchCond, String whereCond, boolean injective, NeoMatch match) {
-
-		'''«matchQuery(nodes)»
-		«isStillValid_whereQuery(nodes, match)»
-		«withQuery(nodes)»
-		«matchCond»
-		«constraint_withQuery(helperNodes)»
-		WHERE «whereCond»
-		«constraint_withQuery(helperNodes)»
-		RETURN TRUE
+		'''
+			«matchQuery(nodes)»
+			«isStillValid_whereQuery(nodes, match)»
+			«withQuery(nodes)»
+			«matchCond»
+			«constraint_withQuery(helperNodes)»
+			WHERE «whereCond»
+			«constraint_withQuery(helperNodes)»
+			RETURN TRUE
 		'''
 	}
 
 	def static String constraintQuery_Satisfied(String optionalMatch, String whereClause) {
-		'''«optionalMatch»
-		WHERE «whereClause»
-		RETURN TRUE'''
+		'''
+			«optionalMatch»
+			WHERE «whereClause»
+			RETURN TRUE
+		'''
 	}
 
 	def static String constraint_matchQuery(Collection<NeoNode> nodes, boolean injective, int idForScope, NeoMask mask) {
@@ -274,28 +291,31 @@ class CypherPatternBuilder {
 	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
 		Collection<String> nodesMap, boolean injective, NeoMask mask) {
 		'''
-		«constraint_ifThen_matchQuery(nodes,nodes2,injective, mask)»
-		«constraint_withQuery(nodesMap)»
-		WHERE «whereNegativeConditionQuery(nodes2)» 
-		«constraint_returnQuery(nodesMap)»'''
+			«constraint_ifThen_matchQuery(nodes,nodes2,injective, mask)»
+			«constraint_withQuery(nodesMap)»
+			WHERE «whereNegativeConditionQuery(nodes2)» 
+			«constraint_returnQuery(nodesMap)»
+		'''
 	}
 	
 	def static String constraint_ifThen_readQuery_satisfy(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen, Collection<String> nodesThenButNotIf, Collection<String> nodesMap,
         boolean injective, NeoMask mask) {
         '''
-        «constraint_ifThen_matchQuery(nodesIf,nodesThen,injective, mask)»
-        «constraint_withQuery(nodesMap)»
-        WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
-        RETURN FALSE'''
+        	«constraint_ifThen_matchQuery(nodesIf,nodesThen,injective, mask)»
+        	«constraint_withQuery(nodesMap)»
+        	WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
+        	RETURN FALSE
+        '''
     }
 
 	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
 		boolean injective, NeoMask mask) {
-		'''«matchQuery(nodes)»
-		«whereQuery(nodes,injective, mask)»
-		«withQuery(nodes)»
-		OPTIONAL «matchQuery(nodes2)»
-		«whereQuery(nodes2, injective, mask)»
+		'''
+			«matchQuery(nodes)»
+			«whereQuery(nodes,injective, mask)»
+			«withQuery(nodes)»
+			OPTIONAL «matchQuery(nodes2)»
+			«whereQuery(nodes2, injective, mask)»
 		'''
 	}
 
@@ -312,33 +332,39 @@ class CypherPatternBuilder {
 	 ****************************/
 	def static String conditionQuery(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
 		Collection<String> helperNodes, boolean isNegated, int limit) {
-		'''«matchQuery(nodes)»
-	 	«withQuery(nodes)»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	«IF limit>0»«returnQuery(nodes,limit)»«ELSE»«returnQuery(nodes)»«ENDIF»'''
+		'''
+			«matchQuery(nodes)»
+			«withQuery(nodes)»
+			«optionalMatches»
+			«constraint_withQuery(helperNodes)»
+			WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+			«IF limit>0»«returnQuery(nodes,limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
+	 	'''
 	}
 
 	def static String conditionQuery_copyPaste(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
 		Collection<String> helperNodes, boolean isNegated, int limit) {
-		'''«matchQuery(nodes)»
-	 	«withQuery(nodes)»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	«IF limit>0»«returnQuery_copyPaste(nodes,limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»'''
+		'''
+			«matchQuery(nodes)»
+			«withQuery(nodes)»
+			«optionalMatches»
+			«constraint_withQuery(helperNodes)»
+			WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+			«IF limit>0»«returnQuery_copyPaste(nodes,limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»
+	 	'''
 	}
 
 	def static String conditionQuery_isStillValid(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
 		Collection<String> helperNodes, boolean isNegated, NeoMatch match) {
-		'''«matchQuery(nodes)»
-	 	«isStillValid_whereQuery(nodes,match)»
-	 	«withQuery(nodes)»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	RETURN TRUE'''
+		'''
+			«matchQuery(nodes)»
+			«isStillValid_whereQuery(nodes,match)»
+			«withQuery(nodes)»
+			«optionalMatches»
+			«constraint_withQuery(helperNodes)»
+			WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+			RETURN TRUE
+	 	'''
 	}
 	
 	def static String whereNegativeConditionQuery_String(Collection<String> nodes) {
@@ -385,33 +411,33 @@ class CypherPatternBuilder {
 	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
 	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK
 	 ) {
-	 	
 	 	'''
-	 	«matchQuery(nodes)»
-	 	«isStillValid_whereQuery(nodes, match)»
-	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
-	 	«ruleExecution_createQuery(nodesR,refR)»
-	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
+	 		«matchQuery(nodes)»
+	 		«isStillValid_whereQuery(nodes, match)»
+	 		«ruleExecution_deleteQuery(spo, nodesL, refL)»
+	 		«ruleExecution_createQuery(nodesR,refR)»
+	 		«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
 	 	'''
-	 	
 	 }
 	 
 	 def static String ruleExecution_deleteQuery(boolean spo, Collection<NeoNode> nodesL, Collection<NeoRelation> refL) {
-	 	'''«IF nodesL.size > 0 || refL.size > 0»«IF spo»DETACH «ENDIF»DELETE «FOR r: refL SEPARATOR ', '»«r.varName»«ENDFOR»
-	 			«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«ENDFOR»«ENDIF»'''
+	 	'''
+	 		«IF nodesL.size > 0 || refL.size > 0»«IF spo»DETACH «ENDIF»DELETE «FOR r: refL SEPARATOR ', '»«r.varName»«ENDFOR»
+	 		«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«ENDFOR»«ENDIF»
+	 	'''
 	 }
 	 
 	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
-	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
-	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»'''
+	 	'''
+	 		«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
+	 		«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»
+	 	'''
 	 }
 	 
 	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesK, Collection<NeoRelation> refK, Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
-	 	'''RETURN «FOR n: nodesK SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
-	 	«IF refK.size > 0 », «ENDIF»«FOR r: refK SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»
 	 	'''
-	 	/* «IF nodesR.size > 0 || refR.size > 0», «FOR n: nodesR SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
-	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»«ENDIF»*/
+			RETURN «FOR n: nodesK SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
+			«IF refK.size > 0 », «ENDIF»«FOR r: refK SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»
+	 	'''
 	 }
-
 }

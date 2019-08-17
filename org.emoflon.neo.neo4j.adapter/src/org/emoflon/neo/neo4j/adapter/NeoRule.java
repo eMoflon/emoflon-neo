@@ -240,7 +240,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 			// Create Query
 			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
-					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(), injective, limit, mask);
+					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(), injective, limit, mask);
 
 			logger.debug(cypherQuery);
 
@@ -322,7 +322,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 				// Create Query
 				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
-						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(),
 						injective, m);
 
 				logger.debug(cypherQuery);

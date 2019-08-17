@@ -15,7 +15,6 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
  *
  */
 public class NeoCondition {
-
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private Optional<IBuilder> builder;
 	private NeoHelper helper;

@@ -129,7 +129,7 @@ public class NeoConstraint implements IConstraint {
 
 			returnStmt.addNodes(co.getNodes());
 			returnStmt.addOptionalMatch(co.getQueryString_MatchCondition());
-			returnStmt.addWhereClause(co.getQueryString_WhereConditon());
+			returnStmt.addWhereClause(co.getQueryString_WhereCondition());
 
 		} else if (c.getBody() instanceof NegativeConstraint) {
 			var ap = ((NegativeConstraint) c.getBody()).getPattern();

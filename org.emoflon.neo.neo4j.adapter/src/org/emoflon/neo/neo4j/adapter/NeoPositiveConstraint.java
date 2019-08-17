@@ -44,8 +44,7 @@ public class NeoPositiveConstraint {
 		this.ap = helper.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodes = new ArrayList<>();
-		this.nodes = this.helper.extractNodesAndRelations(ap.getNodeBlocks());
+		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(ap.getNodeBlocks()));
 	}
 
 	/**
@@ -112,7 +111,7 @@ public class NeoPositiveConstraint {
 	 * @return WHERE xy IS NOT NULL AND yz IS NOT NULL (query part for this
 	 *         constraint)
 	 */
-	public String getQueryString_WhereConditon() {
+	public String getQueryString_WhereCondition() {
 		return CypherPatternBuilder.wherePositiveConditionQuery(nodes);
 	}
 
