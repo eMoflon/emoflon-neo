@@ -19,23 +19,32 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import java.util.HashSet
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import java.util.List
 
 class TGGCompiler {
-	BiMap<MetamodelNodeBlock, String> typeMap;
+	TripleGrammar tgg
+	OperationType opType
+	BiMap<MetamodelNodeBlock, String> typeMap
+	String importStatements
 	
-	def String compile(TripleGrammar pTGG) {
-		val allMetamodels = pTGG.srcMetamodels
-		allMetamodels.addAll(pTGG.trgMetamodels)
-		val resourcesToImport = allMetamodels.map[it.eResource.URI].stream.distinct.collect(Collectors.toSet())
-
-		mapTypeNames(allMetamodels)
-					
-		'''
-			«FOR uri : resourcesToImport»
-				import "«uri»"
-			«ENDFOR»
+	new(TripleGrammar pTGG) {
+		tgg = pTGG
 		
-			«FOR rule : pTGG.rules.map[EMSLFlattener.flatten(it) as TripleRule]»
+		val allMetamodels = tgg.srcMetamodels
+		allMetamodels.addAll(tgg.trgMetamodels)
+		
+		buildImportStatement(allMetamodels)
+		
+		mapTypeNames(allMetamodels)
+	}
+	
+	def String compile(OperationType pOpType) {
+		opType = pOpType
+		
+		'''
+			«importStatements»
+		
+			«FOR rule : tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]»
 				«compileRule(rule)»
 			«ENDFOR»
 		'''
@@ -63,6 +72,15 @@ class TGGCompiler {
 			else
 				typeMap.put(type, type.name)
 		}
+	}
+	
+	private def buildImportStatement(List<Metamodel> pMetamodels) {
+		val resourcesToImport = pMetamodels.map[it.eResource.URI].stream.distinct.collect(Collectors.toSet())
+		importStatements = '''
+			«FOR uri : resourcesToImport»
+				import "«uri»"
+			«ENDFOR»
+		'''
 	}
 	
 	private def compileRule(TripleRule pRule) {
