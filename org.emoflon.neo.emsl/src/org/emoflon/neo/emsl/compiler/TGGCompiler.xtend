@@ -18,6 +18,7 @@ import java.util.Collection
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import java.util.HashSet
+import org.emoflon.neo.emsl.eMSL.Correspondence
 
 class TGGCompiler {
 	BiMap<MetamodelNodeBlock, String> typeMap;
@@ -25,11 +26,12 @@ class TGGCompiler {
 	def String compile(TripleGrammar pTGG) {
 		val allMetamodels = pTGG.srcMetamodels
 		allMetamodels.addAll(pTGG.trgMetamodels)
+		val resourcesToImport = allMetamodels.map[it.eResource.URI].stream.distinct.collect(Collectors.toSet())
 
 		mapTypeNames(allMetamodels)
 					
 		'''
-			«FOR uri : allMetamodels.map[it.eResource.URI].stream.distinct.collect(Collectors.toList())»
+			«FOR uri : resourcesToImport»
 				import "«uri»"
 			«ENDFOR»
 		
@@ -65,25 +67,35 @@ class TGGCompiler {
 	
 	private def compileRule(TripleRule pRule) {
 		
+		val srcToCorr = new HashMap()
+		for(Correspondence corr : pRule.correspondences) {
+			if(!srcToCorr.containsKey(corr.source))
+				srcToCorr.put(corr.source, new HashSet())
+			srcToCorr.get(corr.source).add(corr)
+		}
+		
 		'''
 			rule «pRule.name» {
 				«FOR srcBlock : pRule.srcNodeBlocks»
-					«compileModelNodeBlock(srcBlock)»
+					«compileModelNodeBlock(srcBlock, srcToCorr.get(srcBlock))»
 				«ENDFOR»
 
 				«FOR trgBlock : pRule.trgNodeBlocks»
-					«compileModelNodeBlock(trgBlock)»
+					«compileModelNodeBlock(trgBlock, null)»
 				«ENDFOR»
 			}
 		'''
 	}
 	
-	private def compileModelNodeBlock(ModelNodeBlock pNodeBlock) {
+	private def compileModelNodeBlock(ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs) {
 		'''
 			«IF pNodeBlock.action?.op == ActionOperator.CREATE»++ «ENDIF»«pNodeBlock.name»:«typeMap.get(pNodeBlock.type)» {
 				«FOR relation : pNodeBlock.relations»
 					«compileRelationStatement(relation)»
 				«ENDFOR»
+				«IF pCorrs !== null»«FOR corr : pCorrs»
+					«compileCorrespondence(corr)»
+				«ENDFOR»«ENDIF»
 				«FOR property : pNodeBlock.properties»
 					«compilePropertyStatement(property)»
 				«ENDFOR»
@@ -101,6 +113,15 @@ class TGGCompiler {
 				«ENDFOR»
 			}
 			«ENDIF»
+		'''
+	}
+	
+	private def compileCorrespondence(Correspondence pCorrespondence) {
+		'''
+			«IF pCorrespondence.action?.op == ActionOperator.CREATE»++ «ENDIF»-corr->«pCorrespondence.target.name»
+			{
+				._type_ := "«pCorrespondence.type.name»"
+			}
 		'''
 	}
 	
