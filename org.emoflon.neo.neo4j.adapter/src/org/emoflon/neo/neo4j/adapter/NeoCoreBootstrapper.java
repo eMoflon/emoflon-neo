@@ -43,18 +43,19 @@ public class NeoCoreBootstrapper {
 	static final String ABSTRACT_PROP = "abstract";
 	static final String _TYPE_PROP = "_type_";
 	static final String ISCOMPOSITION_PROP = "isComposition";
+	static final String ISCONTAINMENT_PROP = "isContainment";
 
 	// Meta attributes and relations
 	static final String CONFORMS_TO_PROP = "conformsTo";
 
 	// Lists of properties and labels for meta types
-	private static final List<String> LABELS_FOR_AN_ECLASS = //
+	static final List<String> LABELS_FOR_AN_ECLASS = //
 			List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
-	private static final List<String> LABELS_FOR_AN_EATTRIBUTE = //
+	static final List<String> LABELS_FOR_AN_EATTRIBUTE = //
 			List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
-	private static final List<String> LABELS_FOR_AN_EREFERENCE = //
+	static final List<String> LABELS_FOR_AN_EREFERENCE = //
 			List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT, EOBJECT);
-	private static final List<String> LABELS_FOR_AN_EDATATYPE = //
+	static final List<String> LABELS_FOR_AN_EDATATYPE = //
 			List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
 
 	static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE));
@@ -99,6 +100,9 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> isCompositionProps = List.of(new NeoProp(NAME_PROP, ISCOMPOSITION_PROP));
 	private static final List<String> isCompositionLabels = LABELS_FOR_AN_EATTRIBUTE;
 
+	private static final List<NeoProp> isContainmentProps = List.of(new NeoProp(NAME_PROP, ISCONTAINMENT_PROP));
+	private static final List<String> isContainmentLabels = LABELS_FOR_AN_EATTRIBUTE;
+
 	static final List<NeoProp> eDataTypeProps = List.of(new NeoProp(NAME_PROP, EDATA_TYPE));
 	static final List<String> eDataTypeLabels = LABELS_FOR_AN_ECLASS;
 
@@ -129,7 +133,7 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> corrProps = List.of(new NeoProp(NAME_PROP, CORR));
 	private static final List<String> corrLabels = LABELS_FOR_AN_EREFERENCE;
 
-	private static final List<NeoProp> econtainerProps = List.of(new NeoProp(NAME_PROP, CORR));
+	private static final List<NeoProp> econtainerProps = List.of(new NeoProp(NAME_PROP, ECONTAINER));
 	private static final List<String> econtainerLabels = LABELS_FOR_AN_EREFERENCE;
 
 	private static final List<NeoProp> eAttributesProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTES));
@@ -169,6 +173,7 @@ public class NeoCoreBootstrapper {
 			var name = cb.createNodeWithContAndType(nameProps, nameLabels, eattr, neocore);
 			var _type_ = cb.createNodeWithContAndType(_type_Props, _type_Labels, eattr, neocore);
 			var isComposition = cb.createNodeWithContAndType(isCompositionProps, isCompositionLabels, eattr, neocore);
+			var isContainment = cb.createNodeWithContAndType(isContainmentProps, isContainmentLabels, eattr, neocore);
 			var eDataType = cb.createNodeWithContAndType(eDataTypeProps, eDataTypeLabels, eclass, neocore);
 			var eAttrEle = cb.createNodeWithContAndType(eAttrEleProps, eAttrEleLabels, eclass, neocore);
 			var eString = cb.createNodeWithContAndType(eStringProps, eStringLabels, eDataType, neocore);
@@ -204,6 +209,8 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EATTRIBUTES, econtainer, isComposition);
 			cb.createEdge(EATTRIBUTES, eref, isComposition);
 			cb.createEdge(EATTRIBUTE_TYPE, isComposition, eBoolean);
+			cb.createEdge(EATTRIBUTES, eref, isContainment);
+			cb.createEdge(EATTRIBUTE_TYPE, isContainment, eBoolean);
 			cb.createEdge(EREFERENCES, eattr, eAttrType);
 			cb.createEdge(EREFERENCE_TYPE, eAttrType, eDataType);
 			cb.createEdge(EREFERENCES, eobject, metaType);

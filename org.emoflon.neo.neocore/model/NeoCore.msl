@@ -5,7 +5,10 @@ metamodel org.emoflon.neo.neocore {
 	}
 	
 	EReference : EStructuralFeature, EAttributedElement {
-		.isComposition : EBoolean
+		// <>- and <+>-
+		.isContainment:EBoolean
+		// Only <+>-
+		.isComposition:EBoolean
 		-eReferenceType(1..1)-> EClass
 	}
 	
