@@ -89,7 +89,7 @@ public class CreateCypherQuery extends AbstractHandler {
 					Object o = nodes.get(0);
 					if (o instanceof EObjectNode) {
 						eobNode = Optional.of((EObjectNode) o);
-						eobNode.ifPresent(n -> setBaseEnabled(NeoCoreBuilder.canBeCoppiedToClipboard(n.getEClass())));
+						eobNode.ifPresent(n -> setBaseEnabled(NeoCoreBuilder.canBeCopiedToClipboard(n.getEClass())));
 						return;
 					}
 				}

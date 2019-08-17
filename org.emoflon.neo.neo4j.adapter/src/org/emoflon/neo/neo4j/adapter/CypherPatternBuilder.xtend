@@ -279,6 +279,15 @@ class CypherPatternBuilder {
 		WHERE «whereNegativeConditionQuery(nodes2)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
+	
+	def static String constraint_ifThen_readQuery_satisfy(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen, Collection<String> nodesThenButNotIf, Collection<String> nodesMap,
+        boolean injective, NeoMask mask) {
+        '''
+        «constraint_ifThen_matchQuery(nodesIf,nodesThen,injective, mask)»
+        «constraint_withQuery(nodesMap)»
+        WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
+        RETURN FALSE'''
+    }
 
 	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
 		boolean injective, NeoMask mask) {
@@ -331,6 +340,10 @@ class CypherPatternBuilder {
 	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
 	 	RETURN TRUE'''
 	}
+	
+	def static String whereNegativeConditionQuery_String(Collection<String> nodes) {
+        '''«FOR n:nodes SEPARATOR ' OR '»«n» IS NULL«ENDFOR»'''
+    }
 
 	def static String wherePositiveConstraintQuery(int id) {
 		'''m_«id» > 0'''
@@ -362,5 +375,43 @@ class CypherPatternBuilder {
 
 		'''WITH «ret» count(«nodes.get(0).varName») as m_«id»'''
 	}
+	
+	/*****************************
+	 * Basic Rule Functions
+	 ****************************/
+	 
+	 
+	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, 
+	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
+	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK
+	 ) {
+	 	
+	 	'''
+	 	«matchQuery(nodes)»
+	 	«isStillValid_whereQuery(nodes, match)»
+	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
+	 	«ruleExecution_createQuery(nodesR,refR)»
+	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
+	 	'''
+	 	
+	 }
+	 
+	 def static String ruleExecution_deleteQuery(boolean spo, Collection<NeoNode> nodesL, Collection<NeoRelation> refL) {
+	 	'''«IF nodesL.size > 0 || refL.size > 0»«IF spo»DETACH «ENDIF»DELETE «FOR r: refL SEPARATOR ', '»«r.varName»«ENDFOR»
+	 			«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«ENDFOR»«ENDIF»'''
+	 }
+	 
+	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
+	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
+	 			«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»'''
+	 }
+	 
+	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesK, Collection<NeoRelation> refK, Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
+	 	'''RETURN «FOR n: nodesK SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
+	 	«IF refK.size > 0 », «ENDIF»«FOR r: refK SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»
+	 	'''
+	 	/* «IF nodesR.size > 0 || refR.size > 0», «FOR n: nodesR SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
+	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»«ENDIF»*/
+	 }
 
 }

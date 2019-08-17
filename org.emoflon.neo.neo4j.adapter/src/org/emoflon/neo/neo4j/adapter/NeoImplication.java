@@ -6,17 +6,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.constraints.IIfElseConstraint;
 import org.emoflon.neo.engine.api.rules.IMatch;
 
 /**
- * Class representing an Implaction (if/then) constraint, storing all relevant
+ * Class representing an Implication (if/then) constraint, storing all relevant
  * data, creates and runs the query for checking the constraint
  * 
  * @author Jannik Hinz
  *
  */
-public class NeoImplication implements IIfElseConstraint {
+public class NeoImplication {
 
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private IBuilder builder;
@@ -27,6 +26,7 @@ public class NeoImplication implements IIfElseConstraint {
 	private String name;
 	private List<NeoNode> nodesIf;
 	private List<NeoNode> nodesThen;
+    private List<String> nodesThenButNotIf;
 
 	private NeoMask mask;
 
@@ -54,10 +54,9 @@ public class NeoImplication implements IIfElseConstraint {
 		this.apThen = helper.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodesIf = new ArrayList<>();
 		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());
-		this.nodesThen = new ArrayList<>();
 		this.nodesThen = this.helper.extractNodesAndRelations(apThen.getNodeBlocks());
+        this.nodesThenButNotIf = this.helper.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
 
 	/**
@@ -123,29 +122,12 @@ public class NeoImplication implements IIfElseConstraint {
 	 * @return true if the pattern matcher not find any violation in the then clause
 	 *         and else false
 	 */
-	@Override
 	public boolean isSatisfied() {
 
-		if (getViolations() == null)
-			return true;
-		else
-			return false;
-
-	}
-
-	/**
-	 * Creates and runs the Query in the database for checking the if/then
-	 * constraint violation
-	 * 
-	 * @return NeoMatches return a list of violating Matches of the constraint
-	 */
-	@Override
-	public Collection<IMatch> getViolations() {
 		logger.info("Check constraint: " + name);
 
 		// create query
-		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery(nodesIf, nodesThen, helper.getNodes(),
-				injective, mask);
+		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf, helper.getNodes(), injective, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -159,14 +141,19 @@ public class NeoImplication implements IIfElseConstraint {
 
 		if (matches.isEmpty()) {
 			logger.info("No invalid matches found. Constraint: " + name + " is complied!");
-			return null;
+			return true;
 		} else {
 			logger.info("Invalid matches found. Constraint: " + name + " is NOT complied!");
-			return matches;
+			return false;
 		}
 	}
 
+
+    /**
+     * Return the query for outline copy to clipboard function
+     * @return String query for outline copy to clipboard
+     */
 	public String getQuery() {
-		return CypherPatternBuilder.constraint_ifThen_readQuery(nodesIf, nodesThen, helper.getNodes(), injective, mask);
+		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf, helper.getNodes(), injective, mask);
 	}
 }

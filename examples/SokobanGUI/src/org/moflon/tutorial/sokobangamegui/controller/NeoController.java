@@ -14,7 +14,6 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.emsl.util.FlattenerException;
-import org.emoflon.neo.engine.api.rules.RuleApplicationSemantics;
 import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
@@ -233,7 +232,7 @@ public class NeoController implements IController {
 		var access = api1.getRule_DeleteFigure();
 
 		access.rule().determineMatches().forEach(m -> {
-			access.rule().apply(m, RuleApplicationSemantics.SinglePushOut);
+			access.rule().apply(m);
 		});
 	}
 
