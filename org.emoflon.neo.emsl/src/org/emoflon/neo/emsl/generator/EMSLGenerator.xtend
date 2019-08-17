@@ -56,11 +56,13 @@ class EMSLGenerator extends AbstractGenerator {
 		.join("/");
 		var emslSpec = resource.contents.get(0) as EMSL_Spec
 		
+		val project = ResourcesPlugin.workspace.root.getProject(resource.URI.segment(1))
 		emslSpec.entities.filter[it instanceof TripleGrammar]
 						 .map[it as TripleGrammar]
 						 .forEach[
 						 	val TGGCompiler compiler = new TGGCompiler()
 						 	fsa.generateFile("Test.msl", compiler.compile(it))
+						 	project.findMember("src-gen/Test.msl").touch(null);
 						 ]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
