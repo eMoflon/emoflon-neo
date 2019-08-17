@@ -5,13 +5,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Optional;
+
 import org.emoflon.neo.api.API_ChessBoard;
 import org.emoflon.neo.api.API_ChessLanguage;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_FigureMoves;
 import org.emoflon.neo.api.API_Patterns;
+import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
+import org.emoflon.neo.neo4j.adapter.NeoCoMatch;
+import org.emoflon.neo.neo4j.adapter.NeoMatch;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ChessTests extends ENeoTest {
@@ -43,6 +49,21 @@ class ChessTests extends ENeoTest {
 	void test_KingsGambit() {
 		initDB(models.getModel_KingsGambit());
 		expectSingleMatch(patterns.getPattern_KingsGambit());
+	}
+	
+	@Disabled
+	@Test
+	void move_Figure() {
+		initDB(models.getModel_PawnOnBoard());
+		IRule<NeoMatch, NeoCoMatch> rule = figureMoves.getRule_MoveWhitePawn().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 1);
+		
+		var onlyMatch = matches.iterator().next();
+		
+		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		assertTrue(result.isPresent());
+		assertFalse(onlyMatch.isStillValid());
 	}
 
 

@@ -30,7 +30,7 @@ pattern bottomRightReference {
 	f2 : Field
 }
 
-rule moveFig {
+abstract rule moveFig {
 	fig : Figure {
 		-- -standsOn-> from
 		++ -standsOn-> to
@@ -53,7 +53,7 @@ rule moveBlackPawn -> movePawn {
 	from : Field {
 		-bottom(1..2)-> $to
 	}
-} when forbid byOwnColourOccupiedField
+}
 
 rule moveRook -> moveFig {
 	fig : Rook

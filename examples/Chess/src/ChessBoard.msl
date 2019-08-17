@@ -553,7 +553,7 @@ model CaroKannDefense -> CompleteBoard,
 			k -> king, b2 -> b4, k2 -> k4, r2 -> r4
 		]
 
-model kingsGambit -> CompleteBoard,
+model KingsGambit -> CompleteBoard,
 		StartingLine, 
 		AllPawnsOnBoardForKingsGambit,
 		StartingLine [
@@ -562,3 +562,42 @@ model kingsGambit -> CompleteBoard,
 			r1 -> r3, k1 -> k3, b1 -> b3, q -> queen, 
 			k -> king, b2 -> b4, k2 -> k4, r2 -> r4
 		]
+		
+model PawnOnBoard {
+	fig : Pawn {
+		-standsOn-> f00
+	}
+	
+	f00 : Field
+	f01 : Field {
+		-bottom-> f00
+	}
+	f02 : Field {
+		-bottom-> f01
+	}
+	f03 : Field {
+		-bottom-> f02
+	}
+}
+
+pattern PawnOnStartPosition {
+	fig : Pawn {
+		-standsOn-> f00
+	}
+	f00 : Field
+	f01 : Field {
+		-bottom-> f00
+	}
+}
+
+pattern PawnMadeOneStep -> PawnOnStartPosition {
+	f : Field {
+		-bottom-> $f01
+	}
+}
+
+pattern PawnMadeTwoSteps -> PawnMadeOneStep {
+	ff : Field {
+		-bottom-> $f
+	}
+}
