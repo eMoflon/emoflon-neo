@@ -2,6 +2,9 @@ import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 model SokobanBoard {
 	b : SokobanLanguage.Board {
+		.height : 1
+		.width : 1
+		
 		-fields-> f1 {
 			.row : 0
 			.col : 0

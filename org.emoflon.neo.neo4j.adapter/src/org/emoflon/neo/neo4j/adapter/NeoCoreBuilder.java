@@ -1,5 +1,49 @@
 package org.emoflon.neo.neo4j.adapter;
 
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ABSTRACT_PROP;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.CONFORMS_TO_PROP;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTED_ELEMENT;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTES;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EATTRIBUTE_TYPE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ECLASS;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ECLASSIFIER;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EDATA_TYPE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EENUM;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EENUM_LITERAL;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ELITERALS;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EOBJECT;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EREFERENCE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EREFERENCES;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.EREFERENCE_TYPE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ESTRUCTURAL_FEATURE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ESUPER_TYPE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.ETYPED_ELEMENT;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.METAMODEL;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.META_TYPE;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.MODEL;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.NAME_PROP;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eDataTypeLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eDataTypeProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eattrLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eattrProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eclassLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eclassProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eenumLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eenumLiteralLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eenumLiteralProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eenumProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eobjectLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.eobjectProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.erefLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.erefProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.mmodelLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.mmodelProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.modelLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.modelProps;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.neoCoreLabels;
+import static org.emoflon.neo.neo4j.adapter.NeoCoreBootstrapper.neoCoreProps;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,148 +84,6 @@ import com.google.common.collect.Streams;
 
 public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-
-	public static final String META_TYPE = "metaType";
-	public static final String META_EL_OF = "elementOf";
-	public static final String CORR = "corr";
-
-	// EClasses
-	private static final String ECLASSIFIER = "EClassifier";
-	private static final String ECLASS = "EClass";
-	private static final String EATTRIBUTE = "EAttribute";
-	private static final String EREFERENCE = "EReference";
-	private static final String EDATA_TYPE = "EDataType";
-	private static final String ESTRUCTURAL_FEATURE = "EStructuralFeature";
-	private static final String ETYPED_ELEMENT = "ETypedElement";
-	private static final String EATTRIBUTED_ELEMENT = "EAttributedElement";
-	private static final String METAMODEL = "MetaModel";
-	private static final String MODEL = "Model";
-	private static final String EOBJECT = "EObject";
-
-	// EReferences
-	private static final String EREFERENCE_TYPE = "eReferenceType";
-	private static final String EREFERENCES = "eReferences";
-	private static final String ESUPER_TYPE = "eSuperType";
-	private static final String EATTRIBUTE_TYPE = "eAttributeType";
-	private static final String EATTRIBUTES = "eAttributes";
-	private static final String ELITERALS = "eLiterals";
-
-	// EDataType
-	private static final String EENUM = "EEnum";
-	private static final String EENUM_LITERAL = "EEnumLiteral";
-	private static final String ESTRING = "EString";
-	private static final String EINT = "EInt";
-	private static final String EBOOLEAN = "EBoolean";
-
-	// Attributes
-	private static final String NAME_PROP = "ename";
-	private static final String ABSTRACT_PROP = "abstract";
-	private static final String _TYPE_PROP = "_type_";
-
-	// Meta attributes and relations
-	private static final String CONFORMS_TO_PROP = "conformsTo";
-
-	// Lists of properties and labels for meta types
-	private static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE));
-	private static final List<String> neoCoreLabels = List.of(METAMODEL, MODEL, EOBJECT);
-
-	private static final List<NeoProp> eclassProps = List.of(new NeoProp(NAME_PROP, ECLASS));
-	private static final List<String> eclassLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
-
-	private static final List<NeoProp> mmodelProps = List.of(new NeoProp(NAME_PROP, METAMODEL));
-	private static final List<String> mmodelLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> modelProps = List.of(new NeoProp(NAME_PROP, MODEL));
-	private static final List<String> modelLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eobjectProps = List.of(new NeoProp(NAME_PROP, EOBJECT));
-	private static final List<String> eobjectLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> erefProps = List.of(new NeoProp(NAME_PROP, EREFERENCE));
-	private static final List<String> erefLabels = List.of(ECLASS, EATTRIBUTED_ELEMENT, ECLASSIFIER, EOBJECT);
-
-	private static final List<NeoProp> eleofProps = List.of(new NeoProp(NAME_PROP, META_EL_OF));
-	private static final List<String> eleofLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> conformtoProps = List.of(new NeoProp(NAME_PROP, CONFORMS_TO_PROP));
-	private static final List<String> conformtoLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> erefsProps = List.of(new NeoProp(NAME_PROP, EREFERENCES));
-	private static final List<String> erefsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eRefTypeProps = List.of(new NeoProp(NAME_PROP, EREFERENCE_TYPE));
-	private static final List<String> eRefTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eattrProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE));
-	private static final List<String> eattrLabels = List.of(ECLASS, EOBJECT, EATTRIBUTED_ELEMENT, ECLASSIFIER);
-
-	private static final List<NeoProp> nameProps = List.of(new NeoProp(NAME_PROP, NAME_PROP));
-	private static final List<String> nameLabels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
-
-	private static final List<NeoProp> _type_Props = List.of(new NeoProp(NAME_PROP, _TYPE_PROP));
-	private static final List<String> _type_Labels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE, ETYPED_ELEMENT);
-
-	private static final List<NeoProp> eDataTypeProps = List.of(new NeoProp(NAME_PROP, EDATA_TYPE));
-	private static final List<String> eDataTypeLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
-
-	private static final List<NeoProp> eAttrEleProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTED_ELEMENT));
-	private static final List<String> eAttrEleLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
-
-	private static final List<NeoProp> eStringProps = List.of(new NeoProp(NAME_PROP, ESTRING));
-	private static final List<String> eStringLabels = List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
-
-	private static final List<NeoProp> eintProps = List.of(new NeoProp(NAME_PROP, EINT));
-	private static final List<String> eintLabels = List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
-
-	private static final List<NeoProp> eAttrTypeProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE_TYPE));
-	private static final List<String> eAttrTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eSupTypeProps = List.of(new NeoProp(NAME_PROP, ESUPER_TYPE));
-	private static final List<String> eSupTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eclassifierProps = List.of(new NeoProp(NAME_PROP, ECLASSIFIER));
-	private static final List<String> eclassifierLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
-
-	private static final List<NeoProp> eTypedeleProps = List.of(new NeoProp(NAME_PROP, ETYPED_ELEMENT));
-	private static final List<String> eTypedeleLabels = List.of(ECLASS, EOBJECT, ECLASSIFIER, EATTRIBUTED_ELEMENT);
-
-	private static final List<NeoProp> metaTypeProps = List.of(new NeoProp(NAME_PROP, META_TYPE));
-	private static final List<String> metaTypeLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> corrProps = List.of(new NeoProp(NAME_PROP, CORR));
-	private static final List<String> corrLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eAttributesProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTES));
-	private static final List<String> eAttributesLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eStructProps = List.of(new NeoProp(NAME_PROP, ESTRUCTURAL_FEATURE));
-	private static final List<String> eStructLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> abstractattrProps = List.of(new NeoProp(NAME_PROP, ABSTRACT_PROP));
-	private static final List<String> abstractattrLabels = List.of(EATTRIBUTE, EOBJECT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT);
-
-	private static final List<NeoProp> eBooleanProps = List.of(new NeoProp(NAME_PROP, EBOOLEAN));
-	private static final List<String> eBooleanLabels = List.of(EDATA_TYPE, ECLASSIFIER, EOBJECT);
-
-	private static final List<NeoProp> eenumProps = List.of(new NeoProp(NAME_PROP, EENUM));
-	private static final List<String> eenumLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eenumLiteralProps = List.of(new NeoProp(NAME_PROP, EENUM_LITERAL));
-	private static final List<String> eenumLiteralLabels = List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);
-
-	private static final List<NeoProp> eLiteralsProps = List.of(new NeoProp(NAME_PROP, ELITERALS));
-	private static final List<String> eLiteralsLabels = List.of(EREFERENCE, EATTRIBUTED_ELEMENT, ESTRUCTURAL_FEATURE,
-			ETYPED_ELEMENT, EOBJECT);
 
 	// Defaults for export
 	private int maxTransactionSizeEdges = 10000;
@@ -346,92 +248,14 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return eclass.equals(EMSLPackage.eINSTANCE.getMetamodel()) || eclass.equals(EMSLPackage.eINSTANCE.getModel());
 	}
 
-	public static boolean canBeCoppiedToClipboard(EClass eclass) {
+	public static boolean canBeCopiedToClipboard(EClass eclass) {
 		return eclass.equals(EMSLPackage.eINSTANCE.getAtomicPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getConstraint())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition());
 	}
 
-	private void bootstrapNeoCore() {
-		executeActionAsCreateTransaction((cb) -> {
-			var neocore = cb.createNode(neoCoreProps, neoCoreLabels);
-			var eclass = cb.createNodeWithCont(eclassProps, eclassLabels, neocore);
-			var mmodel = cb.createNodeWithContAndType(mmodelProps, mmodelLabels, eclass, neocore);
-			var model = cb.createNodeWithContAndType(modelProps, modelLabels, eclass, neocore);
-			var eobject = cb.createNodeWithContAndType(eobjectProps, eobjectLabels, eclass, neocore);
-			var eref = cb.createNodeWithContAndType(erefProps, erefLabels, eclass, neocore);
-			var eleof = cb.createNodeWithContAndType(eleofProps, eleofLabels, eref, neocore);
-			var conformto = cb.createNodeWithContAndType(conformtoProps, conformtoLabels, eref, neocore);
-			var erefs = cb.createNodeWithContAndType(erefsProps, erefsLabels, eref, neocore);
-			var eRefType = cb.createNodeWithContAndType(eRefTypeProps, eRefTypeLabels, eref, neocore);
-			var eattr = cb.createNodeWithContAndType(eattrProps, eattrLabels, eclass, neocore);
-			var name = cb.createNodeWithContAndType(nameProps, nameLabels, eattr, neocore);
-			var _type_ = cb.createNodeWithContAndType(_type_Props, _type_Labels, eattr, neocore);
-			var eDataType = cb.createNodeWithContAndType(eDataTypeProps, eDataTypeLabels, eclass, neocore);
-			var eAttrEle = cb.createNodeWithContAndType(eAttrEleProps, eAttrEleLabels, eclass, neocore);
-			var eString = cb.createNodeWithContAndType(eStringProps, eStringLabels, eDataType, neocore);
-			@SuppressWarnings("unused")
-			var eint = cb.createNodeWithContAndType(eintProps, eintLabels, eDataType, neocore);
-			var eAttrType = cb.createNodeWithContAndType(eAttrTypeProps, eAttrTypeLabels, eref, neocore);
-			var eSupType = cb.createNodeWithContAndType(eSupTypeProps, eSupTypeLabels, eref, neocore);
-			var eclassifier = cb.createNodeWithContAndType(eclassifierProps, eclassifierLabels, eclass, neocore);
-			var eTypedele = cb.createNodeWithContAndType(eTypedeleProps, eTypedeleLabels, eclass, neocore);
-			var metaType = cb.createNodeWithContAndType(metaTypeProps, metaTypeLabels, eref, neocore);
-			var eAttributes = cb.createNodeWithContAndType(eAttributesProps, eAttributesLabels, eref, neocore);
-			var eStruct = cb.createNodeWithContAndType(eStructProps, eStructLabels, eclass, neocore);
-			var abstractattr = cb.createNodeWithContAndType(abstractattrProps, abstractattrLabels, eattr, neocore);
-			var eBoolean = cb.createNodeWithContAndType(eBooleanProps, eBooleanLabels, eDataType, neocore);
-			var eenum = cb.createNodeWithContAndType(eenumProps, eenumLabels, eclass, neocore);
-			var eenumLiteral = cb.createNodeWithContAndType(eenumLiteralProps, eenumLabels, eclass, neocore);
-			var eLiterals = cb.createNodeWithContAndType(eLiteralsProps, eLiteralsLabels, eref, neocore);
-			var corr = cb.createNodeWithContAndType(corrProps, corrLabels, eref, neocore);
-
-			cb.createEdge(CONFORMS_TO_PROP, neocore, neocore);
-			cb.createEdge(META_TYPE, neocore, mmodel);
-			cb.createEdge(META_TYPE, eclass, eclass);
-			cb.createEdge(EREFERENCES, eclass, erefs);
-			cb.createEdge(EREFERENCE_TYPE, erefs, eref);
-			cb.createEdge(EREFERENCES, eref, eRefType);
-			cb.createEdge(EREFERENCES, eclass, eSupType);
-			cb.createEdge(EREFERENCE_TYPE, eSupType, eclass);
-			cb.createEdge(EATTRIBUTES, eobject, name);
-			cb.createEdge(EATTRIBUTE_TYPE, name, eString);
-			cb.createEdge(EATTRIBUTES, corr, _type_);
-			cb.createEdge(EATTRIBUTE_TYPE, _type_, eString);
-			cb.createEdge(EREFERENCES, eattr, eAttrType);
-			cb.createEdge(EREFERENCE_TYPE, eAttrType, eDataType);
-			cb.createEdge(EREFERENCES, eobject, metaType);
-			cb.createEdge(EREFERENCE_TYPE, metaType, eobject);
-			cb.createEdge(EREFERENCES, eAttrEle, eAttributes);
-			cb.createEdge(EREFERENCE_TYPE, eAttributes, eattr);
-			cb.createEdge(EATTRIBUTES, eclass, abstractattr);
-			cb.createEdge(EATTRIBUTE_TYPE, abstractattr, eBoolean);
-			cb.createEdge(EREFERENCES, model, conformto);
-			cb.createEdge(EREFERENCE_TYPE, conformto, mmodel);
-			cb.createEdge(EREFERENCES, eobject, eleof);
-			cb.createEdge(EREFERENCE_TYPE, eleof, model);
-			cb.createEdge(EREFERENCES, eenum, eLiterals);
-			cb.createEdge(EREFERENCE_TYPE, eLiterals, eenumLiteral);
-			cb.createEdge(ESUPER_TYPE, eclass, eAttrEle);
-			cb.createEdge(ESUPER_TYPE, eclass, eclassifier);
-			cb.createEdge(ESUPER_TYPE, eDataType, eclassifier);
-			cb.createEdge(ESUPER_TYPE, eref, eAttrEle);
-			cb.createEdge(ESUPER_TYPE, eref, eStruct);
-			cb.createEdge(ESUPER_TYPE, eattr, eStruct);
-			cb.createEdge(ESUPER_TYPE, eenum, eDataType);
-			cb.createEdge(ESUPER_TYPE, mmodel, model);
-			cb.createEdge(ESUPER_TYPE, eStruct, eTypedele);
-			cb.createEdge(ESUPER_TYPE, eTypedele, eobject);
-			cb.createEdge(ESUPER_TYPE, eclassifier, eobject);
-			cb.createEdge(ESUPER_TYPE, model, eobject);
-			cb.createEdge(ESUPER_TYPE, eAttrEle, eobject);
-			cb.createEdge(EREFERENCES, eobject, corr);
-			cb.createEdge(EREFERENCE_TYPE, corr, eobject);
-		});
-	}
-
-	private void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
+	void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
 		var creator = new CypherCreator(maxTransactionSizeNodes, maxTransactionSizeEdges);
 		action.accept(creator);
 		creator.run(driver);
@@ -445,8 +269,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private boolean ecoreIsNotPresent() {
 		var result = executeActionAsMatchTransaction(cb -> {
-			cb.returnWith(
-					cb.matchNode(List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE)), List.of(METAMODEL)));
+			cb.returnWith(cb.matchNode(neoCoreProps, neoCoreLabels));
 		});
 
 		return result.stream().count() == 0;
@@ -460,6 +283,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		} else {
 			logger.info("NeoCore is already present.");
 		}
+	}
+
+	private void bootstrapNeoCore() {
+		var bootstrapper = new NeoCoreBootstrapper();
+		bootstrapper.bootstrapNeoCore(this);
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) {
@@ -785,5 +613,4 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		else
 			throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
 	}
-
 }

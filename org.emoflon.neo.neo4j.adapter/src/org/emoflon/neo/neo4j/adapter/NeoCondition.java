@@ -21,6 +21,7 @@ public class NeoCondition {
 	private NeoHelper helper;
 	private NeoConstraint c;
 	private NeoPattern p;
+	private NeoRule r;
 
 	/**
 	 * @param c       NeoConstraing the extracted constraint in the pattern p
@@ -39,6 +40,16 @@ public class NeoCondition {
 		this.helper = helper;
 		this.c = c;
 		this.p = p;
+	}
+	public NeoCondition(NeoConstraint c, NeoRule r, String name, IBuilder builder, NeoHelper helper) {
+		this(c, r, name, Optional.of(builder), helper);
+	}
+
+	public NeoCondition(NeoConstraint c, NeoRule r, String name, Optional<IBuilder> builder, NeoHelper helper) {
+		this.builder = builder;
+		this.helper = helper;
+		this.c = c;
+		this.r = r;
 	}
 
 	/**
@@ -88,6 +99,33 @@ public class NeoCondition {
 		while (result.hasNext()) {
 			var record = result.next();
 			matches.add(new NeoMatch(p, record));
+		}
+
+		return matches;
+	}
+	
+	public Collection<NeoMatch> determineMatchesRule(int limit) {
+
+		var bld = builder.orElseThrow();
+
+		logger.info("Searching matches for Rule: " + r.getName() + " WHEN " + c.getName());
+
+		// collecting the data
+		var condData = c.getConditionData();
+
+		// creating the query string
+		var cypherQuery = CypherPatternBuilder.conditionQuery(r.getNodes(), condData.getOptionalMatchString(),
+				condData.getWhereClause(), helper.getNodes(), r.isNegated(), limit);
+		logger.debug(cypherQuery);
+
+		// run the query
+		var result = bld.executeQuery(cypherQuery);
+
+		// analyze and return results
+		var matches = new ArrayList<NeoMatch>();
+		while (result.hasNext()) {
+			var record = result.next();
+			matches.add(new NeoMatch(r, record));
 		}
 
 		return matches;

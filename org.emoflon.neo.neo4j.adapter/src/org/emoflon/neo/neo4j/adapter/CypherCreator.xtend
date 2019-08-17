@@ -38,13 +38,13 @@ class CypherCreator extends CypherBuilder {
 
 	def createNodeWithCont(List<NeoProp> props, List<String> labels, NodeCommand container) {
 		val nc = createNode(props, labels)
-		createEdge(NeoCoreBuilder.META_EL_OF, nc, container)
+		createEdge(NeoCoreBootstrapper.META_EL_OF, nc, container)
 		return nc
 	}
 
 	def createNodeWithContAndType(List<NeoProp> props, List<String> labels, NodeCommand type, NodeCommand container) {
 		val nc = createNodeWithCont(props, labels, container)
-		createEdge(NeoCoreBuilder.META_TYPE, nc, type)
+		createEdge(NeoCoreBootstrapper.META_TYPE, nc, type)
 		return nc
 	}
 
@@ -58,7 +58,7 @@ class CypherCreator extends CypherBuilder {
 		else {
 			val nc = new NodeCommand(props, labels)
 			nodesToMatch.put(key, nc)
-			matchEdge(List.of, NeoCoreBuilder.META_EL_OF, nc, container)
+			matchEdge(List.of, NeoCoreBootstrapper.META_EL_OF, nc, container)
 			return nc
 		}
 	}

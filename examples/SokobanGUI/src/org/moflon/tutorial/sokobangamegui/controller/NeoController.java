@@ -233,7 +233,7 @@ public class NeoController implements IController {
 		var access = api1.getRule_DeleteFigure();
 
 		access.rule().determineMatches().forEach(m -> {
-			access.rule().apply(m, RuleApplicationSemantics.SinglePushOut);
+			access.rule().apply(m);
 		});
 	}
 

@@ -14,6 +14,7 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
  *
  */
 public class NeoRelation {
+	private NeoNode from;
 	private List<String> relTypes;
 	private String toNodeVar;
 	private String toNodeLabel;
@@ -32,6 +33,7 @@ public class NeoRelation {
 	 */
 	public NeoRelation(NeoNode from, String varName, List<String> relTypes, String lower, String upper,
 			List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
+		this.from = from;
 		this.relTypes = new ArrayList<String>(relTypes);
 		this.toNodeVar = toNodeVar;
 		this.toNodeLabel = toNodeLabel;
@@ -78,6 +80,10 @@ public class NeoRelation {
 	public String getLower() {
 		return lower;
 	}
+	
+	public NeoNode getFromNode() {
+		return from;
+	}
 
 	/**
 	 * Return the variable name of the target node of the relation
@@ -87,6 +93,10 @@ public class NeoRelation {
 	public String getToNodeVar() {
 		return toNodeVar;
 	}
+	
+	public String getFromNodeVar() {
+		return from.getVarName();
+	}
 
 	/**
 	 * Return the Label /Type of the target node of the relation
@@ -95,6 +105,10 @@ public class NeoRelation {
 	 */
 	public String getToNodeLabel() {
 		return toNodeLabel;
+	}
+	
+	public String getFromNodeLabel() {
+		return from.getClassType();
 	}
 
 	/**
