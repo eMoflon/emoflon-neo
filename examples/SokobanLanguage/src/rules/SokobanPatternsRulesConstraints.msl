@@ -364,6 +364,8 @@ abstract rule moveSokoban {
 	b:SokobanLanguage.Board {
 		-fields->to
 	}
+	
+	++next2 : Block
 }
 
 abstract rule pushBlock {

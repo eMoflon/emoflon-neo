@@ -43,6 +43,15 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 	@Test
+	public void testMoveSokobanDown2() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDown().rule();
+		var matches = rule.determineMatches();		
+		var onlyMatch = matches.iterator().next();
+		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		assertTrue(result.isPresent());
+	}
+	
+	@Test
 	public void testMoveSokobanDownWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownWithCondition().rule();
 		var matches = rule.determineMatches();
@@ -58,5 +67,15 @@ public class SokobanRules extends ENeoTest {
 		
 		Optional<NeoCoMatch> notPossible = rule.apply(onlyMatch);
 		assertFalse(notPossible.isPresent());
+	}
+	
+	@Test
+	public void testMoveSokobanDownWithCond2() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownWithCondition().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 1);
+		var onlyMatch = matches.iterator().next();
+		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		assertTrue(result.isPresent());
 	}
 }

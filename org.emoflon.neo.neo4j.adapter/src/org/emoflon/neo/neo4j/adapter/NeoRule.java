@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.eMSL.Rule;
@@ -24,9 +25,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected List<NeoNode> nodesL;
 	protected List<NeoNode> nodesR;
 	protected List<NeoNode> nodesK;
-	protected List<NeoRelation> relL;
+	protected List<NeoNode> modelNodes;
+ 	protected List<NeoRelation> relL;
 	protected List<NeoRelation> relR;
 	protected List<NeoRelation> relK;
+	protected List<NeoRelation> modelRel;
 
 	protected boolean injective;
 	protected boolean spoSemantics; // if false: DPO; if true SPO semantics
@@ -44,9 +47,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		nodesL = new ArrayList<>();
 		nodesR = new ArrayList<>();
 		nodesK = new ArrayList<>();
+		modelNodes = new ArrayList<>();
 		relL = new ArrayList<>();
 		relR = new ArrayList<>();
 		relK = new ArrayList<>();
+		modelRel = new ArrayList<>();
 
 		injective = true;
 		spoSemantics = true;
@@ -166,6 +171,32 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				nodesK.add(node);
 				logger.info("New klebegraph node: " + node.getVarName() + ":" + n.getType().getName());
 			}
+		}
+		
+		addModelNodesAndRefs();
+	}
+	
+	protected void addModelNodesAndRefs() {
+		for(NeoNode n: nodesR) {
+			
+			var eclassNode = new NeoNode("EClass","eClass_" + n.getVarName());
+			eclassNode.addProperty("ename", "\"" + n.getClassType().toString() + "\"");
+			modelNodes.add(eclassNode);
+			
+			var metaType = new ArrayList<String>();
+			metaType.add("metaType");
+			
+			var metaTypeRel = new NeoRelation(
+					n,
+					n.getVarName()+"_metaType_"+"eClass_" + n.getVarName(), 
+					metaType,
+					"",
+					"",
+					new ArrayList<ModelPropertyStatement>(),
+					"EClass",
+					"eClass_" + n.getVarName());
+			
+			modelRel.add(metaTypeRel);
 		}
 	}
 
@@ -367,11 +398,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				
 			} else if(cond instanceof NeoPositiveConstraint) {
 				var constraint = ((NeoPositiveConstraint) cond);
-				additionalQuery = CypherPatternBuilder.constraintQuery_rule(helper.getNodes(),
+				additionalQuery = CypherPatternBuilder.constraintQuery_ruleAdd(helper.getNodes(), modelNodes,
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon());
 			} else if(cond instanceof NeoNegativeConstraint) {
 				var constraint = ((NeoNegativeConstraint) cond);
-				additionalQuery = CypherPatternBuilder.constraintQuery_rule(helper.getNodes(),
+				additionalQuery = CypherPatternBuilder.constraintQuery_ruleAdd(helper.getNodes(), modelNodes,
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon());
 			} else {
 				// Note: If/Then conditions are currently not supported
@@ -380,7 +411,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 
 		logger.info("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK, additionalQuery);
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK, modelNodes, modelRel, additionalQuery);
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 		
