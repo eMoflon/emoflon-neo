@@ -18,7 +18,7 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoCondition;
-import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
+import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoNegativeConstraint;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoPositiveConstraint;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
@@ -241,7 +241,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			
 		} else if (r.getCondition() instanceof ConstraintReference) {
 			
-			var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
+			var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
 			return cond.determineMatchesRule(limit);
 			
 		} else if (r.getCondition() instanceof PositiveConstraint) {
@@ -252,7 +252,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
 
 			// Create Query
-			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
+			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getAllElements(),
 					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(), injective, limit, mask);
 
 			logger.debug(cypherQuery);
@@ -276,8 +276,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
 
 			// Create Query
-			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
-					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(), injective, limit, mask);
+			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getAllElements(),
+					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(), injective, limit, mask);
 
 			logger.debug(cypherQuery);
 
@@ -323,7 +323,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			// a Body, then create a new NeoCondition, with current data and follow the
 			// structure from there for query execution
 			if (r.getCondition() instanceof ConstraintReference) {
-				var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
+				var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
 				return cond.isStillValid(m);
 
 			} else if (cond instanceof NeoPositiveConstraint) {
@@ -334,7 +334,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				logger.info("Check if match for " + r.getName() + " WHEN " + constraint.getName() + " is still valid");
 
 				// Create Query
-				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getAllElements(),
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(),
 						injective, m);
 
@@ -352,8 +352,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				logger.info("Check if match for " + r.getName() + " WHEN " + constraint.getName() + " is still valid");
 
 				// Create Query
-				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
-						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereConditon(),
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getAllElements(),
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(),
 						injective, m);
 
 				logger.debug(cypherQuery);

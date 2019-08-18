@@ -13,6 +13,8 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
 
+//FIXME:  Is actually ConstraintRef I would say
+
 /**
  * Class created, when a pattern has a condition. Runs relevant pattern and
  * constraint matching checks
@@ -71,7 +73,7 @@ public class NeoCondition {
 	public String getQuery() {
 		var condData = c.getConditionData();
 		return CypherPatternBuilder.conditionQuery_copyPaste(p.getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), helper.getNodes(), p.isNegated(), 0);
+				condData.getWhereClause(), helper.getAllElements(), p.isNegated(), 0);
 	}
 
 	/**
@@ -93,7 +95,7 @@ public class NeoCondition {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery(p.getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), helper.getNodes(), p.isNegated(), limit);
+				condData.getWhereClause(), helper.getAllElements(), p.isNegated(), limit);
 		logger.debug(cypherQuery);
 
 		// run the query
@@ -120,7 +122,7 @@ public class NeoCondition {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery(r.getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), helper.getNodes(), r.isNegated(), limit);
+				condData.getWhereClause(), helper.getAllElements(), r.isNegated(), limit);
 		logger.debug(cypherQuery);
 
 		// run the query
@@ -155,7 +157,7 @@ public class NeoCondition {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(p.getNodes(),
-				condData.getOptionalMatchString(), condData.getWhereClause(), helper.getNodes(), p.isNegated(), m);
+				condData.getOptionalMatchString(), condData.getWhereClause(), helper.getAllElements(), p.isNegated(), m);
 		logger.debug(cypherQuery);
 
 		// run the query

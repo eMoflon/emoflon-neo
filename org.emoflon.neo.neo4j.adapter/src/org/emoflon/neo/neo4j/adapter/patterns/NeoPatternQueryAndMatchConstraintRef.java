@@ -7,41 +7,39 @@ import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoCondition;
-import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
+import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 
 public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
-
+	protected Constraint constraintRef;
+	
 	public NeoPatternQueryAndMatchConstraintRef(Pattern p, IBuilder builder, NeoMask mask) {
 		super(p, builder, mask);
 		ConstraintReference ref = (ConstraintReference) p.getCondition();
-		c = ref.getReference();
+		constraintRef = ref.getReference();
 	}
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
-		var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
+		var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(constraintRef, builder, helper, mask), this, constraintRef.getName(), builder, helper);
 		return cond.determineMatches(limit);
 	}
 
 	@Override
 	public boolean isStillValid(NeoMatch m) {
-		var cond = new NeoCondition(new NeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
+		var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(constraintRef, builder, helper, mask), this, constraintRef.getName(), builder, helper);
 		return cond.isStillValid(m);
 	}
-
-	protected Constraint c;
 
 	@Override
 	public String getQuery() {
 		var cond = new NeoCondition(//
-				new NeoConstraint(c, builder, helper, mask), //
+				NeoConstraintFactory.createNeoConstraint(constraintRef, builder, helper, mask), //
 				this, //
-				c.getName(), //
+				constraintRef.getName(), //
 				Optional.empty(), //
 				helper);
 
 		return cond.getQuery();
 	}
-
 }

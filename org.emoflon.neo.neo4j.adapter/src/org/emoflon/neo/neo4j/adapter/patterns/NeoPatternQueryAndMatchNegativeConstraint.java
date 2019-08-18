@@ -20,7 +20,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 
 	@Override
 	public String getQuery() {
-		return getQuery(ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereConditon());
+		return getQuery(ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition());
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 		logger.info("Searching matches for Pattern: " + p.getBody().getName() + " FORBID " + ncond.getName());
 
 		// create query
-		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereConditon(), injective, limit, mask);
+		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getAllElements(),
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), injective, limit, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -52,8 +52,8 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 		logger.info("Check if match for " + p.getBody().getName() + " WHEN " + ncond.getName() + " is still valid");
 
 		// Create Query
-		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereConditon(), injective, m);
+		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getAllElements(),
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), injective, m);
 
 		logger.debug(cypherQuery);
 
