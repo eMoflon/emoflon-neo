@@ -9,13 +9,11 @@ import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IPattern;
-import org.emoflon.neo.neo4j.adapter.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.IBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoHelper;
-import org.emoflon.neo.neo4j.adapter.NeoMask;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoNode;
+import org.emoflon.neo.neo4j.adapter.common.NeoNode;
+import org.emoflon.neo.neo4j.adapter.models.IBuilder;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
+import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 
@@ -47,7 +45,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 		// execute the Pattern flatterer. Needed if the pattern use refinements or other
 		// functions. Returns the complete flattened Pattern.
-		this.p = helper.getFlattenedPattern(p);
+		this.p = NeoHelper.getFlattenedPattern(p);
 
 		// get all nodes, relations and properties from the pattern
 		extractNodesAndRelations();

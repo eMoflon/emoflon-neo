@@ -5,11 +5,9 @@ import java.util.Collection;
 
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.neo4j.adapter.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.IBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoMask;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoNegativeConstraint;
+import org.emoflon.neo.neo4j.adapter.constraints.NeoNegativeConstraint;
+import org.emoflon.neo.neo4j.adapter.models.IBuilder;
+import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 
 public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 	protected NeoNegativeConstraint ncond;

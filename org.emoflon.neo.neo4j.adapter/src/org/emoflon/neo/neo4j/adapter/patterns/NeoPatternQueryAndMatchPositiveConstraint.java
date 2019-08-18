@@ -5,11 +5,9 @@ import java.util.Collection;
 
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
-import org.emoflon.neo.neo4j.adapter.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.IBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoMask;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoPositiveConstraint;
+import org.emoflon.neo.neo4j.adapter.constraints.NeoPositiveConstraint;
+import org.emoflon.neo.neo4j.adapter.models.IBuilder;
+import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 
 public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 
@@ -17,7 +15,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 
 	@Override
 	public String getQuery() {
-		return getQuery(pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereConditon());
+		return getQuery(pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition());
 	}
 
 	public NeoPatternQueryAndMatchPositiveConstraint(Pattern p, IBuilder builder, NeoMask mask) {
@@ -33,7 +31,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getNodes(),
-				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereConditon(), injective, limit, mask);
+				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition(), injective, limit, mask);
 
 		logger.debug(cypherQuery);
 
@@ -57,7 +55,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getNodes(),
-				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereConditon(), injective, m);
+				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition(), injective, m);
 
 		logger.debug(cypherQuery);
 
