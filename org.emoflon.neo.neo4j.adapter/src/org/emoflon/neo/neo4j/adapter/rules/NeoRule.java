@@ -17,7 +17,6 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
-import org.emoflon.neo.neo4j.adapter.constraints.NeoCondition;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoNegativeConstraint;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoPositiveConstraint;
