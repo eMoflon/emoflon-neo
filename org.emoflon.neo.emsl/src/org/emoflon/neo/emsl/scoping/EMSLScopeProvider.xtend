@@ -203,22 +203,11 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/**
 	 * Returns the scope for the name of a PropertyStatement that is nested in a RelationStatement.
 	 */
-	private def handleTypeOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
-		val root = EcoreUtil2.getRootContainer(context)
-		var nodeBlocks = new HashMap<MetamodelNodeBlock, String>()
+	private def handleTypeOfPropertyStatementInRelationStatement(ModelPropertyStatement context, EReference reference) {
+		val properties = new HashSet()		
+		(context.eContainer as ModelRelationStatement).types.forEach[t | properties.addAll(t.type.properties)]
 
-		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
-
-		val possibilities = new HashMap
-		for (nb : nodeBlocks.keySet) {
-			(nb as MetamodelNodeBlock).relations.forEach [ r |
-				(r as MetamodelRelationStatement).properties.forEach [ p |
-					possibilities.put(p, null)
-				]
-			]
-		}
-
-		determineScope(possibilities)
+		Scopes.scopeFor(properties)
 	}
 
 	private def handleValueOfEnumInPropertyStatementInModel(EnumValue property, EReference reference) {
