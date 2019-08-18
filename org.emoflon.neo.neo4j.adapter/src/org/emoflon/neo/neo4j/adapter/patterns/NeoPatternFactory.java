@@ -4,11 +4,9 @@ import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
-import org.emoflon.neo.neo4j.adapter.EmptyBuilder;
-import org.emoflon.neo.neo4j.adapter.EmptyMask;
-import org.emoflon.neo.neo4j.adapter.IBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoMask;
+import org.emoflon.neo.neo4j.adapter.models.EmptyBuilder;
+import org.emoflon.neo.neo4j.adapter.models.IBuilder;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
 public class NeoPatternFactory {
 

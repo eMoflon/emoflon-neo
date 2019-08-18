@@ -17,7 +17,13 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
 Automatic-Module-Name: org.emoflon.neo.neo4j.adapter
 Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.neo.neo4j.adapter,
+ org.emoflon.neo.neo4j.adapter.common,
+ org.emoflon.neo.neo4j.adapter.constraints,
+ org.emoflon.neo.neo4j.adapter.models,
  org.emoflon.neo.neo4j.adapter.patterns,
+ org.emoflon.neo.neo4j.adapter.rules,
+ org.emoflon.neo.neo4j.adapter.templates,
+ org.emoflon.neo.neo4j.adapter.util,
  org.neo4j.driver.internal,
  org.neo4j.driver.internal.async,
  org.neo4j.driver.internal.async.inbound,
