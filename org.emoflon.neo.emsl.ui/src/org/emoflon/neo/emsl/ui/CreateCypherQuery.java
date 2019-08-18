@@ -22,10 +22,10 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
-import org.emoflon.neo.neo4j.adapter.EmptyBuilder;
-import org.emoflon.neo.neo4j.adapter.EmptyMask;
-import org.emoflon.neo.neo4j.adapter.NeoConstraint;
-import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
+import org.emoflon.neo.neo4j.adapter.models.EmptyBuilder;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 
 @SuppressWarnings("restriction")

@@ -14,7 +14,7 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.emsl.util.FlattenerException;
-import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
 

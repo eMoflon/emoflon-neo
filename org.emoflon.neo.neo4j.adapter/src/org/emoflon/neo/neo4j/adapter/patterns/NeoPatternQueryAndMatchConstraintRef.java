@@ -6,11 +6,9 @@ import java.util.Optional;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.neo4j.adapter.IBuilder;
-import org.emoflon.neo.neo4j.adapter.NeoCondition;
-import org.emoflon.neo.neo4j.adapter.NeoConstraint;
-import org.emoflon.neo.neo4j.adapter.NeoMask;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.constraints.NeoCondition;
+import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
+import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 
 public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 

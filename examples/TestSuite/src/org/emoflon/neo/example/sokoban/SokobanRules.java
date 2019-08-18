@@ -10,8 +10,8 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
-import org.emoflon.neo.neo4j.adapter.NeoCoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

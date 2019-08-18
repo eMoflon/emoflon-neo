@@ -14,7 +14,7 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl;
-import org.emoflon.neo.neo4j.adapter.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
 public class BoardGenerator {
 
