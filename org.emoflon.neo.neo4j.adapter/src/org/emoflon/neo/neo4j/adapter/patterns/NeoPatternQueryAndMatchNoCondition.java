@@ -6,11 +6,12 @@ import java.util.Collection;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 
-	public NeoPatternQueryAndMatchNoCondition(Pattern p, IBuilder builder, NeoMask mask) {
-		super(p, builder, mask);
+	public NeoPatternQueryAndMatchNoCondition(Pattern p, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
+		super(p, builder, mask, queryData);
 	}
 
 	@Override

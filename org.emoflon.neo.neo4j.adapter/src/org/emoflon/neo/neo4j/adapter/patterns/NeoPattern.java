@@ -30,16 +30,16 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	protected List<NeoNode> nodes;
 	protected boolean injective;
-	protected NeoQueryData helper;
+	protected NeoQueryData queryData;
 	protected Pattern p;
 
 	protected IBuilder builder;
 	protected NeoMask mask;
 
-	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask) {
+	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
 		nodes = new ArrayList<>();
 		injective = true;
-		helper = new NeoQueryData();
+		this.queryData = queryData;
 
 		this.builder = builder;
 		this.mask = mask;
@@ -59,7 +59,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	private void extractNodesAndRelations() {
 		for (var n : p.getBody().getNodeBlocks()) {
-			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
+			var node = new NeoNode(n.getType().getName(), queryData.newPatternNode(n.getName()));
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -69,7 +69,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 			n.getRelations()
 					.forEach(r -> node.addRelation(
-							helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
+							queryData.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
 									EMSLUtil.getAllTypes(r), r.getTarget().getName()),
 							EMSLUtil.getAllTypes(r), //
 							r.getLower(), r.getUpper(), //
@@ -182,7 +182,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	protected String getQuery(String matchCond, String whereCond) {
 		return CypherPatternBuilder.constraintQuery_copyPaste(//
 				nodes, //
-				helper.getAllElements(), //
+				queryData.getAllElements(), //
 				matchCond, //
 				whereCond, //
 				injective, //

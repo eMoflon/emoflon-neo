@@ -42,7 +42,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	protected boolean injective;
 	protected boolean spoSemantics; // if false: DPO; if true SPO semantics
-	protected NeoQueryData helper;
+	protected NeoQueryData queryData;
 	
 	protected Rule r;
 	protected Constraint c;
@@ -51,7 +51,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected IBuilder builder;
 	protected NeoMask mask;
 
-	public NeoRule(Rule r, NeoCoreBuilder builder, NeoMask mask) {
+	public NeoRule(Rule r, NeoCoreBuilder builder, NeoMask mask, NeoQueryData queryData) {
 		nodes = new ArrayList<>();
 		nodesL = new ArrayList<>();
 		nodesR = new ArrayList<>();
@@ -62,7 +62,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 		injective = true;
 		spoSemantics = true;
-		helper = new NeoQueryData();
+		this.queryData = queryData;
+		
 		this.mask = mask;
 		this.builder = builder;
 		try {
@@ -80,11 +81,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 			} else if (r.getCondition() instanceof PositiveConstraint) {
 				PositiveConstraint cons = (PositiveConstraint) r.getCondition();
-				cond = (new NeoPositiveConstraint(cons.getPattern(), injective, builder, helper, mask));
+				cond = (new NeoPositiveConstraint(cons.getPattern(), injective, builder, queryData, mask));
 
 			} else if (r.getCondition() instanceof NegativeConstraint) {
 				NegativeConstraint cons = (NegativeConstraint) r.getCondition();
-				cond = (new NeoNegativeConstraint(cons.getPattern(), injective, builder, helper, mask));
+				cond = (new NeoNegativeConstraint(cons.getPattern(), injective, builder, queryData, mask));
 
 			} else {
 				logger.info(r.getCondition().toString());
@@ -94,10 +95,21 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		
 	}
 
-	public NeoRule(Rule r, NeoCoreBuilder builder) {
-		this(r, builder, new EmptyMask());
+	public NeoRule(Rule r, NeoCoreBuilder builder, NeoQueryData queryData) {
+		this(r, builder, new EmptyMask(), queryData);
 	}
 
+	// FIXME:  Avoid directly creating NeoQueryData -- this should only be in a factory
+	public NeoRule(Rule r, NeoCoreBuilder builder, NeoMask mask) {
+		this(r, builder, mask, new NeoQueryData());
+	}
+	
+	// FIXME:  Avoid directly creating NeoQueryData -- this should only be in a factory
+	public NeoRule(Rule r, NeoCoreBuilder builder) {
+		this(r, builder, new NeoQueryData());
+	}
+	
+	// FIXME:  This should be moved to NeoQueryData so that registerNewNode and registerNewRelation can both be made private
 	/**
 	 * Creates and extracts all necessary information data from the flattened
 	 * Pattern. Create new NeoNode for any AtomicPattern node and corresponding add
@@ -107,7 +119,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 		for (var n : r.getNodeBlocks()) {
 
-			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
+			var node = new NeoNode(n.getType().getName(), queryData.newPatternNode(n.getName()));
 			for (var p : n.getProperties()) {
 				node.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 			}
@@ -117,7 +129,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			for (var r : n.getRelations()) {
 
 				var rel = new NeoRelation(node,
-						helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
+						queryData.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
 								EMSLUtil.getAllTypes(r), r.getTarget().getName()),
 						EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
@@ -134,7 +146,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						logger.info("New ++ relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
 								+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":"
 								+ rel.getToNodeLabel() + ")");
-						helper.removeMatchElement(rel.getVarName());
+						queryData.removeMatchElement(rel.getVarName());
 						break;
 					case DELETE:
 						relL.add(rel);
@@ -162,7 +174,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				case CREATE:
 					nodesR.add(node);
 					logger.info("New ++ node: " + node.getVarName() + ":" + n.getType().getName());
-					helper.removeMatchElement(node.getVarName());
+					queryData.removeMatchElement(node.getVarName());
 					break;
 				case DELETE:
 					nodesL.add(node);
@@ -181,6 +193,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 	}
 
+	//FIXME:  This is duplicate code from NeoPattern - why not inherit from NeoPattern?
 	protected void extractPropertiesFromMask(NeoNode node) {
 		for (var propMask : mask.getMaskedAttributes().entrySet()) {
 			var varName = mask.getVarName(propMask.getKey());
@@ -240,7 +253,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			
 		} else if (r.getCondition() instanceof ConstraintReference) {
 			
-			var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
+			var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(c, builder, queryData, mask), this, c.getName(), builder, queryData);
 			return cond.determineMatchesRule(limit);
 			
 		} else if (r.getCondition() instanceof PositiveConstraint) {
@@ -251,7 +264,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
 
 			// Create Query
-			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getAllElements(),
+			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),
 					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(), injective, limit, mask);
 
 			logger.debug(cypherQuery);
@@ -275,7 +288,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
 
 			// Create Query
-			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getAllElements(),
+			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),
 					constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(), injective, limit, mask);
 
 			logger.debug(cypherQuery);
@@ -322,7 +335,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			// a Body, then create a new NeoCondition, with current data and follow the
 			// structure from there for query execution
 			if (r.getCondition() instanceof ConstraintReference) {
-				var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(c, builder, helper, mask), this, c.getName(), builder, helper);
+				var cond = new NeoCondition(NeoConstraintFactory.createNeoConstraint(c, builder, queryData, mask), this, c.getName(), builder, queryData);
 				return cond.isStillValid(m);
 
 			} else if (cond instanceof NeoPositiveConstraint) {
@@ -333,7 +346,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				logger.info("Check if match for " + r.getName() + " WHEN " + constraint.getName() + " is still valid");
 
 				// Create Query
-				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getAllElements(),
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(),
 						injective, m);
 
@@ -351,7 +364,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				logger.info("Check if match for " + r.getName() + " WHEN " + constraint.getName() + " is still valid");
 
 				// Create Query
-				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getAllElements(),
+				var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
 						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition(),
 						injective, m);
 

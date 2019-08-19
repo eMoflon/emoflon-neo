@@ -31,7 +31,7 @@ public class NeoQueryData {
 	 * 
 	 * @return cCount int the new constraint unique id
 	 */
-	public int addConstraint() {
+	public int incrementCounterForConstraintsInQuery() {
 		return cCount++;
 	}
 
@@ -133,7 +133,7 @@ public class NeoQueryData {
 	 * @return NeoNode ArrayList of all Nodes and their Relation and Properties of
 	 *         the AtomicPattern
 	 */
-	public List<NeoNode> extractNodesAndRelations(EList<ModelNodeBlock> mnb) {
+	public List<NeoNode> extractConstraintNodesAndRelations(EList<ModelNodeBlock> mnb) {
 		List<NeoNode> tempNodes = new ArrayList<NeoNode>();
 
 		for (var n : mnb) {
