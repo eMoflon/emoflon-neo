@@ -1,11 +1,9 @@
 package org.emoflon.neo.neo4j.adapter.constraints;
 
-import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
 
@@ -17,13 +15,8 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
  * @author Jannik Hinz
  *
  */
-public class NeoAndBody {
-
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+public class NeoAndBody extends NeoConstraint {
 	private AndBody body;
-	private IBuilder builder;
-	private NeoHelper helper;
-	private NeoMask mask;
 
 	/**
 	 * @param body    of the current AndBody
@@ -31,54 +24,9 @@ public class NeoAndBody {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoAndBody(AndBody body, IBuilder builder, NeoHelper helper, NeoMask mask) {
+	public NeoAndBody(AndBody body, IBuilder builder, NeoHelper helper, NeoMask mask, boolean injective) {
+		super(builder, helper, mask, injective);
 		this.body = body;
-		this.builder = builder;
-		this.helper = helper;
-		this.mask = mask;
-	}
-
-	/**
-	 * Calculates and creates the nested constraints and conditions an return if
-	 * they satisfy or not
-	 * 
-	 * @return boolean true iff the complete nested Body and referenced constraints
-	 *         satisfy or false if not
-	 */
-	public boolean isSatisfied() {
-
-		// for all child in the constraint body
-		for (Object b : body.getChildren()) {
-
-			// if its an constraint body, check if this constraint satisfies
-			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper, mask);
-
-				if (((ConstraintReference) b).isNegated()) {
-					logger.info("Attention: Constraint is negated!");
-				}
-
-				var satisfied = consRef.isSatisfied();
-
-				if ((!satisfied && !((ConstraintReference) b).isNegated())
-						|| (satisfied && ((ConstraintReference) b).isNegated())) {
-
-					return false;
-				}
-
-			}
-			// if its an nested body, check if this nested body and its constraint satisfy
-			else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask);
-
-				if (!orbody.isSatisfied()) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-
 	}
 
 	/**
@@ -88,8 +36,8 @@ public class NeoAndBody {
 	 * @return NeoReturn Object with data and nodes in the nested constraints or
 	 *         Or-Bodies
 	 */
+	@Override
 	public NeoReturn getConstraintData() {
-
 		NeoReturn returnStmt = new NeoReturn();
 		var query = "";
 
@@ -100,13 +48,14 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper, mask);
+				var constraintReference = (ConstraintReference) b;
+				var consRef = NeoConstraintFactory.createNeoConstraint(constraintReference.getReference(), builder, helper, mask);
 				var consData = consRef.getConstraintData();
 
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 
-				if (((ConstraintReference) b).isNegated()) {
+				if (constraintReference.isNegated()) {
 					query += "NOT(" + consData.getWhereClause() + ")";
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere("NOT " + elem));
 				} else {
@@ -115,7 +64,7 @@ public class NeoAndBody {
 				}
 
 			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask);
+				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask, injective);
 				var consData = orbody.getConstraintData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
@@ -137,8 +86,8 @@ public class NeoAndBody {
 	 * @return NeoReturn Object with data and nodes in the nested conditions or
 	 *         Or-Bodies
 	 */
+	@Override
 	public NeoReturn getConditionData() {
-
 		NeoReturn returnStmt = new NeoReturn();
 		var query = "";
 
@@ -149,13 +98,14 @@ public class NeoAndBody {
 			}
 
 			if (b instanceof ConstraintReference) {
-				var consRef = new NeoConstraint(((ConstraintReference) b).getReference(), builder, helper, mask);
+				var constraintReference = (ConstraintReference) b;
+				var consRef = NeoConstraintFactory.createNeoConstraint(constraintReference.getReference(), builder, helper, mask);
 				var consData = consRef.getConditionData();
 
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
 
-				if (((ConstraintReference) b).isNegated()) {
+				if (constraintReference.isNegated()) {
 					query += "NOT(" + consData.getWhereClause() + ")";
 					consData.getIfThenWhere().forEach(elem -> returnStmt.addIfThenWhere("NOT " + elem));
 				} else {
@@ -164,7 +114,7 @@ public class NeoAndBody {
 				}
 
 			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask);
+				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask, injective);
 				var consData = orbody.getConditionData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
@@ -177,6 +127,11 @@ public class NeoAndBody {
 		returnStmt.addWhereClause("(" + query + ")");
 		return returnStmt;
 
+	}
+
+	@Override
+	public String getName() {
+		return "AND";
 	}
 
 }

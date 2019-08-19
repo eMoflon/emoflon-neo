@@ -18,18 +18,11 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
  * @author Jannik Hinz
  *
  */
-public class NeoNegativeConstraint {
-
-	private NeoHelper helper;
-
+public class NeoNegativeConstraint extends NeoConstraint {
 	private AtomicPattern ap;
 	private String name;
 	private List<NeoNode> nodes;
-
-	private boolean injective;
 	private int uuid;
-
-	private NeoMask mask;
 
 	/**
 	 * 
@@ -40,16 +33,14 @@ public class NeoNegativeConstraint {
 	 */
 	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
 			NeoMask mask) {
-		this.uuid = helper.addConstraint();
-		this.helper = helper;
-		this.name = ap.getName();
-		this.injective = injective;
-		this.mask = mask;
+		super(builder, helper, mask, injective);
 
+		this.uuid = helper.addConstraint();
+		this.name = ap.getName();
 		this.ap = NeoHelper.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(ap.getNodeBlocks()));
+		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(this.ap.getNodeBlocks()));
 	}
 
 	/**
@@ -57,6 +48,7 @@ public class NeoNegativeConstraint {
 	 * 
 	 * @return name of the constraint
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -115,8 +107,17 @@ public class NeoNegativeConstraint {
 	 * 
 	 * @return WHERE xy IS NULL OR yz IS NULL (query part for this constraint)
 	 */
-	public String getQueryString_WhereConditon() {
+	public String getQueryString_WhereCondition() {
 		return CypherPatternBuilder.whereNegativeConditionQuery(nodes);
 	}
 
+	@Override
+	public NeoReturn getConstraintData() {
+		return createReturnStatement(getNodes(), getQueryString_MatchConstraint(), getQueryString_WhereConstraint());
+	}
+
+	@Override
+	public NeoReturn getConditionData() {
+		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition());
+	}
 }

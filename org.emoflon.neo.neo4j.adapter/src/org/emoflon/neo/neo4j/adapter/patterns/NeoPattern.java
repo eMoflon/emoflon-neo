@@ -181,7 +181,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	protected String getQuery(String matchCond, String whereCond) {
 		return CypherPatternBuilder.constraintQuery_copyPaste(//
 				nodes, //
-				helper.getNodes(), //
+				helper.getAllElements(), //
 				matchCond, //
 				whereCond, //
 				injective, //

@@ -24,13 +24,12 @@ import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
  *
  */
 public class NeoHelper {
+	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	// Note: nodes and relations are stored in one list at a time
 	private Collection<String> matchElements;
 	private Collection<String> optionalElements;
 
 	private int cCount;
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	/**
 	 * initialize Helper
@@ -121,18 +120,13 @@ public class NeoHelper {
 	 * 
 	 * @return all Nodes from pattern and constraints
 	 */
-	public Collection<String> getNodes() {
+	public Collection<String> getAllElements() {
 		var list = new HashSet<>(matchElements);
 		list.addAll(optionalElements);
 		return list;
 	}
 
-	/**
-	 * Return the List of all Nodes from MATCH clauses
-	 * 
-	 * @return all Nodes from the pattern
-	 */
-	public Collection<String> getMatchNodes() {
+	public Collection<String> getMatchElements() {
 		return matchElements;
 	}
 
@@ -141,7 +135,7 @@ public class NeoHelper {
 	 * 
 	 * @return all Nodes from the constraints
 	 */
-	public Collection<String> getOptionalMatchNodes() {
+	public Collection<String> getOptionalMatchElements() {
 		return optionalElements;
 	}
 
@@ -178,6 +172,18 @@ public class NeoHelper {
 		}
 
 		return tempNodes;
+	}
+	
+	public void removeMatchElement(String name) {
+		if(matchElements.contains(name)) {
+			matchElements.remove(name);
+		}
+	}
+	
+	public void removeOptionalElement(String name) {
+		if(optionalElements.contains(name)) {
+			optionalElements.remove(name);
+		}
 	}
     
     public static List<String> extractElementsOnlyInConclusionPattern(Collection<NeoNode> ifPattern, Collection<NeoNode> thenPattern) {
@@ -222,17 +228,5 @@ public class NeoHelper {
 			return p;
 		}
 
-	}
-	
-	public void removeMatchElement(String name) {
-		if(matchElements.contains(name)) {
-			matchElements.remove(name);
-		}
-	}
-	
-	public void removeOptionalElement(String name) {
-		if(optionalElements.contains(name)) {
-			optionalElements.remove(name);
-		}
 	}
 }
