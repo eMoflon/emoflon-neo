@@ -57,7 +57,6 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
-	// TODO implement isStillValid for conditions
 	public void test_OneSokobanSelectedFigureRequired_StillValid_AfterDeletedEdge() {
 		var p = entities.getPattern_OneSokobanSelectedFigureRequired();
 		var matches = p.matcher().determineMatches();
