@@ -365,7 +365,6 @@ abstract rule moveSokoban {
 		-fields->to
 	}
 	
-	++next2 : Block
 }
 
 abstract rule pushBlock {
@@ -404,6 +403,26 @@ rule moveSokobanDown -> moveSokoban {
 }
 
 rule moveSokobanDownWithCondition -> moveSokobanDown
+	when forbid occupiedField
+	
+rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
+	from : Field {
+		-bottom-> $to
+	}
+	
+	++ f1: Field {
+		++ -right-> from
+	}
+	
+	++next2 : Block {
+		++ -field-> f1
+	}
+	++next3 : Boulder {
+		++ -field -> from
+	}
+}
+
+rule forTestOnlymoveSokobanDownWithConditionAndNewNodes -> moveSokobanDown
 	when forbid occupiedField
 
 rule pushBlockDown -> pushBlock, moveSokobanDown {

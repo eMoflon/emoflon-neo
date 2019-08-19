@@ -15,7 +15,7 @@ class CypherPatternBuilder {
 	 * Basic Cypher Strings
 	 ****************************/
 	def static String sourceNode(NeoNode n) {
-		'''(«n.varName»:«n.classType»«properties(n.properties)»)'''
+		'''(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«properties(n.properties)»)'''
 	}
 
 	def static String directedRelation(NeoRelation r) {
@@ -38,8 +38,8 @@ class CypherPatternBuilder {
 	}
 
 	protected def static CharSequence queryNode(NeoNode n) '''
-	(«n.varName»:«n.classType»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
-
+	(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
+	
 	/*****************************
 	 * Standard Matching Functions
 	 ****************************/
@@ -107,7 +107,7 @@ class CypherPatternBuilder {
 							«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 						«ENDIF»
 						«FOR r : n.relations SEPARATOR ', '»
-							(:«n.classType»)-[«r.varName»]->(:«r.toNodeLabel»)
+							(«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)-[«r.varName»]->(:«r.toNodeLabel»)
 						«ENDFOR»
 		«ENDFOR»'''
 	}
@@ -117,7 +117,7 @@ class CypherPatternBuilder {
 		MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 			«FOR r : n.relations SEPARATOR ', '»
-				(«n.varName»:«n.classType»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
+				(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
 			«ENDFOR»
 			«ENDFOR»'''
 	}
@@ -126,7 +126,7 @@ class CypherPatternBuilder {
 		var pairsToCheck = new ArrayList<Pair<String, String>>()
 		for (var i = 0; i < nodes.size; i++)
 			for (var j = i + 1; j < nodes.size; j++)
-				if (nodes.get(i).classType.equals(nodes.get(j).classType))
+				if (nodes.get(i).classTypes.equals(nodes.get(j).classTypes))
 					pairsToCheck.add(Pair.of(nodes.get(i).varName, nodes.get(j).varName))
 
 		'''«FOR pair : pairsToCheck SEPARATOR 'AND'»
@@ -431,7 +431,8 @@ class CypherPatternBuilder {
 	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR, Collection<NeoNode> modelNode, Collection<NeoRelation> modelRel) {
 	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
 	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»
-	 	«IF modelRel.size > 0»«ruleExecution_createModelRel(modelRel)»«ENDIF»'''
+	 	«IF modelRel.size > 0»«ruleExecution_createModelRel(modelRel)»«ENDIF»
+	 	'''
 	 }
 	 
 	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesK, Collection<NeoRelation> refK, Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
@@ -441,7 +442,7 @@ class CypherPatternBuilder {
 	 }
 	 
 	 def static String ruleExecution_matchModelNodes(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»«sourceNode(n)»«ENDFOR»'''
+	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»«sourceNode(n)»«FOR r : n.relations»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDFOR»'''
 	 }
 	 def static String ruleExecution_createModelRel(Collection<NeoRelation> rel) {
 	 	'''«FOR r:rel BEFORE ", " SEPARATOR ", "»(«r.fromNodeVar»)-[:metaType]->(«r.toNodeVar»)«ENDFOR»'''

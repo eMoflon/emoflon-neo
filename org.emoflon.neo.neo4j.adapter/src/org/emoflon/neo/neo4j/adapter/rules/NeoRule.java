@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
@@ -111,8 +112,15 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private void extractNodesAndRelations() {
 
 		for (var n : r.getNodeBlocks()) {
+			
+			List<String> labels = new ArrayList<String>();
+			
+			if(n.getAction() != null && n.getAction().getOp() == ActionOperator.CREATE)
+				labels = ((NeoCoreBuilder) builder).computeLabelsFromType(n.getType());
+			else
+				labels.add(n.getType().getName());
 
-			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
+			var node = new NeoNode(labels, helper.newPatternNode(n.getName()));
 			for (var p : n.getProperties()) {
 				node.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 			}
@@ -165,6 +173,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 				switch (n.getAction().getOp()) {
 				case CREATE:
+					node.addProperty("ename", "\"" + n.getName() + "\"");
 					nodesR.add(node);
 					logger.info("New ++ node: " + node.getVarName() + ":" + n.getType().getName());
 					helper.removeMatchElement(node.getVarName());
@@ -191,8 +200,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected void addModelNodesAndRefs() {
 		for(NeoNode n: nodesR) {
 			
+			// Match corresponding EClass Node
 			var eclassNode = new NeoNode("EClass","eClass_" + n.getVarName());
-			eclassNode.addProperty("ename", "\"" + n.getClassType().toString() + "\"");
+			eclassNode.addProperty("ename", "\"" + n.getClassTypes().iterator().next() + "\"");
 			modelNodes.add(eclassNode);
 			
 			var metaType = new ArrayList<String>();
