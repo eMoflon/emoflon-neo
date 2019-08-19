@@ -9,7 +9,7 @@ import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 /**
  * Class created, when a pattern has a condition. Runs relevant pattern and
@@ -21,11 +21,11 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
 public class NeoCondition {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private IBuilder builder;
-	private NeoHelper helper;
+	private NeoQueryData helper;
 	private NeoConstraint c;
 	private NeoRule r;
 
-	public NeoCondition(NeoConstraint c, NeoRule r, String name, IBuilder builder, NeoHelper helper) {
+	public NeoCondition(NeoConstraint c, NeoRule r, String name, IBuilder builder, NeoQueryData helper) {
 		this.builder = builder;
 		this.helper = helper;
 		this.c = c;

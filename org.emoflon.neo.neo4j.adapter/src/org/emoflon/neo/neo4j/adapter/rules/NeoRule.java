@@ -26,7 +26,7 @@ import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
@@ -42,7 +42,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	protected boolean injective;
 	protected boolean spoSemantics; // if false: DPO; if true SPO semantics
-	protected NeoHelper helper;
+	protected NeoQueryData helper;
 	
 	protected Rule r;
 	protected Constraint c;
@@ -62,7 +62,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 		injective = true;
 		spoSemantics = true;
-		helper = new NeoHelper();
+		helper = new NeoQueryData();
 		this.mask = mask;
 		this.builder = builder;
 		try {

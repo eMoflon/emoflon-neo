@@ -9,22 +9,22 @@ import org.emoflon.neo.neo4j.adapter.models.EmptyBuilder;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoConstraintFactory {
 	public static NeoConstraint createNeoConstraint(Constraint constraint) {
-		return createNeoConstraint(constraint, new EmptyBuilder(), new NeoHelper(), new EmptyMask());
+		return createNeoConstraint(constraint, new EmptyBuilder(), new NeoQueryData(), new EmptyMask());
 	}
 	
 	public static NeoConstraint createNeoConstraint(Constraint constraint, IBuilder builder) {
-		return createNeoConstraint(constraint, builder, new NeoHelper(), new EmptyMask());
+		return createNeoConstraint(constraint, builder, new NeoQueryData(), new EmptyMask());
 	}
 	
-	public static NeoConstraint createNeoConstraint(Constraint constraint, IBuilder builder, NeoHelper helper, NeoMask mask) {
+	public static NeoConstraint createNeoConstraint(Constraint constraint, IBuilder builder, NeoQueryData helper, NeoMask mask) {
 		return createNeoConstraint(constraint, builder, helper, mask, true);
 	}
 	
-	public static NeoConstraint createNeoConstraint(Constraint constraint, IBuilder builder, NeoHelper helper, NeoMask mask, boolean injective) {
+	public static NeoConstraint createNeoConstraint(Constraint constraint, IBuilder builder, NeoQueryData helper, NeoMask mask, boolean injective) {
 		if(constraint.getBody() instanceof PositiveConstraint) {
 			var ap = ((PositiveConstraint)constraint.getBody()).getPattern();
 			return new NeoPositiveConstraint(ap, injective, builder, helper, mask);

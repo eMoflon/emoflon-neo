@@ -5,27 +5,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
-import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
-import org.emoflon.neo.emsl.eMSL.Pattern;
-import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
-import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
-/**
- * Helper class for managing nodes, relations and their unique names in queries.
- * 
- * @author Jannik Hinz
- *
- */
-public class NeoHelper {
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-
+public class NeoQueryData {
 	private Collection<String> matchElements;
 	private Collection<String> optionalElements;
 
@@ -34,7 +19,7 @@ public class NeoHelper {
 	/**
 	 * initialize Helper
 	 */
-	public NeoHelper() {
+	public NeoQueryData() {
 		this.matchElements = new HashSet<String>();
 		this.optionalElements = new HashSet<String>();
 		this.cCount = 0;
@@ -184,49 +169,5 @@ public class NeoHelper {
 		if(optionalElements.contains(name)) {
 			optionalElements.remove(name);
 		}
-	}
-    
-    public static List<String> extractElementsOnlyInConclusionPattern(Collection<NeoNode> ifPattern, Collection<NeoNode> thenPattern) {
-        List<String> temp = new ArrayList<String>();
-        List<String> only = new ArrayList<String>();
-        
-        for(NeoNode n: ifPattern) {
-            temp.add(n.getVarName());
-            for(NeoRelation r: n.getRelations()) {
-                temp.add(r.getVarName());
-            }
-        }
-        for(NeoNode n:thenPattern) {
-            if(!temp.contains(n.getVarName()))
-                only.add(n.getVarName());
-            for(NeoRelation r: n.getRelations()) {
-                if(!temp.contains(r.getVarName())) {
-                    only.add(r.getVarName());
-                }
-            }
-        }
-        return only;
-    }
-
-	public static AtomicPattern getFlattenedPattern(AtomicPattern ap) {
-		try {
-			return (AtomicPattern) EMSLFlattener.flatten(ap);
-		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the pattern.");
-			e.printStackTrace();
-			return ap;
-		}
-
-	}
-
-	public static Pattern getFlattenedPattern(Pattern p) {
-		try {
-			return EMSLFlattener.flattenPattern(p);
-		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the pattern.");
-			e.printStackTrace();
-			return p;
-		}
-
 	}
 }

@@ -13,7 +13,8 @@ import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 
@@ -29,7 +30,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	protected List<NeoNode> nodes;
 	protected boolean injective;
-	protected NeoHelper helper;
+	protected NeoQueryData helper;
 	protected Pattern p;
 
 	protected IBuilder builder;
@@ -38,14 +39,14 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask) {
 		nodes = new ArrayList<>();
 		injective = true;
-		helper = new NeoHelper();
+		helper = new NeoQueryData();
 
 		this.builder = builder;
 		this.mask = mask;
 
 		// execute the Pattern flatterer. Needed if the pattern use refinements or other
 		// functions. Returns the complete flattened Pattern.
-		this.p = NeoHelper.getFlattenedPattern(p);
+		this.p = NeoUtil.getFlattenedPattern(p);
 
 		// get all nodes, relations and properties from the pattern
 		extractNodesAndRelations();

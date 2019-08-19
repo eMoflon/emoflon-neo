@@ -5,7 +5,7 @@ import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 /**
  * Class for creating nested AndBodies used in NeoConstraints or NeoConditions
@@ -24,7 +24,7 @@ public class NeoAndBody extends NeoConstraint {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoAndBody(AndBody body, IBuilder builder, NeoHelper helper, NeoMask mask, boolean injective) {
+	public NeoAndBody(AndBody body, IBuilder builder, NeoQueryData helper, NeoMask mask, boolean injective) {
 		super(builder, helper, mask, injective);
 		this.body = body;
 	}

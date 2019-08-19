@@ -13,7 +13,8 @@ import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 
 /**
  * Class representing an Implication (if/then) constraint, storing all relevant
@@ -42,17 +43,17 @@ public class NeoImplication extends NeoConstraint {
 	 *                  central node storage
 	 */
 	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, boolean injective, IBuilder builder,
-			NeoHelper helper, NeoMask mask) {
+			NeoQueryData helper, NeoMask mask) {
 		super(builder, helper, mask, injective);
 
 		this.name = "IF " + apIf.getName() + " THEN " + apThen.getName();
-		this.apIf = NeoHelper.getFlattenedPattern(apIf);
-		this.apThen = NeoHelper.getFlattenedPattern(apThen);
+		this.apIf = NeoUtil.getFlattenedPattern(apIf);
+		this.apThen = NeoUtil.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());
 		this.nodesThen = this.helper.extractNodesAndRelations(apThen.getNodeBlocks());
-		this.nodesThenButNotIf = NeoHelper.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
+		this.nodesThenButNotIf = NeoUtil.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
 
 	/**

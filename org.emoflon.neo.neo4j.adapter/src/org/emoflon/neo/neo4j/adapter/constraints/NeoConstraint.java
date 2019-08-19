@@ -10,7 +10,7 @@ import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 /**
  * Class created, when a constraint should be checked or a constraint/condition
@@ -24,7 +24,7 @@ public abstract class NeoConstraint implements IConstraint {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	protected IBuilder builder;
-	protected NeoHelper helper;
+	protected NeoQueryData helper;
 	protected NeoMask mask;
 	protected final boolean injective;
 
@@ -37,7 +37,7 @@ public abstract class NeoConstraint implements IConstraint {
 	 * @param helper  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	protected NeoConstraint(IBuilder builder, NeoHelper helper, NeoMask mask, boolean injective) {
+	protected NeoConstraint(IBuilder builder, NeoQueryData helper, NeoMask mask, boolean injective) {
 		this.builder = builder;
 		this.helper = helper;
 		this.mask = mask;
@@ -51,7 +51,7 @@ public abstract class NeoConstraint implements IConstraint {
 	 * @param neoCoreBuilder for creating and running Cypher queries
 	 */
 	protected NeoConstraint(IBuilder builder, NeoMask mask) {
-		this(builder, new NeoHelper(), mask, true);
+		this(builder, new NeoQueryData(), mask, true);
 	}
 
 	protected NeoConstraint(IBuilder builder) {

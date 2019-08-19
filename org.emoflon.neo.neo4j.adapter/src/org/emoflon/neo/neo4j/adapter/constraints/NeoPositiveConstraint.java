@@ -9,7 +9,8 @@ import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 
 /**
  * Class representing an ENFORCE constraint, storing all relevant data, creates
@@ -31,12 +32,12 @@ public class NeoPositiveConstraint extends NeoConstraint {
 	 * @param builder   for creating and running Cypher queries
 	 * @param helper    for creating nodes and
 	 */
-	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
+	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoQueryData helper,
 			NeoMask mask) {
 		super(builder, helper, mask, injective);
 		this.uuid = helper.addConstraint();
 		this.name = ap.getName();
-		this.ap = NeoHelper.getFlattenedPattern(ap);
+		this.ap = NeoUtil.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
 		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(this.ap.getNodeBlocks()));
