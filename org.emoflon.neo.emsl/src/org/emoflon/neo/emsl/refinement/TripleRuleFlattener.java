@@ -98,9 +98,6 @@ public class TripleRuleFlattener extends RuleFlattener {
 			entity.getCorrespondences().clear();
 			entity.getCorrespondences().addAll(mergeCorrespondences(entity, corrs, mergedSrcNodes, mergedTrgNodes));
 
-			// 4. step: merge attribute conditions
-			mergeAttributeConditions(entity, refinements);
-
 			checkForResolvedProxies(entity);
 		}
 

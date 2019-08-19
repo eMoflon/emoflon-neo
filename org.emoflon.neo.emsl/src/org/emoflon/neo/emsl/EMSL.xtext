@@ -142,7 +142,6 @@ AtomicPattern:
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
 	nodeBlocks+=ModelNodeBlock*
-	('attributeConditions' '{' attributeConditions+=AttributeCondition* '}')?
 	'}')?;
 
 Pattern:
@@ -188,30 +187,7 @@ Rule:
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
 	nodeBlocks+=ModelNodeBlock*
-	('attributeConditions' '{' attributeConditions+=AttributeCondition* '}')?
 	'}')? ('when' condition=Condition)?;
-
-AttributeCondition:
-	operator=LibraryAttributeCondition '(' (bindings+=ParameterBinding)? (',' bindings+=ParameterBinding)* ')';
-
-enum LibraryAttributeCondition:
-	EQ='eq' |
-	ADD='add' |
-	SUB='sub' |
-	DIVIDE='divide' |
-	MULTIPLY='multiply' |
-	MAX='max' |
-	MIN='min' |
-	ADDPREFIX='addPrefix' |
-	ADDSUFFIX='addSuffix' |
-	CONCAT='concat' |
-	SETDEFAULTNumber='setDefaultNumber' |
-	SETDEFAULTSTRING='setDefaultString' |
-	SETRANDOMSTRING='setRandomString' |
-	SMALLEROREQUAL='smallerOrEqual' |
-	STRINGTODOUBLE='stringToDouble' |
-	STRINGTOINT='stringToInt' 
-	;
 
 GraphGrammar:
 	(abstract?='abstract')? 'grammar' name=QualifiedName '{'
@@ -228,7 +204,6 @@ TripleRule:
 	('source' '{' srcNodeBlocks+=ModelNodeBlock* '}')?
 	('target' '{' trgNodeBlocks+=ModelNodeBlock* '}')?
 	('correspondence' '{' correspondences+=Correspondence* '}')?
-	('attributeConditions' '{' attributeConditions+=AttributeCondition* '}')?
 	'}')? ('forbid' nacs+=TripleRuleNAC ('&&' nacs+=TripleRuleNAC)*)?;
 
 Correspondence:
