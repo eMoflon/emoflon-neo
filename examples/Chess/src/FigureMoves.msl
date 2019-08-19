@@ -2,18 +2,13 @@ import "platform:/resource/Chess/src/ChessLanguage.msl"
 
 pattern byOwnColourOccupiedField {
 	blockingFig : Figure {
+		.colour : fig::colour 
 		-standsOn-> to
 	}
 	
 	fig : Figure
 	
 	to : Field
-	
-	attributeConditions {
-		eq( c1 : blockingFig::colour,
-			c2 : fig::colour
-		)
-	}
 }
 
 pattern bottomLeftReference {

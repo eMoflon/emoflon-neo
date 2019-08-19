@@ -110,7 +110,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 			} else if (p.type.type instanceof UserDefinedType) {
 				var propertyType = (p.type.type as UserDefinedType).reference
 				var literals = propertyType.literals
-				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal))) {
+				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal)) &&
+					!(p.value instanceof AttributeExpression && 
+						isOfCorrectType(p.value as AttributeExpression, p.type.type))) {
 					error(WRONG_PROPERTY_TYPE + propertyType.getName,
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}

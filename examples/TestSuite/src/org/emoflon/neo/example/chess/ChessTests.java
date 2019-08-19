@@ -14,8 +14,8 @@ import org.emoflon.neo.api.API_FigureMoves;
 import org.emoflon.neo.api.API_Patterns;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
-import org.emoflon.neo.neo4j.adapter.NeoCoMatch;
-import org.emoflon.neo.neo4j.adapter.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -51,9 +51,9 @@ class ChessTests extends ENeoTest {
 		expectSingleMatch(patterns.getPattern_KingsGambit());
 	}
 	
-	@Disabled
+	//@Disabled
 	@Test
-	void move_Figure() {
+	void move_WhitePawn() {
 		initDB(models.getModel_PawnOnBoard());
 		IRule<NeoMatch, NeoCoMatch> rule = figureMoves.getRule_MoveWhitePawn().rule();
 		var matches = rule.determineMatches();
