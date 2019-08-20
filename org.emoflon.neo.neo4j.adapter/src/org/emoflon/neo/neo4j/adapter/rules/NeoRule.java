@@ -73,7 +73,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 		extractNodesAndRelations();
 
-		// FIXME: Avoid cascade using factory
+		// FIXME: Avoid if/else cascade using factory
 		if (r.getCondition() != null) {
 
 			if (r.getCondition() instanceof ConstraintReference) {
@@ -100,13 +100,13 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		this(r, builder, new EmptyMask(), queryData);
 	}
 
-	// FIXME: Avoid directly creating NeoQueryData -- this should only be in a
+	// FIXME: Avoid directly creating NeoQueryData -- this should only be done in a
 	// factory
 	public NeoRule(Rule r, NeoCoreBuilder builder, NeoMask mask) {
 		this(r, builder, mask, new NeoQueryData());
 	}
 
-	// FIXME: Avoid directly creating NeoQueryData -- this should only be in a
+	// FIXME: Avoid directly creating NeoQueryData -- this should only be done in a
 	// factory
 	public NeoRule(Rule r, NeoCoreBuilder builder) {
 		this(r, builder, new NeoQueryData());
@@ -236,6 +236,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 
+		//FIXME  Avoid if/else cascade
 		if (r.getCondition() == null) {
 
 			logger.info("Searching matches for Pattern: " + getName());
