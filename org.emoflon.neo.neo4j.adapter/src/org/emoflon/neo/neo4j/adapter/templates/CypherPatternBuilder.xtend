@@ -308,7 +308,7 @@ class CypherPatternBuilder {
 		'''
 		«constraint_ifThen_matchQuery(nodes,nodes2,injective, mask)»
 		«constraint_withQuery(nodesMap)»
-		WHERE «whereNegativeConditionQuery(nodes2)» 
+		WHERE «whereNegativeConditionQuery_Nodes(nodes2)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
 	
@@ -389,13 +389,17 @@ class CypherPatternBuilder {
 		'''(m_«id-1» = m_«id»)'''
 	}
 
-	def static String wherePositiveConditionQuery(Collection<NeoNode> nodes) {
-		'''«FOR n : nodes SEPARATOR ' AND '»«n.varName» IS NOT NULL«FOR r:n.relations BEFORE ' AND ' SEPARATOR ' AND '»«r.varName»  IS NOT NULL«ENDFOR»«ENDFOR»'''
+	def static String wherePositiveConditionQuery(Collection<String> elem) {
+		'''«FOR e : elem SEPARATOR ' AND '»«e» IS NOT NULL«ENDFOR»'''
 	}
 
-	def static String whereNegativeConditionQuery(Collection<NeoNode> nodes) {
-		'''«FOR n : nodes SEPARATOR ' OR '»«n.varName» IS NULL«FOR r:n.relations BEFORE ' OR ' SEPARATOR ' OR '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
+	def static String whereNegativeConditionQuery(Collection<String> elem) {
+		'''«FOR e : elem SEPARATOR ' OR '»«e» IS NULL«ENDFOR»'''
 	}
+	
+	def static String whereNegativeConditionQuery_Nodes(Collection<NeoNode> nodes) {
+        '''«FOR n : nodes SEPARATOR ' OR '»«n.varName» IS NULL«FOR r:n.relations BEFORE ' OR ' SEPARATOR ' OR '»«r.varName»  IS NULL«ENDFOR»«ENDFOR»'''
+    }
 
 	def static String withCountQuery(Collection<NeoNode> nodes, int id) {
 

@@ -258,7 +258,9 @@ public class SokobanPatterns extends ENeoTest {
 		assertThat(entities.getPattern_OccupiedNext().matcher().countMatches(), is(9));
 	}
 	
+	// TODO Issue 152
 	@Test
+	@Disabled
 	public void test_BoulderOnEndField() {
 		expectNoMatch(entities.getPattern_BoulderOnEndField());
 	}
