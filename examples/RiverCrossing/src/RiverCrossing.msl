@@ -165,3 +165,36 @@ pattern figureEatsOtherFigure {
 		-on-> r1
 	}	
 }
+
+pattern puzzleSolved {
+	b:Board {
+		-figure -> f
+		-figure -> g
+		-figure -> c
+		-figure -> w
+		-side-> r1
+		-side-> r2
+	}
+	
+	f: Farmer {
+		-on -> r2
+	}
+	g: Goat {
+		-on -> r2
+	}
+	c: Cabbage {
+		-on -> r2
+	}
+	w: Wolf {
+		-on -> r2
+	}
+	
+	r1: RiverSide {
+		.side: "A"
+	}
+	r2: RiverSide {
+		.side: "B"
+	}
+}
+
+constraint gameEnded = enforce puzzleSolved
