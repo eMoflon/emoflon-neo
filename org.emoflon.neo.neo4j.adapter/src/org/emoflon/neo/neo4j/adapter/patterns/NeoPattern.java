@@ -49,36 +49,8 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 		this.p = NeoUtil.getFlattenedPattern(p);
 
 		// get all nodes, relations and properties from the pattern
-		extractNodesAndRelations();
-	}
-
-	/**
-	 * Creates and extracts all necessary information data from the flattened
-	 * Pattern. Create new NeoNode for any AtomicPattern node and corresponding add
-	 * Relations and Properties and save them to the node in an node list.
-	 */
-	private void extractNodesAndRelations() {
-		for (var n : p.getBody().getNodeBlocks()) {
-			var node = new NeoNode(n.getType().getName(), queryData.newPatternNode(n.getName()));
-
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					EMSLUtil.handleValue(p.getValue())));
-
-			extractPropertiesFromMask(node);
-
-			n.getRelations()
-					.forEach(r -> node.addRelation(
-							queryData.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
-									EMSLUtil.getAllTypes(r), r.getTarget().getName()),
-							EMSLUtil.getAllTypes(r), //
-							r.getLower(), r.getUpper(), //
-							r.getProperties(), //
-							r.getTarget().getType().getName(), //
-							r.getTarget().getName()));
-
-			nodes.add(node);
-		}
+		nodes = queryData.extractPatternNodesAndRelations(this.p.getBody().getNodeBlocks());
+		nodes.forEach(this::extractPropertiesFromMask);
 	}
 
 	protected void extractPropertiesFromMask(NeoNode node) {

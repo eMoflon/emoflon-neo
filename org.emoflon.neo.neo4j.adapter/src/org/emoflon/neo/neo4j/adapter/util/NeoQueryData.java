@@ -2,27 +2,27 @@ package org.emoflon.neo.neo4j.adapter.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 
 public class NeoQueryData {
-	private Collection<String> matchElements;
+	private Collection<String> patternElements;
 	private Collection<String> optionalElements;
 
-	private int cCount;
+	private int constraintCount;
 
 	/**
 	 * initialize Helper
 	 */
 	public NeoQueryData() {
-		this.matchElements = new HashSet<String>();
+		this.patternElements = new HashSet<String>();
 		this.optionalElements = new HashSet<String>();
-		this.cCount = 0;
+		this.constraintCount = 0;
 	}
 
 	/**
@@ -32,7 +32,7 @@ public class NeoQueryData {
 	 * @return cCount int the new constraint unique id
 	 */
 	public int incrementCounterForConstraintsInQuery() {
-		return cCount++;
+		return constraintCount++;
 	}
 
 	/**
@@ -42,8 +42,8 @@ public class NeoQueryData {
 	 * @param name of the new node variable
 	 * @return name of the new node variable for including in queries
 	 */
-	public String newPatternNode(String name) {
-		matchElements.add(name);
+	public String registerNewPatternNode(String name) {
+		patternElements.add(name);
 		return name;
 	}
 
@@ -57,9 +57,8 @@ public class NeoQueryData {
 	 * @param toName of the target node of the relation
 	 * @return name of the new relation variable for including in queries
 	 */
-	public String newPatternRelation(String name, int index, List<String> relVar, String toName) {
-		var relName = EMSLUtil.relationNameConvention(name, relVar, toName, index);
-		matchElements.add(relName);
+	public String registerNewPatternRelation(String relName) {
+		patternElements.add(relName);
 		return relName;
 	}
 
@@ -70,12 +69,12 @@ public class NeoQueryData {
 	 * @param name of the new node variable
 	 * @return name of the new node variable for including in queries
 	 */
-	public String newConstraintNode(String name) {
-		if (matchElements.contains(name)) {
+	private String registerNewConstraintNode(String name) {
+		if (patternElements.contains(name)) {
 			return name;
 		} else {
-			optionalElements.add(name + "_" + cCount);
-			return name + "_" + cCount;
+			optionalElements.add(name + "_" + constraintCount);
+			return name + "_" + constraintCount;
 		}
 	}
 
@@ -89,13 +88,12 @@ public class NeoQueryData {
 	 * @param toName of the target node of the relation
 	 * @return name of the new relation variable for including in queries
 	 */
-	public String newConstraintReference(String name, int index, List<String> relVar, String toName) {
-		var relName = EMSLUtil.relationNameConvention(name, relVar, toName, index);
-		if (matchElements.contains(relName)) {
+	private String registerNewConstraintRelation(String relName) {
+		if (patternElements.contains(relName)) {
 			return relName;
 		} else {
-			optionalElements.add(relName + "_" + cCount);
-			return relName + "_" + cCount;
+			optionalElements.add(relName + "_" + constraintCount);
+			return relName + "_" + constraintCount;
 		}
 	}
 
@@ -106,13 +104,13 @@ public class NeoQueryData {
 	 * @return all Nodes from pattern and constraints
 	 */
 	public Collection<String> getAllElements() {
-		var list = new HashSet<>(matchElements);
-		list.addAll(optionalElements);
-		return list;
+		var allElements = new HashSet<>(patternElements);
+		allElements.addAll(optionalElements);
+		return Collections.unmodifiableCollection(allElements);
 	}
 
 	public Collection<String> getMatchElements() {
-		return matchElements;
+		return Collections.unmodifiableCollection(patternElements);
 	}
 
 	/**
@@ -121,23 +119,14 @@ public class NeoQueryData {
 	 * @return all Nodes from the constraints
 	 */
 	public Collection<String> getOptionalMatchElements() {
-		return optionalElements;
+		return Collections.unmodifiableCollection(optionalElements);
 	}
 
-	/**
-	 * Creates and extracts all necessary information data from the Atomic Pattern.
-	 * Create new NeoNode for any AtomicPattern node and corresponding add Relations
-	 * and Properties and save them to the node in an node list.
-	 * 
-	 * @param mnb Collection of all nodes of a AtomicPattern
-	 * @return NeoNode ArrayList of all Nodes and their Relation and Properties of
-	 *         the AtomicPattern
-	 */
-	public List<NeoNode> extractConstraintNodesAndRelations(EList<ModelNodeBlock> mnb) {
-		List<NeoNode> tempNodes = new ArrayList<NeoNode>();
+	public List<NeoNode> extractPatternNodesAndRelations(List<ModelNodeBlock> mnb) {
+		List<NeoNode> nodes = new ArrayList<NeoNode>();
 
 		for (var n : mnb) {
-			var node = new NeoNode(n.getType().getName(), newConstraintNode(n.getName()));
+			var node = new NeoNode(n.getType().getName(), registerNewPatternNode(n.getName()));
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -145,28 +134,54 @@ public class NeoQueryData {
 
 			n.getRelations()
 					.forEach(r -> node.addRelation(
-							newConstraintReference(node.getVarName(), n.getRelations().indexOf(r),
-									EMSLUtil.getAllTypes(r), r.getTarget().getName()),
+							registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
+									EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r))),
 							EMSLUtil.getAllTypes(r), //
 							r.getLower(), r.getUpper(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
-							newConstraintNode(r.getTarget().getName())));
+							r.getTarget().getName()));
 
-			tempNodes.add(node);
+			nodes.add(node);
 		}
 
-		return tempNodes;
+		return nodes;
 	}
-	
+
+	public List<NeoNode> extractConstraintNodesAndRelations(List<ModelNodeBlock> mnb) {
+		List<NeoNode> nodes = new ArrayList<NeoNode>();
+
+		for (var n : mnb) {
+			var node = new NeoNode(n.getType().getName(), registerNewConstraintNode(n.getName()));
+
+			n.getProperties().forEach(p -> node.addProperty(//
+					p.getType().getName(), //
+					EMSLUtil.handleValue(p.getValue())));
+
+			n.getRelations()
+					.forEach(r -> node.addRelation(
+							registerNewConstraintRelation(EMSLUtil.relationNameConvention(node.getVarName(),
+									EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r))),
+							EMSLUtil.getAllTypes(r), //
+							r.getLower(), r.getUpper(), //
+							r.getProperties(), //
+							r.getTarget().getType().getName(), //
+							registerNewConstraintNode(r.getTarget().getName())));
+
+			nodes.add(node);
+		}
+
+		return nodes;
+	}
+
 	public void removeMatchElement(String name) {
-		if(matchElements.contains(name)) {
-			matchElements.remove(name);
+		if (patternElements.contains(name)) {
+			patternElements.remove(name);
 		}
 	}
-	
+
 	public void removeOptionalElement(String name) {
-		if(optionalElements.contains(name)) {
+		if (optionalElements.contains(name)) {
 			optionalElements.remove(name);
 		}
 	}

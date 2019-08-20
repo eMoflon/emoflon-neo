@@ -23,7 +23,7 @@ public class NeoNegativeConstraint extends NeoConstraint {
 	private AtomicPattern ap;
 	private String name;
 	private List<NeoNode> nodes;
-	private int uuid;
+	private final int uuid;
 
 	/**
 	 * 
