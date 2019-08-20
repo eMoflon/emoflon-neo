@@ -68,7 +68,7 @@ public class View extends JFrame {
 
 		/* Initialize all components and update the view for the first time */
 		initializeComponents();
-		updateView();
+		update();
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class View extends JFrame {
 			@Override
 			public void componentResized(ComponentEvent arg0) {
 				icons.clear();
-				updateView();
+				update();
 			}
 		});
 
@@ -214,7 +214,7 @@ public class View extends JFrame {
 	/**
 	 * Updates the view by setting up field text, icon, border, color etc.
 	 */
-	public void updateView() {
+	public void update() {
 		var selectedField = controller.getSelectedField();
 
 		for (int row = 0; row < controller.getHeight(); row++) {
@@ -298,6 +298,9 @@ public class View extends JFrame {
 		if (playAction.isPlayModus()) {
 			controller.selectField(field);
 		}
+		
+		controller.update();
+		update();
 	}
 
 	public void showMessage(String message) {
@@ -309,16 +312,20 @@ public class View extends JFrame {
 	}
 
 	protected void createFigure(String figureType, FieldButton fieldButton) {
-		/* Setup new connection between field and figure */
 		controller.setFigure(fieldButton.getField(), figureType);
+		controller.update();
+		update();
 	}
 
 	protected void createEndFigure(FieldButton fieldButton) {
 		controller.setEndPos(fieldButton.getField(), !fieldButton.getField().isEndPos());
-		updateView();
+		controller.update();
+		update();
 	}
 
 	protected void nullFigure(FieldButton fieldButton) {
-		controller.setFigure(fieldButton.getField(), null);
+		controller.setFigure(fieldButton.getField(), "NONE");
+		controller.update();
+		update();
 	}
 }

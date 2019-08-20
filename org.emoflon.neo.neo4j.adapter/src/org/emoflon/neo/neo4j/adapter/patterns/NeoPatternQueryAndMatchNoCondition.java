@@ -2,16 +2,17 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 
-	public NeoPatternQueryAndMatchNoCondition(Pattern p, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
-		super(p, builder, mask, queryData);
+	public NeoPatternQueryAndMatchNoCondition(List<ModelNodeBlock> nodeBlocks, String name, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
+		super(nodeBlocks, name, builder, mask, queryData);
 	}
 
 	@Override

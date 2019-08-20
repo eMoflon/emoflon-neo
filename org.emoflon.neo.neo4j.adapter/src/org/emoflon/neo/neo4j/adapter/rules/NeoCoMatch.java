@@ -7,8 +7,7 @@ import org.neo4j.driver.v1.Record;
 
 public class NeoCoMatch extends NeoMatch implements ICoMatch {
 
-	public NeoCoMatch(NeoRule rule, Record record) {
-		super(rule, record);
+	public NeoCoMatch(NeoPattern pattern, Record record) {
+		super(pattern, record);
 	}
-
 }

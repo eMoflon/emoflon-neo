@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.ConstraintReference;
-import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
@@ -14,7 +13,6 @@ import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
-import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 
@@ -31,25 +29,23 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	protected List<NeoNode> nodes;
 	protected boolean injective;
 	protected NeoQueryData queryData;
-	protected Pattern p;
-
 	protected IBuilder builder;
 	protected NeoMask mask;
+	protected String name;
+	protected boolean isNegated;
 
-	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
+	protected NeoPattern(List<ModelNodeBlock> nodeBlocks, String name, IBuilder builder, NeoMask mask,
+			NeoQueryData queryData) {
 		nodes = new ArrayList<>();
 		injective = true;
 		this.queryData = queryData;
 
 		this.builder = builder;
 		this.mask = mask;
-
-		// execute the Pattern flatterer. Needed if the pattern use refinements or other
-		// functions. Returns the complete flattened Pattern.
-		this.p = NeoUtil.getFlattenedPattern(p);
+		this.name = name;
 
 		// get all nodes, relations and properties from the pattern
-		nodes = queryData.extractPatternNodesAndRelations(this.p.getBody().getNodeBlocks());
+		nodes = queryData.extractPatternNodesAndRelations(nodeBlocks);
 		nodes.forEach(this::extractPropertiesFromMask);
 	}
 
@@ -89,7 +85,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public String getName() {
-		return p.getBody().getName();
+		return name;
 	}
 
 	/**
@@ -108,10 +104,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	public boolean isInjective() {
 		return injective;
-	}
-
-	public Pattern getPattern() {
-		return p;
 	}
 
 	/**
@@ -135,19 +127,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @return true if the match is still valid or false if not
 	 */
 	public abstract boolean isStillValid(NeoMatch neoMatch);
-
-	/**
-	 * Return is the given pattern an base on the constraint reference is negated
-	 * 
-	 * @return boolean if or not the given result of constraint reference must be
-	 *         negated
-	 */
-	public boolean isNegated() {
-		if (p.getCondition() != null)
-			return ((ConstraintReference) (p.getCondition())).isNegated();
-		else
-			return false;
-	}
 
 	public abstract String getQuery();
 
