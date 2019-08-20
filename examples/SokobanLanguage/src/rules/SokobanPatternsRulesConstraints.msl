@@ -520,3 +520,21 @@ pattern blockOnField {
 	f:Field
 }
 constraint sokOnFieldThenBlockOnField = if sokOnField then blockOnField
+
+
+
+rule moveSokobanDownTest -> moveSokoban {
+	to : Field {
+		-bottom(1..2)-> $from
+	}
+} when forbid byOwnColourOccupiedField
+
+pattern byOwnColourOccupiedField {
+	blockingFig : Figure {
+		-field-> to
+	}
+	
+	fig : Figure
+	
+	to : Field
+}

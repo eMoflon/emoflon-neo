@@ -292,7 +292,15 @@ class CypherPatternBuilder {
 	}
 
 	def static String withQuery(Collection<NeoNode> nodes) {
-		'''WITH «FOR n : nodes SEPARATOR ', '»«n.varName»«IF n.relations.size > 0»«FOR r: n.relations BEFORE ', ' SEPARATOR ', '»«r.varName»«ENDFOR»«ENDIF»«ENDFOR»'''
+		'''WITH «FOR n : nodes SEPARATOR ', '»«n.varName»«IF n.relations.size > 0»«FOR r: n.relations»«getRelationStringOnlyIfNotPath(r)»«ENDFOR»«ENDIF»«ENDFOR»'''
+	}
+	
+	def static String getRelationStringOnlyIfNotPath(NeoRelation r) {
+		if(r.isPath) {
+			''''''
+		} else {
+			''', «r.varName»'''
+		}
 	}
 
 	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,

@@ -77,4 +77,17 @@ public class SokobanRules extends ENeoTest {
 		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 		assertTrue(result.isPresent());
 	}
+	
+	@Test void testMoveSokobanDownPathsWithCond() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownTest().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 1);
+		
+		var onlyMatch = matches.iterator().next();
+		
+		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		assertTrue(result.isPresent());
+		assertFalse(onlyMatch.isStillValid());
+		
+	}
 }

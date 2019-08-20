@@ -160,17 +160,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 					case CREATE:
 						relR.add(rel);
 						relK.add(rel);
-						logger.info("New ++ relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
-								+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":"
-								+ rel.getToNodeLabel() + ")");
 						queryData.removeMatchElement(rel.getVarName());
 						break;
 					case DELETE:
 						relL.add(rel);
 						node.addRelation(rel);
-						logger.info("New -- relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
-								+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":"
-								+ rel.getToNodeLabel() + ")");
 						break;
 					default:
 						throw new UnsupportedOperationException("Undefined Operator.");
@@ -179,9 +173,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				} else {
 					node.addRelation(rel);
 					relK.add(rel);
-					logger.info("New klebegraph relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
-							+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":" + rel.getToNodeLabel()
-							+ ")");
 				}
 			}
 
@@ -191,13 +182,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				case CREATE:
 					node.addProperty("ename", "\"" + n.getName() + "\"");
 					nodesR.add(node);
-					logger.info("New ++ node: " + node.getVarName() + ":" + n.getType().getName());
 					queryData.removeMatchElement(node.getVarName());
 					break;
 				case DELETE:
 					nodesL.add(node);
 					nodes.add(node);
-					logger.info("New -- node: " + node.getVarName() + ":" + n.getType().getName());
 					break;
 				default:
 					throw new UnsupportedOperationException("Undefined Operator.");
@@ -206,7 +195,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			} else {
 				nodes.add(node);
 				nodesK.add(node);
-				logger.info("New klebegraph node: " + node.getVarName() + ":" + n.getType().getName());
 			}
 		}
 		
