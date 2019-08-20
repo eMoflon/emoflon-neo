@@ -2,9 +2,10 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
-import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
@@ -13,10 +14,11 @@ import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	protected NeoConstraint referencedConstraint;
+	protected boolean isNegated;
 
-	public NeoPatternQueryAndMatchConstraintRef(Pattern p, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
-		super(p, builder, mask, queryData);
-		ConstraintReference ref = (ConstraintReference) p.getCondition();
+	public NeoPatternQueryAndMatchConstraintRef(List<ModelNodeBlock> nodeBlocks, String name, ConstraintReference ref, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
+		super(nodeBlocks, name, builder, mask, queryData);
+		isNegated = ref.isNegated();
 		referencedConstraint = NeoConstraintFactory.createNeoConstraint(ref.getReference(), builder, queryData, mask);
 	}
 
@@ -29,7 +31,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery(getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), queryData.getAllElements(), isNegated(), limit);
+				condData.getWhereClause(), queryData.getAllElements(), isNegated, limit);
 		logger.debug(cypherQuery);
 
 		// run the query
@@ -44,7 +46,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 		return matches;
 	}
-
+	
 	/**
 	 * Get the data and nodes from the (nested) conditions and runs the query in the
 	 * database, analyze the results and return the matches
@@ -62,7 +64,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(getNodes(),
-				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), isNegated(), m);
+				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), isNegated, m);
 		logger.debug(cypherQuery);
 
 		// run the query
@@ -82,6 +84,6 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	public String getQuery() {
 		var condData = referencedConstraint.getConditionData();
 		return CypherPatternBuilder.conditionQuery_copyPaste(getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), queryData.getAllElements(), isNegated(), 0);
+				condData.getWhereClause(), queryData.getAllElements(), isNegated, 0);
 	}
 }

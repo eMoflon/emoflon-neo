@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.Rule;
+import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
@@ -39,25 +41,31 @@ public class NeoUtil {
         return only;
     }
 
-	public static AtomicPattern getFlattenedPattern(AtomicPattern ap) {
-		try {
-			return (AtomicPattern) EMSLFlattener.flatten(ap);
+    private static SuperType getFlattenedSuperType(SuperType st) {
+    	try {
+			return EMSLFlattener.flatten(st);
 		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the pattern.");
+			logger.error("EMSL Flattener was unable to process the entity.");
 			e.printStackTrace();
-			return ap;
+			return st;
 		}
-
+    }
+    
+	public static AtomicPattern getFlattenedPattern(AtomicPattern ap) {
+		return (AtomicPattern) getFlattenedSuperType(ap);
 	}
 
 	public static Pattern getFlattenedPattern(Pattern p) {
 		try {
 			return EMSLFlattener.flattenPattern(p);
 		} catch (FlattenerException e) {
-			logger.error("EMSL Flattener was unable to process the pattern.");
+			logger.error("EMSL Flattener was unable to process the entity.");
 			e.printStackTrace();
 			return p;
 		}
-
 	}
+	
+	public static Rule getFlattenedRule(Rule r) {
+		return (Rule) getFlattenedSuperType(r);
+	}	
 }
