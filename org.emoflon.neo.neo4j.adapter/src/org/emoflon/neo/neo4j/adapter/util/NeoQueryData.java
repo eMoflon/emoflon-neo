@@ -6,8 +6,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.emsl.eMSL.Action;
+import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 
@@ -127,35 +132,48 @@ public class NeoQueryData {
 			Function<String, String> registerNewRelation) {
 		List<NeoNode> nodes = new ArrayList<NeoNode>();
 
-		for (var n : mnb) {
+		for (var n : extractContextNodes(mnb)) {
 			var node = new NeoNode(n.getType().getName(), registerNewNode.apply(n.getName()));
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
 					EMSLUtil.handleValue(p.getValue())));
 
-			for(var r : n.getRelations()) {
-				
-				var varName = EMSLUtil.relationNameConvention(node.getVarName(),
-						EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r));
-				
-				if(r.getLower() == null && r.getUpper() ==  null) {
+			for (var r : extractContextRelations(n.getRelations())) {
+				var varName = EMSLUtil.relationNameConvention(node.getVarName(), EMSLUtil.getAllTypes(r),
+						r.getTarget().getName(), n.getRelations().indexOf(r));
+
+				if (r.getLower() == null && r.getUpper() == null) {
 					varName = registerNewRelation.apply(varName);
 				}
-				
-				node.addRelation(
-						varName,
-						EMSLUtil.getAllTypes(r), //
+
+				node.addRelation(varName, EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
 						registerNewNode.apply(r.getTarget().getName()));
 			}
-			
+
 			nodes.add(node);
 		}
 
 		return nodes;
+	}
+
+	private List<ModelRelationStatement> extractContextRelations(EList<ModelRelationStatement> relations) {
+		return relations.stream()//
+				.filter(rel -> redOrBlack(rel.getAction()))//
+				.collect(Collectors.toList());
+	}
+
+	private boolean redOrBlack(Action action) {
+		return action == null || action.getOp().equals(ActionOperator.DELETE);
+	}
+
+	private List<ModelNodeBlock> extractContextNodes(List<ModelNodeBlock> mnb) {
+		return mnb.stream()//
+				.filter(n -> redOrBlack(n.getAction()))//
+				.collect(Collectors.toList());
 	}
 
 	public List<NeoNode> extractPatternNodesAndRelations(List<ModelNodeBlock> mnb) {
