@@ -412,6 +412,7 @@ rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
 	
 	++ f1: Field {
 		++ -right-> from
+		.endPos: true
 	}
 	
 	++next2 : Block {
