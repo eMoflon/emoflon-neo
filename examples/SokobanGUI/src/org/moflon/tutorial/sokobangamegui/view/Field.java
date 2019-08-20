@@ -35,12 +35,4 @@ public class Field {
 	public String toString() {
 		return "[" + row + ", " +  col + "]";
 	}
-
-	public void setIsEndPos(boolean endPos) {
-		this.endPos = endPos;
-	}
-
-	public void setFigureName(Optional<String> figName) {
-		this.figName = figName;
-	}
 }

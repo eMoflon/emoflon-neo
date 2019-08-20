@@ -42,8 +42,6 @@ public class NeoController implements IController {
 		} catch (FlattenerException e) {
 			e.printStackTrace();
 		}
-
-		update();
 		view = createView.apply(this);
 	}
 
@@ -147,11 +145,6 @@ public class NeoController implements IController {
 			break;
 		}
 		default:
-			var access = api1.getRule_DeleteFigure();
-			var mask = access.mask();
-			mask.setB_fields_0_fCol(field.getCol());
-			mask.setB_fields_0_fRow(field.getRow());
-			access.rule(mask).apply();
 			break;
 		}
 	}
@@ -172,7 +165,7 @@ public class NeoController implements IController {
 							.setB_fields_0_fRow(field.getRow()))//
 					.apply();
 		}
-
+		
 		// TODO: Add remaining possibilities for movement
 	}
 
@@ -251,28 +244,5 @@ public class NeoController implements IController {
 	@Override
 	public void saveSOKFile(String filePath) {
 		// Write out board to a sok file
-	}
-
-	@Override
-	public void update() {
-		var accessEmptyFields = api1.getPattern_EmptyFields();
-		accessEmptyFields.matcher().determineMatches().forEach(f -> {
-			var fData = accessEmptyFields.data(f);
-			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col &&
-					fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
-						fld.setIsEndPos(fData.field.endPos);
-						fld.setFigureName(Optional.empty());
-					});
-		});
-
-		var accessOccupiedFields = api1.getPattern_OccupiedFields();
-		accessOccupiedFields.matcher().determineMatches().forEach(f -> {
-			var fData = accessOccupiedFields.data(f);
-			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col &&
-					fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
-						fld.setIsEndPos(fData.field.endPos);
-						fld.setFigureName(Optional.of(fData.type.ename));
-					});
-		});
 	}
 }

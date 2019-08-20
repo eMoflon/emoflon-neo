@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public final class LogUtils {
 	/**
-	 * Basic logging method that logs a message (given as format string +
+	 * Basic logging helper method that logs a message (given as format string +
 	 * optional arguments) using the given {@link Level}
 	 *
 	 * The method is built to be fail-safe, i.e. no exceptions will be thrown if the

@@ -93,8 +93,6 @@ pattern twoPacManOnBoard ->
 
 rule collectMarble {
 	pacMan:PacMan {
-		// TODO: Support for simple arithmetic?
-		//.marbles := pacMan::marbles + 1
 		-- -standsOn->from
 		++ -standsOn->to
 	}
@@ -108,6 +106,13 @@ rule collectMarble {
 	}
 	
 	to:Field
+	
+	attributeConditions {
+		add(summand : `pacMan::marbles,
+			summand : 1, 
+			sum 	: pacMan::marbles´
+		)
+	}
 }
 
 

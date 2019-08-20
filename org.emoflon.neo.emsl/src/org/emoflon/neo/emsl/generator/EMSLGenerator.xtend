@@ -134,7 +134,6 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
-			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
@@ -387,20 +386,16 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «accessClassName» extends NeoRuleAccess<«dataClassName»,«maskClassName»> {
-					«FOR node : rule.nodeBlocks»
-						public final String «node.name» = "«node.name»";
-					«ENDFOR»
-					
 					@Override
 					public NeoRule rule(){
 						var r = (Rule) spec.getEntities().get(«index»);
-						return NeoRuleFactory.createNeoRule(r, builder);
+						return new NeoRule(r, builder);
 					}
 					
 					@Override
 					public NeoRule rule(«maskClassName» mask) {
 						var r = (Rule) spec.getEntities().get(«index»);
-						return NeoRuleFactory.createNeoRule(r, builder, mask);
+						return new NeoRule(r, builder, mask);
 					}
 					
 					@Override

@@ -3,6 +3,8 @@ package org.emoflon.neo.engine.api.rules;
 import java.util.Optional;
 
 public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M> {
+
+
 	/**
 	 * Apply the rule for the match m with default rule application semantics as DPO
 	 * (this might fail if the rule is not applicable).
@@ -11,7 +13,9 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	 * @return The comatch of the resulting rule application. Empty if the rule was
 	 *         not applicable.
 	 */
-	Optional<CM> apply(M match);
+	default Optional<CM> apply(M match) {
+		return apply(match);
+	}
 
 	/**
 	 * Apply the rule for a random match.
@@ -23,5 +27,4 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 		return determineOneMatch().flatMap(m -> apply(m));
 	}
 
-	void useSPOSemantics(boolean spoSemantics);
 }

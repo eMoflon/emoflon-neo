@@ -3,6 +3,7 @@ package org.emoflon.neo.emsl.util
 import java.util.ArrayList
 import java.util.List
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeCondition
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.Metamodel
@@ -121,6 +122,26 @@ class EntityAttributeDispatcher {
 	 */
 	def dispatch getNodeBlocks(Rule entity) {
 		entity.nodeBlocks
+	}
+	
+	/*-------------------------------------------*/
+	/*--------- Get AttributeConditions ---------*/
+	/*-------------------------------------------*/
+	
+	def dispatch getAttributeConditions(AtomicPattern entity) {
+		entity.attributeConditions
+	}
+	
+	def dispatch getAttributeConditions(Rule entity) {
+		entity.attributeConditions
+	}
+	
+	def dispatch getAttributeConditions(TripleRule entity) {
+		entity.attributeConditions
+	}
+	
+	def dispatch getAttributeConditions(Model entity) {
+		new ArrayList<AttributeCondition>()
 	}
 	
 	/*-------------------------------------------*/

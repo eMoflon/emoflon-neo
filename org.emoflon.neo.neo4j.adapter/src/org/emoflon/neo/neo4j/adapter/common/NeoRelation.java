@@ -108,7 +108,7 @@ public class NeoRelation {
 	}
 	
 	public String getFromNodeLabel() {
-		return from.getClassTypes().iterator().next();
+		return from.getClassType();
 	}
 
 	/**

@@ -13,20 +13,25 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.Action;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.AttributeCondition;
+import org.emoflon.neo.emsl.eMSL.AttributeExpression;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType;
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 import org.emoflon.neo.emsl.eMSL.SuperType;
+import org.emoflon.neo.emsl.eMSL.Value;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -71,6 +76,9 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			// 3. step: add merged nodeBlocks to entity
 			dispatcher.getNodeBlocks(entity).clear();
 			dispatcher.getNodeBlocks(entity).addAll((mergedNodes));
+
+			// 4. step: merge attribute conditions
+			mergeAttributeConditions(entity, refinements);
 
 			checkForResolvedProxies(entity);
 		}
@@ -499,6 +507,100 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	}
 
 	/**
+	 * This method merges the attribute conditions given as a list. It searches for
+	 * duplicates in all collected conditions and removes them.
+	 * 
+	 * @param conditionList list of conditions that are to be merged.
+	 * @return list of merged attribute conditions.
+	 */
+	private ArrayList<AttributeCondition> mergeAttributeConditions(ArrayList<AttributeCondition> conditionList) {
+		var mergedConditions = new ArrayList<AttributeCondition>();
+
+		for (var c : conditionList) {
+			boolean alreadyIn = false;
+			for (var other : mergedConditions) {
+				if (c == other)
+					continue;
+				if (c.getOperator() == other.getOperator()) {
+					int numberOfIdenticalBindings = 0;
+					for (var b : c.getBindings()) {
+						for (var otherB : other.getBindings()) {
+							if (b.getName().equals(otherB.getName()) && equalValues(b.getValue(), otherB.getValue())
+									&& (b.isPre() && otherB.isPre() || !b.isPre() && !otherB.isPre())
+									&& (b.isPost() && otherB.isPost() || !b.isPost() && !otherB.isPost())) {
+								numberOfIdenticalBindings++;
+							}
+						}
+					}
+
+					if (numberOfIdenticalBindings == c.getBindings().size()) {
+						alreadyIn = true;
+					}
+				}
+
+			}
+			if (!alreadyIn) {
+				mergedConditions.add(c);
+			}
+		}
+		return mergedConditions;
+	}
+
+	/**
+	 * Compares the two given Values and returns whether they are equal or not.
+	 * 
+	 * @param val1 first value to be compared.
+	 * @param val2 second value to be compared.
+	 * @return true if val1 and val2 are equal, else false.
+	 */
+	@SuppressWarnings("unlikely-arg-type")
+	private boolean equalValues(Value val1, Value val2) {
+		if (val1.eClass() != val2.eClass())
+			return false;
+		else if (val1 instanceof AttributeExpression && val2 instanceof AttributeExpression
+				&& ((AttributeExpression) val1).getNode().getName()
+						.equals(((AttributeExpression) val2).getNode().getName())) {
+			if (((AttributeExpression) val1).getTarget() instanceof LinkAttributeExpTarget
+					&& ((AttributeExpression) val2).getTarget() instanceof LinkAttributeExpTarget) {
+				if (((LinkAttributeExpTarget) ((AttributeExpression) val1).getTarget()).getLink()
+						.equals(((LinkAttributeExpTarget) ((AttributeExpression) val2).getTarget()).getLink())
+						&& ((LinkAttributeExpTarget) ((AttributeExpression) val1).getTarget())
+								.getAttribute() == ((LinkAttributeExpTarget) ((AttributeExpression) val2).getTarget())
+										.getAttribute()) {
+					return true;
+				}
+			} else if (((AttributeExpression) val1).getTarget() instanceof NodeAttributeExpTarget
+					&& ((AttributeExpression) val2).getTarget() instanceof NodeAttributeExpTarget
+					&& ((NodeAttributeExpTarget) ((AttributeExpression) val1).getTarget())
+							.getAttribute() == ((NodeAttributeExpTarget) ((AttributeExpression) val2).getTarget())
+									.getAttribute()) {
+				return true;
+			}
+		} else if (val1 instanceof EnumValue && val2 instanceof EnumValue
+				&& ((EnumValue) val1).getLiteral().equals(((EnumValue) val2).getLiteral())) {
+			return true;
+		} else if (val1 instanceof PrimitiveInt && val2 instanceof PrimitiveInt
+				&& ((PrimitiveInt) val1).getLiteral() == ((PrimitiveInt) val2).getLiteral()) {
+			return true;
+		} else if (val1 instanceof PrimitiveBoolean && val2 instanceof PrimitiveBoolean
+				&& (((PrimitiveBoolean) val1).isTrue() && ((PrimitiveBoolean) val2).isTrue()
+						|| !((PrimitiveBoolean) val1).isTrue() && !((PrimitiveBoolean) val2).isTrue())) {
+			return true;
+		} else if (val1 instanceof PrimitiveString && val2 instanceof PrimitiveString
+				&& ((PrimitiveString) val1).getLiteral().equals(((PrimitiveString) val2).getLiteral())) {
+			return true;
+		} else {
+			if (val1.equals('_') && val2.equals('_')) {
+				return true;
+			} else if (val1.getName() != null && val2.getName() != null && val1.getName().equals(val2.getName())) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * This method creates a new NodeBlock from the given NodeBlock that was
 	 * referenced in the RefinementStatement. It also applies the relabeling of the
 	 * input.
@@ -592,6 +694,22 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				}
 			}
 		}
+	}
+
+	protected void mergeAttributeConditions(SuperType entity, List<RefinementCommand> refinements) {
+		var collectedAttributeConditions = new ArrayList<AttributeCondition>();
+		collectedAttributeConditions.addAll(dispatcher.getAttributeConditions(entity));
+		for (var s : refinements) {
+			if (s.getReferencedType() instanceof AtomicPattern) {
+				((AtomicPattern) s.getReferencedType()).getAttributeConditions()
+						.forEach(c -> collectedAttributeConditions.add(EcoreUtil.copy(c)));
+			} else {
+				collectedAttributeConditions.addAll(dispatcher.getAttributeConditions(s.getReferencedType()));
+			}
+		}
+		var mergedAttributeConditions = mergeAttributeConditions(collectedAttributeConditions);
+		dispatcher.getAttributeConditions(entity).clear();
+		mergedAttributeConditions.forEach(c -> dispatcher.getAttributeConditions(entity).add(EcoreUtil.copy(c)));
 	}
 
 	protected List<ModelNodeBlock> mergeEdgesOfNodeBlocks(SuperType entity,

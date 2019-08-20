@@ -13,7 +13,7 @@ import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
  *
  */
 public class NeoNode {
-	private Collection<String> classTypes;
+	private String classType;
 	private String varName;
 
 	private Collection<NeoProperty> properties;
@@ -23,17 +23,8 @@ public class NeoNode {
 	 * @param classType the label/class of the node
 	 * @param varName   the variable used later in Cypher
 	 */
-	public NeoNode(Collection<String> classTypes, String varName) {
-		this.classTypes = classTypes;
-		this.varName = varName;
-		this.properties = new ArrayList<>();
-		this.relations = new ArrayList<>();
-	}
-	
 	public NeoNode(String classType, String varName) {
-		super();
-		this.classTypes = new ArrayList<String>();
-		this.classTypes.add(classType);
+		this.classType = classType;
 		this.varName = varName;
 		this.properties = new ArrayList<>();
 		this.relations = new ArrayList<>();
@@ -44,8 +35,8 @@ public class NeoNode {
 	 * 
 	 * @return ClassType (the Label) of the node
 	 */
-	public Collection<String> getClassTypes() {
-		return classTypes;
+	public String getClassType() {
+		return classType;
 	}
 
 	/**

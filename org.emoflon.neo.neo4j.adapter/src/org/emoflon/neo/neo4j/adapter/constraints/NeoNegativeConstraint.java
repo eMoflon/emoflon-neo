@@ -9,8 +9,7 @@ import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
-import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
+import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
 
 /**
  * Class representing an FORBID constraint, storing all relevant data, creates
@@ -23,25 +22,25 @@ public class NeoNegativeConstraint extends NeoConstraint {
 	private AtomicPattern ap;
 	private String name;
 	private List<NeoNode> nodes;
-	private final int uuid;
+	private int uuid;
 
 	/**
 	 * 
 	 * @param ap        AtomicPattern of the FORBID constraint
 	 * @param injective boolean if the pattern should be matches injective or not
 	 * @param builder   for creating and running Cypher queries
-	 * @param queryData    for creating nodes and
+	 * @param helper    for creating nodes and
 	 */
-	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoQueryData queryData,
+	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
 			NeoMask mask) {
-		super(builder, queryData, mask, injective);
+		super(builder, helper, mask, injective);
 
-		this.uuid = queryData.incrementCounterForConstraintsInQuery();
+		this.uuid = helper.addConstraint();
 		this.name = ap.getName();
-		this.ap = NeoUtil.getFlattenedPattern(ap);
+		this.ap = NeoHelper.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodes = new ArrayList<>(this.queryData.extractConstraintNodesAndRelations(this.ap.getNodeBlocks()));
+		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(this.ap.getNodeBlocks()));
 	}
 
 	/**

@@ -33,8 +33,7 @@ public class PlayAction implements ActionListener {
 		
 		playModus = !playModus;
 		playToggle.setText(playModus? EDIT : PLAY);
-		
-		view.update();
+		view.updateView();
 	}
 	
 	private boolean isEditModus() {
