@@ -13,7 +13,8 @@ import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 
 /**
  * Class representing an Implication (if/then) constraint, storing all relevant
@@ -38,21 +39,21 @@ public class NeoImplication extends NeoConstraint {
 	 * @param apThen    AtomicPattern of the Then-Clause
 	 * @param injective boolean if the pattern should be matches injective or not
 	 * @param builder   for creating and running Cypher queries
-	 * @param helper    for creating nodes and relation with a unique name and
+	 * @param queryData    for creating nodes and relation with a unique name and
 	 *                  central node storage
 	 */
 	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, boolean injective, IBuilder builder,
-			NeoHelper helper, NeoMask mask) {
-		super(builder, helper, mask, injective);
+			NeoQueryData queryData, NeoMask mask) {
+		super(builder, queryData, mask, injective);
 
 		this.name = "IF " + apIf.getName() + " THEN " + apThen.getName();
-		this.apIf = NeoHelper.getFlattenedPattern(apIf);
-		this.apThen = NeoHelper.getFlattenedPattern(apThen);
+		this.apIf = NeoUtil.getFlattenedPattern(apIf);
+		this.apThen = NeoUtil.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());
-		this.nodesThen = this.helper.extractNodesAndRelations(apThen.getNodeBlocks());
-		this.nodesThenButNotIf = NeoHelper.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
+		this.nodesIf = this.queryData.extractConstraintNodesAndRelations(apIf.getNodeBlocks());
+		this.nodesThen = this.queryData.extractConstraintNodesAndRelations(apThen.getNodeBlocks());
+		this.nodesThenButNotIf = NeoUtil.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
 
 	/**
@@ -125,7 +126,7 @@ public class NeoImplication extends NeoConstraint {
 
 		// create query
 		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen,
-				nodesThenButNotIf, helper.getAllElements(), injective, mask);
+				nodesThenButNotIf, queryData.getAllElements(), injective, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -154,7 +155,7 @@ public class NeoImplication extends NeoConstraint {
 	@Override
 	public String getQuery() {
 		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf,
-				helper.getAllElements(), injective, mask);
+				queryData.getAllElements(), injective, mask);
 	}
 
 	@Override

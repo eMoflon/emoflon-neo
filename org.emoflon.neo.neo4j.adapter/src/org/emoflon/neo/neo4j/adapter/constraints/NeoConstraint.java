@@ -7,10 +7,9 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 /**
  * Class created, when a constraint should be checked or a constraint/condition
@@ -24,7 +23,7 @@ public abstract class NeoConstraint implements IConstraint {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	protected IBuilder builder;
-	protected NeoHelper helper;
+	protected NeoQueryData queryData;
 	protected NeoMask mask;
 	protected final boolean injective;
 
@@ -34,28 +33,14 @@ public abstract class NeoConstraint implements IConstraint {
 	 * 
 	 * @param c       given Constraint for extracting the data
 	 * @param builder for creating and running Cypher queries
-	 * @param helper  for creating nodes and relation with a unique name and central
+	 * @param queryData  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	protected NeoConstraint(IBuilder builder, NeoHelper helper, NeoMask mask, boolean injective) {
+	protected NeoConstraint(IBuilder builder, NeoQueryData queryData, NeoMask mask, boolean injective) {
 		this.builder = builder;
-		this.helper = helper;
+		this.queryData = queryData;
 		this.mask = mask;
 		this.injective = injective;
-	}
-
-	/**
-	 * Constructor will be executed, if the NeoConstraint is created from the test
-	 * 
-	 * @param c              given Constraint for extracting the data
-	 * @param neoCoreBuilder for creating and running Cypher queries
-	 */
-	protected NeoConstraint(IBuilder builder, NeoMask mask) {
-		this(builder, new NeoHelper(), mask, true);
-	}
-
-	protected NeoConstraint(IBuilder builder) {
-		this(builder, new EmptyMask());
 	}
 
 	/**

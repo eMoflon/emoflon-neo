@@ -5,7 +5,7 @@ import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 /**
  * Class for creating nested AndBodies used in NeoConstraints or NeoConditions
@@ -21,11 +21,11 @@ public class NeoAndBody extends NeoConstraint {
 	/**
 	 * @param body    of the current AndBody
 	 * @param builder for creating and running Cypher queries
-	 * @param helper  for creating nodes and relation with a unique name and central
+	 * @param queryData  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoAndBody(AndBody body, IBuilder builder, NeoHelper helper, NeoMask mask, boolean injective) {
-		super(builder, helper, mask, injective);
+	public NeoAndBody(AndBody body, IBuilder builder, NeoQueryData queryData, NeoMask mask, boolean injective) {
+		super(builder, queryData, mask, injective);
 		this.body = body;
 	}
 
@@ -49,7 +49,7 @@ public class NeoAndBody extends NeoConstraint {
 
 			if (b instanceof ConstraintReference) {
 				var constraintReference = (ConstraintReference) b;
-				var consRef = NeoConstraintFactory.createNeoConstraint(constraintReference.getReference(), builder, helper, mask);
+				var consRef = NeoConstraintFactory.createNeoConstraint(constraintReference.getReference(), builder, queryData, mask);
 				var consData = consRef.getConstraintData();
 
 				returnStmt.addNodes(consData.getNodes());
@@ -64,7 +64,7 @@ public class NeoAndBody extends NeoConstraint {
 				}
 
 			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask, injective);
+				var orbody = new NeoOrBody((OrBody) b, builder, queryData, mask, injective);
 				var consData = orbody.getConstraintData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
@@ -99,7 +99,7 @@ public class NeoAndBody extends NeoConstraint {
 
 			if (b instanceof ConstraintReference) {
 				var constraintReference = (ConstraintReference) b;
-				var consRef = NeoConstraintFactory.createNeoConstraint(constraintReference.getReference(), builder, helper, mask);
+				var consRef = NeoConstraintFactory.createNeoConstraint(constraintReference.getReference(), builder, queryData, mask);
 				var consData = consRef.getConditionData();
 
 				returnStmt.addNodes(consData.getNodes());
@@ -114,7 +114,7 @@ public class NeoAndBody extends NeoConstraint {
 				}
 
 			} else if (b instanceof OrBody) {
-				var orbody = new NeoOrBody((OrBody) b, builder, helper, mask, injective);
+				var orbody = new NeoOrBody((OrBody) b, builder, queryData, mask, injective);
 				var consData = orbody.getConditionData();
 				returnStmt.addNodes(consData.getNodes());
 				returnStmt.addOptionalMatch(consData.getOptionalMatchString());
