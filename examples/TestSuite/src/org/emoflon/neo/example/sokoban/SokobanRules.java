@@ -13,6 +13,7 @@ import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanRules extends ENeoTest {
@@ -23,6 +24,8 @@ public class SokobanRules extends ENeoTest {
 		initDB(new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SokobanSimpleTestField());
 	}
 	
+
+	@Disabled("Waiting for rules")
 	@Test
 	public void testMoveSokobanDown() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDown().rule();
@@ -41,8 +44,18 @@ public class SokobanRules extends ENeoTest {
 		assertFalse(notPossible.isPresent());
 	}
 	
+
+	@Disabled("Waiting for rules")
 	@Test
-	//@Disabled("TODO[Jannik] Implement rules")
+	public void testMoveSokobanDownNewNodes() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ForTestOnlyMoveSokobanDownAndNewNodes().rule();
+		var result = rule.apply();
+		assertTrue(result.isPresent());
+	}
+	
+
+	@Disabled("Waiting for rules")
+	@Test
 	public void testMoveSokobanDownWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownWithCondition().rule();
 		var matches = rule.determineMatches();
@@ -58,5 +71,23 @@ public class SokobanRules extends ENeoTest {
 		
 		Optional<NeoCoMatch> notPossible = rule.apply(onlyMatch);
 		assertFalse(notPossible.isPresent());
+	}
+	
+
+	@Disabled("Waiting for rules")
+	@Test
+	public void testMoveSokobanDownNewNodesWithCond() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ForTestOnlymoveSokobanDownWithConditionAndNewNodes().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 1);
+		var onlyMatch = matches.iterator().next();
+		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		assertTrue(result.isPresent());
+	}
+	
+	@Test void testMoveSokobanDownPathsWithCond() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownTest().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 0);		
 	}
 }

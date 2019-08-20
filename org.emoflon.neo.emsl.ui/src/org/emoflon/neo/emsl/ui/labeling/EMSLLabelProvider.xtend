@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.StyledString.Styler
 import org.eclipse.swt.graphics.TextStyle
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.AttributeCondition
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.Correspondence
@@ -173,13 +172,5 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 	
 	def image(TripleGrammar tgg){
 		'tgg.gif'
-	}
-	
-	def image(AttributeCondition ac){
-		'gt-condition.gif'
-	}
-	
-	def text(AttributeCondition ac){
-		ac.operator.literal	
 	}
 }

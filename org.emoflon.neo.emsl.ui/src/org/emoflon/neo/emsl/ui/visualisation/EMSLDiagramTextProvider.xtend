@@ -14,7 +14,6 @@ import org.eclipse.xtext.ui.editor.XtextEditor
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AndBody
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.AttributeCondition
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.Constraint
@@ -48,7 +47,6 @@ import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
-import org.emoflon.neo.emsl.eMSL.Value
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
@@ -406,9 +404,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					endlegend
 					«visualiseCondition(entityCopy)»
 				«ENDIF»
-				«IF entityCopy.body.attributeConditions !== null && !entityCopy.body.attributeConditions.isEmpty»
-					«visualiseAttributeConditions(entityCopy.body.attributeConditions)»
-				«ENDIF»
 			'''
 		} catch (AssertionError e) {
 			
@@ -526,9 +521,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»**!**(«ENDIF»«getConditionString(entityCopy)»«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»)«ENDIF»
 				endlegend
 				«visualiseCondition(entityCopy)»
-			«ENDIF»
-			«IF (entityCopy as Rule).attributeConditions !== null && !(entityCopy as Rule).attributeConditions.empty»
-				«visualiseAttributeConditions((entityCopy as Rule).attributeConditions)»
 			«ENDIF»
 		'''
 		} catch (FlattenerException e) {
@@ -842,12 +834,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	def List<? extends ConstraintBody> getChildren(ConstraintBody body){
 		return ConstraintTraversalHelper.getChildren(body)
 	}
-	
-	def String visualiseAttributeConditions(List<AttributeCondition> conditions) {
-		'''
-		note "«FOR c : conditions»**«c.operator»**(\n«FOR b : c.bindings»\t«b.name» : «IF b.pre»`«ENDIF»«IF b.value instanceof Value»«printValue(b.value)»«ENDIF»«IF b.post»´«ENDIF»,\n«ENDFOR»)\n«ENDFOR» " as N #WhiteSmoke
-		'''
-	}
 
 	/*-------------------------------------------------*/
 	/*---------------- Triple Rules -------------------*/
@@ -871,9 +857,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
 				«ENDFOR»
 			}
-			«IF (entityCopy as TripleRule).attributeConditions !== null && !(entityCopy as TripleRule).attributeConditions.empty»
-				«visualiseAttributeConditions((entityCopy as TripleRule).attributeConditions)»
-			«ENDIF»
 			«IF entityCopy.nacs.size > 0»
 				«visualiseTripleRuleNACs(entity)»
 			«ENDIF»

@@ -364,6 +364,7 @@ abstract rule moveSokoban {
 	b:SokobanLanguage.Board {
 		-fields->to
 	}
+	
 }
 
 abstract rule pushBlock {
@@ -402,6 +403,27 @@ rule moveSokobanDown -> moveSokoban {
 }
 
 rule moveSokobanDownWithCondition -> moveSokobanDown
+	when forbid occupiedField
+	
+rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
+	from : Field {
+		-bottom-> $to
+	}
+	
+	++ f1: Field {
+		++ -right-> from
+		.endPos: true
+	}
+	
+	++next2 : Block {
+		++ -field-> f1
+	}
+	++next3 : Boulder {
+		++ -field -> from
+	}
+}
+
+rule forTestOnlymoveSokobanDownWithConditionAndNewNodes -> moveSokobanDown
 	when forbid occupiedField
 
 rule pushBlockDown -> pushBlock, moveSokobanDown {
@@ -498,3 +520,29 @@ pattern blockOnField {
 	f:Field
 }
 constraint sokOnFieldThenBlockOnField = if sokOnField then blockOnField
+
+
+
+rule moveSokobanDownTest -> moveSokoban {
+	to : Field {
+		-bottom(1..2)-> $from
+	}
+} when forbid byOwnColourOccupiedField
+
+pattern byOwnColourOccupiedField {
+	blockingFig : Figure {
+		-field-> to
+	}
+	
+	fig : Figure
+	
+	to : Field
+}
+
+pattern patternMoveSokobanDownTest {
+	from : Field {
+		-bottom(1..2)-> to
+	}
+	to : Field 
+	
+} when forbid byOwnColourOccupiedField
