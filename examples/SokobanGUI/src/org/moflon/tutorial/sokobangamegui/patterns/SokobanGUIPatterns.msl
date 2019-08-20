@@ -83,10 +83,11 @@ pattern endFieldBlockedByBoulder -> endField {
 
 constraint noBlockedEndField = forbid endFieldBlockedByBoulder
 
+//FIXME:  Waiting for #150
 rule deleteFigure -> chooseField {
-	 -- fig:Figure {
-		-- -field->$f
-	}
+//	-- fig:Figure {
+//		-- -field->$f
+//	}
 }
 
 abstract rule createFigure -> chooseField {

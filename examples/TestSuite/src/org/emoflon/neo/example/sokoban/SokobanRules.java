@@ -44,9 +44,7 @@ public class SokobanRules extends ENeoTest {
 	@Test
 	public void testMoveSokobanDownNewNodes() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ForTestOnlyMoveSokobanDownAndNewNodes().rule();
-		var matches = rule.determineMatches();		
-		var onlyMatch = matches.iterator().next();
-		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		var result = rule.apply();
 		assertTrue(result.isPresent());
 	}
 	
