@@ -48,14 +48,14 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	private List<ModelNodeBlock> extractRedNodes(List<ModelNodeBlock> nodeBlocks) {
 		return nodeBlocks.stream()//
-				.filter(nb -> nb.getAction().getOp() != null)//
+				.filter(nb -> nb.getAction() != null)//
 				.filter(nb -> nb.getAction().getOp().equals(ActionOperator.DELETE))//
 				.collect(Collectors.toList());
 	}
 
 	private List<ModelNodeBlock> extractBlackNodes(List<ModelNodeBlock> nodeBlocks) {
 		return nodeBlocks.stream()//
-				.filter(nb -> nb.getAction().getOp() == null)//
+				.filter(nb -> nb.getAction() == null)//
 				.collect(Collectors.toList());
 	}
 
@@ -87,6 +87,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch match) {
 		// TODO[Jannik]
-		return null;
+		return Optional.empty();
 	}
 }
