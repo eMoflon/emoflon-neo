@@ -1,0 +1,167 @@
+metamodel RiverCrossing {
+	
+	Board {
+		-figure(4..4)->Figure
+		-side(2..2)->RiverSide
+	}
+	
+	Figure {
+		-eats(0..1)->Figure
+		-on(1..1)->RiverSide
+	}
+	
+	RiverSide {
+		-opposite(1..1)->RiverSide
+		.side: EString
+	}
+	
+	Farmer : Figure
+	Goat: Figure
+	Wolf: Figure
+	Cabbage: Figure
+	
+}
+
+model RiverCrossingStart {
+
+	b: Board {
+		-figure-> f
+		-figure-> g
+		-figure-> c
+		-figure-> w
+		-side->r1
+		-side->r2
+	}
+	
+	r2: RiverSide {
+		-opposite->r1
+		.side: "A"
+	}
+	
+	r1: RiverSide {
+		-opposite->r2
+		.side: "B"
+	}	
+				
+	f: Farmer {
+		-on->r1
+	}
+	g: Goat {
+		-eats->c
+		-on->r1
+	}
+	w: Wolf {
+		-eats->g
+		-on->r1
+	}
+	c: Cabbage {
+		-on->r1
+	}
+}
+
+pattern farmerOnOtherSide {
+	b: Board {
+		-figure->f
+		-side->r2
+	}
+	r2: RiverSide
+	f: Farmer {
+		-on-> r2
+	}
+}
+
+pattern wolfAndGoatOnOneSide {
+	b: Board {
+		-figure->w
+		-figure->g
+		-side->r1
+	}
+	r1: RiverSide
+	
+	w: Wolf {
+		-on->r1
+	}
+	g: Goat {
+		-on->r1
+	}
+	
+} when forbid farmerOnOtherSide 
+
+pattern goatAndCabbageOnOneSide {
+	b: Board {
+		-figure->c
+		-figure->g
+		-side->r1
+	}
+	r1: RiverSide
+	
+	c: Cabbage {
+		-on->r1
+	}
+	g: Goat {
+		-on->r1
+	}
+	
+} when forbid farmerOnOtherSide 
+
+rule moveEmptyToOtherSide {
+	
+	b: Board {
+		-figure->f
+		-side->r1
+		-side->r2
+	}
+	
+	r1: RiverSide
+	
+	r2: RiverSide
+	
+	f: Farmer {
+		-- -on->r1
+		++ -on->r2
+	}
+	
+} when !figureCanEatsOtherFigure
+
+rule moveOneFigureToOtherSide {
+	
+	b: Board {
+		-figure->f
+		-figure->f1
+		-side->r1
+		-side->r2
+	}
+	
+	r1: RiverSide
+	
+	r2: RiverSide
+	
+	f: Farmer {
+		-- -on->r1
+		++ -on->r2
+	}
+	f1: Figure {
+		-- -on->r1
+		++ -on->r2
+	}
+	
+} when !figureCanEatsOtherFigure
+
+constraint figureCanEatsOtherFigure = enforce figureEatsOtherFigure
+
+pattern figureEatsOtherFigure {
+	b: Board {
+		-figure->f2
+		-figure->f3
+		-side->r1
+	}
+	r1: RiverSide
+	
+	f2: Figure {
+		-eats->f3
+		-on-> r1
+	}
+	f3: Figure {
+		-on-> r1
+	}	
+}
