@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.eMSL.Rule;
@@ -36,9 +38,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected List<NeoNode> nodesL;
 	protected List<NeoNode> nodesR;
 	protected List<NeoNode> nodesK;
-	protected List<NeoRelation> relL;
+	protected List<NeoNode> modelNodes;
+ 	protected List<NeoRelation> relL;
 	protected List<NeoRelation> relR;
 	protected List<NeoRelation> relK;
+	protected List<NeoRelation> modelRel;
 
 	protected boolean injective;
 	protected boolean spoSemantics; // if false: DPO; if true SPO semantics
@@ -56,9 +60,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		nodesL = new ArrayList<>();
 		nodesR = new ArrayList<>();
 		nodesK = new ArrayList<>();
+		modelNodes = new ArrayList<>();
 		relL = new ArrayList<>();
 		relR = new ArrayList<>();
 		relK = new ArrayList<>();
+		modelRel = new ArrayList<>();
 
 		injective = true;
 		spoSemantics = true;
@@ -109,7 +115,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	// FIXME: Avoid directly creating NeoQueryData -- this should only be done in a
 	// factory
 	public NeoRule(Rule r, NeoCoreBuilder builder) {
-		this(r, builder, new NeoQueryData());
+		this(r, builder, new EmptyMask());
 	}
 
 	// FIXME: This should be moved to NeoQueryData so that registerNewNode and
@@ -122,8 +128,15 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private void extractNodesAndRelations() {
 
 		for (var n : r.getNodeBlocks()) {
+			
+			List<String> labels = new ArrayList<String>();
+			
+			if(n.getAction() != null && n.getAction().getOp() == ActionOperator.CREATE)
+				labels = ((NeoCoreBuilder) builder).computeLabelsFromType(n.getType());
+			else
+				labels.add(n.getType().getName());
 
-			var node = new NeoNode(n.getType().getName(), queryData.registerNewPatternNode(n.getName()));
+			var node = new NeoNode(labels, queryData.registerNewPatternNode(n.getName()));
 			for (var p : n.getProperties()) {
 				node.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 			}
@@ -133,8 +146,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			for (var r : n.getRelations()) {
 
 				var rel = new NeoRelation(node,
-						queryData.registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
-								EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r))),
+						EMSLUtil.relationNameConvention(node.getVarName(),
+								EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)),
 						EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
 						r.getProperties(), //
@@ -147,17 +160,16 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 					case CREATE:
 						relR.add(rel);
 						relK.add(rel);
-						logger.info("New ++ relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
-								+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":"
-								+ rel.getToNodeLabel() + ")");
 						queryData.removeMatchElement(rel.getVarName());
 						break;
 					case DELETE:
+						if(!rel.isPath())
 						relL.add(rel);
 						node.addRelation(rel);
-						logger.info("New -- relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
-								+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":"
-								+ rel.getToNodeLabel() + ")");
+						if(!rel.isPath()) {
+							queryData.registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
+								EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)));
+						}
 						break;
 					default:
 						throw new UnsupportedOperationException("Undefined Operator.");
@@ -166,9 +178,10 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				} else {
 					node.addRelation(rel);
 					relK.add(rel);
-					logger.info("New klebegraph relation: (" + node.getVarName() + ")-[" + rel.getVarName() + ":"
-							+ rel.getLower() + rel.getUpper() + "]->(" + rel.getToNodeVar() + ":" + rel.getToNodeLabel()
-							+ ")");
+					if(!rel.isPath()) {
+						queryData.registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
+							EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)));
+					}
 				}
 			}
 
@@ -176,14 +189,13 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 				switch (n.getAction().getOp()) {
 				case CREATE:
+					node.addProperty("ename", "\"" + n.getName() + "\"");
 					nodesR.add(node);
-					logger.info("New ++ node: " + node.getVarName() + ":" + n.getType().getName());
 					queryData.removeMatchElement(node.getVarName());
 					break;
 				case DELETE:
 					nodesL.add(node);
 					nodes.add(node);
-					logger.info("New -- node: " + node.getVarName() + ":" + n.getType().getName());
 					break;
 				default:
 					throw new UnsupportedOperationException("Undefined Operator.");
@@ -192,8 +204,34 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			} else {
 				nodes.add(node);
 				nodesK.add(node);
-				logger.info("New klebegraph node: " + node.getVarName() + ":" + n.getType().getName());
 			}
+		}
+		
+		addModelNodesAndRefs();
+	}
+	
+	protected void addModelNodesAndRefs() {
+		for(NeoNode n: nodesR) {
+			
+			// Match corresponding EClass Node
+			var eclassNode = new NeoNode("EClass","eClass_" + n.getVarName());
+			eclassNode.addProperty("ename", "\"" + n.getClassTypes().iterator().next() + "\"");
+			modelNodes.add(eclassNode);
+			
+			var metaType = new ArrayList<String>();
+			metaType.add("metaType");
+			
+			var metaTypeRel = new NeoRelation(
+					n,
+					n.getVarName()+"_metaType_"+"eClass_" + n.getVarName(), 
+					metaType,
+					"",
+					"",
+					new ArrayList<ModelPropertyStatement>(),
+					"EClass",
+					"eClass_" + n.getVarName());
+			
+			modelRel.add(metaTypeRel);
 		}
 	}
 
@@ -294,6 +332,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 			// Condition is positive Constraint (ENFORCE xyz)
 			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
+			
+			logger.debug(nodes.toString());
 
 			// Create Query
 			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),
@@ -394,10 +434,28 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch match) {
+		
+		var additionalQuery = "";
+		
+		if(r.getCondition() != null) {
+			if(r.getCondition() instanceof ConstraintReference) {
+				
+			} else if(cond instanceof NeoPositiveConstraint) {
+				var constraint = ((NeoPositiveConstraint) cond);
+				additionalQuery = CypherPatternBuilder.constraintQuery_ruleAdd(queryData.getAllElements(), modelNodes,
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition());
+			} else if(cond instanceof NeoNegativeConstraint) {
+				var constraint = ((NeoNegativeConstraint) cond);
+				additionalQuery = CypherPatternBuilder.constraintQuery_ruleAdd(queryData.getAllElements(), modelNodes,
+						constraint.getQueryString_MatchCondition(), constraint.getQueryString_WhereCondition());
+			} else {
+				// Note: If/Then conditions are currently not supported
+				throw new UnsupportedOperationException();
+			}
+		}
 
 		logger.info("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK,
-				relL, relR, relK);
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, spoSemantics, nodesL, nodesR, nodesK, relL, relR, relK, modelNodes, modelRel, additionalQuery);
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
