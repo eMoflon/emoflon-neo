@@ -538,3 +538,11 @@ pattern byOwnColourOccupiedField {
 	
 	to : Field
 }
+
+pattern patternMoveSokobanDownTest {
+	from : Field {
+		-bottom(1..2)-> to
+	}
+	to : Field 
+	
+} when forbid byOwnColourOccupiedField

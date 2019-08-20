@@ -134,16 +134,28 @@ public class NeoQueryData {
 					p.getType().getName(), //
 					EMSLUtil.handleValue(p.getValue())));
 
-			n.getRelations()
-					.forEach(r -> node.addRelation(
+			for(var r : n.getRelations()) {
+				if(r.getLower() != null || r.getUpper() !=  null) {
+					node.addRelation(
+							EMSLUtil.relationNameConvention(node.getVarName(),
+									EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)),
+							EMSLUtil.getAllTypes(r), //
+							r.getLower(), r.getUpper(), //
+							r.getProperties(), //
+							r.getTarget().getType().getName(), //
+							registerNewNode.apply(r.getTarget().getName()));
+				} else {
+					node.addRelation(
 							registerNewRelation.apply(EMSLUtil.relationNameConvention(node.getVarName(),
 									EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r))),
 							EMSLUtil.getAllTypes(r), //
 							r.getLower(), r.getUpper(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
-							registerNewNode.apply(r.getTarget().getName())));
-
+							registerNewNode.apply(r.getTarget().getName()));
+				}	
+			}
+			
 			nodes.add(node);
 		}
 

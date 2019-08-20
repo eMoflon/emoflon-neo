@@ -146,8 +146,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			for (var r : n.getRelations()) {
 
 				var rel = new NeoRelation(node,
-						queryData.registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
-								EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r))),
+						EMSLUtil.relationNameConvention(node.getVarName(),
+								EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)),
 						EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
 						r.getProperties(), //
@@ -163,8 +163,13 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						queryData.removeMatchElement(rel.getVarName());
 						break;
 					case DELETE:
+						if(!rel.isPath())
 						relL.add(rel);
 						node.addRelation(rel);
+						if(!rel.isPath()) {
+							queryData.registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
+								EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)));
+						}
 						break;
 					default:
 						throw new UnsupportedOperationException("Undefined Operator.");
@@ -173,6 +178,10 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				} else {
 					node.addRelation(rel);
 					relK.add(rel);
+					if(!rel.isPath()) {
+						queryData.registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
+							EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)));
+					}
 				}
 			}
 
@@ -323,6 +332,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 			// Condition is positive Constraint (ENFORCE xyz)
 			logger.info("Searching matches for Pattern: " + constraint.getName() + " ENFORCE " + constraint.getName());
+			
+			logger.debug(nodes.toString());
 
 			// Create Query
 			var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),

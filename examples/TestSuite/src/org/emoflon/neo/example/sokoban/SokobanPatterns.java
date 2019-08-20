@@ -397,4 +397,11 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}
+	
+	@Test
+	public void patternMoveSokobanDownTest() {
+		var p = entities.getPattern_PatternMoveSokobanDownTest();
+		var matches = p.matcher().determineMatches();
+		expectValidMatches(matches, matches.size());
+	}
 }
