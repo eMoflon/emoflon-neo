@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
 
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -122,11 +123,12 @@ public class NeoQueryData {
 		return Collections.unmodifiableCollection(optionalElements);
 	}
 
-	public List<NeoNode> extractPatternNodesAndRelations(List<ModelNodeBlock> mnb) {
+	private List<NeoNode> extractNodesAndRelations(List<ModelNodeBlock> mnb, Function<String, String> registerNewNode,
+			Function<String, String> registerNewRelation) {
 		List<NeoNode> nodes = new ArrayList<NeoNode>();
 
 		for (var n : mnb) {
-			var node = new NeoNode(n.getType().getName(), registerNewPatternNode(n.getName()));
+			var node = new NeoNode(n.getType().getName(), registerNewNode.apply(n.getName()));
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -134,13 +136,13 @@ public class NeoQueryData {
 
 			n.getRelations()
 					.forEach(r -> node.addRelation(
-							registerNewPatternRelation(EMSLUtil.relationNameConvention(node.getVarName(),
+							registerNewRelation.apply(EMSLUtil.relationNameConvention(node.getVarName(),
 									EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r))),
 							EMSLUtil.getAllTypes(r), //
 							r.getLower(), r.getUpper(), //
 							r.getProperties(), //
 							r.getTarget().getType().getName(), //
-							r.getTarget().getName()));
+							registerNewNode.apply(r.getTarget().getName())));
 
 			nodes.add(node);
 		}
@@ -148,30 +150,12 @@ public class NeoQueryData {
 		return nodes;
 	}
 
+	public List<NeoNode> extractPatternNodesAndRelations(List<ModelNodeBlock> mnb) {
+		return extractNodesAndRelations(mnb, this::registerNewPatternNode, this::registerNewPatternRelation);
+	}
+
 	public List<NeoNode> extractConstraintNodesAndRelations(List<ModelNodeBlock> mnb) {
-		List<NeoNode> nodes = new ArrayList<NeoNode>();
-
-		for (var n : mnb) {
-			var node = new NeoNode(n.getType().getName(), registerNewConstraintNode(n.getName()));
-
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					EMSLUtil.handleValue(p.getValue())));
-
-			n.getRelations()
-					.forEach(r -> node.addRelation(
-							registerNewConstraintRelation(EMSLUtil.relationNameConvention(node.getVarName(),
-									EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r))),
-							EMSLUtil.getAllTypes(r), //
-							r.getLower(), r.getUpper(), //
-							r.getProperties(), //
-							r.getTarget().getType().getName(), //
-							registerNewConstraintNode(r.getTarget().getName())));
-
-			nodes.add(node);
-		}
-
-		return nodes;
+		return extractNodesAndRelations(mnb, this::registerNewConstraintNode, this::registerNewConstraintRelation);
 	}
 
 	public void removeMatchElement(String name) {
