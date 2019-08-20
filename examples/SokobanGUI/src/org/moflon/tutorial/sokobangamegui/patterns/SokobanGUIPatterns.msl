@@ -1,3 +1,4 @@
+
 import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 pattern board {
@@ -82,8 +83,10 @@ pattern endFieldBlockedByBoulder -> endField {
 
 constraint noBlockedEndField = forbid endFieldBlockedByBoulder
 
-rule deleteFigure {
-	//-- fig:Figure
+rule deleteFigure -> chooseField {
+	 -- fig:Figure {
+		-- -field->$f
+	}
 }
 
 abstract rule createFigure -> chooseField {
