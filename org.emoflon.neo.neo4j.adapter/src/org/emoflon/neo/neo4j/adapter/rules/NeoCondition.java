@@ -9,7 +9,7 @@ import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 /**
  * Class created, when a pattern has a condition. Runs relevant pattern and
@@ -21,13 +21,13 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
 public class NeoCondition {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 	private IBuilder builder;
-	private NeoHelper helper;
+	private NeoQueryData queryData;
 	private NeoConstraint c;
 	private NeoRule r;
 
-	public NeoCondition(NeoConstraint c, NeoRule r, String name, IBuilder builder, NeoHelper helper) {
+	public NeoCondition(NeoConstraint c, NeoRule r, String name, IBuilder builder, NeoQueryData queryData) {
 		this.builder = builder;
-		this.helper = helper;
+		this.queryData = queryData;
 		this.c = c;
 		this.r = r;
 	}
@@ -40,7 +40,7 @@ public class NeoCondition {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery(r.getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), helper.getAllElements(), r.isNegated(), limit);
+				condData.getWhereClause(), queryData.getAllElements(), r.isNegated(), limit);
 		logger.debug(cypherQuery);
 
 		// run the query
@@ -72,7 +72,7 @@ public class NeoCondition {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(r.getNodes(),
-				condData.getOptionalMatchString(), condData.getWhereClause(), helper.getAllElements(), r.isNegated(),
+				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), r.isNegated(),
 				m);
 		logger.debug(cypherQuery);
 

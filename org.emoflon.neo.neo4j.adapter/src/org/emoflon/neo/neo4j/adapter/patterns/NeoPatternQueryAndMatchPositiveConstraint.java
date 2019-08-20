@@ -8,6 +8,7 @@ import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoPositiveConstraint;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 
@@ -18,10 +19,10 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 		return getQuery(pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition());
 	}
 
-	public NeoPatternQueryAndMatchPositiveConstraint(Pattern p, IBuilder builder, NeoMask mask) {
-		super(p, builder, mask);
+	public NeoPatternQueryAndMatchPositiveConstraint(Pattern p, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
+		super(p, builder, mask, queryData);
 		PositiveConstraint cons = (PositiveConstraint) p.getCondition();
-		pcond = new NeoPositiveConstraint(cons.getPattern(), injective, builder, helper, mask);
+		pcond = new NeoPositiveConstraint(cons.getPattern(), injective, builder, queryData, mask);
 	}
 
 	@Override
@@ -30,7 +31,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 		logger.info("Searching matches for Pattern: " + p.getBody().getName() + " ENFORCE " + pcond.getName());
 
 		// Create Query
-		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, helper.getAllElements(),
+		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),
 				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition(), injective, limit, mask);
 
 		logger.debug(cypherQuery);
@@ -54,7 +55,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 		logger.info("Check if match for " + p.getBody().getName() + " WHEN " + pcond.getName() + " is still valid");
 
 		// Create Query
-		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helper.getAllElements(),
+		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
 				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition(), injective, m);
 
 		logger.debug(cypherQuery);

@@ -7,6 +7,7 @@ import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.neo4j.adapter.models.EmptyBuilder;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoPatternFactory {
 
@@ -20,13 +21,13 @@ public class NeoPatternFactory {
 
 	public static NeoPattern createNeoPattern(Pattern pattern, IBuilder builder, NeoMask mask) {
 		if (pattern.getCondition() == null)
-			return new NeoPatternQueryAndMatchNoCondition(pattern, builder, mask);
+			return new NeoPatternQueryAndMatchNoCondition(pattern, builder, mask, new NeoQueryData());
 		else if (pattern.getCondition() instanceof ConstraintReference)
-			return new NeoPatternQueryAndMatchConstraintRef(pattern, builder, mask);
+			return new NeoPatternQueryAndMatchConstraintRef(pattern, builder, mask, new NeoQueryData());
 		else if (pattern.getCondition() instanceof PositiveConstraint)
-			return new NeoPatternQueryAndMatchPositiveConstraint(pattern, builder, mask);
+			return new NeoPatternQueryAndMatchPositiveConstraint(pattern, builder, mask, new NeoQueryData());
 		else if (pattern.getCondition() instanceof NegativeConstraint)
-			return new NeoPatternQueryAndMatchNegativeConstraint(pattern, builder, mask);
+			return new NeoPatternQueryAndMatchNegativeConstraint(pattern, builder, mask, new NeoQueryData());
 		else
 			throw new IllegalArgumentException("Unknown type of pattern:" + pattern);
 	}

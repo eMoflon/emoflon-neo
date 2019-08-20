@@ -13,7 +13,8 @@ import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 
@@ -29,55 +30,27 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	protected List<NeoNode> nodes;
 	protected boolean injective;
-	protected NeoHelper helper;
+	protected NeoQueryData queryData;
 	protected Pattern p;
 
 	protected IBuilder builder;
 	protected NeoMask mask;
 
-	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask) {
+	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask, NeoQueryData queryData) {
 		nodes = new ArrayList<>();
 		injective = true;
-		helper = new NeoHelper();
+		this.queryData = queryData;
 
 		this.builder = builder;
 		this.mask = mask;
 
 		// execute the Pattern flatterer. Needed if the pattern use refinements or other
 		// functions. Returns the complete flattened Pattern.
-		this.p = NeoHelper.getFlattenedPattern(p);
+		this.p = NeoUtil.getFlattenedPattern(p);
 
 		// get all nodes, relations and properties from the pattern
-		extractNodesAndRelations();
-	}
-
-	/**
-	 * Creates and extracts all necessary information data from the flattened
-	 * Pattern. Create new NeoNode for any AtomicPattern node and corresponding add
-	 * Relations and Properties and save them to the node in an node list.
-	 */
-	private void extractNodesAndRelations() {
-		for (var n : p.getBody().getNodeBlocks()) {
-			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
-
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					EMSLUtil.handleValue(p.getValue())));
-
-			extractPropertiesFromMask(node);
-
-			n.getRelations()
-					.forEach(r -> node.addRelation(
-							helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
-									EMSLUtil.getAllTypes(r), r.getTarget().getName()),
-							EMSLUtil.getAllTypes(r), //
-							r.getLower(), r.getUpper(), //
-							r.getProperties(), //
-							r.getTarget().getType().getName(), //
-							r.getTarget().getName()));
-
-			nodes.add(node);
-		}
+		nodes = queryData.extractPatternNodesAndRelations(this.p.getBody().getNodeBlocks());
+		nodes.forEach(this::extractPropertiesFromMask);
 	}
 
 	protected void extractPropertiesFromMask(NeoNode node) {
@@ -181,7 +154,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	protected String getQuery(String matchCond, String whereCond) {
 		return CypherPatternBuilder.constraintQuery_copyPaste(//
 				nodes, //
-				helper.getAllElements(), //
+				queryData.getAllElements(), //
 				matchCond, //
 				whereCond, //
 				injective, //
