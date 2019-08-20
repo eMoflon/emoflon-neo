@@ -4,7 +4,7 @@ import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.OrBody;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 /**
  * Class for creating nested AndBodies used in NeoConstraints or NeoConditions
@@ -13,46 +13,18 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
  * @author Jannik Hinz
  *
  */
-public class NeoOrBody {
-
+public class NeoOrBody extends NeoConstraint {
 	private OrBody body;
-	private IBuilder builder;
-	private NeoHelper helper;
-	private NeoMask mask;
-
+	
 	/**
 	 * @param body    of the current OrBody
 	 * @param builder for creating and running Cypher queries
-	 * @param helper  for creating nodes and relation with a unique name and central
+	 * @param queryData  for creating nodes and relation with a unique name and central
 	 *                node storage
 	 */
-	public NeoOrBody(OrBody body, IBuilder builder, NeoHelper helper, NeoMask mask) {
+	public NeoOrBody(OrBody body, IBuilder builder, NeoQueryData queryData, NeoMask mask, boolean injective) {
+		super(builder, queryData, mask, injective);
 		this.body = body;
-		this.builder = builder;
-		this.helper = helper;
-		this.mask = mask;
-	}
-
-	/**
-	 * Calculates and creates the nested constraints and conditions an return if
-	 * they satisfy or not
-	 * 
-	 * @return boolean true iff the complete nested Body and referenced constraints
-	 *         satisfy or false if not
-	 */
-	public boolean isSatisfied() {
-
-		// for all child in the constraint body
-		for (AndBody b : body.getChildren()) {
-			var andbody = new NeoAndBody(b, builder, helper, mask);
-
-			if (andbody.isSatisfied()) {
-				return true;
-			}
-		}
-
-		return false;
-
 	}
 
 	/**
@@ -60,13 +32,13 @@ public class NeoOrBody {
 	 * 
 	 * @return NeoReturn Object with data and nodes in the nested And-Bodies
 	 */
+	@Override
 	public NeoReturn getConstraintData() {
-
 		NeoReturn returnStmt = new NeoReturn();
 		var query = "";
 
 		for (AndBody b : body.getChildren()) {
-			var andbody = new NeoAndBody(b, builder, helper, mask);
+			var andbody = new NeoAndBody(b, builder, queryData, mask, injective);
 			var consData = andbody.getConstraintData();
 			returnStmt.addNodes(consData.getNodes());
 			returnStmt.addOptionalMatch(consData.getOptionalMatchString());
@@ -88,13 +60,13 @@ public class NeoOrBody {
 	 * 
 	 * @return NeoReturn Object with data and nodes in the nested And-Bodies
 	 */
+	@Override
 	public NeoReturn getConditionData() {
-
 		NeoReturn returnStmt = new NeoReturn();
 		var query = "";
 
 		for (AndBody b : body.getChildren()) {
-			var andbody = new NeoAndBody(b, builder, helper, mask);
+			var andbody = new NeoAndBody(b, builder, queryData, mask, injective);
 			var consData = andbody.getConditionData();
 			returnStmt.addNodes(consData.getNodes());
 			returnStmt.addOptionalMatch(consData.getOptionalMatchString());
@@ -110,6 +82,11 @@ public class NeoOrBody {
 		returnStmt.addWhereClause("(" + query + ")");
 		return returnStmt;
 
+	}
+
+	@Override
+	public String getName() {
+		return "OR";
 	}
 
 }

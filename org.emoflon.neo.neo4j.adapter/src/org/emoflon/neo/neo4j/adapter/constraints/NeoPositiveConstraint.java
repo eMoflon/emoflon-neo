@@ -9,7 +9,8 @@ import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 
 /**
  * Class representing an ENFORCE constraint, storing all relevant data, creates
@@ -18,38 +19,28 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
  * @author Jannik Hinz
  *
  */
-public class NeoPositiveConstraint {
-
-	private NeoHelper helper;
-
+public class NeoPositiveConstraint extends NeoConstraint {
 	private AtomicPattern ap;
 	private String name;
 	private List<NeoNode> nodes;
-
-	private boolean injective;
 	private int uuid;
-
-	private NeoMask mask;
 
 	/**
 	 * 
 	 * @param ap        AtomicPattern of the FORBID constraint
 	 * @param injective boolean if the pattern should be matches injective or not
 	 * @param builder   for creating and running Cypher queries
-	 * @param helper    for creating nodes and
+	 * @param queryData    for creating nodes and
 	 */
-	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
+	public NeoPositiveConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoQueryData queryData,
 			NeoMask mask) {
-		this.uuid = helper.addConstraint();
-		this.helper = helper;
+		super(builder, queryData, mask, injective);
+		this.uuid = queryData.incrementCounterForConstraintsInQuery();
 		this.name = ap.getName();
-		this.injective = injective;
-		this.mask = mask;
-
-		this.ap = NeoHelper.getFlattenedPattern(ap);
+		this.ap = NeoUtil.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(ap.getNodeBlocks()));
+		this.nodes = new ArrayList<>(this.queryData.extractConstraintNodesAndRelations(this.ap.getNodeBlocks()));
 	}
 
 	/**
@@ -57,6 +48,7 @@ public class NeoPositiveConstraint {
 	 * 
 	 * @return name of the constraint
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -120,4 +112,13 @@ public class NeoPositiveConstraint {
 		return CypherPatternBuilder.wherePositiveConditionQuery(nodes);
 	}
 
+	@Override
+	public NeoReturn getConstraintData() {
+		return createReturnStatement(getNodes(), getQueryString_MatchConstraint(), getQueryString_WhereConstraint());
+	}
+
+	@Override
+	public NeoReturn getConditionData() {
+		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition());
+	}
 }

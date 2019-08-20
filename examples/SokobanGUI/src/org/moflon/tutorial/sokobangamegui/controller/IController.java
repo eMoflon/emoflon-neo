@@ -28,4 +28,5 @@ public interface IController {
 	void loadSOKFile(String filePath);
 	void saveSOKFile(String filePath);
 	
+	void update();
 }

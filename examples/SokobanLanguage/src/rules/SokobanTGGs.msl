@@ -164,10 +164,6 @@ abstract tripleRule FirstRowAllCols:SokobanImportExport {
 		
 		++ ne <-:EntryToField-> nf
 	}
-	
-	attributeConditions {
-		
-	}
 }
 
 tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {

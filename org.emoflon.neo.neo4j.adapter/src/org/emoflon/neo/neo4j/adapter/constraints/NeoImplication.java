@@ -13,7 +13,8 @@ import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 
 /**
  * Class representing an Implication (if/then) constraint, storing all relevant
@@ -22,22 +23,15 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
  * @author Jannik Hinz
  *
  */
-public class NeoImplication {
-
+public class NeoImplication extends NeoConstraint {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
-	private IBuilder builder;
-	private NeoHelper helper;
 
 	private AtomicPattern apIf;
 	private AtomicPattern apThen;
 	private String name;
 	private List<NeoNode> nodesIf;
 	private List<NeoNode> nodesThen;
-    private List<String> nodesThenButNotIf;
-
-	private NeoMask mask;
-
-	private boolean injective;
+	private List<String> nodesThenButNotIf;
 
 	/**
 	 * 
@@ -45,25 +39,21 @@ public class NeoImplication {
 	 * @param apThen    AtomicPattern of the Then-Clause
 	 * @param injective boolean if the pattern should be matches injective or not
 	 * @param builder   for creating and running Cypher queries
-	 * @param helper    for creating nodes and relation with a unique name and
+	 * @param queryData    for creating nodes and relation with a unique name and
 	 *                  central node storage
 	 */
 	public NeoImplication(AtomicPattern apIf, AtomicPattern apThen, boolean injective, IBuilder builder,
-			NeoHelper helper, NeoMask mask) {
-		this.builder = builder;
-		this.helper = helper;
+			NeoQueryData queryData, NeoMask mask) {
+		super(builder, queryData, mask, injective);
+
 		this.name = "IF " + apIf.getName() + " THEN " + apThen.getName();
-		this.injective = injective;
-
-		this.mask = mask;
-
-		this.apIf = NeoHelper.getFlattenedPattern(apIf);
-		this.apThen = NeoHelper.getFlattenedPattern(apThen);
+		this.apIf = NeoUtil.getFlattenedPattern(apIf);
+		this.apThen = NeoUtil.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodesIf = this.helper.extractNodesAndRelations(apIf.getNodeBlocks());
-		this.nodesThen = this.helper.extractNodesAndRelations(apThen.getNodeBlocks());
-        this.nodesThenButNotIf = NeoHelper.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
+		this.nodesIf = this.queryData.extractConstraintNodesAndRelations(apIf.getNodeBlocks());
+		this.nodesThen = this.queryData.extractConstraintNodesAndRelations(apThen.getNodeBlocks());
+		this.nodesThenButNotIf = NeoUtil.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
 
 	/**
@@ -71,6 +61,7 @@ public class NeoImplication {
 	 * 
 	 * @return name of the If/Then constraint
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -129,11 +120,13 @@ public class NeoImplication {
 	 * @return true if the pattern matcher not find any violation in the then clause
 	 *         and else false
 	 */
+	@Override
 	public boolean isSatisfied() {
 		logger.info("Check constraint: " + name);
 
 		// create query
-		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf, helper.getNodes(), injective, mask);
+		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen,
+				nodesThenButNotIf, queryData.getAllElements(), injective, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -154,12 +147,24 @@ public class NeoImplication {
 		}
 	}
 
-
-    /**
-     * Return the query for outline copy to clipboard function
-     * @return String query for outline copy to clipboard
-     */
+	/**
+	 * Return the query for outline copy to clipboard function
+	 * 
+	 * @return String query for outline copy to clipboard
+	 */
+	@Override
 	public String getQuery() {
-		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf, helper.getNodes(), injective, mask);
+		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf,
+				queryData.getAllElements(), injective, mask);
+	}
+
+	@Override
+	public NeoReturn getConstraintData() {
+		throw new UnsupportedOperationException("Implications cannot be nested!");
+	}
+
+	@Override
+	public NeoReturn getConditionData() {
+		throw new UnsupportedOperationException("Implications cannot be used as conditions!");
 	}
 }

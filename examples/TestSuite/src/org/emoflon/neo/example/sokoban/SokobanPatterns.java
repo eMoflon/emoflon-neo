@@ -57,7 +57,6 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
-	// TODO implement isStillValid for conditions
 	public void test_OneSokobanSelectedFigureRequired_StillValid_AfterDeletedEdge() {
 		var p = entities.getPattern_OneSokobanSelectedFigureRequired();
 		var matches = p.matcher().determineMatches();
@@ -395,6 +394,13 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void testSokobanOnFieldOfBoard_StillValid() {
 		var p = entities.getPattern_SokobanOnFieldOfBoard();
+		var matches = p.matcher().determineMatches();
+		expectValidMatches(matches, matches.size());
+	}
+	
+	@Test
+	public void patternMoveSokobanDownTest() {
+		var p = entities.getPattern_PatternMoveSokobanDownTest();
 		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
 	}

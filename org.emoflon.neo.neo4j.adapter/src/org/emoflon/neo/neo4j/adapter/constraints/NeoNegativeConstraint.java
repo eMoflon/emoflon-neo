@@ -9,7 +9,8 @@ import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 
 /**
  * Class representing an FORBID constraint, storing all relevant data, creates
@@ -18,38 +19,29 @@ import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
  * @author Jannik Hinz
  *
  */
-public class NeoNegativeConstraint {
-
-	private NeoHelper helper;
-
+public class NeoNegativeConstraint extends NeoConstraint {
 	private AtomicPattern ap;
 	private String name;
 	private List<NeoNode> nodes;
-
-	private boolean injective;
-	private int uuid;
-
-	private NeoMask mask;
+	private final int uuid;
 
 	/**
 	 * 
 	 * @param ap        AtomicPattern of the FORBID constraint
 	 * @param injective boolean if the pattern should be matches injective or not
 	 * @param builder   for creating and running Cypher queries
-	 * @param helper    for creating nodes and
+	 * @param queryData    for creating nodes and
 	 */
-	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoHelper helper,
+	public NeoNegativeConstraint(AtomicPattern ap, boolean injective, IBuilder builder, NeoQueryData queryData,
 			NeoMask mask) {
-		this.uuid = helper.addConstraint();
-		this.helper = helper;
-		this.name = ap.getName();
-		this.injective = injective;
-		this.mask = mask;
+		super(builder, queryData, mask, injective);
 
-		this.ap = NeoHelper.getFlattenedPattern(ap);
+		this.uuid = queryData.incrementCounterForConstraintsInQuery();
+		this.name = ap.getName();
+		this.ap = NeoUtil.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodes = new ArrayList<>(this.helper.extractNodesAndRelations(ap.getNodeBlocks()));
+		this.nodes = new ArrayList<>(this.queryData.extractConstraintNodesAndRelations(this.ap.getNodeBlocks()));
 	}
 
 	/**
@@ -57,6 +49,7 @@ public class NeoNegativeConstraint {
 	 * 
 	 * @return name of the constraint
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -115,8 +108,17 @@ public class NeoNegativeConstraint {
 	 * 
 	 * @return WHERE xy IS NULL OR yz IS NULL (query part for this constraint)
 	 */
-	public String getQueryString_WhereConditon() {
+	public String getQueryString_WhereCondition() {
 		return CypherPatternBuilder.whereNegativeConditionQuery(nodes);
 	}
 
+	@Override
+	public NeoReturn getConstraintData() {
+		return createReturnStatement(getNodes(), getQueryString_MatchConstraint(), getQueryString_WhereConstraint());
+	}
+
+	@Override
+	public NeoReturn getConditionData() {
+		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition());
+	}
 }

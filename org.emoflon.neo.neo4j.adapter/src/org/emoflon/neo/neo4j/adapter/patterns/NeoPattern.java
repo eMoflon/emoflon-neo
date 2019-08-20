@@ -5,15 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.ConstraintReference;
-import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IPattern;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
-import org.emoflon.neo.neo4j.adapter.util.NeoHelper;
+import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 
@@ -29,55 +28,25 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	protected List<NeoNode> nodes;
 	protected boolean injective;
-	protected NeoHelper helper;
-	protected Pattern p;
-
+	protected NeoQueryData queryData;
 	protected IBuilder builder;
 	protected NeoMask mask;
+	protected String name;
+	protected boolean isNegated;
 
-	protected NeoPattern(Pattern p, IBuilder builder, NeoMask mask) {
+	protected NeoPattern(List<ModelNodeBlock> nodeBlocks, String name, IBuilder builder, NeoMask mask,
+			NeoQueryData queryData) {
 		nodes = new ArrayList<>();
 		injective = true;
-		helper = new NeoHelper();
+		this.queryData = queryData;
 
 		this.builder = builder;
 		this.mask = mask;
-
-		// execute the Pattern flatterer. Needed if the pattern use refinements or other
-		// functions. Returns the complete flattened Pattern.
-		this.p = NeoHelper.getFlattenedPattern(p);
+		this.name = name;
 
 		// get all nodes, relations and properties from the pattern
-		extractNodesAndRelations();
-	}
-
-	/**
-	 * Creates and extracts all necessary information data from the flattened
-	 * Pattern. Create new NeoNode for any AtomicPattern node and corresponding add
-	 * Relations and Properties and save them to the node in an node list.
-	 */
-	private void extractNodesAndRelations() {
-		for (var n : p.getBody().getNodeBlocks()) {
-			var node = new NeoNode(n.getType().getName(), helper.newPatternNode(n.getName()));
-
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					EMSLUtil.handleValue(p.getValue())));
-
-			extractPropertiesFromMask(node);
-
-			n.getRelations()
-					.forEach(r -> node.addRelation(
-							helper.newPatternRelation(node.getVarName(), n.getRelations().indexOf(r),
-									EMSLUtil.getAllTypes(r), r.getTarget().getName()),
-							EMSLUtil.getAllTypes(r), //
-							r.getLower(), r.getUpper(), //
-							r.getProperties(), //
-							r.getTarget().getType().getName(), //
-							r.getTarget().getName()));
-
-			nodes.add(node);
-		}
+		nodes = queryData.extractPatternNodesAndRelations(nodeBlocks);
+		nodes.forEach(this::extractPropertiesFromMask);
 	}
 
 	protected void extractPropertiesFromMask(NeoNode node) {
@@ -116,7 +85,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public String getName() {
-		return p.getBody().getName();
+		return name;
 	}
 
 	/**
@@ -135,10 +104,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	public boolean isInjective() {
 		return injective;
-	}
-
-	public Pattern getPattern() {
-		return p;
 	}
 
 	/**
@@ -163,25 +128,12 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	public abstract boolean isStillValid(NeoMatch neoMatch);
 
-	/**
-	 * Return is the given pattern an base on the constraint reference is negated
-	 * 
-	 * @return boolean if or not the given result of constraint reference must be
-	 *         negated
-	 */
-	public boolean isNegated() {
-		if (p.getCondition() != null)
-			return ((ConstraintReference) (p.getCondition())).isNegated();
-		else
-			return false;
-	}
-
 	public abstract String getQuery();
 
 	protected String getQuery(String matchCond, String whereCond) {
 		return CypherPatternBuilder.constraintQuery_copyPaste(//
 				nodes, //
-				helper.getNodes(), //
+				queryData.getAllElements(), //
 				matchCond, //
 				whereCond, //
 				injective, //
