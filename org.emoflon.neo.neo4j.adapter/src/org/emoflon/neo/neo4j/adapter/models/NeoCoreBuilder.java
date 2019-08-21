@@ -477,7 +477,16 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 				cb.createEdge(EATTRIBUTES, ref, attr);
 				cb.createEdge(EATTRIBUTE_TYPE, attr, typeofattr);
 			});
+
+			addIsTranslatedAttributeForReference(cb, ref, neocore);
 		}
+	}
+
+	private void addIsTranslatedAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
+		var attr = cb.matchNodeWithContainer(//
+				List.of(new NeoProp(NAME_PROP, NeoCoreBootstrapper._TR_PROP)), //
+				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
+		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
 
 	private void handleRelationStatementInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
