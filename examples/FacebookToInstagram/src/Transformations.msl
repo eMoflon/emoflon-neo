@@ -238,12 +238,6 @@ tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {
 	correspondence {
 		++ flu <-:FbUserToInUser-> ilu
 	}
-	
-	attributeConditions {
-		eq( fluName : flu::name,
-			iluName : ilu::name
-		)
-	}
 }
 
 tripleRule UserToUserExtensionRule : FacebookToInstagramGrammar {
@@ -265,12 +259,6 @@ tripleRule UserToUserExtensionRule : FacebookToInstagramGrammar {
 	correspondence {
 		fl <-:NetworkToNetwork-> il
 		++ flu <-:FbUserToInUser-> ilu
-	}
-	
-	attributeConditions {
-		eq( fluName : flu::name,
-			iluName : ilu::name
-		)
 	}
 }
 

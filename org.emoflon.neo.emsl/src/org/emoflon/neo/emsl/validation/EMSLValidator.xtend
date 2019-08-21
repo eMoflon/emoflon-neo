@@ -283,7 +283,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 		
 	}
 
-	@Check(NORMAL)
+	@Check
 	def checkForEntitiesWithSameName(EMSL_Spec spec) {
 		var namelistsOfEntities = new HashMap<String, ArrayList<String>>();
 		namelistsOfEntities.put("Pattern", new ArrayList<String>())

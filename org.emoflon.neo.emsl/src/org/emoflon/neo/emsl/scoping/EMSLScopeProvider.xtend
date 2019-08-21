@@ -37,6 +37,8 @@ import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.eclipse.emf.ecore.util.EcoreUtil
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Entity
 
 /**
  * This class contains custom scoping description.
@@ -614,6 +616,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 							if (e !== other && QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString.equals(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString))
 								duplicateObjects.add(other)
 						}
+						if (!(eob instanceof Entity))
 						duplicateNames.add(
 							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
 					}
@@ -639,7 +642,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 					else
 						QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 				} else if (duplicateNames.contains(eobName)) {
-					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
+					if (aliases.containsKey(eob) && aliases.get(eob) !== null && !(eob.eContainer instanceof EMSL_Spec))
 						QualifiedName.create(aliases.get(eob),
 							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 					else

@@ -51,7 +51,7 @@ class ChessTests extends ENeoTest {
 		expectSingleMatch(patterns.getPattern_KingsGambit());
 	}
 	
-	//@Disabled
+	@Disabled
 	@Test
 	void move_WhitePawn() {
 		initDB(models.getModel_PawnOnBoard());
