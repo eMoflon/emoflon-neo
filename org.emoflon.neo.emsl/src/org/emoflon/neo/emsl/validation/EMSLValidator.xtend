@@ -48,6 +48,7 @@ import java.util.HashSet
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 
 /**
  * This class contains custom validation rules. 
@@ -569,7 +570,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void forbidGreenNodesOfAbstractTypesInRule(ModelNodeBlock nb) {
 		if ((nb.eContainer instanceof Rule && !(nb.eContainer as Rule).abstract 
 					|| nb.eContainer instanceof TripleRule && !(nb.eContainer as TripleRule).abstract) 
-				&& nb.action !== null && nb.type.abstract) {
+				&& nb.action.op === ActionOperator.CREATE && nb.type.abstract) {
 			error(GREEN_NODE_OF_ABSTRACT_TYPES, nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__ACTION)
 		}
 	}

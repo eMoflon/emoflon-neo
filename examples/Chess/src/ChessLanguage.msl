@@ -12,7 +12,7 @@ metamodel Chess {
 		-bottomLeft(0..1)-> Field
 	}
 	
-	Figure {
+	abstract Figure {
 		.colour : COLOUR
 		-standsOn(0..1)-> Field
 	}
