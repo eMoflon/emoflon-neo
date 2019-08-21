@@ -1,0 +1,26 @@
+metamodel IT {
+	IT {
+		.name : EString
+		<+>-router(0..*)-> Router
+		<+>-network(0..*)-> Network
+	}
+	
+	Router {
+		.name : EString
+		-network(0..1)-> Network
+	}
+	
+	Network {
+		.name : EString
+		<+>-pc(0..*)-> PC
+		<+>-laptop(0..*)-> Laptop
+	}
+	
+	PC {
+		.name : EString
+	}
+	
+	Laptop {
+		.name : EString
+	}
+}

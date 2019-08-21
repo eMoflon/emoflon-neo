@@ -1,0 +1,22 @@
+metamodel Company {
+	Company {
+		.name : EString
+		<+>-ceo(0..*)-> CEO
+		<+>-admin(0..*)-> Admin
+		<+>-employee(0..*)-> Employee
+	}
+	
+	CEO {
+		.name : EString
+		-employee(0..*)-> Employee
+	}
+	
+	Admin {
+		.name : EString
+		-ceo(0..1)-> CEO
+	}
+	
+	Employee {
+		.name : EString
+	}
+}
