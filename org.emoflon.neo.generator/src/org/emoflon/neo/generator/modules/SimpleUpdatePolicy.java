@@ -1,11 +1,11 @@
-package org.emoflon.neo.engine.generator.modules;
+package org.emoflon.neo.generator.modules;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.generator.IUpdatePolicy;
+import org.emoflon.neo.generator.IUpdatePolicy;
 
 /**
  * Selects a single match. The selection is non-deterministic but not explicitly

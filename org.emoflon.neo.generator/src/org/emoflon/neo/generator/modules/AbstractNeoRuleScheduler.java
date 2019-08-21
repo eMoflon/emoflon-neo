@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.generator.modules;
+package org.emoflon.neo.generator.modules;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import org.emoflon.neo.emsl.eMSL.GraphGrammar;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.engine.api.rules.IRule;
-import org.emoflon.neo.engine.generator.IRuleScheduler;
+import org.emoflon.neo.generator.IRuleScheduler;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;

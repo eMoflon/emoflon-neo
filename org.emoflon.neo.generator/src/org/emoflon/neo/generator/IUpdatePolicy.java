@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.generator;
+package org.emoflon.neo.generator;
 
 import java.util.Collection;
 

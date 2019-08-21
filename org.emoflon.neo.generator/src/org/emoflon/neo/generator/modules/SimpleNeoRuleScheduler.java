@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.generator.modules;
+package org.emoflon.neo.generator.modules;
 
 import java.util.Collection;
 import java.util.HashMap;
