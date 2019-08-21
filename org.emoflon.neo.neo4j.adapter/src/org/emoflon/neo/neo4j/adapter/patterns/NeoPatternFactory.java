@@ -1,6 +1,7 @@
 package org.emoflon.neo.neo4j.adapter.patterns;
 
-import org.eclipse.emf.common.util.EList;
+import java.util.List;
+
 import org.emoflon.neo.emsl.eMSL.Condition;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -31,7 +32,7 @@ public class NeoPatternFactory {
 		return createNeoPattern(name, nodeBlocks, flatPattern.getCondition(), builder, mask);
 	}
 
-	public static NeoPattern createNeoPattern(String name, EList<ModelNodeBlock> nodeBlocks, Condition c, IBuilder builder, NeoMask mask) {
+	public static NeoPattern createNeoPattern(String name, List<ModelNodeBlock> nodeBlocks, Condition c, IBuilder builder, NeoMask mask) {
 		if (c == null)
 			return new NeoPatternQueryAndMatchNoCondition(nodeBlocks, name, builder, mask, new NeoQueryData());
 		else if (c instanceof ConstraintReference) {

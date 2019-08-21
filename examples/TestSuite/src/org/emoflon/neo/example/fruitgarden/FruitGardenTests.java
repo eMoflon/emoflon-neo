@@ -9,6 +9,7 @@ import org.emoflon.neo.api.org.eneo.fruitgarden.API_FruitGardenLanguage;
 import org.emoflon.neo.api.org.eneo.fruitgarden.API_PatternsAndRules;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class FruitGardenTests extends ENeoTest {
@@ -32,6 +33,8 @@ public class FruitGardenTests extends ENeoTest {
 		assertEquals(4, entities.getPattern_OneFruitOnTree().matcher().countMatches());
 	}
 	
+
+	//@Disabled("Waiting for rules")
 	@Test
 	public void testMatchesForRules() {
 		assertEquals(1, entities.getRule_MoveCrowForward().rule().countMatches());
@@ -41,6 +44,8 @@ public class FruitGardenTests extends ENeoTest {
 		assertEquals(1, entities.getRule_PickAnApple().rule().countMatches());
 	}
 	
+
+	@Disabled("Waiting for rules")
 	@Test
 	public void testMoveCrow() {
 		assertTrue(entities.getRule_MoveCrowForward().rule().apply().isPresent());
@@ -52,6 +57,7 @@ public class FruitGardenTests extends ENeoTest {
 		assertTrue(entities.getConstraint_GameIsLost().isSatisfied());
 	}
 	
+	@Disabled("Waiting for rules")
 	@Test
 	public void testPickFruit() {
 		assertTrue(entities.getRule_PickALemon().rule().apply().isPresent());

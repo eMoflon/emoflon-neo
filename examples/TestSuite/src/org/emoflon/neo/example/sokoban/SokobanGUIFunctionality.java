@@ -10,6 +10,7 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 
@@ -41,6 +42,8 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertTrue(types.contains(IController.BOULDER));
 	}
 
+
+	@Disabled("Waiting for rules")
 	@Test
 	public void testCreateBlock() {
 		var access = entities.getRule_CreateBlock();
