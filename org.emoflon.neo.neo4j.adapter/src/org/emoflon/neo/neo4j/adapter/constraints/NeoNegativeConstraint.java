@@ -135,6 +135,6 @@ public class NeoNegativeConstraint extends NeoConstraint {
 
 	@Override
 	public NeoReturn getConditionData() {
-		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition());
+		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition(), getQueryString_WhereEqualElementsCondition());
 	}
 }

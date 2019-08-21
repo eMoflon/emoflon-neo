@@ -260,7 +260,6 @@ public class SokobanPatterns extends ENeoTest {
 	
 	// TODO Issue 152
 	@Test
-	@Disabled
 	public void test_BoulderOnEndField() {
 		expectNoMatch(entities.getPattern_BoulderOnEndField());
 	}

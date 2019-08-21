@@ -22,6 +22,7 @@ public class NeoReturn {
 
 	private String optionalMatch;
 	private String whereClause;
+	private String whereEqualClause;
 	private Collection<String> ifThenWith;
 	private Collection<String> ifThenWhere;
 
@@ -33,6 +34,7 @@ public class NeoReturn {
 		this.nodesN = new ArrayList<>();
 		this.optionalMatch = "";
 		this.whereClause = "";
+		this.whereEqualClause = "";
 		this.ifThenWith = new ArrayList<String>();
 		this.ifThenWhere = new ArrayList<String>();
 	}
@@ -138,6 +140,10 @@ public class NeoReturn {
 	public String getWhereClause() {
 		return whereClause;
 	}
+	
+	public String getWhereEqualClause() {
+		return whereEqualClause;
+	}
 
 	/**
 	 * Adds a new WHERE query to the existing ones
@@ -146,5 +152,9 @@ public class NeoReturn {
 	 */
 	public void addWhereClause(String where) {
 		whereClause += where;
+	}
+
+	public void addWhereEqualClause(String whereEqualCond) {
+		whereEqualClause += whereEqualCond;
 	}
 }
