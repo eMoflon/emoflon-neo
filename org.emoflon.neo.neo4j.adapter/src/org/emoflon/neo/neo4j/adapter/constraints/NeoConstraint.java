@@ -117,7 +117,6 @@ public abstract class NeoConstraint implements IConstraint {
 		returnStmt.addNodes(nodes);
 		returnStmt.addOptionalMatch(optionalQuery);
 		returnStmt.addWhereClause(whereClause);
-		returnStmt.addWhereEqualClause(whereEqualCond);
 		return returnStmt;
 	}
 }

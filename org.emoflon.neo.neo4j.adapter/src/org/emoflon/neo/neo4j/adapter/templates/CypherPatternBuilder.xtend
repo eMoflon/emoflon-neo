@@ -91,6 +91,32 @@ class CypherPatternBuilder {
 		else	
 			''''''
 	}
+	
+	def static String whereQuery(Collection<NeoNode> nodes, HashMap<String,String> matchnodes, boolean injective, NeoMask mask, HashMap<String,String> equalElem) {
+		var injBlock = "";
+		if(injective && nodes.size > 1){
+			injBlock = injectiveBlock(nodes);
+		}
+		if(injective) {
+			var injBlockC = injectiveBlock(nodes, matchnodes);
+			if(injBlock.length > 0 && injBlockC.length > 0) {
+				injBlock += " AND ";
+			}
+			injBlock += injBlockC;
+		}
+		
+		var maskBlock = maskBlock(nodes, mask)
+		var equalCond = whereEqualElementsConditionQuery(equalElem);
+						
+		if(injBlock.length > 0 || maskBlock.length > 0 || equalCond.length > 0)
+			'''WHERE 
+				«injBlock»«IF injBlock.length > 0 && maskBlock.length > 0» AND «ENDIF»
+				«maskBlock»«IF (injBlock.length > 0 || maskBlock.length > 0) && equalCond.length > 0» AND «ENDIF»
+				«equalCond»
+			'''
+		else	
+			''''''
+	}
 
 	private def static String maskBlock(Collection<NeoNode> nodes, NeoMask mask) {
 		var relevantEntries = mask.maskedNodes.filter [ node, id |
@@ -132,6 +158,26 @@ class CypherPatternBuilder {
 
 		'''«FOR pair : pairsToCheck SEPARATOR 'AND'»
 				NOT id(«pair.key») = id(«pair.value»)«ENDFOR»'''
+	}
+	
+	def static String injectiveBlock(Collection<NeoNode> nodes, HashMap<String, String> matchnodes) {
+		
+		var pairs = new ArrayList<Pair<String,String>>();
+		var keys = matchnodes.keySet();
+		
+		for(n:nodes) {
+			if(matchnodes.containsValue(n.classTypes.get(0))) {
+				for(var i=0; i<keys.size(); i++) {
+					if(n.classTypes.get(0).equals(matchnodes.get(keys.get(i))) && !n.varName.equals(keys.get(i))) {
+						if(!pairs.contains(Pair.of(n.varName, keys.get(i))) && !pairs.contains(Pair.of(keys.get(i), n.varName)))
+							pairs.add(Pair.of(n.varName, keys.get(i)));
+					}
+				}
+			}
+		}
+		
+		'''«FOR p: pairs SEPARATOR " AND "»NOT id(«p.key») = id(«p.value»)«ENDFOR»'''
+		
 	}
 
 	def static String returnQuery(Collection<NeoNode> nodes) {
@@ -212,14 +258,14 @@ class CypherPatternBuilder {
 	 * Basic Constraint Functions
 	 ****************************/
 	def static String constraintQuery(Collection<NeoNode> nodes, Collection<String> helperNodes, String matchCond,
-		String whereCond, String whereEqualsCond, boolean injective, int limit, NeoMask mask) {
+		String whereCond, boolean injective, int limit, NeoMask mask) {
 
 		'''«matchQuery(nodes)»
 		«whereQuery(nodes, injective, mask)»
 		«withQuery(nodes)»
 		«matchCond»
 		«constraint_withQuery(helperNodes)»
-		WHERE «whereCond» «whereEqualsCond»
+		WHERE «whereCond»
 		«constraint_withQuery(helperNodes)»
 		«IF limit>0»«returnQuery(nodes, limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
 		'''
@@ -240,14 +286,14 @@ class CypherPatternBuilder {
 	}
 
 	def static String constraintQuery_isStillValid(Collection<NeoNode> nodes, Collection<String> helperNodes,
-		String matchCond, String whereCond, String whereEqualsCond, boolean injective, NeoMatch match) {
+		String matchCond, String whereCond, boolean injective, NeoMatch match) {
 
 		'''«matchQuery(nodes)»
 		«isStillValid_whereQuery(nodes, match)»
 		«withQuery(nodes)»
 		«matchCond»
 		«constraint_withQuery(helperNodes)»
-		WHERE «whereCond» «whereEqualsCond»
+		WHERE «whereCond»
 		«constraint_withQuery(helperNodes)»
 		RETURN TRUE
 		'''
@@ -285,10 +331,10 @@ class CypherPatternBuilder {
 		'''
 	}
 
-	def static String condition_matchQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask) {
+	def static String condition_matchQuery(Collection<NeoNode> nodes, HashMap<String,String> matchnodes, boolean injective, NeoMask mask, HashMap<String, String> equalElem) {
 		'''
 			 OPTIONAL «matchQuery(nodes)»
-			«whereQuery(nodes,injective, mask)»
+			«whereQuery(nodes, matchnodes, injective, mask, equalElem)»
 		'''
 	}
 
@@ -344,8 +390,9 @@ class CypherPatternBuilder {
 	 * Basic Condition Functions
 	 ****************************/
 	def static String conditionQuery(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
-		Collection<String> helperNodes, boolean isNegated, int limit) {
+		Collection<String> helperNodes, boolean isNegated, boolean injective, int limit, NeoMask mask) {
 		'''«matchQuery(nodes)»
+		«whereQuery(nodes, injective, mask)»
 	 	«withQuery(nodes)»
 	 	«optionalMatches»
 	 	«constraint_withQuery(helperNodes)»
@@ -354,8 +401,9 @@ class CypherPatternBuilder {
 	}
 
 	def static String conditionQuery_copyPaste(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
-		Collection<String> helperNodes, boolean isNegated, int limit) {
+		Collection<String> helperNodes, boolean isNegated, boolean injective, int limit, NeoMask mask) {
 		'''«matchQuery(nodes)»
+		«whereQuery(nodes, injective, mask)»
 	 	«withQuery(nodes)»
 	 	«optionalMatches»
 	 	«constraint_withQuery(helperNodes)»
@@ -403,7 +451,7 @@ class CypherPatternBuilder {
     }
     
     def static String whereEqualElementsConditionQuery(HashMap<String,String> elem) {
-        '''«FOR e: elem.keySet BEFORE "AND " SEPARATOR " AND "»«e» = «elem.get(e)»«ENDFOR»'''
+        '''«FOR e: elem.keySet SEPARATOR " AND "»«e» = «elem.get(e)»«ENDFOR»'''
     }
 
 	def static String withCountQuery(Collection<NeoNode> nodes, int id) {

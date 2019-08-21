@@ -131,6 +131,10 @@ public class NeoQueryData {
 		return Collections.unmodifiableCollection(tempList);
 	}
 	
+	public HashMap<String,String> getAllMatchElementsMap() {
+		return patternElements;
+	}
+	
 	public HashMap<String,String> getEqualElements() {
 		return equalElements;
 	}

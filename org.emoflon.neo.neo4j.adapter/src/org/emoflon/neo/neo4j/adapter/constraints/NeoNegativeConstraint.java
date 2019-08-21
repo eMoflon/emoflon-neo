@@ -92,7 +92,7 @@ public class NeoNegativeConstraint extends NeoConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchCondition() {
-		return CypherPatternBuilder.condition_matchQuery(nodes, injective, mask);
+		return CypherPatternBuilder.condition_matchQuery(nodes, queryData.getAllMatchElementsMap(), injective, mask, queryData.getEqualElements());
 	}
 
 	/**
@@ -135,6 +135,6 @@ public class NeoNegativeConstraint extends NeoConstraint {
 
 	@Override
 	public NeoReturn getConditionData() {
-		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition(), getQueryString_WhereEqualElementsCondition());
+		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition());
 	}
 }

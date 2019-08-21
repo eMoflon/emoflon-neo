@@ -27,6 +27,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 		var flatRule = NeoUtil.getFlattenedRule(r);
 		var nodeBlocks = flatRule.getNodeBlocks();
+		
+		// TODO: Create here
 
 		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
 				builder, mask);

@@ -258,15 +258,33 @@ public class SokobanPatterns extends ENeoTest {
 		assertThat(entities.getPattern_OccupiedNext().matcher().countMatches(), is(9));
 	}
 	
-	// TODO Issue 152
 	@Test
 	public void test_BoulderOnEndField() {
 		expectNoMatch(entities.getPattern_BoulderOnEndField());
 	}
 	
+	@Test 
+	public void test_boulderButNoBlock() {
+		assertThat(entities.getPattern_BoulderButNoBlock().matcher().determineMatches().size(), is(6));
+	}
+	@Test 
+	public void test_twoBoulderButNoTwoBlock() {
+		assertThat(entities.getPattern_TwoBoulderButNoTwoBlock().matcher().determineMatches().size(), is(54));
+	}
+	@Test 
+	public void test_twoBoulderButTwoBlock() {
+		assertThat(entities.getPattern_TwoBoulderButTwoBlock().matcher().determineMatches().size(), is(2));
+	}
+	
+	// FIXME injectivity between pattern elements and condition elements required
+	@Test 
+	public void test_oneBlock1() {
+		assertThat(entities.getPattern_OneBlock1().matcher().determineMatches().size(), is(2));
+	}
+	
 	@Test
 	public void test_BlockNotOnEndFieldInCorner() {
-		assertThat(entities.getPattern_BlockNotOnEndFieldInCorner().matcher().countMatches(), is(0));
+		expectNoMatch(entities.getPattern_BlockNotOnEndFieldInCorner());
 	}
 	
 	@Test
