@@ -1,0 +1,98 @@
+import "platform:/resource/FruitGardenLanguage/src/org/eneo/fruitgarden/FruitGardenLanguage.msl"
+
+// [isOwned]
+// Generic constraint
+pattern HasAnOwner {
+	// TODO[Anjorin] Waiting for a bug fix so this is possible
+	o:EObject {
+		//-ofType:metaType|eSuperType(0..*)->containee
+	}
+
+	containee:EClass
+	
+	container:EClass {
+		-eReferences->ref
+	}
+	
+	
+	ref:EReference {
+		.isComposition : true
+		-eReferenceType->containee
+	}
+}
+
+pattern IsOwned {
+	o:EObject
+	
+	owner:EObject {
+		-eContainer->o {
+			.isComposition : true
+		}
+	}
+}
+
+constraint MustHaveOwner = if HasAnOwner then IsOwned 
+
+// [forbid cyclic containment]
+// Generic constraint
+
+pattern CyclicContainment {
+	ob:EObject {
+		-eContainer(1..*)->ob
+	}
+}
+
+constraint NoCyclicContainment = forbid CyclicContainment
+
+// [containerIsSet]
+// Generate such a constraint for every aggregation or composition
+pattern ConnectedViaFruits {
+	container:FruitTree {
+		-fruits->containee
+	}
+	
+	containee:Fruit
+}
+
+pattern FruitsIsComposition {
+	container:FruitTree
+	
+	containee:Fruit {
+		-eContainer->container {
+			.isComposition : true
+		}
+	}
+}
+
+constraint FruitsIsContainment = if ConnectedViaFruits then FruitsIsComposition
+
+// [checkLowerBounds]
+// Generate such a constraint for every reference with lower bounds 1 ≤ l ≤ 5
+pattern FruitGarden {
+	fruitGarden:FruitGarden
+}
+
+pattern FruitGardenCrowLowerBound {
+	fruitGarden:FruitGarden {
+		-crow->crow
+	}
+	
+	crow:Crow
+}
+
+constraint EnsureFruitGardenCrowLowerBound = if FruitGarden then FruitGardenCrowLowerBound
+
+// [checkUpperBounds]
+// Generate such a constraint for every reference with lower bounds 1 ≤ l ≤ 5
+pattern FruitGardenCrowUpperBound {
+	fruitGarden:FruitGarden {
+		-crow->crow0
+		-crow->crow1
+	}
+	
+	crow0:Crow
+	crow1:Crow
+}
+
+constraint EnsureFruitGardenCrowUpperBound = forbid FruitGardenCrowUpperBound
+
