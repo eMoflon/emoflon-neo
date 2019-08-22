@@ -579,3 +579,29 @@ pattern oneBlock1 {
 pattern oneOtherBlock1 {
 	fig2: Block
 }
+
+pattern oneBlock2 {
+	fig1: Block
+	fig2: Block
+} when enforce oneOtherBlock2
+
+pattern oneOtherBlock2 {
+	fig2: Block
+	fig3: Block
+	fig4: Block
+}
+
+pattern oneOtherBlock2a {
+	fig2: Block
+	fig4: Block
+	fig6: Block
+}
+
+constraint enfOneOtherBlock2 = enforce oneOtherBlock2
+constraint enfOneOtherBlock3 = enforce oneOtherBlock2a
+constraint enforceCombi = enfOneOtherBlock2 && enfOneOtherBlock3
+
+pattern oneBlock2Combi {
+	fig1: Block
+	fig2: Block
+} when enforceCombi

@@ -84,6 +84,6 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	public String getQuery() {
 		var condData = referencedConstraint.getConditionData();
 		return CypherPatternBuilder.conditionQuery_copyPaste(getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), queryData.getAllElements(), isNegated, injective, 0, mask);
+				condData.getWhereClause(), queryData.getAllElements(), isNegated, injective, 0);
 	}
 }
