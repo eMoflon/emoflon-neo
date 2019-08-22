@@ -15,6 +15,7 @@ import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_Sokob
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
 
@@ -158,22 +159,96 @@ public class NeoController implements IController {
 
 	@Override
 	public void selectField(Field field) {
-		// If the board has a selected figure, try to move figure to this field
-		var mask = api2.getRule_MoveSokobanDownWithCondition().mask();
-		mask.setB_fields_0_toCol(field.getCol());
-		mask.setB_fields_0_toRow(field.getRow());
-		var comatch = api2.getRule_MoveSokobanDownWithCondition().rule(mask).apply();
+		Optional<NeoCoMatch> comatch = Optional.empty();
 
-		// If the movement failed, try to select the figure on the field
-		if (!comatch.isPresent()) {
-			api1.getRule_SelectFigure().rule(//
-					api1.getRule_SelectFigure().mask()//
-							.setB_fields_0_fCol(field.getCol())//
-							.setB_fields_0_fRow(field.getRow()))//
-					.apply();
+		// If the board has a selected figure, try to move figure to this field
+		{
+			var mask = api2.getRule_MoveSokobanDownWithCondition().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_MoveSokobanDownWithCondition().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
 		}
 
-		// TODO: Add remaining possibilities for movement
+		{
+			var mask = api2.getRule_PushBlockDown().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_PushBlockDown().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
+		}
+		
+		{
+			var mask = api2.getRule_MoveSokobanUpWithCondition().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_MoveSokobanUpWithCondition().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
+		}
+		
+		{
+			var mask = api2.getRule_PushBlockUp().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_PushBlockUp().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
+		}
+
+		{
+			var mask = api2.getRule_MoveSokobanRightWithCondition().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_MoveSokobanRightWithCondition().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
+		}
+
+		{
+			var mask = api2.getRule_PushBlockRight().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_PushBlockRight().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
+		}
+		
+		{
+			var mask = api2.getRule_MoveSokobanLeftWithCondition().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_MoveSokobanLeftWithCondition().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
+		}
+		
+		{
+			var mask = api2.getRule_PushBlockLeft().mask();
+			mask.setB_fields_0_toCol(field.getCol());
+			mask.setB_fields_0_toRow(field.getRow());
+			comatch = api2.getRule_PushBlockLeft().rule(mask).apply();
+
+			if (comatch.isPresent())
+				return;
+		}
+
+
+		// All movement failed, so try to select the figure on the field
+		api1.getRule_SelectFigure().rule(//
+				api1.getRule_SelectFigure().mask()//
+						.setB_fields_0_fCol(field.getCol())//
+						.setB_fields_0_fRow(field.getRow()))//
+				.apply();
 	}
 
 	@Override
@@ -258,8 +333,8 @@ public class NeoController implements IController {
 		var accessEmptyFields = api1.getPattern_EmptyFields();
 		accessEmptyFields.matcher().determineMatches().forEach(f -> {
 			var fData = accessEmptyFields.data(f);
-			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col &&
-					fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
+			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col
+					&& fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
 						fld.setIsEndPos(fData.field.endPos);
 						fld.setFigureName(Optional.empty());
 					});
@@ -268,8 +343,8 @@ public class NeoController implements IController {
 		var accessOccupiedFields = api1.getPattern_OccupiedFields();
 		accessOccupiedFields.matcher().determineMatches().forEach(f -> {
 			var fData = accessOccupiedFields.data(f);
-			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col &&
-					fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
+			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col
+					&& fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
 						fld.setIsEndPos(fData.field.endPos);
 						fld.setFigureName(Optional.of(fData.type.ename));
 					});
