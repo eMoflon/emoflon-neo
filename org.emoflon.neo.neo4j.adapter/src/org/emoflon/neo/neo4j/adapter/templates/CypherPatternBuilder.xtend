@@ -487,13 +487,11 @@ class CypherPatternBuilder {
 	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, 
 	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
 	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
-	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, String conditionQuery
-	 ) {
+	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel) {
 	 	
 	 	'''
 	 	«matchQuery(nodes)»«ruleExecution_matchModelNodes(modelNodes)»
 	 	«isStillValid_whereQuery(nodes, match)»
-	 	«conditionQuery»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
 	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
