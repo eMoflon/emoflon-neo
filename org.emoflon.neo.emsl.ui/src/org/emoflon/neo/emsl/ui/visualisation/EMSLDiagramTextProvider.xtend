@@ -870,7 +870,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var sizeOfTypeList = 0
 		'''class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
 			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
-				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF entity.srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«link.target.name»:«link.target.type.name»":"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 		'''
@@ -890,31 +890,35 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nodeBlock.name.equals(n.name) && (nodeBlock.eContainer as TripleRule).trgNodeBlocks.contains(nodeBlock))
 				node = n
 		}
-		val nb = node
-		
-		var sizeOfTypeList = 0
-		var sizeOfIncomingRefTypeList = 0		
+		val nb = node	
 		'''
-			class «labelForTripleRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
-			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
-				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+			class «labelForTripleRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»«IF rule.srcNodeBlocks.contains(nb)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+			«FOR link : nb.relations»
+				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entityCopy as TripleRule).srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 				«IF link.action !== null»
-					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
-				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.target)» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
 				«labelForTripleRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
-			«FOR incoming : getTripleRuleNodeBlocks(entityCopy as TripleRule).filter[n|n != nb]»
-				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
-					«IF incomingRef.target == nb && mainSelection»
-						class «labelForTripleRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
-						«labelForTripleRuleComponent(incoming)» -«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForTripleRuleComponent(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
-					«ENDIF»
-				«ENDFOR»
+			«FOR incoming : (entityCopy as TripleRule).srcNodeBlocks.filter[n|n != nb]»
+				«incomingRefHelperForTripleRules(entityCopy as TripleRule, nb, incoming, mainSelection)»
+			«ENDFOR»
+			«FOR incoming : (entityCopy as TripleRule).trgNodeBlocks.filter[n|n != nb]»
+				«incomingRefHelperForTripleRules(entityCopy as TripleRule, nb, incoming, mainSelection)»
 			«ENDFOR»
 		'''
+	}
+	
+	private def incomingRefHelperForTripleRules(TripleRule entity, ModelNodeBlock nb, ModelNodeBlock incoming, boolean mainSelection) {
+		'''«FOR incomingRef : incoming.relations»
+			«IF incomingRef.target == nb && mainSelection»
+				class «labelForTripleRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entity as TripleRule).srcNodeBlocks.contains(incoming)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+				«labelForTripleRuleComponent(incoming)» -«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForTripleRuleComponent(nb)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+			«ENDIF»
+		«ENDFOR»'''
 	}
 
 	/**
@@ -1008,12 +1012,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def dispatch getNodeBlocks(Rule entity) {
 		entity.nodeBlocks
-	}
-	
-	def getTripleRuleNodeBlocks(TripleRule entity) {
-		var nodes = entity.srcNodeBlocks
-		nodes.addAll(entity.trgNodeBlocks)
-		return nodes
 	}
 	
 	def getNodeBlocksOfEntity(Entity e){
@@ -1258,14 +1256,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				BorderColor<<RED>> Red
 				BackgroundColor White
 				ArrowColor Black
-				BackgroundColor<<Selection>> PapayaWhip
+				BackgroundColor<<Selection>> AliceBlue
+				BackgroundColor<<SRC>> LightYellow
+				BackgroundColor<<TRG>> MistyRose
 			}
 			
 			skinparam package {
-				BackgroundColor GhostWhite
 				BorderColor LightSlateGray
 				Fontcolor LightSlateGray
-				BackgroundColor<<Selection>> PapayaWhip
+				BackgroundColor<<Selection>> AliceBlue
 			}
 			
 			skinparam object {
