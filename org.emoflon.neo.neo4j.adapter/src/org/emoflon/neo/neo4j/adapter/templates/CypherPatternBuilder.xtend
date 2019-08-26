@@ -513,9 +513,30 @@ class CypherPatternBuilder {
 	 }
 	 
 	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesK, Collection<NeoRelation> refK, Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
-	 	'''RETURN «FOR n: nodesK SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»
-	 	«IF refK.size > 0 », «ENDIF»«FOR r: refK SEPARATOR ', '»id(«r.varName») as «r.varName»«ENDFOR»
-	 	'''
+	 	
+	 	var nodes = new ArrayList<NeoNode>(nodesK);
+	 	nodes.addAll(nodesR);
+	 	var ref = new ArrayList<NeoRelation>(refK);
+	 	ref.addAll(refR);
+	 	
+	 	'''RETURN «ruleExecution_returnQueryNodes(nodes)»
+	 	«ruleExecution_returnQueryRelation(ref)»'''
+	 	
+	 }
+	 
+	 def static String ruleExecution_returnQueryNodes(Collection<NeoNode> nodes) {
+	 	'''«FOR n: nodes SEPARATOR ', '»id(«n.varName») as «n.varName»«ENDFOR»'''
+	 }
+	 
+	 
+	 def static String ruleExecution_returnQueryRelation(Collection<NeoRelation> rel) {
+	 	var out = "";
+	 	for(r:rel) {
+	 		if(!r.isPath) {
+	 			out += ", id(" + r.varName + ") as " + r.varName;
+	 		}
+	 	}
+	 	return out;
 	 }
 	 
 	 def static String ruleExecution_matchModelNodes(Collection<NeoNode> nodes) {

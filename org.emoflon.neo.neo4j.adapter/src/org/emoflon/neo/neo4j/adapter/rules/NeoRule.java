@@ -139,6 +139,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 		
 		addModelNodesAndRefs();
+		
+		logger.debug(greenRel.toString());
 	}
 
 	private void computePropertiesOfNode(ModelNodeBlock node, NeoNode neoNode, NeoMask neoMask) {
@@ -182,7 +184,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 	}
 	
-	// TODO
 	protected void addModelNodesAndRefs() {
 		greenNodes.forEach((varName,n) -> {
 			

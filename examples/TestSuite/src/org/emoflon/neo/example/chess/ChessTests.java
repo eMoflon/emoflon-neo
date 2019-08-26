@@ -51,18 +51,19 @@ class ChessTests extends ENeoTest {
 		expectSingleMatch(patterns.getPattern_KingsGambit());
 	}
 	
-	@Disabled
 	@Test
 	void move_WhitePawn() {
 		initDB(models.getModel_PawnOnBoard());
 		IRule<NeoMatch, NeoCoMatch> rule = figureMoves.getRule_MoveWhitePawn().rule();
 		var matches = rule.determineMatches();
-		assertTrue(matches.size() == 1);
+		logger.debug(matches.size());
+		assertTrue(matches.size() == 2);
 		
 		var onlyMatch = matches.iterator().next();
 		
 		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 		assertTrue(result.isPresent());
+		
 		assertFalse(onlyMatch.isStillValid());
 	}
 
