@@ -96,6 +96,11 @@ public abstract class NeoConstraint implements IConstraint {
 			return false;
 		}
 	}
+	
+	public String getQueryString_WhereEqualElementsCondition() {
+		var equalElements = queryData.getEqualElements();
+		 return CypherPatternBuilder.whereEqualElementsConditionQuery(equalElements);
+	}
 
 	public String getQuery() {
 		NeoReturn returnStmt = getConstraintData();
@@ -104,6 +109,10 @@ public abstract class NeoConstraint implements IConstraint {
 	}
 
 	protected NeoReturn createReturnStatement(Collection<NeoNode> nodes, String optionalQuery, String whereClause) {
+		return createReturnStatement(nodes, optionalQuery, whereClause, "");
+	}
+	
+	protected NeoReturn createReturnStatement(Collection<NeoNode> nodes, String optionalQuery, String whereClause, String whereEqualCond) {
 		var returnStmt = new NeoReturn();
 		returnStmt.addNodes(nodes);
 		returnStmt.addOptionalMatch(optionalQuery);

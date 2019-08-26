@@ -138,7 +138,7 @@ public class NeoReturn {
 	public String getWhereClause() {
 		return whereClause;
 	}
-
+	
 	/**
 	 * Adds a new WHERE query to the existing ones
 	 * 
@@ -147,4 +147,5 @@ public class NeoReturn {
 	public void addWhereClause(String where) {
 		whereClause += where;
 	}
+
 }

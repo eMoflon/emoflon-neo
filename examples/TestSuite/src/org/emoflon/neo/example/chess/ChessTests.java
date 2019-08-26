@@ -43,7 +43,6 @@ class ChessTests extends ENeoTest {
 		expectSingleMatch(patterns.getPattern_KingsGambit());
 	}
 	
-	@Disabled
 	@Test
 	void move_WhitePawn() {
 		initDB(models.getModel_PawnOnBoard());
@@ -55,6 +54,7 @@ class ChessTests extends ENeoTest {
 		
 		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 		assertTrue(result.isPresent());
+		
 		assertFalse(onlyMatch.isStillValid());
 	}
 
