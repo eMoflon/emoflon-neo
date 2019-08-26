@@ -15,7 +15,6 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ChessTests extends ENeoTest {
@@ -58,7 +57,6 @@ class ChessTests extends ENeoTest {
 		assertFalse(onlyMatch.isStillValid());
 	}
 
-	@Disabled
 	@Test
 	void move_WhitePawnByRefinement() {
 		initDB(models.getModel_PawnOnBoard());
