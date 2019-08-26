@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.models.API_Simple3x3Field;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
@@ -403,5 +404,12 @@ public class SokobanPatterns extends ENeoTest {
 		var p = entities.getPattern_PatternMoveSokobanDownTest();
 		var matches = p.matcher().determineMatches();
 		expectValidMatches(matches, matches.size());
+	}
+	
+	@Test
+	public void testEvenMoreNeighboringFields() {
+		clearDB();
+		initDB(new API_Simple3x3Field(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SimpleThreeByThreeField());
+		assertThat(entities.getPattern_EvenMoreNeighbouringFields().matcher().countMatches(), is(12));
 	}
 }

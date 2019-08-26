@@ -8,29 +8,21 @@ import static org.junit.Assert.assertTrue;
 import java.util.Optional;
 
 import org.emoflon.neo.api.API_ChessBoard;
-import org.emoflon.neo.api.API_ChessLanguage;
+import org.emoflon.neo.api.API_ChessPatterns;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_FigureMoves;
-import org.emoflon.neo.api.API_Patterns;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ChessTests extends ENeoTest {
-	
-	private API_ChessLanguage language = new API_ChessLanguage(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+
 	private API_FigureMoves figureMoves = new API_FigureMoves(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 	private API_ChessBoard models = new API_ChessBoard(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
-	private API_Patterns patterns = new API_Patterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
-
-	@BeforeEach
-	public void initDB() {
-		//initDB(models.getModel_CompleteBoard());
-	}
+	private API_ChessPatterns patterns = new API_ChessPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 	
 	@Test
 	void test_AllDiagonalReferences() {
@@ -57,7 +49,7 @@ class ChessTests extends ENeoTest {
 		initDB(models.getModel_PawnOnBoard());
 		IRule<NeoMatch, NeoCoMatch> rule = figureMoves.getRule_MoveWhitePawn().rule();
 		var matches = rule.determineMatches();
-		assertTrue(matches.size() == 1);
+		assertTrue(matches.size() == 2);
 		
 		var onlyMatch = matches.iterator().next();
 		
@@ -66,5 +58,16 @@ class ChessTests extends ENeoTest {
 		assertFalse(onlyMatch.isStillValid());
 	}
 
-
+	@Disabled
+	@Test
+	void move_WhitePawnByRefinement() {
+		initDB(models.getModel_PawnOnBoard());
+		IRule<NeoMatch, NeoCoMatch> rule = figureMoves.getRule_MovePawnByRefinement().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 2);
+		
+		Optional<NeoCoMatch> result = rule.apply(matches.iterator().next());
+		assertTrue(result.isPresent());
+		assertFalse(((NeoMatch) matches.toArray()[0]).isStillValid());
+	}
 }

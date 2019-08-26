@@ -583,3 +583,16 @@ pattern patternMoveSokobanDownTest {
 	to : Field 
 	
 } when forbid byOwnColourOccupiedField
+
+pattern neighbouringFields {
+	f1 : Field {
+		-e : right|bottom-> f2
+	}
+	f2 : Field
+}
+
+pattern evenMoreNeighbouringFields -> neighbouringFields, neighbouringFields [f1 -> f3, f2 -> f4] {
+	f2 : Field {
+		-e : bottom|right-> $f3
+	}
+}
