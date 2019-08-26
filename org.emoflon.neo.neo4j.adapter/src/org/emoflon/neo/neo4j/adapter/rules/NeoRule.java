@@ -123,6 +123,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			if(n.getAction() != null) {
 				switch(n.getAction().getOp()) {
 				case CREATE:
+					neoNode.addProperty("ename", "\"" + neoNode.getVarName() + "\"");
+					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
 					break;
 				case DELETE:
