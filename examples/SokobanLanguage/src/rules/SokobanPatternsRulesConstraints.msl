@@ -378,6 +378,7 @@ abstract rule pushBlock {
 	}
 }
 
+// up
 rule moveSokobanUp -> moveSokoban {
 	to : Field {
 		-bottom-> $from
@@ -396,6 +397,7 @@ rule pushBlockUp -> pushBlock, moveSokobanUp {
 	}
 } when forbid occupiedNext
 
+// down
 rule moveSokobanDown -> moveSokoban {
 	from : Field {
 		-bottom-> $to
@@ -404,6 +406,47 @@ rule moveSokobanDown -> moveSokoban {
 
 rule moveSokobanDownWithCondition -> moveSokobanDown
 	when forbid occupiedField
+	
+rule pushBlockDown -> pushBlock, moveSokobanDown {
+	to : Field {
+		-bottom-> $next
+	}
+} when forbid occupiedNext
+
+// right
+rule moveSokobanRight -> moveSokoban {
+	from : Field {
+		-right-> $to
+	}
+}
+
+rule moveSokobanRightWithCondition -> moveSokobanRight
+	when forbid occupiedField
+	
+rule pushBlockRight -> pushBlock, moveSokobanRight {
+	to : Field {
+		-right-> $next
+	}
+} when forbid occupiedNext
+
+// left
+rule moveSokobanLeft -> moveSokoban {
+	to : Field {
+		-right-> $from
+	}
+}
+
+rule moveSokobanLeftWithCondition -> moveSokobanLeft
+	when forbid occupiedField
+	
+rule pushBlockLeft -> pushBlock, moveSokobanLeft {
+	next : Field {
+		-right-> $to
+	}
+} when forbid occupiedNext
+
+
+	
 	
 rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
 	from : Field {
@@ -425,12 +468,6 @@ rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
 
 rule forTestOnlymoveSokobanDownWithConditionAndNewNodes -> moveSokobanDown
 	when forbid occupiedField
-
-rule pushBlockDown -> pushBlock, moveSokobanDown {
-	to : Field {
-		-bottom-> $next
-	}
-} when forbid occupiedNext
 
 pattern oneField {
 	f:Field

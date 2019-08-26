@@ -48,6 +48,7 @@ import java.util.HashSet
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 
 /**
  * This class contains custom validation rules. 
@@ -110,7 +111,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 			} else if (p.type.type instanceof UserDefinedType) {
 				var propertyType = (p.type.type as UserDefinedType).reference
 				var literals = propertyType.literals
-				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal))) {
+				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal)) &&
+					!(p.value instanceof AttributeExpression && 
+						isOfCorrectType(p.value as AttributeExpression, p.type.type))) {
 					error(WRONG_PROPERTY_TYPE + propertyType.getName,
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}
@@ -280,7 +283,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 		
 	}
 
-	@Check(NORMAL)
+	@Check
 	def checkForEntitiesWithSameName(EMSL_Spec spec) {
 		var namelistsOfEntities = new HashMap<String, ArrayList<String>>();
 		namelistsOfEntities.put("Pattern", new ArrayList<String>())
@@ -567,7 +570,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	def void forbidGreenNodesOfAbstractTypesInRule(ModelNodeBlock nb) {
 		if ((nb.eContainer instanceof Rule && !(nb.eContainer as Rule).abstract 
 					|| nb.eContainer instanceof TripleRule && !(nb.eContainer as TripleRule).abstract) 
-				&& nb.action !== null && nb.type.abstract) {
+				&& nb.action.op === ActionOperator.CREATE && nb.type.abstract) {
 			error(GREEN_NODE_OF_ABSTRACT_TYPES, nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__ACTION)
 		}
 	}
@@ -591,8 +594,17 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void forbidComplexEdgesInModels(ModelRelationStatement relation) {
-		if (relation.types.size > 1 && relation.eContainer.eContainer instanceof Model) {
-			error(FORBIDDING_COMPLEX_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
+		if (relation.eContainer.eContainer instanceof Model) {
+			if (relation.types.size > 1) {
+				error(FORBIDDING_COMPLEX_EDGES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
+			}
+			if (relation.lower !== null || relation.upper !== null) {
+				try {
+					error("Path lengths in models are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
+				} catch (Exception e) {
+					error("Path lengths in models are not allowed.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__UPPER)
+				}
+			}
 		}
 	}
 	
@@ -817,6 +829,34 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}
 		if (corr.target?.type != corr.type.target) {
 			error('''The target argument must be of type "«corr.type.target.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
+		}
+	}
+	
+	/**
+	 * Checks if the types given in an edge are transitively reachable and their
+	 * target types make sense, i.e. are helping in reaching the desired target.
+	 */
+	@Check
+	def void checkTypesUsedInRelationStatements(ModelRelationStatement relation) {
+		if (relation.types.size > 1) {
+			var index = 0
+			for (t : relation.types) {
+				if (!(t.type.eContainer == (relation.eContainer as ModelNodeBlock).type)) {
+					var reachable = false
+					var usefulTarget = false
+					for (other : relation.types) {
+						if (t.type.eContainer == other.type.target)
+							reachable = true
+						if (t.type.target == other.type.eContainer)
+							usefulTarget = true
+					}
+					if (!reachable)
+						error('''The edge-type "«t.type.name»" is not allowed here because it is not transitively reachable.''', relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES, index)
+					if (!usefulTarget)
+						error('''The edge-type "«t.type.name»" is not allowed here because its target makes no sense.''', relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES, index)
+				}
+				index++
+			}
 		}
 	}
 }

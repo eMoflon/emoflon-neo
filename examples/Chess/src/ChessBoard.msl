@@ -1,0 +1,603 @@
+import "platform:/resource/Chess/src/ChessLanguage.msl"
+
+model FourByFourField {
+	f00 : Field {
+		-right-> f01
+		-bottom-> f10
+		-bottomRight-> f11
+	}
+	
+	f01 : Field {
+		-right-> f02
+		-bottom-> f11
+		-bottomRight-> f12
+		-bottomLeft-> f10
+	}
+	
+	f02 : Field {
+		-right-> f03
+		-bottom-> f12
+		-bottomRight-> f13
+		-bottomLeft-> f11
+	}
+	
+	f03 : Field {
+		-bottom-> f13
+		-bottomLeft-> f12
+	}
+	
+	f10 : Field {
+		-right-> f11
+		-bottom-> f20
+		-bottomRight-> f21
+	}
+	
+	f11 : Field {
+		-right-> f12
+		-bottom-> f21
+		-bottomRight-> f22
+		-bottomLeft-> f20
+	}
+	
+	f12 : Field {
+		-right-> f13
+		-bottom-> f22
+		-bottomRight-> f23
+		-bottomLeft-> f21
+	}
+	
+	f13 : Field {
+		-bottom-> f23
+		-bottomLeft-> f22
+	}
+	
+	f20 : Field {
+		-right-> f21
+		-bottom-> f30
+		-bottomRight-> f31
+	}
+	
+	f21 : Field {
+		-right-> f22
+		-bottom-> f31
+		-bottomRight-> f32
+		-bottomLeft-> f30
+	}
+	
+	f22 : Field {
+		-right-> f23
+		-bottom-> f32
+		-bottomRight-> f33
+		-bottomLeft-> f31
+	}
+	
+	f23 : Field {
+		-bottom-> f33
+		-bottomLeft-> f32
+	}
+	
+	f30 : Field {
+		-right-> f31
+	}
+	
+	f31 : Field {
+		-right-> f32
+	}
+	
+	f32 : Field {
+		-right-> f33
+	}
+	
+	f33 : Field
+}
+
+model CompleteBoard -> FourByFourField,
+		FourByFourField[f00 -> f04, f01 -> f05, f02 -> f06, f03 -> f07,
+			f10 -> f14, f11 -> f15, f12 -> f16, f13 -> f17,
+			f20 -> f24, f21 -> f25, f22 -> f26, f23 -> f27,
+			f30 -> f34, f31 -> f35, f32 -> f36, f33 -> f37
+		],
+		FourByFourField[f00 -> f40, f01 -> f41, f02 -> f42, f03 -> f43,
+			f10 -> f50, f11 -> f51, f12 -> f52, f13 -> f53,
+			f20 -> f60, f21 -> f61, f22 -> f62, f23 -> f63,
+			f30 -> f70, f31 -> f71, f32 -> f72, f33 -> f73
+		],
+		FourByFourField[f00 -> f44, f01 -> f45, f02 -> f46, f03 -> f47,
+			f10 -> f54, f11 -> f55, f12 -> f56, f13 -> f57,
+			f20 -> f64, f21 -> f65, f22 -> f66, f23 -> f67,
+			f30 -> f74, f31 -> f75, f32 -> f76, f33 -> f77
+		] 
+{
+	f03 : Field {
+		-right-> $f04
+		-bottomRight-> $f14
+	}
+	f13 : Field {
+		-right-> $f14
+		-bottomRight-> $f24
+	}
+	f23 : Field {
+		-right-> $f24
+		-bottomRight-> f34
+	}
+	f33 : Field {
+		-right-> $f34
+		-bottom-> f43
+		-bottomRight-> $f44
+		-bottomLeft-> $f42
+	}
+	f43 : Field {
+		-right-> $f44
+		-bottomRight-> $f54
+	}
+	f53 : Field {
+		-right-> $f54
+		-bottomRight-> $f64
+	}
+	f63 : Field {
+		-right-> $f64
+		-bottomRight-> $f74
+	}
+	f73 : Field {
+		-right-> $f74
+	}
+	f30 : Field {
+		-bottom-> $f40
+		-bottomRight-> $f41
+	}
+	f31 : Field {
+		-bottom-> $f41
+		-bottomRight-> $f42
+		-bottomLeft-> $f40
+	}
+	f32 : Field {
+		-bottom-> $f42
+		-bottomRight-> $f43
+		-bottomLeft-> $f41
+	}
+	f34 : Field {
+		-bottom-> $f44
+		-bottomRight-> $f45
+		-bottomLeft-> f43
+	}
+	f35 : Field {
+		-bottom-> $f45
+		-bottomRight-> $f46
+		-bottomLeft-> $f44
+	}
+	f36 : Field {
+		-bottom-> $f46
+		-bottomRight-> $f47
+		-bottomLeft-> $f45
+	}
+	f37 : Field {
+		-bottom-> $f47
+		-bottomLeft-> $f46
+	}
+	f04 : Field {
+		-bottomLeft-> f13
+	}
+	f14 : Field {
+		-bottomLeft-> f23
+	}
+	f24 : Field {
+		-bottomLeft-> f33
+	}
+	f44 : Field {
+		-bottomLeft-> f53
+	}
+	f54 : Field {
+		-bottomLeft-> f63
+	}
+	f64 : Field {
+		-bottomLeft-> f73
+	}
+}
+
+model PawnOnField {
+	p : Pawn {
+		-standsOn-> f
+	}
+	f : Field
+}
+
+model WhitePawn {
+	p : Pawn {
+		.colour : WHITE
+	}
+}
+
+model BlackPawn {
+	p : Pawn {
+		.colour : BLACK
+	}
+}
+
+model WhitePawnOnField -> PawnOnField, WhitePawn
+
+model BlackPawnOnField -> PawnOnField, BlackPawn
+
+model FiguresOnFields -> PawnOnField[f -> f10, p -> p0],
+		PawnOnField [f -> f11, p -> p1],
+		PawnOnField [f -> f12, p -> p2],
+		PawnOnField [f -> f13, p -> p3],
+		PawnOnField [f -> f14, p -> p4],
+		PawnOnField [f -> f15, p -> p5],
+		PawnOnField [f -> f16, p -> p6],
+		PawnOnField [f -> f17, p -> p7] {
+	r1 : Rook {
+		-standsOn->f00
+	}
+	k1 : Knight {
+		-standsOn->f01
+	}
+	b1 : Bishop {
+		-standsOn->f02
+	}
+	q : Queen {
+		-standsOn->f03
+	}
+	k : King {
+		-standsOn->f04
+	}
+	b2 : Bishop {
+		-standsOn->f05
+	}
+	k2 : Knight {
+		-standsOn->f06
+	}
+	r2 : Rook {
+		-standsOn->f07
+	}
+	f00 : Field
+	f01 : Field
+	f02 : Field
+	f03 : Field
+	f04 : Field
+	f05 : Field
+	f06 : Field
+	f07 : Field
+}
+
+model StartConfigurationLines -> FiguresOnFields {
+	f00 : Field {
+		-right-> f01
+	}
+	f01 : Field {
+		-right-> f02
+	}
+	f02 : Field {
+		-right-> f03
+	}
+	f03 : Field {
+		-right-> f04
+	}
+	f04 : Field {
+		-right-> f05
+	}
+	f05 : Field {
+		-right-> f06
+	}
+	f06 : Field {
+		-right-> $f07
+	}
+	f10 : Field {
+		-right-> f11
+	}
+	f11 : Field {
+		-right-> f12
+	}
+	f12 : Field {
+		-right-> f13
+	}
+	f13 : Field {
+		-right-> f14
+	}
+	f14 : Field {
+		-right-> f15
+	}
+	f15 : Field {
+		-right-> f16
+	}
+	f16 : Field {
+		-right-> $f17
+	}
+}
+
+model WhiteStartConfiguration -> WhitePawn [p -> p0],
+		WhitePawn [p -> p1],
+		WhitePawn [p -> p2],
+		WhitePawn [p -> p3],
+		WhitePawn [p -> p4],
+		WhitePawn [p -> p5],
+		WhitePawn [p -> p6],
+		WhitePawn [p -> p7],
+		StartConfigurationLines {
+	r1 : Rook {
+		.colour : WHITE
+	}
+	k1 : Knight {
+		.colour : WHITE
+	}
+	b1 : Bishop {
+		.colour : WHITE
+	}
+	q : Queen {
+		.colour : WHITE
+	}
+	k : King {
+		.colour : WHITE
+	}
+	b2 : Bishop {
+		.colour : WHITE
+	}
+	k2 : Knight {
+		.colour : WHITE
+	}
+	r2 : Rook {
+		.colour : WHITE
+	}
+	f10 : Field {
+		-bottom-> $f00
+	}
+	f11 : Field {
+		-bottom-> $f01
+	}
+	f12 : Field {
+		-bottom-> $f02
+	}
+	f13 : Field {
+		-bottom-> $f03
+	}
+	f14 : Field {
+		-bottom-> $f04
+	}
+	f15 : Field {
+		-bottom-> $f05
+	}
+	f16 : Field {
+		-bottom-> $f06
+	}
+	f17 : Field {
+		-bottom-> $f07
+	}
+}
+
+model StartingLine {
+	r1 : Rook {
+		-standsOn->f00
+	}
+	k1 : Knight {
+		-standsOn->f01
+	}
+	b1 : Bishop {
+		-standsOn->f02
+	}
+	q : Queen {
+		-standsOn->f03
+	}
+	k : King {
+		-standsOn->f04
+	}
+	b2 : Bishop {
+		-standsOn->f05
+	}
+	k2 : Knight {
+		-standsOn->f06
+	}
+	r2 : Rook {
+		-standsOn->f07
+	}
+	f00 : Field {
+		-right-> f01
+	}
+	f01 : Field {
+		-right-> f02
+	}
+	f02 : Field {
+		-right-> f03
+	}
+	f03 : Field {
+		-right-> f04
+	}
+	f04 : Field {
+		-right-> f05
+	}
+	f05 : Field {
+		-right-> f06
+	}
+	f06 : Field {
+		-right-> f07
+	}
+	f07 : Field
+}
+
+model BlackStartConfiguration -> BlackPawn [p -> p0],
+		BlackPawn [p -> p1],
+		BlackPawn [p -> p2],
+		BlackPawn [p -> p3],
+		BlackPawn [p -> p4],
+		BlackPawn [p -> p5],
+		BlackPawn [p -> p6],
+		BlackPawn [p -> p7],
+		StartConfigurationLines {
+	r1 : Rook {
+		.colour : BLACK
+	}
+	k1 : Knight {
+		.colour : BLACK
+	}
+	b1 : Bishop {
+		.colour : BLACK
+	}
+	q : Queen {
+		.colour : BLACK
+	}
+	k : King {
+		.colour : BLACK
+	}
+	b2 : Bishop {
+		.colour : BLACK
+	}
+	k2 : Knight {
+		.colour : BLACK
+	}
+	r2 : Rook {
+		.colour : BLACK
+	}
+	f00 : Field {
+		-bottom-> $f10
+	}
+	f01 : Field {
+		-bottom-> $f11
+	}
+	f02 : Field {
+		-bottom-> $f12
+	}
+	f03 : Field {
+		-bottom-> $f13
+	}
+	f04 : Field {
+		-bottom-> $f14
+	}
+	f05 : Field {
+		-bottom-> $f15
+	}
+	f06 : Field {
+		-bottom-> $f16
+	}
+	f07 : Field {
+		-bottom-> $f17
+	}
+}
+
+// careful: Visualizing this model can fry your eclipse instance!
+model StartingBoard -> CompleteBoard,
+		BlackStartConfiguration,
+		WhiteStartConfiguration [
+			f00 -> f70,
+			f01 -> f71,
+			f02 -> f72,
+			f03 -> f73,
+			f04 -> f74,
+			f05 -> f75,
+			f06 -> f76,
+			f07 -> f77,
+			f10 -> f60,
+			f11 -> f61,
+			f12 -> f62,
+			f13 -> f63,
+			f14 -> f64,
+			f15 -> f65,
+			f16 -> f66,
+			f17 -> f67,
+			r1 -> r1w,
+			k1 -> k1w,
+			b1 -> b1w,
+			q -> qw,
+			k -> kw,
+			b2 -> b2w,
+			k2 -> k2w,
+			r2 -> r2w,
+			p0 -> p0w,
+			p1 -> p1w,
+			p2 -> p2w,
+			p3 -> p3w,
+			p4 -> p4w,
+			p5 -> p5w,
+			p6 -> p6w,
+			p7 -> p7w
+		]
+
+model AllPawnsOnBoardForCaroKannDefense -> BlackPawnOnField [p -> p0, f -> f10],
+		BlackPawnOnField [p -> p2, f -> f22],
+		BlackPawnOnField [p -> p3, f -> f13],
+		BlackPawnOnField [p -> p4, f -> f14],
+		BlackPawnOnField [p -> p5, f -> f15],
+		BlackPawnOnField [p -> p6, f -> f16],
+		BlackPawnOnField [p -> p7, f -> f17],
+		BlackPawnOnField [p -> p1, f -> f11],
+		WhitePawnOnField [p -> pw1, f -> f60],
+		WhitePawnOnField [p -> pw2, f -> f61],
+		WhitePawnOnField [p -> pw3, f -> f62],
+		WhitePawnOnField [p -> pw4, f -> f63],
+		WhitePawnOnField [p -> pw5, f -> f44],
+		WhitePawnOnField [p -> pw6, f -> f65],
+		WhitePawnOnField [p -> pw7, f -> f66],
+		WhitePawnOnField [p -> pw8, f -> f67]
+		
+model AllPawnsOnBoardForKingsGambit -> BlackPawnOnField [p -> p0, f -> f10],
+		BlackPawnOnField [p -> p2, f -> f12],
+		BlackPawnOnField [p -> p3, f -> f13],
+		BlackPawnOnField [p -> p4, f -> f34],
+		BlackPawnOnField [p -> p5, f -> f15],
+		BlackPawnOnField [p -> p6, f -> f16],
+		BlackPawnOnField [p -> p7, f -> f17],
+		BlackPawnOnField [p -> p1, f -> f11],
+		WhitePawnOnField [p -> pw0, f -> f60],
+		WhitePawnOnField [p -> pw1, f -> f61],
+		WhitePawnOnField [p -> pw2, f -> f62],
+		WhitePawnOnField [p -> pw3, f -> f63],
+		WhitePawnOnField [p -> pw4, f -> f44],
+		WhitePawnOnField [p -> pw5, f -> f45],
+		WhitePawnOnField [p -> pw6, f -> f66],
+		WhitePawnOnField [p -> pw7, f -> f67]
+	
+model CaroKannDefense -> CompleteBoard,
+		AllPawnsOnBoardForCaroKannDefense,
+		StartingLine,
+		StartingLine [
+			f00 -> f70, f01 -> f71, f02 -> f72, f03 -> f73,
+			f04 -> f74, f05 -> f75, f06 -> f76, f07 -> f77,
+			r1 -> r3, k1 -> k3, b1 -> b3, q -> queen, 
+			k -> king, b2 -> b4, k2 -> k4, r2 -> r4
+		]
+
+model KingsGambit -> CompleteBoard,
+		StartingLine, 
+		AllPawnsOnBoardForKingsGambit,
+		StartingLine [
+			f00 -> f70, f01 -> f71, f02 -> f72, f03 -> f73,
+			f04 -> f74, f05 -> f75, f06 -> f76, f07 -> f77,
+			r1 -> r3, k1 -> k3, b1 -> b3, q -> queen, 
+			k -> king, b2 -> b4, k2 -> k4, r2 -> r4
+		]
+		
+model PawnOnBoard {
+	fig : Pawn {
+		-standsOn-> f00
+	}
+	
+	f00 : Field
+	f01 : Field {
+		-bottom-> f00
+	}
+	f02 : Field {
+		-bottom-> f01
+	}
+	f03 : Field {
+		-bottom-> f02
+	}
+}
+
+pattern PawnOnStartPosition {
+	fig : Pawn {
+		-standsOn-> f00
+	}
+	f00 : Field
+	f01 : Field {
+		-bottom-> f00
+	}
+}
+
+pattern PawnMadeOneStep -> PawnOnStartPosition {
+	f : Field {
+		-bottom-> $f01
+	}
+}
+
+pattern PawnMadeTwoSteps -> PawnMadeOneStep {
+	ff : Field {
+		-bottom-> $f
+	}
+}
