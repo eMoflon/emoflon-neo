@@ -159,11 +159,34 @@ public class SokobanPatterns extends ENeoTest {
 		var nextMatch = iterator.next();
 		rule.useSPOSemantics(true);
 		Optional<NeoCoMatch> result = rule.apply(nextMatch);
-		logger.debug(result.get().getIdForNode("f2"));
 		assertTrue(result.isPresent());
 		assertFalse(nextMatch.isStillValid());
 		
 	}
+	
+	// FIX: See bug 160
+	@Disabled
+	@Test
+	public void test_OneBoardWithNewFieldWithMaskAndDPO() {
+		
+		var r = entities.getRule_OneBoardWithNewField();
+		var mask = r.mask().setB_fields_0_f1Col(0).setB_fields_0_f1Row(0)
+				.setB_fields_1_f2Col(1).setB_fields_1_f2Row(1)
+				.setB_fields_2_f3Col(99).setB_fields_2_f3Row(99);
+		
+		var rule = r.rule(mask);
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var nextMatch = iterator.next();
+		Optional<NeoCoMatch> result = rule.apply(nextMatch);
+		assertTrue(result.isEmpty());
+		assertFalse(nextMatch.isStillValid());
+		
+	}
+
 
 	@Test
 	public void test_OneEndField_StillValid() {
