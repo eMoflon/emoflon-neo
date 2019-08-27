@@ -22,12 +22,14 @@ import org.emoflon.neo.emsl.eMSL.Correspondence
 import java.util.List
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.core.resources.IProject
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 
 class TGGCompiler {
-	static String BASE_FOLDER = "tgg/";
-	
+	final String BASE_FOLDER = "tgg/";
 	TripleGrammar tgg
-	BiMap<MetamodelNodeBlock, String> typeMap
+	BiMap<MetamodelNodeBlock, String> nodeTypeNames
+	BiMap<MetamodelRelationStatement, String> relationTypeNames
 	String importStatements
 	
 	new(TripleGrammar pTGG) {
@@ -42,12 +44,15 @@ class TGGCompiler {
 	}
 	
 	def compileAll(IFileSystemAccess2 pFSA, IProject pProject) {
-		for (OperationType opType : OperationType.values) {
+		for (OperationType operationType : OperationType.values) {
+			opType = operationType
 			val fileLocation = BASE_FOLDER + tgg.name + opType.opNameExtension
 			pFSA.generateFile(fileLocation, compile(opType))
 			pProject.findMember("src-gen/" + fileLocation).touch(null)
 		}
 	}
+	
+	OperationType opType
 	
 	private def String compile(OperationType pOpType) {
 		'''
@@ -61,25 +66,44 @@ class TGGCompiler {
 	
 	private def mapTypeNames(Collection<Metamodel> pMetamodels) {
 		
-		typeMap = HashBiMap.create()
+		nodeTypeNames = HashBiMap.create()
+		relationTypeNames = HashBiMap.create();
 
-		val allTypes = new HashMap
+		val nodeTypeToMetamodelName = new HashMap
+		val relationTypeToNodeName = new HashMap
 		for(Metamodel metamodel : pMetamodels)
-			for(MetamodelNodeBlock type : metamodel.nodeBlocks)
-				allTypes.put(type, metamodel);
+			for(MetamodelNodeBlock nodeType : metamodel.nodeBlocks) {
+				nodeTypeToMetamodelName.put(nodeType, metamodel.name)
+				for(MetamodelRelationStatement relationType : nodeType.relations)
+					relationTypeToNodeName.put(relationType, nodeType.name)
+			}
 		
 		val duplicateNames = new HashSet
-		for(MetamodelNodeBlock type : allTypes.keySet) {
-			if(typeMap.containsValue(type.name)) {
-				val otherType = typeMap.inverse.get(type.name)
-				typeMap.put(otherType, allTypes.get(otherType).name + "." + otherType.name)
+		for(MetamodelNodeBlock type : nodeTypeToMetamodelName.keySet) {
+			if(nodeTypeNames.containsValue(type.name)) {
+				val otherType = nodeTypeNames.inverse.get(type.name)
+				nodeTypeNames.put(otherType, nodeTypeToMetamodelName.get(otherType) + "." + otherType.name)
 				duplicateNames.add(type.name)
 			}
 			
 			if(duplicateNames.contains(type.name))
-				typeMap.put(type, allTypes.get(type).name + "." + type.name)
+				nodeTypeNames.put(type, nodeTypeToMetamodelName.get(type) + "." + type.name)
 			else
-				typeMap.put(type, type.name)
+				nodeTypeNames.put(type, type.name)
+		}
+		
+		duplicateNames.clear()
+		for(MetamodelRelationStatement type : relationTypeToNodeName.keySet) {
+			if(relationTypeNames.containsValue(type.name)) {
+				val otherType = relationTypeNames.inverse.get(type.name)
+				relationTypeNames.put(otherType, relationTypeToNodeName.get(otherType) + "." + otherType.name)
+				duplicateNames.add(type.name)
+			}
+			
+			if(duplicateNames.contains(type.name))
+				relationTypeNames.put(type, relationTypeToNodeName.get(type) + "." + type.name)
+			else
+				relationTypeNames.put(type, type.name)
 		}
 	}
 	
@@ -104,21 +128,29 @@ class TGGCompiler {
 		'''
 			rule «pRule.name» {
 				«FOR srcBlock : pRule.srcNodeBlocks»
-					«compileModelNodeBlock(srcBlock, srcToCorr.get(srcBlock))»
+					«compileModelNodeBlock(srcBlock, srcToCorr.get(srcBlock), true)»
 				«ENDFOR»
 
 				«FOR trgBlock : pRule.trgNodeBlocks»
-					«compileModelNodeBlock(trgBlock, null)»
+					«compileModelNodeBlock(trgBlock, null, false)»
 				«ENDFOR»
 			}
 		'''
 	}
 	
-	private def compileModelNodeBlock(ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs) {
+	private def compileModelNodeBlock(ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs, boolean pIsSrc) {
+		val translate = (opType === OperationType.FWD && pIsSrc) || (opType === OperationType.BWD && !pIsSrc)
+		var action = ""
+		if(pNodeBlock.action?.op === ActionOperator.CREATE &&
+			(opType === OperationType.MODELGEN ||
+				(opType === OperationType.FWD && !pIsSrc) ||
+				(opType === OperationType.BWD && pIsSrc)
+			))
+				action = "++ "
 		'''
-			«IF pNodeBlock.action?.op == ActionOperator.CREATE»++ «ENDIF»«pNodeBlock.name»:«typeMap.get(pNodeBlock.type)» {
+			«action»«pNodeBlock.name»:«nodeTypeNames.get(pNodeBlock.type)» {
 				«FOR relation : pNodeBlock.relations»
-					«compileRelationStatement(relation)»
+					«compileRelationStatement(relation, pIsSrc)»
 				«ENDFOR»
 				«IF pCorrs !== null»«FOR corr : pCorrs»
 					«compileCorrespondence(corr)»
@@ -126,26 +158,53 @@ class TGGCompiler {
 				«FOR property : pNodeBlock.properties»
 					«compilePropertyStatement(property)»
 				«ENDFOR»
+				«IF translate»
+					.~_tr_ := true
+				«ENDIF»
 			}
 		'''
 	}
 	
-	private def compileRelationStatement(ModelRelationStatement pRelationStatement) {
+	private def compileRelationStatement(ModelRelationStatement pRelationStatement, boolean pIsSrc) {
+		val translate = (opType === OperationType.FWD && pIsSrc) || (opType === OperationType.BWD && !pIsSrc)
+		val hasProperties = pRelationStatement.properties !== null && !pRelationStatement.properties.empty
+		var action = ""
+		if(pRelationStatement.action?.op === ActionOperator.CREATE &&
+			(opType === OperationType.MODELGEN ||
+				(opType === OperationType.FWD && !pIsSrc) ||
+				(opType === OperationType.BWD && pIsSrc)
+			))
+				action = "++ "
 		'''
-			«IF pRelationStatement.action?.op == ActionOperator.CREATE»++ «ENDIF»-«pRelationStatement.types.get(0).type.name»->«pRelationStatement.target.name»
-			«IF pRelationStatement.properties !== null && !pRelationStatement.properties.empty»
+			«action»-«compileRelationTypes(pRelationStatement.types)»->«pRelationStatement.target.name»
+			«IF translate || hasProperties»
 			{
-				«FOR property : pRelationStatement.properties»
-					«compilePropertyStatement(property)»
-				«ENDFOR»
+				«IF hasProperties»
+					«FOR property : pRelationStatement.properties»
+						«compilePropertyStatement(property)»
+					«ENDFOR»
+				«ENDIF»
+				«IF translate»
+					.~_tr_ := true
+				«ENDIF»
 			}
 			«ENDIF»
 		'''
 	}
 	
+	private def compileRelationTypes(List<ModelRelationStatementType> pTypes) {
+		var types = null
+		for(ModelRelationStatementType type : pTypes) {
+			if(types !== null)
+				types += "|"
+			types += relationTypeNames.get(type.type)
+		}
+	}
+	
 	private def compileCorrespondence(Correspondence pCorrespondence) {
+		val action = (pCorrespondence.action?.op === ActionOperator.CREATE && opType !== OperationType.CO) ? "++ " : ""
 		'''
-			«IF pCorrespondence.action?.op == ActionOperator.CREATE»++ «ENDIF»-corr->«pCorrespondence.target.name»
+			«action»-corr->«pCorrespondence.target.name»
 			{
 				._type_ := "«pCorrespondence.type.name»"
 			}
