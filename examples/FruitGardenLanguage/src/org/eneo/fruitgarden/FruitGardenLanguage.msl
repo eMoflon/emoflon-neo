@@ -85,27 +85,27 @@ model SampleGarden {
 	seg4:PathSegment
 	
 	pears:PearTree {
-		-FruitTree.fruits->pear
+		-fruits->pear
 		-pears->pear
 	}
 	
 	plums:PlumTree {
-		-FruitTree.fruits->plum
+		-fruits->plum
 		-plums->plum
 	}
 	
 	apples:AppleTree {
-		-FruitTree.fruits->apple
+		-fruits->apple
 		-apples->apple
 	}
 	
 	lemons:LemonTree {
-		-FruitTree.fruits->lemon
+		-fruits->lemon
 		-lemons->lemon
 	}
 	
 	pear:Pear
 	apple:Apple
 	lemon:Lemon
-	plum:Plum			
+	plum:Plum	
 }

@@ -268,14 +268,26 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	def handleTypeOfRelationStatementInModelRelationStatement(ModelRelationStatement context,
 		ModelNodeBlock container) {
-		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), MetamodelRelationStatement))
+		if (context.name !== null) {
+			determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), MetamodelRelationStatement))
+		} else {
+			val relations = new HashSet()
+			thisAndAllSuperTypes(container.type).forEach[t | relations.addAll(t.relations)]
+			Scopes.scopeFor(relations)
+		}
 	}
 
 	/**
 	 * Returns the scope for the name of a RelationStatement.
 	 */
 	def handleTypeOfRelationStatementInModelRelationStatementType(ModelRelationStatement relation, ModelNodeBlock container) {
-		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(relation), MetamodelRelationStatement))
+		if (relation.name !== null) {
+			determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(relation), MetamodelRelationStatement))
+		} else {
+			val relations = new HashSet()
+			thisAndAllSuperTypes(container.type).forEach[t | relations.addAll(t.relations)]
+			Scopes.scopeFor(relations)
+		}
 	}
 	
 	/**

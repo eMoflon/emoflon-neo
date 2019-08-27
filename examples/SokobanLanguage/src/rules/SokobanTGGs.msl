@@ -153,7 +153,7 @@ tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {
 	source {
 		r: Row {
 			-firstEntry-> $e 
-			++ -Row.next-> nr
+			++ -next-> nr
 		}
 		
 		++ nr: Row {
