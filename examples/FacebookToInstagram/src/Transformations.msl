@@ -1,0 +1,273 @@
+import "platform:/resource/FacebookToInstagram/src/Languages.msl"
+
+tripleGrammar FacebookToInstagramGrammar {
+	source {
+		FacebookLanguage
+	}
+	
+	target {
+		InstagramLanguage
+	}
+	
+	correspondence {
+		FacebookLanguage.Network <-NetworkToNetwork-> InstagramLanguage.Network
+		
+		FacebookLanguage.User <-FbUserToInUser-> InstagramLanguage.User
+	}
+}
+
+abstract tripleRule Followers : FacebookToInstagramGrammar {
+	source {
+		n : Network {
+			-FacebookLanguage.Network.users-> fn
+		}
+		
+		fu : User
+		fn : User
+	}
+	
+	target {
+		iu : User {
+			-followerships-> fou
+		}
+		
+		fou : Followership {
+			-from-> fru
+		}
+		
+		fru : From
+		
+		in : User {
+			-followerships-> fon
+		}
+		
+		fon : Followership {
+			-to-> ton
+		}
+		
+		ton : To {
+			++ -follows-> fru
+		}
+	}
+	
+	correspondence {
+		fu <-:FbUserToInUser-> iu
+		
+		fn <-:FbUserToInUser-> in
+	}
+}
+
+tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers {
+	source {
+		n : Network {
+			-FacebookLanguage.Network.users-> $fu
+			++ -fiendships-> fri
+		}
+		
+		++ fri : Friendship {
+			++ -friends-> $fu
+			++ -friends-> $fn
+		}
+	}
+	
+	target {
+		fou : Followership {
+			-to-> tou
+		}
+		
+		tou : To
+		
+		fon : Followership {
+			-from-> frn
+		}
+		
+		frn : From
+	}
+} forbid src(noDoubleFriendshipFacebook) && trg(noDoubleFollowershipInstagram)
+
+pattern noDoubleFriendshipFacebook {
+	fn : FacebookLanguage.User
+	
+	fu : FacebookLanguage.User
+	
+	other : Friendship {
+		-friends-> fn
+		-friends-> fu
+	}
+}
+
+pattern noDoubleFollowershipInstagram {
+	tou : To {
+		-follows-> frn
+	}
+	
+	frn : From
+}
+
+tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {
+	source {
+		fu : User
+		
+		fn : User
+	}
+}
+
+tripleRule FriendsParentsIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
+	source {
+		fu : User {
+			++ -parents-> $fn
+		}
+	}
+}
+
+tripleRule FriendsSpouseIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
+	source {
+		fu : User {
+			++ -spouse-> $fn
+		}
+	}
+}
+
+tripleRule FriendsSiblingsIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
+	source {
+		fu : User {
+			++ -siblings-> $fn
+		}
+	}
+}
+
+tripleRule IgnoreInterNetworkFollowers : FacebookToInstagramGrammar -> Followers {
+	source {
+		nu : Network {
+			-FacebookLanguage.Network.users-> $fu
+		}
+	}
+}
+
+tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
+	target {
+		iu : User {
+			-followerships-> fou
+		}
+		
+		fou : Followership {
+			-to-> tou
+			-from-> fru
+		}
+		
+		tou : To {
+			++ -follows-> frn
+		}
+		
+		fru : From
+		
+		in : User {
+			-followerships-> fon
+		}
+		
+		fon : Followership {
+			-to-> ton
+			-from-> frn
+		}
+		
+		frn : From
+		
+		ton : To {
+			-follows-> fru
+		}
+	}
+}
+
+tripleRule NetworkToNetworkIslandRule : FacebookToInstagramGrammar {
+	source {
+		++ fl : Network
+	}
+	
+	target {
+		++ il : Network
+	}
+	
+	correspondence {
+		++ fl <-:NetworkToNetwork-> il
+	}
+}
+
+tripleRule UserNetworkBridgeRule : FacebookToInstagramGrammar {
+	source {
+		f : Network {
+			++ -FacebookLanguage.Network.users-> fu
+		}
+		
+		fu : User
+	}
+	
+	target {
+		i : Network {
+			++ -InstagramLanguage.Network.users-> iu
+		}
+		
+		iu : User
+	}
+	
+	correspondence {
+		f <-:NetworkToNetwork-> i
+		fu <-:FbUserToInUser-> iu
+	}
+}
+
+tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {
+	source {
+		++ flu : User
+	}
+	
+	target {
+		++ ilu : User {
+			++ -followerships-> fo
+		}
+		
+		++ fo : Followership {
+			++ -to-> to
+			++ -from-> fr
+		}
+		
+		++ to : To
+		
+		++ fr : From
+	}
+	
+	correspondence {
+		++ flu <-:FbUserToInUser-> ilu
+	}
+}
+
+tripleRule UserToUserExtensionRule : FacebookToInstagramGrammar {
+	source {
+		fl : Network {
+			++ -FacebookLanguage.Network.users-> flu
+		}
+		++ flu : User
+	}
+	
+	target {
+		il : Network {
+			++ -InstagramLanguage.Network.users-> ilu
+		}
+		
+		++ ilu : User
+	}
+	
+	correspondence {
+		fl <-:NetworkToNetwork-> il
+		++ flu <-:FbUserToInUser-> ilu
+	}
+}
+
+
+
+
+
+
+
+
+
+

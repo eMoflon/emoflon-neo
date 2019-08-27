@@ -65,3 +65,8 @@ examples/FruitGardenLanguage/src-gen/org/emoflon/neo/api/org/eneo/fruitgarden/AP
 examples/FruitGardenLanguage/src-gen/org/emoflon/neo/api/org/eneo/fruitgarden/API_FruitGardenLanguage.java
 examples/FruitGardenLanguage/src-gen/org/emoflon/neo/api/API_Common.java
 examples/FruitGardenLanguage/src-gen/org/emoflon/neo/api/org/eneo/fruitgarden/API_DomainConstraints.java
+examples/Chess/src-gen/org/emoflon/neo/api/API_ChessBoard.java
+examples/Chess/src-gen/org/emoflon/neo/api/API_ChessLanguage.java
+examples/Chess/src-gen/org/emoflon/neo/api/API_Common.java
+examples/Chess/src-gen/org/emoflon/neo/api/API_FigureMoves.java
+examples/Chess/src-gen/org/emoflon/neo/api/API_Patterns.java

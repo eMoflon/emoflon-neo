@@ -36,6 +36,9 @@ import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.eclipse.emf.ecore.util.EcoreUtil
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Entity
 
 /**
  * This class contains custom scoping description.
@@ -83,7 +86,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		}
 
 		if (typeOfRelationStatementInModelRelationStatementType(context, reference)) {
-			return handleTypeOfRelationStatementInModelRelationStatementType(
+			return handleTypeOfRelationStatementInModelRelationStatementType(context.eContainer as ModelRelationStatement,
 				context.eContainer.eContainer as ModelNodeBlock)
 		}
 
@@ -202,22 +205,11 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/**
 	 * Returns the scope for the name of a PropertyStatement that is nested in a RelationStatement.
 	 */
-	private def handleTypeOfPropertyStatementInRelationStatement(EObject context, EReference reference) {
-		val root = EcoreUtil2.getRootContainer(context)
-		var nodeBlocks = new HashMap<MetamodelNodeBlock, String>()
+	private def handleTypeOfPropertyStatementInRelationStatement(ModelPropertyStatement context, EReference reference) {
+		val properties = new HashSet()		
+		(context.eContainer as ModelRelationStatement).types.forEach[t | properties.addAll(t.type.properties)]
 
-		nodeBlocks = (allNodeBlocksInAllImportedMetamodels(root))
-
-		val possibilities = new HashMap
-		for (nb : nodeBlocks.keySet) {
-			(nb as MetamodelNodeBlock).relations.forEach [ r |
-				(r as MetamodelRelationStatement).properties.forEach [ p |
-					possibilities.put(p, null)
-				]
-			]
-		}
-
-		determineScope(possibilities)
+		Scopes.scopeFor(properties)
 	}
 
 	private def handleValueOfEnumInPropertyStatementInModel(EnumValue property, EReference reference) {
@@ -276,26 +268,21 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	def handleTypeOfRelationStatementInModelRelationStatement(ModelRelationStatement context,
 		ModelNodeBlock container) {
-		val nodeBlocks = thisAndAllSuperTypes(container.type)
-		val possibilities = new HashMap
-		for (nb : nodeBlocks) {
-			nb.relations.forEach[r|possibilities.put(r, null)]
-		}
-
-		determineScope(possibilities)
+		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), MetamodelRelationStatement))
 	}
 
 	/**
 	 * Returns the scope for the name of a RelationStatement.
 	 */
+	def handleTypeOfRelationStatementInModelRelationStatementType(ModelRelationStatement relation, ModelNodeBlock container) {
+		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(relation), MetamodelRelationStatement))
+	}
+	
+	/**
+	 * Returns the scope for the name of a RelationStatement.
+	 */
 	def handleTypeOfRelationStatementInModelRelationStatementType(ModelNodeBlock container) {
-		val nodeBlocks = thisAndAllSuperTypes(container.type)
-		val possibilities = new HashMap
-		for (nb : nodeBlocks) {
-			nb.relations.forEach[r|possibilities.put(r, null)]
-		}
-
-		determineScope(possibilities)
+		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(container), MetamodelRelationStatement))
 	}
 
 	/**
@@ -617,18 +604,45 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 				// find duplicates in names of NodeBlocks
 				val nameList = newArrayList
 				val duplicateNames = newArrayList
+				val extendedDuplicateNames = newArrayList
+				val duplicateObjects = newArrayList
 				aliases.keySet.forEach [ e |
 					if (!nameList.contains(
 						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString))
 						nameList.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
-					else
+					else {
+						duplicateObjects.add(e)
+						for (other : aliases.keySet) {
+							if (e !== other && QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString.equals(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString))
+								duplicateObjects.add(other)
+						}
+						if (!(eob instanceof Entity))
 						duplicateNames.add(
 							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+					}
+						
 				]
+				for (o : duplicateObjects) {
+					for (other : duplicateObjects) {
+						if (o !== other && 
+								QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(o)).toString.
+									equals(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString) &&
+								o.eContainer instanceof MetamodelNodeBlock && other.eContainer instanceof MetamodelNodeBlock &&
+								(o.eContainer as MetamodelNodeBlock).name.equals((other.eContainer as MetamodelNodeBlock).name)
+						) {
+							extendedDuplicateNames.add(QualifiedName.create((o.eContainer.eContainer as Metamodel).name, SimpleAttributeResolver.NAME_RESOLVER.apply(o)).toString)
+						}
+					}
+				}
 				// create QualifiedNames for NodeBlocks
 				val eobName = SimpleAttributeResolver.NAME_RESOLVER.apply(eob)
-				if (duplicateNames.contains(eobName)) {
+				if (eob.eContainer.eContainer instanceof Metamodel && extendedDuplicateNames.contains(QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, eobName).toString)) {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
+						QualifiedName.create(aliases.get(eob), QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName).toString)
+					else
+						QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+				} else if (duplicateNames.contains(eobName)) {
+					if (aliases.containsKey(eob) && aliases.get(eob) !== null && !(eob.eContainer instanceof EMSL_Spec))
 						QualifiedName.create(aliases.get(eob),
 							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 					else

@@ -48,7 +48,7 @@ constraint NoCyclicContainment = forbid CyclicContainment
 // Generate such a constraint for every aggregation or composition
 pattern ConnectedViaFruits {
 	container:FruitTree {
-		-fruits->containee
+		-FruitTree.fruits->containee
 	}
 	
 	containee:Fruit
