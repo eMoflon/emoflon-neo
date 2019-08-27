@@ -78,7 +78,7 @@ abstract tripleRule NormalRule:SokobanImportExport {
 abstract tripleRule AllOtherFields:SokobanImportExport {
 	source {
 		ble: Entry {
-			++ -Entry.next->ne
+			++ -next->ne
 		}
 		
 		++ ne: Entry
