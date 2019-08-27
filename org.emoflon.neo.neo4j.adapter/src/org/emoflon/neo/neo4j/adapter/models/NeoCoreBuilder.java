@@ -253,7 +253,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return eclass.equals(EMSLPackage.eINSTANCE.getAtomicPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getConstraint())
-				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition());
+				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getRule());
 	}
 
 	void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
