@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
+import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
@@ -91,7 +92,7 @@ public class NeoNegativeConstraint extends NeoConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchCondition() {
-		return CypherPatternBuilder.condition_matchQuery(nodes, injective, mask);
+		return CypherPatternBuilder.condition_matchQuery(nodes, queryData.getAllMatchElementsMap(), injective, mask, queryData.getEqualElements());
 	}
 
 	/**
@@ -109,7 +110,22 @@ public class NeoNegativeConstraint extends NeoConstraint {
 	 * @return WHERE xy IS NULL OR yz IS NULL (query part for this constraint)
 	 */
 	public String getQueryString_WhereCondition() {
-		return CypherPatternBuilder.whereNegativeConditionQuery(nodes);
+		var patternElements = queryData.getMatchElements();
+		var optionalElements = new ArrayList<String>();
+		
+		for(NeoNode n: nodes) {
+			if(!patternElements.contains(n.getVarName())) {
+				optionalElements.add(n.getVarName());
+			}
+			
+			for(NeoRelation r: n.getRelations()) {
+				if(!patternElements.contains(r.getVarName())) {
+					optionalElements.add(r.getVarName());
+				}
+			}
+		}
+		
+		return CypherPatternBuilder.whereNegativeConditionQuery(optionalElements);
 	}
 
 	@Override

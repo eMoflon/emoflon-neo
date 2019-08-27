@@ -583,3 +583,62 @@ pattern patternMoveSokobanDownTest {
 	to : Field 
 	
 } when forbid byOwnColourOccupiedField
+
+pattern boulderButNoBlock {
+	fig: Boulder
+} when forbid isBlock
+
+pattern isBlock {
+	fig: Block
+}
+
+pattern twoBoulderButNoTwoBlock {
+	fig1: Boulder
+	fig2: Boulder
+} when forbidIsTwoBlock
+
+pattern isTwoBlock {
+	fig1: Block
+	fig2: Block
+}
+
+constraint forbidIsTwoBlock = forbid isTwoBlock
+
+pattern twoBoulderButTwoBlock {
+	fig1: Boulder
+	fig2: Boulder
+} when !forbidIsTwoBlock
+
+pattern oneBlock1 {
+	fig1: Block
+} when enforce oneOtherBlock1
+
+pattern oneOtherBlock1 {
+	fig2: Block
+}
+
+pattern oneBlock2 {
+	fig1: Block
+	fig2: Block
+} when enforce oneOtherBlock2
+
+pattern oneOtherBlock2 {
+	fig2: Block
+	fig3: Block
+	fig4: Block
+}
+
+pattern oneOtherBlock2a {
+	fig2: Block
+	fig4: Block
+	fig6: Block
+}
+
+constraint enfOneOtherBlock2 = enforce oneOtherBlock2
+constraint enfOneOtherBlock3 = enforce oneOtherBlock2a
+constraint enforceCombi = enfOneOtherBlock2 && enfOneOtherBlock3
+
+pattern oneBlock2Combi {
+	fig1: Block
+	fig2: Block
+} when enforceCombi

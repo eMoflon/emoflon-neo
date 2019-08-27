@@ -25,7 +25,6 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 
-	@Disabled("Waiting for rules")
 	@Test
 	public void testMoveSokobanDown() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDown().rule();
@@ -44,8 +43,6 @@ public class SokobanRules extends ENeoTest {
 		assertFalse(notPossible.isPresent());
 	}
 	
-
-	@Disabled("Waiting for rules")
 	@Test
 	public void testMoveSokobanDownNewNodes() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ForTestOnlyMoveSokobanDownAndNewNodes().rule();
@@ -53,8 +50,6 @@ public class SokobanRules extends ENeoTest {
 		assertTrue(result.isPresent());
 	}
 	
-
-	@Disabled("Waiting for rules")
 	@Test
 	public void testMoveSokobanDownWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownWithCondition().rule();
@@ -73,8 +68,6 @@ public class SokobanRules extends ENeoTest {
 		assertFalse(notPossible.isPresent());
 	}
 	
-
-	@Disabled("Waiting for rules")
 	@Test
 	public void testMoveSokobanDownNewNodesWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ForTestOnlymoveSokobanDownWithConditionAndNewNodes().rule();
