@@ -87,6 +87,7 @@ pattern oneNormalField {
 	f:Field
 }
 
+
 rule oneExtraField {
 	f:Field {
 		-- -right-> oldF
@@ -100,6 +101,24 @@ pattern oneEndField {
 	field : Field {
 		.endPos : true
 	}
+}
+
+pattern oneBoardWithField {
+	b:SokobanLanguage.Board {
+		-fields->f
+	}
+	f:Field
+}
+
+rule oneBoardWithNewField {
+	b:SokobanLanguage.Board {
+		-- -fields->f1
+		-fields->f2
+		++ -fields->f3
+	}
+	-- f1:Field
+	f2:Field
+	++ f3:Field
 }
 
 pattern anOccupiedField {

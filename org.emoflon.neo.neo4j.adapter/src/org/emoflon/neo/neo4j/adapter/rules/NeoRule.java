@@ -101,6 +101,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				if(r.getAction() != null) {
 					switch(r.getAction().getOp()) {
 					case CREATE:
+						extractRelationPropertiesFromMask(neoRel);
 						greenRel.put(neoRel.getVarName(), neoRel);
 						break;
 					case DELETE:
@@ -121,7 +122,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			if(n.getAction() != null) {
 				switch(n.getAction().getOp()) {
 				case CREATE:
-					extractPropertiesFromMask(neoNode);
+					extractNodePropertiesFromMask(neoNode);
 					neoNode.addProperty("ename", "\"" + neoNode.getVarName() + "\"");
 					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
@@ -148,7 +149,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 	}
 	
-	private void extractPropertiesFromMask(NeoNode neoNode) {
+	private void extractNodePropertiesFromMask(NeoNode neoNode) {
 		
 		for (var propMask : mask.getMaskedAttributes().entrySet()) {
 			var varName = mask.getVarName(propMask.getKey());
@@ -157,15 +158,19 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						mask.getAttributeName(propMask.getKey()), //
 						EMSLUtil.handleValue(propMask.getValue()));
 			}
-
-
-			for (var rel : neoNode.getRelations()) {
-				if (rel.getVarName().equals(varName)) {
-					rel.addProperty(//
-							mask.getAttributeName(propMask.getKey()), //
-							EMSLUtil.handleValue(propMask.getValue()));
-				}
+		}
+	}
+	
+	private void extractRelationPropertiesFromMask(NeoRelation neoRel) {
+		
+		for (var propMask : mask.getMaskedAttributes().entrySet()) {
+			var varName = mask.getVarName(propMask.getKey());
+			if (neoRel.getVarName().equals(varName)) {
+				neoRel.addProperty(//
+						mask.getAttributeName(propMask.getKey()), //
+						EMSLUtil.handleValue(propMask.getValue()));
 			}
+			
 		}
 	}
 
@@ -241,6 +246,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 		if (result.hasNext()) {
 			var record = result.next();
+			logger.debug(record.toString());
 			return Optional.of(new NeoCoMatch(contextPattern, record));
 		} else {
 			return Optional.empty();

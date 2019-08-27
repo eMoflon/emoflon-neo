@@ -130,6 +130,40 @@ public class SokobanPatterns extends ENeoTest {
 		assertTrue(nextMatch.isStillValid());
 	
 	}
+	
+	@Test
+	public void test_OneBoardWithFieldWithMask() {
+		var p = entities.getPattern_OneBoardWithField();
+		var mask = p.mask().setB_fields_0_fCol(2).setB_fields_0_fRow(2);
+		
+		var matches = p.matcher().countMatches();
+		assertEquals(16, matches);
+		var matchesWithMask = p.matcher(mask).countMatches();
+		assertEquals(1, matchesWithMask);
+	}
+	
+	@Test
+	public void test_OneBoardWithNewFieldWithMask() {
+		
+		var r = entities.getRule_OneBoardWithNewField();
+		var mask = r.mask().setB_fields_0_f1Col(0).setB_fields_0_f1Row(0)
+				.setB_fields_1_f2Col(1).setB_fields_1_f2Row(1)
+				.setB_fields_2_f3Col(99).setB_fields_2_f3Row(99);
+		
+		var rule = r.rule(mask);
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var nextMatch = iterator.next();
+		rule.useSPOSemantics(true);
+		Optional<NeoCoMatch> result = rule.apply(nextMatch);
+		logger.debug(result.get().getIdForNode("f2"));
+		assertTrue(result.isPresent());
+		assertFalse(nextMatch.isStillValid());
+		
+	}
 
 	@Test
 	public void test_OneEndField_StillValid() {
