@@ -98,7 +98,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName());
 				
-				extractPropertiesFromMaskRelation(r, neoRel, mask);
+				//extractPropertiesFromMaskRelation(r, neoRel, mask);
 				
 				if(r.getAction() != null) {
 					switch(r.getAction().getOp()) {
@@ -148,7 +148,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			neoNode.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 		}
 		
-		extractPropertiesFromMaskNodes(node, neoNode, mask);
+		//extractPropertiesFromMaskNodes(node, neoNode, mask);
 	}
 
 	private void extractPropertiesFromMaskNodes(ModelNodeBlock node, NeoNode neoNode, NeoMask mask) {

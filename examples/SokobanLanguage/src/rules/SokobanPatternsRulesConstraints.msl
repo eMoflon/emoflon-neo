@@ -83,6 +83,17 @@ pattern oneBlock {
 	block : Block
 }
 
+pattern oneNormalField {
+	f:Field
+}
+
+rule oneExtraField {
+	f:Field {
+		++ -right-> newF
+	}
+	++ newF:Field
+}
+
 pattern oneEndField {
 	field : Field {
 		.endPos : true

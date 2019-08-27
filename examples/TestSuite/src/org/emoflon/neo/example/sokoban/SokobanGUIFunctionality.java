@@ -42,8 +42,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertTrue(types.contains(IController.BOULDER));
 	}
 
-
-	@Disabled("Waiting for rules")
 	@Test
 	public void testCreateBlock() {
 		var access = entities.getRule_CreateBlock();

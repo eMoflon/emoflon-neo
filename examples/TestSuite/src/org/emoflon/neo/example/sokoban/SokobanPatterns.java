@@ -4,11 +4,15 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Optional;
 
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -93,6 +97,38 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_OneEndField() {
 		assertThat(entities.getPattern_OneEndField().matcher().countMatches(), is(2));
+	}
+	
+	@Test
+	public void test_OneFieldWithMask() {
+		var p = entities.getPattern_OneNormalField();
+		var mask = p.mask().setFEndPos(true);
+		assertEquals(2, p.matcher(mask).countMatches());
+		
+		mask = p.mask().setFEndPos(false);
+		assertEquals(14, p.matcher(mask).countMatches());
+	}
+	
+	@Test
+	public void test_OneNewFieldWithMask() {
+		var r = entities.getRule_OneExtraField();
+		var mask = r.mask().setFEndPos(true);
+		
+		var matches = r.rule(mask).determineMatches();
+		assertEquals(2, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var nextMatch = iterator.next();
+		Optional<NeoCoMatch> result1 = r.rule(mask).apply(nextMatch);
+		assertTrue(result1.isPresent());
+		assertTrue(nextMatch.isStillValid());
+		
+		nextMatch = iterator.next();
+		Optional<NeoCoMatch> result2 = r.rule(mask).apply(nextMatch);
+		assertTrue(result2.isPresent());
+		assertTrue(nextMatch.isStillValid());
+	
 	}
 
 	@Test
