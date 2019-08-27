@@ -20,10 +20,13 @@ import com.google.common.collect.HashBiMap
 import java.util.HashSet
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import java.util.List
+import org.eclipse.xtext.generator.IFileSystemAccess2
+import org.eclipse.core.resources.IProject
 
 class TGGCompiler {
+	static String BASE_FOLDER = "tgg/";
+	
 	TripleGrammar tgg
-	OperationType opType
 	BiMap<MetamodelNodeBlock, String> typeMap
 	String importStatements
 	
@@ -38,9 +41,15 @@ class TGGCompiler {
 		mapTypeNames(allMetamodels)
 	}
 	
-	def String compile(OperationType pOpType) {
-		opType = pOpType
-		
+	def compileAll(IFileSystemAccess2 pFSA, IProject pProject) {
+		for (OperationType opType : OperationType.values) {
+			val fileLocation = BASE_FOLDER + tgg.name + opType.opNameExtension
+			pFSA.generateFile(fileLocation, compile(opType))
+			pProject.findMember("src-gen/" + fileLocation).touch(null)
+		}
+	}
+	
+	private def String compile(OperationType pOpType) {
 		'''
 			«importStatements»
 		

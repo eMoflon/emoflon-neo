@@ -35,7 +35,6 @@ import org.emoflon.neo.emsl.util.LogUtils
 import org.emoflon.neo.emsl.util.ManifestFileUpdater
 import org.apache.log4j.Logger
 import org.emoflon.neo.emsl.compiler.TGGCompiler
-import org.emoflon.neo.emsl.compiler.OperationType
 
 /**
  * Generates code from your model files on save.
@@ -60,11 +59,7 @@ class EMSLGenerator extends AbstractGenerator {
 		val project = ResourcesPlugin.workspace.root.getProject(resource.URI.segment(1))
 		emslSpec.entities.filter[it instanceof TripleGrammar]
 						 .map[it as TripleGrammar]
-						 .forEach[
-						 	val TGGCompiler compiler = new TGGCompiler(it)
-						 	fsa.generateFile("Test.msl", compiler.compile(OperationType.MODELGEN))
-						 	project.findMember("src-gen/Test.msl").touch(null);
-						 ]
+						 .forEach[new TGGCompiler(it).compileAll(fsa, project)]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
 		fsa.generateFile("org/emoflon/neo/api/" + apiPath + "/" + apiName + ".java",
