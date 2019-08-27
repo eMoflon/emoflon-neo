@@ -193,12 +193,13 @@ class TGGCompiler {
 	}
 	
 	private def compileRelationTypes(List<ModelRelationStatementType> pTypes) {
-		var types = null
+		var types = ""
 		for(ModelRelationStatementType type : pTypes) {
-			if(types !== null)
+			if(types !== "")
 				types += "|"
 			types += relationTypeNames.get(type.type)
 		}
+		return types
 	}
 	
 	private def compileCorrespondence(Correspondence pCorrespondence) {
