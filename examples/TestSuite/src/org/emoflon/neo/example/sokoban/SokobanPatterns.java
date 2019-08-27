@@ -112,7 +112,7 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_OneNewFieldWithMask() {
 		var r = entities.getRule_OneExtraField();
-		var mask = r.mask().setFEndPos(true);
+		var mask = r.mask().setFEndPos(true).setOldFEndPos(false);
 		
 		var matches = r.rule(mask).determineMatches();
 		assertEquals(2, matches.size());

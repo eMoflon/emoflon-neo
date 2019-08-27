@@ -89,9 +89,11 @@ pattern oneNormalField {
 
 rule oneExtraField {
 	f:Field {
+		-- -right-> oldF
 		++ -right-> newF
 	}
-	++ newF:Field
+	-- oldF:Field
+	++ newF:Field 
 }
 
 pattern oneEndField {
