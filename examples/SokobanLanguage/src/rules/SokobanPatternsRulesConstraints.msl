@@ -93,7 +93,7 @@ rule oneExtraField {
 		++ -right-> newF
 	}
 	-- oldF:Field
-	++ newF:Field 
+	++ newF:Field
 }
 
 pattern oneEndField {

@@ -98,8 +98,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName());
 				
-				//extractPropertiesFromMaskRelation(r, neoRel, mask);
-				
 				if(r.getAction() != null) {
 					switch(r.getAction().getOp()) {
 					case CREATE:
@@ -123,6 +121,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			if(n.getAction() != null) {
 				switch(n.getAction().getOp()) {
 				case CREATE:
+					extractPropertiesFromMask(neoNode);
 					neoNode.addProperty("ename", "\"" + neoNode.getVarName() + "\"");
 					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
@@ -147,29 +146,25 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		for (var p : node.getProperties()) {
 			neoNode.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 		}
-		
-		//extractPropertiesFromMaskNodes(node, neoNode, mask);
 	}
-
-	private void extractPropertiesFromMaskNodes(ModelNodeBlock node, NeoNode neoNode, NeoMask mask) {
+	
+	private void extractPropertiesFromMask(NeoNode neoNode) {
+		
 		for (var propMask : mask.getMaskedAttributes().entrySet()) {
 			var varName = mask.getVarName(propMask.getKey());
-			if (node.getName().equals(varName)) {
+			if (neoNode.getVarName().equals(varName)) {
 				neoNode.addProperty(//
 						mask.getAttributeName(propMask.getKey()), //
 						EMSLUtil.handleValue(propMask.getValue()));
 			}
-		}
-	}
-	
-	private void extractPropertiesFromMaskRelation(ModelRelationStatement r, NeoRelation rel, NeoMask mask) {
-		for (var propMask : mask.getMaskedAttributes().entrySet()) {
-			var varName = mask.getVarName(propMask.getKey());
-			
-			if (r.getName().equals(varName)) {
-				rel.addProperty(//
-						mask.getAttributeName(propMask.getKey()), //
-						EMSLUtil.handleValue(propMask.getValue()));
+
+
+			for (var rel : neoNode.getRelations()) {
+				if (rel.getVarName().equals(varName)) {
+					rel.addProperty(//
+							mask.getAttributeName(propMask.getKey()), //
+							EMSLUtil.handleValue(propMask.getValue()));
+				}
 			}
 		}
 	}
