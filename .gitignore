@@ -70,3 +70,5 @@ examples/Chess/src-gen/org/emoflon/neo/api/API_ChessLanguage.java
 examples/Chess/src-gen/org/emoflon/neo/api/API_Common.java
 examples/Chess/src-gen/org/emoflon/neo/api/API_FigureMoves.java
 examples/Chess/src-gen/org/emoflon/neo/api/API_Patterns.java
+
+examples/Chess/src-gen/org/emoflon/neo/api/API_ChessPatterns.java

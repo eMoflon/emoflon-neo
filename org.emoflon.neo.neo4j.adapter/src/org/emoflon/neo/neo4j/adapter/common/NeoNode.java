@@ -93,4 +93,13 @@ public class NeoNode {
 	public void addRelation(NeoRelation rel) {
 		this.relations.add(rel);
 	}
+	
+	public void addLabel(String label) {
+		classTypes.add(label);
+	}
+	
+	public void removeLabel(String label) {
+		if(classTypes.contains(label))
+			classTypes.remove(label);
+	}
 }

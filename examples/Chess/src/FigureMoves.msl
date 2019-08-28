@@ -2,7 +2,7 @@ import "platform:/resource/Chess/src/ChessLanguage.msl"
 
 pattern byOwnColourOccupiedField {
 	blockingFig : Figure {
-		.colour : fig::colour 
+		.colour : fig::colour
 		-standsOn-> to
 	}
 	
@@ -33,6 +33,26 @@ abstract rule moveFig {
 	from : Field
 	to : Field
 }
+
+rule removeStandsOnEdge {
+	fig : Figure {
+		-- -standsOn-> f
+	}
+	
+	f : Field
+}
+
+rule addStandsOnEdge {
+	fig : Figure {
+		++ -standsOn-> f
+	}
+	
+	f : Field
+}
+
+rule moveFigureByRefinement -> removeStandsOnEdge[f -> from], addStandsOnEdge[f -> to], moveFig
+
+rule movePawnByRefinement -> moveFigureByRefinement, moveWhitePawn
 
 rule movePawn -> moveFig {
 	fig : Pawn

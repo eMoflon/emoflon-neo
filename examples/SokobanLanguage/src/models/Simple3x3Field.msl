@@ -1,0 +1,41 @@
+import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
+
+model simpleThreeByThreeField {
+	f00 : Field {
+		-right-> f01
+		-bottom-> f10
+	}
+	
+	f01 : Field {
+		-right-> f02
+		-bottom-> f11
+	}
+	
+	f02 : Field {
+		-bottom-> f12
+	}
+	
+	f10 : Field {
+		-right-> f11
+		-bottom-> f20
+	}
+	
+	f11 : Field {
+		-right-> f12
+		-bottom-> f21
+	}
+	
+	f12 : Field {
+		-bottom-> f22
+	}
+	
+	f20 : Field {
+		-right-> f21
+	}
+	
+	f21 : Field {
+		-right-> f22
+	}
+	
+	f22 : Field
+}

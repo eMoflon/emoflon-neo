@@ -578,19 +578,3 @@ pattern kingsGambit -> allPawnsOnBoard {
 		-right-> $f67
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
