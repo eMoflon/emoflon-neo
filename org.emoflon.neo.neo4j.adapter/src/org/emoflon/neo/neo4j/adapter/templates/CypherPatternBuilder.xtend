@@ -542,9 +542,6 @@ class CypherPatternBuilder {
 	 def static String ruleExecution_matchModelNodes(Collection<NeoNode> nodes) {
 	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»«sourceNode(n)»«FOR r : n.relations»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDFOR»'''
 	 }
-	 def static String ruleExecution_matchModelRel(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»«sourceNode(n)»«FOR r : n.relations»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDFOR»'''
-	 }
 	 def static String ruleExecution_matchModelEContainer(Collection<NeoRelation> rel) {
 	 	'''«FOR r:rel BEFORE ", " SEPARATOR ", "»(«r.fromNodeVar»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»'''
 	 }

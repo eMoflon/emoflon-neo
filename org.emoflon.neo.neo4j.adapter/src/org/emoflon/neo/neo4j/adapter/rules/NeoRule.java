@@ -106,7 +106,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 					case CREATE:
 						extractRelationPropertiesFromMask(neoRel);
 						greenRel.put(neoRel.getVarName(), neoRel);
-						if(eCont != null) {
+						if(eCont != null && !alreadyAContainer(eCont)) {
 							greenRel.put(eCont.getVarName(), eCont);
 						}
 						break;
@@ -179,6 +179,21 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 		
 		return null;
+	}
+	
+	private boolean alreadyAContainer(NeoRelation rel) {
+		
+		var labels = rel.getRelTypes();
+		
+		for(var l : labels) {
+			for(var r : greenRel.values()) {
+					
+				if(r.getRelTypes().contains(l)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private void computePropertiesOfNode(ModelNodeBlock node, NeoNode neoNode, NeoMask neoMask) {
