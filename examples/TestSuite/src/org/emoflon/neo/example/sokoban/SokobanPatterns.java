@@ -164,8 +164,6 @@ public class SokobanPatterns extends ENeoTest {
 		
 	}
 	
-	// FIX: See bug 160
-	@Disabled
 	@Test
 	public void test_OneBoardWithNewFieldWithMaskAndDPO() {
 		
@@ -183,7 +181,7 @@ public class SokobanPatterns extends ENeoTest {
 		var nextMatch = iterator.next();
 		Optional<NeoCoMatch> result = rule.apply(nextMatch);
 		assertTrue(result.isEmpty());
-		assertFalse(nextMatch.isStillValid());
+		assertTrue(nextMatch.isStillValid());
 		
 	}
 

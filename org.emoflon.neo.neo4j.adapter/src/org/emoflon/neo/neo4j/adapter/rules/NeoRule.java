@@ -244,13 +244,13 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
-		if (result.hasNext()) {
+		if (result == null || !result.hasNext()) {
+			return Optional.empty();
+		} else {
 			var record = result.next();
 			logger.debug(record.toString());
 			return Optional.of(new NeoCoMatch(contextPattern, record));
-		} else {
-			return Optional.empty();
-		}
+		} 
 	}
 
 	public String getQuery() {
