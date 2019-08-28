@@ -8,6 +8,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 
@@ -27,17 +28,24 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);
-
 		var matches = new ArrayList<NeoMatch>();
-		while (result.hasNext()) {
-			var record = result.next();
-			matches.add(new NeoMatch(this, record));
+		
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			
+			while (result.hasNext()) {
+				var record = result.next();
+				matches.add(new NeoMatch(this, record));
+			}
+			
+			if (matches.isEmpty()) {
+				logger.info("NO MATCHES FOUND");
+			} else {
+				logger.info(matches.size() + " MATCHES FOUND");
+			}
+			return matches;	
 		}
-
-		if (matches.isEmpty()) {
-			logger.debug("NO MATCHES FOUND");
-		}
-		return matches;
 	}
 
 	@Override
@@ -47,13 +55,16 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
-		// Query is id-based and must be unique
-		var results = result.list();
-		if (results.size() > 1) {
-			throw new IllegalStateException("There should be at most one record found not " + results.size());
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			// Query is id-based and must be unique
+			var results = result.list();
+			if (results.size() > 1) {
+				throw new IllegalStateException("There should be at most one record found not " + results.size());
+			}
+	
+			return results.size() == 1;
 		}
-
-		return results.size() == 1;
 	}
-
 }

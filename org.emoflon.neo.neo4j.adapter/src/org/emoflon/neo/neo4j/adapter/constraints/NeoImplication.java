@@ -15,6 +15,7 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
+import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 /**
  * Class representing an Implication (if/then) constraint, storing all relevant
@@ -132,18 +133,22 @@ public class NeoImplication extends NeoConstraint {
 		// execute query
 		var result = builder.executeQuery(cypherQuery);
 
-		// analyze and return results
-		var matches = new ArrayList<IMatch>();
-		while (result.hasNext()) {
-			matches.add(new NeoConstraintMatch(nodesIf, result.next()));
-		}
-
-		if (matches.isEmpty()) {
-			logger.info("No invalid matches found. Constraint: " + name + " is complied!");
-			return true;
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
-			logger.info("Invalid matches found. Constraint: " + name + " is NOT complied!");
-			return false;
+			// analyze and return results
+			var matches = new ArrayList<IMatch>();
+			while (result.hasNext()) {
+				matches.add(new NeoConstraintMatch(nodesIf, result.next()));
+			}
+	
+			if (matches.isEmpty()) {
+				logger.info("No invalid matches found. Constraint: " + name + " is complied!");
+				return true;
+			} else {
+				logger.info("Invalid matches found. Constraint: " + name + " is NOT complied!");
+				return false;
+			}
 		}
 	}
 

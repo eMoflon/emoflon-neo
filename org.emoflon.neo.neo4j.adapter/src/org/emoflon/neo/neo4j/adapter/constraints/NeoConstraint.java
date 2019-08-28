@@ -10,6 +10,7 @@ import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 /**
  * Class created, when a constraint should be checked or a constraint/condition
@@ -88,12 +89,16 @@ public abstract class NeoConstraint implements IConstraint {
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
-		if (result.hasNext()) {
-			logger.info("Found matches! Constraint: " + getName() + " is satisfied!");
-			return true;
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
-			logger.info("Not matches found! Constraint: " + getName() + " is NOT satisfied!");
-			return false;
+			if (result.hasNext()) {
+				logger.info("Found matches! Constraint: " + getName() + " is satisfied!");
+				return true;
+			} else {
+				logger.info("Not matches found! Constraint: " + getName() + " is NOT satisfied!");
+				return false;
+			}
 		}
 	}
 	

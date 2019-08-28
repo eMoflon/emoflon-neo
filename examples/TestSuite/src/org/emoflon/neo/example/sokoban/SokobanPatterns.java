@@ -110,7 +110,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
-	public void test_OneNewFieldWithMask() {
+	public void test_OneNewFieldWithMaskSPO() {
 		var r = entities.getRule_OneExtraField();
 		var mask = r.mask().setFEndPos(true).setOldFEndPos(false).setNewFEndPos(true);
 		
@@ -119,15 +119,52 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var iterator = matches.iterator();
 		
+		var rule = r.rule(mask);
+		rule.useSPOSemantics(true);
+		
 		var nextMatch = iterator.next();
-		Optional<NeoCoMatch> result1 = r.rule(mask).apply(nextMatch);
+		Optional<NeoCoMatch> result1 = rule.apply(nextMatch);
 		assertTrue(result1.isPresent());
-		assertTrue(nextMatch.isStillValid());
+		assertFalse(nextMatch.isStillValid());
 		
 		nextMatch = iterator.next();
-		Optional<NeoCoMatch> result2 = r.rule(mask).apply(nextMatch);
+		Optional<NeoCoMatch> result2 = rule.apply(nextMatch);
 		assertTrue(result2.isPresent());
-		assertTrue(nextMatch.isStillValid());
+		assertFalse(nextMatch.isStillValid());
+	
+	}
+	
+	@Test
+	public void test_OneNewFieldWithMaskDPO() {
+		var r = entities.getRule_OneExtraField();
+		var mask = r.mask().setFEndPos(true).setOldFEndPos(false).setNewFEndPos(true);
+		
+		var matches = r.rule(mask).determineMatches();
+		assertEquals(2, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var rule = r.rule(mask);
+		rule.useSPOSemantics(false);
+		
+		var nextMatch = iterator.next();
+		try {
+			Optional<NeoCoMatch> result1 = rule.apply(nextMatch);
+			assertTrue(result1.isPresent());
+			assertFalse(nextMatch.isStillValid());
+		} catch (Exception e) {
+			assertFalse(false);
+		}
+		
+		
+		nextMatch = iterator.next();
+		try {
+			Optional<NeoCoMatch> result2 = rule.apply(nextMatch);
+			assertTrue(result2.isPresent());
+			assertFalse(nextMatch.isStillValid());
+		} catch (Exception e) {
+			assertFalse(false);
+		}
 	
 	}
 	
@@ -143,7 +180,7 @@ public class SokobanPatterns extends ENeoTest {
 	}
 	
 	@Test
-	public void test_OneBoardWithNewFieldWithMask() {
+	public void test_OneBoardWithNewFieldWithMaskSPO() {
 		
 		var r = entities.getRule_OneBoardWithNewField();
 		var mask = r.mask().setB_fields_0_f1Col(0).setB_fields_0_f1Row(0)
@@ -179,9 +216,13 @@ public class SokobanPatterns extends ENeoTest {
 		var iterator = matches.iterator();
 		
 		var nextMatch = iterator.next();
-		Optional<NeoCoMatch> result = rule.apply(nextMatch);
-		assertTrue(result.isEmpty());
-		assertTrue(nextMatch.isStillValid());
+		try {
+			Optional<NeoCoMatch> result = rule.apply(nextMatch);
+			assertTrue(result.isPresent());
+			assertFalse(nextMatch.isStillValid());
+		} catch (Exception e) {
+			assertFalse(false);
+		}
 		
 	}
 

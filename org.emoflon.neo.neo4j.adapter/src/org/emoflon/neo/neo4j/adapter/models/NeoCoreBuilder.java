@@ -47,7 +47,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -79,16 +78,10 @@ import org.emoflon.neo.neo4j.adapter.templates.NodeCommand;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.Transaction;
-import org.neo4j.driver.v1.exceptions.Neo4jException;
-import org.neo4j.driver.v1.summary.ResultSummary;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
-
-import jdk.jshell.StatementSnippet;
 
 public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -111,29 +104,6 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	public Driver getDriver() {
 		return driver;
 	}
-	
-	public StatementResult run(Transaction t, String cypherStatement) throws Exception {
-		var result = t.run(cypherStatement.trim());
-		var summary = result.summary();
-		
-		var notifications = summary.notifications();
-		
-		if(notifications.isEmpty()) {
-			// mark query as successful
-			t.success();
-			t.close();
-			return result;
-		} else {
-			var str = "";
-			for(var n : notifications) {
-				str += "[" + n.code() + n.title() + " : " + n.description() + "]";
-			}
-			// roll back query execution, mark as failed
-			t.failure();
-			t.close();
-			throw new Exception(str);
-		}			
-	}
 
 	@Override
 	public StatementResult executeQuery(String cypherStatement) {
@@ -141,17 +111,32 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var transaction = session.beginTransaction();
 		
 		try {
-			return run(transaction, cypherStatement);
+			var result = transaction.run(cypherStatement.trim());
+			transaction.success();
+			transaction.close();
+			return result;
 		} catch (Exception e) {
-			logger.error("QUERY EXECUTION STOPPED: " + e.getMessage());
-			logger.info("No changes performed. Roll back of transaction executed.");
+			transaction.failure();
+			transaction.close();
+			logger.error(e.getMessage());
 			return null;
 		}
 	}
 
 	public void executeQueryForSideEffect(String cypherStatement) {
-		var st = driver.session().run(cypherStatement.trim());
-		st.consume();
+		var session = driver.session();
+		var transaction = session.beginTransaction();
+		
+		try {
+			var st = driver.session().run(cypherStatement.trim());
+			st.consume();
+			transaction.success();
+			transaction.close();
+		} catch (Exception e) {
+			transaction.failure();
+			transaction.close();
+			logger.error(e.getMessage());
+		}
 	}
 
 	public void clearDataBase() {
