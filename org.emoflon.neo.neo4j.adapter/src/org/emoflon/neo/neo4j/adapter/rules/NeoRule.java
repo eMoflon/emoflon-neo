@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IRule;
@@ -37,6 +39,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private ArrayList<NeoNode> nodes;
 	private ArrayList<NeoNode> modelNodes;
 	private ArrayList<NeoRelation> modelRel;
+	private HashMap<String, NeoRelation> modelEContainerRel;
 
 	private HashMap<String, NeoNode> blackNodes;
 	private HashMap<String, NeoRelation> blackRel;
@@ -59,6 +62,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		this.nodes = new ArrayList<NeoNode>();
 		this.modelNodes = new ArrayList<NeoNode>();
 		this.modelRel = new ArrayList<NeoRelation>();
+		this.modelEContainerRel = new HashMap<String,NeoRelation>();
 		this.blackNodes = new HashMap<String, NeoNode>();
 		this.blackRel = new HashMap<String, NeoRelation>();
 		this.redNodes = new HashMap<String, NeoNode>();
@@ -76,7 +80,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	private void extractNodesAndRelations(Collection<ModelNodeBlock> nodeBlocks) {
-
+		
 		for (var n : nodeBlocks) {
 
 			var labels = new ArrayList<String>(computeLabelsOfNode(n));
@@ -94,16 +98,25 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName());
-
+				
+				var eCont = computeEContainerReferences(r,neoRel);
+				
 				if (r.getAction() != null) {
 					switch (r.getAction().getOp()) {
 					case CREATE:
 						extractRelationPropertiesFromMask(neoRel);
 						greenRel.put(neoRel.getVarName(), neoRel);
+						if(eCont != null) {
+							greenRel.put(eCont.getVarName(), eCont);
+						}
 						break;
 					case DELETE:
 						if (!neoRel.isPath()) {
 							redRel.put(neoRel.getVarName(), neoRel);
+							if(eCont != null && !modelEContainerRel.containsKey(eCont.getFromNodeVar())) {
+								redRel.put(eCont.getVarName(), eCont);
+								modelEContainerRel.put(eCont.getFromNodeVar(), eCont);
+							}
 						}
 						neoNode.addRelation(neoRel);
 						break;
@@ -138,6 +151,34 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 
 		addModelNodesAndRefs();
+	}
+	
+	private NeoRelation computeEContainerReferences(ModelRelationStatement r, NeoRelation neoRel) {
+		
+		for(var t : r.getTypes()) {
+			
+			if (t.getType().getKind().getName().equals("COMPOSITION") || t.getType().getKind().getName().equals("AGGREGATION")) {
+				
+				var oppositeNode = new NeoNode(neoRel.getToNodeLabel(), neoRel.getToNodeVar());
+				var typeRel = new ArrayList<String>();
+				typeRel.add("eContainer");
+				
+				var eConNeoRel = new NeoRelation(
+						oppositeNode,
+						"eContainer_" + neoRel.getVarName(),
+						typeRel, 
+						r.getLower(),
+						r.getUpper(),
+						new ArrayList<ModelPropertyStatement>(),
+						neoRel.getFromNodeLabel(),
+						neoRel.getFromNodeVar());
+				
+				eConNeoRel.addProperty("isComposition", EMSLUtil.handleValue(t.getType().getKind().getName().equals("COMPOSITION")));	
+				return eConNeoRel;
+			}
+		}
+		
+		return null;
 	}
 
 	private void computePropertiesOfNode(ModelNodeBlock node, NeoNode neoNode, NeoMask neoMask) {
@@ -229,7 +270,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		logger.info("Execute Rule " + getName());
 		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
-				modelNodes, modelRel);
+				modelNodes, modelRel, modelEContainerRel.values());
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
@@ -238,7 +279,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		} else {
 			if (result.hasNext()) {
 				var record = result.next();
-				logger.debug(record.toString());
 				return Optional.of(new NeoCoMatch(contextPattern, record));
 			} else {
 				return Optional.empty();
