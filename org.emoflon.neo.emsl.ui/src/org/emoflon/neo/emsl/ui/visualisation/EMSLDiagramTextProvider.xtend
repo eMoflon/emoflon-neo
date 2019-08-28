@@ -51,6 +51,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerException
+import java.util.HashSet
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -148,34 +149,41 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for the overview of the current file, i.e. when no entity is selected.
 	 */
 	def String visualiseOverview(EMSL_Spec root) {
+		val sortedEntities = sortEntities(root.entities)
 		'''
 			left to right direction
-			«FOR entity : root.entities»
-				«IF entity instanceof Metamodel»
-					rectangle "Metamodel: «entity.name»" as metamodel«entity.name»  <<Rectangle>> «link(entity)»
-				«ENDIF»
-				«IF entity instanceof Model»
-					rectangle "Model: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as model«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
-					«referenceInstantiatedMetamodel(entity as Model)»
-				«ENDIF»
-				«IF entity instanceof Pattern»
-					rectangle "Pattern: «IF entity.body.abstract»//«ENDIF»«entity.body.name»«IF entity.body.abstract»//«ENDIF»" as pattern«entity.name»  «IF entity.body.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
-				«ENDIF»
-				«IF entity instanceof Rule»
-					rectangle "Rule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as rule«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
-				«ENDIF»
-				«IF entity instanceof TripleRule»
-					rectangle "TripleRule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as triplerule«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
-				«ENDIF»
-				«IF entity instanceof TripleGrammar»
-					rectangle "TripleGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as triplegrammar«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
-				«ENDIF»
-				«IF entity instanceof GraphGrammar»
-					rectangle "GraphGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as graphgrammar«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
-				«ENDIF»
-				«IF entity instanceof Constraint»
-					rectangle "Constraint: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as constraint«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
-				«ENDIF»
+			«FOR type : sortedEntities.keySet»
+			«IF !sortedEntities.get(type).empty»
+			package «type» {
+				«FOR entity : sortedEntities.get(type)»
+					«IF entity instanceof Metamodel»
+						rectangle "Metamodel: «entity.name»" as Metamodels«entity.name»  <<Rectangle>> «link(entity)»
+					«ENDIF»
+					«IF entity instanceof Model»
+						rectangle "Model: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as Models«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+						«referenceInstantiatedMetamodel(entity as Model)»
+					«ENDIF»
+					«IF entity instanceof Pattern»
+						rectangle "Pattern: «IF entity.body.abstract»//«ENDIF»«entity.body.name»«IF entity.body.abstract»//«ENDIF»" as Patterns«entity.name»  «IF entity.body.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					«ENDIF»
+					«IF entity instanceof Rule»
+						rectangle "Rule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as Rules«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					«ENDIF»
+					«IF entity instanceof TripleRule»
+						rectangle "TripleRule: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as TripleRules«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					«ENDIF»
+					«IF entity instanceof TripleGrammar»
+						rectangle "TripleGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as TripleGrammars«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					«ENDIF»
+					«IF entity instanceof GraphGrammar»
+						rectangle "GraphGrammar: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as GraphGrammars«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					«ENDIF»
+					«IF entity instanceof Constraint»
+						rectangle "Constraint: «IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF»" as Constraint«entity.name»  «IF entity.abstract»<<Abstract>>«ENDIF» <<Rectangle>> «link(entity)»
+					«ENDIF»
+				«ENDFOR»
+			}
+			«ENDIF»
 			«ENDFOR»
 			«FOR entity : root.entities»
 				«IF entity instanceof SuperType»
@@ -283,7 +291,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			for (nb : model.nodeBlocks) {
 				for (i : allMetamodels) {
 					if (i.nodeBlocks.contains(nb.type))
-						return '''model«model.name» --> metamodel«i.name»'''
+						return '''Models«model.name» --> Metamodels«i.name»'''
 				}
 			}
 		}
@@ -1101,38 +1109,73 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for all SuperTypes of a Pattern with inheritance arrows.
 	 */
 	def String visualiseSuperTypesInEntity(Entity entity) {
-		var superTypeNames = new HashMap<String, ArrayList<String>>()
-		superTypeNames.put("pattern", new ArrayList<String>())
-		superTypeNames.put("rule", new ArrayList<String>())
-		superTypeNames.put("model", new ArrayList<String>())
-		superTypeNames.put("triplerule", new ArrayList<String>())
-
-		for (st : entity.superRefinementTypes) {
-			if (st.referencedType instanceof AtomicPattern &&
-					!superTypeNames.get("pattern").contains(
-						(st.referencedType as AtomicPattern).name)) {
-					superTypeNames.get("pattern").add(st.referencedType.name)
-			} else if (st.referencedType instanceof Rule &&
-					!superTypeNames.get("rule").contains(
-						(st.referencedType as Rule).name)) {
-				superTypeNames.get("rule").add(st.referencedType.name)
-			} else if (st.referencedType instanceof Model &&
-					!superTypeNames.get("model").contains(
-						(st.referencedType as Model).name)) {
-				superTypeNames.get("model").add(st.referencedType.name)
-			} else if (st.referencedType instanceof TripleRule &&
-					!superTypeNames.get("triplerule").contains(
-						(st.referencedType as TripleRule).name)) {
-				superTypeNames.get("triplerule").add(st.referencedType.name)
-			}
-		}
+		var superTypes = sortEntities(entity.superRefinementTypes.map[st | 
+			if (!(st.referencedType instanceof AtomicPattern))
+				st.referencedType as Entity
+			else
+				st.referencedType.eContainer as Entity
+		])
 		'''
-			«FOR type : superTypeNames.keySet»
-				«FOR name : superTypeNames.get(type)»
-					«entity.eClass.name.toLowerCase»«entity.name» --|> «type»«name»
+			«FOR type : superTypes.keySet»
+				«FOR e : superTypes.get(type)»
+					«type»«entity.name» --|> «type»«(e as Entity).name»
 				«ENDFOR»
 			«ENDFOR»
 		'''
+	}
+	
+	/**
+	 * Helper method to sort the given list of entities into a hashMap.
+	 * The result is a list mapped to the typename of the entities that are
+	 * contained in the list.
+	 */
+	def HashMap<String, HashSet<Entity>> sortEntities(List<Entity> entities) {
+		var superTypes = new HashMap<String, HashSet<Entity>>()
+		superTypes.put("Patterns", new HashSet())
+		superTypes.put("Rules", new HashSet())
+		superTypes.put("Models", new HashSet())
+		superTypes.put("TripleRules", new HashSet())
+		superTypes.put("TripleGrammars", new HashSet())
+		superTypes.put("GraphGrammars", new HashSet())
+		superTypes.put("Metamodels", new HashSet())
+		superTypes.put("Constraints", new HashSet())
+
+		for (st : entities) {
+			if (st instanceof Pattern &&
+					!superTypes.get("Patterns").contains(
+						(st as Pattern).body)) {
+					superTypes.get("Patterns").add(st as Entity)
+			} else if (st instanceof Rule &&
+					!superTypes.get("Rules").contains(
+						(st as Rule))) {
+				superTypes.get("Rules").add(st as Entity)
+			} else if (st instanceof Model &&
+					!superTypes.get("Models").contains(
+						(st as Model))) {
+				superTypes.get("Models").add(st as Entity)
+			} else if (st instanceof TripleRule &&
+					!superTypes.get("TripleRules").contains(
+						(st as TripleRule))) {
+				superTypes.get("TripleRules").add(st as Entity)
+			} else if (st instanceof TripleGrammar &&
+					!superTypes.get("TripleGrammars").contains(
+						(st as TripleGrammar))) {
+				superTypes.get("TripleGrammars").add(st as Entity)
+			} else if (st instanceof GraphGrammar &&
+					!superTypes.get("GraphGrammars").contains(
+						(st as GraphGrammar))) {
+				superTypes.get("GraphGrammars").add(st as Entity)
+			} else if (st instanceof Metamodel &&
+					!superTypes.get("Metamodels").contains(
+						(st as Metamodel))) {
+				superTypes.get("Metamodels").add(st as Entity)
+			}  else if (st instanceof Constraint &&
+					!superTypes.get("Constraints").contains(
+						(st as Constraint))) {
+				superTypes.get("Constraints").add(st as Entity)
+			}
+		}
+		return superTypes
 	}
 	
 	/**
