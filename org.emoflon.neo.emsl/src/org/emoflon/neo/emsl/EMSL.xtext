@@ -29,7 +29,7 @@ ModelNodeBlock:
 	'}')?;
 
 ModelPropertyStatement:
-	'.' ('~'inferredType=ID | type=[MetamodelPropertyStatement|ID]) op=ConditionOperator value=Value;
+	('~' inferredType=ID | '.' type=[MetamodelPropertyStatement|ID]) op=ConditionOperator value=Value;
 
 Value:
 	AttributeExpression | EnumValue | PrimitiveInt | PrimitiveBoolean | PrimitiveString

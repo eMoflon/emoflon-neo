@@ -89,12 +89,12 @@ rule PickALemonBack {
 	fruitToPick:Lemon
 	
 	tree:LemonTree {
-		++ -FruitTree.fruits->fruitToPick
+		++ -fruits->fruitToPick
 		++ -lemons->fruitToPick
 	}
 	
 	basket:FruitBasket {
-		-- -FruitTree.fruits->fruitToPick	
+		-- -fruits->fruitToPick	
 	}
 }
 

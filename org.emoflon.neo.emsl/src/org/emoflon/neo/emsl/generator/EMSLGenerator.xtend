@@ -416,7 +416,6 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public class «dataClassName» extends NeoData {
 					«val blackAndGreenNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op !== ActionOperator.DELETE]»
-					«val blackAndRedNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op == ActionOperator.DELETE]»
 					«classMembers(blackAndGreenNodeBlocks)»
 					
 					«constructor(dataClassName, blackAndGreenNodeBlocks)»
