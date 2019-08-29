@@ -107,12 +107,36 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	@Override
 	public StatementResult executeQuery(String cypherStatement) {
-		return driver.session().run(cypherStatement.trim());
+		var session = driver.session();
+		var transaction = session.beginTransaction();
+		
+		try {
+			var result = transaction.run(cypherStatement.trim());
+			transaction.success();
+			transaction.close();
+			return result;
+		} catch (Exception e) {
+			transaction.failure();
+			transaction.close();
+			logger.error(e.getMessage());
+			return null;
+		}
 	}
 
 	public void executeQueryForSideEffect(String cypherStatement) {
-		var st = driver.session().run(cypherStatement.trim());
-		st.consume();
+		var session = driver.session();
+		var transaction = session.beginTransaction();
+		
+		try {
+			var st = driver.session().run(cypherStatement.trim());
+			st.consume();
+			transaction.success();
+			transaction.close();
+		} catch (Exception e) {
+			transaction.failure();
+			transaction.close();
+			logger.error(e.getMessage());
+		}
 	}
 
 	public void clearDataBase() {
@@ -253,7 +277,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return eclass.equals(EMSLPackage.eINSTANCE.getAtomicPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getConstraint())
-				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition());
+				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getRule());
 	}
 
 	void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {

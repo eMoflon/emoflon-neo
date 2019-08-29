@@ -423,7 +423,6 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public class «dataClassName» extends NeoData {
 					«val blackAndGreenNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op !== ActionOperator.DELETE]»
-					«val blackAndRedNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op == ActionOperator.DELETE]»
 					«classMembers(blackAndGreenNodeBlocks)»
 					
 					«constructor(dataClassName, blackAndGreenNodeBlocks)»
@@ -434,8 +433,9 @@ class EMSLGenerator extends AbstractGenerator {
 				public class «maskClassName» extends NeoMask {
 				
 					«maskClassMembers()»
-				
-					«maskMethods(blackAndRedNodeBlocks, maskClassName)»
+					
+					// Black and Red Nodes of a Rule
+					«maskMethods(rule.nodeBlocks, maskClassName)»
 				}
 			'''
 		} catch (Exception e) {

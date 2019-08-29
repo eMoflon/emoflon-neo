@@ -3,9 +3,8 @@ import "platform:/resource/FruitGardenLanguage/src/org/eneo/fruitgarden/FruitGar
 // [isOwned]
 // Generic constraint
 pattern HasAnOwner {
-	// TODO[Anjorin] Waiting for a bug fix so this is possible
 	o:EObject {
-		//-ofType:metaType|eSuperType(0..*)->containee
+		-ofType:metaType|eSuperType(0..*)->containee
 	}
 
 	containee:EClass
@@ -48,7 +47,7 @@ constraint NoCyclicContainment = forbid CyclicContainment
 // Generate such a constraint for every aggregation or composition
 pattern ConnectedViaFruits {
 	container:FruitTree {
-		-FruitTree.fruits->containee
+		-fruits->containee
 	}
 	
 	containee:Fruit

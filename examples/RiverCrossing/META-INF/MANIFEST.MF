@@ -5,3 +5,4 @@ Bundle-SymbolicName: RiverCrossing
 Bundle-Version: 1.0.0.qualifier
 Export-Package: org.emoflon.neo.api
 Require-Bundle: org.emoflon.neo.neo4j.adapter
+Automatic-Module-Name: RiverCrossing

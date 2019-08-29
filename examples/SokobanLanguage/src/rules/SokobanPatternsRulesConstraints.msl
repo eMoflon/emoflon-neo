@@ -83,10 +83,42 @@ pattern oneBlock {
 	block : Block
 }
 
+pattern oneNormalField {
+	f:Field
+}
+
+
+rule oneExtraField {
+	f:Field {
+		-- -right-> oldF
+		++ -right-> newF
+	}
+	-- oldF:Field
+	++ newF:Field
+}
+
 pattern oneEndField {
 	field : Field {
 		.endPos : true
 	}
+}
+
+pattern oneBoardWithField {
+	b:SokobanLanguage.Board {
+		-fields->f
+	}
+	f:Field
+}
+
+rule oneBoardWithNewField {
+	b:SokobanLanguage.Board {
+		-- -fields->f1
+		-fields->f2
+		++ -fields->f3
+	}
+	-- f1:Field
+	f2:Field
+	++ f3:Field
 }
 
 pattern anOccupiedField {
@@ -642,3 +674,16 @@ pattern oneBlock2Combi {
 	fig1: Block
 	fig2: Block
 } when enforceCombi
+
+pattern neighbouringFields {
+	f1 : Field {
+		-e : right|bottom-> f2
+	}
+	f2 : Field
+}
+
+pattern evenMoreNeighbouringFields -> neighbouringFields, neighbouringFields [f1 -> f3, f2 -> f4] {
+	f2 : Field {
+		-e : bottom|right-> $f3
+	}
+}

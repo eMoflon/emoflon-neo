@@ -19,7 +19,7 @@ tripleGrammar FacebookToInstagramGrammar {
 abstract tripleRule Followers : FacebookToInstagramGrammar {
 	source {
 		n : Network {
-			-FacebookLanguage.Network.users-> fn
+			-users-> fn
 		}
 		
 		fu : User
@@ -60,7 +60,7 @@ abstract tripleRule Followers : FacebookToInstagramGrammar {
 tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers {
 	source {
 		n : Network {
-			-FacebookLanguage.Network.users-> $fu
+			-users-> $fu
 			++ -fiendships-> fri
 		}
 		
@@ -139,7 +139,7 @@ tripleRule FriendsSiblingsIgnoreRule : FacebookToInstagramGrammar -> UserRelatio
 tripleRule IgnoreInterNetworkFollowers : FacebookToInstagramGrammar -> Followers {
 	source {
 		nu : Network {
-			-FacebookLanguage.Network.users-> $fu
+			-users-> $fu
 		}
 	}
 }
@@ -195,7 +195,7 @@ tripleRule NetworkToNetworkIslandRule : FacebookToInstagramGrammar {
 tripleRule UserNetworkBridgeRule : FacebookToInstagramGrammar {
 	source {
 		f : Network {
-			++ -FacebookLanguage.Network.users-> fu
+			++ -users-> fu
 		}
 		
 		fu : User
@@ -203,7 +203,7 @@ tripleRule UserNetworkBridgeRule : FacebookToInstagramGrammar {
 	
 	target {
 		i : Network {
-			++ -InstagramLanguage.Network.users-> iu
+			++ -users-> iu
 		}
 		
 		iu : User
@@ -243,14 +243,14 @@ tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {
 tripleRule UserToUserExtensionRule : FacebookToInstagramGrammar {
 	source {
 		fl : Network {
-			++ -FacebookLanguage.Network.users-> flu
+			++ -users-> flu
 		}
 		++ flu : User
 	}
 	
 	target {
 		il : Network {
-			++ -InstagramLanguage.Network.users-> ilu
+			++ -users-> ilu
 		}
 		
 		++ ilu : User

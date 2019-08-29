@@ -685,7 +685,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 			if (relation.types.size > 1) {
 				error(COMPLEX_EDGE_WITH_OPERATOR, relation.types.get(1), EMSLPackage.Literals.MODEL_RELATION_STATEMENT_TYPE__TYPE)
 			} else if (relation.lower !== null) {
-				error(EDGE_WITH_OPERATOR_AND_PATH_LENGTH, relation.types.get(0), EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
+				error(EDGE_WITH_OPERATOR_AND_PATH_LENGTH, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
 			}
 		}
 	}

@@ -28,7 +28,7 @@ pattern OneFruitOnTree {
 	}
 	
 	tree:FruitTree {
-		-FruitTree.fruits->f
+		-fruits->f
 	}
 	
 	f:Fruit
@@ -53,11 +53,11 @@ abstract rule PickAFruit {
 	fruitToPick:Fruit
 	
 	tree:FruitTree {
-		-- -FruitTree.fruits->fruitToPick
+		-- -fruits->fruitToPick
 	}
 	
 	basket:FruitBasket {
-		++ -FruitTree.fruits->fruitToPick	
+		++ -fruits->fruitToPick	
 	}
 }
 
@@ -83,6 +83,19 @@ rule PickALemon -> PickAFruit {
 	tree:LemonTree {
 		-- -lemons->fruitToPick
 	}	
+}
+
+rule PickALemonBack {
+	fruitToPick:Lemon
+	
+	tree:LemonTree {
+		++ -fruits->fruitToPick
+		++ -lemons->fruitToPick
+	}
+	
+	basket:FruitBasket {
+		-- -fruits->fruitToPick	
+	}
 }
 
 rule PickAPear -> PickAFruit {
