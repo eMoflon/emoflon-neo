@@ -22,9 +22,10 @@ public class RiverCrossingRules extends ENeoTest {
 	}
 	
 	@Test
-	public void test_SolveCompleteGame() {
+	public void test_completeGame() {
 		
 		// (F W C G)  <-----> ()
+		assertFalse(entities.getConstraint_GameEnded().isSatisfied());
 		
 		// Move Goat to other side
 		IRule<NeoMatch, NeoCoMatch> moveGoat = entities.getRule_MoveGoatToOtherSide().rule();
@@ -36,6 +37,7 @@ public class RiverCrossingRules extends ENeoTest {
 		
 		// (W C)  <-----> (F G)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
+		assertFalse(entities.getConstraint_GameEnded().isSatisfied());
 		
 		// Move empty back
 		IRule<NeoMatch, NeoCoMatch> moveEmpty = entities.getRule_MoveEmptyToOtherSide().rule();
@@ -47,6 +49,7 @@ public class RiverCrossingRules extends ENeoTest {
 		
 		// (F W C)  <-----> (G)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
+		assertFalse(entities.getConstraint_GameEnded().isSatisfied());
 		
 		// Move Wolf to other side
 		IRule<NeoMatch, NeoCoMatch> moveWolf = entities.getRule_MoveWolfToOtherSide().rule();
@@ -58,7 +61,54 @@ public class RiverCrossingRules extends ENeoTest {
 		
 		// (C)  <-----> (F W G)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
+		assertFalse(entities.getConstraint_GameEnded().isSatisfied());
+		
+		// Move Goat to other side
+		matchesMoveGoat = moveGoat.determineMatches();
+		assertEquals(1, matchesMoveGoat.size());
+		matchMoveGoat = matchesMoveGoat.iterator().next();
+		moveGoat.apply(matchMoveGoat);
+		assertFalse(matchMoveGoat.isStillValid());
+		
+		// (F C G)  <-----> (W)
+		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
+		assertFalse(entities.getConstraint_GameEnded().isSatisfied());
+		
+		// Move Cabbage to other side
+		IRule<NeoMatch, NeoCoMatch> moveCabbage = entities.getRule_MoveCabbageToOtherSide().rule();
+		var matchesMoveCabbage = moveCabbage.determineMatches();
+		assertEquals(1, matchesMoveCabbage.size());
+		var matchMoveCabbage = matchesMoveCabbage.iterator().next();
+		moveCabbage.apply(matchMoveCabbage);
+		assertFalse(matchMoveCabbage.isStillValid());
+		
+		// (G)  <-----> (F W C)
+		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
+		assertFalse(entities.getConstraint_GameEnded().isSatisfied());
+		
+		// Move empty back
+		matchesMoveEmpty = moveEmpty.determineMatches();
+		assertEquals(1, matchesMoveEmpty.size());
+		matchMoveEmpty = matchesMoveEmpty.iterator().next();
+		moveEmpty.apply(matchMoveEmpty);
+		assertFalse(matchMoveEmpty.isStillValid());
+		
+		// (F G)  <-----> (W C)
+		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
+		assertFalse(entities.getConstraint_GameEnded().isSatisfied());
+		
+		// Move Goat to other side
+		matchesMoveGoat = moveGoat.determineMatches();
+		assertEquals(1, matchesMoveGoat.size());
+		matchMoveGoat = matchesMoveGoat.iterator().next();
+		moveGoat.apply(matchMoveGoat);
+		assertFalse(matchMoveGoat.isStillValid());
+		
+		// ()  <-----> (F W C G)
+		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
+		assertTrue(entities.getConstraint_GameEnded().isSatisfied());
+		
+		// game finished
 		
 	}
-	
 }

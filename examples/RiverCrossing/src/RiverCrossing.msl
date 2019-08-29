@@ -33,15 +33,15 @@ model RiverCrossingStart {
 		-side->r2
 	}
 	
-	r2: RiverSide {
-		-opposite->r1
-		.side: "A"
-	}
-	
 	r1: RiverSide {
 		-opposite->r2
+		.side: "A"
+	}
+		
+	r2: RiverSide {
+		-opposite->r1
 		.side: "B"
-	}	
+	}
 				
 	f: Farmer {
 		-on->r1
