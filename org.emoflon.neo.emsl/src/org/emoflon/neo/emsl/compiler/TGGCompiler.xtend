@@ -159,7 +159,7 @@ class TGGCompiler {
 					«compilePropertyStatement(property)»
 				«ENDFOR»
 				«IF translate»
-					.~_tr_ := true
+					~_tr_ := true
 				«ENDIF»
 			}
 		'''
@@ -185,7 +185,7 @@ class TGGCompiler {
 					«ENDFOR»
 				«ENDIF»
 				«IF translate»
-					.~_tr_ := true
+					~_tr_ := true
 				«ENDIF»
 			}
 			«ENDIF»
