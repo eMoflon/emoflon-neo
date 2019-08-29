@@ -63,4 +63,10 @@ public class FruitGardenTests extends ENeoTest {
 		assertTrue(entities.getConstraint_GameIsWon().isSatisfied());
 		assertTrue(entities.getConstraint_GameIsLost().isViolated());
 	}
+	
+	@Test
+	public void testPickFruitAndBack() {
+		assertTrue(entities.getRule_PickALemon().rule().apply().isPresent());
+		assertTrue(entities.getRule_PickALemonBack().rule().apply().isPresent());
+	}
 }

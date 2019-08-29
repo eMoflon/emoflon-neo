@@ -427,8 +427,9 @@ class EMSLGenerator extends AbstractGenerator {
 				public class «maskClassName» extends NeoMask {
 				
 					«maskClassMembers()»
-				
-					«maskMethods(blackAndRedNodeBlocks, maskClassName)»
+					
+					// Black and Red Nodes of a Rule
+					«maskMethods(rule.nodeBlocks, maskClassName)»
 				}
 			'''
 		} catch (Exception e) {

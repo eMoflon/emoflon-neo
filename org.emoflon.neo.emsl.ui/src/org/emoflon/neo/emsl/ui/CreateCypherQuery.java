@@ -21,10 +21,12 @@ import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
+import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
+import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 
 @SuppressWarnings("restriction")
 public class CreateCypherQuery extends AbstractHandler {
@@ -72,6 +74,9 @@ public class CreateCypherQuery extends AbstractHandler {
 		} else if (selection instanceof Constraint) {
 			var constraint = NeoConstraintFactory.createNeoConstraint((Constraint) selection);
 			copyStringToClipboard(constraint.getQuery());
+		} else if (selection instanceof Rule) {
+			var rule = NeoRuleFactory.createNeoRule((Rule) selection);
+			copyStringToClipboard(rule.getQuery());
 		} else
 			throw new IllegalArgumentException("This type of selection cannot be exported: " + selection);
 	}

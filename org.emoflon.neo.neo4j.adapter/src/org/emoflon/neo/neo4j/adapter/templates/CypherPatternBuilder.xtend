@@ -487,10 +487,10 @@ class CypherPatternBuilder {
 	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, 
 	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
 	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
-	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel) {
+	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel) {
 	 	
 	 	'''
-	 	«matchQuery(nodes)»«ruleExecution_matchModelNodes(modelNodes)»
+	 	«matchQuery(nodes)»«ruleExecution_matchModelNodes(modelNodes)»«ruleExecution_matchModelEContainer(modelEContRel)»
 	 	«isStillValid_whereQuery(nodes, match)»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
@@ -502,7 +502,7 @@ class CypherPatternBuilder {
 	 
 	 def static String ruleExecution_deleteQuery(boolean spo, Collection<NeoNode> nodesL, Collection<NeoRelation> refL) {
 	 	'''«IF nodesL.size > 0 || refL.size > 0»«IF spo»DETACH «ENDIF»DELETE «FOR r: refL SEPARATOR ', '»«r.varName»«ENDFOR»
-	 			«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«ENDFOR»«ENDIF»'''
+	 			«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«n.varName»«ENDFOR»«ENDIF»'''
 	 }
 	 
 	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR, Collection<NeoNode> modelNode, Collection<NeoRelation> modelRel) {
@@ -541,6 +541,9 @@ class CypherPatternBuilder {
 	 
 	 def static String ruleExecution_matchModelNodes(Collection<NeoNode> nodes) {
 	 	'''«FOR n:nodes BEFORE ", " SEPARATOR ", "»«sourceNode(n)»«FOR r : n.relations»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDFOR»'''
+	 }
+	 def static String ruleExecution_matchModelEContainer(Collection<NeoRelation> rel) {
+	 	'''«FOR r:rel BEFORE ", " SEPARATOR ", "»(«r.fromNodeVar»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»'''
 	 }
 	 def static String ruleExecution_createModelRel(Collection<NeoRelation> rel) {
 	 	'''«FOR r:rel BEFORE ", " SEPARATOR ", "»(«r.fromNodeVar»)-[:metaType]->(«r.toNodeVar»)«ENDFOR»'''

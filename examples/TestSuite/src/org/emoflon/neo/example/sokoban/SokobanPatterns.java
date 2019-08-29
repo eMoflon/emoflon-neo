@@ -4,12 +4,16 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Optional;
 
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_Simple3x3Field;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.example.ENeoTest;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -95,6 +99,134 @@ public class SokobanPatterns extends ENeoTest {
 	public void test_OneEndField() {
 		assertThat(entities.getPattern_OneEndField().matcher().countMatches(), is(2));
 	}
+	
+	@Test
+	public void test_OneFieldWithMask() {
+		var p = entities.getPattern_OneNormalField();
+		var mask = p.mask().setFEndPos(true);
+		assertEquals(2, p.matcher(mask).countMatches());
+		
+		mask = p.mask().setFEndPos(false);
+		assertEquals(14, p.matcher(mask).countMatches());
+	}
+	
+	@Test
+	public void test_OneNewFieldWithMaskSPO() {
+		var r = entities.getRule_OneExtraField();
+		var mask = r.mask().setFEndPos(true).setOldFEndPos(false).setNewFEndPos(true);
+		
+		var matches = r.rule(mask).determineMatches();
+		assertEquals(2, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var rule = r.rule(mask);
+		rule.useSPOSemantics(true);
+		
+		var nextMatch = iterator.next();
+		Optional<NeoCoMatch> result1 = rule.apply(nextMatch);
+		assertTrue(result1.isPresent());
+		assertFalse(nextMatch.isStillValid());
+		
+		nextMatch = iterator.next();
+		Optional<NeoCoMatch> result2 = rule.apply(nextMatch);
+		assertTrue(result2.isPresent());
+		assertFalse(nextMatch.isStillValid());
+	
+	}
+	
+	@Test
+	public void test_OneNewFieldWithMaskDPO() {
+		var r = entities.getRule_OneExtraField();
+		var mask = r.mask().setFEndPos(true).setOldFEndPos(false).setNewFEndPos(true);
+		
+		var matches = r.rule(mask).determineMatches();
+		assertEquals(2, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var rule = r.rule(mask);
+		rule.useSPOSemantics(false);
+		
+		var nextMatch = iterator.next();
+		try {
+			Optional<NeoCoMatch> result1 = rule.apply(nextMatch);
+			assertTrue(result1.isPresent());
+			assertFalse(nextMatch.isStillValid());
+		} catch (Exception e) {
+			assertFalse(false);
+		}
+		
+		
+		nextMatch = iterator.next();
+		try {
+			Optional<NeoCoMatch> result2 = rule.apply(nextMatch);
+			assertTrue(result2.isPresent());
+			assertFalse(nextMatch.isStillValid());
+		} catch (Exception e) {
+			assertFalse(false);
+		}
+	
+	}
+	
+	@Test
+	public void test_OneBoardWithFieldWithMask() {
+		var p = entities.getPattern_OneBoardWithField();
+		var mask = p.mask().setB_fields_0_fCol(2).setB_fields_0_fRow(2);
+		
+		var matches = p.matcher().countMatches();
+		assertEquals(16, matches);
+		var matchesWithMask = p.matcher(mask).countMatches();
+		assertEquals(1, matchesWithMask);
+	}
+	
+	@Test
+	public void test_OneBoardWithNewFieldWithMaskSPO() {
+		
+		var r = entities.getRule_OneBoardWithNewField();
+		var mask = r.mask().setB_fields_0_f1Col(0).setB_fields_0_f1Row(0)
+				.setB_fields_1_f2Col(1).setB_fields_1_f2Row(1)
+				.setB_fields_2_f3Col(99).setB_fields_2_f3Row(99);
+		
+		var rule = r.rule(mask);
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var nextMatch = iterator.next();
+		rule.useSPOSemantics(true);
+		Optional<NeoCoMatch> result = rule.apply(nextMatch);
+		assertTrue(result.isPresent());
+		assertFalse(nextMatch.isStillValid());
+		
+	}
+	
+	@Test
+	public void test_OneBoardWithNewFieldWithMaskAndDPO() {
+		
+		var r = entities.getRule_OneBoardWithNewField();
+		var mask = r.mask().setB_fields_0_f1Col(0).setB_fields_0_f1Row(0)
+				.setB_fields_1_f2Col(1).setB_fields_1_f2Row(1)
+				.setB_fields_2_f3Col(99).setB_fields_2_f3Row(99);
+		
+		var rule = r.rule(mask);
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var iterator = matches.iterator();
+		
+		var nextMatch = iterator.next();
+		try {
+			Optional<NeoCoMatch> result = rule.apply(nextMatch);
+			assertTrue(result.isPresent());
+			assertFalse(nextMatch.isStillValid());
+		} catch (Exception e) {
+			assertFalse(false);
+		}
+		
+	}
+
 
 	@Test
 	public void test_OneEndField_StillValid() {
