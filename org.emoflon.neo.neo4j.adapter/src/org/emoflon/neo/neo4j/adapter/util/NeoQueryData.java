@@ -61,8 +61,10 @@ public class NeoQueryData {
 
 	public String registerNewPatternNode(String name, Collection<String> labels) {
 		var list = new ArrayList<String>(labels);
-		patternElements.put(name, list);
-		patternNodes.put(name, list);
+		if (!patternElements.containsKey(name)) {
+			patternElements.put(name, list);
+			patternNodes.put(name, list);
+		}
 		return name;
 	}
 
@@ -79,7 +81,9 @@ public class NeoQueryData {
 	public String registerNewPatternRelation(String relName, String label) {
 		var list = new ArrayList<String>();
 		list.add(label);
-		patternElements.put(relName, list);
+		if (!patternElements.containsKey(relName)) {
+			patternElements.put(relName, list);
+		}
 		return relName;
 	}
 
@@ -108,29 +112,33 @@ public class NeoQueryData {
 			if (equal) {
 				return name;
 			} else {
-				optionalElements.put(name + "_" + constraintCount, list);
-				optionalNodes.put(name + "_" + constraintCount, list);
-				equalElements.put(name, name + "_" + constraintCount);
+				if (!optionalElements.containsKey(name + "_" + constraintCount)) {
+					optionalElements.put(name + "_" + constraintCount, list);
+					optionalNodes.put(name + "_" + constraintCount, list);
+					equalElements.put(name, name + "_" + constraintCount);
+				}
 				return name + "_" + constraintCount;
 			}
 
 		} else {
-			optionalElements.put(name + "_" + constraintCount, list);
-			optionalNodes.put(name + "_" + constraintCount, list);
+			if (!optionalElements.containsKey(name + "_" + constraintCount)) {
+				optionalElements.put(name + "_" + constraintCount, list);
+				optionalNodes.put(name + "_" + constraintCount, list);
+			}
 			return name + "_" + constraintCount;
 		}
 	}
-	
+
 	public ArrayList<String> getAllNodesRequireInjectivityChecksCondition() {
-		
+
 		var elem = new ArrayList<String>();
-		
+
 		for (var p1 : optionalNodes.keySet()) {
 
 			for (var p2 : optionalNodes.keySet()) {
-				
-				if(!p1.equals(p2)) {
-					
+
+				if (!p1.equals(p2)) {
+
 					var l1 = optionalNodes.get(p1);
 					var l2 = optionalNodes.get(p2);
 
@@ -138,7 +146,7 @@ public class NeoQueryData {
 
 					for (var l : l1) {
 						if (!equal && l2.contains(l)) {
-							if(!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
+							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
 								elem.add(p1 + "<>" + p2);
 							}
 							equal = true;
@@ -146,7 +154,7 @@ public class NeoQueryData {
 					}
 					for (var l : l2) {
 						if (!equal && l1.contains(l)) {
-							if(!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
+							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
 								elem.add(p1 + "<>" + p2);
 							}
 							equal = true;
@@ -166,7 +174,7 @@ public class NeoQueryData {
 
 		for (var pElem : patternNodes.keySet()) {
 			for (var oElem : optionalNodes.keySet()) {
-				
+
 				if (equalElements.containsKey(pElem) && equalElements.get(pElem).equals(oElem)) {
 				} else {
 
@@ -177,7 +185,7 @@ public class NeoQueryData {
 
 					for (var l : labelsP) {
 						if (!equal && labelsO.contains(l)) {
-							if(!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
+							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
 								elem.add(pElem + "<>" + oElem);
 							}
 							equal = true;
@@ -185,7 +193,7 @@ public class NeoQueryData {
 					}
 					for (var l : labelsO) {
 						if (!equal && labelsP.contains(l)) {
-							if(!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
+							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
 								elem.add(pElem + "<>" + oElem);
 							}
 							equal = true;
@@ -212,11 +220,11 @@ public class NeoQueryData {
 		var list = new ArrayList<String>();
 		list.add(label);
 		if (patternElements.containsKey(relName)) {
-			// FIXME
-			if (patternElements.get(relName).equals(label)) {
+			if (patternElements.get(relName).contains(label)) {
 				return relName;
 			} else {
 				optionalElements.put(relName + "_" + constraintCount, list);
+				equalElements.put(relName, relName + "_" + constraintCount);
 				return relName + "_" + constraintCount;
 			}
 		} else {

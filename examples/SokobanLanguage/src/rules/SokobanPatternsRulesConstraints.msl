@@ -36,6 +36,17 @@ pattern blockOnEndField {
         .endPos:true
     }
 }
+pattern blockOnEndFieldWithRight {
+    b:Block {
+        -field->f
+    }
+    f:Field {
+        -right->fR
+    }
+    fR: Field {
+    	.endPos: true
+    }
+}
 pattern blockOnNoEndField {
     b:Block {
         -field->f
