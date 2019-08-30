@@ -87,6 +87,11 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.matcher().determineMatches();
 		assertThat(matches.size(), is(2));
 	}
+	
+	@Test 
+	public void test_blockOnEndFieldWithRight() {
+		assertThat(entities.getPattern_BlockOnEndFieldWithRight().matcher().countMatches(), is(1));
+	}
 
 	@Test
 	public void test_OneBlock_StillValid() {

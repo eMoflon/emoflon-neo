@@ -33,15 +33,15 @@ model RiverCrossingStart {
 		-side->r2
 	}
 	
-	r2: RiverSide {
-		-opposite->r1
-		.side: "A"
-	}
-	
 	r1: RiverSide {
 		-opposite->r2
+		.side: "A"
+	}
+		
+	r2: RiverSide {
+		-opposite->r1
 		.side: "B"
-	}	
+	}
 				
 	f: Farmer {
 		-on->r1
@@ -59,50 +59,55 @@ model RiverCrossingStart {
 	}
 }
 
-pattern farmerOnOtherSide {
-	b: Board {
+
+pattern oneEatsAnother {
+	b:Board {
 		-figure->f
+		-figure->f2
+		-figure->f3
+		-side->r1
 		-side->r2
 	}
+	r1: RiverSide
 	r2: RiverSide
+	
 	f: Farmer {
-		-on-> r2
+		-on->r1
+	}
+	
+	f2: Figure {
+		-eats->f3
+		-on->r2
+	}
+	f3: Figure {
+		-on->r2
 	}
 }
 
-pattern wolfAndGoatOnOneSide {
-	b: Board {
-		-figure->w
-		-figure->g
+pattern oneEatsAnotherAfterTransport {
+	b:Board {
+		-figure->f
+		-figure->f2
+		-figure->f3
 		-side->r1
 	}
 	r1: RiverSide
 	
-	w: Wolf {
-		-on->r1
-	}
-	g: Goat {
+	f: Farmer {
 		-on->r1
 	}
 	
-} when forbid farmerOnOtherSide 
+	f2: Figure {
+		-eats->f3
+		-on->r1
+	}
+	f3: Figure {
+		-on->r1
+	}
+}
 
-pattern goatAndCabbageOnOneSide {
-	b: Board {
-		-figure->c
-		-figure->g
-		-side->r1
-	}
-	r1: RiverSide
-	
-	c: Cabbage {
-		-on->r1
-	}
-	g: Goat {
-		-on->r1
-	}
-	
-} when forbid farmerOnOtherSide 
+constraint forbidOneEatsAnother = forbid oneEatsAnother
+constraint enforceOneEatsAnother = enforce oneEatsAnotherAfterTransport
 
 rule moveEmptyToOtherSide {
 	
@@ -121,9 +126,9 @@ rule moveEmptyToOtherSide {
 		++ -on->r2
 	}
 	
-} when !figureCanEatsOtherFigure
+} when !enforceOneEatsAnother
 
-rule moveOneFigureToOtherSide {
+abstract rule moveOneFigureToOtherSide {
 	
 	b: Board {
 		-figure->f
@@ -145,26 +150,19 @@ rule moveOneFigureToOtherSide {
 		++ -on->r2
 	}
 	
-} when !figureCanEatsOtherFigure
+} 
 
-constraint figureCanEatsOtherFigure = enforce figureEatsOtherFigure
+rule moveWolfToOtherSide -> moveOneFigureToOtherSide {
+	f1: Wolf
+} when !enforceOneEatsAnother
 
-pattern figureEatsOtherFigure {
-	b: Board {
-		-figure->f2
-		-figure->f3
-		-side->r1
-	}
-	r1: RiverSide
-	
-	f2: Figure {
-		-eats->f3
-		-on-> r1
-	}
-	f3: Figure {
-		-on-> r1
-	}	
-}
+rule moveGoatToOtherSide -> moveOneFigureToOtherSide {
+	f1: Goat
+} when !enforceOneEatsAnother
+
+rule moveCabbageToOtherSide -> moveOneFigureToOtherSide {
+	f1: Cabbage
+} when !enforceOneEatsAnother
 
 pattern puzzleSolved {
 	b:Board {

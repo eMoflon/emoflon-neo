@@ -92,10 +92,11 @@ class CypherPatternBuilder {
 			''''''
 	}
 	
-	def static String whereQuery(Collection<NeoNode> nodes, HashMap<String,String> matchnodes, boolean injective, NeoMask mask, HashMap<String,String> equalElem) {
+	def static String whereQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask, 
+		HashMap<String,String> equalElem, Collection<String> injElem) {
 		var injBlock = "";
 		if(injective) {
-			injBlock = injectiveBlock(nodes, matchnodes);
+			injBlock = injectiveNodes(injElem);			
 		}
 		
 		var maskBlock = maskBlock(nodes, mask)
@@ -109,6 +110,10 @@ class CypherPatternBuilder {
 			'''
 		else	
 			''''''
+	}
+	
+	def static String injectiveNodes(Collection<String> injElem) {
+		'''«FOR k:injElem SEPARATOR " AND "»NOT id(«k.split("<>").get(0)») = id(«k.split("<>").get(1)»)«ENDFOR»'''
 	}
 
 	private def static String maskBlock(Collection<NeoNode> nodes, NeoMask mask) {
@@ -144,33 +149,30 @@ class CypherPatternBuilder {
 
 	def static ArrayList<Pair<String,String>> injectiveElem(Collection<NeoNode> nodes) {
 		var pairsToCheck = new ArrayList<Pair<String, String>>()
-		for (var i = 0; i < nodes.size; i++)
-			for (var j = i + 1; j < nodes.size; j++)
-				if (nodes.get(i).classTypes.equals(nodes.get(j).classTypes))
-					pairsToCheck.add(Pair.of(nodes.get(i).varName, nodes.get(j).varName))
-
-		return pairsToCheck;
-	}
-	
-	def static ArrayList<Pair<String,String>> injectiveElem(Collection<NeoNode> nodes, HashMap<String, String> matchnodes) {
-		
-		var pairsToCheck = new ArrayList<Pair<String,String>>();
-		var keys = matchnodes.keySet();
-		
-		for(n:nodes) {
-			if(matchnodes.containsValue(n.classTypes.get(0))) {
-				for(var i=0; i<keys.size(); i++) {
-					if(n.classTypes.get(0).equals(matchnodes.get(keys.get(i))) && !n.varName.equals(keys.get(i))) {
-						if(!pairsToCheck.contains(Pair.of(n.varName, keys.get(i))) && !pairsToCheck.contains(Pair.of(keys.get(i), n.varName)))
-							pairsToCheck.add(Pair.of(n.varName, keys.get(i)));
+		for (var i = 0; i < nodes.size; i++) {
+			for (var j = i + 1; j < nodes.size; j++) {
+				var classTypesI = nodes.get(i).classTypes;
+				var classTypesJ = nodes.get(j).classTypes;
+				
+				var equalFound = false;
+				for(elem : classTypesI) {
+					if(classTypesJ.contains(elem)) {
+						equalFound = true;
 					}
 				}
+				for(elem : classTypesJ) {
+					if(classTypesI.contains(elem)) {
+						equalFound = true;
+					}
+				}
+				
+				if (equalFound)
+					pairsToCheck.add(Pair.of(nodes.get(i).varName, nodes.get(j).varName))
 			}
 		}
-		
 		return pairsToCheck;
 	}
-	
+
 	def static String injectiveCond(ArrayList<Pair<String,String>> pairsToCheck) {
 		'''«FOR p: pairsToCheck SEPARATOR " AND "»NOT id(«p.key») = id(«p.value»)«ENDFOR»'''
 	}
@@ -181,19 +183,6 @@ class CypherPatternBuilder {
 		return injectiveCond(pairsToCheck);
 	}
 	
-	def static String injectiveBlock(Collection<NeoNode> nodes, HashMap<String, String> matchnodes) {
-		var pairsToCheck = new ArrayList<Pair<String,String>>(injectiveElem(nodes));
-		
-		for(pair:injectiveElem(nodes,matchnodes)) {
-			if(!pairsToCheck.contains(pair) && !pairsToCheck.contains(Pair.of(pair.value, pair.key))) {
-				pairsToCheck.add(pair);
-			}
-		}
-		
-		return injectiveCond(pairsToCheck);
-	
-	}
-
 	def static String returnQuery(Collection<NeoNode> nodes) {
 		'''
 		RETURN «FOR n : nodes SEPARATOR ',\n '»
@@ -345,10 +334,11 @@ class CypherPatternBuilder {
 		'''
 	}
 
-	def static String condition_matchQuery(Collection<NeoNode> nodes, HashMap<String,String> matchnodes, boolean injective, NeoMask mask, HashMap<String, String> equalElem) {
+	def static String condition_matchQuery(Collection<NeoNode> nodes, boolean injective, NeoMask mask, 
+		HashMap<String, String> equalElem, Collection<String> injElem) {
 		'''
 			 OPTIONAL «matchQuery(nodes)»
-			«whereQuery(nodes, matchnodes, injective, mask, equalElem)»
+			«whereQuery(nodes, injective, mask, equalElem, injElem)»
 		'''
 	}
 
