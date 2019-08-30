@@ -109,4 +109,39 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertEquals(0, access.rule().countMatches());
 		assertFalse(access.rule().determineOneMatch().isPresent());
 	}
+	
+	@Disabled("TODO[Jannik] Waiting for #166")
+	@Test
+	public void testEndFieldToggle() {
+		{
+			var access = entities.getRule_SetEndField();
+			var mask = access.mask();
+			mask.setB_fields_0_fCol(1);
+			mask.setB_fields_0_fRow(1);
+			var match = access.rule(mask).determineOneMatch();
+
+			assertTrue(match.isPresent());
+			var m = match.get();
+			assertFalse(access.data(m).f.endPos);
+
+			access.rule().apply(m);
+
+			assertTrue(access.data(m).f.endPos);
+		}
+		{
+			var access = entities.getRule_SetNotEndField();
+			var mask = access.mask();
+			mask.setB_fields_0_fCol(1);
+			mask.setB_fields_0_fRow(1);
+			var match = access.rule(mask).determineOneMatch();
+
+			assertTrue(match.isPresent());
+			var m = match.get();
+			assertTrue(access.data(m).f.endPos);
+
+			access.rule().apply(m);
+
+			assertFalse(access.data(m).f.endPos);
+		}
+	}
 }

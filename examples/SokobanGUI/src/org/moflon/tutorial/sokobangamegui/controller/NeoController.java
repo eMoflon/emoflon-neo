@@ -268,11 +268,22 @@ public class NeoController implements IController {
 
 	@Override
 	public void newBoard(int width, int height) {
-		// TODO:  Complete
+		//TODO[Anjorin] Use masks to fix attribute values
+		
+		// Top-left corner
 		api1.getRule_CreateTopLeft().rule().apply();
-		api1.getRule_CreateFirstRow().rule().apply();
-		api1.getRule_CreateFirstCol().rule().apply();
-		api1.getRule_CreateRestOfFields().rule().apply();
+		
+		// First row
+		for (int row = 0; row < width-1; row++)			
+			api1.getRule_CreateFirstRow().rule().apply();
+		
+		// First column
+		for (int col = 0; col < height-1; col++)	
+			api1.getRule_CreateFirstCol().rule().apply();
+		
+		// Apply as long as possible
+		var rest = api1.getRule_CreateRestOfFields().rule();
+		while(rest.apply().isPresent());
 	}
 
 	private void defaultBoard() throws FlattenerException {
