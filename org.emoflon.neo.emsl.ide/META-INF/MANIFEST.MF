@@ -10,5 +10,6 @@ Require-Bundle: org.emoflon.neo.emsl,
  org.eclipse.xtext.ide,
  org.eclipse.xtext.xbase.ide,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
-Export-Package: org.emoflon.neo.emsl.ide.contentassist.antlr.internal,
- org.emoflon.neo.emsl.ide.contentassist.antlr
+Export-Package: org.emoflon.neo.emsl.ide,
+ org.emoflon.neo.emsl.ide.contentassist.antlr,
+ org.emoflon.neo.emsl.ide.contentassist.antlr.internal
