@@ -25,5 +25,10 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.apiguardian,
  org.emoflon.neo.engine;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.neo.emf;bundle-version="1.0.0";visibility:=reexport
-Export-Package: metamodels
+Export-Package: metamodels,
+ models,
+ org.emoflon.neo.api,
+ org.emoflon.neo.api.metamodels,
+ org.emoflon.neo.api.models,
+ tgg
 Automatic-Module-Name: CompanyToIT

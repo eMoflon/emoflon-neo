@@ -70,7 +70,6 @@ class TGGCompiler {
 		'''
 	}
 
-	// FIXME[Mario] This causes a problem for FacebookToInstagram - please check if the handling of duplicates is still necessary in this form
 	private def mapTypeNames(Collection<Metamodel> pMetamodels) {
 
 		nodeTypeNames = HashBiMap.create()
@@ -107,10 +106,13 @@ class TGGCompiler {
 				duplicateNames.add(type.name)
 			}
 
-			if (duplicateNames.contains(type.name))
-				relationTypeNames.put(type, relationTypeToNodeName.get(type) + "." + type.name)
-			else
-				relationTypeNames.put(type, type.name)
+		// FIXME[Mario] This causes a problem for FacebookToInstagram - please check if the handling of duplicates is still necessary in this form
+		/* 
+		 * if (duplicateNames.contains(type.name))
+		 *     relationTypeNames.put(type, relationTypeToNodeName.get(type) + "." + type.name)
+		 * else
+		 *     relationTypeNames.put(type, type.name)
+		 */
 		}
 	}
 
