@@ -603,7 +603,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	}
 
-	public List<String> computeLabelsFromType(MetamodelNodeBlock type) {
+	public static List<String> computeLabelsFromType(MetamodelNodeBlock type) {
 		var labels = new LinkedHashSet<String>();
 		labels.add(type.getName());
 		for (MetamodelNodeBlock st : type.getSuperTypes()) {

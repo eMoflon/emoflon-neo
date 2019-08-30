@@ -230,7 +230,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private Collection<String> computeLabelsOfNode(ModelNodeBlock node) {
 		var labels = new ArrayList<String>();
 		if (node.getAction() != null && node.getAction().getOp() == ActionOperator.CREATE) {
-			return ((NeoCoreBuilder) builder).computeLabelsFromType(node.getType());
+			return NeoCoreBuilder.computeLabelsFromType(node.getType());
 		} else {
 			labels.add(node.getType().getName());
 			return labels;
