@@ -268,7 +268,11 @@ public class NeoController implements IController {
 
 	@Override
 	public void newBoard(int width, int height) {
-		// TODO: Use a grammar and the model generator to generate a new board
+		// TODO:  Complete
+		api1.getRule_CreateTopLeft().rule().apply();
+		api1.getRule_CreateFirstRow().rule().apply();
+		api1.getRule_CreateFirstCol().rule().apply();
+		api1.getRule_CreateRestOfFields().rule().apply();
 	}
 
 	private void defaultBoard() throws FlattenerException {
