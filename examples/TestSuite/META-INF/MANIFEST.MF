@@ -34,7 +34,8 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  Quiltography;bundle-version="1.0.0",
  FruitGardenLanguage;bundle-version="1.0.0",
  RiverCrossing;bundle-version="1.0.0",
- Chess
+ Chess,
+ org.eclipse.core.resources;bundle-version="3.13.400"
 Automatic-Module-Name: TestSuite
 Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.api.expected,
