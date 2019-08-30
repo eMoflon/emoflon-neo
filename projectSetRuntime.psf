@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <psf version="2.0">
 <provider id="org.eclipse.egit.core.GitProvider">
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/Chess"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/CompanyToIT"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/FacebookToInstagram"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/FruitGardenLanguage"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/NetworkTopology"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/Organigram"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/PacMan"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/Quiltography"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/RiverCrossing"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/SheRememberedCaterpillars"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/SokobanGUI"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/SokobanLanguage"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/TestSuite"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,compiler,examples/TestSuiteSokobanGUI"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Chess"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/CompanyToIT"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FacebookToInstagram"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FruitGardenLanguage"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/NetworkTopology"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Organigram"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/PacMan"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Quiltography"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/RiverCrossing"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SheRememberedCaterpillars"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanGUI"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanLanguage"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuite"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuiteSokobanGUI"/>
 </provider>
 </psf>
