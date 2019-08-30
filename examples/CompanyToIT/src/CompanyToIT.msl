@@ -29,7 +29,7 @@ tripleRule CompanyToITRule : CompanyToIT {
 	source {
 		++ ceo : CEO
 		++ company : Company {
-			++ -Company.ceo-> ceo
+			++ -ceo-> ceo
 		}
 	}
 	
@@ -46,21 +46,21 @@ tripleRule CompanyToITRule : CompanyToIT {
 tripleRule AdminToRouterRule : CompanyToIT {
 	source {
 		company : Company {
-			-Company.ceo-> ceo
+			-ceo-> ceo
 			++ -admin-> admin
 		}
 		ceo : CEO
 		++ admin : Admin {
-			++ -Admin.ceo-> ceo
+			++ -ceo-> ceo
 		}
 	} 
 
 	target {
 		++ router : Router {
-			++ -Router.network-> network
+			++ -network-> network
 		}
 		it : IT {
-			++ -IT.network-> network
+			++ -network-> network
 			++ -router-> router
 		}
 		++ network : Network
@@ -75,15 +75,15 @@ tripleRule AdminToRouterRule : CompanyToIT {
 tripleRule EmployeeToPCRule : CompanyToIT {
 	source {
 		admin : Admin {
-			-Admin.ceo-> ceo
+			-ceo-> ceo
 		}
 		company : Company {
 			-admin-> admin
-			++ -Company.employee-> employee
-			-Company.ceo-> ceo
+			++ -employee-> employee
+			-ceo-> ceo
 		}
 		ceo : CEO {
-			++ -CEO.employee-> employee
+			++ -employee-> employee
 		}
 		++ employee : Employee
 	}
@@ -94,11 +94,11 @@ tripleRule EmployeeToPCRule : CompanyToIT {
 		}
 		it : IT {
 			-router-> router
-			-IT.network-> network
+			-network-> network
 		}
 		++ computer : PC
 		router : Router {
-			-Router.network-> network
+			-network-> network
 		}
 	}
 
@@ -112,15 +112,15 @@ tripleRule EmployeeToPCRule : CompanyToIT {
 tripleRule EmployeeToLaptopRule : CompanyToIT {
 	source {
 		admin : Admin {
-			-Admin.ceo-> ceo
+			-ceo-> ceo
 		}
 		company : Company {
 			-admin-> admin
-			++ -Company.employee-> employee
-			-Company.ceo-> ceo
+			++ -employee-> employee
+			-ceo-> ceo
 		}
 		ceo : CEO {
-			++ -CEO.employee-> employee
+			++ -employee-> employee
 		}
 		++ employee : Employee
 	}
@@ -131,11 +131,11 @@ tripleRule EmployeeToLaptopRule : CompanyToIT {
 		}
 		it : IT {
 			-router-> router
-			-IT.network-> network
+			-network-> network
 		}
 		++ computer : Laptop
 		router : Router {
-			-Router.network-> network
+			-network-> network
 		}
 	}
 

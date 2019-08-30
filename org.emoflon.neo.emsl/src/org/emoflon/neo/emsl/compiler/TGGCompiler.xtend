@@ -70,6 +70,7 @@ class TGGCompiler {
 		'''
 	}
 
+	// FIXME[Mario] This causes a problem for FacebookToInstagram - please check if the handling of duplicates is still necessary in this form
 	private def mapTypeNames(Collection<Metamodel> pMetamodels) {
 
 		nodeTypeNames = HashBiMap.create()
@@ -122,13 +123,13 @@ class TGGCompiler {
 		'''
 	}
 
-	//FIXME[Mario]  I think the distinction between isTranslated (tr : true) and translate (tr := true) is missing
+	// FIXME[Mario]  I think the distinction between isTranslated (tr : true) and translate (tr := true) is missing
 	// In the TGGs I looked at, I only found := even in places where it should be clearly :
 	// There are basically two checks:
 	// (1) Is something already translated? ==> tr : true
 	// (2) Translate something but only if it is not already translated ==> tr : false  
-	// 																		tr := true
-	// 	   Note that you need both statements!
+	// tr := true
+	// Note that you need both statements!
 	private def compileRule(TripleRule pRule) {
 
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
