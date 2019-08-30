@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
@@ -25,7 +26,6 @@ import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 import org.neo4j.driver.v1.exceptions.DatabaseException;
-import org.apache.log4j.Logger;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -55,7 +55,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		else
 			this.mask = mask;
 
-		useSPOSemantics = false;
+		useSPOSemantics = true;
 		this.builder = builder;
 		this.queryData = neoQuery;
 
