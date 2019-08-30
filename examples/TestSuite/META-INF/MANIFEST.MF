@@ -36,3 +36,15 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  RiverCrossing;bundle-version="1.0.0",
  Chess
 Automatic-Module-Name: TestSuite
+Export-Package: org.emoflon.neo.api,
+ org.emoflon.neo.api.expected,
+ org.emoflon.neo.example,
+ org.emoflon.neo.example.chess,
+ org.emoflon.neo.example.fruitgarden,
+ org.emoflon.neo.example.networktopology,
+ org.emoflon.neo.example.organigram,
+ org.emoflon.neo.example.pac_man,
+ org.emoflon.neo.example.quiltography,
+ org.emoflon.neo.example.rivercrossing,
+ org.emoflon.neo.example.she_remembered_caterpillars,
+ org.emoflon.neo.example.sokoban

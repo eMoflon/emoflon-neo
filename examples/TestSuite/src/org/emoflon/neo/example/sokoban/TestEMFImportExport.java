@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.common.util.URI;
@@ -31,7 +32,7 @@ class TestEMFImportExport {
 		var rs = new ResourceSetImpl();
 		rs.getResource(URI.createFileURI("./resources/in/SimpleFamilies.ecore"), true);
 
-		String expected = FileUtils.readFileToString(new File("./resources/expected/SimpleFamilies.msl"));
+		String expected = FileUtils.readFileToString(new File("./resources/expected/SimpleFamilies.msl"), Charset.defaultCharset());
 		assertEquals(expected, importer.generateEMSLSpecification(rs));
 	}
 
