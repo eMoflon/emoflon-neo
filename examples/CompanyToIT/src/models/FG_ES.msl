@@ -1,0 +1,32 @@
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+
+model ES {
+	andy:CEO {
+		.name : "Andy"
+		
+		-employee->marius
+		-employee->tony
+	}
+	
+	ES:Company {
+		.name : "ES"
+		
+		-ceo->andy
+		-admin->ingo
+		-employee->tony
+		-employee->marius
+	}
+	
+	ingo:Admin {
+		.name : "Ingo"
+		-ceo->andy
+	}
+	
+	tony:Employee {
+		.name : "Tony"
+	}
+	
+	marius:Employee {
+		.name : "Marius"
+	}
+}
