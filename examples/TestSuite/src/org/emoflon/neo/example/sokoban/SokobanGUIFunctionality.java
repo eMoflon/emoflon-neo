@@ -62,7 +62,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertEquals(1, access.data(result.get()).b_fields_0_f.col);
 	}
 
-	@Disabled("TODO[Jannik] Waiting for #169")
 	@Test
 	public void testAxiom() {
 		builder.clearDataBase();
@@ -85,7 +84,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertTrue(access.rule().determineOneMatch().isPresent());
 	}
 
-	@Disabled("TODO[Jannik] Waiting for #169")
 	@Test
 	public void testAxiomWithAppCond() {
 		builder.clearDataBase();
