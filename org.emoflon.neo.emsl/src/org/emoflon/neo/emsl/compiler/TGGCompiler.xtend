@@ -1,29 +1,25 @@
 package org.emoflon.neo.emsl.compiler
 
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.eMSL.ActionOperator
-import org.emoflon.neo.emsl.refinement.EMSLFlattener
-import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
-import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
-import org.emoflon.neo.emsl.eMSL.Value
-import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
-import org.emoflon.neo.emsl.eMSL.PrimitiveInt
-import java.util.stream.Collectors
-import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
-import org.emoflon.neo.emsl.eMSL.Metamodel
-import java.util.HashMap
-import java.util.Collection
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
+import java.util.Collection
+import java.util.HashMap
 import java.util.HashSet
-import org.emoflon.neo.emsl.eMSL.Correspondence
 import java.util.List
-import org.eclipse.xtext.generator.IFileSystemAccess2
+import java.util.stream.Collectors
 import org.eclipse.core.resources.IProject
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
+import org.eclipse.xtext.generator.IFileSystemAccess2
+import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.refinement.EMSLFlattener
 
 class TGGCompiler {
 	final String BASE_FOLDER = "tgg/";
@@ -211,7 +207,7 @@ class TGGCompiler {
 			}
 		'''
 	}
-	
+
 	private def compilePropertyStatement(ModelPropertyStatement pPropertyStatement) {
 		'''
 			.«pPropertyStatement.type.name» «pPropertyStatement.op.literal» «resolveValue(pPropertyStatement.value)»

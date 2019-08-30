@@ -346,10 +346,10 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			for (var e : edges) {
 				// collect propertyStatements
 				e.getProperties().forEach(p -> {
-					if (!properties.containsKey(p.getType().getName())) {
-						properties.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
+					if (!properties.containsKey(getNameOfType(p))) {
+						properties.put(getNameOfType(p), new ArrayList<ModelPropertyStatement>());
 					}
-					properties.get(p.getType().getName()).add(p);
+					properties.get(getNameOfType(p)).add(p);
 				});
 			}
 
@@ -360,7 +360,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					basis = props.get(0);
 				}
 				for (var p : props) {
-					if (p.getType().getType() != basis.getType().getType()) {
+					if (!sameDataType(p, basis)) {
 						// incompatible types/operands found
 						if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
 							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
@@ -385,6 +385,20 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		}
 
 		return mergedProperties;
+	}
+
+	private boolean sameDataType(ModelPropertyStatement p1, ModelPropertyStatement p2) {
+		if(p1.getType() != null && p2.getType() != null)
+			return p1.getType().getType() == p2.getType().getType();
+		else
+			return p1.getInferredType().equals(p2.getInferredType());
+	}
+
+	protected String getNameOfType(ModelPropertyStatement p) {
+		if(p.getType() != null)
+			return p.getType().getName();
+		else // Link has an inferred type
+			return p.getInferredType();
 	}
 
 	/**
@@ -449,11 +463,11 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					if (p.getType() == null) {
 						continue;
 					}
-					if (!propertyStatementsSortedByName.containsKey(p.getType().getName())) {
-						propertyStatementsSortedByName.put(p.getType().getName(),
+					if (!propertyStatementsSortedByName.containsKey(getNameOfType(p))) {
+						propertyStatementsSortedByName.put(getNameOfType(p),
 								new ArrayList<ModelPropertyStatement>());
 					}
-					propertyStatementsSortedByName.get(p.getType().getName()).add(p);
+					propertyStatementsSortedByName.get(getNameOfType(p)).add(p);
 				}
 			}
 
@@ -465,7 +479,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					basis = properties.get(0);
 				}
 				for (var p : properties) {
-					if (p.getType().getType() != basis.getType().getType()) {
+					if (!sameDataType(p, basis)) {
 						if (p.eContainer().eContainer() instanceof AtomicPattern) {
 							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
 									basis, p, (SuperType) p.eContainer().eContainer());
