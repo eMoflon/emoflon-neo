@@ -119,7 +119,7 @@ class EMSLUtil {
 		}
 	}
 
-	def static String getJavaType(DataType type) {
+	def static String getJavaType(DataType type) {		
 		if (type instanceof BuiltInType) {
 			switch (type.reference) {
 				case ESTRING:
@@ -128,6 +128,8 @@ class EMSLUtil {
 					return "int"
 				case EBOOLEAN:
 					return "boolean"
+				case EDATE:
+					return "LocalDate"
 				default:
 					throw new IllegalStateException("This type has to be handled: " + type)
 			}

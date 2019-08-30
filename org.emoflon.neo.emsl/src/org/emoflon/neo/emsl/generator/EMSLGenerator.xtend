@@ -153,6 +153,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import java.util.HashMap;
 			import java.util.Map;
 			import java.util.Optional;
+			import java.time.LocalDate;
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
