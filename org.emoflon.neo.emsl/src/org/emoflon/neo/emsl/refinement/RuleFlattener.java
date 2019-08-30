@@ -27,6 +27,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 import org.emoflon.neo.emsl.eMSL.SuperType;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -346,10 +347,10 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			for (var e : edges) {
 				// collect propertyStatements
 				e.getProperties().forEach(p -> {
-					if (!properties.containsKey(getNameOfType(p))) {
-						properties.put(getNameOfType(p), new ArrayList<ModelPropertyStatement>());
+					if (!properties.containsKey(EMSLUtil.getNameOfType(p))) {
+						properties.put(EMSLUtil.getNameOfType(p), new ArrayList<ModelPropertyStatement>());
 					}
-					properties.get(getNameOfType(p)).add(p);
+					properties.get(EMSLUtil.getNameOfType(p)).add(p);
 				});
 			}
 
@@ -392,13 +393,6 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			return p1.getType().getType() == p2.getType().getType();
 		else
 			return p1.getInferredType().equals(p2.getInferredType());
-	}
-
-	protected String getNameOfType(ModelPropertyStatement p) {
-		if(p.getType() != null)
-			return p.getType().getName();
-		else // Link has an inferred type
-			return p.getInferredType();
 	}
 
 	/**
@@ -463,11 +457,11 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					if (p.getType() == null) {
 						continue;
 					}
-					if (!propertyStatementsSortedByName.containsKey(getNameOfType(p))) {
-						propertyStatementsSortedByName.put(getNameOfType(p),
+					if (!propertyStatementsSortedByName.containsKey(EMSLUtil.getNameOfType(p))) {
+						propertyStatementsSortedByName.put(EMSLUtil.getNameOfType(p),
 								new ArrayList<ModelPropertyStatement>());
 					}
-					propertyStatementsSortedByName.get(getNameOfType(p)).add(p);
+					propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).add(p);
 				}
 			}
 
@@ -681,7 +675,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						typesOfEdges.addAll(e.getTypes());
 					}
 					newRel.getTypes().add(newRelType);
-					// TODO merge path lengths
+					// TODO[Max] merge path lengths
 					
 					var bounds = mergeModelRelationStatementPathLimits(entity, edges.get(typename).get(targetname));
 					if (bounds == null)

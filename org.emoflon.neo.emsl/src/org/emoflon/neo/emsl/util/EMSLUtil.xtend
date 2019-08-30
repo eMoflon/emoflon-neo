@@ -28,6 +28,9 @@ import org.eclipse.emf.ecore.EObject
 import java.util.ArrayList
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import java.util.List
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.eclipse.emf.ecore.resource.ResourceSet
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -39,6 +42,8 @@ class EMSLUtil {
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"
 	public static final String P_PASSWORD = "PasswordPreference"
+	
+	static ArrayList<MetamodelPropertyStatement> propsOfEObject
 
 	def static EMSL_Spec loadSpecification(String modelURI, String platformResourceURIRoot, String platformPluginURIRoot) {
 		EMSLPackageImpl.init()
@@ -65,6 +70,16 @@ class EMSLUtil {
 		
 		return spec
 	}
+	
+	def static loadEMSL_Spec(String uri, EObject root) {
+		val rs = root.eResource.resourceSet
+		loadEMSL_Spec(uri, rs)
+	}
+	
+	def static loadEMSL_Spec(String uri, ResourceSet rs){
+		val resource = rs.getResource(URI.createURI(uri), true)
+		resource.contents.get(0)
+	}
 
 	def static Set<MetamodelNodeBlock> thisAndAllSuperTypes(MetamodelNodeBlock block) {
 		val blocks = new HashSet
@@ -72,6 +87,7 @@ class EMSLUtil {
 			blocks.add(block)
 			block.superTypes.forEach[blocks.addAll(thisAndAllSuperTypes(it))]
 		}
+		
 		return blocks
 	}
 
@@ -144,9 +160,25 @@ class EMSLUtil {
 	}
 	
 	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type){
-		thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
+		val allProps = thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
+		allProps.addAll(getPropsOfEObject())
+		return allProps
 	}
 	
+	def static getPropsOfEObject() {
+		if(propsOfEObject === null){
+			val sp = EMSLUtil.loadEMSL_Spec(EMSLUtil.ORG_EMOFLON_NEO_CORE_URI, new ResourceSetImpl)
+			sp.eAllContents.forEach[
+				if(it instanceof MetamodelNodeBlock){
+					if(it.name.equals("EObject"))
+						propsOfEObject = new ArrayList(it.properties)
+				}
+			]
+		}
+		
+		return propsOfEObject
+	}
+		
 	def static getAllTypes(ModelRelationStatement rel){
 		rel.types.sortBy[t | t.type.name].map[t | t.type.name]
 	}
@@ -160,5 +192,12 @@ class EMSLUtil {
 			throw new IllegalArgumentException('''«rel» is a variable link and does not have a single type!''')
 			
 		rel.types.get(0).type
+	}
+	
+	def static getNameOfType(ModelPropertyStatement p){
+		if(p.type !== null)
+			p.type.name
+		else // Link has an inferred type
+			p.inferredType
 	}
 }

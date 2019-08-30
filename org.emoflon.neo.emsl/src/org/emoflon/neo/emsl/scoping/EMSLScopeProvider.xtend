@@ -6,9 +6,9 @@ package org.emoflon.neo.emsl.scoping
 import java.util.HashMap
 import java.util.HashSet
 import java.util.Map
-import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
+import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.scoping.IScope
@@ -17,7 +17,10 @@ import org.eclipse.xtext.scoping.impl.SimpleScope
 import org.eclipse.xtext.util.SimpleAttributeResolver
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
@@ -29,16 +32,12 @@ import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.eMSL.SuperType
-import org.emoflon.neo.emsl.eMSL.RefinementCommand
-import org.emoflon.neo.emsl.eMSL.Correspondence
-import org.eclipse.emf.ecore.util.EcoreUtil
-import org.emoflon.neo.emsl.eMSL.EMSL_Spec
-import org.emoflon.neo.emsl.eMSL.Entity
 
 /**
  * This class contains custom scoping description.
@@ -536,7 +535,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
 		for (st : importStatements) {
 			try {
-				val sp = loadEMSL_Spec(st.value, root)
+				val sp = EMSLUtil.loadEMSL_Spec(st.value, root)
 				EcoreUtil2.getAllContentsOfType(sp, type).forEach [ o |
 					aliases.put(o, if(st.alias == "") null else st.alias)
 				]
@@ -552,7 +551,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (!thisSpecDefinesNeoCore(aliases) &&
 			!importStatements.exists[it.value === EMSLUtil.ORG_EMOFLON_NEO_CORE_URI]) {
 			try {
-				val sp = loadEMSL_Spec(EMSLUtil.ORG_EMOFLON_NEO_CORE_URI, root)
+				val sp = EMSLUtil.loadEMSL_Spec(EMSLUtil.ORG_EMOFLON_NEO_CORE_URI, root)
 				EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
 			} catch (Exception e) {
 				println(e)
@@ -603,12 +602,6 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/*--------------------------*/
 	/*---------- Misc ----------*/
 	/*--------------------------*/
-	private def loadEMSL_Spec(String uri, EObject root) {
-		val rs = root.eResource.resourceSet
-		val resource = rs.getResource(URI.createURI(uri), true)
-		resource.contents.get(0)
-	}
-
 	private def <T extends EObject> determineScope(Map<T, String> aliases) {
 		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
 			aliases.keySet,

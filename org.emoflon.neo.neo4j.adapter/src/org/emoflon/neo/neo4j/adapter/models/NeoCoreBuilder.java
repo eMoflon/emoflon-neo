@@ -65,6 +65,7 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
@@ -85,6 +86,8 @@ import com.google.common.collect.Streams;
 
 public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+
+	private static final Object TRANSLATION_MARKER = "_tr_";
 
 	// Defaults for export
 	private int maxTransactionSizeEdges = 10000;
@@ -523,7 +526,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			// Handle attributes of relation in model
 			List<NeoProp> props = new ArrayList<>();
 			rs.getProperties().forEach(ps -> {
-				props.add(new NeoProp(ps.getType().getName(), inferType(ps, nb)));
+				props.add(new NeoProp(EMSLUtil.getNameOfType(ps), inferType(ps, nb)));
 			});
 
 			cb.createEdgeWithProps(props, EMSLUtil.getOnlyType(rs).getName(), refOwner, typeOfRef);
@@ -623,7 +626,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private Object inferType(ModelPropertyStatement ps, ModelNodeBlock nb) {
-		String propName = ps.getType().getName();
+		String propName = EMSLUtil.getNameOfType(ps);
 		MetamodelNodeBlock nodeType = nb.getType();
 
 		if (ps.eContainer().equals(nb)) {
@@ -638,6 +641,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private Object inferTypeForEdgeAttribute(Value value, String relName, String propName,
 			MetamodelNodeBlock nodeType) {
+		if(propName.equals(TRANSLATION_MARKER)) {
+			return PrimitiveBoolean.class.cast(value).isTrue();
+		}
+		
 		var typedValue = nodeType.getRelations().stream()//
 				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getProperties().stream())//
