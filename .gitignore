@@ -72,3 +72,5 @@ examples/Chess/src-gen/org/emoflon/neo/api/API_FigureMoves.java
 examples/Chess/src-gen/org/emoflon/neo/api/API_Patterns.java
 
 examples/Chess/src-gen/org/emoflon/neo/api/API_ChessPatterns.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Languages.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Common.java

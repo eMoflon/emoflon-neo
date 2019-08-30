@@ -66,6 +66,19 @@ pattern canCrossBridge {
 	p2:Platform
 }
 
+rule colourBridgeRED {
+	b:Bridge {
+		.colour != RED
+		.colour := RED
+		
+		-feet->p1
+		-feet->p2
+	}
+	
+	p1:Platform
+	p2:Platform
+}
+
 pattern everythingBlue {
 	a:Character {
 		.colour : BLUE
