@@ -657,6 +657,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private Object inferTypeForNodeAttribute(Value value, String propName, MetamodelNodeBlock nodeType) {
+		if(propName.equals(TRANSLATION_MARKER)) {
+			return PrimitiveBoolean.class.cast(value).isTrue();
+		}
+		
 		var typedValue = EMSLUtil.allPropertiesOf(nodeType).stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//
