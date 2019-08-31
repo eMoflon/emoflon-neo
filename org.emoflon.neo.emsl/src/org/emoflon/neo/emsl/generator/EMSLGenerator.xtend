@@ -35,6 +35,8 @@ import org.emoflon.neo.emsl.util.LogUtils
 import org.emoflon.neo.emsl.util.ManifestFileUpdater
 import org.apache.log4j.Logger
 import org.emoflon.neo.emsl.compiler.TGGCompiler
+import java.util.Collection
+import java.util.HashSet
 
 /**
  * Generates code from your model files on save.
@@ -44,6 +46,8 @@ import org.emoflon.neo.emsl.compiler.TGGCompiler
 class EMSLGenerator extends AbstractGenerator {
 
 	static final Logger logger = Logger.getLogger(EMSLGenerator)
+
+	Collection<String> generatedTGGFiles
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val segments = resource.URI.trimFileExtension.segmentsList
@@ -56,10 +60,14 @@ class EMSLGenerator extends AbstractGenerator {
 		.join("/");
 		var emslSpec = resource.contents.get(0) as EMSL_Spec
 		
-		val project = ResourcesPlugin.workspace.root.getProject(resource.URI.segment(1))
+		generatedTGGFiles = new HashSet
 		emslSpec.entities.filter[it instanceof TripleGrammar]
 						 .map[it as TripleGrammar]
-						 .forEach[new TGGCompiler(it).compileAll(fsa, project)]
+						 .forEach[
+						 	new TGGCompiler(it)
+						 	.compileAll(fsa)
+						 	.forEach[generatedTGGFiles.add(it)]
+						 ]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
 		fsa.generateFile("org/emoflon/neo/api/" + apiPath + "/" + apiName + ".java",
@@ -82,6 +90,8 @@ class EMSLGenerator extends AbstractGenerator {
 		} catch (CoreException e) {
 			LogUtils.error(logger, e);
 		}
+		
+		generatedTGGFiles.forEach[project.findMember(it).touch(null)]
 	}
 
 	def generateCommon() {

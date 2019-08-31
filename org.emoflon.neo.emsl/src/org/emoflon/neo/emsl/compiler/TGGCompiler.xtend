@@ -9,9 +9,7 @@ import java.util.HashSet
 import java.util.List
 import java.util.Set
 import java.util.stream.Collectors
-import org.eclipse.core.resources.IProject
 import org.eclipse.xtext.generator.IFileSystemAccess2
-import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
@@ -45,14 +43,14 @@ class TGGCompiler {
 		mapTypeNames(allMetamodels)
 	}
 
-	def compileAll(IFileSystemAccess2 pFSA, IProject pProject) {
+	def Collection<String> compileAll(IFileSystemAccess2 pFSA) {
+		val generatedFiles = new HashSet<String>
 		for (Operation operation : Operation.allOps) {
 			val fileLocation = BASE_FOLDER + tgg.name + operation.nameExtension
 			pFSA.generateFile(fileLocation, compile(operation))
-			// FIXME[Mario] This doesn't work for me (on Mac OSX)
-			// Perhaps move touch to afterGenerate in EMSLGenerator?
-			pProject.findMember("src-gen/" + fileLocation).touch(null)
+			generatedFiles.add("src-gen/" + fileLocation)
 		}
+		return generatedFiles
 	}
 
 	private def String compile(Operation pOp) {
