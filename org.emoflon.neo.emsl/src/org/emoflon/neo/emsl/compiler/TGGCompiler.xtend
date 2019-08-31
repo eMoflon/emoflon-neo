@@ -48,24 +48,21 @@ class TGGCompiler {
 	}
 
 	def compileAll(IFileSystemAccess2 pFSA, IProject pProject) {
-		for (OperationType operationType : OperationType.values) {
-			opType = operationType
-			val fileLocation = BASE_FOLDER + tgg.name + opType.opNameExtension
-			pFSA.generateFile(fileLocation, compile(opType))
+		for (Operation operation : Operation.allOps) {
+			val fileLocation = BASE_FOLDER + tgg.name + operation.nameExtension
+			pFSA.generateFile(fileLocation, compile(operation))
 			// FIXME[Mario] This doesn't work for me (on Mac OSX)
 			// Perhaps move touch to afterGenerate in EMSLGenerator?
 			pProject.findMember("src-gen/" + fileLocation).touch(null)
 		}
 	}
 
-	OperationType opType
-
-	private def String compile(OperationType pOpType) {
+	private def String compile(Operation pOp) {
 		'''
 			«importStatements»
 			
 			«FOR rule : tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule] SEPARATOR "\n"»
-				«compileRule(rule)»
+				«compileRule(pOp, rule)»
 			«ENDFOR»
 		'''
 	}
@@ -132,7 +129,7 @@ class TGGCompiler {
 	// (2) Translate something but only if it is not already translated ==> tr : false  
 	// tr := true
 	// Note that you need both statements!
-	private def compileRule(TripleRule pRule) {
+	private def compileRule(Operation pOp, TripleRule pRule) {
 
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
 		for (Correspondence corr : pRule.correspondences) {
@@ -144,63 +141,46 @@ class TGGCompiler {
 		'''
 			rule «pRule.name» {
 				«FOR srcBlock : pRule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true)»
+					«compileModelNodeBlock(pOp, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true)»
 				«ENDFOR»
 			
 				«FOR trgBlock : pRule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(trgBlock, Collections.emptySet, false)»
+					«compileModelNodeBlock(pOp, trgBlock, Collections.emptySet, false)»
 				«ENDFOR»
 			}
 		'''
 	}
 
-	private def compileModelNodeBlock(ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs, boolean pIsSrc) {
-		val translate = (opType === OperationType.FWD && pIsSrc) || (opType === OperationType.BWD && !pIsSrc)
-		var action = ""
-		if (pNodeBlock.action?.op === ActionOperator.CREATE &&
-			(opType === OperationType.MODELGEN || (opType === OperationType.FWD && !pIsSrc) ||
-				(opType === OperationType.BWD && pIsSrc)
-			))
-			action = "++ "
+	private def compileModelNodeBlock(Operation pOp, ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs, boolean pIsSrc) {
 		'''
-			«action»«pNodeBlock.name»:«nodeTypeNames.get(pNodeBlock.type)» {
+			«pOp.getAction(pNodeBlock.action, pIsSrc)»«pNodeBlock.name»:«nodeTypeNames.get(pNodeBlock.type)» {
 				«FOR relation : pNodeBlock.relations»
-					«compileRelationStatement(relation, pIsSrc)»
+					«compileRelationStatement(pOp, relation, pIsSrc)»
 				«ENDFOR»
 				«FOR corr : pCorrs»
-					«compileCorrespondence(corr)»
+					«compileCorrespondence(pOp, corr)»
 				«ENDFOR»
 				«FOR property : pNodeBlock.properties»
 					«compilePropertyStatement(property)»
 				«ENDFOR»
-				«IF translate»
-					._tr_ := true
-				«ENDIF»
+				«pOp.getTranslation(pNodeBlock.action, pIsSrc)»
 			}
 		'''
 	}
 
-	private def compileRelationStatement(ModelRelationStatement pRelationStatement, boolean pIsSrc) {
-		val translate = (opType === OperationType.FWD && pIsSrc) || (opType === OperationType.BWD && !pIsSrc)
+	private def compileRelationStatement(Operation pOp, ModelRelationStatement pRelationStatement, boolean pIsSrc) {
+		val translate = pOp.getTranslation(pRelationStatement.action, pIsSrc)
 		val hasProperties = pRelationStatement.properties !== null && !pRelationStatement.properties.empty
-		var action = ""
-		if (pRelationStatement.action?.op === ActionOperator.CREATE &&
-			(opType === OperationType.MODELGEN || (opType === OperationType.FWD && !pIsSrc) ||
-				(opType === OperationType.BWD && pIsSrc)
-			))
-			action = "++ "
 		'''
-			«action»-«compileRelationTypes(pRelationStatement.types)»->«pRelationStatement.target.name»
-			«IF translate || hasProperties»
+			«pOp.getAction(pRelationStatement.action, pIsSrc)»-«compileRelationTypes(pRelationStatement.types)»->«pRelationStatement.target.name»
+			«IF !translate.empty || hasProperties»
 				{
 					«IF hasProperties»
 						«FOR property : pRelationStatement.properties»
 							«compilePropertyStatement(property)»
 						«ENDFOR»
 					«ENDIF»
-					«IF translate»
-						~_tr_ := true
-					«ENDIF»
+					«translate»
 				}
 			«ENDIF»
 		'''
@@ -218,10 +198,9 @@ class TGGCompiler {
 		return types
 	}
 
-	private def compileCorrespondence(Correspondence pCorrespondence) {
-		val action = (pCorrespondence.action?.op === ActionOperator.CREATE && opType !== OperationType.CO) ? "++ " : ""
+	private def compileCorrespondence(Operation pOp, Correspondence pCorrespondence) {
 		'''
-			«action»-corr->«pCorrespondence.target.name»
+			«pOp.getCorrAction(pCorrespondence.action)»-corr->«pCorrespondence.target.name»
 			{
 				._type_ := "«pCorrespondence.type.name»"
 			}
