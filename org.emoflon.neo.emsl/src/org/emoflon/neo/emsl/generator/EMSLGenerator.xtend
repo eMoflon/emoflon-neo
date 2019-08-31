@@ -30,9 +30,11 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.util.LogUtils
 import org.emoflon.neo.emsl.util.ManifestFileUpdater
 import org.apache.log4j.Logger
+import org.emoflon.neo.emsl.compiler.TGGCompiler
 
 /**
  * Generates code from your model files on save.
@@ -52,7 +54,12 @@ class EMSLGenerator extends AbstractGenerator {
 		.drop(3) // remove: resource/projectName/src/
 		.take(segments.size - 4) // only take path up to EMSL file
 		.join("/");
-		val emslSpec = resource.contents.get(0) as EMSL_Spec
+		var emslSpec = resource.contents.get(0) as EMSL_Spec
+		
+		val project = ResourcesPlugin.workspace.root.getProject(resource.URI.segment(1))
+		emslSpec.entities.filter[it instanceof TripleGrammar]
+						 .map[it as TripleGrammar]
+						 .forEach[new TGGCompiler(it).compileAll(fsa, project)]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
 		fsa.generateFile("org/emoflon/neo/api/" + apiPath + "/" + apiName + ".java",
@@ -146,6 +153,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import java.util.HashMap;
 			import java.util.Map;
 			import java.util.Optional;
+			import java.time.LocalDate;
 			
 			@SuppressWarnings("unused")
 			public class «apiName» {
@@ -416,7 +424,6 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public class «dataClassName» extends NeoData {
 					«val blackAndGreenNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op !== ActionOperator.DELETE]»
-					«val blackAndRedNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op == ActionOperator.DELETE]»
 					«classMembers(blackAndGreenNodeBlocks)»
 					
 					«constructor(dataClassName, blackAndGreenNodeBlocks)»
@@ -427,8 +434,9 @@ class EMSLGenerator extends AbstractGenerator {
 				public class «maskClassName» extends NeoMask {
 				
 					«maskClassMembers()»
-				
-					«maskMethods(blackAndRedNodeBlocks, maskClassName)»
+					
+					// Black and Red Nodes of a Rule
+					«maskMethods(rule.nodeBlocks, maskClassName)»
 				}
 			'''
 		} catch (Exception e) {

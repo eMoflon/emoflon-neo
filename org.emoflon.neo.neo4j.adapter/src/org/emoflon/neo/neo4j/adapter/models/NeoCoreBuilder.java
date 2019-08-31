@@ -65,6 +65,7 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.Value;
@@ -85,6 +86,8 @@ import com.google.common.collect.Streams;
 
 public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+
+	private static final Object TRANSLATION_MARKER = "_tr_";
 
 	// Defaults for export
 	private int maxTransactionSizeEdges = 10000;
@@ -107,12 +110,36 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	@Override
 	public StatementResult executeQuery(String cypherStatement) {
-		return driver.session().run(cypherStatement.trim());
+		var session = driver.session();
+		var transaction = session.beginTransaction();
+		
+		try {
+			var result = transaction.run(cypherStatement.trim());
+			transaction.success();
+			transaction.close();
+			return result;
+		} catch (Exception e) {
+			transaction.failure();
+			transaction.close();
+			logger.error(e.getMessage());
+			return null;
+		}
 	}
 
 	public void executeQueryForSideEffect(String cypherStatement) {
-		var st = driver.session().run(cypherStatement.trim());
-		st.consume();
+		var session = driver.session();
+		var transaction = session.beginTransaction();
+		
+		try {
+			var st = driver.session().run(cypherStatement.trim());
+			st.consume();
+			transaction.success();
+			transaction.close();
+		} catch (Exception e) {
+			transaction.failure();
+			transaction.close();
+			logger.error(e.getMessage());
+		}
 	}
 
 	public void clearDataBase() {
@@ -253,7 +280,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return eclass.equals(EMSLPackage.eINSTANCE.getAtomicPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getPattern())
 				|| eclass.equals(EMSLPackage.eINSTANCE.getConstraint())
-				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition());
+				|| eclass.equals(EMSLPackage.eINSTANCE.getCondition())
+				|| eclass.equals(EMSLPackage.eINSTANCE.getRule());
 	}
 
 	void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
@@ -477,7 +505,16 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 				cb.createEdge(EATTRIBUTES, ref, attr);
 				cb.createEdge(EATTRIBUTE_TYPE, attr, typeofattr);
 			});
+
+			addIsTranslatedAttributeForReference(cb, ref, neocore);
 		}
+	}
+
+	private void addIsTranslatedAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
+		var attr = cb.matchNodeWithContainer(//
+				List.of(new NeoProp(NAME_PROP, NeoCoreBootstrapper._TR_PROP)), //
+				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
+		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
 
 	private void handleRelationStatementInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
@@ -489,7 +526,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			// Handle attributes of relation in model
 			List<NeoProp> props = new ArrayList<>();
 			rs.getProperties().forEach(ps -> {
-				props.add(new NeoProp(ps.getType().getName(), inferType(ps, nb)));
+				props.add(new NeoProp(EMSLUtil.getNameOfType(ps), inferType(ps, nb)));
 			});
 
 			cb.createEdgeWithProps(props, EMSLUtil.getOnlyType(rs).getName(), refOwner, typeOfRef);
@@ -578,7 +615,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	}
 
-	public List<String> computeLabelsFromType(MetamodelNodeBlock type) {
+	public static List<String> computeLabelsFromType(MetamodelNodeBlock type) {
 		var labels = new LinkedHashSet<String>();
 		labels.add(type.getName());
 		for (MetamodelNodeBlock st : type.getSuperTypes()) {
@@ -589,7 +626,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private Object inferType(ModelPropertyStatement ps, ModelNodeBlock nb) {
-		String propName = ps.getType().getName();
+		String propName = EMSLUtil.getNameOfType(ps);
 		MetamodelNodeBlock nodeType = nb.getType();
 
 		if (ps.eContainer().equals(nb)) {
@@ -604,6 +641,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private Object inferTypeForEdgeAttribute(Value value, String relName, String propName,
 			MetamodelNodeBlock nodeType) {
+		if(propName.equals(TRANSLATION_MARKER)) {
+			return PrimitiveBoolean.class.cast(value).isTrue();
+		}
+		
 		var typedValue = nodeType.getRelations().stream()//
 				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getProperties().stream())//
@@ -616,6 +657,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private Object inferTypeForNodeAttribute(Value value, String propName, MetamodelNodeBlock nodeType) {
+		if(propName.equals(TRANSLATION_MARKER)) {
+			return PrimitiveBoolean.class.cast(value).isTrue();
+		}
+		
 		var typedValue = EMSLUtil.allPropertiesOf(nodeType).stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//

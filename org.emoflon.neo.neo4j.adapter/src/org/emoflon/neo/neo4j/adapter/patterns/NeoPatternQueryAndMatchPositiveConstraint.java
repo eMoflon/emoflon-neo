@@ -10,6 +10,7 @@ import org.emoflon.neo.neo4j.adapter.constraints.NeoPositiveConstraint;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
+import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 
@@ -40,14 +41,18 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 		// Execute query
 		var result = builder.executeQuery(cypherQuery);
 
-		// Analyze and return results
-		var matches = new ArrayList<NeoMatch>();
-		while (result.hasNext()) {
-			var record = result.next();
-			matches.add(new NeoMatch(this, record));
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			// Analyze and return results
+			var matches = new ArrayList<NeoMatch>();
+			while (result.hasNext()) {
+				var record = result.next();
+				matches.add(new NeoMatch(this, record));
+			}
+	
+			return matches;
 		}
-
-		return matches;
 	}
 
 	@Override
@@ -63,7 +68,11 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 
 		// Execute query
 		var result = builder.executeQuery(cypherQuery);
-		return result.hasNext();
+		
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			return result.list().size() == 1;
+		}
 	}
-
 }

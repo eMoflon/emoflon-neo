@@ -42,7 +42,7 @@ public class NeoRelation {
 		this.lower = convertLower(lower);
 
 		properties = new ArrayList<>();
-		props.forEach(prop -> addProperty(prop.getType().getName(), EMSLUtil.handleValue(prop.getValue())));
+		props.forEach(prop -> addProperty(EMSLUtil.getNameOfType(prop), EMSLUtil.handleValue(prop.getValue())));
 	}
 
 	private String convertUpper(String length) {

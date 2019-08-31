@@ -2,40 +2,50 @@ import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 model simpleThreeByThreeField {
 	f00 : Field {
+		.endPos : false
 		-right-> f01
 		-bottom-> f10
 	}
 	
 	f01 : Field {
+		.endPos : false
 		-right-> f02
 		-bottom-> f11
 	}
 	
 	f02 : Field {
+		.endPos : false
 		-bottom-> f12
 	}
 	
 	f10 : Field {
+		.endPos : false
 		-right-> f11
 		-bottom-> f20
 	}
 	
 	f11 : Field {
+		.endPos : false
 		-right-> f12
 		-bottom-> f21
 	}
 	
 	f12 : Field {
+		.endPos : false
 		-bottom-> f22
 	}
 	
 	f20 : Field {
+		.endPos : false
 		-right-> f21
 	}
 	
 	f21 : Field {
+		.endPos : false
 		-right-> f22
 	}
 	
-	f22 : Field
+	f22 : Field {
+		.endPos : false
+	}
 }

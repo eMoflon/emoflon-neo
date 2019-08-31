@@ -15,6 +15,7 @@ import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 /**
  * Class for representing an in EMSL defined pattern for creating pattern
@@ -158,12 +159,16 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 		logger.debug(cypherQuery);
 		StatementResult result = builder.executeQuery(cypherQuery);
 
-		// Query is id-based and must be unique
-		var results = result.list();
-		if (results.size() != 1) {
-			throw new IllegalStateException("Unable to extract data from match.\n"
-					+ "There should be only one record but found: " + results.size());
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			// Query is id-based and must be unique
+			var results = result.list();
+			if (results.size() != 1) {
+				throw new IllegalStateException("Unable to extract data from match.\n"
+						+ "There should be only one record but found: " + results.size());
+			}
+			return results.get(0);
 		}
-		return results.get(0);
 	}
 }

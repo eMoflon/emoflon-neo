@@ -72,3 +72,11 @@ examples/Chess/src-gen/org/emoflon/neo/api/API_FigureMoves.java
 examples/Chess/src-gen/org/emoflon/neo/api/API_Patterns.java
 
 examples/Chess/src-gen/org/emoflon/neo/api/API_ChessPatterns.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Languages.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Common.java
+examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_GEN.msl
+examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_FWD.msl
+examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_CO.msl
+examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_CC.msl
+examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_BWD.msl
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Transformations.java

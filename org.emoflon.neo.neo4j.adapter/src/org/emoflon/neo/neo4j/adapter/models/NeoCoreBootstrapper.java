@@ -43,6 +43,7 @@ public class NeoCoreBootstrapper {
 	static final String NAME_PROP = "ename";
 	static final String ABSTRACT_PROP = "abstract";
 	static final String _TYPE_PROP = "_type_";
+	static final String _TR_PROP = "_tr_";
 	static final String ISCOMPOSITION_PROP = "isComposition";
 	static final String ISCONTAINMENT_PROP = "isContainment";
 
@@ -97,6 +98,9 @@ public class NeoCoreBootstrapper {
 
 	private static final List<NeoProp> _type_Props = List.of(new NeoProp(NAME_PROP, _TYPE_PROP));
 	private static final List<String> _type_Labels = LABELS_FOR_AN_EATTRIBUTE;
+
+	private static final List<NeoProp> _tr_Props = List.of(new NeoProp(NAME_PROP, _TR_PROP));
+	private static final List<String> _tr_Labels = LABELS_FOR_AN_EATTRIBUTE;
 
 	private static final List<NeoProp> isCompositionProps = List.of(new NeoProp(NAME_PROP, ISCOMPOSITION_PROP));
 	private static final List<String> isCompositionLabels = LABELS_FOR_AN_EATTRIBUTE;
@@ -173,6 +177,7 @@ public class NeoCoreBootstrapper {
 			var eattr = cb.createNodeWithContAndType(eattrProps, eattrLabels, eclass, neocore);
 			var name = cb.createNodeWithContAndType(nameProps, nameLabels, eattr, neocore);
 			var _type_ = cb.createNodeWithContAndType(_type_Props, _type_Labels, eattr, neocore);
+			var _tr_ = cb.createNodeWithContAndType(_tr_Props, _tr_Labels, eattr, neocore);
 			var isComposition = cb.createNodeWithContAndType(isCompositionProps, isCompositionLabels, eattr, neocore);
 			var isContainment = cb.createNodeWithContAndType(isContainmentProps, isContainmentLabels, eattr, neocore);
 			var eDataType = cb.createNodeWithContAndType(eDataTypeProps, eDataTypeLabels, eclass, neocore);
@@ -207,6 +212,8 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EATTRIBUTE_TYPE, name, eString);
 			cb.createEdge(EATTRIBUTES, corr, _type_);
 			cb.createEdge(EATTRIBUTE_TYPE, _type_, eString);
+			cb.createEdge(EATTRIBUTES, eobject, _tr_);
+			cb.createEdge(EATTRIBUTE_TYPE, _tr_, eBoolean);
 			cb.createEdge(EATTRIBUTES, econtainer, isComposition);
 			cb.createEdge(EATTRIBUTES, eref, isComposition);
 			cb.createEdge(EATTRIBUTE_TYPE, isComposition, eBoolean);

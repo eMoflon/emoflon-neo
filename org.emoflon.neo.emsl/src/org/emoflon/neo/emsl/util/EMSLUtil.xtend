@@ -1,11 +1,16 @@
 package org.emoflon.neo.emsl.util
 
 import com.google.inject.Injector
+import java.util.ArrayList
 import java.util.Collection
 import java.util.HashSet
+import java.util.List
 import java.util.Set
 import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.resource.ResourceSet
+import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.mwe.utils.StandaloneSetup
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.resource.XtextResourceSet
@@ -16,6 +21,8 @@ import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
@@ -23,24 +30,21 @@ import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.Value
 import org.emoflon.neo.emsl.eMSL.impl.AttributeExpressionImpl
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
-import org.eclipse.emf.ecore.util.EcoreUtil
-import org.eclipse.emf.ecore.EObject
-import java.util.ArrayList
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
-import java.util.List
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
 	public static final String UI_PLUGIN_ID = "org.emoflon.neo.emsl.ui"
-	
+
 	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
-	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/" + ORG_EMOFLON_NEO_CORE + "/model/NeoCore.msl"
-	
+	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/" + ORG_EMOFLON_NEO_CORE +
+		"/model/NeoCore.msl"
+
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"
 	public static final String P_PASSWORD = "PasswordPreference"
 
-	def static EMSL_Spec loadSpecification(String modelURI, String platformResourceURIRoot, String platformPluginURIRoot) {
+	def static EMSL_Spec loadSpecification(String modelURI, String platformResourceURIRoot,
+		String platformPluginURIRoot) {
 		EMSLPackageImpl.init()
 		new StandaloneSetup().setPlatformUri(platformResourceURIRoot)
 		var Injector injector = new EMSLStandaloneSetup().createInjectorAndDoEMFRegistration()
@@ -50,20 +54,30 @@ class EMSLUtil {
 		var Resource resource = resourceSet.getResource(URI.createURI(modelURI), true)
 		var EMSL_Spec spec = (resource.getContents().get(0) as EMSL_Spec)
 		EcoreUtil.resolveAll(resourceSet)
-		
-		val proxies = resourceSet.resources.flatMap[
-			it.allContents.toList.flatMap[
+
+		val proxies = resourceSet.resources.flatMap [
+			it.allContents.toList.flatMap [
 				var allRefs = new ArrayList<EObject>
 				allRefs.addAll(it.eAllContents.toList)
 				allRefs.addAll(it.eCrossReferences)
 				return allRefs
 			]
 		].filter[it.eIsProxy]
-		
-		if(!proxies.empty)
+
+		if (!proxies.empty)
 			throw new IllegalStateException("Your resource set contains unresolved proxies: " + proxies.toList)
-		
+
 		return spec
+	}
+
+	def static loadEMSL_Spec(String uri, EObject root) {
+		val rs = root.eResource.resourceSet
+		loadEMSL_Spec(uri, rs)
+	}
+
+	def static loadEMSL_Spec(String uri, ResourceSet rs) {
+		val resource = rs.getResource(URI.createURI(uri), true)
+		resource.contents.get(0)
 	}
 
 	def static Set<MetamodelNodeBlock> thisAndAllSuperTypes(MetamodelNodeBlock block) {
@@ -72,6 +86,7 @@ class EMSLUtil {
 			blocks.add(block)
 			block.superTypes.forEach[blocks.addAll(thisAndAllSuperTypes(it))]
 		}
+
 		return blocks
 	}
 
@@ -104,7 +119,7 @@ class EMSLUtil {
 		}
 	}
 
-	def static String getJavaType(DataType type) {
+	def static String getJavaType(DataType type) {		
 		if (type instanceof BuiltInType) {
 			switch (type.reference) {
 				case ESTRING:
@@ -113,6 +128,8 @@ class EMSLUtil {
 					return "int"
 				case EBOOLEAN:
 					return "boolean"
+				case EDATE:
+					return "LocalDate"
 				default:
 					throw new IllegalStateException("This type has to be handled: " + type)
 			}
@@ -122,7 +139,7 @@ class EMSLUtil {
 			throw new IllegalArgumentException("Unknown type: " + type);
 		}
 	}
-	
+
 	def static String handleValue(Value value) {
 		if(value instanceof PrimitiveString) return "\"" + PrimitiveString.cast(value).getLiteral() + "\""
 
@@ -130,35 +147,42 @@ class EMSLUtil {
 
 		if(value instanceof PrimitiveBoolean) return Boolean.toString(PrimitiveBoolean.cast(value).isTrue())
 
-		if(value instanceof EnumValue) return "\""+EnumValue.cast(value).getLiteral().getName().toString()+"\""
-		
-		if(value instanceof AttributeExpressionImpl) return AttributeExpressionImpl.cast(value).node.name.toString + "." +
-												allPropertiesOf(AttributeExpressionImpl.cast(value).node.type).get(0).name.toString
-		
+		if(value instanceof EnumValue) return "\"" + EnumValue.cast(value).getLiteral().getName().toString() + "\""
+
+		if (value instanceof AttributeExpressionImpl)
+			return AttributeExpressionImpl.cast(value).node.name.toString + "." +
+				allPropertiesOf(AttributeExpressionImpl.cast(value).node.type).get(0).name.toString
+
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
-	
+
 	def static String handleValue(Object value) {
-		if(value instanceof String) return "\"" + value + "\""
-		else return value.toString;
+		if(value instanceof String) return "\"" + value + "\"" else return value.toString;
 	}
-	
-	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type){
+
+	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type) {
 		thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
 	}
-	
-	def static getAllTypes(ModelRelationStatement rel){
-		rel.types.sortBy[t | t.type.name].map[t | t.type.name]
+
+	def static getAllTypes(ModelRelationStatement rel) {
+		rel.types.sortBy[t|t.type.name].map[t|t.type.name]
 	}
-	
-	def static isVariableLink(ModelRelationStatement rel){
+
+	def static isVariableLink(ModelRelationStatement rel) {
 		rel.types.size > 1
 	}
-	
-	def static getOnlyType(ModelRelationStatement rel){
-		if(org.emoflon.neo.emsl.util.EMSLUtil.isVariableLink(rel))
+
+	def static getOnlyType(ModelRelationStatement rel) {
+		if (EMSLUtil.isVariableLink(rel))
 			throw new IllegalArgumentException('''«rel» is a variable link and does not have a single type!''')
-			
+
 		rel.types.get(0).type
+	}
+
+	def static getNameOfType(ModelPropertyStatement p) {
+		if (p.type !== null)
+			p.type.name
+		else // Link has an inferred type
+			p.inferredType
 	}
 }

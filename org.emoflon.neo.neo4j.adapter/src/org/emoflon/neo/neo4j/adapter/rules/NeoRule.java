@@ -1,15 +1,14 @@
 package org.emoflon.neo.neo4j.adapter.rules;
 
-import java.awt.Label;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
-import org.eclipse.emf.common.util.EList;
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -26,7 +25,7 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
-import org.apache.log4j.Logger;
+import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -40,7 +39,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private ArrayList<NeoNode> nodes;
 	private ArrayList<NeoNode> modelNodes;
 	private ArrayList<NeoRelation> modelRel;
-	
+	private HashMap<String, NeoRelation> modelEContainerRel;
+
 	private HashMap<String, NeoNode> blackNodes;
 	private HashMap<String, NeoRelation> blackRel;
 	private HashMap<String, NeoNode> redNodes;
@@ -49,19 +49,20 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private HashMap<String, NeoRelation> greenRel;
 
 	public NeoRule(Rule r, IBuilder builder, NeoMask mask, NeoQueryData neoQuery) {
-		
-		if(mask == null)
+
+		if (mask == null)
 			this.mask = new EmptyMask();
 		else
 			this.mask = mask;
-		
-		useSPOSemantics = false;
+
+		useSPOSemantics = true;
 		this.builder = builder;
 		this.queryData = neoQuery;
 
 		this.nodes = new ArrayList<NeoNode>();
 		this.modelNodes = new ArrayList<NeoNode>();
 		this.modelRel = new ArrayList<NeoRelation>();
+		this.modelEContainerRel = new HashMap<String,NeoRelation>();
 		this.blackNodes = new HashMap<String, NeoNode>();
 		this.blackRel = new HashMap<String, NeoRelation>();
 		this.redNodes = new HashMap<String, NeoNode>();
@@ -79,35 +80,43 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	private void extractNodesAndRelations(Collection<ModelNodeBlock> nodeBlocks) {
-
+		
 		for (var n : nodeBlocks) {
 
 			var labels = new ArrayList<String>(computeLabelsOfNode(n));
 			var neoNode = new NeoNode(labels, n.getName());
 
 			computePropertiesOfNode(n, neoNode, mask);
-			
-			for(var r: n.getRelations()) {
-				
+
+			for (var r : n.getRelations()) {
+
 				var neoRel = new NeoRelation(neoNode,
-						EMSLUtil.relationNameConvention(neoNode.getVarName(),
-								EMSLUtil.getAllTypes(r), r.getTarget().getName(), n.getRelations().indexOf(r)),
+						EMSLUtil.relationNameConvention(neoNode.getVarName(), EMSLUtil.getAllTypes(r),
+								r.getTarget().getName(), n.getRelations().indexOf(r)),
 						EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName());
 				
-				extractPropertiesFromMaskRelation(r, neoRel, mask);
+				var eCont = computeEContainerReferences(r,neoRel);
 				
-				if(r.getAction() != null) {
-					switch(r.getAction().getOp()) {
+				if (r.getAction() != null) {
+					switch (r.getAction().getOp()) {
 					case CREATE:
+						extractRelationPropertiesFromMask(neoRel);
 						greenRel.put(neoRel.getVarName(), neoRel);
+						if(eCont != null && !alreadyAContainer(eCont)) {
+							greenRel.put(eCont.getVarName(), eCont);
+						}
 						break;
 					case DELETE:
-						if(!neoRel.isPath()) {
+						if (!neoRel.isPath()) {
 							redRel.put(neoRel.getVarName(), neoRel);
+							if(eCont != null && !modelEContainerRel.containsKey(eCont.getFromNodeVar())) {
+								redRel.put(eCont.getVarName(), eCont);
+								modelEContainerRel.put(eCont.getFromNodeVar(), eCont);
+							}
 						}
 						neoNode.addRelation(neoRel);
 						break;
@@ -119,10 +128,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 					neoNode.addRelation(neoRel);
 				}
 			}
-			
-			if(n.getAction() != null) {
-				switch(n.getAction().getOp()) {
+
+			if (n.getAction() != null) {
+				switch (n.getAction().getOp()) {
 				case CREATE:
+					extractNodePropertiesFromMask(neoNode);
 					neoNode.addProperty("ename", "\"" + neoNode.getVarName() + "\"");
 					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
@@ -139,74 +149,108 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				nodes.add(neoNode);
 			}
 		}
-		
+
 		addModelNodesAndRefs();
+	}
+	
+	private NeoRelation computeEContainerReferences(ModelRelationStatement r, NeoRelation neoRel) {
 		
-		logger.debug(greenRel.toString());
+		for(var t : r.getTypes()) {
+			
+			if (t.getType().getKind().getName().equals("COMPOSITION") || t.getType().getKind().getName().equals("AGGREGATION")) {
+				
+				var oppositeNode = new NeoNode(neoRel.getToNodeLabel(), neoRel.getToNodeVar());
+				var typeRel = new ArrayList<String>();
+				typeRel.add("eContainer");
+				
+				var eConNeoRel = new NeoRelation(
+						oppositeNode,
+						"eContainer_" + neoRel.getVarName(),
+						typeRel, 
+						r.getLower(),
+						r.getUpper(),
+						new ArrayList<ModelPropertyStatement>(),
+						neoRel.getFromNodeLabel(),
+						neoRel.getFromNodeVar());
+				
+				eConNeoRel.addProperty("isComposition", EMSLUtil.handleValue(t.getType().getKind().getName().equals("COMPOSITION")));	
+				return eConNeoRel;
+			}
+		}
+		
+		return null;
+	}
+	
+	private boolean alreadyAContainer(NeoRelation rel) {
+		
+		var labels = rel.getRelTypes();
+		
+		for(var l : labels) {
+			for(var r : greenRel.values()) {
+					
+				if(r.getRelTypes().contains(l)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private void computePropertiesOfNode(ModelNodeBlock node, NeoNode neoNode, NeoMask neoMask) {
 		for (var p : node.getProperties()) {
 			neoNode.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
 		}
-		
-		extractPropertiesFromMaskNodes(node, neoNode, mask);
 	}
 
-	private void extractPropertiesFromMaskNodes(ModelNodeBlock node, NeoNode neoNode, NeoMask mask) {
+	private void extractNodePropertiesFromMask(NeoNode neoNode) {
+
 		for (var propMask : mask.getMaskedAttributes().entrySet()) {
 			var varName = mask.getVarName(propMask.getKey());
-			if (node.getName().equals(varName)) {
+			if (neoNode.getVarName().equals(varName)) {
 				neoNode.addProperty(//
 						mask.getAttributeName(propMask.getKey()), //
 						EMSLUtil.handleValue(propMask.getValue()));
 			}
 		}
 	}
-	
-	private void extractPropertiesFromMaskRelation(ModelRelationStatement r, NeoRelation rel, NeoMask mask) {
+
+	private void extractRelationPropertiesFromMask(NeoRelation neoRel) {
+
 		for (var propMask : mask.getMaskedAttributes().entrySet()) {
 			var varName = mask.getVarName(propMask.getKey());
-			
-			if (r.getName().equals(varName)) {
-				rel.addProperty(//
+			if (neoRel.getVarName().equals(varName)) {
+				neoRel.addProperty(//
 						mask.getAttributeName(propMask.getKey()), //
 						EMSLUtil.handleValue(propMask.getValue()));
 			}
+
 		}
 	}
 
 	private Collection<String> computeLabelsOfNode(ModelNodeBlock node) {
 		var labels = new ArrayList<String>();
 		if (node.getAction() != null && node.getAction().getOp() == ActionOperator.CREATE) {
-			return ((NeoCoreBuilder) builder).computeLabelsFromType(node.getType());
+			return NeoCoreBuilder.computeLabelsFromType(node.getType());
 		} else {
 			labels.add(node.getType().getName());
 			return labels;
 		}
 	}
-	
+
 	protected void addModelNodesAndRefs() {
-		greenNodes.forEach((varName,n) -> {
-			
+		greenNodes.forEach((varName, n) -> {
+
 			// Match corresponding EClass Node
-			var eclassNode = new NeoNode("EClass","eClass_" + n.getVarName());
+			var eclassNode = new NeoNode("EClass", "eClass_" + n.getVarName());
 			eclassNode.addProperty("ename", "\"" + n.getClassTypes().iterator().next() + "\"");
 			modelNodes.add(eclassNode);
-			
+
 			var metaType = new ArrayList<String>();
 			metaType.add("metaType");
-			
-			var metaTypeRel = new NeoRelation(
-					n,
-					n.getVarName()+"_metaType_"+"eClass_" + n.getVarName(), 
-					metaType,
-					"",
-					"",
-					new ArrayList<>(),
-					"EClass",
-					"eClass_" + n.getVarName());
-			
+
+			var metaTypeRel = new NeoRelation(n, n.getVarName() + "_metaType_" + "eClass_" + n.getVarName(), metaType,
+					"", "", new ArrayList<>(), "EClass", "eClass_" + n.getVarName());
+
 			modelRel.add(metaTypeRel);
 		});
 	}
@@ -239,18 +283,25 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch match) {
 		logger.info("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, useSPOSemantics, 
-				redNodes.values(), greenNodes.values(), blackNodes.values(), 
-				redRel.values(), greenRel.values(), blackRel.values(), 
-				modelNodes, modelRel);
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, useSPOSemantics, redNodes.values(),
+				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
+				modelNodes, modelRel, modelEContainerRel.values());
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
-		if (result.hasNext()) {
-			var record = result.next();
-			return Optional.of(new NeoCoMatch(contextPattern, record));
+		if (result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
-			return Optional.empty();
+			if (result.hasNext()) {
+				var record = result.next();
+				return Optional.of(new NeoCoMatch(contextPattern, record));
+			} else {
+				return Optional.empty();
+			}
 		}
+	}
+
+	public String getQuery() {
+		return contextPattern.getQuery();
 	}
 }

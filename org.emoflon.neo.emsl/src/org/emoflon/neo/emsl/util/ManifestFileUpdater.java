@@ -16,7 +16,6 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -83,9 +82,8 @@ public class ManifestFileUpdater {
 		subMon.worked(80);
 
 		if (hasManifestChanged) {
-			final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-			try {
+			try(final ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
 				new ManifestWriter().write(manifest, stream);
 				String formattedManifestString = prettyPrintManifest(stream.toString());
 				if (!manifestFile.exists()) {
@@ -99,8 +97,6 @@ public class ManifestFileUpdater {
 			} catch (final IOException e) {
 				throw new CoreException(new Status(IStatus.ERROR, WorkspaceHelper.getPluginId(getClass()),
 						"Problem while stream Manifest file: " + e.getMessage(), e));
-			} finally {
-				IOUtils.closeQuietly(stream);
 			}
 		} else {
 			subMon.worked(10);

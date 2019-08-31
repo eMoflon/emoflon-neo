@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.resource.ResourceSet
 
 import org.eclipse.emf.ecore.EClass
+import java.nio.charset.Charset
 
 /**
  * Transforms EMF to EMSL
@@ -43,7 +44,7 @@ class EMFImporter {
 	}
 
 	def saveEMSLSpecification(ResourceSet rs, File f) {
-		FileUtils.writeStringToFile(f, generateEMSLSpecification(rs))
+		FileUtils.writeStringToFile(f, generateEMSLSpecification(rs), Charset.defaultCharset())
 	}
 
 }

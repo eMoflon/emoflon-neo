@@ -92,7 +92,7 @@ public class NeoNegativeConstraint extends NeoConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchCondition() {
-		return CypherPatternBuilder.condition_matchQuery(nodes, queryData.getAllMatchElementsMap(), injective, mask, queryData.getEqualElements());
+		return CypherPatternBuilder.condition_matchQuery(nodes, injective, mask, queryData.getEqualElements(), queryData.getAllNodesRequireInjectivityChecksCondition());
 	}
 
 	/**

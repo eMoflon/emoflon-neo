@@ -85,6 +85,19 @@ rule PickALemon -> PickAFruit {
 	}	
 }
 
+rule PickALemonBack {
+	fruitToPick:Lemon
+	
+	tree:LemonTree {
+		++ -fruits->fruitToPick
+		++ -lemons->fruitToPick
+	}
+	
+	basket:FruitBasket {
+		-- -fruits->fruitToPick	
+	}
+}
+
 rule PickAPear -> PickAFruit {
 	fruitToPick:Pear
 	

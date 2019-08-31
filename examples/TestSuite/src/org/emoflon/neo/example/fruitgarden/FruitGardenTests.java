@@ -9,7 +9,6 @@ import org.emoflon.neo.api.org.eneo.fruitgarden.API_FruitGardenLanguage;
 import org.emoflon.neo.api.org.eneo.fruitgarden.API_PatternsAndRules;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class FruitGardenTests extends ENeoTest {
@@ -62,5 +61,11 @@ public class FruitGardenTests extends ENeoTest {
 		
 		assertTrue(entities.getConstraint_GameIsWon().isSatisfied());
 		assertTrue(entities.getConstraint_GameIsLost().isViolated());
+	}
+	
+	@Test
+	public void testPickFruitAndBack() {
+		assertTrue(entities.getRule_PickALemon().rule().apply().isPresent());
+		assertTrue(entities.getRule_PickALemonBack().rule().apply().isPresent());
 	}
 }

@@ -4,11 +4,13 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_SheRememberedCaterpillars;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SheRememberedCaterpillarsPatterns extends ENeoTest {
@@ -73,5 +75,14 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 	public void testNothingBlue() {
 		assertFalse(entities.getConstraint_NothingBlue().isSatisfied());
 		assertTrue(entities.getConstraint_NothingBlue().isViolated());
+	}
+	
+	@Disabled("//TODO[Jannik] Waiting for attribute checks and assignments in rules")
+	@Test
+	public void testRuleWithAttributeAssignment() {
+		var attrAssg = entities.getRule_ColourBridgeRED();
+		assertEquals(1, attrAssg.rule().countMatches());
+		assertTrue(attrAssg.rule().apply().isPresent());
+		assertEquals(0, attrAssg.rule().countMatches());
 	}
 }

@@ -16,10 +16,13 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
 public class NeoQueryData {
-	private HashMap<String, String> patternElements;
-	private HashMap<String, String> optionalElements;
+	private HashMap<String, ArrayList<String>> patternNodes;
+	private HashMap<String, ArrayList<String>> patternElements;
+	private HashMap<String, ArrayList<String>> optionalNodes;
+	private HashMap<String, ArrayList<String>> optionalElements;
 	private HashMap<String, String> equalElements;
 
 	private int constraintCount;
@@ -28,9 +31,11 @@ public class NeoQueryData {
 	 * initialize Helper
 	 */
 	public NeoQueryData() {
-		this.patternElements = new HashMap<String,String>();
-		this.optionalElements = new HashMap<String,String>();
-		this.equalElements = new HashMap<String,String>();
+		this.patternElements = new HashMap<String, ArrayList<String>>();
+		this.patternNodes = new HashMap<String, ArrayList<String>>();
+		this.optionalElements = new HashMap<String, ArrayList<String>>();
+		this.optionalNodes = new HashMap<String, ArrayList<String>>();
+		this.equalElements = new HashMap<String, String>();
 		this.constraintCount = 0;
 	}
 
@@ -41,6 +46,7 @@ public class NeoQueryData {
 	 * @return cCount int the new constraint unique id
 	 */
 	public int incrementCounterForConstraintsInQuery() {
+		optionalNodes.clear();
 		return constraintCount++;
 	}
 
@@ -51,8 +57,13 @@ public class NeoQueryData {
 	 * @param name of the new node variable
 	 * @return name of the new node variable for including in queries
 	 */
-	public String registerNewPatternNode(String name, String label) {
-		patternElements.put(name,label);
+
+	public String registerNewPatternNode(String name, Collection<String> labels) {
+		var list = new ArrayList<String>(labels);
+		if (!patternElements.containsKey(name)) {
+			patternElements.put(name, list);
+			patternNodes.put(name, list);
+		}
 		return name;
 	}
 
@@ -67,7 +78,11 @@ public class NeoQueryData {
 	 * @return name of the new relation variable for including in queries
 	 */
 	public String registerNewPatternRelation(String relName, String label) {
-		patternElements.put(relName,label);
+		var list = new ArrayList<String>();
+		list.add(label);
+		if (!patternElements.containsKey(relName)) {
+			patternElements.put(relName, list);
+		}
 		return relName;
 	}
 
@@ -78,19 +93,116 @@ public class NeoQueryData {
 	 * @param name of the new node variable
 	 * @return name of the new node variable for including in queries
 	 */
-	private String registerNewConstraintNode(String name, String label) {
+
+	private String registerNewConstraintNode(String name, Collection<String> label) {
+		var list = new ArrayList<String>(label);
 		if (patternElements.containsKey(name)) {
-			if(patternElements.get(name).equals(label)) {
+			var labelsP = patternElements.get(name);
+			var equal = true;
+			for (var l : label) {
+				if (!labelsP.contains(l))
+					equal = false;
+			}
+			for (var l : labelsP) {
+				if (!label.contains(l))
+					equal = false;
+			}
+
+			if (equal) {
 				return name;
 			} else {
-				optionalElements.put(name + "_" + constraintCount, label);
-				equalElements.put(name, name + "_" + constraintCount);
+				if (!optionalElements.containsKey(name + "_" + constraintCount)) {
+					optionalElements.put(name + "_" + constraintCount, list);
+					optionalNodes.put(name + "_" + constraintCount, list);
+					equalElements.put(name, name + "_" + constraintCount);
+				}
 				return name + "_" + constraintCount;
 			}
+
 		} else {
-			optionalElements.put(name + "_" + constraintCount, label);
+			if (!optionalElements.containsKey(name + "_" + constraintCount)) {
+				optionalElements.put(name + "_" + constraintCount, list);
+				optionalNodes.put(name + "_" + constraintCount, list);
+			}
 			return name + "_" + constraintCount;
 		}
+	}
+
+	public ArrayList<String> getAllNodesRequireInjectivityChecksCondition() {
+
+		var elem = new ArrayList<String>();
+
+		for (var p1 : optionalNodes.keySet()) {
+
+			for (var p2 : optionalNodes.keySet()) {
+
+				if (!p1.equals(p2)) {
+
+					var l1 = optionalNodes.get(p1);
+					var l2 = optionalNodes.get(p2);
+
+					boolean equal = false;
+
+					for (var l : l1) {
+						if (!equal && l2.contains(l)) {
+							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
+								elem.add(p1 + "<>" + p2);
+							}
+							equal = true;
+						}
+					}
+					for (var l : l2) {
+						if (!equal && l1.contains(l)) {
+							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
+								elem.add(p1 + "<>" + p2);
+							}
+							equal = true;
+						}
+					}
+				}
+			}
+		}
+		var x = getAllNodesRequireInjectivityChecksPatternAndCondition();
+		elem.addAll(x);
+		return elem;
+	}
+
+	private ArrayList<String> getAllNodesRequireInjectivityChecksPatternAndCondition() {
+
+		var elem = new ArrayList<String>();
+
+		for (var pElem : patternNodes.keySet()) {
+			for (var oElem : optionalNodes.keySet()) {
+
+				if (equalElements.containsKey(pElem) && equalElements.get(pElem).equals(oElem)) {
+				} else {
+
+					var labelsP = patternNodes.get(pElem);
+					var labelsO = optionalNodes.get(oElem);
+
+					boolean equal = false;
+
+					for (var l : labelsP) {
+						if (!equal && labelsO.contains(l)) {
+							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
+								elem.add(pElem + "<>" + oElem);
+							}
+							equal = true;
+						}
+					}
+					for (var l : labelsO) {
+						if (!equal && labelsP.contains(l)) {
+							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
+								elem.add(pElem + "<>" + oElem);
+							}
+							equal = true;
+						}
+					}
+				}
+			}
+		}
+
+		return elem;
 	}
 
 	/**
@@ -104,16 +216,18 @@ public class NeoQueryData {
 	 * @return name of the new relation variable for including in queries
 	 */
 	private String registerNewConstraintRelation(String relName, String label) {
+		var list = new ArrayList<String>();
+		list.add(label);
 		if (patternElements.containsKey(relName)) {
-			if(patternElements.get(relName).equals(label)) {
+			if (patternElements.get(relName).contains(label)) {
 				return relName;
 			} else {
-				optionalElements.put(relName + "_" + constraintCount, label);
+				optionalElements.put(relName + "_" + constraintCount, list);
 				equalElements.put(relName, relName + "_" + constraintCount);
 				return relName + "_" + constraintCount;
 			}
 		} else {
-			optionalElements.put(relName + "_" + constraintCount, label);
+			optionalElements.put(relName + "_" + constraintCount, list);
 			return relName + "_" + constraintCount;
 		}
 	}
@@ -130,12 +244,12 @@ public class NeoQueryData {
 		tempList.addAll(optionalElements.keySet());
 		return Collections.unmodifiableCollection(tempList);
 	}
-	
-	public HashMap<String,String> getAllMatchElementsMap() {
+
+	public HashMap<String, ArrayList<String>> getAllMatchElementsMap() {
 		return patternElements;
 	}
-	
-	public HashMap<String,String> getEqualElements() {
+
+	public HashMap<String, String> getEqualElements() {
 		return equalElements;
 	}
 
@@ -154,12 +268,15 @@ public class NeoQueryData {
 		return Collections.unmodifiableCollection(tempList);
 	}
 
-	private List<NeoNode> extractNodesAndRelations(List<ModelNodeBlock> mnb, BiFunction<String, String, String> registerNewNode,
+	private List<NeoNode> extractNodesAndRelations(List<ModelNodeBlock> mnb,
+			BiFunction<String, Collection<String>, String> registerNewNode,
 			BiFunction<String, String, String> registerNewRelation) {
 		List<NeoNode> nodes = new ArrayList<NeoNode>();
 
 		for (var n : extractContextNodes(mnb)) {
-			var node = new NeoNode(n.getType().getName(), registerNewNode.apply(n.getName(), n.getType().getName()));
+
+			var node = new NeoNode(NeoCoreBuilder.computeLabelsFromType(n.getType()),
+					registerNewNode.apply(n.getName(), NeoCoreBuilder.computeLabelsFromType(n.getType())));
 
 			n.getProperties().forEach(p -> node.addProperty(//
 					p.getType().getName(), //
@@ -177,7 +294,8 @@ public class NeoQueryData {
 						r.getLower(), r.getUpper(), //
 						r.getProperties(), //
 						r.getTarget().getType().getName(), //
-						registerNewNode.apply(r.getTarget().getName(), r.getTarget().getType().getName()));
+						registerNewNode.apply(r.getTarget().getName(),
+								NeoCoreBuilder.computeLabelsFromType(r.getTarget().getType())));
 			}
 
 			nodes.add(node);
@@ -221,7 +339,7 @@ public class NeoQueryData {
 			optionalElements.remove(name);
 		}
 	}
-	
+
 	public void removeEqualElement(String name) {
 		if (equalElements.containsKey(name)) {
 			equalElements.remove(name);

@@ -13,7 +13,6 @@ import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanRules extends ENeoTest {

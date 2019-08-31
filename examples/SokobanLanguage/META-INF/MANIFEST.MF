@@ -26,8 +26,11 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.engine;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.neo.emf;bundle-version="1.0.0";visibility:=reexport
 Automatic-Module-Name: SokobanLanguage
-Export-Package: models,
+Export-Package: metamodels,
+ models,
  org.emoflon.neo.api,
  org.emoflon.neo.api.metamodels,
  org.emoflon.neo.api.models,
- org.emoflon.neo.api.rules
+ org.emoflon.neo.api.rules,
+ rules,
+ tgg

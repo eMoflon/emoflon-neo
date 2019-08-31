@@ -33,5 +33,19 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  SokobanGUI,
  Quiltography;bundle-version="1.0.0",
  FruitGardenLanguage;bundle-version="1.0.0",
- Chess
+ RiverCrossing;bundle-version="1.0.0",
+ Chess,
+ org.eclipse.core.resources;bundle-version="3.13.400"
 Automatic-Module-Name: TestSuite
+Export-Package: org.emoflon.neo.api,
+ org.emoflon.neo.api.expected,
+ org.emoflon.neo.example,
+ org.emoflon.neo.example.chess,
+ org.emoflon.neo.example.fruitgarden,
+ org.emoflon.neo.example.networktopology,
+ org.emoflon.neo.example.organigram,
+ org.emoflon.neo.example.pac_man,
+ org.emoflon.neo.example.quiltography,
+ org.emoflon.neo.example.rivercrossing,
+ org.emoflon.neo.example.she_remembered_caterpillars,
+ org.emoflon.neo.example.sokoban

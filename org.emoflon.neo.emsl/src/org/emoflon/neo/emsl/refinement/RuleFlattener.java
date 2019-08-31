@@ -27,6 +27,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 import org.emoflon.neo.emsl.eMSL.SuperType;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -346,10 +347,10 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			for (var e : edges) {
 				// collect propertyStatements
 				e.getProperties().forEach(p -> {
-					if (!properties.containsKey(p.getType().getName())) {
-						properties.put(p.getType().getName(), new ArrayList<ModelPropertyStatement>());
+					if (!properties.containsKey(EMSLUtil.getNameOfType(p))) {
+						properties.put(EMSLUtil.getNameOfType(p), new ArrayList<ModelPropertyStatement>());
 					}
-					properties.get(p.getType().getName()).add(p);
+					properties.get(EMSLUtil.getNameOfType(p)).add(p);
 				});
 			}
 
@@ -360,7 +361,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					basis = props.get(0);
 				}
 				for (var p : props) {
-					if (p.getType().getType() != basis.getType().getType()) {
+					if (!sameDataType(p, basis)) {
 						// incompatible types/operands found
 						if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
 							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
@@ -385,6 +386,13 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		}
 
 		return mergedProperties;
+	}
+
+	private boolean sameDataType(ModelPropertyStatement p1, ModelPropertyStatement p2) {
+		if(p1.getType() != null && p2.getType() != null)
+			return p1.getType().getType() == p2.getType().getType();
+		else
+			return p1.getInferredType().equals(p2.getInferredType());
 	}
 
 	/**
@@ -449,11 +457,11 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					if (p.getType() == null) {
 						continue;
 					}
-					if (!propertyStatementsSortedByName.containsKey(p.getType().getName())) {
-						propertyStatementsSortedByName.put(p.getType().getName(),
+					if (!propertyStatementsSortedByName.containsKey(EMSLUtil.getNameOfType(p))) {
+						propertyStatementsSortedByName.put(EMSLUtil.getNameOfType(p),
 								new ArrayList<ModelPropertyStatement>());
 					}
-					propertyStatementsSortedByName.get(p.getType().getName()).add(p);
+					propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).add(p);
 				}
 			}
 
@@ -465,7 +473,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					basis = properties.get(0);
 				}
 				for (var p : properties) {
-					if (p.getType().getType() != basis.getType().getType()) {
+					if (!sameDataType(p, basis)) {
 						if (p.eContainer().eContainer() instanceof AtomicPattern) {
 							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
 									basis, p, (SuperType) p.eContainer().eContainer());
@@ -667,7 +675,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						typesOfEdges.addAll(e.getTypes());
 					}
 					newRel.getTypes().add(newRelType);
-					// TODO merge path lengths
+					// TODO[Max] merge path lengths
 					
 					var bounds = mergeModelRelationStatementPathLimits(entity, edges.get(typename).get(targetname));
 					if (bounds == null)

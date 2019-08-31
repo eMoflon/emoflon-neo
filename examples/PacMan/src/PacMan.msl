@@ -110,6 +110,12 @@ rule collectMarble {
 	to:Field
 }
 
-
-
+model TranslatedState -> SimplePacManGame {
+	p:PacMan {
+		._tr_ : true
+		-standsOn->$f00 {
+			~_tr_ : true
+		}
+	}
+}
 

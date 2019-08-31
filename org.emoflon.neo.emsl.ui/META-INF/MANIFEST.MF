@@ -27,8 +27,15 @@ Require-Bundle: org.emoflon.neo.emsl,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.jdt.core;bundle-version="3.16.0"
 Import-Package: org.apache.log4j
-Export-Package: org.emoflon.neo.emsl.ui.quickfix,
+Export-Package: org.emoflon.neo.emsl.ui,
+ org.emoflon.neo.emsl.ui.contentassist,
+ org.emoflon.neo.emsl.ui.editor,
  org.emoflon.neo.emsl.ui.internal,
+ org.emoflon.neo.emsl.ui.labeling,
+ org.emoflon.neo.emsl.ui.outline,
+ org.emoflon.neo.emsl.ui.preferences,
  org.emoflon.neo.emsl.ui.quickfix,
- org.emoflon.neo.emsl.ui.contentassist
+ org.emoflon.neo.emsl.ui.util,
+ org.emoflon.neo.emsl.ui.visualisation,
+ org.emoflon.neo.emsl.validation
 Bundle-Activator: org.emoflon.neo.emsl.ui.internal.EmslActivator

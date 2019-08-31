@@ -14,6 +14,21 @@ tripleGrammar SokobanImportExport {
 	
 		sokobanExchangeFormat.Board <-BoardToBoard-> SokobanLanguage.Board
 	}
+	
+	rules {
+		BoardToBoardRule
+		BoardEndEntryRule
+		BoardNormalEntryRule
+		EndRule
+		NormalRule
+		AllOtherFields
+		AllOtherFieldsEnd
+		AllOtherFieldsNormal
+		FirstRowAllCols
+		FirstColAllRows
+		FirstColAllRowsEnd
+		FirstColAllRowsNormal
+	}
 }
 
 

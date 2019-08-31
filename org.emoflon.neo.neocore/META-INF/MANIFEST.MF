@@ -7,3 +7,4 @@ Bundle-Activator: org.emoflon.neo.neocore.Activator
 Require-Bundle: org.eclipse.core.runtime
 Automatic-Module-Name: org.emoflon.neo.neocore
 Bundle-ActivationPolicy: lazy
+Export-Package: org.emoflon.neo.neocore

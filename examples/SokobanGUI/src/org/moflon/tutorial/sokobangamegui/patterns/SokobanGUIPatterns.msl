@@ -1,4 +1,3 @@
-
 import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 pattern board {
@@ -83,11 +82,10 @@ pattern endFieldBlockedByBoulder -> endField {
 
 constraint noBlockedEndField = forbid endFieldBlockedByBoulder
 
-//FIXME:  Waiting for #150
 rule deleteFigure -> chooseField {
-//	-- fig:Figure {
-//		-- -field->$f
-//	}
+	-- fig:Figure {
+		-- -field->$f
+	}
 }
 
 abstract rule createFigure -> chooseField {
@@ -142,4 +140,104 @@ rule selectFigure {
 		-- -selectedFigure->fig
 		++ -selectedFigure->newFig
 	}
+}
+
+// Rules for generating boards
+
+rule createTopLeft {
+	++ b:SokobanLanguage.Board {
+		++ -fields->f {
+			.col := 0
+			.row := 0
+		}
+	}
+	
+	++ f:Field
+}
+
+rule createTopLeftWithAppCond -> createTopLeft when forbid TopLeft
+
+pattern TopLeft {
+	otherBoard:SokobanLanguage.Board {
+		-fields->otherField {
+			.col : 0
+			.row : 0
+		}
+	}
+	
+	otherField:Field
+}
+
+rule createFirstRow {
+	b:SokobanLanguage.Board {
+		-fields->leftField {
+			.row : 0
+		}
+		
+		++ -fields->rightField {
+			.row := 0
+		}
+	}
+	
+	leftField:Field {
+		++ -right->rightField
+	}
+	
+	++ rightField:Field
+} when forbid OtherRight
+
+rule createFirstCol {
+	b:SokobanLanguage.Board {
+		-fields->topField {
+			.col : 0
+		}
+		
+		++ -fields->bottomField {
+			.col := 0
+		}
+	}
+	
+	topField:Field {
+		++ -bottom->bottomField
+	}
+	
+	++ bottomField:Field
+} when forbid OtherBottom
+
+rule createRestOfFields {
+	b:SokobanLanguage.Board {
+		-fields->leftField
+		-fields->topField
+		++ -fields->field
+	}
+	
+	leftField:Field {
+		++ -right->field
+	}
+	
+	topField:Field {
+		++ -bottom->field
+	}
+	
+	++ field:Field
+} when noBottomAndNoRight
+
+constraint NoOtherBottom = forbid OtherBottom
+constraint NoOtherRight = forbid OtherRight
+constraint noBottomAndNoRight = NoOtherBottom && NoOtherRight
+
+pattern OtherBottom {
+	topField:Field {
+		-bottom->otherField
+	}
+	
+	otherField:Field
+}
+
+pattern OtherRight {
+	leftField:Field {
+		-right->otherField
+	}
+	
+	otherField:Field
 }
