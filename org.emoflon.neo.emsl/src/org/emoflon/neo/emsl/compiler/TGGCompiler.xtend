@@ -29,7 +29,6 @@ class TGGCompiler {
 	final String BASE_FOLDER = "tgg/";
 	TripleGrammar tgg
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
-	BiMap<MetamodelRelationStatement, String> relationTypeNames
 	String importStatements
 
 	new(TripleGrammar pTGG) {
@@ -66,7 +65,6 @@ class TGGCompiler {
 	private def mapTypeNames(Collection<Metamodel> pMetamodels) {
 
 		nodeTypeNames = HashBiMap.create()
-		relationTypeNames = HashBiMap.create();
 
 		val nodeTypeToMetamodelName = new HashMap
 		val relationTypeToNodeName = new HashMap
@@ -89,23 +87,6 @@ class TGGCompiler {
 				nodeTypeNames.put(type, nodeTypeToMetamodelName.get(type) + "." + type.name)
 			else
 				nodeTypeNames.put(type, type.name)
-		}
-
-		duplicateNames.clear()
-		for (MetamodelRelationStatement type : relationTypeToNodeName.keySet) {
-			if (relationTypeNames.containsValue(type.name)) {
-				val otherType = relationTypeNames.inverse.get(type.name)
-				relationTypeNames.put(otherType, relationTypeToNodeName.get(otherType) + "." + otherType.name)
-				duplicateNames.add(type.name)
-			}
-
-		// FIXME[Mario] This causes a problem for FacebookToInstagram - please check if the handling of duplicates is still necessary in this form
-		/* 
-		 * if (duplicateNames.contains(type.name))
-		 *     relationTypeNames.put(type, relationTypeToNodeName.get(type) + "." + type.name)
-		 * else
-		 *     relationTypeNames.put(type, type.name)
-		 */
 		}
 	}
 
@@ -180,8 +161,6 @@ class TGGCompiler {
 		for (ModelRelationStatementType type : pTypes) {
 			if (types !== "")
 				types += "|"
-			// FIXME[Mario]  I don't think duplicates should be handled
-			// types += relationTypeNames.get(type.type)
 			types += type.type.name
 		}
 		return types
