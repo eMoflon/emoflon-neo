@@ -27,8 +27,6 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.Value
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 
-//FIXME[Mario] Extract logic for different Ops into separate classes that implement the same "Operation" interface
-// This would greatly simplify the code here
 class TGGCompiler {
 	final String BASE_FOLDER = "tgg/";
 	TripleGrammar tgg
@@ -122,13 +120,6 @@ class TGGCompiler {
 		'''
 	}
 
-	// FIXME[Mario]  I think the distinction between isTranslated (tr : true) and translate (tr := true) is missing
-	// In the TGGs I looked at, I only found := even in places where it should be clearly :
-	// There are basically two checks:
-	// (1) Is something already translated? ==> tr : true
-	// (2) Translate something but only if it is not already translated ==> tr : false  
-	// tr := true
-	// Note that you need both statements!
 	private def compileRule(Operation pOp, TripleRule pRule) {
 
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
