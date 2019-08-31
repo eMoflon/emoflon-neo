@@ -122,6 +122,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (typeOfCorrespondence(context, reference))
 			return handleTypeOfCorrespondence(context as Correspondence, reference)
 
+		if (patternInApplicationCondition(context, reference))
+			return handlePatternInApplicationCondition(context, reference)
+			
+		if (constraintReferenceInApplicationCondition(context, reference))
+			return handleConstraintReferenceInApplicationCondition(context, reference)
+
 		return super.getScope(context, reference)
 	}
 
@@ -461,6 +467,31 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 	
 	
+	/*--------------------------------------------*/
+	/*---------- Application Conditions ----------*/
+	/*--------------------------------------------*/
+	
+	
+	private def constraintReferenceInApplicationCondition(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.CONSTRAINT_REFERENCE__REFERENCE
+	}
+	
+	private def handleConstraintReferenceInApplicationCondition(EObject context, EReference reference) {
+		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), Constraint))
+	}
+	
+	private def patternInApplicationCondition(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.NEGATIVE_CONSTRAINT__PATTERN ||
+			reference == EMSLPackage.Literals.POSITIVE_CONSTRAINT__PATTERN ||
+			reference == EMSLPackage.Literals.IMPLICATION__PREMISE ||
+			reference == EMSLPackage.Literals.IMPLICATION__CONCLUSION
+	}
+		
+	private def handlePatternInApplicationCondition(EObject context, EReference reference) {
+		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), AtomicPattern))
+	}
+	
+	
 
 	/*--------------------------------*/
 	/*---------- NodeBlocks ----------*/
@@ -618,12 +649,11 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 					else {
 						duplicateObjects.add(e)
 						for (other : aliases.keySet) {
-							if (e !== other && QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString.equals(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString))
+							if (e !== other && QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString.equals(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString) && aliases.get(e) === null && aliases.get(other) === null) {
 								duplicateObjects.add(other)
+								duplicateNames.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+							}
 						}
-						if (!(eob instanceof Entity))
-						duplicateNames.add(
-							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
 					}
 						
 				]
@@ -650,8 +680,13 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null && !(eob.eContainer instanceof EMSL_Spec))
 						QualifiedName.create(aliases.get(eob),
 							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
-					else
-						QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+					else { 
+						if (eob instanceof AtomicPattern) {
+							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer.eContainer), eobName)
+						} else {
+							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+						}
+					}
 				} else {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
 						QualifiedName.create(aliases.get(eob), eobName)

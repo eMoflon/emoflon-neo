@@ -49,6 +49,8 @@ import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 
 /**
  * This class contains custom validation rules. 
@@ -857,6 +859,18 @@ class EMSLValidator extends AbstractEMSLValidator {
 				}
 				index++
 			}
+		}
+	}
+	
+	/**
+	 * Checks if the ConditionOperator used in ModelPropertyStatements is allowed to be used.
+	 */
+	@Check
+	def void checkAttributeStatementOperators(ModelPropertyStatement statement) {
+		if ((statement.eContainer.eContainer instanceof Model || statement.eContainer.eContainer.eContainer instanceof Model) && statement.op !== ConditionOperator.EQ) {
+			error("This operator is not allowed in models. Use \":\" instead.", statement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+		} else if ((statement.eContainer.eContainer instanceof AtomicPattern || statement.eContainer.eContainer.eContainer instanceof AtomicPattern) && statement.op === ConditionOperator.ASSIGN) {
+			error("This operator is not allowed in patterns. Use a conditional operator instead.", statement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
 		}
 	}
 }
