@@ -873,4 +873,26 @@ class EMSLValidator extends AbstractEMSLValidator {
 			error("This operator is not allowed in patterns. Use a conditional operator instead.", statement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
 		}
 	}
+	
+	/**
+	 * Validates the LinkAttributeExpTarget statements because the scoping is not specific enough.
+	 */
+	@Check
+	def void validateLinkAttributeExpression(LinkAttributeExpTarget exp) {
+		if (exp.link.target !== exp.target.type) {
+			error('''The target of the link type "«exp.link»" must be of type "«exp.link.target»".''', exp, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET)
+		} else {
+			var valid = false
+			for (r : (exp.eContainer as AttributeExpression).node.relations) {
+				if (r.types.map[t | t.type].contains(exp.link) && r.types.size == 1 && exp.target === r.target) {
+					valid = true
+				}
+			}
+			if (!valid) {
+				error('''The edge from "«(exp.eContainer as AttributeExpression).node.name»" to "«exp.target.name»" of type "«exp.link.name»" must exist in "«(exp.eContainer as AttributeExpression).node.name»".''', 
+						exp, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET
+				)
+			}
+		}
+	}
 }

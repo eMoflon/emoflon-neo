@@ -253,8 +253,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	dispatch def printTarget(LinkAttributeExpTarget target) {
-		var size = target.link.types.size
-		'''-"«IF target !== null»«FOR t : target.link.types»«t.type.name»«IF size > 0» | «ENDIF»«{size = size - 1;""}»«ENDFOR»"->.«target.attribute.name»«ELSE»?«ENDIF»'''
+		'''-"«IF target !== null»«target.link.name»"->.«target.attribute.name»«ELSE»?«ENDIF»'''
 	}
 
 	dispatch def printValue(EnumValue value) {

@@ -40,7 +40,7 @@ AttributeExpression:
 ;
 
 LinkAttributeExpTarget:
-	'-' link=[ModelRelationStatement|ID] '->::' attribute=[MetamodelPropertyStatement|ID]
+	'::-' link=[MetamodelRelationStatement|ID] '->' target=[ModelNodeBlock|ID] '::' attribute=[MetamodelPropertyStatement|ID]
 ;
 
 NodeAttributeExpTarget:

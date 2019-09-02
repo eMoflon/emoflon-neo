@@ -20,7 +20,6 @@ import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
-import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.Metamodel
@@ -38,6 +37,9 @@ import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
+import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.eMSL.Constraint
 
 /**
  * This class contains custom scoping description.
@@ -121,7 +123,16 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		
 		if (typeOfCorrespondence(context, reference))
 			return handleTypeOfCorrespondence(context as Correspondence, reference)
-
+			
+		if (linkAttributeExpressionTargetsLink(context, reference))
+			return handleLinkAttributeExpressionTargetsLink(context, reference)
+		
+		if (linkAttributeExpressionTargetsAttribute(context, reference))
+			return handleLinkAttributeExpressionTargetsAttribute(context, reference)
+			
+		if (linkAttributeExpressionTargetsTarget(context, reference))
+			return handleLinkAttributeExpressionTargetsTarget(context, reference)
+		
 		if (patternInApplicationCondition(context, reference))
 			return handlePatternInApplicationCondition(context, reference)
 			
@@ -129,6 +140,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			return handleConstraintReferenceInApplicationCondition(context, reference)
 
 		return super.getScope(context, reference)
+	}
+	
+	private def linkAttributeExpressionTargetsTarget(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET
 	}
 
 	/*---------------------------------*/
@@ -240,6 +255,48 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def valueOfNodeAttributeExpression(EObject context, EReference reference) {
 		context instanceof NodeAttributeExpTarget &&
 			reference == EMSLPackage.Literals.NODE_ATTRIBUTE_EXP_TARGET__ATTRIBUTE
+	}
+	
+	private def handleLinkAttributeExpressionTargetsTarget(EObject context, EReference reference) {
+		val nodes = new HashMap()
+		if (context instanceof LinkAttributeExpTarget) {
+			(context.eContainer as AttributeExpression).node.relations.forEach[r |
+				if (r.types.map[t | t.type].contains(context.link) && r.target.type == context.link.target) {
+					nodes.put(r.target, null)
+				}
+			]
+		}
+		determineScope(nodes)
+	}
+	
+	private def linkAttributeExpressionTargetsAttribute(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__ATTRIBUTE
+	}
+	
+	private def handleLinkAttributeExpressionTargetsAttribute(EObject context, EReference reference) {
+		val propertyTypes = new HashSet()
+		if (context instanceof LinkAttributeExpTarget) {
+			(context.eContainer as AttributeExpression).node.relations.forEach[r |
+				r.properties.forEach[p | propertyTypes.add(p.type)]
+			]
+		}
+		Scopes.scopeFor(propertyTypes)
+	}
+	
+	private def linkAttributeExpressionTargetsLink(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__LINK
+	}
+	
+	private def handleLinkAttributeExpressionTargetsLink(EObject exp, EReference reference) {
+		val relationTypes = new HashMap()
+		if (exp instanceof ModelRelationStatement) {
+			new EntityAttributeDispatcher().getNodeBlocks(exp.eContainer.eContainer as SuperType).forEach[n | n.relations.forEach[r | r.types.forEach[t | relationTypes.put(t.type, null)]]]
+		} else if (exp instanceof LinkAttributeExpTarget && exp.eContainer.eContainer.eContainer instanceof ModelRelationStatement) {
+			new EntityAttributeDispatcher().getNodeBlocks(exp.eContainer.eContainer.eContainer.eContainer.eContainer as SuperType).forEach[n | n.relations.forEach[r | r.types.forEach[t | relationTypes.put(t.type, null)]]]
+		} else if (exp instanceof LinkAttributeExpTarget && exp.eContainer.eContainer instanceof ModelPropertyStatement) {
+			new EntityAttributeDispatcher().getNodeBlocks(exp.eContainer.eContainer.eContainer.eContainer as SuperType).forEach[n | n.relations.forEach[r | r.types.forEach[t | relationTypes.put(t.type, null)]]]
+		}
+		determineScope(relationTypes)
 	}
 
 	/*----------------------------------------*/
