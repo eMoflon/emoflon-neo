@@ -64,7 +64,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 	@Test
 	public void testAxiom() {
-		builder.clearDataBase();
+		builder.executeQueryForSideEffect("DETACH DELETE (f:Field), (b:Board), (m:Figure)");
 
 		var access = entities.getRule_CreateTopLeft();
 		assertEquals(1, access.rule().countMatches(),
@@ -86,7 +86,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 	@Test
 	public void testAxiomWithAppCond() {
-		builder.clearDataBase();
+		builder.executeQueryForSideEffect("DETACH DELETE (:Field), (:Board), (:Figure)");
 
 		var access = entities.getRule_CreateTopLeftWithAppCond();
 		assertEquals(1, access.rule().countMatches(),
