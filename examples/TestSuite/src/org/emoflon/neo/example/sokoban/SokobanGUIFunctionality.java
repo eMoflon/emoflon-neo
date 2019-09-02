@@ -62,10 +62,9 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertEquals(1, access.data(result.get()).b_fields_0_f.col);
 	}
 
-	@Disabled("TODO[Jannik] Waiting for #169")
 	@Test
 	public void testAxiom() {
-		builder.clearDataBase();
+		builder.executeQueryForSideEffect("MATCH (f:Field), (b:Board), (m:Figure) DETACH DELETE f,b,m");
 
 		var access = entities.getRule_CreateTopLeft();
 		assertEquals(1, access.rule().countMatches(),
@@ -85,10 +84,10 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertTrue(access.rule().determineOneMatch().isPresent());
 	}
 
-	@Disabled("TODO[Jannik] Waiting for #169")
+	// FIXME
 	@Test
 	public void testAxiomWithAppCond() {
-		builder.clearDataBase();
+		builder.executeQueryForSideEffect("MATCH (f:Field), (b:Board), (m:Figure) DETACH DELETE f,b,m");
 
 		var access = entities.getRule_CreateTopLeftWithAppCond();
 		assertEquals(1, access.rule().countMatches(),

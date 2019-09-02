@@ -133,7 +133,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				switch (n.getAction().getOp()) {
 				case CREATE:
 					extractNodePropertiesFromMask(neoNode);
-					neoNode.addProperty("ename", "\"" + neoNode.getVarName() + "\"");
+					neoNode.addProperty("ename", EMSLUtil.handleValue(neoNode.getVarName()));
 					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
 					break;
@@ -242,7 +242,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 			// Match corresponding EClass Node
 			var eclassNode = new NeoNode("EClass", "eClass_" + n.getVarName());
-			eclassNode.addProperty("ename", "\"" + n.getClassTypes().iterator().next() + "\"");
+			eclassNode.addProperty("ename", EMSLUtil.handleValue(n.getClassTypes().iterator().next()));
 			modelNodes.add(eclassNode);
 
 			var metaType = new ArrayList<String>();

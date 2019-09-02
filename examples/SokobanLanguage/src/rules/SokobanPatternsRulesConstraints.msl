@@ -698,3 +698,20 @@ pattern evenMoreNeighbouringFields -> neighbouringFields, neighbouringFields [f1
 		-e : bottom|right-> $f3
 	}
 }
+
+pattern oneFieldWithBlock {
+	f:Field
+} when enforce fieldWithBlock
+
+pattern oneFieldWithNoBlock {
+	f:Field
+} when forbid fieldWithBlock
+
+pattern fieldWithBlock {
+	block:Block {
+		-field -> f1
+	}
+	f1:Field
+}
+
+

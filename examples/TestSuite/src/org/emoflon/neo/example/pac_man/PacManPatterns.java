@@ -40,6 +40,6 @@ public class PacManPatterns extends ENeoTest {
 	
 	@Test
 	public void test_Paths() {
-		assertEquals(2, entities.getPattern_RelatedFields().matcher().countMatches());
+		assertEquals(1, entities.getPattern_RelatedFields().matcher().countMatches());
 	}
 }
