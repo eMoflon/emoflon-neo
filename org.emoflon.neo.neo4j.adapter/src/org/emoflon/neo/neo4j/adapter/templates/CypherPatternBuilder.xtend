@@ -487,7 +487,7 @@ class CypherPatternBuilder {
 	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel) {
 	 	
 	 	'''
-	 	«matchQuery(nodes)»«IF nodes.size>0», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«ruleExecution_matchModelEContainer(modelEContRel)»
+	 	«matchQuery(nodes)»«IF nodes.size>0 && (modelNodes.size > 0 || modelEContRel.size > 0)», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«IF modelNodes.size > 0 && modelEContRel.size > 0», «ENDIF»«ruleExecution_matchModelEContainer(modelEContRel)»
 	 	«IF nodes.size>0»«isStillValid_whereQuery(nodes, match)»«ENDIF»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
@@ -540,7 +540,7 @@ class CypherPatternBuilder {
 	 	'''«FOR n:nodes SEPARATOR ", "»«sourceNode(n)»«FOR r : n.relations»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDFOR»'''
 	 }
 	 def static String ruleExecution_matchModelEContainer(Collection<NeoRelation> rel) {
-	 	'''«FOR r:rel BEFORE ", " SEPARATOR ", "»(«r.fromNodeVar»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»'''
+	 	'''«FOR r:rel SEPARATOR ", "»(«r.fromNodeVar»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»'''
 	 }
 	 def static String ruleExecution_createModelRel(Collection<NeoRelation> rel) {
 	 	'''«FOR r:rel BEFORE ", " SEPARATOR ", "»(«r.fromNodeVar»)-[:metaType]->(«r.toNodeVar»)«ENDFOR»'''
