@@ -49,6 +49,8 @@ import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 
 /**
  * This class contains custom validation rules. 
@@ -856,6 +858,40 @@ class EMSLValidator extends AbstractEMSLValidator {
 						error('''The edge-type "«t.type.name»" is not allowed here because its target makes no sense.''', relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES, index)
 				}
 				index++
+			}
+		}
+	}
+	
+	/**
+	 * Checks if the ConditionOperator used in ModelPropertyStatements is allowed to be used.
+	 */
+	@Check
+	def void checkAttributeStatementOperators(ModelPropertyStatement statement) {
+		if ((statement.eContainer.eContainer instanceof Model || statement.eContainer.eContainer.eContainer instanceof Model) && statement.op !== ConditionOperator.EQ) {
+			error("This operator is not allowed in models. Use \":\" instead.", statement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+		} else if ((statement.eContainer.eContainer instanceof AtomicPattern || statement.eContainer.eContainer.eContainer instanceof AtomicPattern) && statement.op === ConditionOperator.ASSIGN) {
+			error("This operator is not allowed in patterns. Use a conditional operator instead.", statement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+		}
+	}
+	
+	/**
+	 * Validates the LinkAttributeExpTarget statements because the scoping is not specific enough.
+	 */
+	@Check
+	def void validateLinkAttributeExpression(LinkAttributeExpTarget exp) {
+		if (exp.link.target !== exp.target.type) {
+			error('''The target of the link type "«exp.link»" must be of type "«exp.link.target»".''', exp, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET)
+		} else {
+			var valid = false
+			for (r : (exp.eContainer as AttributeExpression).node.relations) {
+				if (r.types.map[t | t.type].contains(exp.link) && r.types.size == 1 && exp.target === r.target) {
+					valid = true
+				}
+			}
+			if (!valid) {
+				error('''The edge from "«(exp.eContainer as AttributeExpression).node.name»" to "«exp.target.name»" of type "«exp.link.name»" must exist in "«(exp.eContainer as AttributeExpression).node.name»".''', 
+						exp, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET
+				)
 			}
 		}
 	}
