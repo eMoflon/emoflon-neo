@@ -593,4 +593,14 @@ public class SokobanPatterns extends ENeoTest {
 		initDB(new API_Simple3x3Field(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SimpleThreeByThreeField());
 		assertThat(entities.getPattern_EvenMoreNeighbouringFields().matcher().countMatches(), is(12));
 	}
+	
+	@Test
+	public void testDisjoinedPatternWithConditionElements_Enforce() {
+		assertEquals(16, entities.getPattern_OneFieldWithBlock().matcher().countMatches());
+	}
+	
+	@Test
+	public void testDisjoinedPatternWithConditionElements_Forbid() {
+		assertEquals(0, entities.getPattern_OneFieldWithNoBlock().matcher().countMatches());
+	}
 }

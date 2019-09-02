@@ -188,7 +188,7 @@ class CypherPatternBuilder {
 	
 	def static String returnQuery(Collection<NeoNode> nodes) {
 		'''
-		RETURN «FOR n : nodes SEPARATOR ',\n '»
+		RETURN DISTINCT «FOR n : nodes SEPARATOR ',\n '»
 			id(«n.varName») AS «n.varName»«IF removePaths(n.relations).size > 0», «ENDIF»
 			«FOR r : removePaths(n.relations) SEPARATOR ', '»
 				id(«r.varName») AS «r.varName»
@@ -202,7 +202,7 @@ class CypherPatternBuilder {
 
 	def static String returnQuery_copyPaste(Collection<NeoNode> nodes) {
 		'''
-		RETURN «FOR n : nodes SEPARATOR ',\n '»
+		RETURN DISTINCT «FOR n : nodes SEPARATOR ',\n '»
 			«n.varName»«IF removePaths(n.relations).size > 0», «ENDIF»
 			«FOR r : removePaths(n.relations) SEPARATOR ', '»
 				«r.varName»
