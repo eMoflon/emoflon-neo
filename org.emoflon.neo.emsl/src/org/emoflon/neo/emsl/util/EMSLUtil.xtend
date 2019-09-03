@@ -15,20 +15,24 @@ import org.eclipse.emf.mwe.utils.StandaloneSetup
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.emoflon.neo.emsl.EMSLStandaloneSetup
+import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.DataType
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.EnumValue
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.Value
-import org.emoflon.neo.emsl.eMSL.impl.AttributeExpressionImpl
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
 
 class EMSLUtil {
@@ -119,7 +123,7 @@ class EMSLUtil {
 		}
 	}
 
-	def static String getJavaType(DataType type) {		
+	def static String getJavaType(DataType type) {
 		if (type instanceof BuiltInType) {
 			switch (type.reference) {
 				case ESTRING:
@@ -149,11 +153,31 @@ class EMSLUtil {
 
 		if(value instanceof EnumValue) return "\"" + EnumValue.cast(value).getLiteral().getName().toString() + "\""
 
-		if (value instanceof AttributeExpressionImpl)
-			return AttributeExpressionImpl.cast(value).node.name.toString + "." +
-				allPropertiesOf(AttributeExpressionImpl.cast(value).node.type).get(0).name.toString
+		if (value instanceof AttributeExpression) {
+			// node::<target>
+			var node = value.node
+			var target = value.target
+
+			if (target instanceof NodeAttributeExpTarget) {
+				// node::attribute
+				var attr = target.attribute
+				return node.name + "." + attr.name
+			} else if (target instanceof LinkAttributeExpTarget) {
+				// node::-link->target::attribute
+				var link = target.link
+				var trgBlock = target.target
+				var attr = target.attribute
+				return EMSLUtil.relationNameConvention(node.name, List.of(link.name), trgBlock.name,
+					indexOf(link, node, trgBlock)) + "." + attr.name
+			}
+		}
 
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
+	}
+	
+	private def static int indexOf(MetamodelRelationStatement ref, ModelNodeBlock node, ModelNodeBlock trg){
+		val rel = node.relations.filter[!isVariableLink(it) && getOnlyType(it).equals(ref) && it.target.equals(trg)].get(0)
+		return node.relations.indexOf(rel)
 	}
 
 	def static String handleValue(Object value) {

@@ -254,7 +254,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 	def valueOfNodeAttributeExpression(EObject context, EReference reference) {
 		context instanceof NodeAttributeExpTarget &&
-			reference == EMSLPackage.Literals.NODE_ATTRIBUTE_EXP_TARGET__ATTRIBUTE
+			reference == EMSLPackage.Literals.ATTRIBUTE_EXP_TARGET__ATTRIBUTE
 	}
 	
 	private def handleLinkAttributeExpressionTargetsTarget(EObject context, EReference reference) {
@@ -270,7 +270,8 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 	
 	private def linkAttributeExpressionTargetsAttribute(EObject context, EReference reference) {
-		reference == EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__ATTRIBUTE
+		context instanceof LinkAttributeExpTarget &&
+		reference == EMSLPackage.Literals.ATTRIBUTE_EXP_TARGET__ATTRIBUTE
 	}
 	
 	private def handleLinkAttributeExpressionTargetsAttribute(EObject context, EReference reference) {
