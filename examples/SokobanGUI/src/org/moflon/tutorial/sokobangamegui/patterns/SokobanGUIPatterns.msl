@@ -209,7 +209,10 @@ rule createRestOfFields {
 		-fields->leftField
 		-fields->topField
 		-fields->cornerField
-		++ -fields->field
+		++ -fields->field {
+			.col := b::-fields->topField::col
+			.row := b::-fields->leftField::row
+		}
 	}
 	
 	cornerField:Field {

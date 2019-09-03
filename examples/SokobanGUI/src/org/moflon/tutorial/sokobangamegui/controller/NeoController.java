@@ -284,22 +284,26 @@ public class NeoController implements IController {
 			e.printStackTrace();
 		}
 		
-		//TODO[Anjorin] Use masks to fix attribute values
-		
-		var mask = api1.getRule_CreateTopLeft().mask();
-		mask.setBWidth(width);
-		mask.setBHeight(height);
+		var maskTopLeft = api1.getRule_CreateTopLeft().mask();
+		maskTopLeft.setBWidth(width);
+		maskTopLeft.setBHeight(height);
 		
 		// Top-left corner
-		api1.getRule_CreateTopLeft().rule(mask).apply().ifPresent((m) -> System.out.println(m));
+		api1.getRule_CreateTopLeft().rule(maskTopLeft).apply().ifPresent((m) -> System.out.println(m));
 		
 		// First row
-		for (int row = 0; row < width-1; row++)			
-			api1.getRule_CreateFirstRow().rule().apply();
+		var maskFirstRow = api1.getRule_CreateFirstRow().mask();
+		for (int col = 0; col < width-1; col++) {			
+			maskFirstRow.setB_fields_1_rightFieldCol(col+1);
+			api1.getRule_CreateFirstRow().rule(maskFirstRow).apply();
+		}
 		
 		// First column
-		for (int col = 0; col < height-1; col++)	
-			api1.getRule_CreateFirstCol().rule().apply();
+		var maskFirstCol = api1.getRule_CreateFirstCol().mask();
+		for (int row = 0; row < height-1; row++) {
+			maskFirstCol.setB_fields_1_bottomFieldRow(row+1);
+			api1.getRule_CreateFirstCol().rule(maskFirstCol).apply();
+		}
 		
 		// Apply as long as possible
 		var rest = api1.getRule_CreateRestOfFields().rule();
