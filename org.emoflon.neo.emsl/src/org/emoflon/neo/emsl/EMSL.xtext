@@ -36,7 +36,11 @@ Value:
 ;
 
 AttributeExpression:
-	node=[ModelNodeBlock|ID] target=(LinkAttributeExpTarget | NodeAttributeExpTarget)
+	node=[ModelNodeBlock|ID] target=AttributeExpTarget
+;
+
+AttributeExpTarget:
+	LinkAttributeExpTarget | NodeAttributeExpTarget
 ;
 
 LinkAttributeExpTarget:

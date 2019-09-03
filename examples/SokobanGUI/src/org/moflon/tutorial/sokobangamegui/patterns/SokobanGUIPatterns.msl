@@ -208,7 +208,16 @@ rule createRestOfFields {
 	b:SokobanLanguage.Board {
 		-fields->leftField
 		-fields->topField
-		++ -fields->field
+		-fields->cornerField
+		++ -fields->field {
+			.col := b::-fields->topField::col
+			.row := b::-fields->leftField::row
+		}
+	}
+	
+	cornerField:Field {
+		-right->topField
+		-bottom->leftField
 	}
 	
 	leftField:Field {

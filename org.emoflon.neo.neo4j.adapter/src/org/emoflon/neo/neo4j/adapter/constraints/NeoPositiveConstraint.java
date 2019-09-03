@@ -21,7 +21,6 @@ import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
  *
  */
 public class NeoPositiveConstraint extends NeoConstraint {
-	private AtomicPattern ap;
 	private String name;
 	private List<NeoNode> nodes;
 	private int uuid;
@@ -38,10 +37,13 @@ public class NeoPositiveConstraint extends NeoConstraint {
 		super(builder, queryData, mask, injective);
 		this.uuid = queryData.incrementCounterForConstraintsInQuery();
 		this.name = ap.getName();
-		this.ap = NeoUtil.getFlattenedPattern(ap);
+		var flatPattern = NeoUtil.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodes = new ArrayList<>(this.queryData.extractConstraintNodesAndRelations(this.ap.getNodeBlocks()));
+		this.nodes = new ArrayList<>(this.queryData.extractConstraintNodesAndRelations(flatPattern.getNodeBlocks()));
+	
+		this.returnAsConstraint = createReturnStatement(getNodes(), getQueryString_MatchConstraint(), getQueryString_WhereConstraint());
+		this.returnAsCondition = createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition());
 	}
 
 	/**
@@ -52,15 +54,6 @@ public class NeoPositiveConstraint extends NeoConstraint {
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Return the AtomicPattern of the constraint
-	 * 
-	 * @return AtomicPattern of the constraint
-	 */
-	public AtomicPattern getPattern() {
-		return ap;
 	}
 
 	/**
@@ -126,15 +119,5 @@ public class NeoPositiveConstraint extends NeoConstraint {
 		}
 		
 		return CypherPatternBuilder.wherePositiveConditionQuery(optionalElements);
-	}
-
-	@Override
-	public NeoReturn getConstraintData() {
-		return createReturnStatement(getNodes(), getQueryString_MatchConstraint(), getQueryString_WhereConstraint());
-	}
-
-	@Override
-	public NeoReturn getConditionData() {
-		return createReturnStatement(getNodes(), getQueryString_MatchCondition(), getQueryString_WhereCondition());
 	}
 }

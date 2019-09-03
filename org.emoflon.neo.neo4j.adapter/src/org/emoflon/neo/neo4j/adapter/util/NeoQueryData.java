@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -239,7 +238,7 @@ public class NeoQueryData {
 	 * @return all Nodes from pattern and constraints
 	 */
 	public Collection<String> getAllElements() {
-		var tempList = new HashSet<String>();
+		var tempList = new ArrayList<String>();
 		tempList.addAll(patternElements.keySet());
 		tempList.addAll(optionalElements.keySet());
 		return Collections.unmodifiableCollection(tempList);
@@ -254,8 +253,7 @@ public class NeoQueryData {
 	}
 
 	public Collection<String> getMatchElements() {
-		var tempList = new HashSet<String>(patternElements.keySet());
-		return Collections.unmodifiableCollection(tempList);
+		return Collections.unmodifiableCollection(patternElements.keySet());
 	}
 
 	/**
@@ -264,8 +262,7 @@ public class NeoQueryData {
 	 * @return all Nodes from the constraints
 	 */
 	public Collection<String> getOptionalMatchElements() {
-		var tempList = new HashSet<String>(optionalElements.keySet());
-		return Collections.unmodifiableCollection(tempList);
+		return Collections.unmodifiableCollection(optionalElements.keySet());
 	}
 
 	private List<NeoNode> extractNodesAndRelations(List<ModelNodeBlock> mnb,
