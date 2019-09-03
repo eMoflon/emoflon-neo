@@ -3,12 +3,13 @@ package org.moflon.tutorial.sokobangui.tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.NeoController;
 
-class TestSokobanMovement {
+class TestSokobanMovement extends ENeoTest {
 	
 	private TestView view;
 	private IController controller;
@@ -18,8 +19,7 @@ class TestSokobanMovement {
 		controller = new NeoController((c) -> {
 			view = new TestView(c);
 			return view;
-		});
-		controller.newBoard(8, 8);
+		}, 8, 8);
 	}
 
 	@Test

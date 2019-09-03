@@ -4,12 +4,14 @@ package org.moflon.tutorial.sokobangamegui.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.metamodels.API_SokobanLanguage;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
@@ -30,27 +32,32 @@ public class NeoController implements IController {
 	private List<Field> fields;
 
 	public NeoController() {
-		this(c -> new View(c));
+		this(c -> new View(c), (c) -> c.defaultBoard());
+	}
+	
+	public NeoController(Function<IController, View> createView, int width, int height) {
+		this(createView, (c) -> c.newBoard(width, height));
+	}
+	
+	public NeoController(int width, int height) {
+		this(c -> new View(c), (c) -> c.newBoard(width, height));
 	}
 
-	public NeoController(Function<IController, View> createView) {
+	public NeoController(Function<IController, View> createView, Consumer<NeoController> createBoard) {
 		builder = API_Common.createBuilder();
 		api1 = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		api2 = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI,
 				API_Common.PLATFORM_PLUGIN_URI);
-		try {
-			defaultBoard();
-		} catch (FlattenerException e) {
-			e.printStackTrace();
-		}
-
+		
+		createBoard.accept(this);;
+		
 		update();
 		view = createView.apply(this);
 	}
 
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		new NeoController();
+		new NeoController(4,4);
 	}
 
 	@Override
@@ -268,10 +275,23 @@ public class NeoController implements IController {
 
 	@Override
 	public void newBoard(int width, int height) {
+		try {
+			var language = new API_SokobanLanguage(builder, API_Common.PLATFORM_RESOURCE_URI,
+					API_Common.PLATFORM_PLUGIN_URI);
+			var metamodel = language.getMetamodel_SokobanLanguage();
+			builder.exportEMSLEntityToNeo4j(metamodel);
+		} catch (FlattenerException e) {
+			e.printStackTrace();
+		}
+		
 		//TODO[Anjorin] Use masks to fix attribute values
 		
+		var mask = api1.getRule_CreateTopLeft().mask();
+		mask.setBWidth(width);
+		mask.setBHeight(height);
+		
 		// Top-left corner
-		api1.getRule_CreateTopLeft().rule().apply();
+		api1.getRule_CreateTopLeft().rule(mask).apply().ifPresent((m) -> System.out.println(m));
 		
 		// First row
 		for (int row = 0; row < width-1; row++)			
@@ -284,14 +304,20 @@ public class NeoController implements IController {
 		// Apply as long as possible
 		var rest = api1.getRule_CreateRestOfFields().rule();
 		while(rest.apply().isPresent());
+		
+		extractFields();
 	}
 
-	private void defaultBoard() throws FlattenerException {
-		var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI,
-				API_Common.PLATFORM_PLUGIN_URI);
-		var board = exampleBoard.getModel_SokobanSimpleTestField();
-		builder.exportEMSLEntityToNeo4j(board);
-		extractFields();
+	private void defaultBoard() {
+		try {
+			var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI,
+					API_Common.PLATFORM_PLUGIN_URI);
+			var board = exampleBoard.getModel_SokobanSimpleTestField();
+			builder.exportEMSLEntityToNeo4j(board);
+			extractFields();
+		} catch (FlattenerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void extractFields() {

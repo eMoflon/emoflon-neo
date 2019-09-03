@@ -4,12 +4,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.NeoController;
 
-class TestSokobanBoardValidation {
+class TestSokobanBoardValidation extends ENeoTest {
 
 	private TestView view;
 	private IController controller;
@@ -19,8 +20,7 @@ class TestSokobanBoardValidation {
 		controller = new NeoController((c) -> {
 			view = new TestView(c);
 			return view;
-		});
-		controller.newBoard(8, 8);
+		}, 8, 8);
 	}
 	
 	@Test

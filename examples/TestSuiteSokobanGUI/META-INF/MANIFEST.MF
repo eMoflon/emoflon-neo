@@ -24,7 +24,8 @@ Require-Bundle: org.junit,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
  SokobanLanguage;bundle-version="0.0.1",
- SokobanGUI
+ SokobanGUI,
+ TestSuite
 Automatic-Module-Name: TestSuiteSokobanGUI
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
