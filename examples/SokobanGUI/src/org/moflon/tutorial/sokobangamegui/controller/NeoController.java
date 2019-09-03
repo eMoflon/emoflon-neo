@@ -289,7 +289,7 @@ public class NeoController implements IController {
 		maskTopLeft.setBHeight(height);
 		
 		// Top-left corner
-		api1.getRule_CreateTopLeft().rule(maskTopLeft).apply().ifPresent((m) -> System.out.println(m));
+		api1.getRule_CreateTopLeft().rule(maskTopLeft).apply();
 		
 		// First row
 		var maskFirstRow = api1.getRule_CreateFirstRow().mask();
