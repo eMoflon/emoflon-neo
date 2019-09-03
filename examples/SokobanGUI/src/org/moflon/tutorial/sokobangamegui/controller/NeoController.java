@@ -57,7 +57,7 @@ public class NeoController implements IController {
 
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		new NeoController(4,4);
+		new NeoController(8, 8);
 	}
 
 	@Override
