@@ -28,14 +28,17 @@ public abstract class NeoConstraint implements IConstraint {
 	protected NeoMask mask;
 	protected final boolean injective;
 
+	protected NeoReturn returnAsConstraint;
+	protected NeoReturn returnAsCondition;
+
 	/**
 	 * Constructor will be executed, if the NeoConstraint is created parent
 	 * constraint
 	 * 
-	 * @param c       given Constraint for extracting the data
-	 * @param builder for creating and running Cypher queries
-	 * @param queryData  for creating nodes and relation with a unique name and central
-	 *                node storage
+	 * @param c         given Constraint for extracting the data
+	 * @param builder   for creating and running Cypher queries
+	 * @param queryData for creating nodes and relation with a unique name and
+	 *                  central node storage
 	 */
 	protected NeoConstraint(IBuilder builder, NeoQueryData queryData, NeoMask mask, boolean injective) {
 		this.builder = builder;
@@ -58,7 +61,9 @@ public abstract class NeoConstraint implements IConstraint {
 	 * @return NeoReturn Object with data and nodes from the constraint or of the
 	 *         nested constraints or Or-Bodies
 	 */
-	public abstract NeoReturn getConstraintData();
+	public NeoReturn getConstraintData() {
+		return returnAsConstraint;
+	}
 
 	/**
 	 * Returns a NeoReturn Object with data and nodes from the condition or of the
@@ -67,7 +72,9 @@ public abstract class NeoConstraint implements IConstraint {
 	 * @return NeoReturn Object with data and nodes from the condition or of the
 	 *         nested condition or Or-Bodies
 	 */
-	public abstract NeoReturn getConditionData();
+	public NeoReturn getConditionData() {
+		return returnAsCondition;
+	}
 
 	/**
 	 * Runs the created Cypher query of all nested constraints and conditions an
@@ -89,7 +96,7 @@ public abstract class NeoConstraint implements IConstraint {
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 
-		if(result == null) {
+		if (result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
 			if (result.hasNext()) {
@@ -101,10 +108,10 @@ public abstract class NeoConstraint implements IConstraint {
 			}
 		}
 	}
-	
+
 	public String getQueryString_WhereEqualElementsCondition() {
 		var equalElements = queryData.getEqualElements();
-		 return CypherPatternBuilder.whereEqualElementsConditionQuery(equalElements);
+		return CypherPatternBuilder.whereEqualElementsConditionQuery(equalElements);
 	}
 
 	public String getQuery() {
@@ -116,8 +123,9 @@ public abstract class NeoConstraint implements IConstraint {
 	protected NeoReturn createReturnStatement(Collection<NeoNode> nodes, String optionalQuery, String whereClause) {
 		return createReturnStatement(nodes, optionalQuery, whereClause, "");
 	}
-	
-	protected NeoReturn createReturnStatement(Collection<NeoNode> nodes, String optionalQuery, String whereClause, String whereEqualCond) {
+
+	protected NeoReturn createReturnStatement(Collection<NeoNode> nodes, String optionalQuery, String whereClause,
+			String whereEqualCond) {
 		var returnStmt = new NeoReturn();
 		returnStmt.addNodes(nodes);
 		returnStmt.addOptionalMatch(optionalQuery);
