@@ -10,7 +10,7 @@ tripleGrammar SokobanImportExport {
 	}
 	
 	correspondence {
-		sokobanExchangeFormat.Entry <-EntryToField-> SokobanLanguage.Field
+		Entry <-EntryToField-> Field
 	
 		sokobanExchangeFormat.Board <-BoardToBoard-> SokobanLanguage.Board
 	}

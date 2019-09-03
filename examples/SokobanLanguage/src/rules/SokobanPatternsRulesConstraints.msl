@@ -406,6 +406,7 @@ abstract rule moveSokoban {
 	
 	b:SokobanLanguage.Board {
 		-fields->to
+		-fields-> from
 	}
 	
 }

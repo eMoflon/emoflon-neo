@@ -68,6 +68,19 @@ rule moveBlackPawn -> movePawn {
 	from : Field {
 		-bottom(1..2)-> $to
 	}
+} when forbid alreadyMoved
+
+pattern alreadyMoved {
+	fig : Pawn {
+		-standsOn-> moved
+	}
+	base : Field {
+		-bottom-> startField
+	}
+	startField : Field {
+		-bottom-> moved
+	}
+	moved : Field
 }
 
 rule moveRook -> moveFig {

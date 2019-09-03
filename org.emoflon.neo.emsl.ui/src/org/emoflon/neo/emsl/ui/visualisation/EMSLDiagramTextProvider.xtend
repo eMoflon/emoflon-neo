@@ -880,6 +880,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF entity.srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«link.target.name»:«link.target.type.name»":"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
+			«FOR attr : nb.properties»
+				«labelForTripleRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
+			«ENDFOR»
 		'''
 	}
 
