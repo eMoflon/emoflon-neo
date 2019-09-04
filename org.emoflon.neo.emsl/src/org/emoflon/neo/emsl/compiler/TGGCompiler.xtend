@@ -18,12 +18,10 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
-import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
-import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
+import org.emoflon.neo.emsl.util.EMSLUtil
 
 class TGGCompiler {
 	final String BASE_FOLDER = "tgg/";
@@ -176,16 +174,9 @@ class TGGCompiler {
 	}
 
 	private def compilePropertyStatement(ModelPropertyStatement pPropertyStatement) {
+		// TODO any reason why EMSLUtil::handleValue shouldn't be used here?
 		'''
-			.«pPropertyStatement.type.name» «pPropertyStatement.op.literal» «resolveValue(pPropertyStatement.value)»
+			.«pPropertyStatement.type.name» «pPropertyStatement.op.literal» «EMSLUtil.handleValue(pPropertyStatement.value)»
 		'''
-	}
-
-	//FIXME[Mario] Please see EMSLUtil.handleValue?
-	private def resolveValue(ValueExpression pValue) {
-		if (pValue instanceof PrimitiveBoolean)
-			return pValue.^true
-		else if (pValue instanceof PrimitiveInt)
-			return pValue.literal
 	}
 }
