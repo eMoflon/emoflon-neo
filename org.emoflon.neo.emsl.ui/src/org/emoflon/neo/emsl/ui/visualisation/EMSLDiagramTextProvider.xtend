@@ -2,6 +2,7 @@ package org.emoflon.neo.emsl.ui.visualisation
 
 import java.util.ArrayList
 import java.util.HashMap
+import java.util.HashSet
 import java.util.List
 import java.util.Optional
 import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider
@@ -15,6 +16,7 @@ import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AndBody
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.BinaryExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.ConstraintBody
@@ -51,7 +53,6 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerException
-import java.util.HashSet
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -242,6 +243,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDFOR»
 		'''
+	}
+
+	dispatch def String printValue(BinaryExpression value){
+		'''«printValue(value.left)» «value.op» «printValue(value.right)»'''
 	}
 
 	dispatch def printValue(AttributeExpression value) {

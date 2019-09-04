@@ -234,10 +234,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	private def handleValueOfEnumInPropertyStatementInModel(EnumValue property, EReference reference) {
-		val type = (property.eContainer() as ModelPropertyStatement).type.type
-		if (type instanceof UserDefinedType) {
-			val enum = type.reference
-			return Scopes.scopeFor(enum.literals)
+		if (property.eContainer() instanceof ModelPropertyStatement) {
+			val type = (property.eContainer() as ModelPropertyStatement).type.type
+			if (type instanceof UserDefinedType) {
+				val enum = type.reference
+				return Scopes.scopeFor(enum.literals)
+			}
 		}
 
 		return super.getScope(property, reference)

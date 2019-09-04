@@ -11,7 +11,6 @@ import org.emoflon.neo.emsl.eMSL.Pattern
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
-import org.emoflon.neo.emsl.eMSL.ParameterBinding
 
 /**
  * Customization of the default outline structure.
@@ -33,10 +32,6 @@ class EMSLOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	}
 	
 	def _createChildren(EObjectNode parentNode, ModelPropertyStatement m){
-			
-	}
-	
-	def _createChildren(EObjectNode parentNode, ParameterBinding b){
 			
 	}
 }

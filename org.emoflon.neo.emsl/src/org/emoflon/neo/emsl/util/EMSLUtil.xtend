@@ -32,8 +32,9 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
-import org.emoflon.neo.emsl.eMSL.Value
+import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
+import org.emoflon.neo.emsl.eMSL.BinaryExpression
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -98,7 +99,7 @@ class EMSLUtil {
 		'''«from»_«relType.join("_")»_«index»_«to»'''
 	}
 
-	def static Object parseStringWithType(Value value, DataType type) {
+	def static Object parseStringWithType(ValueExpression value, DataType type) {
 		if (type instanceof BuiltInType) {
 			switch (type.reference) {
 				case ESTRING:
@@ -144,7 +145,7 @@ class EMSLUtil {
 		}
 	}
 
-	def static String handleValue(Value value) {
+	def static String handleValue(ValueExpression value) {
 		if(value instanceof PrimitiveString) return "\"" + PrimitiveString.cast(value).getLiteral() + "\""
 
 		if(value instanceof PrimitiveInt) return Integer.toString(PrimitiveInt.cast(value).getLiteral())
@@ -155,21 +156,26 @@ class EMSLUtil {
 
 		if (value instanceof AttributeExpression) {
 			// node::<target>
-			var node = value.node
-			var target = value.target
+			val node = value.node
+			val target = value.target
 
 			if (target instanceof NodeAttributeExpTarget) {
 				// node::attribute
-				var attr = target.attribute
+				val attr = target.attribute
 				return node.name + "." + attr.name
 			} else if (target instanceof LinkAttributeExpTarget) {
 				// node::-link->target::attribute
-				var link = target.link
-				var trgBlock = target.target
-				var attr = target.attribute
+				val link = target.link
+				val trgBlock = target.target
+				val attr = target.attribute
 				return EMSLUtil.relationNameConvention(node.name, List.of(link.name), trgBlock.name,
 					indexOf(link, node, trgBlock)) + "." + attr.name
 			}
+		}
+		
+		// TODO[Jannik] check if this makes sense!
+		if(value instanceof BinaryExpression){
+			return handleValue(value.left) + value.op + handleValue(value.right)
 		}
 
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
@@ -180,7 +186,7 @@ class EMSLUtil {
 		return node.relations.indexOf(rel)
 	}
 
-	def static String handleValue(Object value) {
+	def static String returnValueAsString(Object value) {
 		if(value instanceof String) return "\"" + value + "\"" else return value.toString;
 	}
 

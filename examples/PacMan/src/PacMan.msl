@@ -93,8 +93,7 @@ pattern twoPacManOnBoard ->
 
 rule collectMarble {
 	pacMan:PacMan {
-		// TODO: Support for simple arithmetic?
-		//.marbles := pacMan::marbles + 1
+		.marbles := pacMan::marbles + 1
 		-- -standsOn->from
 		++ -standsOn->to
 	}
