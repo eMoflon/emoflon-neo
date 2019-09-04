@@ -14,6 +14,5 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanGUI"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanLanguage"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuite"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuiteSokobanGUI"/>
 </provider>
 </psf>

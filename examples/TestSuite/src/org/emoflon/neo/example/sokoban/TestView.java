@@ -1,4 +1,4 @@
-package org.moflon.tutorial.sokobangui.tests;
+package org.emoflon.neo.example.sokoban;
 
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.view.Field;

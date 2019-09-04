@@ -27,8 +27,6 @@ import org.neo4j.driver.v1.exceptions.DatabaseException;
 public class NeoImplication extends NeoConstraint {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	private AtomicPattern apIf;
-	private AtomicPattern apThen;
 	private String name;
 	private List<NeoNode> nodesIf;
 	private List<NeoNode> nodesThen;
@@ -48,12 +46,12 @@ public class NeoImplication extends NeoConstraint {
 		super(builder, queryData, mask, injective);
 
 		this.name = "IF " + apIf.getName() + " THEN " + apThen.getName();
-		this.apIf = NeoUtil.getFlattenedPattern(apIf);
-		this.apThen = NeoUtil.getFlattenedPattern(apThen);
+		var flatIf = NeoUtil.getFlattenedPattern(apIf);
+		var flatThen = NeoUtil.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodesIf = this.queryData.extractConstraintNodesAndRelations(apIf.getNodeBlocks());
-		this.nodesThen = this.queryData.extractConstraintNodesAndRelations(apThen.getNodeBlocks());
+		this.nodesIf = this.queryData.extractConstraintNodesAndRelations(flatIf.getNodeBlocks());
+		this.nodesThen = this.queryData.extractConstraintNodesAndRelations(flatThen.getNodeBlocks());
 		this.nodesThenButNotIf = NeoUtil.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
 
@@ -66,25 +64,7 @@ public class NeoImplication extends NeoConstraint {
 	public String getName() {
 		return name;
 	}
-
-	/**
-	 * Return the If-Clause Atomic Pattern (Premise)
-	 * 
-	 * @return AtomicPattern of the If-Clause (Premise)
-	 */
-	public AtomicPattern getIfPattern() {
-		return apIf;
-	}
-
-	/**
-	 * Return the Then-Clause Automic Pattern
-	 * 
-	 * @return AtomicPattern of the Then-Clause
-	 */
-	public AtomicPattern getThenPattern() {
-		return apThen;
-	}
-
+	
 	/**
 	 * Returns a collection of the Nodes from the If-Clause
 	 * 

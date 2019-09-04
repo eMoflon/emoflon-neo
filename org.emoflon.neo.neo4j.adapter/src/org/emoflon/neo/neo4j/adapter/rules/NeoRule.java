@@ -133,7 +133,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				switch (n.getAction().getOp()) {
 				case CREATE:
 					extractNodePropertiesFromMask(neoNode);
-					neoNode.addProperty("ename", "\"" + neoNode.getVarName() + "\"");
+					neoNode.addProperty("ename", EMSLUtil.returnValueAsString(neoNode.getVarName()));
 					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
 					break;
@@ -173,7 +173,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						neoRel.getFromNodeLabel(),
 						neoRel.getFromNodeVar());
 				
-				eConNeoRel.addProperty("isComposition", EMSLUtil.handleValue(t.getType().getKind().getName().equals("COMPOSITION")));	
+				eConNeoRel.addProperty("isComposition", EMSLUtil.returnValueAsString(t.getType().getKind().getName().equals("COMPOSITION")));	
 				return eConNeoRel;
 			}
 		}
@@ -209,7 +209,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			if (neoNode.getVarName().equals(varName)) {
 				neoNode.addProperty(//
 						mask.getAttributeName(propMask.getKey()), //
-						EMSLUtil.handleValue(propMask.getValue()));
+						EMSLUtil.returnValueAsString(propMask.getValue()));
 			}
 		}
 	}
@@ -221,7 +221,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			if (neoRel.getVarName().equals(varName)) {
 				neoRel.addProperty(//
 						mask.getAttributeName(propMask.getKey()), //
-						EMSLUtil.handleValue(propMask.getValue()));
+						EMSLUtil.returnValueAsString(propMask.getValue()));
 			}
 
 		}
@@ -242,7 +242,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 			// Match corresponding EClass Node
 			var eclassNode = new NeoNode("EClass", "eClass_" + n.getVarName());
-			eclassNode.addProperty("ename", "\"" + n.getClassTypes().iterator().next() + "\"");
+			eclassNode.addProperty("ename", EMSLUtil.returnValueAsString(n.getClassTypes().iterator().next()));
 			modelNodes.add(eclassNode);
 
 			var metaType = new ArrayList<String>();

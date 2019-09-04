@@ -1,14 +1,16 @@
-package org.moflon.tutorial.sokobangui.tests;
+package org.emoflon.neo.example.sokoban;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.NeoController;
 
-class TestSokobanMovement {
+class TestSokobanMovement extends ENeoTest {
 	
 	private TestView view;
 	private IController controller;
@@ -18,10 +20,10 @@ class TestSokobanMovement {
 		controller = new NeoController((c) -> {
 			view = new TestView(c);
 			return view;
-		});
-		controller.newBoard(8, 8);
+		}, 8, 8);
 	}
 
+	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardMoveSokoban() {
 		view.createSokoban(2,2);
@@ -39,6 +41,7 @@ class TestSokobanMovement {
 		}
 	}
 	
+	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardMoveBlock() {
 		view.createSokoban(2,2);
@@ -63,6 +66,7 @@ class TestSokobanMovement {
 		assertEquals(ExpectedBoards.validBoardMoveBlockAfterMove(), view.printBoard());
 	}
 	
+	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardMoveBoulder() {
 		view.createSokoban(2,2);
@@ -73,7 +77,6 @@ class TestSokobanMovement {
 		assertTrue(controller.boardIsValid());
 		view.setPlayModus(true);
 		view.moveFigure(view.getField(2,2), view.getField(2,3));
-		//view.moveFigure(view.getField(2,3), view.getField(2,4));
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {

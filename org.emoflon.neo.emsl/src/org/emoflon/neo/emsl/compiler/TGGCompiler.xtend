@@ -22,7 +22,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.Value
+import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 
 class TGGCompiler {
@@ -181,7 +181,8 @@ class TGGCompiler {
 		'''
 	}
 
-	private def resolveValue(Value pValue) {
+	//FIXME[Mario] Please see EMSLUtil.handleValue?
+	private def resolveValue(ValueExpression pValue) {
 		if (pValue instanceof PrimitiveBoolean)
 			return pValue.^true
 		else if (pValue instanceof PrimitiveInt)

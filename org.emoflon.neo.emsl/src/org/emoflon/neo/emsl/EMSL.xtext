@@ -29,18 +29,36 @@ ModelNodeBlock:
 	'}')?;
 
 ModelPropertyStatement:
-	('~' inferredType=ID | '.' type=[MetamodelPropertyStatement|ID]) op=ConditionOperator value=Value;
+	('~' inferredType=ID | '.' type=[MetamodelPropertyStatement|ID]) op=ConditionOperator value=ValueExpression;
+
+ValueExpression:
+	Value | BinaryExpression
+;
 
 Value:
 	AttributeExpression | EnumValue | PrimitiveInt | PrimitiveBoolean | PrimitiveString
 ;
 
+BinaryExpression:
+	left=Value op=ValueOperator right=Value
+;
+
+//TODO[Jannik/Tony] Add missing operators 
+enum ValueOperator:
+	PLUS  =  '+' |
+	MINUS =  '-'
+;
+
 AttributeExpression:
-	node=[ModelNodeBlock|ID] target=(LinkAttributeExpTarget | NodeAttributeExpTarget)
+	node=[ModelNodeBlock|ID] target=AttributeExpTarget
+;
+
+AttributeExpTarget:
+	LinkAttributeExpTarget | NodeAttributeExpTarget
 ;
 
 LinkAttributeExpTarget:
-	'-' link=[ModelRelationStatement|ID] '->::' attribute=[MetamodelPropertyStatement|ID]
+	'::-' link=[MetamodelRelationStatement|ID] '->' target=[ModelNodeBlock|ID] '::' attribute=[MetamodelPropertyStatement|ID]
 ;
 
 NodeAttributeExpTarget:
@@ -214,18 +232,6 @@ Correspondence:
 
 CorrespondenceType:
 	source=[MetamodelNodeBlock|QualifiedName] '<-' name=QualifiedName '->' target=[MetamodelNodeBlock|QualifiedName];
-
-ParameterBinding:
-	name=ID ':' (pre?='`')? value=(Value | TemporaryVariable | IgnoredVariable) (post?='´')?
-;
-
-TemporaryVariable returns Value:
-	'$' name=ID
-;
-
-IgnoredVariable returns Value:
-	{IgnoredVariable} '_'
-;
 
 TripleRuleNAC:
 	SourceNAC | TargetNAC;

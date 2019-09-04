@@ -5,16 +5,21 @@ package org.emoflon.neo.emsl.validation
 
 import java.util.ArrayList
 import java.util.HashMap
+import java.util.HashSet
 import java.util.function.Consumer
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
+import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.BinaryExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
 import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.Condition
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.ConstraintReference
-import org.emoflon.neo.emsl.eMSL.DataType
+import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.EnumValue
@@ -22,15 +27,16 @@ import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.Implication
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Metamodel
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint
-import org.emoflon.neo.emsl.eMSL.PositiveConstraint
-import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Pattern
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
@@ -40,15 +46,11 @@ import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
+import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
-import java.util.HashSet
-import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
-import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
-import org.emoflon.neo.emsl.eMSL.Correspondence
-import org.emoflon.neo.emsl.eMSL.ActionOperator
 
 /**
  * This class contains custom validation rules. 
@@ -100,20 +102,12 @@ class EMSLValidator extends AbstractEMSLValidator {
 		if (p.type instanceof MetamodelPropertyStatement) {
 			if (p.type.type instanceof BuiltInType) {
 				var propertyType = (p.type.type as BuiltInType).reference
-
-				if (!(p.value instanceof PrimitiveInt && propertyType == BuiltInDataTypes.EINT) &&
-					!(p.value instanceof PrimitiveBoolean && propertyType == BuiltInDataTypes.EBOOLEAN) &&
-					!(p.value instanceof PrimitiveString && propertyType == BuiltInDataTypes.ESTRING) &&
-					!(p.value instanceof AttributeExpression &&
-						isOfCorrectType(p.value as AttributeExpression, p.type.type)))
+				if (!isOfCorrectBuiltInType(p.value, propertyType))
 					error(WRONG_PROPERTY_TYPE + propertyType.getName,
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 			} else if (p.type.type instanceof UserDefinedType) {
 				var propertyType = (p.type.type as UserDefinedType).reference
-				var literals = propertyType.literals
-				if (!(p.value instanceof EnumValue && literals.contains((p.value as EnumValue).literal)) &&
-					!(p.value instanceof AttributeExpression && 
-						isOfCorrectType(p.value as AttributeExpression, p.type.type))) {
+				if (!isOfCorrectUserDefinedType(p.value, p.type.type as UserDefinedType)) {
 					error(WRONG_PROPERTY_TYPE + propertyType.getName,
 						EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
 				}
@@ -121,16 +115,33 @@ class EMSLValidator extends AbstractEMSLValidator {
 		}
 	}
 
+	def boolean isOfCorrectBuiltInType(ValueExpression expr, BuiltInDataTypes propertyType){
+		if (expr instanceof PrimitiveInt) 
+			propertyType == BuiltInDataTypes.EINT
+		else if (expr instanceof PrimitiveBoolean)
+			propertyType == BuiltInDataTypes.EBOOLEAN
+		else if (expr instanceof PrimitiveString)
+		 	propertyType == BuiltInDataTypes.ESTRING
+		else if (expr instanceof AttributeExpression)
+			expr.target.attribute.type instanceof BuiltInType && 
+			(expr.target.attribute.type as BuiltInType).reference.equals(propertyType)
+		else if(expr instanceof BinaryExpression)
+			isOfCorrectBuiltInType(expr.left, propertyType) && isOfCorrectBuiltInType(expr.right, propertyType)
+		else 
+			false
+	}
+
 	/**
 	 * Helper method for checking the values of AttributeExpressions for correctness in respect of the
 	 * metamodel.
 	 */
-	def isOfCorrectType(AttributeExpression attrExpr, DataType type) {
-		if (attrExpr.target instanceof NodeAttributeExpTarget) {
-			(attrExpr.target as NodeAttributeExpTarget).attribute.type.equals(type)
-		} else if (attrExpr.target instanceof LinkAttributeExpTarget) {
-			return (attrExpr.target as LinkAttributeExpTarget).attribute.type.equals(type)
-		}
+	def boolean isOfCorrectUserDefinedType(ValueExpression expr, UserDefinedType type) {
+		if (expr instanceof AttributeExpression) {
+			expr.target.attribute.type.equals(type)
+		} else if (expr instanceof EnumValue)
+			type.reference.literals.contains(expr.literal)
+		else
+			false
 	}
 
 	/**
@@ -856,6 +867,40 @@ class EMSLValidator extends AbstractEMSLValidator {
 						error('''The edge-type "«t.type.name»" is not allowed here because its target makes no sense.''', relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES, index)
 				}
 				index++
+			}
+		}
+	}
+	
+	/**
+	 * Checks if the ConditionOperator used in ModelPropertyStatements is allowed to be used.
+	 */
+	@Check
+	def void checkAttributeStatementOperators(ModelPropertyStatement statement) {
+		if ((statement.eContainer.eContainer instanceof Model || statement.eContainer.eContainer.eContainer instanceof Model) && statement.op !== ConditionOperator.EQ) {
+			error("This operator is not allowed in models. Use \":\" instead.", statement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+		} else if ((statement.eContainer.eContainer instanceof AtomicPattern || statement.eContainer.eContainer.eContainer instanceof AtomicPattern) && statement.op === ConditionOperator.ASSIGN) {
+			error("This operator is not allowed in patterns. Use a conditional operator instead.", statement, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+		}
+	}
+	
+	/**
+	 * Validates the LinkAttributeExpTarget statements because the scoping is not specific enough.
+	 */
+	@Check
+	def void validateLinkAttributeExpression(LinkAttributeExpTarget exp) {
+		if (exp.link.target !== exp.target.type) {
+			error('''The target of the link type "«exp.link»" must be of type "«exp.link.target»".''', exp, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET)
+		} else {
+			var valid = false
+			for (r : (exp.eContainer as AttributeExpression).node.relations) {
+				if (r.types.map[t | t.type].contains(exp.link) && r.types.size == 1 && exp.target === r.target) {
+					valid = true
+				}
+			}
+			if (!valid) {
+				error('''The edge from "«(exp.eContainer as AttributeExpression).node.name»" to "«exp.target.name»" of type "«exp.link.name»" must exist in "«(exp.eContainer as AttributeExpression).node.name»".''', 
+						exp, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET
+				)
 			}
 		}
 	}
