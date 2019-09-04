@@ -904,4 +904,25 @@ class EMSLValidator extends AbstractEMSLValidator {
 			}
 		}
 	}
+	
+	/**
+	 * Checks if the lower bound of a path is smaller or equal to the upper bound.
+	 */
+	@Check
+	def void checkBoundsOfPaths(ModelRelationStatement relation) {
+		if (relation.upper !== null) {
+			try {
+				if (relation.lower !== null && relation.upper !== null
+						&& Integer.parseInt(relation.lower) > Integer.parseInt(relation.upper)) {
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__UPPER)
+				}
+			} catch (NumberFormatException e) {
+				if (relation.lower.equals("*") && !relation.upper.equals("*")) {	
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__UPPER)
+				}
+			}
+		}
+	}
 }

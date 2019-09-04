@@ -675,7 +675,6 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						typesOfEdges.addAll(e.getTypes());
 					}
 					newRel.getTypes().add(newRelType);
-					// TODO[Max] merge path lengths
 					
 					var bounds = mergeModelRelationStatementPathLimits(entity, edges.get(typename).get(targetname));
 					if (bounds == null)
