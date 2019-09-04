@@ -68,7 +68,7 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
-import org.emoflon.neo.emsl.eMSL.Value;
+import org.emoflon.neo.emsl.eMSL.ValueExpression;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -639,7 +639,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		}
 	}
 
-	private Object inferTypeForEdgeAttribute(Value value, String relName, String propName,
+	private Object inferTypeForEdgeAttribute(ValueExpression value, String relName, String propName,
 			MetamodelNodeBlock nodeType) {
 		if(propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
@@ -656,7 +656,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return typedValue.orElseThrow(() -> new IllegalStateException("Unable to infer type of " + value));
 	}
 
-	private Object inferTypeForNodeAttribute(Value value, String propName, MetamodelNodeBlock nodeType) {
+	private Object inferTypeForNodeAttribute(ValueExpression value, String propName, MetamodelNodeBlock nodeType) {
 		if(propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}

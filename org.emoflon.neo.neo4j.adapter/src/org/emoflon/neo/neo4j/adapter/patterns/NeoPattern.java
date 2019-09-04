@@ -56,14 +56,14 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			if (node.getVarName().equals(varName)) {
 				node.addProperty(//
 						mask.getAttributeName(propMask.getKey()), //
-						EMSLUtil.handleValue(propMask.getValue()));
+						EMSLUtil.returnValueAsString(propMask.getValue()));
 			}
 
 			for (var rel : node.getRelations()) {
 				if (rel.getVarName().equals(varName)) {
 					rel.addProperty(//
 							mask.getAttributeName(propMask.getKey()), //
-							EMSLUtil.handleValue(propMask.getValue()));
+							EMSLUtil.returnValueAsString(propMask.getValue()));
 				}
 			}
 		}
