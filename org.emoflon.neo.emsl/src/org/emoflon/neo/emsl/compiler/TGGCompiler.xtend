@@ -54,7 +54,7 @@ class TGGCompiler {
 			pFSA.generateFile(fileLocation, compile(opType))
 			// FIXME[Mario] This doesn't work for me (on Mac OSX)
 			// Perhaps move touch to afterGenerate in EMSLGenerator?
-			pProject.findMember("src-gen/" + fileLocation).touch(null)
+			//pProject.findMember("src-gen/" + fileLocation).touch(null)
 		}
 	}
 
