@@ -4,6 +4,8 @@
 package org.emoflon.neo.emsl.generator
 
 import java.net.URI
+import java.util.Collection
+import java.util.HashSet
 import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
@@ -31,13 +33,6 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.util.LogUtils
-import org.emoflon.neo.emsl.util.ManifestFileUpdater
-import org.apache.log4j.Logger
-import org.emoflon.neo.emsl.compiler.TGGCompiler
-import java.util.Collection
-import java.util.HashSet
 
 /**
  * Generates code from your model files on save.
@@ -45,8 +40,6 @@ import java.util.HashSet
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class EMSLGenerator extends AbstractGenerator {
-
-	static final Logger logger = Logger.getLogger(EMSLGenerator)
 
 	Collection<String> generatedTGGFiles
 
@@ -93,7 +86,7 @@ class EMSLGenerator extends AbstractGenerator {
 		ClasspathUtil.setUpAsXtextProject(project)
 		ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
 		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder("src-gen"))
-
+		
 		generatedTGGFiles.forEach[project.findMember(it).touch(null)]
 	}
 
