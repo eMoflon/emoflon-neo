@@ -174,7 +174,6 @@ class TGGCompiler {
 	}
 
 	private def compilePropertyStatement(ModelPropertyStatement pPropertyStatement) {
-		// TODO any reason why EMSLUtil::handleValue shouldn't be used here?
 		'''
 			.«pPropertyStatement.type.name» «pPropertyStatement.op.literal» «EMSLUtil.handleValue(pPropertyStatement.value)»
 		'''
