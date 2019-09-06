@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.core.resources;bundle-version="3.13.200",
  org.eclipse.jdt.core;bundle-version="3.16.0",
  org.apache.commons.io;bundle-version="2.2.0",
- org.apache.log4j;bundle-version="1.2.15"
+ org.apache.log4j;bundle-version="1.2.15",
+ org.eclipse.jdt.ui;bundle-version="3.18.0"
 Export-Package: org.emoflon.neo.emsl,
  org.emoflon.neo.emsl.compiler,
  org.emoflon.neo.emsl.eMSL,
