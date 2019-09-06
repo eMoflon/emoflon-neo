@@ -31,6 +31,13 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.util.LogUtils
+import org.emoflon.neo.emsl.util.ManifestFileUpdater
+import org.apache.log4j.Logger
+import org.emoflon.neo.emsl.compiler.TGGCompiler
+import java.util.Collection
+import java.util.HashSet
 
 /**
  * Generates code from your model files on save.
@@ -38,6 +45,10 @@ import org.emoflon.neo.emsl.util.EMSLUtil
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class EMSLGenerator extends AbstractGenerator {
+
+	static final Logger logger = Logger.getLogger(EMSLGenerator)
+
+	Collection<String> generatedTGGFiles
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val segments = resource.URI.trimFileExtension.segmentsList
@@ -57,11 +68,15 @@ class EMSLGenerator extends AbstractGenerator {
 		if(resource.contents.isEmpty) return
 
 		var emslSpec = resource.contents.get(0) as EMSL_Spec
-
-		val project = ResourcesPlugin.workspace.root.getProject(resource.URI.segment(1))
-		emslSpec.entities.filter[it instanceof TripleGrammar].map[it as TripleGrammar].forEach [
-			new TGGCompiler(it).compileAll(fsa, project)
-		]
+		
+		generatedTGGFiles = new HashSet
+		emslSpec.entities.filter[it instanceof TripleGrammar]
+						 .map[it as TripleGrammar]
+						 .forEach[
+						 	new TGGCompiler(it)
+						 	.compileAll(fsa)
+						 	.forEach[generatedTGGFiles.add(it)]
+						 ]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
 		fsa.generateFile("org/emoflon/neo/api/" + apiPath + "/" + apiName + ".java",
@@ -78,6 +93,8 @@ class EMSLGenerator extends AbstractGenerator {
 		ClasspathUtil.setUpAsXtextProject(project)
 		ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
 		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder("src-gen"))
+
+		generatedTGGFiles.forEach[project.findMember(it).touch(null)]
 	}
 
 	def generateCommon() {
