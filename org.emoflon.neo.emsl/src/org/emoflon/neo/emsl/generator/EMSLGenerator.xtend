@@ -33,6 +33,7 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
 
 /**
  * Generates code from your model files on save.
@@ -385,6 +386,9 @@ class EMSLGenerator extends AbstractGenerator {
 
 	def allProperties(MetamodelNodeBlock nb) {
 		EMSLUtil.thisAndAllSuperTypes(nb).flatMap[it.properties]
+	}
+
+	dispatch def generateAccess(GraphGrammar gg, int index) {
 	}
 
 	dispatch def generateAccess(Rule r, int index) {

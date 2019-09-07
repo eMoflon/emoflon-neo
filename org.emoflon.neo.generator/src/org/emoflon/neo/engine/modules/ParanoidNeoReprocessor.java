@@ -1,9 +1,8 @@
-package org.emoflon.neo.generator.modules;
+package org.emoflon.neo.engine.modules;
 
-import java.util.Map;
-
-import org.emoflon.neo.engine.api.rules.IRule;
-import org.emoflon.neo.generator.IMatchReprocessor;
+import org.emoflon.neo.engine.generator.IMatchReprocessor;
+import org.emoflon.neo.engine.generator.IMonitor;
+import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
@@ -12,7 +11,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
  */
 public class ParanoidNeoReprocessor implements IMatchReprocessor<NeoMatch, NeoCoMatch> {
 	@Override
-	public void reprocess(Map<NeoMatch, IRule<NeoMatch, NeoCoMatch>> pRemainingMatches) {
+	public void reprocess(MatchContainer<NeoMatch, NeoCoMatch> pRemainingMatches, IMonitor pProgressMonitor) {
 		pRemainingMatches.clear();
 	}
 }

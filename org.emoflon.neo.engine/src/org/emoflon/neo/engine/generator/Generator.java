@@ -1,11 +1,7 @@
-package org.emoflon.neo.generator;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.emoflon.neo.engine.generator;
 
 import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.api.rules.IRule;
 
 public class Generator<M extends IMatch, C extends ICoMatch> {
 
@@ -24,19 +20,17 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 
 	public void generate() {
 
-		Map<M, IRule<M, C>> matches = new HashMap<>();
+		MatchContainer<M, C> matches = new MatchContainer<>();
+		IMonitor monitor = null; // TODO
 
 		while (!terminationCondition.isReached()) {
 
-			ruleScheduler.scheduleWith(matches).forEach(
-					(rule, count) -> rule.determineMatches(count).forEach((match) -> matches.put(match, rule)));
+			ruleScheduler.scheduleWith(null, monitor).forEach(
+					(rule, count) -> rule.determineMatches(count).forEach((match) -> matches.add(match, rule)));
 
-			updatePolicy.selectMatches(matches).forEach((match) -> {
-				IRule<M, C> rule = matches.remove(match);
-				rule.apply(match);
-			});
+			updatePolicy.selectMatches(matches, monitor).forEach((match) -> matches.remove(match).apply(match));
 
-			matchReprocessor.reprocess(matches);
+			matchReprocessor.reprocess(matches, monitor);
 		}
 	}
 }

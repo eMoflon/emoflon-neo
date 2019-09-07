@@ -1,11 +1,8 @@
-package org.emoflon.neo.generator;
-
-import java.util.Map;
+package org.emoflon.neo.engine.generator;
 
 import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.api.rules.IRule;
 
 public interface IMatchReprocessor<M extends IMatch, C extends ICoMatch> {
-	public void reprocess(Map<M, IRule<M, C>> pRemainingMatches);
+	public void reprocess(MatchContainer<M, C> pRemainingMatches, IMonitor pProgressMonitor);
 }
