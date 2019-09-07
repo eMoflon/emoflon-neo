@@ -176,6 +176,7 @@ rule createFirstRow {
 		
 		++ -fields->rightField {
 			.row := 0
+			.col := b::-fields->leftField::col + 1
 		}
 	}
 	
@@ -194,6 +195,7 @@ rule createFirstCol {
 		
 		++ -fields->bottomField {
 			.col := 0
+			.row := b::-fields->topField::row + 1
 		}
 	}
 	
