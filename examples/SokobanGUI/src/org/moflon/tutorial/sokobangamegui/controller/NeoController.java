@@ -292,17 +292,13 @@ public class NeoController implements IController {
 		api1.getRule_CreateTopLeft().rule(maskTopLeft).apply();
 		
 		// First row
-		var maskFirstRow = api1.getRule_CreateFirstRow().mask();
 		for (int col = 0; col < width-1; col++) {			
-			maskFirstRow.setB_fields_1_rightFieldCol(col+1);
-			api1.getRule_CreateFirstRow().rule(maskFirstRow).apply();
+			api1.getRule_CreateFirstRow().rule().apply();
 		}
 		
 		// First column
-		var maskFirstCol = api1.getRule_CreateFirstCol().mask();
 		for (int row = 0; row < height-1; row++) {
-			maskFirstCol.setB_fields_1_bottomFieldRow(row+1);
-			api1.getRule_CreateFirstCol().rule(maskFirstCol).apply();
+			api1.getRule_CreateFirstCol().rule().apply();
 		}
 		
 		// Apply as long as possible

@@ -297,14 +297,21 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	
 	private def handleLinkAttributeExpressionTargetsLink(EObject exp, EReference reference) {
 		val relationTypes = new HashMap()
-		if (exp instanceof ModelRelationStatement) {
-			new EntityAttributeDispatcher().getNodeBlocks(exp.eContainer.eContainer as SuperType).forEach[n | n.relations.forEach[r | r.types.forEach[t | relationTypes.put(t.type, null)]]]
-		} else if (exp instanceof LinkAttributeExpTarget && exp.eContainer.eContainer.eContainer instanceof ModelRelationStatement) {
-			new EntityAttributeDispatcher().getNodeBlocks(exp.eContainer.eContainer.eContainer.eContainer.eContainer as SuperType).forEach[n | n.relations.forEach[r | r.types.forEach[t | relationTypes.put(t.type, null)]]]
-		} else if (exp instanceof LinkAttributeExpTarget && exp.eContainer.eContainer instanceof ModelPropertyStatement) {
-			new EntityAttributeDispatcher().getNodeBlocks(exp.eContainer.eContainer.eContainer.eContainer as SuperType).forEach[n | n.relations.forEach[r | r.types.forEach[t | relationTypes.put(t.type, null)]]]
-		}
+		
+		val containingEntity = getContainingEntity(exp)
+		
+		new EntityAttributeDispatcher().getNodeBlocks(containingEntity).forEach[n | 
+				n.relations.forEach[r | r.types.forEach[t | 
+					relationTypes.put(t.type, null)
+				]
+			]
+		]
+		
 		determineScope(relationTypes)
+	}
+
+	private def SuperType getContainingEntity(EObject exp){
+		return exp.eContainer instanceof SuperType? exp.eContainer as SuperType : getContainingEntity(exp.eContainer)
 	}
 
 	/*----------------------------------------*/

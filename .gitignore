@@ -80,3 +80,8 @@ examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_CO.msl
 examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_CC.msl
 examples/FacebookToInstagram/src-gen/tgg/FacebookToInstagramGrammar_BWD.msl
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Transformations.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_BWD.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_GEN.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_FWD.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_CO.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_CC.java

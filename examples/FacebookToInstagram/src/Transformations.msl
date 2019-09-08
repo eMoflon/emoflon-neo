@@ -14,6 +14,14 @@ tripleGrammar FacebookToInstagramGrammar {
 		
 		FacebookLanguage.User <-FbUserToInUser-> InstagramLanguage.User
 	}
+	
+	rules {
+		Followers
+		FriendsParentsIgnoreRule
+		FriendsSiblingsIgnoreRule
+		FriendsSpouseIgnoreRule
+		HandleIntraNetworkFollowers
+	}
 }
 
 abstract tripleRule Followers : FacebookToInstagramGrammar {

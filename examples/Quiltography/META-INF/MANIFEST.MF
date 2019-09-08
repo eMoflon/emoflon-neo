@@ -6,3 +6,5 @@ Bundle-Version: 1.0.0.qualifier
 Export-Package: org.emoflon.neo.api
 Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0"
 Automatic-Module-Name: Quiltography
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

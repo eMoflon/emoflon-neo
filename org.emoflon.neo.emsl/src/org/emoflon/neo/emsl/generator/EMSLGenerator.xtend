@@ -4,9 +4,10 @@
 package org.emoflon.neo.emsl.generator
 
 import java.net.URI
-import java.util.Arrays
+import java.util.Collection
+import java.util.HashSet
+import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
 import org.eclipse.core.runtime.preferences.InstanceScope
@@ -15,6 +16,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.emoflon.neo.emsl.compiler.TGGCompiler
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Constraint
@@ -27,14 +29,10 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.util.LogUtils
-import org.emoflon.neo.emsl.util.ManifestFileUpdater
-import org.apache.log4j.Logger
-import org.emoflon.neo.emsl.compiler.TGGCompiler
 
 /**
  * Generates code from your model files on save.
@@ -43,23 +41,35 @@ import org.emoflon.neo.emsl.compiler.TGGCompiler
  */
 class EMSLGenerator extends AbstractGenerator {
 
-	static final Logger logger = Logger.getLogger(EMSLGenerator)
+	Collection<String> generatedTGGFiles
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val segments = resource.URI.trimFileExtension.segmentsList
 
 		val apiName = "API_" + segments.last
 
+		// Always remove:  resource/projectName
+		var prefixSegments = 2
+		// If the msl file is nested any deeper, also remove first folder (typically src)
+		if (segments.size > 3)
+			prefixSegments++
+
 		val apiPath = segments //
-		.drop(3) // remove: resource/projectName/src/
-		.take(segments.size - 4) // only take path up to EMSL file
+		.drop(prefixSegments).take(segments.size - (prefixSegments + 1)) // only take path up to EMSL file
 		.join("/");
+
+		if(resource.contents.isEmpty) return
+
 		var emslSpec = resource.contents.get(0) as EMSL_Spec
 		
-		val project = ResourcesPlugin.workspace.root.getProject(resource.URI.segment(1))
+		generatedTGGFiles = new HashSet
 		emslSpec.entities.filter[it instanceof TripleGrammar]
 						 .map[it as TripleGrammar]
-						 .forEach[new TGGCompiler(it).compileAll(fsa, project)]
+						 .forEach[
+						 	new TGGCompiler(it)
+						 	.compileAll(fsa)
+						 	.forEach[generatedTGGFiles.add(it)]
+						 ]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
 		fsa.generateFile("org/emoflon/neo/api/" + apiPath + "/" + apiName + ".java",
@@ -69,19 +79,15 @@ class EMSLGenerator extends AbstractGenerator {
 	override void afterGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val segments = resource.URI.trimFileExtension.segmentsList
 		val projectName = segments.get(1)
-		val project = ResourcesPlugin.workspace.root.getProject(projectName)
-		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder("src-gen"))
 
-		try {
-			new ManifestFileUpdater().processManifest(project, [ manifest |
-				return ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
-					// eNeo Deps
-					"org.emoflon.neo.neo4j.adapter"
-				))
-			])
-		} catch (CoreException e) {
-			LogUtils.error(logger, e);
-		}
+		val project = ResourcesPlugin.workspace.root.getProject(projectName)
+		ClasspathUtil.setUpAsJavaProject(project)
+		ClasspathUtil.setUpAsPluginProject(project)
+		ClasspathUtil.setUpAsXtextProject(project)
+		ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
+		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder("src-gen"))
+		
+		generatedTGGFiles.forEach[project.findMember(it).touch(null)]
 	}
 
 	def generateCommon() {

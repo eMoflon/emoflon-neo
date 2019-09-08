@@ -624,15 +624,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	private def labelForRuleComponent(ModelNodeBlock nb) {
 		val entity = nb?.eContainer as Rule
+		var entityName = "?"
+		var nbName = "?"
+		var nbTypeName = "?"
+		
 		if (entity !== null) {
-			if (entity.name === null)
-				entity.name = "?"
-			if (nb.name === null)
-				nb.name = "?"
-			if (nb.type?.name === null)
-				nb.type.name = "?"
+			if (entity?.name !== null)
+				entityName = entity.name
+			if (nb?.name !== null)
+				nbName = nb.name
+			if (nb?.type?.name !== null)
+				nbTypeName = nb.type.name
 
-			'''"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»"'''
+			'''"«IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»:«nbTypeName»"'''
 		} else
 			'''"?"'''
 	}

@@ -4,7 +4,7 @@ generate eMSL "http://www.emoflon.org/neo/emsl/EMSL"
 
 /* An EMSL consists of a set of imports and entities */
 EMSL_Spec:
-	imports+=ImportStatement* entities+=Entity+;
+	imports+=ImportStatement* entities+=Entity*;
 
 /* Other EMSL files can be imported, optionally via an alias to resolve name clashes of entities in the imported files */
 ImportStatement:

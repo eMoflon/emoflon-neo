@@ -9,9 +9,7 @@ import java.util.HashSet
 import java.util.List
 import java.util.Set
 import java.util.stream.Collectors
-import org.eclipse.core.resources.IProject
 import org.eclipse.xtext.generator.IFileSystemAccess2
-import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
@@ -20,20 +18,15 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
-import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
-import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
-import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
+import org.emoflon.neo.emsl.util.EMSLUtil
 
-//FIXME[Mario] Extract logic for different Ops into separate classes that implement the same "Operation" interface
-// This would greatly simplify the code here
 class TGGCompiler {
 	final String BASE_FOLDER = "tgg/";
 	TripleGrammar tgg
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
-	BiMap<MetamodelRelationStatement, String> relationTypeNames
 	String importStatements
 
 	new(TripleGrammar pTGG) {
@@ -47,25 +40,22 @@ class TGGCompiler {
 		mapTypeNames(allMetamodels)
 	}
 
-	def compileAll(IFileSystemAccess2 pFSA, IProject pProject) {
-		for (OperationType operationType : OperationType.values) {
-			opType = operationType
-			val fileLocation = BASE_FOLDER + tgg.name + opType.opNameExtension
-			pFSA.generateFile(fileLocation, compile(opType))
-			// FIXME[Mario] This doesn't work for me (on Mac OSX)
-			// Perhaps move touch to afterGenerate in EMSLGenerator?
-			pProject.findMember("src-gen/" + fileLocation).touch(null)
+	def Collection<String> compileAll(IFileSystemAccess2 pFSA) {
+		val generatedFiles = new HashSet<String>
+		for (Operation operation : Operation.allOps) {
+			val fileLocation = BASE_FOLDER + tgg.name + operation.nameExtension
+			pFSA.generateFile(fileLocation, compile(operation))
+			generatedFiles.add("src-gen/" + fileLocation)
 		}
+		return generatedFiles
 	}
 
-	OperationType opType
-
-	private def String compile(OperationType pOpType) {
+	private def String compile(Operation pOp) {
 		'''
 			«importStatements»
 			
 			«FOR rule : tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule] SEPARATOR "\n"»
-				«compileRule(rule)»
+				«compileRule(pOp, rule)»
 			«ENDFOR»
 		'''
 	}
@@ -73,7 +63,6 @@ class TGGCompiler {
 	private def mapTypeNames(Collection<Metamodel> pMetamodels) {
 
 		nodeTypeNames = HashBiMap.create()
-		relationTypeNames = HashBiMap.create();
 
 		val nodeTypeToMetamodelName = new HashMap
 		val relationTypeToNodeName = new HashMap
@@ -97,23 +86,6 @@ class TGGCompiler {
 			else
 				nodeTypeNames.put(type, type.name)
 		}
-
-		duplicateNames.clear()
-		for (MetamodelRelationStatement type : relationTypeToNodeName.keySet) {
-			if (relationTypeNames.containsValue(type.name)) {
-				val otherType = relationTypeNames.inverse.get(type.name)
-				relationTypeNames.put(otherType, relationTypeToNodeName.get(otherType) + "." + otherType.name)
-				duplicateNames.add(type.name)
-			}
-
-		// FIXME[Mario] This causes a problem for FacebookToInstagram - please check if the handling of duplicates is still necessary in this form
-		/* 
-		 * if (duplicateNames.contains(type.name))
-		 *     relationTypeNames.put(type, relationTypeToNodeName.get(type) + "." + type.name)
-		 * else
-		 *     relationTypeNames.put(type, type.name)
-		 */
-		}
 	}
 
 	private def buildImportStatement(List<Metamodel> pMetamodels) {
@@ -125,14 +97,7 @@ class TGGCompiler {
 		'''
 	}
 
-	// FIXME[Mario]  I think the distinction between isTranslated (tr : true) and translate (tr := true) is missing
-	// In the TGGs I looked at, I only found := even in places where it should be clearly :
-	// There are basically two checks:
-	// (1) Is something already translated? ==> tr : true
-	// (2) Translate something but only if it is not already translated ==> tr : false  
-	// tr := true
-	// Note that you need both statements!
-	private def compileRule(TripleRule pRule) {
+	private def compileRule(Operation pOp, TripleRule pRule) {
 
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
 		for (Correspondence corr : pRule.correspondences) {
@@ -144,63 +109,46 @@ class TGGCompiler {
 		'''
 			rule «pRule.name» {
 				«FOR srcBlock : pRule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true)»
+					«compileModelNodeBlock(pOp, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true)»
 				«ENDFOR»
 			
 				«FOR trgBlock : pRule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(trgBlock, Collections.emptySet, false)»
+					«compileModelNodeBlock(pOp, trgBlock, Collections.emptySet, false)»
 				«ENDFOR»
 			}
 		'''
 	}
 
-	private def compileModelNodeBlock(ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs, boolean pIsSrc) {
-		val translate = (opType === OperationType.FWD && pIsSrc) || (opType === OperationType.BWD && !pIsSrc)
-		var action = ""
-		if (pNodeBlock.action?.op === ActionOperator.CREATE &&
-			(opType === OperationType.MODELGEN || (opType === OperationType.FWD && !pIsSrc) ||
-				(opType === OperationType.BWD && pIsSrc)
-			))
-			action = "++ "
+	private def compileModelNodeBlock(Operation pOp, ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs, boolean pIsSrc) {
 		'''
-			«action»«pNodeBlock.name»:«nodeTypeNames.get(pNodeBlock.type)» {
+			«pOp.getAction(pNodeBlock.action, pIsSrc)»«pNodeBlock.name»:«nodeTypeNames.get(pNodeBlock.type)» {
 				«FOR relation : pNodeBlock.relations»
-					«compileRelationStatement(relation, pIsSrc)»
+					«compileRelationStatement(pOp, relation, pIsSrc)»
 				«ENDFOR»
 				«FOR corr : pCorrs»
-					«compileCorrespondence(corr)»
+					«compileCorrespondence(pOp, corr)»
 				«ENDFOR»
 				«FOR property : pNodeBlock.properties»
 					«compilePropertyStatement(property)»
 				«ENDFOR»
-				«IF translate»
-					._tr_ := true
-				«ENDIF»
+				«pOp.getTranslation(pNodeBlock.action, pIsSrc)»
 			}
 		'''
 	}
 
-	private def compileRelationStatement(ModelRelationStatement pRelationStatement, boolean pIsSrc) {
-		val translate = (opType === OperationType.FWD && pIsSrc) || (opType === OperationType.BWD && !pIsSrc)
+	private def compileRelationStatement(Operation pOp, ModelRelationStatement pRelationStatement, boolean pIsSrc) {
+		val translate = pOp.getTranslation(pRelationStatement.action, pIsSrc)
 		val hasProperties = pRelationStatement.properties !== null && !pRelationStatement.properties.empty
-		var action = ""
-		if (pRelationStatement.action?.op === ActionOperator.CREATE &&
-			(opType === OperationType.MODELGEN || (opType === OperationType.FWD && !pIsSrc) ||
-				(opType === OperationType.BWD && pIsSrc)
-			))
-			action = "++ "
 		'''
-			«action»-«compileRelationTypes(pRelationStatement.types)»->«pRelationStatement.target.name»
-			«IF translate || hasProperties»
+			«pOp.getAction(pRelationStatement.action, pIsSrc)»-«compileRelationTypes(pRelationStatement.types)»->«pRelationStatement.target.name»
+			«IF !translate.empty || hasProperties»
 				{
 					«IF hasProperties»
 						«FOR property : pRelationStatement.properties»
 							«compilePropertyStatement(property)»
 						«ENDFOR»
 					«ENDIF»
-					«IF translate»
-						~_tr_ := true
-					«ENDIF»
+					«translate»
 				}
 			«ENDIF»
 		'''
@@ -211,17 +159,14 @@ class TGGCompiler {
 		for (ModelRelationStatementType type : pTypes) {
 			if (types !== "")
 				types += "|"
-			// FIXME[Mario]  I don't think duplicates should be handled
-			// types += relationTypeNames.get(type.type)
 			types += type.type.name
 		}
 		return types
 	}
 
-	private def compileCorrespondence(Correspondence pCorrespondence) {
-		val action = (pCorrespondence.action?.op === ActionOperator.CREATE && opType !== OperationType.CO) ? "++ " : ""
+	private def compileCorrespondence(Operation pOp, Correspondence pCorrespondence) {
 		'''
-			«action»-corr->«pCorrespondence.target.name»
+			«pOp.getCorrAction(pCorrespondence.action)»-corr->«pCorrespondence.target.name»
 			{
 				._type_ := "«pCorrespondence.type.name»"
 			}
@@ -230,15 +175,7 @@ class TGGCompiler {
 
 	private def compilePropertyStatement(ModelPropertyStatement pPropertyStatement) {
 		'''
-			.«pPropertyStatement.type.name» «pPropertyStatement.op.literal» «resolveValue(pPropertyStatement.value)»
+			.«pPropertyStatement.type.name» «pPropertyStatement.op.literal» «EMSLUtil.handleValue(pPropertyStatement.value)»
 		'''
-	}
-
-	//FIXME[Mario] Please see EMSLUtil.handleValue?
-	private def resolveValue(ValueExpression pValue) {
-		if (pValue instanceof PrimitiveBoolean)
-			return pValue.^true
-		else if (pValue instanceof PrimitiveInt)
-			return pValue.literal
 	}
 }

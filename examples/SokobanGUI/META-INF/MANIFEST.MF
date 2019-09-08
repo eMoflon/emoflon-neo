@@ -18,3 +18,4 @@ Require-Bundle: org.apache.log4j,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: SokobanGUI
 Bundle-Vendor: eMoflon::IBeX Developers
+Bundle-ActivationPolicy: lazy
