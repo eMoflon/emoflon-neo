@@ -54,6 +54,7 @@ import org.emoflon.neo.emsl.util.FlattenerException
 import java.util.List
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 
 /**
  * This class contains custom validation rules. 
@@ -120,11 +121,13 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 	def boolean isOfCorrectBuiltInType(ValueExpression expr, BuiltInDataTypes propertyType){
 		if (expr instanceof PrimitiveInt) 
-			propertyType == BuiltInDataTypes.EINT
+			(propertyType == BuiltInDataTypes.EINT || propertyType == BuiltInDataTypes.ELONG)
 		else if (expr instanceof PrimitiveBoolean)
 			propertyType == BuiltInDataTypes.EBOOLEAN
 		else if (expr instanceof PrimitiveString)
-		 	propertyType == BuiltInDataTypes.ESTRING
+		 	(propertyType == BuiltInDataTypes.ESTRING || propertyType == BuiltInDataTypes.ECHAR && expr.literal.toCharArray.size == 1)
+		else if (expr instanceof PrimitiveDouble)
+			(propertyType == BuiltInDataTypes.EDOUBLE || propertyType == BuiltInDataTypes.EFLOAT)
 		else if (expr instanceof AttributeExpression)
 			expr.target.attribute.type instanceof BuiltInType && 
 			(expr.target.attribute.type as BuiltInType).reference.equals(propertyType)
@@ -1034,6 +1037,40 @@ class EMSLValidator extends AbstractEMSLValidator {
 					error('''The relation of type "«(e.target as LinkAttributeExpTarget).link.name»" in the node "«e.node.name»" must be black.''', e.target, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__LINK)
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Checks for redundant rules in GraphGrammars.
+	 */
+	@Check
+	def void forbidRedundantRulesInGraphGrammar(GraphGrammar gg) {
+		val rules = new HashSet()
+		var counter = 0
+		for (r : gg.rules) {
+			if (!rules.contains(r)) {
+				rules.add(r)
+			} else {
+				error("This rule is already contained in your Grammar", gg, EMSLPackage.Literals.GRAPH_GRAMMAR__RULES, counter)
+			}
+			counter++
+		}
+	}
+	
+	/**
+	 * Checks for redundant rules in TripleGrammar.
+	 */
+	@Check
+	def void forbidRedundantRulesInTripleGrammar(TripleGrammar tg) {
+		val rules = new HashSet()
+		var counter = 0
+		for (r : tg.rules) {
+			if (!rules.contains(r)) {
+				rules.add(r)
+			} else {
+				error("This rule is already contained in your Grammar", tg, EMSLPackage.Literals.TRIPLE_GRAMMAR__RULES, counter)
+			}
+			counter++
 		}
 	}
 }

@@ -46,8 +46,8 @@ abstract tripleRule BoardToBoardRule : SokobanImportExport {
 	target {
 		++ board: Board {
 			++ -fields->nf {
-				.row : 0
-				.col : 0
+				.row := 0
+				.col := 0
 			}
 		}
 		++ nf: Field
@@ -73,7 +73,7 @@ abstract tripleRule EndRule:SokobanImportExport {
 	
 	target {
 		++ nf: Field {
-			.endPos : true
+			.endPos := true
 		}
 	}
 }
@@ -85,7 +85,7 @@ abstract tripleRule NormalRule:SokobanImportExport {
 	
 	target {
 		++ nf: Field {
-			.endPos : false
+			.endPos := false
 		}
 	}
 }
@@ -146,7 +146,7 @@ abstract tripleRule FirstRowAllCols:SokobanImportExport {
 				.row : 0
 			}
 			++ -fields->nf {
-				.row : 0
+				.row := 0
 			}
 		}
 		

@@ -53,6 +53,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerException
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -275,6 +276,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	dispatch def printValue(PrimitiveBoolean value) {
 		'''«value.^true»'''
+	}
+	
+	dispatch def printValue(PrimitiveDouble value) {
+		'''«value.literal»'''
 	}
 
 	/**
