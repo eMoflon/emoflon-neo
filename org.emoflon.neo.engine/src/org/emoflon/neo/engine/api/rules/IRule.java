@@ -2,9 +2,12 @@ package org.emoflon.neo.engine.api.rules;
 
 import java.util.Optional;
 
+import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.api.patterns.IPattern;
+
 public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M> {
 	/**
-	 * Apply the rule for the match m with default rule application semantics as DPO
+	 * Apply the rule for the match m with default rule application semantics as SPO
 	 * (this might fail if the rule is not applicable).
 	 * 
 	 * @param match The match at which to apply the rule.

@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.api.rules;
+package org.emoflon.neo.engine.api.patterns;
 
 public interface IMatch {
 	IPattern<?> getPattern();

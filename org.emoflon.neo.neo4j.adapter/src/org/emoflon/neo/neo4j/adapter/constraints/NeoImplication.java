@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.rules.IMatch;
+import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;

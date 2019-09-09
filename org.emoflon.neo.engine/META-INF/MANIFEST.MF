@@ -5,5 +5,10 @@ Bundle-SymbolicName: org.emoflon.neo.engine
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
  org.emoflon.neo.engine.api.constraints,
- org.emoflon.neo.engine.api.rules
+ org.emoflon.neo.engine.api.patterns,
+ org.emoflon.neo.engine.api.rules,
+ org.emoflon.neo.engine.ilp
 Automatic-Module-Name: org.emoflon.neo.engine
+Require-Bundle: org.apache.log4j,
+ org.sat4j.core;bundle-version="2.3.5",
+ org.sat4j.pb;bundle-version="2.3.5"

@@ -3,8 +3,8 @@ package org.emoflon.neo.generator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.ICoMatch;
-import org.emoflon.neo.engine.api.rules.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 
 public class Generator<M extends IMatch, C extends ICoMatch> {

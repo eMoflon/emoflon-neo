@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.api.rules;
+package org.emoflon.neo.engine.api.patterns;
 
 import java.util.Collection;
 import java.util.Optional;
