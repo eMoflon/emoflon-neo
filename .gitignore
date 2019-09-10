@@ -85,3 +85,6 @@ examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInsta
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_FWD.java
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_CO.java
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/tgg/API_FacebookToInstagramGrammar_CC.java
+examples/GameOfLife/src-gen/org/emoflon/neo/api/API_Common.java
+examples/GameOfLife/src-gen/org/emoflon/neo/api/API_GameOfLifeRules.java
+examples/GameOfLife/src-gen/org/emoflon/neo/api/API_GameOfLifeSeeds.java
