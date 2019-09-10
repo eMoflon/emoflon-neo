@@ -34,6 +34,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
+import java.util.stream.Collectors
 
 /**
  * Generates code from your model files on save.
@@ -157,6 +158,8 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoData;
+			import java.util.Collection;
+			import java.util.HashSet;
 			import java.util.HashMap;
 			import java.util.Map;
 			import java.util.Optional;
@@ -389,6 +392,24 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(GraphGrammar gg, int index) {
+		if(gg.abstract) return ""
+		try {
+			val ruleMethods = gg.rules.stream
+										.map["getRule_" + namingConvention(it.name) + "().rule()"]
+										.collect(Collectors.toSet)
+			'''
+				public Collection<IRule<NeoMatch, NeoCoMatch>> getAllRules() {
+					Collection<IRule<NeoMatch, NeoCoMatch>> rules = new HashSet<>();
+					«FOR access : ruleMethods»
+						rules.add(«access»);
+					«ENDFOR»
+					return rules;
+				}
+			'''
+		} catch (Exception e) {
+			e.printStackTrace
+			'''//FIXME Unable to generate API: «e.toString»  */ '''
+		}
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
