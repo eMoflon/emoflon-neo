@@ -51,10 +51,17 @@ class TGGCompiler {
 	}
 
 	private def String compile(Operation pOp) {
+		val flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
 		'''
 			«importStatements»
 			
-			«FOR rule : tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule] SEPARATOR "\n"»
+			grammar «tgg.name»_«pOp.nameExtension» {
+				«FOR rule : flattenedRules»
+					«rule.name»
+				«ENDFOR»
+			}
+			
+			«FOR rule : flattenedRules SEPARATOR "\n"»
 				«compileRule(pOp, rule)»
 			«ENDFOR»
 		'''
