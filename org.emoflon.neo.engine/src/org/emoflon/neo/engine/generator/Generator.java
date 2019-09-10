@@ -1,7 +1,10 @@
 package org.emoflon.neo.engine.generator;
 
+import java.util.Collection;
+
 import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IMatch;
+import org.emoflon.neo.engine.api.rules.IRule;
 
 public class Generator<M extends IMatch, C extends ICoMatch> {
 
@@ -20,16 +23,17 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 		progressMonitor = pProgressMonitor;
 	}
 
-	public void generate() {
-		MatchContainer<M, C> matches = new MatchContainer<>();
-
+	public void generate(Collection<IRule<M, C>> pAllRules) {
 		while (!terminationCondition.isReached()) {
-			ruleScheduler.scheduleWith(null, progressMonitor).forEach(
-					(rule, count) -> rule.determineMatches(count).forEach((match) -> matches.add(match, rule)));
+			MatchContainer<M, C> matchContainer = new MatchContainer<>(pAllRules);
 
-			updatePolicy.selectMatches(matches, progressMonitor).forEach((match) -> matches.remove(match).apply(match));
+			ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor).forEach(
+					(rule, count) -> rule.determineMatches(count).forEach((match) -> matchContainer.add(match, rule)));
 
-			matchReprocessor.reprocess(matches, progressMonitor);
+			updatePolicy.selectMatches(matchContainer, progressMonitor)
+					.forEach((match) -> matchContainer.remove(match).apply(match));
+
+			matchReprocessor.reprocess(matchContainer, progressMonitor);
 		}
 	}
 }
