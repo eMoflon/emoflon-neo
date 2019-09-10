@@ -90,8 +90,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final String COLORED_EDGES_ADJACENT_TO_COLORED_NODES = "Edges adjacent to green/red nodes must be green/red"
 	static final def String ONLY_RED_AND_GREEN_ELEMENTS(String type, String name) '''The «type»s called "«name»" in your refinements appear only red and green which is not allowed. To fix this, repeat this «type» without an operator.'''
 	final static String SAME_NAME_ENUMS_CLASSES = "Using the same name twice for enums and/or classes is not allowed."
-	static final def String SENSELESS_MULTIPLICITIES(String type) '''The upper bound in your «type» must be at least as big as your lower bound.'''
-	static final String ENFORCING_NAMES_IN_EDGES = "Complex edges (more than one type) must have a name."
+	static final def String SENSELESS_MULTIPLICITIES(String type) '''Upper bounds must be at least as large as lower bounds.'''
+	static final String ENFORCING_NAMES_IN_EDGES = "Complex links (with more than one type) must have a name."
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
