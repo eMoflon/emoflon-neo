@@ -8,7 +8,7 @@ public class FWD implements Operation {
 
 	@Override
 	public String getNameExtension() {
-		return "_FWD.msl";
+		return "_FWD";
 	}
 
 	@Override

@@ -43,7 +43,7 @@ class TGGCompiler {
 	def Collection<String> compileAll(IFileSystemAccess2 pFSA) {
 		val generatedFiles = new HashSet<String>
 		for (Operation operation : Operation.allOps) {
-			val fileLocation = BASE_FOLDER + tgg.name + operation.nameExtension
+			val fileLocation = BASE_FOLDER + tgg.name + operation.nameExtension + ".msl"
 			pFSA.generateFile(fileLocation, compile(operation))
 			generatedFiles.add("src-gen/" + fileLocation)
 		}

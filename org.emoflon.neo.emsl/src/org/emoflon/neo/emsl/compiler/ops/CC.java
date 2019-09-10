@@ -8,7 +8,7 @@ public class CC implements Operation {
 
 	@Override
 	public String getNameExtension() {
-		return "_CC.msl";
+		return "_CC";
 	}
 
 	@Override
