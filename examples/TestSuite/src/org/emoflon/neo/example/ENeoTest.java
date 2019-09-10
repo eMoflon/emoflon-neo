@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.util.FlattenerException;
-import org.emoflon.neo.engine.api.rules.IMatch;
+import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;

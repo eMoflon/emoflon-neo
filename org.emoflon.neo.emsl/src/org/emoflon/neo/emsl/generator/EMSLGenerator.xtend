@@ -141,7 +141,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.eMSL.Model;
 			import org.emoflon.neo.emsl.eMSL.Metamodel;
 			import org.emoflon.neo.emsl.util.EMSLUtil;
-			import org.emoflon.neo.engine.api.rules.IPattern;
+			import org.emoflon.neo.engine.api.patterns.IPattern;
 			import org.emoflon.neo.engine.api.rules.IRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleAccess;
