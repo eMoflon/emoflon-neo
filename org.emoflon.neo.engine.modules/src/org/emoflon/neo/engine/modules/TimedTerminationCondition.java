@@ -9,6 +9,7 @@ public class TimedTerminationCondition implements ITerminationCondition {
 
 	public TimedTerminationCondition(long pMaxDuration) {
 		maxDuration = pMaxDuration;
+		start();
 	}
 
 	public void start() {
