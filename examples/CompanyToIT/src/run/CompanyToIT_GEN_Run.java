@@ -1,7 +1,7 @@
 package run;
 
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.tgg.API_CompanyToIT_GEN;
+import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.NeoProgressMonitor;
 import org.emoflon.neo.engine.modules.ParanoidNeoReprocessor;

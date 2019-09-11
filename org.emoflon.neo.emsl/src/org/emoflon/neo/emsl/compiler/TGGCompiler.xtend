@@ -22,15 +22,18 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.generator.EMSLGenerator
 
 class TGGCompiler {
-	final String BASE_FOLDER = "tgg/";
+	final String BASE_FOLDER = "../" + EMSLGenerator.TGG_GEN_FOLDER + "/";
+	final String pathToGeneratedFiles
 	TripleGrammar tgg
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
 
-	new(TripleGrammar pTGG) {
+	new(TripleGrammar pTGG, String pathToGeneratedFiles) {
 		tgg = pTGG
+		this.pathToGeneratedFiles = pathToGeneratedFiles
 
 		val allMetamodels = tgg.srcMetamodels
 		allMetamodels.addAll(tgg.trgMetamodels)
@@ -40,14 +43,11 @@ class TGGCompiler {
 		mapTypeNames(allMetamodels)
 	}
 
-	def Collection<String> compileAll(IFileSystemAccess2 pFSA) {
-		val generatedFiles = new HashSet<String>
+	def void compileAll(IFileSystemAccess2 pFSA) {
 		for (Operation operation : Operation.allOps) {
-			val fileLocation = BASE_FOLDER + tgg.name + operation.nameExtension + ".msl"
+			val fileLocation = BASE_FOLDER + pathToGeneratedFiles + "/" + tgg.name + operation.nameExtension + ".msl"
 			pFSA.generateFile(fileLocation, compile(operation))
-			generatedFiles.add("src-gen/" + fileLocation)
 		}
-		return generatedFiles
 	}
 
 	private def String compile(Operation pOp) {

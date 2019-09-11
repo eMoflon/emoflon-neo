@@ -4,9 +4,8 @@
 package org.emoflon.neo.emsl.generator
 
 import java.net.URI
-import java.util.Collection
-import java.util.HashSet
 import java.util.List
+import java.util.stream.Collectors
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
@@ -22,6 +21,7 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.Entity
+import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.Model
@@ -33,8 +33,7 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.eMSL.GraphGrammar
-import java.util.stream.Collectors
+import org.eclipse.core.runtime.NullProgressMonitor
 
 /**
  * Generates code from your model files on save.
@@ -42,8 +41,8 @@ import java.util.stream.Collectors
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class EMSLGenerator extends AbstractGenerator {
-
-	Collection<String> generatedTGGFiles
+	public static final String TGG_GEN_FOLDER = "tgg-gen"
+	public static final String SRC_GEN_Folder = "src-gen"
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val segments = resource.URI.trimFileExtension.segmentsList
@@ -64,13 +63,11 @@ class EMSLGenerator extends AbstractGenerator {
 
 		var emslSpec = resource.contents.get(0) as EMSL_Spec
 		
-		generatedTGGFiles = new HashSet
 		emslSpec.entities.filter[it instanceof TripleGrammar]
 						 .map[it as TripleGrammar]
 						 .forEach[
-						 	new TGGCompiler(it)
+						 	new TGGCompiler(it, apiPath + "/" + segments.last)
 						 	.compileAll(fsa)
-						 	.forEach[generatedTGGFiles.add(it)]
 						 ]
 
 		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
@@ -87,9 +84,11 @@ class EMSLGenerator extends AbstractGenerator {
 		ClasspathUtil.setUpAsPluginProject(project)
 		ClasspathUtil.setUpAsXtextProject(project)
 		ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
-		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder("src-gen"))
+		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder(SRC_GEN_Folder))
+		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder(TGG_GEN_FOLDER))
 		
-		generatedTGGFiles.forEach[project.findMember(it).touch(null)]
+		if(project.getFolder(TGG_GEN_FOLDER).exists) 
+			project.getFolder(TGG_GEN_FOLDER).touch(new NullProgressMonitor)
 	}
 
 	def generateCommon() {
