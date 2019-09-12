@@ -77,7 +77,6 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 		assertTrue(entities.getConstraint_NothingBlue().isViolated());
 	}
 	
-	@Disabled("//TODO[Jannik] Waiting for #166")
 	@Test
 	public void testRuleWithAttributeAssignment() {
 		var attrAssg = entities.getRule_ColourBridgeRED();
@@ -85,4 +84,5 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 		assertTrue(attrAssg.rule().apply().isPresent());
 		assertEquals(0, attrAssg.rule().countMatches());
 	}
+	
 }

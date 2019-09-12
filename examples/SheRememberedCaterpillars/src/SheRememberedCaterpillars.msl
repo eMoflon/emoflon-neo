@@ -96,6 +96,19 @@ pattern everythingBlue {
 	p2:Platform
 }
 
+pattern blueCharacter {
+	a:Character {
+		.colour : BLUE
+		.colour != RED
+	}
+}
+pattern blueAndRedCharacter {
+	a:Character {
+		.colour != BLUE
+		.colour : RED
+	}
+}
+
 pattern strangeBridge {
 	b:Bridge {
 		-feet->p

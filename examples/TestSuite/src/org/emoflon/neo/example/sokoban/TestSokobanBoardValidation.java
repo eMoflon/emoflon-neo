@@ -63,7 +63,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		assertFalse(controller.boardIsValid());
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testNoBoulder() {
 		view.createSokoban(2,2);
@@ -87,7 +86,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		assertFalse(controller.boardIsValid());
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testSingleEndPos() {
 		view.createEndPos(2,5);
@@ -95,7 +93,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		assertFalse(controller.boardIsValid());
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoard() {
 		view.createSokoban(2,2);
@@ -160,7 +157,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		assertFalse(controller.boardIsValid());
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardEqualEndPosAndBlocks() {
 		view.createSokoban(2,2);
@@ -187,7 +183,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		assertFalse(controller.boardIsValid());
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardClearBoardAction() {
 		view.createSokoban(2,2);
@@ -213,7 +208,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		}
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testGetNewBoardAction() {
 		int width = 8;

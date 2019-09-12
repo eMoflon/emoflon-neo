@@ -8,6 +8,7 @@ Export-Package: .,
  org.emoflon.neo.engine.api.patterns,
  org.emoflon.neo.engine.api.rules,
  org.emoflon.neo.engine.generator,
- org.emoflon.neo.engine.ilp
+ org.emoflon.neo.engine.ilp,
+ org.emoflon.neo.engine.api.rules
 Automatic-Module-Name: org.emoflon.neo.engine
 Require-Bundle: org.apache.log4j
