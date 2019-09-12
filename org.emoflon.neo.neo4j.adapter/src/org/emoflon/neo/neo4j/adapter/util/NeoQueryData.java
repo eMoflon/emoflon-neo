@@ -16,8 +16,11 @@ import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
+import org.emoflon.neo.neo4j.adapter.common.NeoProperty;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeReturn;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeReturnRelation;
 
 public class NeoQueryData {
 	private HashMap<String, ArrayList<String>> patternNodes;
@@ -281,6 +284,9 @@ public class NeoQueryData {
     public Collection<NeoAttributeExpression> getAttributeExpressionsOptional() {
         return attrExprOptional;
     }
+    public Collection<NeoAttributeExpression> getAttributeAssignments() {
+        return attrAssign;
+    }
 
 	private List<NeoNode> extractNodesAndRelations(List<ModelNodeBlock> mnb,
 			BiFunction<String, Collection<String>, String> registerNewNode,
@@ -292,7 +298,10 @@ public class NeoQueryData {
 			var node = new NeoNode(NeoCoreBuilder.computeLabelsFromType(n.getType()),
 					registerNewNode.apply(n.getName(), NeoCoreBuilder.computeLabelsFromType(n.getType())));
 
-			handleNodeAttributes(n.getProperties(), node, attrExpr);
+			var props = getNodePropertiesAndAttributes(n.getProperties(), node.getVarName(), attrExpr);
+			props.getElemProps().forEach(prop -> node.addProperty(prop.getName(), prop.getValue()));
+			attrExpr.addAll(props.getElemAttrExpr());
+			attrAssign.addAll(props.getElemAttrAsgn());
 
 			for (var r : extractContextRelations(n.getRelations())) {
 				var varName = EMSLUtil.relationNameConvention(node.getVarName(), EMSLUtil.getAllTypes(r),
@@ -301,10 +310,14 @@ public class NeoQueryData {
 				if (r.getLower() == null && r.getUpper() == null) {
 					varName = registerNewRelation.apply(varName, r.getTypes().get(0).getType().getName());
 				}
+				
+				var propsR = getRelationPropertiesAndAttributes(r.getProperties(), varName, attrExpr);
+				attrExpr.addAll(propsR.getElemAttrExpr());
+				attrAssign.addAll(propsR.getElemAttrAsgn());
 
 				node.addRelation(varName, EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
-						handleRelationAttributes(r.getProperties(), node, varName, attrExpr), //
+						propsR.getElemProps(), //
 						r.getTarget().getType().getName(), //
 						registerNewNode.apply(r.getTarget().getName(),
 								NeoCoreBuilder.computeLabelsFromType(r.getTarget().getType())));
@@ -316,77 +329,77 @@ public class NeoQueryData {
 		return nodes;
 	}
 	
-	private void handleNodeAttributes(Collection<ModelPropertyStatement> props, NeoNode node, ArrayList<NeoAttributeExpression> attrExpr) {
+	public NeoAttributeReturn getNodePropertiesAndAttributes(Collection<ModelPropertyStatement> props, String nodeVarName, ArrayList<NeoAttributeExpression> attrExpr) {
+		
+		var nodeProps = new ArrayList<NeoProperty>();
+		var nodeAttrExpr = new ArrayList<NeoAttributeExpression>();
+		var nodeAttrAsgn = new ArrayList<NeoAttributeExpression>();
 		
 		for(var p : props) {
             
             switch(p.getOp()) {
             case EQ:
-                node.addProperty(//
-                        p.getType().getName(), //
-                        EMSLUtil.handleValue(p.getValue()));
+            	nodeProps.add(new NeoProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue())));
                 break;
             case GREATER:
             case GREATEREQ:
             case LESS:
             case LESSEQ:
             case NOTEQ:
-                var attrE = new NeoAttributeExpression(
-                        node.getVarName(), 
+            	nodeAttrExpr.add(new NeoAttributeExpression(
+            			nodeVarName, 
                         p.getType().getName(), //
                         EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp());
-                attrExpr.add(attrE);
+                        p.getOp()));
                 break;
             case ASSIGN:
-            	var attrA = new NeoAttributeExpression(
-                        node.getVarName(), 
+            	nodeAttrAsgn.add(new NeoAttributeExpression(
+            			nodeVarName, 
                         p.getType().getName(), //
                         EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp());
-                attrAssign.add(attrA);
+                        p.getOp()));
                 break;
             default:
                 throw new UnsupportedOperationException(p.getOp().toString());
             }
-            
         }
-		
+		return new NeoAttributeReturn(nodeProps, nodeAttrExpr, nodeAttrAsgn);
 	}
 	
-	private List<ModelPropertyStatement> handleRelationAttributes(Collection<ModelPropertyStatement> props, NeoNode node, String varName, ArrayList<NeoAttributeExpression> attrExpr) {
+	public NeoAttributeReturnRelation getRelationPropertiesAndAttributes(Collection<ModelPropertyStatement> props, String varName, ArrayList<NeoAttributeExpression> attrExpr) {
 		
-		var listOfRelProps = new ArrayList<ModelPropertyStatement>();
+		var relProps = new ArrayList<ModelPropertyStatement>();
+		var relAttrExpr = new ArrayList<NeoAttributeExpression>();
+		var relAttrAsgn = new ArrayList<NeoAttributeExpression>();
+		
 		for(var p : props) {
 			switch(p.getOp()) {
             case EQ:
-            	listOfRelProps.add(p);
+            	relProps.add(p);
                 break;
             case GREATER:
             case GREATEREQ:
             case LESS:
             case LESSEQ:
             case NOTEQ:
-            	var attrE = new NeoAttributeExpression(
+            	relAttrExpr.add(new NeoAttributeExpression(
                         varName, 
                         p.getType().getName(), //
                         EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp());
-                attrExpr.add(attrE);
+                        p.getOp()));
                 break;
             case ASSIGN:
-            	var attrA = new NeoAttributeExpression(
+            	relAttrAsgn.add(new NeoAttributeExpression(
                         varName, 
                         p.getType().getName(), //
                         EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp());
-                attrAssign.add(attrA);
+                        p.getOp()));
                 break;
             default:
                 throw new UnsupportedOperationException(p.getOp().toString());
             }
 		}
-		return listOfRelProps;
+		return new NeoAttributeReturnRelation(relProps, relAttrExpr, relAttrAsgn);
 		
 	}
 

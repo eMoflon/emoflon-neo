@@ -69,7 +69,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(getNodes(),
-				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), isNegated, m);
+				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated, m);
 		logger.debug(cypherQuery);
 
 		// run the query

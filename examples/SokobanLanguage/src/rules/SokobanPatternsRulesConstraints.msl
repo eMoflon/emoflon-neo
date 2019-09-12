@@ -759,3 +759,10 @@ pattern someField {
 		.endPos != false
 	}
 } when testConcatenatedConstraintAttrExpression
+
+rule testAttributeAssignmentsInRule {
+	f:Field {
+		.endPos != false
+		.endPos := false
+	}
+}

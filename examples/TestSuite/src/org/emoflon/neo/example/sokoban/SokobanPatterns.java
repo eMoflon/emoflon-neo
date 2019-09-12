@@ -12,7 +12,9 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_Simple3x3Field;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
+import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -632,5 +634,24 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void testAttributeExpressionsPatternWithPositiveCondition() {
 		assertEquals(2, entities.getPattern_SomeField().matcher().countMatches());
+	}
+	
+	@Test
+	public void testAttributeAssignmentsInRules() {
+		
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_TestAttributeAssignmentsInRule().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 2);
+		
+		var iterator = matches.iterator();
+		
+		while(iterator.hasNext()) {
+			var onlyMatch = iterator.next();
+			assertTrue(onlyMatch.isStillValid());
+			
+			Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+			assertTrue(result.isPresent());
+		}
+		
 	}
 }

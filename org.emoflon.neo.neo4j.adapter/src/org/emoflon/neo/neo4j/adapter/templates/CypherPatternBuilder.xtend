@@ -70,7 +70,7 @@ class CypherPatternBuilder {
 	def static String getDataQuery(Collection<NeoNode> nodes, NeoMatch match, Collection<NeoAttributeExpression> attr, boolean injective) {
 		'''
 		«matchQueryForData(nodes, match)»
-		«isStillValid_whereQuery(nodes, match)»«IF attr.size > 0» AND «ENDIF»«attributeExpressionQuery(attr)»
+		«isStillValid_whereQuery(nodes, match, attr)»
 		«returnDataQuery(nodes)»'''
 	}
 
@@ -107,6 +107,9 @@ class CypherPatternBuilder {
 	
 	def static attributeExpressionQuery(Collection<NeoAttributeExpression> attr) {
 		'''«FOR a:attr SEPARATOR " AND "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
+	}
+	def static attributeExpressionQueryList(Collection<NeoAttributeExpression> attr) {
+		'''«FOR a:attr SEPARATOR ", "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
 	}
 	
 	def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, 
@@ -248,7 +251,7 @@ class CypherPatternBuilder {
 	def static String isStillValidQuery(Collection<NeoNode> nodes, NeoMatch match, Collection<NeoAttributeExpression> attr, boolean injective) {
 		'''
 		«matchQuery(nodes)»
-		«isStillValid_whereQuery(nodes, match)»«IF attr.size > 0» AND «ENDIF»«attributeExpressionQuery(attr)»
+		«isStillValid_whereQuery(nodes, match, attr)»
 		«isStillValid_returnQuery()»'''
 	}
 
@@ -262,9 +265,9 @@ class CypherPatternBuilder {
 			«ENDFOR»'''
 	}
 
-	def static String isStillValid_whereQuery(Collection<NeoNode> nodes, NeoMatch match) {
+	def static String isStillValid_whereQuery(Collection<NeoNode> nodes, NeoMatch match, Collection<NeoAttributeExpression> attr) {
 		'''
-			WHERE «nodeIdBlock(nodes, match)»
+			WHERE «nodeIdBlock(nodes, match)»«IF attr.size > 0» AND «ENDIF»«attributeExpressionQuery(attr)»
 		'''
 	}
 
@@ -321,7 +324,7 @@ class CypherPatternBuilder {
 		String matchCond, String whereCond, Collection<NeoAttributeExpression> attr, boolean injective, NeoMatch match) {
 
 		'''«IF nodes.size>0»«matchQuery(nodes)»
-		«isStillValid_whereQuery(nodes, match)»«IF attr.size > 0» AND «ENDIF»«attributeExpressionQuery(attr)»
+		«isStillValid_whereQuery(nodes, match, attr)»
 		«withQuery(nodes)»«ENDIF»
 		«matchCond»
 		«constraint_withQuery(helperNodes)»
@@ -447,9 +450,9 @@ class CypherPatternBuilder {
 	}
 
 	def static String conditionQuery_isStillValid(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
-		Collection<String> helperNodes, boolean isNegated, NeoMatch match) {
+		Collection<String> helperNodes, Collection<NeoAttributeExpression> attr, boolean isNegated, NeoMatch match) {
 		'''«IF nodes.size>0»«matchQuery(nodes)»
-	 	«isStillValid_whereQuery(nodes,match)»
+	 	«isStillValid_whereQuery(nodes,match,attr)»
 	 	«withQuery(nodes)»«ENDIF»
 	 	«optionalMatches»
 	 	«constraint_withQuery(helperNodes)»
@@ -508,13 +511,14 @@ class CypherPatternBuilder {
 	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, NeoMatch match, boolean spo, 
 	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
 	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
-	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel) {
-	 	
+	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel,
+	 	Collection<NeoAttributeExpression> attrExpr, Collection<NeoAttributeExpression> attrAsgn) {
 	 	'''
 	 	«matchQuery(nodes)»«IF nodes.size>0 && (modelNodes.size > 0 || modelEContRel.size > 0)», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«IF modelNodes.size > 0 && modelEContRel.size > 0», «ENDIF»«ruleExecution_matchModelEContainer(modelEContRel)»
-	 	«IF nodes.size>0»«isStillValid_whereQuery(nodes, match)»«ENDIF»
+	 	«IF nodes.size>0»«isStillValid_whereQuery(nodes, match, attrExpr)»«ENDIF»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
+	 	«ruleExecution_setQuery(attrAsgn)»
 	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
 	 	
 	 	'''
@@ -531,6 +535,13 @@ class CypherPatternBuilder {
 	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»
 	 	«IF modelRel.size > 0»«ruleExecution_createModelRel(modelRel)»«ENDIF»
 	 	'''
+	 }
+	 
+	 def static String ruleExecution_setQuery(Collection<NeoAttributeExpression> assignments) {
+	 	if(assignments.size>0)
+	 	'''SET «attributeExpressionQueryList(assignments)»'''
+	 	else
+	 	''''''
 	 }
 	 
 	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesK, Collection<NeoRelation> refK, Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
