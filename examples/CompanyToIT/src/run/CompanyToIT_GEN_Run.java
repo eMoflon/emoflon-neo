@@ -31,7 +31,7 @@ public class CompanyToIT_GEN_Run {
 		var companyAPI = new API_Company(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		var itAPI = new API_IT(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		
-		// I think all metamodels have to be exported first (unless they are already in the DB) :(
+		//[FIXME Mario] I think all metamodels have to be exported first (unless they are already in the DB) :(
 		// This will also be the case for input models for other ops (or GEN for an existing triple)
 		builder.exportEMSLEntityToNeo4j(companyAPI.getMetamodel_Company());
 		builder.exportEMSLEntityToNeo4j(itAPI.getMetamodel_IT());

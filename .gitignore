@@ -100,3 +100,8 @@ examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_CC.msl
 examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_CO.msl
 examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_FWD.msl
 examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_GEN.msl
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_BWD.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_CC.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_CO.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_FWD.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_GEN.java
