@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.ilp;
+package org.emoflon.neo.engine.modules.ilp;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 
 public class OPT {

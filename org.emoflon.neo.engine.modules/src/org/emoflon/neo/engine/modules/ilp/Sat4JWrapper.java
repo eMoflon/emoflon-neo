@@ -1,13 +1,15 @@
-package org.emoflon.neo.engine.ilp;
+package org.emoflon.neo.engine.modules.ilp;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.emoflon.neo.engine.ilp.ILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.neo.engine.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.neo.engine.ilp.ILPProblem.ILPObjective;
 import org.emoflon.neo.engine.ilp.ILPProblem.ILPSolution;
+import org.emoflon.neo.engine.ilp.ILPSolver;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;

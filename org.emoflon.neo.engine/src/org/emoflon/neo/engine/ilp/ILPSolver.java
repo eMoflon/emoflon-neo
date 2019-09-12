@@ -1,7 +1,6 @@
 package org.emoflon.neo.engine.ilp;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.engine.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.ilp.ILPProblem.ILPSolution;
 
 /**
@@ -45,35 +44,6 @@ public abstract class ILPSolver {
 	 * @throws Exception
 	 */
 	protected abstract ILPSolution solveILP() throws Exception;
-
-	/**
-	 * Solves the ILPProblem using the given solver
-	 * 
-	 * @param ilpProblem
-	 *            The ILPProblem to solve
-	 * @param solver
-	 *            The solver to use
-	 * @return a valid solution for the ILP or null if no solution could be found
-	 * @throws Exception
-	 */
-	public static ILPSolution solveILPProblem(ILPProblem ilpProblem, SupportedILPSolver solver) throws Exception {
-		return ILPFactory.createILPSolver(ilpProblem, solver).solveILP();
-	}
-
-	/**
-	 * Solves the ILPProblem using the given solver. The ILPProblem is restricted to
-	 * binary variables.
-	 * 
-	 * @param ilpProblem
-	 *            The ILPProblem to solve
-	 * @param solver
-	 *            The solver to use
-	 * @return a valid solution for the ILP or null if no solution could be found
-	 * @throws Exception
-	 */
-	public static ILPSolution solveBinaryILPProblem(ILPProblem ilpProblem, SupportedILPSolver solver) throws Exception {
-		return ILPFactory.createBinaryILPSolver(ilpProblem, solver).solveILP();
-	}
 
 	/**
 	 * @return The tolerance between found solution and theoretical optimum at which the solver is allowed to stop

@@ -72,7 +72,7 @@ public class ILPProblem {
 	 * Creates a new ILPProblem. Instances can be obtained using the
 	 * {@link ILPFactory}
 	 */
-	ILPProblem() {
+	public ILPProblem() {
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class ILPProblem {
 	 *
 	 * @return the variable IDs
 	 */
-	Set<Integer> getVariableIdsOfUnfixedVariables() {
+	public Set<Integer> getVariableIdsOfUnfixedVariables() {
 		return Collections.unmodifiableSet(this.unfixedVariables);
 	}
 
@@ -221,7 +221,7 @@ public class ILPProblem {
 	 * @param variableId The variable ID to look for
 	 * @return
 	 */
-	String getVariable(final int variableId) {
+	public String getVariable(final int variableId) {
 		return this.variableIDsToVariables.get(variableId);
 	}
 
@@ -248,7 +248,7 @@ public class ILPProblem {
 	 *                            solution
 	 * @return the created solution
 	 */
-	ILPSolution createILPSolution(final Map<Integer, Integer> variableAllocations, final boolean optimal,
+	public ILPSolution createILPSolution(final Map<Integer, Integer> variableAllocations, final boolean optimal,
 			final double solutionValue) {
 		return new ILPSolution(variableAllocations, optimal, solutionValue);
 	}
@@ -460,7 +460,7 @@ public class ILPProblem {
 	 * @author Robin Oppermann
 	 *
 	 */
-	final class ILPConstraint {
+	public final class ILPConstraint {
 		/**
 		 * The linear expression of the constraint (left side of the inequation)
 		 */
@@ -506,7 +506,7 @@ public class ILPProblem {
 		 *
 		 * @param factor
 		 */
-		void multiplyBy(final double factor) {
+		public void multiplyBy(final double factor) {
 			this.linearExpression.multiplyBy(factor);
 			this.value *= factor;
 		}
@@ -585,7 +585,7 @@ public class ILPProblem {
 		/**
 		 * @return the linearExpression
 		 */
-		ILPLinearExpression getLinearExpression() {
+		public ILPLinearExpression getLinearExpression() {
 			return this.linearExpression;
 		}
 
@@ -602,21 +602,21 @@ public class ILPProblem {
 		/**
 		 * @return the comparator
 		 */
-		Comparator getComparator() {
+		public Comparator getComparator() {
 			return this.comparator;
 		}
 
 		/**
 		 * @return the value
 		 */
-		double getValue() {
+		public double getValue() {
 			return this.value;
 		}
 
 		/**
 		 * @return the name
 		 */
-		String getName() {
+		public String getName() {
 			return this.name;
 		}
 
@@ -667,7 +667,7 @@ public class ILPProblem {
 	 * @author Robin Oppermann
 	 *
 	 */
-	final class ILPObjective {
+	public final class ILPObjective {
 		/**
 		 * The linear expression to optimize
 		 */
@@ -708,21 +708,21 @@ public class ILPProblem {
 		 * @param ilpSolution The solution to use
 		 * @return The value of the solution
 		 */
-		double getSolutionValue(final ILPSolution ilpSolution) {
+		public double getSolutionValue(final ILPSolution ilpSolution) {
 			return this.linearExpression.getSolutionValue(ilpSolution) + this.fixedVariablesValue;
 		}
 
 		/**
 		 * @return the linearExpression
 		 */
-		ILPLinearExpression getLinearExpression() {
+		public ILPLinearExpression getLinearExpression() {
 			return this.linearExpression;
 		}
 
 		/**
 		 * @return the objectiveOperation
 		 */
-		Objective getObjectiveOperation() {
+		public Objective getObjectiveOperation() {
 			return this.objectiveOperation;
 		}
 
@@ -819,7 +819,7 @@ public class ILPProblem {
 		 * @param variableID  The id of the variable
 		 * @param coefficient The coefficient of the variable
 		 */
-		void addTerm(final int variableID, final double coefficient) {
+		public void addTerm(final int variableID, final double coefficient) {
 			double result = this.terms.put(variableID, coefficient);
 			if (Double.doubleToLongBits(result) == Double.doubleToLongBits(-coefficient)) {
 				this.terms.remove(variableID);
@@ -831,7 +831,7 @@ public class ILPProblem {
 		 *
 		 * @param factor The factor to multiply by
 		 */
-		void multiplyBy(final double factor) {
+		public void multiplyBy(final double factor) {
 			this.terms.replaceAll((variableID, coefficient) -> coefficient * factor);
 		}
 
@@ -880,7 +880,7 @@ public class ILPProblem {
 		 *
 		 * @return
 		 */
-		Set<Integer> getVariables() {
+		public Set<Integer> getVariables() {
 			return Collections.unmodifiableSet(this.terms.keySet());
 		}
 
@@ -890,7 +890,7 @@ public class ILPProblem {
 		 * @param variableId the id of the variable
 		 * @return the coefficient, or 0 if no term for this variable has been defined
 		 */
-		double getCoefficient(final int variableId) {
+		public double getCoefficient(final int variableId) {
 			if (this.terms.containsKey(variableId))
 				return this.terms.get(variableId);
 			return 0;
@@ -1045,7 +1045,7 @@ public class ILPProblem {
 		 *
 		 * @return A string containing information about the solution size and value.
 		 */
-		String getSolutionInformation() {
+		public String getSolutionInformation() {
 			int fixed = ILPProblem.this.getVariables().size()
 					- ILPProblem.this.getVariableIdsOfUnfixedVariables().size();
 			return "Found solution for " + ILPProblem.this.getVariables().size() + " variables (" + fixed

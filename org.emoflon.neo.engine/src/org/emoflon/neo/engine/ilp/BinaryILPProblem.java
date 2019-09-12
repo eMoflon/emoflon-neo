@@ -70,7 +70,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	/**
 	 * Creates a new binary ILP problem
 	 */
-	BinaryILPProblem() {
+	public BinaryILPProblem() {
 	}
 
 	/**

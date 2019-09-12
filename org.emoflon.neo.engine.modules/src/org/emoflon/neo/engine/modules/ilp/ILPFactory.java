@@ -1,4 +1,8 @@
-package org.emoflon.neo.engine.ilp;
+package org.emoflon.neo.engine.modules.ilp;
+
+import org.emoflon.neo.engine.ilp.BinaryILPProblem;
+import org.emoflon.neo.engine.ilp.ILPProblem;
+import org.emoflon.neo.engine.ilp.ILPSolver;
 
 /**
  * This static class offers methods to create ILP solvers and ILP problems
