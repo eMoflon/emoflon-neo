@@ -3,6 +3,7 @@ package org.emoflon.neo.example.sokoban;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -118,9 +119,7 @@ class TestSokobanBoardValidation extends ENeoTest {
 	public void testBlockOnBoulder() {
 		view.createSokoban(2,2);
 		view.createBlock(5,6);
-		view.createBoulder(5,6);
-		view.createEndPos(2,5);
-		assertFalse(controller.boardIsValid());
+		assertThrows(UnsupportedOperationException.class, () -> view.createBoulder(5,6));
 	}
 	
 	@Test

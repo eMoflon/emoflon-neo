@@ -26,11 +26,14 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.emoflon.neo.engine.modules;bundle-version="1.0.0"
-Export-Package: metamodels,
+Export-Package: CompanyToIT,
+ metamodels,
  models,
  org.emoflon.neo.api,
+ org.emoflon.neo.api.CompanyToIT,
  org.emoflon.neo.api.metamodels,
- org.emoflon.neo.api.models
+ org.emoflon.neo.api.models,
+ run
 Automatic-Module-Name: CompanyToIT
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
