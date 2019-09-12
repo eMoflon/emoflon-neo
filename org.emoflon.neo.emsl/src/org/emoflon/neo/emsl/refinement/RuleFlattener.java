@@ -451,48 +451,52 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			var newProperties = new ArrayList<ModelPropertyStatement>();
 
 			// collect ModelPropertyStatements with same name
-			var propertyStatementsSortedByName = new HashMap<String, ArrayList<ModelPropertyStatement>>();
+			var propertyStatementsSortedByName = new HashMap<String, HashMap<String, ArrayList<ModelPropertyStatement>>>();
 			for (var nb : nodeBlocksWithKey) {
 				for (var p : nb.getProperties()) {
 					if (p.getType() == null) {
 						continue;
 					}
 					if (!propertyStatementsSortedByName.containsKey(EMSLUtil.getNameOfType(p))) {
-						propertyStatementsSortedByName.put(EMSLUtil.getNameOfType(p),
-								new ArrayList<ModelPropertyStatement>());
+						propertyStatementsSortedByName.put(EMSLUtil.getNameOfType(p), new HashMap<String, ArrayList<ModelPropertyStatement>>());
 					}
-					propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).add(p);
+					if (!propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).containsKey(p.getOp().toString())) {
+						propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).put(p.getOp().toString(), new ArrayList<ModelPropertyStatement>());
+					}
+					propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).get(p.getOp().toString()).add(p);
 				}
 			}
 
 			// check statements for compliance
 			for (var propertyName : propertyStatementsSortedByName.keySet()) {
-				var properties = propertyStatementsSortedByName.get(propertyName);
-				ModelPropertyStatement basis = null;
-				if (properties.size() > 0) {
-					basis = properties.get(0);
-				}
-				for (var p : properties) {
-					if (!sameDataType(p, basis)) {
-						if (p.eContainer().eContainer() instanceof AtomicPattern) {
-							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-									basis, p, (SuperType) p.eContainer().eContainer());
-						} else {
-							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-									basis, p, (SuperType) p.eContainer().eContainer()); // incompatible types found
-						}
-					} else if (basis.getOp() != p.getOp()) {
-						if (p.eContainer().eContainer() instanceof AtomicPattern) {
-							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-									basis, p, (SuperType) p.eContainer().eContainer());
-						} else {
-							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-									basis, p, (SuperType) p.eContainer().eContainer()); // incompatible operators found
-						}
+				for (var operator : propertyStatementsSortedByName.get(propertyName).keySet()) {
+					var properties = propertyStatementsSortedByName.get(propertyName).get(operator);
+					ModelPropertyStatement basis = null;
+					if (properties.size() > 0) {
+						basis = properties.get(0);
 					}
-					compareValueOfModelPropertyStatement(entity, basis, p);
+					for (var p : properties) {
+						if (!sameDataType(p, basis)) {
+							if (p.eContainer().eContainer() instanceof AtomicPattern) {
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+										basis, p, (SuperType) p.eContainer().eContainer());
+							} else {
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+										basis, p, (SuperType) p.eContainer().eContainer()); // incompatible types found
+							}
+						} else if (basis.getOp() != p.getOp()) {
+							if (p.eContainer().eContainer() instanceof AtomicPattern) {
+								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+										basis, p, (SuperType) p.eContainer().eContainer());
+							} else {
+								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+										basis, p, (SuperType) p.eContainer().eContainer()); // incompatible operators found
+							}
+						}
+						compareValueOfModelPropertyStatement(entity, basis, p);
+					}
+					newProperties.add(EcoreUtil.copy(basis));
 				}
-				newProperties.add(EcoreUtil.copy(basis));
 			}
 
 			// add merged properties to the new nodeblock

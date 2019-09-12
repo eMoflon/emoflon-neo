@@ -574,7 +574,11 @@ class EMSLValidator extends AbstractEMSLValidator {
 			if (relation.action === null && relation.target?.action !== null 
 					|| (relation.action === null && (relation.eContainer as ModelNodeBlock).action !== null)) {
 				error(COLORED_EDGES_ADJACENT_TO_COLORED_NODES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
-			}
+			} else if (relation.action !== null && relation.target?.action !== null 
+						&& relation.action.op !== relation.target?.action.op
+					|| relation.action !== null && (relation.eContainer as ModelNodeBlock).action !== null 
+						&& relation.action.op !== (relation.eContainer as ModelNodeBlock).action.op)
+				error("Having a green/red object adjacent to a red/green object does not make sense.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 		}
 	}
 	
