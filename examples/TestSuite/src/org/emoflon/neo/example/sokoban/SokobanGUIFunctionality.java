@@ -109,7 +109,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertFalse(access.rule().determineOneMatch().isPresent());
 	}
 	
-	@Disabled("TODO[Jannik] Waiting for #166")
 	@Test
 	public void testEndFieldToggle() {
 		{

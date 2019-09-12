@@ -766,3 +766,14 @@ rule testAttributeAssignmentsInRule {
 		.endPos := false
 	}
 }
+
+rule testAttributeAssignmentsWithCalc {
+	b:SokobanLanguage.Board {
+		-fields->f {
+			.row : 0
+			.col : 1
+		
+		}
+	}
+	f:Field
+}
