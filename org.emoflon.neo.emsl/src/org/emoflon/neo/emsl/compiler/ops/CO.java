@@ -7,7 +7,7 @@ public class CO implements Operation {
 
 	@Override
 	public String getNameExtension() {
-		return "_CO.msl";
+		return "_CO";
 	}
 
 	@Override

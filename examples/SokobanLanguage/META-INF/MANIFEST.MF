@@ -33,7 +33,6 @@ Export-Package: metamodels,
  org.emoflon.neo.api.metamodels,
  org.emoflon.neo.api.models,
  org.emoflon.neo.api.rules,
- rules,
- tgg
+ rules
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

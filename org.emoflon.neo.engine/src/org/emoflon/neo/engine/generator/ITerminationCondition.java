@@ -1,4 +1,4 @@
-package org.emoflon.neo.generator;
+package org.emoflon.neo.engine.generator;
 
 public interface ITerminationCondition {
 	public boolean isReached();
