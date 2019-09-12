@@ -33,7 +33,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 
 		// create query
 		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), injective, limit, mask);
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective, limit, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -60,7 +60,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), injective, m);
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective, m);
 
 		logger.debug(cypherQuery);
 

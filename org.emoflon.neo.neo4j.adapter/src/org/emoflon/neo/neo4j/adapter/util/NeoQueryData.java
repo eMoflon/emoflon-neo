@@ -12,10 +12,15 @@ import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.Action;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
+import org.emoflon.neo.neo4j.adapter.common.NeoProperty;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeReturn;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeReturnRelation;
 
 public class NeoQueryData {
 	private HashMap<String, ArrayList<String>> patternNodes;
@@ -23,6 +28,10 @@ public class NeoQueryData {
 	private HashMap<String, ArrayList<String>> optionalNodes;
 	private HashMap<String, ArrayList<String>> optionalElements;
 	private HashMap<String, String> equalElements;
+	
+    private ArrayList<NeoAttributeExpression> attrExprPattern;
+    private ArrayList<NeoAttributeExpression> attrExprOptional;
+    private ArrayList<NeoAttributeExpression> attrAssign;
 
 	private int constraintCount;
 
@@ -35,6 +44,9 @@ public class NeoQueryData {
 		this.optionalElements = new HashMap<String, ArrayList<String>>();
 		this.optionalNodes = new HashMap<String, ArrayList<String>>();
 		this.equalElements = new HashMap<String, String>();
+		this.attrExprPattern = new ArrayList<NeoAttributeExpression>();
+		this.attrExprOptional = new ArrayList<NeoAttributeExpression>();
+		this.attrAssign = new ArrayList<NeoAttributeExpression>();
 		this.constraintCount = 0;
 	}
 
@@ -46,6 +58,7 @@ public class NeoQueryData {
 	 */
 	public int incrementCounterForConstraintsInQuery() {
 		optionalNodes.clear();
+		attrExprOptional.clear();
 		return constraintCount++;
 	}
 
@@ -264,10 +277,20 @@ public class NeoQueryData {
 	public Collection<String> getOptionalMatchElements() {
 		return Collections.unmodifiableCollection(optionalElements.keySet());
 	}
+	
+    public Collection<NeoAttributeExpression> getAttributeExpressions() {
+        return attrExprPattern;
+    }
+    public Collection<NeoAttributeExpression> getAttributeExpressionsOptional() {
+        return attrExprOptional;
+    }
+    public Collection<NeoAttributeExpression> getAttributeAssignments() {
+        return attrAssign;
+    }
 
 	private List<NeoNode> extractNodesAndRelations(List<ModelNodeBlock> mnb,
 			BiFunction<String, Collection<String>, String> registerNewNode,
-			BiFunction<String, String, String> registerNewRelation) {
+			BiFunction<String, String, String> registerNewRelation, ArrayList<NeoAttributeExpression> attrExpr) {
 		List<NeoNode> nodes = new ArrayList<NeoNode>();
 
 		for (var n : extractContextNodes(mnb)) {
@@ -275,9 +298,10 @@ public class NeoQueryData {
 			var node = new NeoNode(NeoCoreBuilder.computeLabelsFromType(n.getType()),
 					registerNewNode.apply(n.getName(), NeoCoreBuilder.computeLabelsFromType(n.getType())));
 
-			n.getProperties().forEach(p -> node.addProperty(//
-					p.getType().getName(), //
-					EMSLUtil.handleValue(p.getValue())));
+			var props = getNodePropertiesAndAttributes(n.getProperties(), node.getVarName(), attrExpr);
+			props.getElemProps().forEach(prop -> node.addProperty(prop.getName(), prop.getValue()));
+			attrExpr.addAll(props.getElemAttrExpr());
+			attrAssign.addAll(props.getElemAttrAsgn());
 
 			for (var r : extractContextRelations(n.getRelations())) {
 				var varName = EMSLUtil.relationNameConvention(node.getVarName(), EMSLUtil.getAllTypes(r),
@@ -286,10 +310,14 @@ public class NeoQueryData {
 				if (r.getLower() == null && r.getUpper() == null) {
 					varName = registerNewRelation.apply(varName, r.getTypes().get(0).getType().getName());
 				}
+				
+				var propsR = getRelationPropertiesAndAttributes(r.getProperties(), varName, attrExpr);
+				attrExpr.addAll(propsR.getElemAttrExpr());
+				attrAssign.addAll(propsR.getElemAttrAsgn());
 
 				node.addRelation(varName, EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
-						r.getProperties(), //
+						propsR.getElemProps(), //
 						r.getTarget().getType().getName(), //
 						registerNewNode.apply(r.getTarget().getName(),
 								NeoCoreBuilder.computeLabelsFromType(r.getTarget().getType())));
@@ -299,6 +327,80 @@ public class NeoQueryData {
 		}
 
 		return nodes;
+	}
+	
+	public NeoAttributeReturn getNodePropertiesAndAttributes(Collection<ModelPropertyStatement> props, String nodeVarName, ArrayList<NeoAttributeExpression> attrExpr) {
+		
+		var nodeProps = new ArrayList<NeoProperty>();
+		var nodeAttrExpr = new ArrayList<NeoAttributeExpression>();
+		var nodeAttrAsgn = new ArrayList<NeoAttributeExpression>();
+		
+		for(var p : props) {
+            
+            switch(p.getOp()) {
+            case EQ:
+            	nodeProps.add(new NeoProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue())));
+                break;
+            case GREATER:
+            case GREATEREQ:
+            case LESS:
+            case LESSEQ:
+            case NOTEQ:
+            	nodeAttrExpr.add(new NeoAttributeExpression(
+            			nodeVarName, 
+                        p.getType().getName(), //
+                        EMSLUtil.handleValue(p.getValue()), 
+                        p.getOp()));
+                break;
+            case ASSIGN:
+            	nodeAttrAsgn.add(new NeoAttributeExpression(
+            			nodeVarName, 
+                        p.getType().getName(), //
+                        EMSLUtil.handleValue(p.getValue()), 
+                        p.getOp()));
+                break;
+            default:
+                throw new UnsupportedOperationException(p.getOp().toString());
+            }
+        }
+		return new NeoAttributeReturn(nodeProps, nodeAttrExpr, nodeAttrAsgn);
+	}
+	
+	public NeoAttributeReturnRelation getRelationPropertiesAndAttributes(Collection<ModelPropertyStatement> props, String varName, ArrayList<NeoAttributeExpression> attrExpr) {
+		
+		var relProps = new ArrayList<ModelPropertyStatement>();
+		var relAttrExpr = new ArrayList<NeoAttributeExpression>();
+		var relAttrAsgn = new ArrayList<NeoAttributeExpression>();
+		
+		for(var p : props) {
+			switch(p.getOp()) {
+            case EQ:
+            	relProps.add(p);
+                break;
+            case GREATER:
+            case GREATEREQ:
+            case LESS:
+            case LESSEQ:
+            case NOTEQ:
+            	relAttrExpr.add(new NeoAttributeExpression(
+                        varName, 
+                        p.getType().getName(), //
+                        EMSLUtil.handleValue(p.getValue()), 
+                        p.getOp()));
+                break;
+            case ASSIGN:
+            	relAttrAsgn.add(new NeoAttributeExpression(
+                        varName, 
+                        p.getType().getName(), //
+                        EMSLUtil.handleValue(p.getValue()), 
+                        p.getOp()));
+                break;
+            default:
+                throw new UnsupportedOperationException(p.getOp().toString());
+            }
+		}
+		return new NeoAttributeReturnRelation(relProps, relAttrExpr, relAttrAsgn);
+		
 	}
 
 	private List<ModelRelationStatement> extractContextRelations(EList<ModelRelationStatement> relations) {
@@ -318,11 +420,11 @@ public class NeoQueryData {
 	}
 
 	public List<NeoNode> extractPatternNodesAndRelations(List<ModelNodeBlock> mnb) {
-		return extractNodesAndRelations(mnb, this::registerNewPatternNode, this::registerNewPatternRelation);
+		return extractNodesAndRelations(mnb, this::registerNewPatternNode, this::registerNewPatternRelation, attrExprPattern);
 	}
 
 	public List<NeoNode> extractConstraintNodesAndRelations(List<ModelNodeBlock> mnb) {
-		return extractNodesAndRelations(mnb, this::registerNewConstraintNode, this::registerNewConstraintRelation);
+		return extractNodesAndRelations(mnb, this::registerNewConstraintNode, this::registerNewConstraintRelation, attrExprOptional);
 	}
 
 	public void removeMatchElement(String name) {

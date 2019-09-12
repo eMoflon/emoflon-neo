@@ -10,7 +10,6 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_SheRememberedCaterpillars;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SheRememberedCaterpillarsPatterns extends ENeoTest {
@@ -77,7 +76,6 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 		assertTrue(entities.getConstraint_NothingBlue().isViolated());
 	}
 	
-	@Disabled("//TODO[Jannik] Waiting for #166")
 	@Test
 	public void testRuleWithAttributeAssignment() {
 		var attrAssg = entities.getRule_ColourBridgeRED();
@@ -85,4 +83,5 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 		assertTrue(attrAssg.rule().apply().isPresent());
 		assertEquals(0, attrAssg.rule().countMatches());
 	}
+	
 }

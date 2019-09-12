@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Name: GameOfLife
+Bundle-ManifestVersion: 2
+Bundle-Version: 0.0.1
+Bundle-SymbolicName: GameOfLife;singleton:=true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.emoflon.neo.neo4j.adapter
+Automatic-Module-Name: GameOfLife
+Export-Package: org.emoflon.neo.api

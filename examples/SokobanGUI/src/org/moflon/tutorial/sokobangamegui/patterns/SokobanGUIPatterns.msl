@@ -94,17 +94,25 @@ abstract rule createFigure -> chooseField {
 	}
 }
 
+pattern otherFigureOnField {
+	other:Figure {
+		-field->f
+	}
+	
+	f:Field
+}
+
 rule createSokoban -> createFigure {
 	++ fig:Sokoban
-}
+} when forbid otherFigureOnField
 
 rule createBlock -> createFigure {
 	++ fig:Block
-}
+} when forbid otherFigureOnField
 
 rule createBoulder -> createFigure {
 	++ fig:Boulder
-}
+} when forbid otherFigureOnField
 
 abstract rule chooseField {
 	b:SokobanLanguage.Board {

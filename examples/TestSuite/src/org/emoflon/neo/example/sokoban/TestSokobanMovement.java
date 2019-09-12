@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.NeoController;
@@ -23,7 +22,6 @@ class TestSokobanMovement extends ENeoTest {
 		}, 8, 8);
 	}
 
-	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardMoveSokoban() {
 		view.createSokoban(2,2);
@@ -41,7 +39,6 @@ class TestSokobanMovement extends ENeoTest {
 		}
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardMoveBlock() {
 		view.createSokoban(2,2);
@@ -66,7 +63,6 @@ class TestSokobanMovement extends ENeoTest {
 		assertEquals(ExpectedBoards.validBoardMoveBlockAfterMove(), view.printBoard());
 	}
 	
-	@Disabled("Waiting for #166")
 	@Test
 	public void testValidBoardMoveBoulder() {
 		view.createSokoban(2,2);

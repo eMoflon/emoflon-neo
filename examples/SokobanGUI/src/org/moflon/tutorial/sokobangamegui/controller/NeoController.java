@@ -129,13 +129,14 @@ public class NeoController implements IController {
 
 	@Override
 	public void setFigure(Field field, String figureType) {
+		Optional<?> result;
 		switch (figureType) {
 		case SOKOBAN: {
 			var access = api1.getRule_CreateSokoban();
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			access.rule(mask).apply();
+			result = access.rule(mask).apply();
 			break;
 		}
 		case BLOCK: {
@@ -143,7 +144,7 @@ public class NeoController implements IController {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			access.rule(mask).apply();
+			result = access.rule(mask).apply();
 			break;
 		}
 		case BOULDER: {
@@ -151,7 +152,7 @@ public class NeoController implements IController {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			access.rule(mask).apply();
+			result = access.rule(mask).apply();
 			break;
 		}
 		default:
@@ -159,9 +160,12 @@ public class NeoController implements IController {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			access.rule(mask).apply();
+			result = access.rule(mask).apply();
 			break;
 		}
+		
+		if(result.isEmpty())
+			throw new UnsupportedOperationException("Unable to create " + figureType + " on " + field);
 	}
 
 	@Override
