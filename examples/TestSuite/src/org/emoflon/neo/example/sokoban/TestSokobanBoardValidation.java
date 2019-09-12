@@ -126,14 +126,12 @@ class TestSokobanBoardValidation extends ENeoTest {
 	public void testSokobanOnBoulder() {
 		view.createSokoban(2,2);
 		view.createBlock(5,6);
-		view.createBoulder(2,2);
 		view.createEndPos(2,5);
-		assertFalse(controller.boardIsValid());
+		assertThrows(UnsupportedOperationException.class, () -> view.createBoulder(2,2));
 	}
 	
 	@Test
 	public void testSokobanOnBlock() {
-		view.createSokoban(2,2);
 		view.createBlock(2,2);
 		view.createBoulder(3,2);
 		view.createEndPos(2,5);
