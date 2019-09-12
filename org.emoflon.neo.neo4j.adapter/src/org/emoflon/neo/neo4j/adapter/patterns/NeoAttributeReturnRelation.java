@@ -3,7 +3,6 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 import java.util.ArrayList;
 
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
-import org.emoflon.neo.neo4j.adapter.common.NeoProperty;
 
 public class NeoAttributeReturnRelation {
 	
