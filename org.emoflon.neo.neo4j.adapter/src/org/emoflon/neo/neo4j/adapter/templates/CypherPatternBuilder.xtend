@@ -112,9 +112,10 @@ class CypherPatternBuilder {
 	def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, 
 		HashMap<String,String> equalElem, Collection<String> injElem) {
 		var out = "";
-		if(injective && nodes.size > 1){
-			out += injectiveBlock(nodes);
+		if(injective) {
+			out += injectiveNodes(injElem);			
 		}
+		
 		var maskBlock = maskBlock(nodes, mask)
 		if(out.length > 0 && maskBlock.length > 0)
 			out += " AND "
@@ -130,8 +131,10 @@ class CypherPatternBuilder {
 			out += " AND ";
 		out += attrBlock;
 						
-		if(out.length > 0)
-			'''WHERE «out»'''
+		if(out.length>0)
+			'''WHERE 
+				«out»
+			'''
 		else	
 			''''''
 	}
