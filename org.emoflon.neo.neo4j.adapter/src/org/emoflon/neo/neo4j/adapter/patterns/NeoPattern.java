@@ -136,6 +136,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 				queryData.getAllElements(), //
 				matchCond, //
 				whereCond, //
+				queryData.getAttributeExpressions(),
 				injective, //
 				0);
 	}
@@ -154,7 +155,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	public Record getData(NeoMatch m) {
 		logger.info("Extract data from " + getName());
-		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, m, injective);
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, m, queryData.getAttributeExpressions(), injective);
 		logger.debug(cypherQuery);
 		StatementResult result = builder.executeQuery(cypherQuery);
 

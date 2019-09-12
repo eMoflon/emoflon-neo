@@ -32,7 +32,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery(getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), queryData.getAllElements(), isNegated, injective, limit, mask);
+				condData.getWhereClause(), queryData.getAllElements(), isNegated, queryData.getAttributeExpressions(), injective, limit, mask);
 		logger.debug(cypherQuery);
 
 		// run the query
@@ -93,6 +93,6 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	public String getQuery() {
 		var condData = referencedConstraint.getConditionData();
 		return CypherPatternBuilder.conditionQuery_copyPaste(getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), queryData.getAllElements(), isNegated, injective, 0);
+				condData.getWhereClause(), queryData.getAllElements(), isNegated, queryData.getAttributeExpressions(), injective, 0);
 	}
 }

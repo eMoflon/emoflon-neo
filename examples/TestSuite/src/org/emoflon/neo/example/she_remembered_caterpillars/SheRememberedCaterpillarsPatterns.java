@@ -85,4 +85,5 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 		assertTrue(attrAssg.rule().apply().isPresent());
 		assertEquals(0, attrAssg.rule().countMatches());
 	}
+	
 }

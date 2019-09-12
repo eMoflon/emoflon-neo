@@ -603,4 +603,34 @@ public class SokobanPatterns extends ENeoTest {
 	public void testDisjoinedPatternWithConditionElements_Forbid() {
 		assertEquals(0, entities.getPattern_OneFieldWithNoBlock().matcher().countMatches());
 	}
+	
+	@Test
+	public void testAttributeExpressionsPattern() {
+		assertEquals(2, entities.getPattern_TestAttrExpression().matcher().countMatches());
+	}
+	
+	@Test
+	public void testAttributeExpressionsPositiveConstraint() {
+		assertTrue(entities.getConstraint_TestConstraintAttrExpression().isSatisfied());
+	}
+	
+	@Test
+	public void testAttributeExpressionsNegativeConstraint() {
+		assertTrue(entities.getConstraint_TestConstraintAttrExpressionNegativ().isViolated());
+	}
+	
+	@Test
+	public void testAttributeExpressionsNegatedConstraint() {
+		assertTrue(entities.getConstraint_TestConstraintAttrExpressionNegated().isSatisfied());
+	}
+	
+	@Test
+	public void testAttributeExpressionsNestedConstraint() {
+		assertTrue(entities.getConstraint_TestConcatenatedConstraintAttrExpression().isSatisfied());
+	}
+	
+	@Test
+	public void testAttributeExpressionsPatternWithPositiveCondition() {
+		assertEquals(2, entities.getPattern_SomeField().matcher().countMatches());
+	}
 }
