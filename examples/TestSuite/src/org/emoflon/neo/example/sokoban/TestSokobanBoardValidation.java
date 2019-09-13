@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.NeoController;
 
+//FIXME[Jannik]
+@Disabled
 class TestSokobanBoardValidation extends ENeoTest {
 
 	private TestView view;
@@ -170,8 +172,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		assertTrue(controller.boardIsValid());
 	}
 	
-	//FIXME[Jannik]
-	@Disabled
 	@Test
 	public void testValidBoardBlockIsInCorner() {
 		view.createSokoban(2,2);
