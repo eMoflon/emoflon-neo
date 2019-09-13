@@ -108,7 +108,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 						varName,
 						EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
-						r.getProperties(), //
+						propsR.getElemProps(), //
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName());
 				

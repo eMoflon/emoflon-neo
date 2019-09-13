@@ -77,12 +77,10 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 		assertTrue(entities.getConstraint_NothingBlue().isViolated());
 	}
 	
-	//FIXME[Jannik]
-	@Disabled
 	@Test
 	public void testRuleWithAttributeAssignment() {
 		var attrAssg = entities.getRule_ColourBridgeRED();
-		assertEquals(1, attrAssg.rule().countMatches());
+		assertEquals(2, attrAssg.rule().countMatches());
 		assertTrue(attrAssg.rule().apply().isPresent());
 		assertEquals(0, attrAssg.rule().countMatches());
 	}

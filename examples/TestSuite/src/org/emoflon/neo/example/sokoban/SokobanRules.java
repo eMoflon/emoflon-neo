@@ -82,4 +82,12 @@ public class SokobanRules extends ENeoTest {
 		var matches = rule.determineMatches();
 		assertTrue(matches.size() == 0);		
 	}
+	
+	@Test void testAssignEndPosToNeighboringEndPosField() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_TestAttributeAssignmentsWithElementsValueAssign().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 2);	
+	}
+	
+	
 }
