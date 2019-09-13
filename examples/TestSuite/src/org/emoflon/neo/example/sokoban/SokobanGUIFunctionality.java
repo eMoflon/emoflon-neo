@@ -83,7 +83,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertTrue(access.rule().determineOneMatch().isPresent());
 	}
 
-	// FIXME [Jannik]
 	@Test
 	public void testAxiomWithAppCond() {
 		builder.executeQueryForSideEffect("MATCH (f:Field), (b:Board), (m:Figure) DETACH DELETE f,b,m");
