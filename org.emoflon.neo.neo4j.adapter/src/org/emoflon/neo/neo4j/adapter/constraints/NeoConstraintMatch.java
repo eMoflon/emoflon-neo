@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.api.rules.IPattern;
+import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.api.patterns.IPattern;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;

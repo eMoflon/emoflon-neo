@@ -67,7 +67,7 @@ public final class ClasspathUtil {
 	 * @throws CoreException if analyzing the classpath fails
 	 */
 	public static void makeSourceFolderIfNecessary(final IFolder folder) throws CoreException {
-		if (!ClasspathUtil.isSourceFolder(folder)) {
+		if (folder.exists() && !ClasspathUtil.isSourceFolder(folder)) {
 			makeSourceFolder(folder);
 		}
 	}

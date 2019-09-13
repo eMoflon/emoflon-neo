@@ -3,8 +3,8 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.emoflon.neo.engine.api.rules.IMatch;
-import org.emoflon.neo.engine.api.rules.IPattern;
+import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.api.patterns.IPattern;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.neo4j.driver.v1.Record;

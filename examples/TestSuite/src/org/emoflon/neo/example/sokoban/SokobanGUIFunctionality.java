@@ -11,7 +11,6 @@ import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 
@@ -84,7 +83,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertTrue(access.rule().determineOneMatch().isPresent());
 	}
 
-	// FIXME
 	@Test
 	public void testAxiomWithAppCond() {
 		builder.executeQueryForSideEffect("MATCH (f:Field), (b:Board), (m:Figure) DETACH DELETE f,b,m");
@@ -109,7 +107,6 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		assertFalse(access.rule().determineOneMatch().isPresent());
 	}
 	
-	@Disabled("TODO[Jannik] Waiting for #166")
 	@Test
 	public void testEndFieldToggle() {
 		{

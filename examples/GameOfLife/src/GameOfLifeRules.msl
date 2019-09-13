@@ -1,0 +1,57 @@
+metamodel GameOfLife {
+	class Cell {
+		.x:EInt
+		.y:EInt
+
+		.alive : EBoolean
+		-neighbours(3..8)->Cell
+	}
+}
+
+/* Rules of the Game */
+
+abstract rule die {
+	c:Cell {
+		.alive : true
+		.alive := false
+	}
+}
+
+rule dieDueToUnderpopulation -> die when forbid twoNeighboursAlive
+
+rule dieDueToOverpopulation -> die when enforce fourNeighboursAlive
+
+rule reproduce {
+	c:Cell {
+		.alive : false
+		.alive := true
+	}
+} when exactlyThreeNeighboursAlive
+
+/* Auxiliary Patterns */
+
+constraint exactlyThreeNeighboursAlive = atLeastThreeNeighboursAlive && noMoreThanThreeNeighboursAlive
+constraint atLeastThreeNeighboursAlive = enforce threeNeighboursAlive
+constraint noMoreThanThreeNeighboursAlive = forbid fourNeighboursAlive
+
+pattern fourNeighboursAlive 
+	-> twoNeighboursAlive,
+	   twoNeighboursAlive[n1 -> n3, n2 -> n4]
+
+pattern threeNeighboursAlive
+	-> twoNeighboursAlive, 
+	   oneNeighbourAlive[n1 -> n3]
+
+pattern twoNeighboursAlive 
+	-> oneNeighbourAlive, 
+	   oneNeighbourAlive[n1 -> n2]
+
+pattern oneNeighbourAlive {
+	c:Cell {
+		-neighbours->n1
+	}
+	
+	n1:Cell {
+		.alive : true	
+	}
+}

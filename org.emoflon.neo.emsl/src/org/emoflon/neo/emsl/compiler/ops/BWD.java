@@ -8,7 +8,7 @@ public class BWD implements Operation {
 
 	@Override
 	public String getNameExtension() {
-		return "_BWD.msl";
+		return "_BWD";
 	}
 
 	@Override

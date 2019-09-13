@@ -18,6 +18,7 @@ import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
@@ -47,6 +48,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private HashMap<String, NeoRelation> redRel;
 	private HashMap<String, NeoNode> greenNodes;
 	private HashMap<String, NeoRelation> greenRel;
+	
+	private ArrayList<NeoAttributeExpression> attrExpr;
+	private ArrayList<NeoAttributeExpression> attrAssign;
 
 	public NeoRule(Rule r, IBuilder builder, NeoMask mask, NeoQueryData neoQuery) {
 
@@ -69,6 +73,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		this.redRel = new HashMap<String, NeoRelation>();
 		this.greenNodes = new HashMap<String, NeoNode>();
 		this.greenRel = new HashMap<String, NeoRelation>();
+		
+		this.attrExpr = new ArrayList<NeoAttributeExpression>();
+		this.attrAssign = new ArrayList<NeoAttributeExpression>();
 
 		var flatRule = NeoUtil.getFlattenedRule(r);
 		var nodeBlocks = flatRule.getNodeBlocks();
@@ -89,13 +96,19 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			computePropertiesOfNode(n, neoNode, mask);
 
 			for (var r : n.getRelations()) {
+				
+				var varName = EMSLUtil.relationNameConvention(neoNode.getVarName(), EMSLUtil.getAllTypes(r),
+						r.getTarget().getName(), n.getRelations().indexOf(r));
+				
+				var propsR = queryData.getRelationPropertiesAndAttributes(r.getProperties(), varName, this.attrExpr);
+				attrExpr.addAll(propsR.getElemAttrExpr());
+				attrAssign.addAll(propsR.getElemAttrAsgn());
 
 				var neoRel = new NeoRelation(neoNode,
-						EMSLUtil.relationNameConvention(neoNode.getVarName(), EMSLUtil.getAllTypes(r),
-								r.getTarget().getName(), n.getRelations().indexOf(r)),
+						varName,
 						EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
-						r.getProperties(), //
+						propsR.getElemProps(), //
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName());
 				
@@ -197,9 +210,10 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	private void computePropertiesOfNode(ModelNodeBlock node, NeoNode neoNode, NeoMask neoMask) {
-		for (var p : node.getProperties()) {
-			neoNode.addProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue()));
-		}
+		var props = queryData.getNodePropertiesAndAttributes(node.getProperties(), neoNode.getVarName(), this.attrExpr);
+		props.getElemProps().forEach(prop -> neoNode.addProperty(prop.getName(), prop.getValue()));
+		attrExpr.addAll(props.getElemAttrExpr());
+		attrAssign.addAll(props.getElemAttrAsgn());
 	}
 
 	private void extractNodePropertiesFromMask(NeoNode neoNode) {
@@ -285,7 +299,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		logger.info("Execute Rule " + getName());
 		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
-				modelNodes, modelRel, modelEContainerRel.values());
+				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 

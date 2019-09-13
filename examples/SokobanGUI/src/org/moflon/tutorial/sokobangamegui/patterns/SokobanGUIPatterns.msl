@@ -94,17 +94,25 @@ abstract rule createFigure -> chooseField {
 	}
 }
 
+pattern otherFigureOnField {
+	other:Figure {
+		-field->f
+	}
+	
+	f:Field
+}
+
 rule createSokoban -> createFigure {
 	++ fig:Sokoban
-}
+} when forbid otherFigureOnField
 
 rule createBlock -> createFigure {
 	++ fig:Block
-}
+} when forbid otherFigureOnField
 
 rule createBoulder -> createFigure {
 	++ fig:Boulder
-}
+} when forbid otherFigureOnField
 
 abstract rule chooseField {
 	b:SokobanLanguage.Board {
@@ -144,15 +152,19 @@ rule selectFigure {
 
 // Rules for generating boards
 
-rule createTopLeft {
+abstract rule createField {
+	++ f:Field {
+		.endPos := false
+	}
+}
+
+rule createTopLeft -> createField {
 	++ b:SokobanLanguage.Board {
-		++ -fields->f {
+		++ -fields->$f {
 			.col := 0
 			.row := 0
 		}
 	}
-	
-	++ f:Field
 }
 
 rule createTopLeftWithAppCond -> createTopLeft when forbid TopLeft
@@ -168,7 +180,7 @@ pattern TopLeft {
 	otherField:Field
 }
 
-rule createFirstRow {
+rule createFirstRow -> createField[f -> rightField] {
 	b:SokobanLanguage.Board {
 		-fields->leftField {
 			.row : 0
@@ -187,7 +199,7 @@ rule createFirstRow {
 	++ rightField:Field
 } when forbid OtherRight
 
-rule createFirstCol {
+rule createFirstCol -> createField[f -> bottomField] {
 	b:SokobanLanguage.Board {
 		-fields->topField {
 			.col : 0
@@ -206,7 +218,7 @@ rule createFirstCol {
 	++ bottomField:Field
 } when forbid OtherBottom
 
-rule createRestOfFields {
+rule createRestOfFields -> createField[f -> field] {
 	b:SokobanLanguage.Board {
 		-fields->leftField
 		-fields->topField

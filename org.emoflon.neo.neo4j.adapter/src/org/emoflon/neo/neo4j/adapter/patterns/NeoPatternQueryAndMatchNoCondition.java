@@ -18,13 +18,13 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 
 	@Override
 	public String getQuery() {
-		return CypherPatternBuilder.readQuery_copyPaste(nodes, injective);
+		return CypherPatternBuilder.readQuery_copyPaste(nodes, queryData.getAttributeExpressions(), injective);
 	}
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 		logger.info("Searching matches for Pattern: " + getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, injective, limit, mask);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, queryData.getAttributeExpressions(), injective, limit, mask);
 		logger.debug(cypherQuery);
 
 		var result = builder.executeQuery(cypherQuery);
@@ -51,7 +51,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 	@Override
 	public boolean isStillValid(NeoMatch m) {
 		logger.info("Check if match for " + getName() + " is still valid");
-		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, injective);
+		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, queryData.getAttributeExpressions(), injective);
 		logger.debug(cypherQuery);
 		var result = builder.executeQuery(cypherQuery);
 

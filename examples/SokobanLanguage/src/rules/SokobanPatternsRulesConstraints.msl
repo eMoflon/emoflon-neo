@@ -715,4 +715,76 @@ pattern fieldWithBlock {
 	f1:Field
 }
 
+pattern testAttrExpression {
+	b:SokobanLanguage.Board {
+		-fields -> f {
+			.col : 2
+			.col > 0
+			.col >= 1
+			.row <= 3
+			.row < 4
+			.row != 0
+		}
+	}
+	
+	f:Field {
+		.endPos : true
+	}
+}
 
+pattern testAttrExpression2 {
+	b:SokobanLanguage.Board {
+		-fields -> f {
+			.col : 2
+			.col > 0
+			.col >= 0
+			.row <= 99
+			.row < 100
+			.row != 99
+		}
+	}
+	
+	f:Field {
+		.endPos : true
+	}
+}
+
+constraint testConstraintAttrExpression = enforce testAttrExpression
+constraint testConstraintAttrExpression2 = forbid testAttrExpression2
+constraint testConstraintAttrExpressionNegativ = forbid testAttrExpression
+constraint testConstraintAttrExpressionNegated = !testConstraintAttrExpressionNegativ
+constraint testConcatenatedConstraintAttrExpression = testConstraintAttrExpression || !testConstraintAttrExpression2
+
+pattern someField {
+	f:Field {
+		.endPos != false
+	}
+} when testConcatenatedConstraintAttrExpression
+
+rule testAttributeAssignmentsInRule {
+	f:Field {
+		.endPos != false
+		.endPos := false
+	}
+}
+
+rule testAttributeAssignmentsWithElementsValueAssign {
+	b:SokobanLanguage.Board {
+		-fields->f {
+			.row > 1
+			.col != 1
+		}
+		-fields->fEnd {
+			.row := b::-fields->f::row + 42
+			.col := b::-fields->f::col + 42
+		}
+	}
+	f:Field {
+		.endPos : true
+		-right->fEnd
+	}
+	fEnd:Field {
+		.endPos : false
+		.endPos := f::endPos
+	}
+}

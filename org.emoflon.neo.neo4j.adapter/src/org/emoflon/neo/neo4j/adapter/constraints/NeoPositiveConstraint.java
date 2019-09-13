@@ -73,7 +73,7 @@ public class NeoPositiveConstraint extends NeoConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchConstraint() {
-		return CypherPatternBuilder.constraint_matchQuery(nodes, injective, uuid, mask);
+		return CypherPatternBuilder.constraint_matchQuery(nodes, queryData.getAttributeExpressionsOptional(), injective, uuid, mask);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class NeoPositiveConstraint extends NeoConstraint {
 	 *         constraint)
 	 */
 	public String getQueryString_MatchCondition() {
-		return CypherPatternBuilder.condition_matchQuery(nodes, injective, mask, queryData.getEqualElements(), queryData.getAllNodesRequireInjectivityChecksCondition());
+		return CypherPatternBuilder.condition_matchQuery(nodes, queryData.getAttributeExpressionsOptional(), injective, mask, queryData.getEqualElements(), queryData.getAllNodesRequireInjectivityChecksCondition());
 	}
 
 	/**

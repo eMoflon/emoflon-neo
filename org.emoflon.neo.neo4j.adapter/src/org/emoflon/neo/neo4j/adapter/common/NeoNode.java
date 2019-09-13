@@ -90,6 +90,7 @@ public class NeoNode {
 			List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
 		this.relations.add(new NeoRelation(this, varName, relTypes, lower, upper, props, toNodeLabel, toNodeVar));
 	}
+	
 	public void addRelation(NeoRelation rel) {
 		this.relations.add(rel);
 	}

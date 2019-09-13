@@ -567,7 +567,9 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 */
 	private void compareValueOfModelPropertyStatement(SuperType entity, ModelPropertyStatement p1,
 			ModelPropertyStatement p2) throws FlattenerException {
-
+		if(p1.equals(p2))
+			return;
+		
 		if (p1.getValue() instanceof PrimitiveBoolean && p2.getValue() instanceof PrimitiveBoolean
 				&& (((PrimitiveBoolean) p1.getValue()).isTrue() && ((PrimitiveBoolean) p2.getValue()).isTrue()
 						|| !((PrimitiveBoolean) p1.getValue()).isTrue()

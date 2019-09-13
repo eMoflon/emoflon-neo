@@ -8,7 +8,7 @@ public class MODELGEN implements Operation {
 
 	@Override
 	public String getNameExtension() {
-		return "_GEN.msl";
+		return "_GEN";
 	}
 
 	@Override
