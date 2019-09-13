@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.NeoController;
 
-//FIXME[Jannik]
+//FIXME[Max]
 @Disabled
 class TestSokobanMovement extends ENeoTest {
 	
