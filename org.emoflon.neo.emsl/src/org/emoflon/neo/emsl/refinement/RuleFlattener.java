@@ -13,8 +13,10 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.Action;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.emsl.eMSL.AttributeExpression;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.EnumValue;
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -338,7 +340,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @throws FlattenerException is thrown if two properties are not mergeable.
 	 */
 	private HashSet<ModelPropertyStatement> collectAndMergePropertyStatementsOfRelations(
-			ArrayList<ModelRelationStatement> edges, SuperType entity) throws FlattenerException {
+			ArrayList<ModelRelationStatement> edges, SuperType entity, List<ModelNodeBlock> mergedNodes) throws FlattenerException {
 		var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
 		var mergedProperties = new HashSet<ModelPropertyStatement>();
 
@@ -384,7 +386,22 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				mergedProperties.add(EcoreUtil.copy(basis));
 			}
 		}
-
+		
+		// re-set targets of attribute expressions to the newly copied nodes
+		for (var p : mergedProperties) {
+			if (p.getValue() instanceof AttributeExpression) {
+				for (var n : mergedNodes) {
+					if (n.getName().equals(((AttributeExpression) p).getNode().getName())) {
+						((AttributeExpression) p).setNode(n);
+					}
+					if (((AttributeExpression) p.getValue()).getTarget() instanceof LinkAttributeExpTarget
+							&& ((LinkAttributeExpTarget) ((AttributeExpression) p.getValue()).getTarget()).getTarget().getName().equals(n.getName())) {
+						((LinkAttributeExpTarget) ((AttributeExpression) p.getValue()).getTarget()).setTarget(n);
+					}
+				}
+			}
+		}
+		
 		return mergedProperties;
 	}
 
@@ -496,6 +513,21 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						compareValueOfModelPropertyStatement(entity, basis, p);
 					}
 					newProperties.add(EcoreUtil.copy(basis));
+				}
+			}
+			
+			// re-set targets of attribute expressions to the newly copied nodes
+			for (var p : newProperties) {
+				if (p.getValue() instanceof AttributeExpression) {
+					for (var n : mergedNodes) {
+						if (n.getName().equals(((AttributeExpression) p).getNode().getName())) {
+							((AttributeExpression) p).setNode(n);
+						}
+						if (((AttributeExpression) p.getValue()).getTarget() instanceof LinkAttributeExpTarget
+								&& ((LinkAttributeExpTarget) ((AttributeExpression) p.getValue()).getTarget()).getTarget().getName().equals(n.getName())) {
+							((LinkAttributeExpTarget) ((AttributeExpression) p.getValue()).getTarget()).setTarget(n);
+						}
+					}
 				}
 			}
 
@@ -666,7 +698,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 
 					// merge statements and check statements for compliance
 					newRel.getProperties().addAll(
-							collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity));
+							collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity, mergedNodes));
 
 					// check and merge action
 					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname), entity));
@@ -744,7 +776,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				}
 
 				// merge statements and check statements for compliance
-				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity));
+				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity, mergedNodes));
 
 				// check and merge action
 				newRel.setAction(mergeActionOfRelations(namedEdges.get(n), entity));
