@@ -229,7 +229,7 @@ public class TripleRuleFlattener extends RuleFlattener {
 		}
 
 		return mergeEdgesOfNodeBlocks(entity, nodeBlocks,
-				mergePropertyStatementsOfNodeBlocks(entity, nodeBlocks, mergedNodes));
+				mergePropertyStatementsOfNodeBlocks(entity, nodeBlocks, mergedNodes, refinementList), refinementList);
 	}
 
 	/**
