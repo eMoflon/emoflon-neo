@@ -85,8 +85,6 @@ public class SokobanRules extends ENeoTest {
 		assertTrue(matches.size() == 0);		
 	}
 	
-	//FIXME[Jannik]
-	@Disabled
 	@Test void testAssignEndPosToNeighboringEndPosField() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_TestAttributeAssignmentsWithElementsValueAssign().rule();
 		var matches = rule.determineMatches();
