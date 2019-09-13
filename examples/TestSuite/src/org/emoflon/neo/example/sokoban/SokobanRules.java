@@ -2,6 +2,7 @@ package org.emoflon.neo.example.sokoban;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
 
@@ -84,12 +85,19 @@ public class SokobanRules extends ENeoTest {
 		assertTrue(matches.size() == 0);		
 	}
 	
-	//FIXME[Jannik]
-	@Disabled
 	@Test void testAssignEndPosToNeighboringEndPosField() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_TestAttributeAssignmentsWithElementsValueAssign().rule();
 		var matches = rule.determineMatches();
-		assertTrue(matches.size() == 2);	
+		assertEquals(2, matches.size());	
+		
+		var iterator = matches.iterator();
+		
+		while(iterator.hasNext()) {
+			var match = iterator.next();
+			Optional<NeoCoMatch> result = rule.apply(match);
+			assertTrue(result.isPresent());
+			assertFalse(match.isStillValid());
+		}
 	}
 	
 	

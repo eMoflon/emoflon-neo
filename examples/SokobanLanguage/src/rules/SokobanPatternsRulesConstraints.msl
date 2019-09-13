@@ -770,13 +770,17 @@ rule testAttributeAssignmentsInRule {
 rule testAttributeAssignmentsWithElementsValueAssign {
 	b:SokobanLanguage.Board {
 		-fields->f {
-			.row : 1
-			.col : 1
+			.row > 1
+			.col != 1
 		}
-		-fields->fEnd
+		-fields->fEnd {
+			.row := b::-fields->f::row + 42
+			.col := b::-fields->f::col + 42
+		}
 	}
 	f:Field {
 		.endPos : true
+		-right->fEnd
 	}
 	fEnd:Field {
 		.endPos : false
