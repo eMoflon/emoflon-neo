@@ -17,6 +17,8 @@ public class OPT {
 	private Map<Long, Set<IMatch>> elementToDependentMatches;
 	private Map<IMatch, Set<Long>> matchToCreatedElements;
 	private Set<Set<IMatch>> cycles;
+	private Set<IMatch> visited;
+	private Set<IMatch> visiting;
 
 	private long constraintCounter;
 	private long variableCounter;
@@ -88,8 +90,11 @@ public class OPT {
 			}
 		}
 		
+		cycles = new HashSet<>();
+		visited = new HashSet<>();
+		visiting = new HashSet<>();
 		for (var match : matchToId.keySet())
-			computeCycles(match, Set.of());
+			computeCycles(match, new HashSet<>());
 		
 		for (var cycle : cycles) {
 			ilpProblem.addExclusion(cycle.stream().map(this::varNameFor), registerConstraint("EXCL_cycle"),
@@ -98,6 +103,16 @@ public class OPT {
 	}
 
 	private void computeCycles(IMatch match, Set<IMatch> cycle) {
+		if(visited.contains(match))
+			return;
+		
+		if(visiting.contains(match)) {
+			cycles.add(cycle);
+			return;
+		}
+		
+		cycle.add(match);
+		visiting.add(match);
 		for(var element : matchToCreatedElements.get(match)) {
 			for(var child : elementToCreatingMatches.get(element)) {
 				if(cycle.contains(child))
@@ -109,6 +124,9 @@ public class OPT {
 				}
 			}
 		}
+		
+		visited.add(match);
+		visiting.remove(match);
 	}
 	
 	protected void defineILPObjective() {
