@@ -34,6 +34,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.eclipse.core.runtime.NullProgressMonitor
+import org.emoflon.neo.emsl.eMSL.TripleRule
 
 /**
  * Generates code from your model files on save.
@@ -43,11 +44,39 @@ import org.eclipse.core.runtime.NullProgressMonitor
 class EMSLGenerator extends AbstractGenerator {
 	public static final String TGG_GEN_FOLDER = "tgg-gen"
 	public static final String SRC_GEN_Folder = "src-gen"
+	public static final String API_ROOT = "org/emoflon/neo/api/"
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		val segments = resource.URI.trimFileExtension.segmentsList
+		if(resource.contents.isEmpty) return
 
-		val apiName = "API_" + segments.last
+		val apiPath = getAPIPath(resource)
+		val apiName = getAPIName(resource)
+		val apiFile = getAPIFileName(resource)
+
+		var emslSpec = resource.contents.get(0) as EMSL_Spec		
+		emslSpec.entities.filter[it instanceof TripleGrammar]
+						 .map[it as TripleGrammar]
+						 .forEach[
+						 	new TGGCompiler(it, apiPath + "/" + apiName)
+						 	.compileAll(fsa)
+						 ]
+
+		fsa.generateFile(API_ROOT + "API_Common.java", generateCommon())
+		fsa.generateFile(API_ROOT + apiPath + "/" + apiFile + ".java",
+			generateAPIFor(apiFile, apiPath, emslSpec, resource))
+	}
+
+	def getAPIName(Resource resource){
+		val segments = resource.URI.trimFileExtension.segmentsList
+		return segments.last
+	}
+
+	def getAPIFileName(Resource resource){
+		return "API_" + getAPIName(resource)
+	}
+
+	def getAPIPath(Resource resource){
+		val segments = resource.URI.trimFileExtension.segmentsList
 
 		// Always remove:  resource/projectName
 		var prefixSegments = 2
@@ -58,21 +87,8 @@ class EMSLGenerator extends AbstractGenerator {
 		val apiPath = segments //
 		.drop(prefixSegments).take(segments.size - (prefixSegments + 1)) // only take path up to EMSL file
 		.join("/");
-
-		if(resource.contents.isEmpty) return
-
-		var emslSpec = resource.contents.get(0) as EMSL_Spec
 		
-		emslSpec.entities.filter[it instanceof TripleGrammar]
-						 .map[it as TripleGrammar]
-						 .forEach[
-						 	new TGGCompiler(it, apiPath + "/" + segments.last)
-						 	.compileAll(fsa)
-						 ]
-
-		fsa.generateFile("org/emoflon/neo/api/" + "API_Common.java", generateCommon())
-		fsa.generateFile("org/emoflon/neo/api/" + apiPath + "/" + apiName + ".java",
-			generateAPIFor(apiName, apiPath, emslSpec, resource))
+		return apiPath
 	}
 
 	override void afterGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
@@ -140,14 +156,18 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.eMSL.Model;
 			import org.emoflon.neo.emsl.eMSL.Metamodel;
 			import org.emoflon.neo.emsl.util.EMSLUtil;
+			import org.emoflon.neo.emsl.util.FlattenerException;
 			import org.emoflon.neo.engine.api.patterns.IPattern;
 			import org.emoflon.neo.engine.api.rules.IRule;
+			import org.emoflon.neo.engine.api.rules.ITripleRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleAccess;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
+			import org.emoflon.neo.emsl.eMSL.TripleRule;
+			import org.emoflon.neo.neo4j.adapter.rules.NeoTripleRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
@@ -157,6 +177,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoData;
+			import org.emoflon.neo.api.API_Common;
 			import java.util.Collection;
 			import java.util.HashSet;
 			import java.util.HashMap;
@@ -403,6 +424,53 @@ class EMSLGenerator extends AbstractGenerator {
 						rules.add(«access»);
 					«ENDFOR»
 					return rules;
+				}
+			'''
+		} catch (Exception e) {
+			e.printStackTrace
+			'''//FIXME Unable to generate API: «e.toString»  */ '''
+		}
+	}
+	
+	dispatch def generateAccess(TripleGrammar tgg, int index){
+		if(tgg.abstract) return ""
+		try {
+			val rootName = namingConvention(tgg.name)
+			'''
+				public void exportMetamodelsFor«rootName»() throws FlattenerException {
+					«FOR mm : tgg.srcMetamodels + tgg.trgMetamodels»
+						«val apiPath = API_ROOT + getAPIPath(mm.eResource) + "/" + getAPIFileName(mm.eResource)»
+						«val apiFQN = apiPath.replace("/", ".").replace("..", ".")»
+						«val mmName = namingConvention(mm.name)»
+						{
+							var api = new «apiFQN»(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+							builder.exportEMSLEntityToNeo4j(api.getMetamodel_«mmName»());
+						}
+					«ENDFOR»
+				}
+				
+				public Collection<ITripleRule> getTripleRuleInfoFor«rootName»() {
+					Collection<ITripleRule> info = new HashSet<>();
+					«FOR tr : tgg.rules.filter[!it.abstract]»
+						info.add(getTripleRule_«tr.name»());
+					«ENDFOR»
+					return info;
+				}
+			'''
+		} catch (Exception e) {
+			e.printStackTrace
+			'''//FIXME Unable to generate API: «e.toString»  */ '''
+		}
+	}
+	
+	dispatch def generateAccess(TripleRule tr, int index){
+		if(tr.abstract) return ""
+		try {
+			val rootName = namingConvention(tr.name)
+			'''
+				public ITripleRule getTripleRule_«rootName»() {
+					var tr = (TripleRule) spec.getEntities().get(«index»);
+					return new NeoTripleRule(tr);
 				}
 			'''
 		} catch (Exception e) {
