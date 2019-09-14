@@ -112,7 +112,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @return Number of matches
 	 */
 	@Override
-	public Number countMatches() {
+	public int countMatches() {
 		var matches = determineMatches();
 		if (matches != null)
 			return matches.size();

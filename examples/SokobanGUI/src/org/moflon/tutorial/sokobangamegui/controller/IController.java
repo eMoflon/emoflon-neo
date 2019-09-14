@@ -9,6 +9,8 @@ public interface IController {
 	public String BOULDER = "Boulder";
 	public String BLOCK = "Block";
 	public String SOKOBAN = "Sokoban";
+	public String NONE = "None";
+	
 	int getWidth();
 	int getHeight();
 

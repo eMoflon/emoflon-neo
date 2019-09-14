@@ -72,15 +72,13 @@ pattern endField {
 
 constraint oneEndField = enforce endField
 
-pattern block { b:Block }
+pattern block { boulder:Block }
 
 pattern endFieldBlockedByBoulder -> endField {
 	boulder : Boulder {
 		-field-> $endField
 	}
-}
-
-constraint noBlockedEndField = forbid endFieldBlockedByBoulder
+} when forbid block
 
 rule deleteFigure -> chooseField {
 	-- fig:Figure {

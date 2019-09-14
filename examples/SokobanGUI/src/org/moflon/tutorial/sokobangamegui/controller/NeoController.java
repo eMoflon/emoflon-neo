@@ -113,7 +113,7 @@ public class NeoController implements IController {
 			return false;
 		}
 
-		if (api1.getConstraint_NoBlockedEndField().isViolated()) {
+		if (api1.getPattern_EndFieldBlockedByBoulder().matcher().countMatches() != 0) {
 			view.updateStatus("One of your end fields is blocked by a boulder!");
 			return false;
 		}
@@ -164,7 +164,7 @@ public class NeoController implements IController {
 			break;
 		}
 		
-		if(!result.isPresent())
+		if(!result.isPresent() && !figureType.equals(NONE))
 			throw new UnsupportedOperationException("Unable to create " + figureType + " on " + field);
 	}
 

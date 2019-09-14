@@ -46,7 +46,7 @@ public interface IPattern<M extends IMatch> {
 	 * 
 	 * @return
 	 */
-	default Number countMatches() {
+	default int countMatches() {
 		return determineMatches().size();
 	}
 }

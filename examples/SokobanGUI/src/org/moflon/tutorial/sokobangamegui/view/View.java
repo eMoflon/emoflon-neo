@@ -324,7 +324,7 @@ public class View extends JFrame {
 	}
 
 	protected void nullFigure(FieldButton fieldButton) {
-		controller.setFigure(fieldButton.getField(), "NONE");
+		controller.setFigure(fieldButton.getField(), IController.NONE);
 		controller.update();
 		update();
 	}
