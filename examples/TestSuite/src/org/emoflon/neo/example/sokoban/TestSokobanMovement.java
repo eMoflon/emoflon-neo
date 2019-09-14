@@ -5,13 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.NeoController;
 
-//FIXME[Max]
-@Disabled
 class TestSokobanMovement extends ENeoTest {
 	
 	private TestView view;
