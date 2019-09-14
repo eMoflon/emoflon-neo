@@ -7,22 +7,22 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 
-public class OPT {
-	private Map<IMatch, Long> matchToId;
-	private Map<Long, Set<IMatch>> elementToCreatingMatches;
-	private Map<Long, Set<IMatch>> elementToDependentMatches;
-	private Map<IMatch, Set<Long>> matchToCreatedElements;
-	private Set<Set<IMatch>> cycles;
-	private Set<IMatch> visited;
-	private Set<IMatch> visiting;
+public abstract class OPT {
+	protected Map<ICoMatch, Long> matchToId;
+	private Map<Long, Set<ICoMatch>> elementToCreatingMatches;
+	private Map<Long, Set<ICoMatch>> elementToDependentMatches;
+	private Map<ICoMatch, Set<Long>> matchToCreatedElements;
+	private Set<Set<ICoMatch>> cycles;
+	private Set<ICoMatch> visited;
+	private Set<ICoMatch> visiting;
 
 	private long constraintCounter;
 	private long variableCounter;
-	private Map<IMatch, Long> matchToWeight;
+	protected Map<ICoMatch, Long> matchToWeight;
 	private BinaryILPProblem ilpProblem;
 
 	/**
@@ -31,38 +31,39 @@ public class OPT {
 	 * 
 	 * @return the ILP Problem
 	 */
-	public OPT(Collection<IMatch> matches) {
+	public OPT(Collection<ICoMatch> matches) {
 		// Precedence information
-		registerMatches();
+		registerMatches(matches);
 		computeWeights();
-		
+
 		// ILP definition
 		constraintCounter = 0;
 		variableCounter = 0;
 		ilpProblem = ILPFactory.createBinaryILPProblem();
-		
+
 		defineILPExclusions();
 		defineILPImplications();
 		defineILPObjective();
 	}
-	
+
 	public BinaryILPProblem getILPProblem() {
 		return ilpProblem;
 	}
-	
-	protected void registerMatches() {
-		//TODO[Anjorin] fill precedence tables with information from matches
+
+	// TODO[Anjorin] fill precedence tables with information from matches
+	protected void registerMatches(Collection<ICoMatch> matches) {
 		matchToId = new HashMap<>();
 		elementToCreatingMatches = new HashMap<>();
 		elementToDependentMatches = new HashMap<>();
 		matchToCreatedElements = new HashMap<>();
+		
+		long i = 0;
+		for (var m : matches) {
+			matchToId.put(m, i++);
+		}
 	}
-	
-	protected void computeWeights() {
-		//TODO[Anjorin] Compute weights for matches (matchToWeight)
-		// - Number of "green" elements in the match
-		matchToWeight = new HashMap<>();
-	}
+
+	abstract protected void computeWeights();
 
 	protected void defineILPImplications() {
 		for (var entry : elementToCreatingMatches.entrySet()) {
@@ -89,46 +90,43 @@ public class OPT {
 						registerConstraint("EXCL_MarkOnce_" + entry.getKey()));
 			}
 		}
-		
+
 		cycles = new HashSet<>();
 		visited = new HashSet<>();
 		visiting = new HashSet<>();
 		for (var match : matchToId.keySet())
 			computeCycles(match, new HashSet<>());
-		
+
 		for (var cycle : cycles) {
 			ilpProblem.addExclusion(cycle.stream().map(this::varNameFor), registerConstraint("EXCL_cycle"),
 					cycle.size() - 1);
 		}
 	}
 
-	private void computeCycles(IMatch match, Set<IMatch> cycle) {
-		if(visited.contains(match))
+	private void computeCycles(ICoMatch match, Set<ICoMatch> cycle) {
+		if (visited.contains(match))
 			return;
-		
-		if(visiting.contains(match)) {
+
+		if (visiting.contains(match)) {
 			cycles.add(cycle);
 			return;
 		}
-		
+
 		cycle.add(match);
 		visiting.add(match);
-		for(var element : matchToCreatedElements.get(match)) {
-			for(var child : elementToCreatingMatches.get(element)) {
-				if(cycle.contains(child))
-					cycles.add(cycle);
-				else {	
-					var newCycle = new HashSet<>(cycle);
-					newCycle.add(child);
-					computeCycles(child, newCycle);
-				}
+		for (var element : matchToCreatedElements.get(match)) {
+			for (var child : elementToCreatingMatches.get(element)) {
+				var newCycle = new HashSet<>(cycle);
+				newCycle.add(child);
+				computeCycles(child, newCycle);
 			}
 		}
-		
+
 		visited.add(match);
 		visiting.remove(match);
+
 	}
-	
+
 	protected void defineILPObjective() {
 		var expr = ilpProblem.createLinearExpression();
 		matchToWeight.keySet().stream().forEach(v -> {
@@ -137,8 +135,8 @@ public class OPT {
 		});
 		ilpProblem.setObjective(expr, Objective.maximize);
 	}
-	
-	private String varNameFor(IMatch m) {
+
+	private String varNameFor(ICoMatch m) {
 		if (!matchToId.containsKey(m))
 			matchToId.put(m, variableCounter++);
 
