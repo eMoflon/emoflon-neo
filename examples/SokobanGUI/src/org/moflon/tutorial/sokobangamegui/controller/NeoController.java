@@ -164,7 +164,7 @@ public class NeoController implements IController {
 			break;
 		}
 		
-		if(result.isEmpty())
+		if(!result.isPresent())
 			throw new UnsupportedOperationException("Unable to create " + figureType + " on " + field);
 	}
 
