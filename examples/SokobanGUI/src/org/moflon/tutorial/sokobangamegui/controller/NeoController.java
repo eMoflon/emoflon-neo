@@ -175,8 +175,8 @@ public class NeoController implements IController {
 		// If the board has a selected figure, try to move figure to this field
 		{
 			var mask = api2.getRule_MoveSokobanDownWithCondition().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_MoveSokobanDownWithCondition().rule(mask).apply();
 
 			if (comatch.isPresent())
@@ -185,8 +185,8 @@ public class NeoController implements IController {
 
 		{
 			var mask = api2.getRule_PushBlockDown().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_PushBlockDown().rule(mask).apply();
 
 			if (comatch.isPresent())
@@ -195,8 +195,8 @@ public class NeoController implements IController {
 		
 		{
 			var mask = api2.getRule_MoveSokobanUpWithCondition().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_MoveSokobanUpWithCondition().rule(mask).apply();
 
 			if (comatch.isPresent())
@@ -205,8 +205,8 @@ public class NeoController implements IController {
 		
 		{
 			var mask = api2.getRule_PushBlockUp().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_PushBlockUp().rule(mask).apply();
 
 			if (comatch.isPresent())
@@ -215,8 +215,8 @@ public class NeoController implements IController {
 
 		{
 			var mask = api2.getRule_MoveSokobanRightWithCondition().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_MoveSokobanRightWithCondition().rule(mask).apply();
 
 			if (comatch.isPresent())
@@ -225,8 +225,8 @@ public class NeoController implements IController {
 
 		{
 			var mask = api2.getRule_PushBlockRight().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_PushBlockRight().rule(mask).apply();
 
 			if (comatch.isPresent())
@@ -235,8 +235,8 @@ public class NeoController implements IController {
 		
 		{
 			var mask = api2.getRule_MoveSokobanLeftWithCondition().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_MoveSokobanLeftWithCondition().rule(mask).apply();
 
 			if (comatch.isPresent())
@@ -245,8 +245,8 @@ public class NeoController implements IController {
 		
 		{
 			var mask = api2.getRule_PushBlockLeft().mask();
-			mask.setB_fields_0_toCol(field.getCol());
-			mask.setB_fields_0_toRow(field.getRow());
+			mask.setB_fields_1_toCol(field.getCol());
+			mask.setB_fields_1_toRow(field.getRow());
 			comatch = api2.getRule_PushBlockLeft().rule(mask).apply();
 
 			if (comatch.isPresent())
