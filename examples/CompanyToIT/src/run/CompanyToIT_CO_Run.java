@@ -2,7 +2,7 @@ package run;
 
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
+import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_CO;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.NeoProgressMonitor;
 import org.emoflon.neo.engine.modules.ParanoidNeoReprocessor;
@@ -12,7 +12,7 @@ import org.emoflon.neo.engine.modules.TimedTerminationCondition;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
-public class CompanyToIT_GEN_Run {
+public class CompanyToIT_CO_Run {
 	public static void main(String[] pArgs) throws Exception {
 		var builder = API_Common.createBuilder();
 
@@ -27,10 +27,10 @@ public class CompanyToIT_GEN_Run {
 				new ParanoidNeoReprocessor(), //
 				new NeoProgressMonitor());
 
-		var genAPI = new API_CompanyToIT_GEN(builder, API_Common.PLATFORM_RESOURCE_URI,
+		var coAPI = new API_CompanyToIT_CO(builder, API_Common.PLATFORM_RESOURCE_URI,
 				API_Common.PLATFORM_PLUGIN_URI);
-				
-		generator.generate(genAPI.getAllRules());
+
+		generator.generate(coAPI.getAllRules());
 		
 		builder.close();
 	}
