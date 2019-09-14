@@ -406,6 +406,7 @@ abstract rule moveSokoban {
 	
 	b:SokobanLanguage.Board {
 		-fields->to
+		-fields-> from
 	}
 	
 }
@@ -498,7 +499,7 @@ rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
 	
 	++ f1: Field {
 		++ -right-> from
-		.endPos: true
+		.endPos := true
 	}
 	
 	++next2 : Block {

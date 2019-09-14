@@ -53,6 +53,8 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerException
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
+import org.apache.commons.lang3.StringUtils
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -270,11 +272,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	dispatch def printValue(PrimitiveString value) {
-		'''«value.literal»'''
+		if (value.eContainer.eContainer instanceof ModelNodeBlock)
+			'''«StringUtils.abbreviate(value.literal, (value.eContainer.eContainer as ModelNodeBlock).name.length * 2 + 3)»'''
+		else if (value.eContainer.eContainer.eContainer instanceof ModelNodeBlock) {
+			'''«StringUtils.abbreviate(value.literal, (value.eContainer.eContainer.eContainer as ModelNodeBlock).name.length * 2 + 3)»'''
+		}
 	}
 
 	dispatch def printValue(PrimitiveBoolean value) {
 		'''«value.^true»'''
+	}
+	
+	dispatch def printValue(PrimitiveDouble value) {
+		'''«value.literal»'''
 	}
 
 	/**
@@ -888,6 +898,9 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
 				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF entity.srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«link.target.name»:«link.target.type.name»":"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+			«ENDFOR»
+			«FOR attr : nb.properties»
+				«labelForTripleRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 		'''
 	}

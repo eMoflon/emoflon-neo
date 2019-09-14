@@ -40,6 +40,8 @@ import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.CorrespondenceType
 
 /**
  * This class contains custom scoping description.
@@ -139,11 +141,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (constraintReferenceInApplicationCondition(context, reference))
 			return handleConstraintReferenceInApplicationCondition(context, reference)
 
+		if (correspondenceDefinitionSrc(context, reference))
+			return handleCorrespondenceDefinition(context, reference)
+
 		return super.getScope(context, reference)
-	}
-	
-	private def linkAttributeExpressionTargetsTarget(EObject context, EReference reference) {
-		reference == EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET
 	}
 
 	/*---------------------------------*/
@@ -257,6 +258,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def valueOfNodeAttributeExpression(EObject context, EReference reference) {
 		context instanceof NodeAttributeExpTarget &&
 			reference == EMSLPackage.Literals.ATTRIBUTE_EXP_TARGET__ATTRIBUTE
+	}
+	
+	private def linkAttributeExpressionTargetsTarget(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET
 	}
 	
 	private def handleLinkAttributeExpressionTargetsTarget(EObject context, EReference reference) {
@@ -531,6 +536,23 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		possibilities.addAll((context.eContainer as TripleRule).srcNodeBlocks.filter[n | n.type == context.type.target])
 		possibilities.addAll((context.eContainer as TripleRule).trgNodeBlocks.filter[n | n.type == context.type.target])
 		Scopes.scopeFor(possibilities)
+	}
+	
+	private def correspondenceDefinitionSrc(EObject context, EReference reference) {
+		reference == EMSLPackage.Literals.CORRESPONDENCE_TYPE__SOURCE ||
+		reference == EMSLPackage.Literals.CORRESPONDENCE_TYPE__TARGET
+	}
+	
+	private def handleCorrespondenceDefinition(EObject context, EReference reference) {
+		val nodes = new HashMap()
+		if (context instanceof TripleGrammar) {
+			(context as TripleGrammar).srcMetamodels.forEach[m | m.nodeBlocks.forEach[nb | nodes.put(nb, null)]]
+			(context as TripleGrammar).trgMetamodels.forEach[m | m.nodeBlocks.forEach[nb | nodes.put(nb, null)]]
+		} else if (context instanceof CorrespondenceType) {
+			(context.eContainer as TripleGrammar).srcMetamodels.forEach[m | m.nodeBlocks.forEach[nb | nodes.put(nb, null)]]
+			(context.eContainer as TripleGrammar).trgMetamodels.forEach[m | m.nodeBlocks.forEach[nb | nodes.put(nb, null)]]
+		}
+		determineScope(nodes)
 	}
 	
 	

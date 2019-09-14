@@ -11,10 +11,10 @@ tripleGrammar CompanyToIT {
 	}
 	
 	correspondence {
-		Company.Company <- CompanyToIT -> IT.IT
-		Company.Admin <- AdminToRouter -> IT.Router
-		Company.Employee <- EmployeeToPC -> IT.PC
-		Company.Employee <- EmployeeToLaptop -> IT.Laptop
+		Company <- CompanyToIT -> IT
+		Admin <- AdminToRouter -> Router
+		Employee <- EmployeeToPC -> PC
+		Employee <- EmployeeToLaptop -> Laptop
 	}
 	
 	rules {

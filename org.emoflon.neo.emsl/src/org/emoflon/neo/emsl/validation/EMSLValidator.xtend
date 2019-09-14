@@ -51,6 +51,10 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
+import java.util.List
+import org.emoflon.neo.emsl.eMSL.Action
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 
 /**
  * This class contains custom validation rules. 
@@ -117,11 +121,13 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 	def boolean isOfCorrectBuiltInType(ValueExpression expr, BuiltInDataTypes propertyType){
 		if (expr instanceof PrimitiveInt) 
-			propertyType == BuiltInDataTypes.EINT
+			(propertyType == BuiltInDataTypes.EINT || propertyType == BuiltInDataTypes.ELONG)
 		else if (expr instanceof PrimitiveBoolean)
 			propertyType == BuiltInDataTypes.EBOOLEAN
 		else if (expr instanceof PrimitiveString)
-		 	propertyType == BuiltInDataTypes.ESTRING
+		 	(propertyType == BuiltInDataTypes.ESTRING || propertyType == BuiltInDataTypes.ECHAR && expr.literal.toCharArray.size == 1)
+		else if (expr instanceof PrimitiveDouble)
+			(propertyType == BuiltInDataTypes.EDOUBLE || propertyType == BuiltInDataTypes.EFLOAT)
 		else if (expr instanceof AttributeExpression)
 			expr.target.attribute.type instanceof BuiltInType && 
 			(expr.target.attribute.type as BuiltInType).reference.equals(propertyType)
@@ -568,7 +574,11 @@ class EMSLValidator extends AbstractEMSLValidator {
 			if (relation.action === null && relation.target?.action !== null 
 					|| (relation.action === null && (relation.eContainer as ModelNodeBlock).action !== null)) {
 				error(COLORED_EDGES_ADJACENT_TO_COLORED_NODES, relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
-			}
+			} else if (relation.action !== null && relation.target?.action !== null 
+						&& relation.action.op !== relation.target?.action.op
+					|| relation.action !== null && (relation.eContainer as ModelNodeBlock).action !== null 
+						&& relation.action.op !== (relation.eContainer as ModelNodeBlock).action.op)
+				error("Having a green/red object adjacent to a red/green object does not make sense.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TYPES)
 		}
 	}
 	
@@ -902,6 +912,169 @@ class EMSLValidator extends AbstractEMSLValidator {
 						exp, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__TARGET
 				)
 			}
+		}
+	}
+	
+	/**
+	 * Checks if the lower bound of a path is smaller or equal to the upper bound.
+	 */
+	@Check
+	def void checkBoundsOfPaths(ModelRelationStatement relation) {
+		if (relation.upper !== null) {
+			try {
+				if (relation.lower !== null && relation.upper !== null
+						&& Integer.parseInt(relation.lower) > Integer.parseInt(relation.upper)) {
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__UPPER)
+				}
+			} catch (NumberFormatException e) {
+				if (relation.lower.equals("*") && !relation.upper.equals("*")) {	
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__LOWER)
+					error("The lower bound of your path lengths must be smaller than the upper bound.", relation, EMSLPackage.Literals.MODEL_RELATION_STATEMENT__UPPER)
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks for abstract rules in a graph grammar.
+	 */
+	@Check
+	def void forbidAbstractRulesInGraphGrammar(GraphGrammar gg) {
+		var index = 0
+		for (r : gg.rules) {
+			if (r.abstract)
+				error("Abstract rules are not allowed in graph grammars.", gg, EMSLPackage.Literals.GRAPH_GRAMMAR__RULES, index)
+			index++
+		}
+	}
+	
+	/**
+	 * Checks if the operators of ModelPropertyStatements make sense
+	 * in a rule.
+	 */
+	@Check
+	def void checkOperatorsInRule(Rule rule) {
+		for (nb : rule.nodeBlocks) {
+			for(p : nb.properties) {
+				operatorValidationHelper(nb.action, p)
+			}
+			for (r : nb.relations) {
+				for (p : r.properties) {
+					operatorValidationHelper(r.action, p)
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks if the operators of ModelPropertyStatements make sense
+	 * in a triple rule.
+	 */
+	@Check
+	def void checkOperatorsInTripleRule(TripleRule tripleRule) {
+		operatorValidationHelperForTripleRules(tripleRule.srcNodeBlocks)
+		operatorValidationHelperForTripleRules(tripleRule.trgNodeBlocks)
+	}
+	
+	/**
+	 * Helper method to validate the operators of ModelPropertyStatements in TripleRules.
+	 */
+	def void operatorValidationHelperForTripleRules(List<ModelNodeBlock> nodes) {
+		for (nb : nodes) {
+			for (p : nb.properties) {
+				operatorValidationHelper(nb.action, p)
+				if (nb.action === null && p.op.name().equals("ASSIGN"))
+					error('''The operator "«p.op.toString»" is not allowed in black nodes.''', p, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+			}
+			for (r : nb.relations) {
+				for (p : r.properties) {
+					operatorValidationHelper(r.action, p)
+				if (r.action === null && p.op.name().equals("ASSIGN"))
+					error('''The operator "«p.op.toString»" is not allowed in black nodes.''', p, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Helper method to validate if the operators of ModelPropertyStatements in Rules/TripleRules
+	 * make sense.
+	 */
+	def void operatorValidationHelper(Action a, ModelPropertyStatement p) {
+		if (a !== null && a.op === ActionOperator.CREATE && (p.op.name().equals("EQ") || p.op.name().equals("NOTEQ")))
+			error('''The operator "«p.op.toString»" is not allowed in green nodes.''', p, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+		else if (a !== null && a.op === ActionOperator.DELETE && p.op.name().equals("ASSIGN"))
+			error('''The operator "«p.op.toString»" is not allowed in red nodes.''', p, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+	}
+	
+	/**
+	 * Checks if the operators "<", ">", ">=", "<=" are used for numerical values/data types only.
+	 */
+	@Check
+	def void checkOperatorOfProperties(ModelPropertyStatement p) {
+		if (p.type.type instanceof BuiltInType
+				&& !((p.type.type as BuiltInType).reference === BuiltInDataTypes.EINT 
+					|| (p.type.type as BuiltInType).reference === BuiltInDataTypes.EDOUBLE 
+					|| (p.type.type as BuiltInType).reference === BuiltInDataTypes.EFLOAT 
+					|| (p.type.type as BuiltInType).reference === BuiltInDataTypes.ELONG)
+				&& (p.op == ConditionOperator.GREATER
+					|| p.op == ConditionOperator.GREATEREQ
+					|| p.op == ConditionOperator.LESS
+					|| p.op == ConditionOperator.LESSEQ))
+			error('''The operator "«p.op.toString»" is only allowed with numerical values.''', p, EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__OP)
+	}
+	
+	/**
+	 * Checks if the source of a NodeAttributeExpression or the link of a LinkAttributeExpression
+	 * is black.
+	 */
+	@Check
+	def void checkAttributeExpressionSourcesForBeingBlack(AttributeExpression e) {
+		if (e.target instanceof NodeAttributeExpTarget && e.node.action !== null) {
+			error('''The source node "«e.node.name»" must be a black node.''', e, EMSLPackage.Literals.ATTRIBUTE_EXPRESSION__NODE)
+		} else if (e.target instanceof LinkAttributeExpTarget) {
+			for (r : e.node.relations) {
+				if (r.types.map[t | t.type].contains((e.target as LinkAttributeExpTarget).link)
+						&& r.target == (e.target as LinkAttributeExpTarget).target
+						&& r.action !== null) {
+					error('''The relation of type "«(e.target as LinkAttributeExpTarget).link.name»" in the node "«e.node.name»" must be black.''', e.target, EMSLPackage.Literals.LINK_ATTRIBUTE_EXP_TARGET__LINK)
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks for redundant rules in GraphGrammars.
+	 */
+	@Check
+	def void forbidRedundantRulesInGraphGrammar(GraphGrammar gg) {
+		val rules = new HashSet()
+		var counter = 0
+		for (r : gg.rules) {
+			if (!rules.contains(r)) {
+				rules.add(r)
+			} else {
+				error("This rule is already contained in your Grammar", gg, EMSLPackage.Literals.GRAPH_GRAMMAR__RULES, counter)
+			}
+			counter++
+		}
+	}
+	
+	/**
+	 * Checks for redundant rules in TripleGrammar.
+	 */
+	@Check
+	def void forbidRedundantRulesInTripleGrammar(TripleGrammar tg) {
+		val rules = new HashSet()
+		var counter = 0
+		for (r : tg.rules) {
+			if (!rules.contains(r)) {
+				rules.add(r)
+			} else {
+				error("This rule is already contained in your Grammar", tg, EMSLPackage.Literals.TRIPLE_GRAMMAR__RULES, counter)
+			}
+			counter++
 		}
 	}
 }
