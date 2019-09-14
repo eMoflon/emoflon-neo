@@ -8,7 +8,6 @@ import java.util.HashMap
 import java.util.HashSet
 import java.util.List
 import java.util.Set
-import java.util.stream.Collectors
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.Metamodel
@@ -20,9 +19,9 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.generator.EMSLGenerator
 
 class TGGCompiler {
 	final String BASE_FOLDER = "../" + EMSLGenerator.TGG_GEN_FOLDER + "/";
@@ -35,11 +34,8 @@ class TGGCompiler {
 		tgg = pTGG
 		this.pathToGeneratedFiles = pathToGeneratedFiles
 
-		val allMetamodels = tgg.srcMetamodels
-		allMetamodels.addAll(tgg.trgMetamodels)
-
+		val allMetamodels = tgg.srcMetamodels + tgg.trgMetamodels
 		buildImportStatement(allMetamodels)
-
 		mapTypeNames(allMetamodels)
 	}
 
@@ -67,8 +63,7 @@ class TGGCompiler {
 		'''
 	}
 
-	private def mapTypeNames(Collection<Metamodel> pMetamodels) {
-
+	private def mapTypeNames(Iterable<Metamodel> pMetamodels) {
 		nodeTypeNames = HashBiMap.create()
 
 		val nodeTypeToMetamodelName = new HashMap
@@ -95,8 +90,8 @@ class TGGCompiler {
 		}
 	}
 
-	private def buildImportStatement(List<Metamodel> pMetamodels) {
-		val resourcesToImport = pMetamodels.map[it.eResource.URI].stream.distinct.collect(Collectors.toSet())
+	private def buildImportStatement(Iterable<Metamodel> pMetamodels) {
+		val resourcesToImport = pMetamodels.map[it.eResource.URI].toSet
 		importStatements = '''
 			«FOR uri : resourcesToImport»
 				import "«uri»"
