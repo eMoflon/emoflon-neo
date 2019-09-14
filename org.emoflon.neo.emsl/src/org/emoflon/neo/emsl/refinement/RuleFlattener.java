@@ -30,6 +30,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 import org.emoflon.neo.emsl.eMSL.SuperType;
+import org.emoflon.neo.emsl.eMSL.ValueExpression;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
@@ -269,7 +270,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * 
 	 * @param nodes list of nodes that provide actions must be merged
 	 * @return an action if a merged action can be determined, null if not
-	 * @throws FlattenerException 
+	 * @throws FlattenerException
 	 */
 	protected Action mergeActionOfNodes(List<ModelNodeBlock> nodes, SuperType entity) throws FlattenerException {
 		var action = EMSLFactory.eINSTANCE.createAction();
@@ -314,8 +315,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					if (other.getTypes().size() > 1 || relation == other)
 						continue;
 					if (relation.getTypes().get(0).getType() == other.getTypes().get(0).getType()
-							&& relation.getTarget() == other.getTarget()
-							&& relation.getLower().equals(other.getLower())
+							&& relation.getTarget() == other.getTarget() && relation.getLower().equals(other.getLower())
 							&& relation.getUpper().equals(other.getUpper())) {
 						if (!duplicates.contains(other)) {
 							duplicates.add(other);
@@ -341,7 +341,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @throws FlattenerException is thrown if two properties are not mergeable.
 	 */
 	private HashSet<ModelPropertyStatement> collectAndMergePropertyStatementsOfRelations(
-			ArrayList<ModelRelationStatement> edges, SuperType entity, List<ModelNodeBlock> mergedNodes, List<RefinementCommand> refinementList) throws FlattenerException {
+			ArrayList<ModelRelationStatement> edges, SuperType entity, List<ModelNodeBlock> mergedNodes,
+			List<RefinementCommand> refinementList) throws FlattenerException {
 		var properties = new HashMap<String, ArrayList<ModelPropertyStatement>>();
 		var mergedProperties = new HashSet<ModelPropertyStatement>();
 
@@ -384,23 +385,30 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					}
 					compareValueOfModelPropertyStatement(entity, basis, p);
 				}
-				
+
 				var newProp = EcoreUtil.copy(basis);
 
 				if (basis.getValue() instanceof AttributeExpression) {
-					newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(), basis, refinementList, mergedNodes));
+					newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(),
+							basis, refinementList, mergedNodes));
 				}
-				if (newProp.getValue() instanceof BinaryExpression && ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
-					((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences((AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis, refinementList, mergedNodes)));
+				if (newProp.getValue() instanceof BinaryExpression
+						&& ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
+					((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences(
+							(AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis,
+							refinementList, mergedNodes)));
 				}
-				if (newProp.getValue() instanceof BinaryExpression && ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
-					((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences((AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis, refinementList, mergedNodes)));
+				if (newProp.getValue() instanceof BinaryExpression
+						&& ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
+					((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences(
+							(AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis,
+							refinementList, mergedNodes)));
 				}
-				
+
 				mergedProperties.add(newProp);
 			}
 		}
-		
+
 		// re-set targets of attribute expressions to the newly copied nodes
 		for (var p : mergedProperties) {
 			if (p.getValue() instanceof AttributeExpression) {
@@ -409,25 +417,33 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						((AttributeExpression) p.getValue()).setNode(n);
 					}
 					if (((AttributeExpression) p.getValue()).getTarget() instanceof LinkAttributeExpTarget
-							&& ((LinkAttributeExpTarget) ((AttributeExpression) p.getValue()).getTarget()).getTarget().getName().equals(n.getName())) {
+							&& ((LinkAttributeExpTarget) ((AttributeExpression) p.getValue()).getTarget()).getTarget()
+									.getName().equals(n.getName())) {
 						((LinkAttributeExpTarget) ((AttributeExpression) p.getValue()).getTarget()).setTarget(n);
 					}
 				}
 			}
 		}
-		
+
 		return mergedProperties;
 	}
-	
-	private AttributeExpression readjustAttributeExpressionReferences(AttributeExpression exp, ModelPropertyStatement basis, List<RefinementCommand> refinementList, List<ModelNodeBlock> mergedNodes) {
+
+	private AttributeExpression readjustAttributeExpressionReferences(AttributeExpression exp,
+			ModelPropertyStatement basis, List<RefinementCommand> refinementList, List<ModelNodeBlock> mergedNodes) {
 		String newLabel = null;
-		for (var refinement	: refinementList) {
-			if (basis.eContainer().eContainer() instanceof SuperType && refinement.getReferencedType().getName().equals(((SuperType) basis.eContainer().eContainer()).getName())
-					|| basis.eContainer().eContainer().eContainer() instanceof SuperType && refinement.getReferencedType().getName().equals(((SuperType) basis.eContainer().eContainer().eContainer()).getName())) {
+		for (var refinement : refinementList) {
+			if (basis.eContainer().eContainer() instanceof SuperType
+					&& refinement.getReferencedType().getName().equals(((SuperType) basis.eContainer().eContainer()).getName())
+					|| (basis.eContainer().eContainer() != null 
+							&& basis.eContainer().eContainer().eContainer() instanceof SuperType
+							&& refinement.getReferencedType().getName().equals(((SuperType) basis.eContainer().eContainer().eContainer()).getName()))) {
 				for (var relabeling : refinement.getRelabeling()) {
-					if (basis.eContainer().eContainer() instanceof ModelNodeBlock && ((ModelNodeBlock) basis.eContainer().eContainer()).getName().equals(relabeling.getOldLabel())) {
+					if (basis.eContainer().eContainer() instanceof ModelNodeBlock
+							&& ((ModelNodeBlock) basis.eContainer().eContainer()).getName()
+									.equals(relabeling.getOldLabel())) {
 						newLabel = relabeling.getNewLabel();
-					} else if (basis.eContainer() instanceof ModelNodeBlock && ((ModelNodeBlock) basis.eContainer()).getName().equals(relabeling.getOldLabel())) {
+					} else if (basis.eContainer() instanceof ModelNodeBlock
+							&& ((ModelNodeBlock) basis.eContainer()).getName().equals(relabeling.getOldLabel())) {
 						newLabel = relabeling.getNewLabel();
 					}
 				}
@@ -438,7 +454,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				if (n.getName().equals(exp.getNode().getName())) {
 					exp.setNode(n);
 				}
-				if (exp.getTarget() instanceof LinkAttributeExpTarget 
+				if (exp.getTarget() instanceof LinkAttributeExpTarget
 						&& ((LinkAttributeExpTarget) exp.getTarget()).getTarget().getName().equals(n.getName())) {
 					((LinkAttributeExpTarget) exp.getTarget()).setTarget(n);
 				}
@@ -448,7 +464,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	}
 
 	private boolean sameDataType(ModelPropertyStatement p1, ModelPropertyStatement p2) {
-		if(p1.getType() != null && p2.getType() != null)
+		if (p1.getType() != null && p2.getType() != null)
 			return p1.getType().getType() == p2.getType().getType();
 		else
 			return p1.getInferredType().equals(p2.getInferredType());
@@ -462,9 +478,10 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 * @param typename   parameter to decide which edges have to be merged.
 	 * @param targetname parameter to decide which edges have to be merged.
 	 * @return Action that is the result of the merging of all edges' actions.
-	 * @throws FlattenerException 
+	 * @throws FlattenerException
 	 */
-	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges, SuperType entity) throws FlattenerException {
+	private Action mergeActionOfRelations(ArrayList<ModelRelationStatement> edges, SuperType entity)
+			throws FlattenerException {
 		var action = EMSLFactory.eINSTANCE.createAction();
 
 		boolean green = false;
@@ -504,7 +521,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 *                            merging process.
 	 */
 	protected List<ModelNodeBlock> mergePropertyStatementsOfNodeBlocks(SuperType entity,
-			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes, List<RefinementCommand> refinementList) throws FlattenerException {
+			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes,
+			List<RefinementCommand> refinementList) throws FlattenerException {
 		for (var name : nodeBlocks.keySet()) {
 			var nodeBlocksWithKey = nodeBlocks.get(name);
 			var newProperties = new ArrayList<ModelPropertyStatement>();
@@ -517,10 +535,13 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						continue;
 					}
 					if (!propertyStatementsSortedByName.containsKey(EMSLUtil.getNameOfType(p))) {
-						propertyStatementsSortedByName.put(EMSLUtil.getNameOfType(p), new HashMap<String, ArrayList<ModelPropertyStatement>>());
+						propertyStatementsSortedByName.put(EMSLUtil.getNameOfType(p),
+								new HashMap<String, ArrayList<ModelPropertyStatement>>());
 					}
-					if (!propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).containsKey(p.getOp().toString())) {
-						propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).put(p.getOp().toString(), new ArrayList<ModelPropertyStatement>());
+					if (!propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p))
+							.containsKey(p.getOp().toString())) {
+						propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).put(p.getOp().toString(),
+								new ArrayList<ModelPropertyStatement>());
 					}
 					propertyStatementsSortedByName.get(EMSLUtil.getNameOfType(p)).get(p.getOp().toString()).add(p);
 				}
@@ -549,24 +570,32 @@ public class RuleFlattener extends AbstractEntityFlattener {
 										basis, p, (SuperType) p.eContainer().eContainer());
 							} else {
 								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-										basis, p, (SuperType) p.eContainer().eContainer()); // incompatible operators found
+										basis, p, (SuperType) p.eContainer().eContainer()); // incompatible operators
+																							// found
 							}
 						}
 						compareValueOfModelPropertyStatement(entity, basis, p);
 					}
-					
+
 					var newProp = EcoreUtil.copy(basis);
 
 					if (basis.getValue() instanceof AttributeExpression) {
-						newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(), basis, refinementList, mergedNodes));
+						newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(),
+								basis, refinementList, mergedNodes));
 					}
-					if (newProp.getValue() instanceof BinaryExpression && ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
-						((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences((AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis, refinementList, mergedNodes)));
+					if (newProp.getValue() instanceof BinaryExpression
+							&& ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
+						((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences(
+								(AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis,
+								refinementList, mergedNodes)));
 					}
-					if (newProp.getValue() instanceof BinaryExpression && ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
-						((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences((AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis, refinementList, mergedNodes)));
+					if (newProp.getValue() instanceof BinaryExpression
+							&& ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
+						((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences(
+								(AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis,
+								refinementList, mergedNodes)));
 					}
-					
+
 					newProperties.add(newProp);
 				}
 			}
@@ -639,26 +668,41 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 */
 	private void compareValueOfModelPropertyStatement(SuperType entity, ModelPropertyStatement p1,
 			ModelPropertyStatement p2) throws FlattenerException {
-		if(p1.equals(p2))
+		if (p1.equals(p2))
 			return;
-		
-		if (p1.getValue() instanceof PrimitiveBoolean && p2.getValue() instanceof PrimitiveBoolean
-				&& (((PrimitiveBoolean) p1.getValue()).isTrue() && ((PrimitiveBoolean) p2.getValue()).isTrue()
-						|| !((PrimitiveBoolean) p1.getValue()).isTrue()
-								&& !((PrimitiveBoolean) p2.getValue()).isTrue())) {
+
+		if (compareProperties(p1.getValue(), p2.getValue()))
 			return;
-		} else if (p1.getValue() instanceof PrimitiveInt && p2.getValue() instanceof PrimitiveInt
-				&& ((PrimitiveInt) p1.getValue()).getLiteral() == ((PrimitiveInt) p2.getValue()).getLiteral()) {
-			return;
-		} else if (p1.getValue() instanceof PrimitiveString && p2.getValue() instanceof PrimitiveString
-				&& ((PrimitiveString) p1.getValue()).getLiteral()
-						.equals(((PrimitiveString) p2.getValue()).getLiteral())) {
-			return;
-		} else if (p1.getValue() instanceof EnumValue && p2.getValue() instanceof EnumValue
-				&& ((EnumValue) p1.getValue()).getLiteral() == ((EnumValue) p2.getValue()).getLiteral()) {
-			return;
-		}
+
 		throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_VALUES, p1, p2, null);
+	}
+
+	private boolean compareProperties(ValueExpression v1, ValueExpression v2) {
+		if (v1 instanceof PrimitiveBoolean && v2 instanceof PrimitiveBoolean
+				&& (((PrimitiveBoolean) v1).isTrue() && ((PrimitiveBoolean) v2).isTrue()
+						|| !((PrimitiveBoolean) v1).isTrue() && !((PrimitiveBoolean) v2).isTrue())) {
+			return true;
+		} else if (v1 instanceof PrimitiveInt && v2 instanceof PrimitiveInt
+				&& ((PrimitiveInt) v1).getLiteral() == ((PrimitiveInt) v2).getLiteral()) {
+			return true;
+		} else if (v1 instanceof PrimitiveString && v2 instanceof PrimitiveString
+				&& ((PrimitiveString) v1).getLiteral().equals(((PrimitiveString) v2).getLiteral())) {
+			return true;
+		} else if (v1 instanceof EnumValue && v2 instanceof EnumValue
+				&& ((EnumValue) v1).getLiteral() == ((EnumValue) v2).getLiteral()) {
+			return true;
+		} else if(v1 instanceof AttributeExpression && v2 instanceof AttributeExpression) {
+			var ae1 = (AttributeExpression)v1;
+			var ae2 = (AttributeExpression)v2;
+			return ae1.getNode().equals(ae2.getNode()) && ae1.getTarget().getAttribute().equals(ae2.getTarget().getAttribute());
+		} else if (v1 instanceof BinaryExpression && v2 instanceof BinaryExpression) {
+			var be1 = (BinaryExpression) v1;
+			var be2 = (BinaryExpression) v2;
+			return be1.getOp().equals(be2.getOp()) && compareProperties(be1.getLeft(), be2.getLeft())
+					&& compareProperties(be1.getRight(), be2.getRight());
+		}
+
+		return false;
 	}
 
 	/**
@@ -681,7 +725,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	}
 
 	protected List<ModelNodeBlock> mergeEdgesOfNodeBlocks(SuperType entity,
-			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes, List<RefinementCommand> refinementList) throws FlattenerException {
+			Map<String, List<ModelNodeBlock>> nodeBlocks, List<ModelNodeBlock> mergedNodes,
+			List<RefinementCommand> refinementList) throws FlattenerException {
 
 		// collect all edges in hashmap; first key is type name, second is target name
 		for (var name : nodeBlocks.keySet()) {
@@ -737,8 +782,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					var newRel = EMSLFactory.eINSTANCE.createModelRelationStatement();
 
 					// merge statements and check statements for compliance
-					newRel.getProperties().addAll(
-							collectAndMergePropertyStatementsOfRelations(edges.get(typename).get(targetname), entity, mergedNodes, refinementList));
+					newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(
+							edges.get(typename).get(targetname), entity, mergedNodes, refinementList));
 
 					// check and merge action
 					newRel.setAction(mergeActionOfRelations(edges.get(typename).get(targetname), entity));
@@ -753,13 +798,13 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						typesOfEdges.addAll(e.getTypes());
 					}
 					newRel.getTypes().add(newRelType);
-					
+
 					var bounds = mergeModelRelationStatementPathLimits(entity, edges.get(typename).get(targetname));
 					if (bounds == null)
 						throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, newRel);
 					newRel.setLower(bounds[0]);
 					newRel.setUpper(bounds[1]);
-					
+
 					mergedNodes.forEach(nb -> {
 						if (nb.getName().equals(targetname)) {
 							newRel.setTarget(nb);
@@ -807,8 +852,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				var bounds = mergeModelRelationStatementPathLimits(entity, namedEdges.get(n));
 				if (bounds == null) {
 					throw new FlattenerException(entity, FlattenerErrorType.PATH_LENGTHS_NONSENSE, newRel);
-				}
-				else {
+				} else {
 					if (bounds[0] != null)
 						newRel.setLower(bounds[0].toString());
 					if (bounds[1] != null)
@@ -816,15 +860,17 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				}
 
 				// merge statements and check statements for compliance
-				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity, mergedNodes, refinementList));
+				newRel.getProperties().addAll(collectAndMergePropertyStatementsOfRelations(namedEdges.get(n), entity,
+						mergedNodes, refinementList));
 
 				// check and merge action
 				newRel.setAction(mergeActionOfRelations(namedEdges.get(n), entity));
 
 				mergedNodes.forEach(nb -> {
-					if (namedEdges.get(n).get(0).getTarget() != null && nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
+					if (namedEdges.get(n).get(0).getTarget() != null
+							&& nb.getName().equals(namedEdges.get(n).get(0).getTarget().getName())) {
 						newRel.setTarget(nb);
-					} else if (namedEdges.get(n).get(0).getProxyTarget() != null 
+					} else if (namedEdges.get(n).get(0).getProxyTarget() != null
 							&& nb.getName().equals(namedEdges.get(n).get(0).getProxyTarget())) {
 						newRel.setTarget(nb);
 					}
@@ -851,8 +897,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 	 *                            greater than the upper limit (does not make
 	 *                            sense).
 	 */
-	protected String[] mergeModelRelationStatementPathLimits(SuperType entity,
-			ArrayList<ModelRelationStatement> edges) throws FlattenerException {
+	protected String[] mergeModelRelationStatementPathLimits(SuperType entity, ArrayList<ModelRelationStatement> edges)
+			throws FlattenerException {
 		var bounds = new String[2];
 		var lowerComparator = new Comparator<String>() {
 			@Override
@@ -860,36 +906,38 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				try {
 					if (o1 == null) {
 						return -1;
-					}
-					else if (Integer.parseInt(o1) < Integer.parseInt(o2)) {
+					} else if (Integer.parseInt(o1) < Integer.parseInt(o2)) {
 						return 1;
 					} else {
 						return -1;
 					}
 				} catch (NumberFormatException e) {
-					if (o1.equals("*")) return -1;
-					else if (o2.equals("*")) return 1;
+					if (o1.equals("*"))
+						return -1;
+					else if (o2.equals("*"))
+						return 1;
 				}
 				return 0;
 			}
 
 		};
-		
+
 		var upperComparator = new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {
 				try {
 					if (o1 == null) {
 						return 1;
-					}
-					else if (Integer.parseInt(o1) < Integer.parseInt(o2)) {
+					} else if (Integer.parseInt(o1) < Integer.parseInt(o2)) {
 						return -1;
 					} else {
 						return 1;
 					}
 				} catch (NumberFormatException e) {
-					if (o1.equals("*")) return 1;
-					else if (o2.equals("*")) return -1;
+					if (o1.equals("*"))
+						return 1;
+					else if (o2.equals("*"))
+						return -1;
 				}
 				return 0;
 			}
@@ -898,7 +946,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 
 		var lowerBoundQueue = new PriorityQueue<String>(lowerComparator);
 		var upperBoundQueue = new PriorityQueue<String>(upperComparator);
-		
+
 		for (var rel : edges) {
 			if (rel.getLower() != null)
 				lowerBoundQueue.add(rel.getLower());
@@ -907,7 +955,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		}
 		bounds[0] = lowerBoundQueue.peek();
 		bounds[1] = upperBoundQueue.peek();
-		
+
 		try {
 			if (Integer.parseInt(bounds[0]) > Integer.parseInt(bounds[1]))
 				return null;
@@ -915,7 +963,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			if (bounds[1] != null && !bounds[1].equals("*"))
 				return null;
 		}
-		
+
 		return bounds;
 	}
 }

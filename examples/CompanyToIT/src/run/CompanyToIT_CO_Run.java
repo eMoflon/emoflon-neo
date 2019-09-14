@@ -16,8 +16,7 @@ public class CompanyToIT_CO_Run {
 	public static void main(String[] pArgs) throws Exception {
 		var builder = API_Common.createBuilder();
 
-		var api = new API_CompanyToIT(builder, API_Common.PLATFORM_RESOURCE_URI,
-				API_Common.PLATFORM_PLUGIN_URI);
+		var api = new API_CompanyToIT(builder);
 		api.exportMetamodelsForCompanyToIT();
 		
 		Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
@@ -27,8 +26,7 @@ public class CompanyToIT_CO_Run {
 				new ParanoidNeoReprocessor(), //
 				new NeoProgressMonitor());
 
-		var coAPI = new API_CompanyToIT_CO(builder, API_Common.PLATFORM_RESOURCE_URI,
-				API_Common.PLATFORM_PLUGIN_URI);
+		var coAPI = new API_CompanyToIT_CO(builder);
 
 		generator.generate(coAPI.getAllRules());
 		

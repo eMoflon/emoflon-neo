@@ -21,7 +21,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.moflon.tutorial.sokobangamegui.view.Field;
 import org.moflon.tutorial.sokobangamegui.view.View;
 
-public class NeoController implements IController {
+public class SokobanNeoController implements IController {
 	private View view;
 	private API_SokobanGUIPatterns api1;
 	private API_SokobanPatternsRulesConstraints api2;
@@ -31,25 +31,25 @@ public class NeoController implements IController {
 	private int height = 0;
 	private List<Field> fields;
 
-	public NeoController() {
+	public SokobanNeoController() {
 		this(c -> new View(c), (c) -> c.defaultBoard());
 	}
 	
-	public NeoController(Function<IController, View> createView, int width, int height) {
+	public SokobanNeoController(Function<IController, View> createView, int width, int height) {
 		this(createView, (c) -> c.newBoard(width, height));
 	}
 	
-	public NeoController(int width, int height) {
+	public SokobanNeoController(int width, int height) {
 		this(c -> new View(c), (c) -> c.newBoard(width, height));
 	}
 
-	public NeoController(Function<IController, View> createView, Consumer<NeoController> createBoard) {
+	public SokobanNeoController(Function<IController, View> createView, Consumer<SokobanNeoController> createBoard) {
 		builder = API_Common.createBuilder();
 		api1 = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		api2 = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI,
 				API_Common.PLATFORM_PLUGIN_URI);
 		
-		createBoard.accept(this);;
+		createBoard.accept(this);
 		
 		update();
 		view = createView.apply(this);
@@ -57,7 +57,7 @@ public class NeoController implements IController {
 
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		new NeoController(8, 8);
+		new SokobanNeoController(8, 8);
 	}
 
 	@Override

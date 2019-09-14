@@ -76,7 +76,7 @@ public class View extends JFrame {
 	 * buttons etc.
 	 */
 	private void initializeComponents() {
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		/* Create the menu bar */
 		JMenuBar menuBar = new JMenuBar();

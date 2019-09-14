@@ -5,6 +5,12 @@ Bundle-Version: 0.0.1
 Bundle-SymbolicName: GameOfLife;singleton:=true
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.emoflon.neo.neo4j.adapter
+Require-Bundle: org.emoflon.neo.neo4j.adapter,
+ org.apache.log4j;bundle-version="1.2.15",
+ org.eclipse.xtext;bundle-version="2.18.0",
+ org.apache.commons.logging;bundle-version="1.2.0"
 Automatic-Module-Name: GameOfLife
-Export-Package: org.emoflon.neo.api
+Export-Package: org.emoflon.neo.api,
+ org.emoflon.neo.api.spec,
+ spec,
+ ui

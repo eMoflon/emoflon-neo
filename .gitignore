@@ -108,3 +108,6 @@ examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_Fac
 examples/GameOfLife/src-gen/org/emoflon/neo/api/API_Common.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/API_GameOfLifeRules.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/API_GameOfLifeSeeds.java
+examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeBuilder.java
+examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeRules.java
+examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeSeeds.java

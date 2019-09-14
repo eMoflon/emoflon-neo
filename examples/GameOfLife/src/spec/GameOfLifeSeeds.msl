@@ -1,4 +1,4 @@
-import "platform:/resource/GameOfLife/src/GameOfLifeRules.msl"
+import "platform:/resource/GameOfLife/src/spec/GameOfLifeRules.msl"
 
 model GOL_3x3 {
 	_00:Cell {

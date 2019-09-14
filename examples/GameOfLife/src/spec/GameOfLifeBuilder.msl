@@ -1,0 +1,123 @@
+import "platform:/resource/GameOfLife/src/spec/GameOfLifeRules.msl"
+
+rule createTopLeftCell {
+	++ cell:Cell {
+		.x := 0
+		.y := 0
+		.alive := false
+	}
+}
+
+rule createCellsInFirstRow {
+	left:Cell {
+		.x : 0
+		
+		++ -neighbours->cell
+	}
+	
+	++ cell:Cell {
+		.x := 0
+		.y := left::y + 1
+		.alive := false
+		
+		++ -neighbours->left
+	}
+} when forbid alreadyHasRightNeighbour
+
+pattern alreadyHasRightNeighbour {
+	left:Cell {
+		-neighbours->otherCell
+	}
+	
+	otherCell:Cell {
+		.x : 0
+		.y > left::y
+	}
+}
+
+rule createCellsInFirstCol {
+	top:Cell {
+		.y : 0
+		
+		++ -neighbours->cell
+	}
+	
+	++ cell:Cell {
+		.y := 0
+		.x := top::x + 1
+		
+		.alive := false
+		
+		++ -neighbours->top
+	}
+} when forbid alreadyHasBottomNeighbour
+
+pattern alreadyHasBottomNeighbour {
+	top:Cell {
+		-neighbours->otherCell
+	}
+	
+	otherCell:Cell {
+		.y : 0
+		.x > top::x
+	}
+}
+
+rule createAllOtherCells {
+	left:Cell {
+		.y : top::y - 1
+		++ -neighbours->newCell
+	}
+	
+	top:Cell {
+		.x : topLeft::x
+		++ -neighbours->newCell
+	}
+	
+	topLeft:Cell {
+		.x : left::x - 1
+		.y : top::y - 1
+		++ -neighbours->newCell
+	}
+	
+	++ newCell:Cell {
+		.x := left::x
+		.y := top::y
+		
+		.alive := true
+		
+		++ -neighbours->top
+		++ -neighbours->left
+		++ -neighbours->topLeft
+	}
+} when forbid otherCell
+
+pattern otherCell {
+	left:Cell {
+		.y : top::y - 1
+	}
+	
+	top:Cell {
+		.x : topLeft::x
+	}
+	
+	topLeft:Cell {
+		.x : left::x - 1
+		.y : top::y - 1
+	}
+	
+	otherCell:Cell {
+		.x : left::x
+		.y : top::y
+		
+		-neighbours->top
+		-neighbours->left
+		-neighbours->topLeft
+	}
+}
+
+pattern aLiveCell {
+	cell:Cell {
+		.alive : true
+	}
+}

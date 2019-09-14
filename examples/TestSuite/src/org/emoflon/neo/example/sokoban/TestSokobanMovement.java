@@ -7,7 +7,7 @@ import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
-import org.moflon.tutorial.sokobangamegui.controller.NeoController;
+import org.moflon.tutorial.sokobangamegui.controller.SokobanNeoController;
 
 class TestSokobanMovement extends ENeoTest {
 	
@@ -16,7 +16,7 @@ class TestSokobanMovement extends ENeoTest {
 	
 	@BeforeEach
 	public void createView() {
-		controller = new NeoController((c) -> {
+		controller = new SokobanNeoController((c) -> {
 			view = new TestView(c);
 			return view;
 		}, 8, 8);

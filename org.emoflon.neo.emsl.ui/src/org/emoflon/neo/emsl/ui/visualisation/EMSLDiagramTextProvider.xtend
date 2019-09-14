@@ -246,13 +246,17 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«ENDFOR»
 		'''
 	}
+	
+	dispatch def printValue(Object o){
+		'''?'''
+	}
 
 	dispatch def String printValue(BinaryExpression value){
-		'''«printValue(value.left)» «value.op» «printValue(value.right)»'''
+		'''«printValue(value?.left)» «value?.op» «printValue(value?.right)»'''
 	}
 
 	dispatch def printValue(AttributeExpression value) {
-		'''«value.node.name».«printTarget(value.target)»'''
+		'''«value?.node?.name».«printTarget(value?.target)»'''
 	}
 
 	dispatch def printTarget(NodeAttributeExpTarget target) {
@@ -264,7 +268,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	dispatch def printValue(EnumValue value) {
-		'''«value.literal.name»'''
+		'''«value?.literal?.name»'''
 	}
 
 	dispatch def printValue(PrimitiveInt value) {
