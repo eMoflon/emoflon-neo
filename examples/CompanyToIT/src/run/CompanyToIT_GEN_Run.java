@@ -6,9 +6,9 @@ import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.SimpleLoggerMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.SimpleNeoRuleScheduler;
+import org.emoflon.neo.engine.modules.ruleschedulers.FixedNoOfMatchesRuleScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.SimpleNeoUpdatePolicy;
+import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
@@ -21,8 +21,8 @@ public class CompanyToIT_GEN_Run {
 
 		Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
 				new TimedTerminationCondition(10000), //
-				new SimpleNeoRuleScheduler(), //
-				new SimpleNeoUpdatePolicy(), //
+				new FixedNoOfMatchesRuleScheduler(10), //
+				new AnySingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new SimpleLoggerMonitor());
 

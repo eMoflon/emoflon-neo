@@ -14,7 +14,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
  * Selects a single match. The selection is non-deterministic but not explicitly
  * random.
  */
-public class SimpleNeoUpdatePolicy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
+public class AnySingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	@Override
 	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> pMatches,
 			IMonitor pProgressMonitor) {

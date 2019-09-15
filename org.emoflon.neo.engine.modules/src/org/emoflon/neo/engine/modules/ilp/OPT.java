@@ -31,7 +31,7 @@ public abstract class OPT {
 	 * 
 	 * @return the ILP Problem
 	 */
-	public OPT(Collection<ICoMatch> matches) {
+	public BinaryILPProblem computeILPProblem(Collection<ICoMatch> matches) {
 		// Precedence information
 		registerMatches(matches);
 		computeWeights();
@@ -44,9 +44,6 @@ public abstract class OPT {
 		defineILPExclusions();
 		defineILPImplications();
 		defineILPObjective();
-	}
-
-	public BinaryILPProblem getILPProblem() {
 		return ilpProblem;
 	}
 
@@ -56,7 +53,7 @@ public abstract class OPT {
 		elementToCreatingMatches = new HashMap<>();
 		elementToDependentMatches = new HashMap<>();
 		matchToCreatedElements = new HashMap<>();
-		
+
 		long i = 0;
 		for (var m : matches) {
 			matchToId.put(m, i++);

@@ -5,6 +5,6 @@ import org.emoflon.neo.engine.api.rules.ITripleRule;
 
 public class NeoTripleRule implements ITripleRule {
 	public NeoTripleRule(TripleRule tr) {
-		// TODO Auto-generated constructor stub
+		// TODO[Anjorin] Extract info
 	}
 }
