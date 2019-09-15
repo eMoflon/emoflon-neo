@@ -1,12 +1,12 @@
-package org.emoflon.neo.engine.modules;
+package org.emoflon.neo.engine.modules.ruleschedulers;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.emoflon.neo.engine.api.rules.IRule;
-import org.emoflon.neo.engine.generator.IMonitor;
-import org.emoflon.neo.engine.generator.IRuleScheduler;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
+import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 

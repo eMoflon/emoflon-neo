@@ -4,8 +4,12 @@ Bundle-Name: Generator-Modules
 Bundle-SymbolicName: org.emoflon.neo.engine.modules
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
- org.emoflon.neo.engine.modules,
- org.emoflon.neo.engine.modules.ilp
+ org.emoflon.neo.engine.modules.ilp,
+ org.emoflon.neo.engine.modules.matchreprocessors,
+ org.emoflon.neo.engine.modules.monitors,
+ org.emoflon.neo.engine.modules.ruleschedulers,
+ org.emoflon.neo.engine.modules.terminationcondition,
+ org.emoflon.neo.engine.modules.updatepolicies
 Automatic-Module-Name: org.emoflon.neo.generator
 Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",

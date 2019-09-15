@@ -1,6 +1,6 @@
-package org.emoflon.neo.engine.modules;
+package org.emoflon.neo.engine.modules.terminationcondition;
 
-import org.emoflon.neo.engine.generator.ITerminationCondition;
+import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 
 public class TimedTerminationCondition implements ITerminationCondition {
 

@@ -5,6 +5,11 @@ import java.util.Collection;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.modules.IMatchReprocessor;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
+import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
+import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
+import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 
 public class Generator<M extends IMatch, C extends ICoMatch> {
 

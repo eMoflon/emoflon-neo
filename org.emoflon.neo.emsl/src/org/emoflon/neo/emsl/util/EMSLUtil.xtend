@@ -173,7 +173,6 @@ class EMSLUtil {
 			}
 		}
 		
-		// TODO[Jannik] check if this makes sense!
 		if(value instanceof BinaryExpression){
 			return handleValue(value.left) + value.op + handleValue(value.right)
 		}

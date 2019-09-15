@@ -1,12 +1,12 @@
-package org.emoflon.neo.engine.modules;
+package org.emoflon.neo.engine.modules.updatepolicies;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
-import org.emoflon.neo.engine.generator.IMonitor;
-import org.emoflon.neo.engine.generator.IUpdatePolicy;
 import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
+import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
