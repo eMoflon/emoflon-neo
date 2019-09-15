@@ -1,23 +1,23 @@
 import "platform:/resource/GameOfLife/src/spec/GameOfLifeRules.msl"
 
-rule createTopLeftCell {
+rule createTopLeftCorner {
 	++ cell:Cell {
-		.x := 0
-		.y := 0
+		.row := 0
+		.col := 0
 		.alive := false
 	}
 }
 
 rule createCellsInFirstRow {
 	left:Cell {
-		.x : 0
+		.row : 0
 		
 		++ -neighbours->cell
 	}
 	
 	++ cell:Cell {
-		.x := 0
-		.y := left::y + 1
+		.row := 0
+		.col := left::col + 1
 		.alive := false
 		
 		++ -neighbours->left
@@ -30,21 +30,21 @@ pattern alreadyHasRightNeighbour {
 	}
 	
 	otherCell:Cell {
-		.x : 0
-		.y > left::y
+		.row : 0
+		.col > left::col
 	}
 }
 
 rule createCellsInFirstCol {
 	top:Cell {
-		.y : 0
+		.col : 0
 		
 		++ -neighbours->cell
 	}
 	
 	++ cell:Cell {
-		.y := 0
-		.x := top::x + 1
+		.col := 0
+		.row := top::row + 1
 		
 		.alive := false
 		
@@ -58,31 +58,31 @@ pattern alreadyHasBottomNeighbour {
 	}
 	
 	otherCell:Cell {
-		.y : 0
-		.x > top::x
+		.col : 0
+		.row > top::row
 	}
 } 
 
 rule createAllOtherCells {
 	left:Cell {
-		.y : top::y - 1
+		.col : top::col - 1
 		++ -neighbours->newCell
 	}
 	
 	top:Cell {
-		.x : topLeft::x
+		.row : topLeft::row
 		++ -neighbours->newCell
 	}
 	
 	topLeft:Cell {
-		.x : left::x - 1
-		.y : top::y - 1
+		.row : left::row - 1
+		.col : top::col - 1
 		++ -neighbours->newCell
 	}
 	
 	++ newCell:Cell {
-		.x := left::x
-		.y := top::y
+		.row := left::row
+		.col := top::col
 		
 		.alive := false
 		
@@ -94,21 +94,21 @@ rule createAllOtherCells {
 
 pattern otherCell {
 	left:Cell {
-		.y : top::y - 1
+		.col : top::col - 1
 	}
 	
 	top:Cell {
-		.x : topLeft::x
+		.row : topLeft::row
 	}
 	
 	topLeft:Cell {
-		.x : left::x - 1
-		.y : top::y - 1
+		.row : left::row - 1
+		.col : top::col - 1
 	}
 	
 	otherCell:Cell {
-		.x : left::x
-		.y : top::y
+		.row : left::row
+		.col : top::col
 		
 		-neighbours->top
 		-neighbours->left
@@ -116,8 +116,37 @@ pattern otherCell {
 	}
 }
 
+rule createDiagonals {
+	upRight:Cell {
+		.row : downLeft::row - 1
+		.col : downLeft::col + 1
+		
+		++ -neighbours->downLeft
+	}
+	
+	downLeft:Cell {
+		++ -neighbours->upRight
+	}
+} when forbid alreadyConnected
+
+pattern alreadyConnected {
+	upRight:Cell {
+		-neighbours->downLeft
+	}
+	
+	downLeft:Cell {
+		-neighbours->upRight
+	}
+}
+
 pattern aLiveCell {
 	cell:Cell {
 		.alive : true
+	}
+}
+
+rule makeCellAlive {
+	cell:Cell {
+		.alive := true
 	}
 }

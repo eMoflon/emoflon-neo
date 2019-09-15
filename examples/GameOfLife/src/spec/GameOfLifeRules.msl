@@ -1,7 +1,7 @@
 metamodel GameOfLife {
 	Cell {
-		.x:EInt
-		.y:EInt
+		.row:EInt
+		.col:EInt
 
 		.alive : EBoolean
 		-neighbours(3..8)->Cell

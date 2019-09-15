@@ -3,14 +3,14 @@ import "platform:/resource/GameOfLife/src/spec/GameOfLifeRules.msl"
 // FIXME[Max] https://github.com/eMoflon/emoflon-neo/issues/193
 rule createCellsInFirstCol {
 	top:Cell {
-		.y : 0
+		.col : 0
 		
 		++ -neighbours->cell
 	}
 	
 	++ cell:Cell {
-		.y := 0
-		.x := top::x + 1
+		.col := 0
+		.row := top::row + 1
 		
 		.alive := false
 		
@@ -24,8 +24,8 @@ pattern alreadyHasBottomNeighbour -> alreadyHasRightNeighbour {
 	}
 	
 	otherCell:Cell {
-		.y : 0
-		.x > top::x
+		.col : 0
+		.row > top::row
 	}
 }
 
@@ -35,8 +35,8 @@ pattern alreadyHasRightNeighbour {
 	}
 	
 	otherCell:Cell {
-		.x : 0
-		.y > left::y
+		.row : 0
+		.col > left::col
 	}
 }
 

@@ -101,7 +101,7 @@ public class View extends JFrame {
 				
 				/* Setup border and background color */
 				if (f.isAlive()) {
-					button.setBackground(Color.decode("#c1ffc1"));
+					button.setBackground(Color.RED);
 					button.setBorder(BorderFactory.createLineBorder(Color.RED));
 				} else {
 					button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
