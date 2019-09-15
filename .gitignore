@@ -111,3 +111,4 @@ examples/GameOfLife/src-gen/org/emoflon/neo/api/API_GameOfLifeSeeds.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeBuilder.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeRules.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeSeeds.java
+examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_Errors.java

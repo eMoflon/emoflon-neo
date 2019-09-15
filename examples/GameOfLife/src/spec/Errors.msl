@@ -1,0 +1,51 @@
+import "platform:/resource/GameOfLife/src/spec/GameOfLifeRules.msl"
+
+// FIXME[Max] https://github.com/eMoflon/emoflon-neo/issues/193
+rule createCellsInFirstCol {
+	top:Cell {
+		.y : 0
+		
+		++ -neighbours->cell
+	}
+	
+	++ cell:Cell {
+		.y := 0
+		.x := top::x + 1
+		
+		.alive := false
+		
+		++ -neighbours->top
+	}
+} when forbid alreadyHasBottomNeighbour
+
+pattern alreadyHasBottomNeighbour -> alreadyHasRightNeighbour {
+	top:Cell {
+		-neighbours->otherCell
+	}
+	
+	otherCell:Cell {
+		.y : 0
+		.x > top::x
+	}
+}
+
+pattern alreadyHasRightNeighbour {
+	left:Cell {
+		-neighbours->otherCell
+	}
+	
+	otherCell:Cell {
+		.x : 0
+		.y > left::y
+	}
+}
+
+//FIXME[Max] https://github.com/eMoflon/emoflon-neo/issues/192 
+pattern aLiveCell {
+	cell:Cell {
+		.alive : true
+	}
+} 
+// Uncomment the following line for stackoverflow
+//when forbid aLiveCell
+

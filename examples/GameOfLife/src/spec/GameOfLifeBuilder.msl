@@ -61,7 +61,7 @@ pattern alreadyHasBottomNeighbour {
 		.y : 0
 		.x > top::x
 	}
-}
+} 
 
 rule createAllOtherCells {
 	left:Cell {
@@ -84,7 +84,7 @@ rule createAllOtherCells {
 		.x := left::x
 		.y := top::y
 		
-		.alive := true
+		.alive := false
 		
 		++ -neighbours->top
 		++ -neighbours->left
