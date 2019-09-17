@@ -819,3 +819,12 @@ rule changeToEndField {
 	}
 	f1:Field
 }
+
+rule createThirdSokoban {
+	sok1: Sokoban 
+	sok2: Sokoban
+	f:Field
+	++ sok3: Sokoban {
+		++ -field->f
+	}
+}

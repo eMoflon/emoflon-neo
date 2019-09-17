@@ -45,6 +45,13 @@ public class SokobanPatterns extends ENeoTest {
 	public void test_TwoSokoban() {
 		expectNoMatch(entities.getPattern_TwoSokoban());
 	}
+	
+	@Test
+	public void test_TwoSokobanNotInjective() {
+		var pattern = entities.getPattern_TwoSokoban().matcher();
+		pattern.setMatchInjectively(false);
+		assertEquals(1, pattern.countMatches());
+	}
 
 	@Test
 	public void test_OneSokoban_StillValid() {
@@ -649,6 +656,28 @@ public class SokobanPatterns extends ENeoTest {
 			var onlyMatch = iterator.next();
 			assertTrue(onlyMatch.isStillValid());
 			
+			Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+			assertTrue(result.isPresent());
+		}
+		
+	}
+	
+	@Test
+	public void testInjectivityInRules() {
+		
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_CreateThirdSokoban().rule();
+		rule.setMatchInjectively(true);
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 0);
+		
+		rule.setMatchInjectively(false);
+		matches = rule.determineMatches();
+		assertTrue(matches.size() == 16);
+		
+		var iterator = matches.iterator();
+		
+		if(iterator.hasNext()) {
+			var onlyMatch = iterator.next();
 			Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 			assertTrue(result.isPresent());
 		}

@@ -79,13 +79,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
 			// analyze and return results
-			var matches = new ArrayList<NeoMatch>();
-			while (result.hasNext()) {
-				var record = result.next();
-				matches.add(new NeoMatch(this, record));
-			}
-	
-			return matches.size() == 1;
+			return result.hasNext();
 		}
 	}
 
