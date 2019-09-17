@@ -694,7 +694,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		} else if(v1 instanceof AttributeExpression && v2 instanceof AttributeExpression) {
 			var ae1 = (AttributeExpression)v1;
 			var ae2 = (AttributeExpression)v2;
-			return ae1.getNode().equals(ae2.getNode()) && ae1.getTarget().getAttribute().equals(ae2.getTarget().getAttribute());
+			return ae1.getNode().getName().equals(ae2.getNode().getName()) && ae1.getTarget().getAttribute().equals(ae2.getTarget().getAttribute());
 		} else if (v1 instanceof BinaryExpression && v2 instanceof BinaryExpression) {
 			var be1 = (BinaryExpression) v1;
 			var be2 = (BinaryExpression) v2;
