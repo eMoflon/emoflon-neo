@@ -40,12 +40,10 @@ pattern alreadyHasRightNeighbour {
 	}
 }
 
-//FIXME[Max] https://github.com/eMoflon/emoflon-neo/issues/192 
 pattern aLiveCell {
 	cell:Cell {
 		.alive : true
 	}
-} 
-// Uncomment the following line for stackoverflow
-//when forbid aLiveCell
+} when forbid aLiveCell
+
 
