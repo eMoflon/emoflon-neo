@@ -121,7 +121,7 @@ public class SokobanRules extends ENeoTest {
 	public void testChangeToEndField() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ChangeToEndField().rule();
 		var matches = rule.determineMatches();
-		assertEquals(14, matches.size());	
+		assertEquals(10, matches.size());	
 		
 		var iterator = matches.iterator();
 		

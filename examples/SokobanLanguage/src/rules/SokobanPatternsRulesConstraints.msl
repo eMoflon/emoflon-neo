@@ -812,11 +812,10 @@ rule testAttributeAssignmentsWithElementsValueAssign {
 
 rule changeToEndField {
 	f:Field {
+		-right->f1
 		.endPos : false
 		.endPos := true
 		.ename := f1::ename + "b"
 	}
-	f1:Field {
-		.ename : "Hallo"
-	}
+	f1:Field
 }
