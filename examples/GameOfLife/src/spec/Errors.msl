@@ -1,6 +1,5 @@
 import "platform:/resource/GameOfLife/src/spec/GameOfLifeRules.msl"
 
-// FIXME[Max] https://github.com/eMoflon/emoflon-neo/issues/193
 rule createCellsInFirstCol {
 	top:Cell {
 		.col : 0
@@ -44,6 +43,6 @@ pattern aLiveCell {
 	cell:Cell {
 		.alive : true
 	}
-} when forbid aLiveCell
+}// when forbid aLiveCell
 
 
