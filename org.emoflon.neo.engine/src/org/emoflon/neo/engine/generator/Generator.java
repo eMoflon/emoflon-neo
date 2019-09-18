@@ -33,9 +33,8 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	}
 
 	public void generate(Collection<IRule<M, C>> pAllRules) {
+		MatchContainer<M, C> matchContainer = new MatchContainer<>(pAllRules);
 		while (!terminationCondition.isReached()) {
-			MatchContainer<M, C> matchContainer = new MatchContainer<>(pAllRules);
-
 			ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor)//
 					.forEach((rule, count) -> rule.determineMatches(count)//
 							.forEach((match) -> matchContainer.add(match, rule)));
