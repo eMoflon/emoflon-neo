@@ -37,6 +37,11 @@ public class NeoConstraintMatch implements IMatch {
 		extractIds(record);
 	}
 
+	@Override
+	public Map<String, Long> getIDs() {
+		return ids;
+	}
+	
 	/**
 	 * Extracts the node and relations id out of the result set in regards to the
 	 * nodes variable name and add it to the result list
