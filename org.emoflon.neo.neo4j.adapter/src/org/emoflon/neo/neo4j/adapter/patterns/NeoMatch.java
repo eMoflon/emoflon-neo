@@ -18,7 +18,7 @@ import org.neo4j.driver.v1.Record;
  */
 public class NeoMatch implements IMatch {
 	private NeoPattern pattern;
-	private Map<String, Long> ids;
+	protected Map<String, Long> ids;
 
 	/**
 	 * @param pattern the corresponding pattern to the match
@@ -29,6 +29,11 @@ public class NeoMatch implements IMatch {
 
 		ids = new HashMap<>();
 		extractIdsPattern(record);
+	}
+	
+	@Override
+	public Map<String, Long> getIDs() {
+		return ids;
 	}
 	
 	/**

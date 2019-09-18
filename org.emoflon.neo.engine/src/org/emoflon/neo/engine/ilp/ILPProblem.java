@@ -820,7 +820,8 @@ public class ILPProblem {
 		 * @param coefficient The coefficient of the variable
 		 */
 		public void addTerm(final int variableID, final double coefficient) {
-			double result = this.terms.put(variableID, coefficient);
+			terms.put(variableID, coefficient);
+			double result = terms.get(variableID);
 			if (Double.doubleToLongBits(result) == Double.doubleToLongBits(-coefficient)) {
 				this.terms.remove(variableID);
 			}

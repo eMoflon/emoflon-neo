@@ -159,7 +159,6 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.util.FlattenerException;
 			import org.emoflon.neo.engine.api.patterns.IPattern;
 			import org.emoflon.neo.engine.api.rules.IRule;
-			import org.emoflon.neo.engine.api.rules.ITripleRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleAccess;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
@@ -167,7 +166,6 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
 			import org.emoflon.neo.emsl.eMSL.TripleRule;
-			import org.emoflon.neo.neo4j.adapter.rules.NeoTripleRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
@@ -454,14 +452,6 @@ class EMSLGenerator extends AbstractGenerator {
 						}
 					«ENDFOR»
 				}
-				
-				public Collection<ITripleRule> getTripleRuleInfoFor«rootName»() {
-					Collection<ITripleRule> info = new HashSet<>();
-					«FOR tr : tgg.rules.filter[!it.abstract]»
-						info.add(getTripleRule_«tr.name»());
-					«ENDFOR»
-					return info;
-				}
 			'''
 		} catch (Exception e) {
 			e.printStackTrace
@@ -470,19 +460,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 	
 	dispatch def generateAccess(TripleRule tr, int index){
-		if(tr.abstract) return ""
-		try {
-			val rootName = namingConvention(tr.name)
-			'''
-				public ITripleRule getTripleRule_«rootName»() {
-					var tr = (TripleRule) spec.getEntities().get(«index»);
-					return new NeoTripleRule(tr);
-				}
-			'''
-		} catch (Exception e) {
-			e.printStackTrace
-			'''//FIXME Unable to generate API: «e.toString»  */ '''
-		}
+		'''/* No API at the moment */'''
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
