@@ -1,6 +1,7 @@
 package org.emoflon.neo.engine.api.rules;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;
@@ -27,4 +28,8 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	}
 
 	void useSPOSemantics(boolean spoSemantics);
+
+	Stream<String> getContextElts();
+
+	Stream<String> getCreatedElts();
 }

@@ -416,26 +416,20 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Pattern.
 	 */
 	def dispatch String visualiseEntity(Pattern entity, boolean mainSelection) {
-		try {
-			var entityCopy = EMSLFlattener.flattenPattern(entity)
-			'''
-				package «IF entity.body.abstract»//«ENDIF»«entityCopy.body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
-				«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy.body)»
-					«visualiseNodeBlockInPattern2(entityCopy, nb, false)»
-				«ENDFOR»
-				}
-				«IF entityCopy.condition !== null »
-					legend bottom
-						«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»**!**(«ENDIF»«getConditionString(entityCopy)»«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»)«ENDIF»
-					endlegend
-					«visualiseCondition(entityCopy)»
-				«ENDIF»
-			'''
-		} catch (AssertionError e) {
-			
-		} catch (FlattenerException e) {
-			return ""
-		}
+		var entityCopy = EMSLFlattener.flattenPattern(entity)
+		'''
+			package «IF entity.body.abstract»//«ENDIF»«entityCopy.body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
+			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy.body)»
+				«visualiseNodeBlockInPattern2(entityCopy, nb, false)»
+			«ENDFOR»
+			}
+			«IF entityCopy.condition !== null »
+				legend bottom
+					«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»**!**(«ENDIF»«getConditionString(entityCopy)»«IF entityCopy.condition instanceof ConstraintReference && (entityCopy.condition as ConstraintReference).negated»)«ENDIF»
+				endlegend
+				«visualiseCondition(entityCopy)»
+			«ENDIF»
+		'''
 	}
 
 	/**
@@ -534,8 +528,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 * Returns the diagram text for a Rule.
 	 */
 	def dispatch String visualiseEntity(Rule entity, boolean mainSelection) {
-		try {
-			var entityCopy = EMSLFlattener.flatten(entity) as Rule
+		var entityCopy = EMSLFlattener.flatten(entity) as Rule
 		'''
 			package «IF entity.abstract»//«ENDIF»«(entityCopy as Rule).name»«IF entity.abstract»//«ENDIF»«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
@@ -549,10 +542,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«visualiseCondition(entityCopy)»
 			«ENDIF»
 		'''
-		} catch (FlattenerException e) {
-			e.printStackTrace
-			return ""
-		}
 	}
 
 	/**
@@ -686,11 +675,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseCondition(Entity entity) {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
-		var copiesOfConditionPatterns = newArrayList
+		var copiesOfConditionPatterns = new HashSet()
 		for (p : conditionPattern) {
-			var copiedPattern = EMSLFlattener.flattenToPattern(p)
-			copiedPattern.condition = EcoreUtil2.copy((p.eContainer as Pattern).condition)
-			copiesOfConditionPatterns.add(copiedPattern)
+			if (p.name.equals(entity.name) && entity instanceof Pattern) {
+				throw new Exception("Using a pattern as its own condition is not allowed.")
+			} else {
+				var copiedPattern = EMSLFlattener.flattenToPattern(p)
+				copiedPattern.condition = EcoreUtil2.copy((p.eContainer as Pattern).condition)
+				copiesOfConditionPatterns.add(copiedPattern)
+			}
 		}
 		'''
 			«FOR c : copiesOfConditionPatterns»

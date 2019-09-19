@@ -176,7 +176,7 @@ public class ILPProblem {
 				// unchanged
 				return;
 			else
-				throw new RuntimeException("The variable " + this.getVariable(variableId) + "cannot be fixed to value "
+				throw new RuntimeException("The variable " + this.getVariable(variableId) + " cannot be fixed to value "
 						+ value + " as it already been fixed to a different value: "
 						+ this.fixedVariableValues.get(variableId));
 		}
@@ -820,7 +820,8 @@ public class ILPProblem {
 		 * @param coefficient The coefficient of the variable
 		 */
 		public void addTerm(final int variableID, final double coefficient) {
-			double result = this.terms.put(variableID, coefficient);
+			terms.put(variableID, coefficient);
+			double result = terms.get(variableID);
 			if (Double.doubleToLongBits(result) == Double.doubleToLongBits(-coefficient)) {
 				this.terms.remove(variableID);
 			}

@@ -18,7 +18,8 @@ import org.neo4j.driver.v1.Record;
  */
 public class NeoMatch implements IMatch {
 	private NeoPattern pattern;
-	private Map<String, Long> ids;
+	protected Map<String, Long> nodeIDs;
+	protected Map<String, Long> edgeIDs;
 
 	/**
 	 * @param pattern the corresponding pattern to the match
@@ -27,7 +28,8 @@ public class NeoMatch implements IMatch {
 	public NeoMatch(NeoPattern pattern, Record record) {
 		this.pattern = pattern;
 
-		ids = new HashMap<>();
+		nodeIDs = new HashMap<>();
+		edgeIDs = new HashMap<>();
 		extractIdsPattern(record);
 	}
 	
@@ -42,25 +44,25 @@ public class NeoMatch implements IMatch {
 
 		for (var n : pattern.getNodes()) {
 			if (recMap.containsKey(n.getVarName()))
-				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
+				nodeIDs.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
 
 			for (var r : n.getRelations()) {
 				if (recMap.containsKey(r.getVarName()))
-					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
+					edgeIDs.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
 			}
 		}
 	}
 
 	public long getIdForNode(NeoNode node) {
-		return ids.get(node.getVarName());
+		return nodeIDs.get(node.getVarName());
 	}
 
 	public long getIdForNode(String varName) {
-		return ids.get(varName);
+		return edgeIDs.get(varName);
 	}
 
 	public long getIdForRelation(NeoRelation rel) {
-		return ids.get(rel.getVarName());
+		return edgeIDs.get(rel.getVarName());
 	}
 
 	public Record getData() {
@@ -69,7 +71,8 @@ public class NeoMatch implements IMatch {
 	
 	public Map<String, Object> getParameters() {
 		var map = new HashMap<String,Object>();
-		ids.keySet().forEach(elem -> map.put(elem, ids.get(elem)));
+		nodeIDs.keySet().forEach(elem -> map.put(elem, nodeIDs.get(elem)));
+		edgeIDs.keySet().forEach(elem -> map.put(elem, edgeIDs.get(elem)));
 		return map;
 	}
 
@@ -93,5 +96,15 @@ public class NeoMatch implements IMatch {
 	@Override
 	public boolean isStillValid() {
 		return pattern.isStillValid(this);
+	}
+
+	@Override
+	public Map<String, Long> getNodeIDs() {
+		return nodeIDs;
+	}
+
+	@Override
+	public Map<String, Long> getEdgeIDs() {
+		return edgeIDs;
 	}
 }

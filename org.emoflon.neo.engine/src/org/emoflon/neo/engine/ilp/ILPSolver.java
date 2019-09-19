@@ -43,7 +43,7 @@ public abstract class ILPSolver {
 	 * @return The solution of the ILP (if found)
 	 * @throws Exception
 	 */
-	protected abstract ILPSolution solveILP() throws Exception;
+	public abstract ILPSolution solveILP() throws Exception;
 
 	/**
 	 * @return The tolerance between found solution and theoretical optimum at which the solver is allowed to stop

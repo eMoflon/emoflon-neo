@@ -4,6 +4,7 @@ Bundle-Name: Generator-Modules
 Bundle-SymbolicName: org.emoflon.neo.engine.modules
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
+ gurobi,
  org.emoflon.neo.engine.modules.ilp,
  org.emoflon.neo.engine.modules.matchreprocessors,
  org.emoflon.neo.engine.modules.monitors,
@@ -14,5 +15,7 @@ Automatic-Module-Name: org.emoflon.neo.generator
 Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.log4j;bundle-version="1.2.15",
- org.sat4j.core;bundle-version="2.3.5",
- org.sat4j.pb;bundle-version="2.3.5"
+ org.sat4j.core;bundle-version="2.3.5";visibility:=reexport,
+ org.sat4j.pb;bundle-version="2.3.5";visibility:=reexport
+Bundle-ClassPath: lib/gurobi.jar,
+ .

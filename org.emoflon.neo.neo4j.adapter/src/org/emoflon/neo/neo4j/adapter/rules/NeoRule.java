@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
@@ -27,6 +28,8 @@ import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
 import org.neo4j.driver.v1.exceptions.DatabaseException;
+
+import com.google.common.collect.Streams;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
@@ -317,5 +320,15 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	public String getQuery() {
 		return contextPattern.getQuery();
+	}
+
+	@Override
+	public Stream<String> getContextElts() {
+		return Streams.concat(blackNodes.keySet().stream(), blackRel.keySet().stream());
+	}
+
+	@Override
+	public Stream<String> getCreatedElts() {
+		return Streams.concat(greenNodes.keySet().stream(), greenRel.keySet().stream());
 	}
 }
