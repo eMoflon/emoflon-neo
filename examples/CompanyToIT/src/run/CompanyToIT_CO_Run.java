@@ -29,7 +29,7 @@ public class CompanyToIT_CO_Run {
 			api.exportMetamodelsForCompanyToIT();
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRules());
+			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRules(), false);
 
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
 					new OneShotTerminationCondition(), //

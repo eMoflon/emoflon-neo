@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
@@ -16,10 +18,13 @@ import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
+	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
+	
 	protected Map<IMatch, String> matchToId;
 	protected Map<Long, Set<IMatch>> elementToCreatingMatches;
 	protected Map<Long, Set<IMatch>> elementToDependentMatches;
@@ -32,27 +37,41 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private int variableCounter;
 	protected Map<IMatch, Integer> matchToWeight;
 	private BinaryILPProblem ilpProblem;
+	
+	private boolean optimise;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 
-	public ILPBasedOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules) {
+	public ILPBasedOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules, boolean optimise) {
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
+		this.optimise= optimise; 
 	}
 
 	public void computeILPProblem(Stream<IMatch> matches) {
+		logger.debug("Registering all matches...");
+		
 		// Precedence information
 		registerMatches(matches);
 		computeWeights();
 
+		logger.debug("Registered all matches.");
+		
 		// ILP definition
 		constraintCounter = 0;
 		variableCounter = 0;
 		ilpProblem = ILPFactory.createBinaryILPProblem();
 
+		logger.debug("Defining exclusions...");
 		defineILPExclusions();
+		
+		logger.debug("Defining implications...");
 		defineILPImplications();
+		
+		logger.debug("Defining objective...");
 		defineILPObjective();
+		
+		logger.debug("Created ILP problem.");
 	}
 
 	public ILPProblem getILPProblem() {
@@ -106,11 +125,16 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			var creatingMatches = entry.getValue();
 			var dependentMatches = elementToDependentMatches.getOrDefault(entry.getKey(), Collections.emptySet());
 
+			if(!optimise && creatingMatches.size() == 1)
+				ilpProblem.fixVariable(varNameFor(creatingMatches.iterator().next()), true);
+			
 			if (!creatingMatches.isEmpty() && !dependentMatches.isEmpty()) {
 				// If no creator is chosen, no dependent can be chosen
 				ilpProblem.addNegativeImplication(creatingMatches.stream().map(this::varNameFor),
 						dependentMatches.stream().map(this::varNameFor), registerConstraint("IMPL_" + entry.getKey()));
-			} else {
+			} 
+			
+			if(creatingMatches.isEmpty()){
 				// There is no match creating this element -> forbid all matches needing it
 				dependentMatches.stream().forEach(m -> ilpProblem.fixVariable(varNameFor(m), false));
 			}
@@ -134,7 +158,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			computeCycles(match, new HashSet<>());
 
 		for (var cycle : cycles) {
-			ilpProblem.addExclusion(cycle.stream().map(this::varNameFor), registerConstraint("EXCL_cycle"),
+			ilpProblem.addExclusion(cycle.stream().map(this::varNameFor), registerConstraint("EXCL_Cycle"),
 					cycle.size() - 1);
 		}
 	}
@@ -181,5 +205,25 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 	private String registerConstraint(String label) {
 		return label + "_" + constraintCounter++;
+	}
+	
+
+	public Set<Long> determineConsistentElements(SupportedILPSolver suppSolver) throws Exception {
+		var solver = ILPFactory.createILPSolver(getILPProblem(), suppSolver);
+		
+		logger.debug(getILPProblem());
+		
+		var solution = solver.solveILP();
+
+		return matchToId.entrySet().stream()//
+				.filter(entry -> solution.getVariable(entry.getValue()) > 0)
+				.flatMap(entry -> getCreatedElts(entry.getKey()).stream()).collect(Collectors.toSet());
+	}
+	
+	public Set<Long> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
+		var consistentElements = determineConsistentElements(suppSolver);
+		var allElements = new HashSet<>(elementToCreatingMatches.keySet());
+		allElements.removeAll(consistentElements);
+		return allElements;
 	}
 }

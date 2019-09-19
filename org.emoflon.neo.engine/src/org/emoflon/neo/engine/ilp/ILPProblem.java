@@ -176,7 +176,7 @@ public class ILPProblem {
 				// unchanged
 				return;
 			else
-				throw new RuntimeException("The variable " + this.getVariable(variableId) + "cannot be fixed to value "
+				throw new RuntimeException("The variable " + this.getVariable(variableId) + " cannot be fixed to value "
 						+ value + " as it already been fixed to a different value: "
 						+ this.fixedVariableValues.get(variableId));
 		}
