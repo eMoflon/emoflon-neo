@@ -24,7 +24,8 @@ public class NeoConstraintMatch implements IMatch {
 	private static final Logger logger = Logger.getLogger(NeoConstraintMatch.class);
 
 	private Collection<NeoNode> pNodes;
-	private Map<String, Long> ids;
+	private Map<String, Long> nodeIDs;
+	private Map<String, Long> edgeIDs;
 
 	/**
 	 * @param pNodes list of all Nodes including relations of the constraint
@@ -33,13 +34,10 @@ public class NeoConstraintMatch implements IMatch {
 	public NeoConstraintMatch(Collection<NeoNode> pNodes, Record record) {
 		this.pNodes = pNodes;
 
-		ids = new HashMap<String, Long>();
+		nodeIDs = new HashMap<String, Long>();
+		edgeIDs = new HashMap<String, Long>();
+		
 		extractIds(record);
-	}
-
-	@Override
-	public Map<String, Long> getIDs() {
-		return ids;
 	}
 	
 	/**
@@ -53,11 +51,11 @@ public class NeoConstraintMatch implements IMatch {
 
 		for (var n : pNodes) {
 			if (recMap.containsKey(n.getVarName()))
-				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
+				nodeIDs.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
 
 			for (var r : n.getRelations()) {
 				if (recMap.containsKey(r.getVarName()))
-					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
+					edgeIDs.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
 			}
 		}
 	}
@@ -68,7 +66,10 @@ public class NeoConstraintMatch implements IMatch {
 	 * @return list of ID in regards to the variable name of matched nodes
 	 */
 	public Map<String, Long> getResults() {
-		return ids;
+		var allIDs = new HashMap<String, Long>();
+		allIDs.putAll(nodeIDs);
+		allIDs.putAll(edgeIDs);
+		return allIDs;
 	}
 
 	/**
@@ -78,7 +79,7 @@ public class NeoConstraintMatch implements IMatch {
 	 * @return id of the NeoNode in the Result
 	 */
 	public long getIdForNode(NeoNode node) {
-		return ids.get(node.getVarName());
+		return nodeIDs.get(node.getVarName());
 	}
 
 	/**
@@ -89,7 +90,7 @@ public class NeoConstraintMatch implements IMatch {
 	 * @return id of the NeoRelation in the Result
 	 */
 	public long getIdForRelation(NeoRelation rel) {
-		return ids.get(rel.getVarName());
+		return edgeIDs.get(rel.getVarName());
 	}
 
 	/**
@@ -107,5 +108,15 @@ public class NeoConstraintMatch implements IMatch {
 	@Override
 	public boolean isStillValid() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Map<String, Long> getNodeIDs() {
+		return nodeIDs;
+	}
+
+	@Override
+	public Map<String, Long> getEdgeIDs() {
+		return edgeIDs;
 	}
 }

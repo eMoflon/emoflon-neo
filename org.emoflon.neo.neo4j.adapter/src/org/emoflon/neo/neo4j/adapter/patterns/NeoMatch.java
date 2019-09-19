@@ -18,7 +18,8 @@ import org.neo4j.driver.v1.Record;
  */
 public class NeoMatch implements IMatch {
 	private NeoPattern pattern;
-	protected Map<String, Long> ids;
+	protected Map<String, Long> nodeIDs;
+	protected Map<String, Long> edgeIDs;
 
 	/**
 	 * @param pattern the corresponding pattern to the match
@@ -27,13 +28,9 @@ public class NeoMatch implements IMatch {
 	public NeoMatch(NeoPattern pattern, Record record) {
 		this.pattern = pattern;
 
-		ids = new HashMap<>();
+		nodeIDs = new HashMap<>();
+		edgeIDs = new HashMap<>();
 		extractIdsPattern(record);
-	}
-	
-	@Override
-	public Map<String, Long> getIDs() {
-		return ids;
 	}
 	
 	/**
@@ -47,25 +44,25 @@ public class NeoMatch implements IMatch {
 
 		for (var n : pattern.getNodes()) {
 			if (recMap.containsKey(n.getVarName()))
-				ids.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
+				nodeIDs.put(n.getVarName(), (Long) recMap.get(n.getVarName()));
 
 			for (var r : n.getRelations()) {
 				if (recMap.containsKey(r.getVarName()))
-					ids.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
+					edgeIDs.put(r.getVarName(), (Long) recMap.get(r.getVarName()));
 			}
 		}
 	}
 
 	public long getIdForNode(NeoNode node) {
-		return ids.get(node.getVarName());
+		return nodeIDs.get(node.getVarName());
 	}
 
 	public long getIdForNode(String varName) {
-		return ids.get(varName);
+		return edgeIDs.get(varName);
 	}
 
 	public long getIdForRelation(NeoRelation rel) {
-		return ids.get(rel.getVarName());
+		return edgeIDs.get(rel.getVarName());
 	}
 
 	public Record getData() {
@@ -92,5 +89,15 @@ public class NeoMatch implements IMatch {
 	@Override
 	public boolean isStillValid() {
 		return pattern.isStillValid(this);
+	}
+
+	@Override
+	public Map<String, Long> getNodeIDs() {
+		return nodeIDs;
+	}
+
+	@Override
+	public Map<String, Long> getEdgeIDs() {
+		return edgeIDs;
 	}
 }

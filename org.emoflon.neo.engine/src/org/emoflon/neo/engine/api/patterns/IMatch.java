@@ -7,5 +7,6 @@ public interface IMatch {
 
 	boolean isStillValid();	
 	
-	Map<String, Long> getIDs();
+	Map<String, Long> getNodeIDs();
+	Map<String, Long> getEdgeIDs();
 }
