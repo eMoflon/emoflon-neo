@@ -19,6 +19,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.v1.Record;
 
 public class SokobanPatterns extends ENeoTest {
 
@@ -271,6 +272,19 @@ public class SokobanPatterns extends ENeoTest {
 
 		expectValidMatches(matches, matches.size() - 2);
 	}
+	
+	@Test
+	public void test_ConnectedEndField_StillValid_AfterOneNoEndField() {
+		var p = entities.getPattern_TwoEmptyEndFields();
+		var matches = p.matcher().determineMatches();
+		expectSingleMatch(p);
+		
+		// removing 2 blocks, valid matches should be 2 less
+		builder.executeQueryForSideEffect("MATCH (f1:Field {endPos:true})-[:bottom]->(f2:Field {endPos: true}) SET f2.endPos = false");
+
+		expectValidMatches(matches, matches.size() - 1);
+	}
+
 
 	@Test
 	public void test_AnOccupiedSokobanField() {

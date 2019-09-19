@@ -60,12 +60,12 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective, m);
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);
 
-		logger.debug(cypherQuery);
+		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
 
 		// Execute query
-		var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
 		
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");

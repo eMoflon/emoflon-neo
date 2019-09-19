@@ -295,13 +295,13 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	@Override
-	public Optional<NeoCoMatch> apply(NeoMatch match) {
+	public Optional<NeoCoMatch> apply(NeoMatch m) {
 		logger.info("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, match, useSPOSemantics, redNodes.values(),
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
 				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
-		logger.debug(cypherQuery);
-		var result = builder.executeQuery(cypherQuery);
+		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
 
 		if (result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");

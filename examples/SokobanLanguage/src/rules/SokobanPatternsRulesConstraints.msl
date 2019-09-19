@@ -828,3 +828,19 @@ rule createThirdSokoban {
 		++ -field->f
 	}
 }
+
+pattern twoEmptyEndFields {
+	f1:Field {
+		.endPos: true
+	}
+	f2:Field {
+		.endPos: true
+	}
+} when enforce connectedField
+
+pattern connectedField {
+	f1:Field {
+		-bottom->f2
+	}
+	f2:Field
+}

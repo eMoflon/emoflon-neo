@@ -66,6 +66,12 @@ public class NeoMatch implements IMatch {
 	public Record getData() {
 		return pattern.getData(this);
 	}
+	
+	public Map<String, Object> getParameters() {
+		var map = new HashMap<String,Object>();
+		ids.keySet().forEach(elem -> map.put(elem, ids.get(elem)));
+		return map;
+	}
 
 	/**
 	 * Return the corresponding pattern of the match
