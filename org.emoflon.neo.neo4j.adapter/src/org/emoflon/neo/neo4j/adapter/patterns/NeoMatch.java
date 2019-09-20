@@ -58,7 +58,7 @@ public class NeoMatch implements IMatch {
 	}
 
 	public long getIdForNode(String varName) {
-		return edgeIDs.get(varName);
+		return nodeIDs.get(varName);
 	}
 
 	public long getIdForRelation(NeoRelation rel) {
@@ -71,8 +71,8 @@ public class NeoMatch implements IMatch {
 	
 	public Map<String, Object> getParameters() {
 		var map = new HashMap<String,Object>();
-		nodeIDs.keySet().forEach(elem -> map.put(elem, nodeIDs.get(elem)));
-		edgeIDs.keySet().forEach(elem -> map.put(elem, edgeIDs.get(elem)));
+		map.putAll(nodeIDs);
+		map.putAll(edgeIDs);
 		return map;
 	}
 
