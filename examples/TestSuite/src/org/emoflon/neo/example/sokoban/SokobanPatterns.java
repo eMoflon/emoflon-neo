@@ -19,7 +19,6 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.neo4j.driver.v1.Record;
 
 public class SokobanPatterns extends ENeoTest {
 
