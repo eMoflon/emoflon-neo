@@ -67,10 +67,10 @@ class CypherPatternBuilder {
 		«returnQuery_copyPaste(nodes)»'''
 	}
 
-	def static String getDataQuery(Collection<NeoNode> nodes, NeoMatch match, Collection<NeoAttributeExpression> attr, boolean injective) {
+	def static String getDataQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
 		'''
-		«matchQueryForData(nodes, match)»
-		«isStillValid_whereQueryUnparam(nodes, match, attr)»
+		«matchQueryForData(nodes)»
+		«isStillValid_whereQuery(nodes, attr)»
 		«returnDataQuery(nodes)»'''
 	}
 
@@ -167,7 +167,7 @@ class CypherPatternBuilder {
 		«ENDFOR»'''
 	}
 
-	def static String matchQueryForData(Collection<NeoNode> nodes, NeoMatch match) {
+	def static String matchQueryForData(Collection<NeoNode> nodes) {
 		'''
 		MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»

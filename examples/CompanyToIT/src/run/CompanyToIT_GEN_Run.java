@@ -18,7 +18,7 @@ public class CompanyToIT_GEN_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);
 
 	public static void main(String[] pArgs) throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		
 		var builder = API_Common.createBuilder();
 

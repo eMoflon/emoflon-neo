@@ -147,9 +147,9 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	public Record getData(NeoMatch m) {
 		logger.info("Extract data from " + getName());
-		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, m, queryData.getAttributeExpressions(), injective);
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
 		logger.debug(cypherQuery);
-		StatementResult result = builder.executeQuery(cypherQuery);
+		StatementResult result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
