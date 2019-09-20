@@ -2,7 +2,9 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
@@ -51,9 +53,10 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 	@Override
 	public boolean isStillValid(NeoMatch m) {
 		logger.info("Check if match for " + getName() + " is still valid");
-		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, m, queryData.getAttributeExpressions(), injective);
-		logger.debug(cypherQuery);
-		var result = builder.executeQuery(cypherQuery);
+		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, queryData.getAttributeExpressions(), injective);
+		
+		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");

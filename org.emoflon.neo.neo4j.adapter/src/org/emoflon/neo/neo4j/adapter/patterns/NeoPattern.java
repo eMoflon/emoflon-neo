@@ -97,14 +97,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 		return nodes;
 	}
 
-	/**
-	 * Get the injectivity information of a pattern
-	 * 
-	 * @return boolean true if the given pattern requires injective pattern matching
-	 */
-	public boolean isInjective() {
-		return injective;
-	}
 
 	/**
 	 * Runs the pattern matching and counts size of matches

@@ -78,16 +78,50 @@ public class SokobanRules extends ENeoTest {
 		assertTrue(result.isPresent());
 	}
 	
-	@Test void testMoveSokobanDownPathsWithCond() {
+	@Test 
+	public void testMoveSokobanDownPathsWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownTest().rule();
 		var matches = rule.determineMatches();
 		assertTrue(matches.size() == 0);		
 	}
 	
-	@Test void testAssignEndPosToNeighboringEndPosField() {
+	@Test 
+	public void testAssignEndPosToNeighboringEndPosField() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_TestAttributeAssignmentsWithElementsValueAssign().rule();
 		var matches = rule.determineMatches();
 		assertEquals(2, matches.size());	
+		
+		var iterator = matches.iterator();
+		
+		while(iterator.hasNext()) {
+			var match = iterator.next();
+			Optional<NeoCoMatch> result = rule.apply(match);
+			assertTrue(result.isPresent());
+			assertFalse(match.isStillValid());
+		}
+	}
+	
+	@Test 
+	public void testMoveSokobanRightWhenForbidOccupiedField() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanRightWhenForbidOccupiedField().rule();
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());	
+		
+		var iterator = matches.iterator();
+		
+		while(iterator.hasNext()) {
+			var match = iterator.next();
+			Optional<NeoCoMatch> result = rule.apply(match);
+			assertTrue(result.isPresent());
+			assertFalse(match.isStillValid());
+		}
+	}
+	
+	@Test 
+	public void testChangeToEndField() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ChangeToEndField().rule();
+		var matches = rule.determineMatches();
+		assertEquals(10, matches.size());	
 		
 		var iterator = matches.iterator();
 		

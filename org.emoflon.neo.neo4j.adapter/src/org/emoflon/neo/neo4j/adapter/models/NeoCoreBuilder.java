@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -110,11 +111,20 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	@Override
 	public StatementResult executeQuery(String cypherStatement) {
+		return executeQueryWithParameters(cypherStatement, null);
+	}
+	
+	@Override
+	public StatementResult executeQueryWithParameters(String cypherStatement, Map<String,Object> parameters) {
 		var session = driver.session();
 		var transaction = session.beginTransaction();
-		
+
 		try {
-			var result = transaction.run(cypherStatement.trim());
+			StatementResult result;
+			if(parameters == null)
+				result = transaction.run(cypherStatement.trim());
+			else
+				result = transaction.run(cypherStatement.trim(), parameters);
 			transaction.success();
 			transaction.close();
 			return result;

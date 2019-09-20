@@ -1,13 +1,9 @@
 package org.emoflon.neo.neo4j.adapter.constraints;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
@@ -64,35 +60,6 @@ public class NeoImplication extends NeoConstraint {
 	public String getName() {
 		return name;
 	}
-	
-	/**
-	 * Returns a collection of the Nodes from the If-Clause
-	 * 
-	 * @return NeoNode collection of the Nodes from the If-Clause
-	 */
-	public Collection<NeoNode> getIfNodes() {
-		return nodesIf;
-	}
-
-	/**
-	 * Return a collection of the Nodes from the Then-Clause
-	 * 
-	 * @return NeoNode collection of the Nodes from the Then-Clause
-	 */
-	public Collection<NeoNode> getThenNodes() {
-		return nodesThen;
-	}
-
-	/**
-	 * Return a collection of all nodes from the If- and the Then-Clause
-	 * 
-	 * @return NeoNode collection of all nodes from the If- and the Then-Clause
-	 */
-	public Collection<NeoNode> getNodes() {
-		var list = new HashSet<>(nodesIf);
-		list.addAll(nodesThen);
-		return list;
-	}
 
 	/**
 	 * Runs the Matching Query for If/Then Constraints and checks is the constraints
@@ -117,12 +84,7 @@ public class NeoImplication extends NeoConstraint {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
 			// analyze and return results
-			var matches = new ArrayList<IMatch>();
-			while (result.hasNext()) {
-				matches.add(new NeoConstraintMatch(nodesIf, result.next()));
-			}
-	
-			if (matches.isEmpty()) {
+			if (!result.hasNext()) {
 				logger.info("No invalid matches found. Constraint: " + name + " is complied!");
 				return true;
 			} else {

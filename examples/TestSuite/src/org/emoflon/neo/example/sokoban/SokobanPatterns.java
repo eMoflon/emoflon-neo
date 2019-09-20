@@ -19,6 +19,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.v1.Record;
 
 public class SokobanPatterns extends ENeoTest {
 
@@ -44,6 +45,13 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void test_TwoSokoban() {
 		expectNoMatch(entities.getPattern_TwoSokoban());
+	}
+	
+	@Test
+	public void test_TwoSokobanNotInjective() {
+		var pattern = entities.getPattern_TwoSokoban().matcher();
+		pattern.setMatchInjectively(false);
+		assertEquals(1, pattern.countMatches());
 	}
 
 	@Test
@@ -264,6 +272,19 @@ public class SokobanPatterns extends ENeoTest {
 
 		expectValidMatches(matches, matches.size() - 2);
 	}
+	
+	@Test
+	public void test_ConnectedEndField_StillValid_AfterOneNoEndField() {
+		var p = entities.getPattern_TwoEmptyEndFields();
+		var matches = p.matcher().determineMatches();
+		expectSingleMatch(p);
+		
+		// removing 2 blocks, valid matches should be 2 less
+		builder.executeQueryForSideEffect("MATCH (f1:Field {endPos:true})-[:bottom]->(f2:Field {endPos: true}) SET f2.endPos = false");
+
+		expectValidMatches(matches, matches.size() - 1);
+	}
+
 
 	@Test
 	public void test_AnOccupiedSokobanField() {
@@ -649,6 +670,28 @@ public class SokobanPatterns extends ENeoTest {
 			var onlyMatch = iterator.next();
 			assertTrue(onlyMatch.isStillValid());
 			
+			Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+			assertTrue(result.isPresent());
+		}
+		
+	}
+	
+	@Test
+	public void testInjectivityInRules() {
+		
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_CreateThirdSokoban().rule();
+		rule.setMatchInjectively(true);
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 0);
+		
+		rule.setMatchInjectively(false);
+		matches = rule.determineMatches();
+		assertTrue(matches.size() == 16);
+		
+		var iterator = matches.iterator();
+		
+		if(iterator.hasNext()) {
+			var onlyMatch = iterator.next();
 			Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 			assertTrue(result.isPresent());
 		}

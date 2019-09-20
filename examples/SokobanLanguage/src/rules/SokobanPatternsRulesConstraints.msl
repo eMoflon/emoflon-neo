@@ -510,6 +510,27 @@ rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
 	}
 }
 
+rule moveSokobanRightWhenForbidOccupiedField {
+	b: SokobanLanguage.Board {
+		-fields -> from
+		-fields -> to
+	}
+	
+	from: Field {
+		-right -> to
+	}
+	to: Field
+	
+	sok: Sokoban {
+		-- -field -> from
+		++ -field -> to
+	}
+	
+	++ boulder: Boulder {
+		++ -field -> from
+	}
+} when forbid occupiedField
+
 rule forTestOnlymoveSokobanDownWithConditionAndNewNodes -> moveSokobanDown
 	when forbid occupiedField
 
@@ -787,4 +808,39 @@ rule testAttributeAssignmentsWithElementsValueAssign {
 		.endPos : false
 		.endPos := f::endPos
 	}
+}
+
+rule changeToEndField {
+	f:Field {
+		-right->f1
+		.endPos : false
+		.endPos := true
+		.ename := f1::ename + "b"
+	}
+	f1:Field
+}
+
+rule createThirdSokoban {
+	sok1: Sokoban 
+	sok2: Sokoban
+	f:Field
+	++ sok3: Sokoban {
+		++ -field->f
+	}
+}
+
+pattern twoEmptyEndFields {
+	f1:Field {
+		.endPos: true
+	}
+	f2:Field {
+		.endPos: true
+	}
+} when enforce connectedField
+
+pattern connectedField {
+	f1:Field {
+		-bottom->f2
+	}
+	f2:Field
 }

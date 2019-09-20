@@ -163,14 +163,14 @@ public class NeoQueryData {
 							equal = true;
 						}
 					}
-					for (var l : l2) {
+					/*for (var l : l2) {
 						if (!equal && l1.contains(l)) {
 							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
 								elem.add(p1 + "<>" + p2);
 							}
 							equal = true;
 						}
-					}
+					}*/
 				}
 			}
 		}
@@ -202,14 +202,14 @@ public class NeoQueryData {
 							equal = true;
 						}
 					}
-					for (var l : labelsO) {
+					/*for (var l : labelsO) {
 						if (!equal && labelsP.contains(l)) {
 							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
 								elem.add(pElem + "<>" + oElem);
 							}
 							equal = true;
 						}
-					}
+					}*/
 				}
 			}
 		}
@@ -427,21 +427,4 @@ public class NeoQueryData {
 		return extractNodesAndRelations(mnb, this::registerNewConstraintNode, this::registerNewConstraintRelation, attrExprOptional);
 	}
 
-	public void removeMatchElement(String name) {
-		if (patternElements.containsKey(name)) {
-			patternElements.remove(name);
-		}
-	}
-
-	public void removeOptionalElement(String name) {
-		if (optionalElements.containsKey(name)) {
-			optionalElements.remove(name);
-		}
-	}
-
-	public void removeEqualElement(String name) {
-		if (equalElements.containsKey(name)) {
-			equalElements.remove(name);
-		}
-	}
 }
