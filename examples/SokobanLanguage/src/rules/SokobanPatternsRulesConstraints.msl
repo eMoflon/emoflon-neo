@@ -854,3 +854,25 @@ pattern connectedField {
 	}
 	f2:Field
 }
+
+pattern attrCondField {
+	b:SokobanLanguage.Board {
+		-fields->f {
+			.col > 2
+			.row > 2
+		}
+	}
+	f:Field
+}
+
+pattern attrCondFieldZero {
+	b:SokobanLanguage.Board {
+		-fields->f2 {
+			.col <= 0
+			.row <= 0
+		}
+	}
+	f2:Field
+} when enforce attrCondField
+
+
