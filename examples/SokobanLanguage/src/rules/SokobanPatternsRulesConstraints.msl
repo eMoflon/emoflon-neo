@@ -897,3 +897,17 @@ pattern attrCondFieldZero2 {
 	}
 	f2:Field
 } when enforceAttrFieldC
+
+rule moveBlockUp {
+	f1:Field {
+		-bottom->f2
+	}
+	f2:Field
+	b1:Block {
+		-- -field->f2
+		++ -field->f1
+	}
+	++ b2:Block {
+		++ -field->f2
+	}
+}

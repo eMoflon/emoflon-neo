@@ -331,4 +331,17 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public Stream<String> getCreatedElts() {
 		return Streams.concat(greenNodes.keySet().stream(), greenRel.keySet().stream());
 	}
+
+	// FIXME [Tony] functions should be accessible in the API
+	/*
+	@override
+	public boolean isStillApplicable(NeoMatch m) {
+		return contextPattern.isStillValid(m);
+	}
+
+	@Override
+	public Map<String, Boolean> isStillApplicable(Collection<NeoMatch> matches) {
+		return contextPattern.isStillValid(matches);
+	}
+	*/
 }

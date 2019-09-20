@@ -2,7 +2,6 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -166,6 +165,5 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			return results.get(0);
 		}
 	}
-
 	
 }

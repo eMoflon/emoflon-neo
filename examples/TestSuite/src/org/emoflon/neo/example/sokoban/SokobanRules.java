@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.emoflon.neo.api.API_Common;
@@ -133,5 +134,30 @@ public class SokobanRules extends ENeoTest {
 		}
 	}
 	
+	@Test
+	public void testMoveBlockUp() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveBlockUp().rule();
+		var matches = rule.determineMatches();
+		assertTrue(matches.size() == 2);
+		
+		//var tempMatches = rule.isStillApplicable(matches);
+		
+		/*
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		
+		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		assertTrue(result.isPresent());
+		
+		assertFalse(onlyMatch.isStillValid());
+		
+		Optional<NeoCoMatch> notPossible = rule.apply(onlyMatch);
+		assertFalse(notPossible.isPresent());*/
+	}
 	
 }
