@@ -98,6 +98,16 @@ pattern oneNormalField {
 	f:Field
 }
 
+pattern oneNormalFieldC {
+	f:Field
+} when enforce oneNeighborField
+
+pattern oneNeighborField {
+	f:Field {
+		-right->f2
+	}
+	f2:Field
+}
 
 rule oneExtraField {
 	f:Field {

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
@@ -72,7 +73,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 	}
 	
 	@Override
-	public Map<NeoMatch,Boolean> isStillValid(Collection<NeoMatch> matches) {
+	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		
 		logger.info("Check if matches for " + getName() + " are still valid");
 		var cypherQuery = CypherPatternBuilder.isStillValidQueryCollection(nodes, queryData.getAttributeExpressions(), injective);
@@ -89,9 +90,9 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		var results = result.list();
 		
 		if(results.size()==1 && results.get(0).size()==1) {
-			var returnMap = new HashMap<NeoMatch,Boolean>();
+			var returnMap = new HashMap<String,Boolean>();
 			for(var match : matches) {
-				returnMap.put(match,results.get(0).get(0).asList().contains(match.getUUID()));
+				returnMap.put(match.getHashCode(),results.get(0).get(0).asList().contains(match.getHashCode()));
 			}
 			logger.debug(returnMap.toString());
 			return returnMap;

@@ -121,7 +121,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @return true if the match is still valid or false if not
 	 */
 	public abstract boolean isStillValid(NeoMatch neoMatch);
-	public abstract Map<NeoMatch,Boolean> isStillValid(Collection<NeoMatch> neoMatch);
+	public abstract Map<String, Boolean> isStillValid(Collection<NeoMatch> neoMatch);
 
 	public abstract String getQuery();
 

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.emoflon.neo.api.API_Common;
@@ -90,11 +91,39 @@ public class SokobanPatterns extends ENeoTest {
 		expectValidMatches(matches, matches.size() - 1);
 	}
 	
-	@Test void  test_allFieldValid() {
-		var p = entities.getPattern_OneNormalField().matcher();
+	@Test 
+	public void  test_allEndFieldValid() {
+		var p = entities.getPattern_OneEndField().matcher();
 		var matches = p.determineMatches();
+		assertEquals(2, matches.size());
+		var tempMatches = p.isStillValid(matches);
 		
-		p.isStillValid(matches);
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(2, matches.size());
+	}
+	
+	@Test 
+	public void  test_allEndFieldValidWithSideEffects() {
+		var p = entities.getPattern_OneEndField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(2, matches.size());
+		builder.executeQueryForSideEffect("MATCH (f:Field {endPos:true})-[:bottom]->(f2:Field {endPos:true}) SET f2.endPos = false");
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
 	}
 
 	@Test

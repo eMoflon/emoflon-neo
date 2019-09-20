@@ -323,7 +323,7 @@ class CypherPatternBuilder {
 		'''RETURN TRUE'''
 	}
 	def static String isStillValid_returnQueryCollection() {
-		'''RETURN collect(matches.uuid) as matches'''
+		'''RETURN collect(matches.hash_id) as matches'''
 	}
 
 	/*****************************
@@ -497,6 +497,19 @@ class CypherPatternBuilder {
 	 	«constraint_withQuery(helperNodes)»
 	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
 	 	RETURN TRUE'''
+	}
+	
+	def static String conditionQuery_isStillValidCollection(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
+		Collection<String> helperNodes, Collection<NeoAttributeExpression> attr, boolean isNegated) {
+		'''
+		UNWIND $matches AS matches
+		«IF nodes.size>0»«matchQuery(nodes)»
+	 	«isStillValid_whereQueryCollection(nodes,attr)»
+	 	«withQuery(nodes)»«ENDIF»
+	 	«optionalMatches»
+	 	«constraint_withQuery(helperNodes)»
+	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+	 	«isStillValid_returnQueryCollection()»'''
 	}
 	
 	def static String whereNegativeConditionQuery_String(Collection<String> nodes) {

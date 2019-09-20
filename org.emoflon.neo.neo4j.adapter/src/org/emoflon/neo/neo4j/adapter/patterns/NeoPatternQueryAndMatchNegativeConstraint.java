@@ -76,7 +76,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 	}
 	
 	@Override
-	public Map<NeoMatch,Boolean> isStillValid(Collection<NeoMatch> matches) {
+	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		
 		var list = new ArrayList<Map<String,Object>>();
 		matches.forEach(match -> list.add(match.getParameters()));

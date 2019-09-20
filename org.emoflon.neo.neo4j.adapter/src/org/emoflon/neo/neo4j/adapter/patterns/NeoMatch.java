@@ -21,7 +21,6 @@ public class NeoMatch implements IMatch {
 	private NeoPattern pattern;
 	protected Map<String, Long> nodeIDs;
 	protected Map<String, Long> edgeIDs;
-	protected UUID uuid;
 
 	/**
 	 * @param pattern the corresponding pattern to the match
@@ -33,7 +32,6 @@ public class NeoMatch implements IMatch {
 		nodeIDs = new HashMap<>();
 		edgeIDs = new HashMap<>();
 		extractIdsPattern(record);
-		uuid = UUID.randomUUID();
 	}
 	
 	/**
@@ -76,7 +74,7 @@ public class NeoMatch implements IMatch {
 		var map = new HashMap<String,Object>();
 		map.putAll(nodeIDs);
 		map.putAll(edgeIDs);
-		map.put("uuid", getUUID());
+		map.put("hash_id", getHashCode());
 		return map;
 	}
 
@@ -112,7 +110,7 @@ public class NeoMatch implements IMatch {
 		return edgeIDs;
 	}
 	
-	public String getUUID() {
-		return uuid.toString();
+	public String getHashCode() {
+		return Integer.toString(this.hashCode());
 	}
 }
