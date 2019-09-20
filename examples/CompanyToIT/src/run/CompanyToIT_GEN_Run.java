@@ -8,9 +8,9 @@ import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.SimpleLoggerMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.FixedNoOfMatchesRuleScheduler;
+import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
+import org.emoflon.neo.engine.modules.updatepolicies.AllMatchesUpdatePolicy;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
@@ -18,7 +18,7 @@ public class CompanyToIT_GEN_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);
 
 	public static void main(String[] pArgs) throws Exception {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+		Logger.getRootLogger().setLevel(Level.FATAL);
 		
 		var builder = API_Common.createBuilder();
 
@@ -27,9 +27,9 @@ public class CompanyToIT_GEN_Run {
 			api.exportMetamodelsForCompanyToIT();
 
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
-					new TimedTerminationCondition(300000), //
-					new FixedNoOfMatchesRuleScheduler(10), //
-					new AnySingleMatchUpdatePolicy(), //
+					new TimedTerminationCondition(60000), //
+					new AllRulesAllMatchesScheduler(), //
+					new AllMatchesUpdatePolicy(), //
 					new ParanoidNeoReprocessor(), //
 					new SimpleLoggerMonitor());
 
