@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,6 +164,28 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 						+ "There should be only one record but found: " + results.size());
 			}
 			return results.get(0);
+		}
+	}
+	
+	public Collection<Record> getData(Collection<NeoMatch> m) {
+		logger.info("Extract data from " + getName());
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
+
+		var list = new ArrayList<Map<String,Object>>();
+		m.forEach(match -> list.add(match.getParameters()));
+		
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
+		
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		
+		StatementResult result = builder.executeQueryWithParameters(cypherQuery, map);
+
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			var results = result.list();
+			return results;
 		}
 	}
 	

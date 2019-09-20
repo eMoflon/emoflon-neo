@@ -73,6 +73,13 @@ class CypherPatternBuilder {
 		«isStillValid_whereQuery(nodes, attr)»
 		«returnDataQuery(nodes)»'''
 	}
+	def static String getDataQueryCollection(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
+		'''
+		«unwindQuery»
+		«matchQueryForData(nodes)»
+		«isStillValid_whereQueryCollection(nodes, attr)»
+		«returnDataQuery(nodes)»'''
+	}
 
 	def static String matchQuery(Collection<NeoNode> nodes) {
 		'''MATCH «FOR n : nodes SEPARATOR ', '»
