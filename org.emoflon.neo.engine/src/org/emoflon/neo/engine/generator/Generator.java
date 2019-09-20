@@ -40,7 +40,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 							.forEach((match) -> matchContainer.add(match, rule)));
 
 			updatePolicy.selectMatches(matchContainer, progressMonitor)//
-					.forEach((match) -> matchContainer.remove(match).apply(match));
+					.forEach((match) -> matchContainer.getRuleFor(match).apply(match));
 
 			matchReprocessor.reprocess(matchContainer, progressMonitor);
 		}

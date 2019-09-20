@@ -52,4 +52,8 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		matchesToRule.clear();
 		rulesToMatches.forEach((r, matches) -> matches.clear());
 	}
+
+	public IRule<M, C> getRuleFor(M match) {
+		return matchesToRule.get(match);
+	}
 }
