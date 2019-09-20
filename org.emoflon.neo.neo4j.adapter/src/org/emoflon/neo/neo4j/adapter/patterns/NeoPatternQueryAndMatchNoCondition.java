@@ -37,8 +37,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		} else {
 			
 			while (result.hasNext()) {
-				var record = result.next();
-				matches.add(new NeoMatch(this, record));
+				matches.add(new NeoMatch(this, result.next()));
 			}
 			
 			if (matches.isEmpty()) {

@@ -18,6 +18,8 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	 *         not applicable.
 	 */
 	Optional<CM> apply(M match);
+	
+	Optional<Collection<CM>> applyAll(Collection<M> matches);
 
 	/**
 	 * Apply the rule for a random match.

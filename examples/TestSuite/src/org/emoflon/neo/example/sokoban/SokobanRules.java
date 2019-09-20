@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import org.emoflon.neo.api.API_Common;
@@ -138,11 +140,9 @@ public class SokobanRules extends ENeoTest {
 	public void testMoveBlockUp() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveBlockUp().rule();
 		var matches = rule.determineMatches();
-		assertTrue(matches.size() == 2);
+		assertEquals(2, matches.size());
 		
-		//var tempMatches = rule.isStillApplicable(matches);
-		
-		/*
+		var tempMatches = rule.isStillApplicable(matches);
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
 			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
@@ -150,14 +150,27 @@ public class SokobanRules extends ENeoTest {
 			}
 		}
 		matches = validMatches;
+		assertEquals(2, matches.size());
 		
-		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
+		Optional<Collection<NeoCoMatch>> result = rule.applyAll(matches);
 		assertTrue(result.isPresent());
 		
-		assertFalse(onlyMatch.isStillValid());
+		var coMatches = new ArrayList<NeoMatch>();
+		for(var co : result.get()) {
+			coMatches.add((NeoMatch)co);
+		}
+		assertEquals(2,coMatches.size());
 		
-		Optional<NeoCoMatch> notPossible = rule.apply(onlyMatch);
-		assertFalse(notPossible.isPresent());*/
+		tempMatches = rule.isStillApplicable(matches);
+		validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(0, matches.size());
+		
 	}
 	
 }

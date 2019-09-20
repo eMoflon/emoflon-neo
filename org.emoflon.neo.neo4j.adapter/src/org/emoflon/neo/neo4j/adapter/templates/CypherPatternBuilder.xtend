@@ -592,6 +592,24 @@ class CypherPatternBuilder {
 	 	
 	 }
 	 
+	 def static String ruleExecutionQueryCollection(Collection<NeoNode> nodes, boolean spo, 
+	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
+	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
+	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel,
+	 	Collection<NeoAttributeExpression> attrExpr, Collection<NeoAttributeExpression> attrAsgn) {
+	 	'''
+	 	UNWIND $matches AS matches
+	 	«matchQuery(nodes)»«IF nodes.size>0 && (modelNodes.size > 0 || modelEContRel.size > 0)», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«IF modelNodes.size > 0 && modelEContRel.size > 0», «ENDIF»«ruleExecution_matchModelEContainer(modelEContRel)»
+	 	«IF nodes.size>0»«isStillValid_whereQueryCollection(nodes, attrExpr)»«ENDIF»
+	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
+	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
+	 	«ruleExecution_setQuery(attrAsgn)»
+	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)», matches.hash_id as hash_id
+	 	
+	 	'''
+	 	
+	 }
+	 
 	 def static String ruleExecution_deleteQuery(boolean spo, Collection<NeoNode> nodesL, Collection<NeoRelation> refL) {
 	 	'''«IF nodesL.size > 0 || refL.size > 0»«IF spo»DETACH «ENDIF»DELETE «FOR r: refL SEPARATOR ', '»«r.varName»«ENDFOR»
 	 			«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«n.varName»«ENDFOR»«ENDIF»'''
