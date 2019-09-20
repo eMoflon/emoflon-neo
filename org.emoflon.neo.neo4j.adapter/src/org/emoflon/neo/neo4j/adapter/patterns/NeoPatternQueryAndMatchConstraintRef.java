@@ -88,35 +88,12 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		
-		logger.info("Check if match for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
-
-		// collecting the data
-		var condData = referencedConstraint.getConditionData();
-
-		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(getNodes(),
-				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
-		
 		var list = new ArrayList<Map<String,Object>>();
 		matches.forEach(match -> list.add(match.getParameters()));
 		
-		var map = new HashMap<String,Object>();
-		map.put("matches",(Object)list);
+		logger.debug(list.toString());
 		
-		logger.debug(map.toString() + "\n" + cypherQuery);
-		var result = builder.executeQueryWithParameters(cypherQuery, map);
-
-		var results = result.list();
-		
-		if(results.size()==1 && results.get(0).size()==1) {
-			var returnMap = new HashMap<String,Boolean>();
-			for(var match : matches) {
-				returnMap.put(match.getHashCode(),results.get(0).get(0).asList().contains(match.getHashCode()));
-			}
-			logger.debug(returnMap.toString());
-			return returnMap;
-		} else {
-			throw new IllegalStateException("There should be at most one record found not " + results.size());
-		}	
+		return null;	
 	}
 
 	@Override

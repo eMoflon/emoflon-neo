@@ -2,7 +2,6 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;

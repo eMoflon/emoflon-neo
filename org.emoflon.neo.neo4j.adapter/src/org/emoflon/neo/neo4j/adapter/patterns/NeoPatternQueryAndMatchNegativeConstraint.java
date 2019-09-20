@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,12 +79,37 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		
+		// Condition is positive Constraint (ENFORCE xyz)
+		logger.info("Check if match for " + getName() + " WHEN " + ncond.getName() + " is still valid");
+		
 		var list = new ArrayList<Map<String,Object>>();
 		matches.forEach(match -> list.add(match.getParameters()));
 		
-		logger.debug(list.toString());
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
 		
-		return null;
-	}
+		// Create Query
+		var helperNodes = new ArrayList<String>(queryData.getAllElements());
+		helperNodes.add("matches");
+		
+		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValidCollection(nodes, helperNodes,
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);
 
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, map);
+
+		logger.info(result.toString());
+		var results = result.list();
+		
+		if(results.size()==1 && results.get(0).size()==1) {
+			var returnMap = new HashMap<String,Boolean>();
+			for(var match : matches) {
+				returnMap.put(match.getHashCode(),results.get(0).get(0).asList().contains(match.getHashCode()));
+			}
+			logger.debug(returnMap.toString());
+			return returnMap;
+		} else {
+			throw new IllegalStateException("There should be at most one record found not " + results.size());
+		}	
+	}
 }

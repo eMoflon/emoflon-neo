@@ -125,6 +125,80 @@ public class SokobanPatterns extends ENeoTest {
 		matches = validMatches;
 		assertEquals(1, matches.size());
 	}
+	
+	@Test 
+	public void  test_oneNormalField() {
+		var p = entities.getPattern_OneNormalField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(12, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(12, matches.size());
+	}
+	
+	@Test 
+	public void  test_oneNormalFieldWithSideEffects() {
+		var p = entities.getPattern_OneNormalField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(12, matches.size());
+		
+		builder.executeQueryForSideEffect("MATCH (f:Field {endPos:true})-[rel:right]->(f2:Field) DELETE rel");
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(10, matches.size());
+	}
+	
+	@Test 
+	public void  test_oneNormalFieldNeg() {
+		var p = entities.getPattern_OneNormalFieldNeg().matcher();
+		var matches = p.determineMatches();
+		assertEquals(4, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(4, matches.size());
+	}
+	
+	@Test 
+	public void  test_oneNormalFieldNegWithSideEffects() {
+		var p = entities.getPattern_OneNormalFieldNeg().matcher();
+		var matches = p.determineMatches();
+		assertEquals(4, matches.size());
+		
+		builder.executeQueryForSideEffect("MATCH (f:Field)-[:bottom]->(f2:Field) CREATE (f)-[:right]->(f2)");
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
+	}
 
 	@Test
 	public void test_OneBlock() {

@@ -373,6 +373,21 @@ class CypherPatternBuilder {
 		'''
 	}
 	
+	def static String constraintQuery_isStillValidCollection(Collection<NeoNode> nodes, Collection<String> helperNodes,
+		String matchCond, String whereCond, Collection<NeoAttributeExpression> attr, boolean injective) {
+
+		'''UNWIND $matches AS matches 
+		«IF nodes.size>0»«matchQuery(nodes)»
+		«isStillValid_whereQueryCollection(nodes, attr)»
+		«withQuery(nodes)», matches«ENDIF»
+		«matchCond»
+		«constraint_withQuery(helperNodes)»
+		WHERE «whereCond»
+		«constraint_withQuery(helperNodes)»
+		«isStillValid_returnQueryCollection()»
+		'''
+	}
+	
 	def static String constraintQuery_rule(Collection<String> helperNodes, String matchCond, String whereCond) {
 
 		'''«matchCond»
@@ -491,12 +506,12 @@ class CypherPatternBuilder {
 	def static String conditionQuery_isStillValid(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
 		Collection<String> helperNodes, Collection<NeoAttributeExpression> attr, boolean isNegated) {
 		'''«IF nodes.size>0»«matchQuery(nodes)»
-	 	«isStillValid_whereQuery(nodes,attr)»
-	 	«withQuery(nodes)»«ENDIF»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	RETURN TRUE'''
+		«isStillValid_whereQuery(nodes,attr)»
+		«withQuery(nodes)»«ENDIF»
+		«optionalMatches»
+		«constraint_withQuery(helperNodes)»
+		WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+		RETURN TRUE'''
 	}
 	
 	def static String conditionQuery_isStillValidCollection(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
@@ -504,12 +519,12 @@ class CypherPatternBuilder {
 		'''
 		UNWIND $matches AS matches
 		«IF nodes.size>0»«matchQuery(nodes)»
-	 	«isStillValid_whereQueryCollection(nodes,attr)»
-	 	«withQuery(nodes)»«ENDIF»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	«isStillValid_returnQueryCollection()»'''
+		«isStillValid_whereQueryCollection(nodes,attr)»
+		«withQuery(nodes)»«ENDIF»
+		«optionalMatches»
+		«constraint_withQuery(helperNodes)»
+		WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+		«isStillValid_returnQueryCollection()»'''
 	}
 	
 	def static String whereNegativeConditionQuery_String(Collection<String> nodes) {

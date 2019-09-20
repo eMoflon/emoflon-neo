@@ -96,11 +96,11 @@ pattern oneBlock {
 
 pattern oneNormalField {
 	f:Field
-}
-
-pattern oneNormalFieldC {
-	f:Field
 } when enforce oneNeighborField
+
+pattern oneNormalFieldNeg {
+	f:Field
+} when forbid oneNeighborField
 
 pattern oneNeighborField {
 	f:Field {
