@@ -88,12 +88,40 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		
+		logger.info("Check if matches for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
+
+		// collecting the data
+		var condData = referencedConstraint.getConditionData();
+		
 		var list = new ArrayList<Map<String,Object>>();
 		matches.forEach(match -> list.add(match.getParameters()));
 		
-		logger.debug(list.toString());
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
 		
-		return null;	
+		// Create Query
+		var helperNodes = new ArrayList<String>(queryData.getAllElements());
+		helperNodes.add("matches");
+		
+		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValidCollection(getNodes(),
+				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
+
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, map);
+
+		logger.info(result.toString());
+		var results = result.list();
+		
+		if(results.size()==1 && results.get(0).size()==1) {
+			var returnMap = new HashMap<String,Boolean>();
+			for(var match : matches) {
+				returnMap.put(match.getHashCode(),results.get(0).get(0).asList().contains(match.getHashCode()));
+			}
+			logger.debug(returnMap.toString());
+			return returnMap;
+		} else {
+			throw new IllegalStateException("There should be at most one record found not " + results.size());
+		}	
 	}
 
 	@Override

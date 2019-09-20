@@ -876,4 +876,23 @@ public class SokobanPatterns extends ENeoTest {
 		matches = validMatches;
 		assertEquals(1, matches.size());
 	}
+	
+	@Test 
+	public void  test_attrCondFieldCondZero2() {
+		var p = entities.getPattern_AttrCondFieldZero2().matcher();
+		var matches = p.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
+	}
+	
 }

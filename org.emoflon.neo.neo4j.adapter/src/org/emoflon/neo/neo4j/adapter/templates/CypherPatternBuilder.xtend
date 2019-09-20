@@ -520,9 +520,9 @@ class CypherPatternBuilder {
 		UNWIND $matches AS matches
 		«IF nodes.size>0»«matchQuery(nodes)»
 		«isStillValid_whereQueryCollection(nodes,attr)»
-		«withQuery(nodes)»«ENDIF»
+		«withQuery(nodes)»«ENDIF», matches
 		«optionalMatches»
-		«constraint_withQuery(helperNodes)»
+		«constraint_withQuery(helperNodes)», matches
 		WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
 		«isStillValid_returnQueryCollection()»'''
 	}

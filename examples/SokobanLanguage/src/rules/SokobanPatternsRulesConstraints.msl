@@ -865,6 +865,19 @@ pattern attrCondField {
 	f:Field
 }
 
+pattern attrCondField2 {
+	b:SokobanLanguage.Board {
+		-fields->f1 {
+			.col : 2
+			.row : 2
+		}
+	}
+	f1:Field
+}
+constraint enforceAttrField = enforce attrCondField
+constraint enforceAttrField2 = enforce attrCondField2
+constraint enforceAttrFieldC = enforceAttrField && enforceAttrField2
+
 pattern attrCondFieldZero {
 	b:SokobanLanguage.Board {
 		-fields->f2 {
@@ -875,4 +888,12 @@ pattern attrCondFieldZero {
 	f2:Field
 } when enforce attrCondField
 
-
+pattern attrCondFieldZero2 {
+	b:SokobanLanguage.Board {
+		-fields->f2 {
+			.col <= 0
+			.row <= 0
+		}
+	}
+	f2:Field
+} when enforceAttrFieldC
