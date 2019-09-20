@@ -1,5 +1,7 @@
 package org.emoflon.neo.engine.api.rules;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -32,4 +34,8 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	Stream<String> getContextElts();
 
 	Stream<String> getCreatedElts();
+	
+	boolean isStillApplicable(M m);
+
+	public Map<String, Boolean> isStillApplicable(Collection<M> matches);
 }

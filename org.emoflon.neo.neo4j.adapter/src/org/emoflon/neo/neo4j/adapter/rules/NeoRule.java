@@ -3,6 +3,7 @@ package org.emoflon.neo.neo4j.adapter.rules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -332,9 +333,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		return Streams.concat(greenNodes.keySet().stream(), greenRel.keySet().stream());
 	}
 
-	// FIXME [Tony] functions should be accessible in the API
-	/*
-	@override
+	
+	@Override
 	public boolean isStillApplicable(NeoMatch m) {
 		return contextPattern.isStillValid(m);
 	}
@@ -343,5 +343,4 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public Map<String, Boolean> isStillApplicable(Collection<NeoMatch> matches) {
 		return contextPattern.isStillValid(matches);
 	}
-	*/
 }
