@@ -2,7 +2,9 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -119,6 +121,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @return true if the match is still valid or false if not
 	 */
 	public abstract boolean isStillValid(NeoMatch neoMatch);
+	public abstract Map<NeoMatch,Boolean> isStillValid(Collection<NeoMatch> neoMatch);
 
 	public abstract String getQuery();
 
@@ -163,4 +166,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			return results.get(0);
 		}
 	}
+
+	
 }

@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;
@@ -20,6 +21,7 @@ public class NeoMatch implements IMatch {
 	private NeoPattern pattern;
 	protected Map<String, Long> nodeIDs;
 	protected Map<String, Long> edgeIDs;
+	protected UUID uuid;
 
 	/**
 	 * @param pattern the corresponding pattern to the match
@@ -31,6 +33,7 @@ public class NeoMatch implements IMatch {
 		nodeIDs = new HashMap<>();
 		edgeIDs = new HashMap<>();
 		extractIdsPattern(record);
+		uuid = UUID.randomUUID();
 	}
 	
 	/**
@@ -73,6 +76,7 @@ public class NeoMatch implements IMatch {
 		var map = new HashMap<String,Object>();
 		map.putAll(nodeIDs);
 		map.putAll(edgeIDs);
+		map.put("uuid", getUUID());
 		return map;
 	}
 
@@ -106,5 +110,9 @@ public class NeoMatch implements IMatch {
 	@Override
 	public Map<String, Long> getEdgeIDs() {
 		return edgeIDs;
+	}
+	
+	public String getUUID() {
+		return uuid.toString();
 	}
 }

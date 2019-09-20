@@ -89,6 +89,13 @@ public class SokobanPatterns extends ENeoTest {
 		builder.executeQueryForSideEffect("MATCH (s:Sokoban) SET s:Block REMOVE s:Sokoban");
 		expectValidMatches(matches, matches.size() - 1);
 	}
+	
+	@Test void  test_allFieldValid() {
+		var p = entities.getPattern_OneNormalField().matcher();
+		var matches = p.determineMatches();
+		
+		p.isStillValid(matches);
+	}
 
 	@Test
 	public void test_OneBlock() {

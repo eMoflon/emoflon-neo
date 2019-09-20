@@ -3,6 +3,7 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
@@ -74,5 +75,16 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 		} else {
 			return result.list().size() == 1;
 		}
+	}
+	
+	@Override
+	public Map<NeoMatch,Boolean> isStillValid(Collection<NeoMatch> matches) {
+		
+		var list = new ArrayList<Map<String,Object>>();
+		matches.forEach(match -> list.add(match.getParameters()));
+		
+		logger.debug(list.toString());
+		
+		return null;
 	}
 }
