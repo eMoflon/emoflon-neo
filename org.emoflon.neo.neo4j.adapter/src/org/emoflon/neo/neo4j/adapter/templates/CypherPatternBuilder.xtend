@@ -244,6 +244,10 @@ class CypherPatternBuilder {
 	def static String returnQuery_copyPaste(Collection<NeoNode> nodes, int limit) {
 		'''«returnQuery_copyPaste(nodes)» LIMIT «limit»'''
 	}
+	
+	def static String unwindQuery() {
+		'''UNWIND $matches AS matches'''
+	}
 
 	/*****************************
 	 * IsStillValid Functions
@@ -256,7 +260,7 @@ class CypherPatternBuilder {
 	}
 	def static String isStillValidQueryCollection(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
 		'''
-		UNWIND $matches AS matches 
+		«unwindQuery()»
 		«matchQuery(nodes)»
 		«isStillValid_whereQueryCollection(nodes, attr)»
 		«isStillValid_returnQueryCollection()»'''
@@ -323,7 +327,7 @@ class CypherPatternBuilder {
 		'''RETURN TRUE'''
 	}
 	def static String isStillValid_returnQueryCollection() {
-		'''RETURN collect(matches.hash_id) as matches'''
+		'''RETURN matches.hash_id as hash_id'''
 	}
 
 	/*****************************
@@ -376,7 +380,7 @@ class CypherPatternBuilder {
 	def static String constraintQuery_isStillValidCollection(Collection<NeoNode> nodes, Collection<String> helperNodes,
 		String matchCond, String whereCond, Collection<NeoAttributeExpression> attr, boolean injective) {
 
-		'''UNWIND $matches AS matches 
+		'''«unwindQuery()»
 		«IF nodes.size>0»«matchQuery(nodes)»
 		«isStillValid_whereQueryCollection(nodes, attr)»
 		«withQuery(nodes)», matches«ENDIF»
@@ -517,7 +521,7 @@ class CypherPatternBuilder {
 	def static String conditionQuery_isStillValidCollection(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
 		Collection<String> helperNodes, Collection<NeoAttributeExpression> attr, boolean isNegated) {
 		'''
-		UNWIND $matches AS matches
+		«unwindQuery()»
 		«IF nodes.size>0»«matchQuery(nodes)»
 		«isStillValid_whereQueryCollection(nodes,attr)»
 		«withQuery(nodes)»«ENDIF», matches
@@ -598,7 +602,7 @@ class CypherPatternBuilder {
 	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel,
 	 	Collection<NeoAttributeExpression> attrExpr, Collection<NeoAttributeExpression> attrAsgn) {
 	 	'''
-	 	UNWIND $matches AS matches
+	 	«unwindQuery()»
 	 	«matchQuery(nodes)»«IF nodes.size>0 && (modelNodes.size > 0 || modelEContRel.size > 0)», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«IF modelNodes.size > 0 && modelEContRel.size > 0», «ENDIF»«ruleExecution_matchModelEContainer(modelEContRel)»
 	 	«IF nodes.size>0»«isStillValid_whereQueryCollection(nodes, attrExpr)»«ENDIF»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»

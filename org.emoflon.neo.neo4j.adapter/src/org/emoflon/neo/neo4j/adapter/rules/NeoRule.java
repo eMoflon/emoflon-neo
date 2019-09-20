@@ -28,7 +28,6 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
-import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 import com.google.common.collect.Streams;

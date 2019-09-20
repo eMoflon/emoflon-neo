@@ -86,16 +86,17 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		var result = builder.executeQueryWithParameters(cypherQuery, map);
 
 		var results = result.list();
+		var hashCode = new ArrayList<String>();
+		for(var r : results) {
+			hashCode.add(r.asMap().get("hash_id").toString());
+		}
 		
-		if(results.size()==1 && results.get(0).size()==1) {
-			var returnMap = new HashMap<String,Boolean>();
-			for(var match : matches) {
-				returnMap.put(match.getHashCode(),results.get(0).get(0).asList().contains(match.getHashCode()));
-			}
-			logger.debug(returnMap.toString());
-			return returnMap;
-		} else {
-			throw new IllegalStateException("There should be at most one record found not " + results.size());
-		}	
+		var returnMap = new HashMap<String,Boolean>();
+		for(var match : matches) {
+			returnMap.put(match.getHashCode(),hashCode.contains(match.getHashCode()));
+		}
+		
+		logger.debug(returnMap.toString());
+		return returnMap;
 	}
 }
