@@ -2,7 +2,9 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
@@ -35,8 +37,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		} else {
 			
 			while (result.hasNext()) {
-				var record = result.next();
-				matches.add(new NeoMatch(this, record));
+				matches.add(new NeoMatch(this, result.next()));
 			}
 			
 			if (matches.isEmpty()) {
@@ -67,5 +68,35 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 	
 			return results.size() == 1;
 		}
+	}
+	
+	@Override
+	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
+		
+		logger.info("Check if matches for " + getName() + " are still valid");
+		var cypherQuery = CypherPatternBuilder.isStillValidQueryCollection(nodes, queryData.getAttributeExpressions(), injective);
+		
+		var list = new ArrayList<Map<String,Object>>();
+		matches.forEach(match -> list.add(match.getParameters()));
+		
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
+		
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, map);
+
+		var results = result.list();
+		var hashCode = new ArrayList<String>();
+		for(var r : results) {
+			hashCode.add(r.asMap().get("hash_id").toString());
+		}
+		
+		var returnMap = new HashMap<String,Boolean>();
+		for(var match : matches) {
+			returnMap.put(match.getHashCode(),hashCode.contains(match.getHashCode()));
+		}
+		
+		logger.debug(returnMap.toString());
+		return returnMap;
 	}
 }

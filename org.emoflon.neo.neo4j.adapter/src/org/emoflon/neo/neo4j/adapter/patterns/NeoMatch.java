@@ -73,6 +73,7 @@ public class NeoMatch implements IMatch {
 		var map = new HashMap<String,Object>();
 		map.putAll(nodeIDs);
 		map.putAll(edgeIDs);
+		map.put("hash_id", getHashCode());
 		return map;
 	}
 
@@ -106,5 +107,9 @@ public class NeoMatch implements IMatch {
 	@Override
 	public Map<String, Long> getEdgeIDs() {
 		return edgeIDs;
+	}
+	
+	public String getHashCode() {
+		return Integer.toString(this.hashCode());
 	}
 }

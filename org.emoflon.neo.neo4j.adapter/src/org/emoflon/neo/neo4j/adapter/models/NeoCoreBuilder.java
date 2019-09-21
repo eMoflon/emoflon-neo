@@ -121,10 +121,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		try {
 			StatementResult result;
-			if(parameters == null)
+			if(parameters == null || parameters.isEmpty())
 				result = transaction.run(cypherStatement.trim());
 			else
 				result = transaction.run(cypherStatement.trim(), parameters);
+			
 			transaction.success();
 			transaction.close();
 			return result;

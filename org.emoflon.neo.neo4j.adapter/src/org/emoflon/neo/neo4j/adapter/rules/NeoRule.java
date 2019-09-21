@@ -3,6 +3,7 @@ package org.emoflon.neo.neo4j.adapter.rules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -311,7 +312,43 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		} else {
 			if (result.hasNext()) {
 				var record = result.next();
-				return Optional.of(new NeoCoMatch(contextPattern, record));
+				return Optional.of(new NeoCoMatch(contextPattern, record, m.getHashCode()));
+			} else {
+				return Optional.empty();
+			}
+		}
+	}
+	
+	@Override
+	public Optional<Collection<NeoCoMatch>> applyAll(Collection<NeoMatch> matches) {
+		logger.info("Execute Rule " + getName());
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQueryCollection(nodes, useSPOSemantics, redNodes.values(),
+				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
+				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
+		
+		var list = new ArrayList<Map<String,Object>>();
+		matches.forEach(match -> list.add(match.getParameters()));
+		
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
+		
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, map);
+		
+		if (result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			
+			if (result.hasNext()) {
+				var coMatches = new ArrayList<NeoCoMatch>();
+				
+				while (result.hasNext()) {
+					var next = result.next();
+					coMatches.add(new NeoCoMatch(this.contextPattern, next, next.get("hash_id").toString()));
+				}
+				logger.debug(coMatches.toString());
+				return Optional.of(coMatches);
+
 			} else {
 				return Optional.empty();
 			}
@@ -331,4 +368,16 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public Stream<String> getCreatedElts() {
 		return Streams.concat(greenNodes.keySet().stream(), greenRel.keySet().stream());
 	}
+
+	
+	@Override
+	public boolean isStillApplicable(NeoMatch m) {
+		return contextPattern.isStillValid(m);
+	}
+
+	@Override
+	public Map<String, Boolean> isStillApplicable(Collection<NeoMatch> matches) {
+		return contextPattern.isStillValid(matches);
+	}
+
 }
