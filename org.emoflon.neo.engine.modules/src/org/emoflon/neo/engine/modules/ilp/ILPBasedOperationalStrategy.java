@@ -1,5 +1,6 @@
 package org.emoflon.neo.engine.modules.ilp;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.engine.api.constraints.IConstraint;
+import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
@@ -24,7 +27,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
-	
+
 	protected Map<IMatch, String> matchToId;
 	protected Map<Long, Set<IMatch>> elementToCreatingMatches;
 	protected Map<Long, Set<IMatch>> elementToDependentMatches;
@@ -37,26 +40,38 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private int variableCounter;
 	protected Map<IMatch, Integer> matchToWeight;
 	private BinaryILPProblem ilpProblem;
-	
+
 	private boolean optimise;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
+	protected Collection<INegativeConstraint> negativeConstraints;
 
-	public ILPBasedOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules, boolean optimise) {
+	public ILPBasedOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules,
+			Collection<IConstraint> negativeConstraints, boolean optimise) {
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
-		this.optimise= optimise; 
+
+		this.negativeConstraints = new ArrayList<>();
+		negativeConstraints.forEach(nc -> {
+			if(nc instanceof INegativeConstraint) {
+				this.negativeConstraints.add((INegativeConstraint) nc);
+			} else {
+				throw new IllegalArgumentException("Only negative domain constraints are supported at the moment: " + nc);
+			}
+		});
+
+		this.optimise = optimise;
 	}
 
 	public void computeILPProblem(Stream<IMatch> matches) {
 		logger.debug("Registering all matches...");
-		
+
 		// Precedence information
 		registerMatches(matches);
 		computeWeights();
 
 		logger.debug("Registered all matches.");
-		
+
 		// ILP definition
 		constraintCounter = 0;
 		variableCounter = 0;
@@ -64,13 +79,16 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 		logger.debug("Defining exclusions...");
 		defineILPExclusions();
-		
+
 		logger.debug("Defining implications...");
 		defineILPImplications();
-		
+
 		logger.debug("Defining objective...");
 		defineILPObjective();
-		
+
+		logger.debug("Handling constraint violations...");
+		handleConstraintViolations();
+
 		logger.debug("Created ILP problem.");
 	}
 
@@ -125,16 +143,16 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			var creatingMatches = entry.getValue();
 			var dependentMatches = elementToDependentMatches.getOrDefault(entry.getKey(), Collections.emptySet());
 
-			if(!optimise && creatingMatches.size() == 1)
+			if (!optimise && creatingMatches.size() == 1)
 				ilpProblem.fixVariable(varNameFor(creatingMatches.iterator().next()), true);
-			
+
 			if (!creatingMatches.isEmpty() && !dependentMatches.isEmpty()) {
 				// If no creator is chosen, no dependent can be chosen
 				ilpProblem.addNegativeImplication(creatingMatches.stream().map(this::varNameFor),
 						dependentMatches.stream().map(this::varNameFor), registerConstraint("IMPL_" + entry.getKey()));
-			} 
-			
-			if(creatingMatches.isEmpty()){
+			}
+
+			if (creatingMatches.isEmpty()) {
 				// There is no match creating this element -> forbid all matches needing it
 				dependentMatches.stream().forEach(m -> ilpProblem.fixVariable(varNameFor(m), false));
 			}
@@ -206,20 +224,24 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private String registerConstraint(String label) {
 		return label + "_" + constraintCounter++;
 	}
-	
+
+	protected void handleConstraintViolations() {
+		var violations = negativeConstraints.stream().flatMap(nc -> nc.getViolations().stream());
+		logger.debug("Found " + violations.count() + " violations!");
+	}
 
 	public Set<Long> determineConsistentElements(SupportedILPSolver suppSolver) throws Exception {
 		var solver = ILPFactory.createILPSolver(getILPProblem(), suppSolver);
-		
+
 		logger.debug(getILPProblem());
-		
+
 		var solution = solver.solveILP();
 
 		return matchToId.entrySet().stream()//
 				.filter(entry -> solution.getVariable(entry.getValue()) > 0)
 				.flatMap(entry -> getCreatedElts(entry.getKey()).stream()).collect(Collectors.toSet());
 	}
-	
+
 	public Set<Long> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
 		var consistentElements = determineConsistentElements(suppSolver);
 		var allElements = new HashSet<>(elementToCreatingMatches.keySet());

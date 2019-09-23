@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
@@ -13,8 +14,8 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
 
-	public CheckOnlyOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules, boolean optimise) {
-		super(genRules, optimise);
+	public CheckOnlyOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules, Collection<IConstraint> negativeConstraints, boolean optimise) {
+		super(genRules, negativeConstraints, optimise);
 	}
 
 	@Override

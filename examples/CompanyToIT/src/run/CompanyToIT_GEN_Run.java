@@ -18,7 +18,7 @@ public class CompanyToIT_GEN_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);
 
 	public static void main(String[] pArgs) throws Exception {
-		Logger.getRootLogger().setLevel(Level.FATAL);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		
 		var builder = API_Common.createBuilder();
 
@@ -27,7 +27,7 @@ public class CompanyToIT_GEN_Run {
 			api.exportMetamodelsForCompanyToIT();
 
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
-					new TimedTerminationCondition(60000), //
+					new TimedTerminationCondition(10000), //
 					new AllRulesAllMatchesScheduler(), //
 					new AllMatchesUpdatePolicy(), //
 					new ParanoidNeoReprocessor(), //
