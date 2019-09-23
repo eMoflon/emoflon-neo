@@ -109,11 +109,6 @@ public abstract class NeoConstraint implements IConstraint {
 		}
 	}
 
-	public String getQueryString_WhereEqualElementsCondition() {
-		var equalElements = queryData.getEqualElements();
-		return CypherPatternBuilder.whereEqualElementsConditionQuery(equalElements);
-	}
-
 	public String getQuery() {
 		NeoReturn returnStmt = getConstraintData();
 		return CypherPatternBuilder.constraintQuery_Satisfied(returnStmt.getOptionalMatchString(),

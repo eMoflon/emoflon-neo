@@ -50,6 +50,10 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 
 	public void clear() {
 		matchesToRule.clear();
-		rulesToMatches.clear();
+		rulesToMatches.forEach((r, matches) -> matches.clear());
+	}
+
+	public IRule<M, C> getRuleFor(M match) {
+		return matchesToRule.get(match);
 	}
 }

@@ -7,7 +7,15 @@ import org.neo4j.driver.v1.Record;
 
 public class NeoCoMatch extends NeoMatch implements ICoMatch {
 
-	public NeoCoMatch(NeoPattern pattern, Record record) {
+	String matchHash;
+	
+	public NeoCoMatch(NeoPattern pattern, Record record, String matchHash) {
 		super(pattern, record);
+		this.matchHash = matchHash;
 	}
+	
+	public String getMatchHashCode() {
+		return matchHash;
+	}
+	
 }

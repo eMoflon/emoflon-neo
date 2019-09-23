@@ -167,12 +167,7 @@ class TGGCompiler {
 	}
 
 	private def compileCorrespondence(Operation pOp, Correspondence pCorrespondence) {
-		'''
-			«pOp.getCorrAction(pCorrespondence.action)»-corr->«pCorrespondence.target.name»
-			{
-				._type_ := "«pCorrespondence.type.name»"
-			}
-		'''
+		pOp.compileCorrespondence(pCorrespondence)
 	}
 
 	private def compilePropertyStatement(ModelPropertyStatement pPropertyStatement) {

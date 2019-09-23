@@ -2,7 +2,9 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
@@ -60,12 +62,12 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective, m);
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);
 
-		logger.debug(cypherQuery);
+		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
 
 		// Execute query
-		var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
 		
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
@@ -73,5 +75,41 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 			return result.list().size() == 1;
 		}
 	}
+	
+	@Override
+	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
+		
+		// Condition is positive Constraint (ENFORCE xyz)
+		logger.info("Check if match for " + getName() + " WHEN " + ncond.getName() + " is still valid");
+		
+		var list = new ArrayList<Map<String,Object>>();
+		matches.forEach(match -> list.add(match.getParameters()));
+		
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
+		
+		// Create Query
+		var helperNodes = new ArrayList<String>(queryData.getAllElements());
+		helperNodes.add("matches");
+		
+		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValidCollection(nodes, helperNodes,
+				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);
 
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, map);
+
+		var results = result.list();
+		var hashCode = new ArrayList<String>();
+		for(var r : results) {
+			hashCode.add(r.asMap().get("hash_id").toString());
+		}
+		
+		var returnMap = new HashMap<String,Boolean>();
+		for(var match : matches) {
+			returnMap.put(match.getHashCode(),hashCode.contains(match.getHashCode()));
+		}
+		
+		logger.debug(returnMap.toString());
+		return returnMap;
+	}
 }

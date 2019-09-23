@@ -2,7 +2,9 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -69,24 +71,57 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(getNodes(),
-				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated, m);
-		logger.debug(cypherQuery);
+				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
+		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
 
 		// run the query
-		var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
 			// analyze and return results
-			var matches = new ArrayList<NeoMatch>();
-			while (result.hasNext()) {
-				var record = result.next();
-				matches.add(new NeoMatch(this, record));
-			}
-	
-			return matches.size() == 1;
+			return result.hasNext();
 		}
+	}
+	
+	@Override
+	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
+		
+		logger.info("Check if matches for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
+
+		// collecting the data
+		var condData = referencedConstraint.getConditionData();
+		
+		var list = new ArrayList<Map<String,Object>>();
+		matches.forEach(match -> list.add(match.getParameters()));
+		
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
+		
+		// Create Query
+		var helperNodes = new ArrayList<String>(queryData.getAllElements());
+		helperNodes.add("matches");
+		
+		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValidCollection(getNodes(),
+				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
+
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, map);
+
+		var results = result.list();
+		var hashCode = new ArrayList<String>();
+		for(var r : results) {
+			hashCode.add(r.asMap().get("hash_id").toString());
+		}
+		
+		var returnMap = new HashMap<String,Boolean>();
+		for(var match : matches) {
+			returnMap.put(match.getHashCode(),hashCode.contains(match.getHashCode()));
+		}
+		
+		logger.debug(returnMap.toString());
+		return returnMap;	
 	}
 
 	@Override

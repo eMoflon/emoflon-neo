@@ -2,7 +2,9 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -97,14 +99,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 		return nodes;
 	}
 
-	/**
-	 * Get the injectivity information of a pattern
-	 * 
-	 * @return boolean true if the given pattern requires injective pattern matching
-	 */
-	public boolean isInjective() {
-		return injective;
-	}
 
 	/**
 	 * Runs the pattern matching and counts size of matches
@@ -127,6 +121,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @return true if the match is still valid or false if not
 	 */
 	public abstract boolean isStillValid(NeoMatch neoMatch);
+	public abstract Map<String, Boolean> isStillValid(Collection<NeoMatch> neoMatch);
 
 	public abstract String getQuery();
 
@@ -155,9 +150,9 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	public Record getData(NeoMatch m) {
 		logger.info("Extract data from " + getName());
-		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, m, queryData.getAttributeExpressions(), injective);
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
 		logger.debug(cypherQuery);
-		StatementResult result = builder.executeQuery(cypherQuery);
+		StatementResult result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
@@ -171,4 +166,27 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			return results.get(0);
 		}
 	}
+	
+	public Collection<Record> getData(Collection<NeoMatch> m) {
+		logger.info("Extract data from " + getName());
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
+
+		var list = new ArrayList<Map<String,Object>>();
+		m.forEach(match -> list.add(match.getParameters()));
+		
+		var map = new HashMap<String,Object>();
+		map.put("matches",(Object)list);
+		
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		
+		StatementResult result = builder.executeQueryWithParameters(cypherQuery, map);
+
+		if(result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			var results = result.list();
+			return results;
+		}
+	}
+	
 }
