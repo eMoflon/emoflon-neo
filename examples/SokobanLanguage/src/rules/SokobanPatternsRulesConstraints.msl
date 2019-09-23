@@ -911,3 +911,13 @@ rule moveBlockUp {
 		++ -field->f2
 	}
 }
+
+pattern oneFieldOnBoard {
+	f:Field
+}
+pattern oneEndFieldOnBoard {
+	f:Field {
+		.endPos: true
+	}
+}
+constraint ifFieldThenEndField = if oneFieldOnBoard then oneEndFieldOnBoard

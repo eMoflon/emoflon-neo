@@ -46,7 +46,7 @@ public class NeoImplication extends NeoConstraint {
 		var flatThen = NeoUtil.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodesIf = this.queryData.extractConstraintNodesAndRelations(flatIf.getNodeBlocks());
+		this.nodesIf = this.queryData.extractPatternNodesAndRelations(flatIf.getNodeBlocks());
 		this.nodesThen = this.queryData.extractConstraintNodesAndRelations(flatThen.getNodeBlocks());
 		this.nodesThenButNotIf = NeoUtil.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
@@ -74,7 +74,7 @@ public class NeoImplication extends NeoConstraint {
 
 		// create query
 		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen,
-				nodesThenButNotIf, queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), injective, mask);
+				nodesThenButNotIf, queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), injective, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -102,7 +102,7 @@ public class NeoImplication extends NeoConstraint {
 	@Override
 	public String getQuery() {
 		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf,
-				queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), injective, mask);
+				queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), injective, mask);
 	}
 
 	@Override

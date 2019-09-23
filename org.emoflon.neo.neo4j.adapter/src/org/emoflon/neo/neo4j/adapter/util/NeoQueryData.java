@@ -121,7 +121,10 @@ public class NeoQueryData {
 			}
 
 			if (equal) {
-				return name;
+				optionalElements.put(name + "_" + constraintCount, list);
+				optionalNodes.put(name + "_" + constraintCount, list);
+				equalElements.put(name, name + "_" + constraintCount);
+				return name + "_" + constraintCount;
 			} else {
 				if (!optionalElements.containsKey(name + "_" + constraintCount)) {
 					optionalElements.put(name + "_" + constraintCount, list);

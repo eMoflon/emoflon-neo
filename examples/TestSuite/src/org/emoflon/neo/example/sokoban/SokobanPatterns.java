@@ -895,4 +895,10 @@ public class SokobanPatterns extends ENeoTest {
 		assertEquals(1, matches.size());
 	}
 	
+	// FIXME [Jannik]
+	@Test
+	public void test_notExtenedIfElseConstraintWithNewAttributesOnly() {
+		var c = entities.getConstraint_IfFieldThenEndField();
+		assertFalse(c.isSatisfied());
+	}
 }
