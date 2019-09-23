@@ -464,30 +464,30 @@ class CypherPatternBuilder {
 	}
 
 	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<String> nodesMap, Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, boolean injective, NeoMask mask) {
+		Collection<String> nodesMap, Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
 		'''
-		«constraint_ifThen_matchQuery(nodes,nodes2,attr,injective, mask, equalElem)»
+		«constraint_ifThen_matchQuery(nodes,nodes2,attr,injective, mask, equalElem, injectiveElem)»
 		«constraint_withQuery(nodesMap)»
 		WHERE «whereNegativeConditionQuery_Nodes(nodes2)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
 	
 	def static String constraint_ifThen_readQuery_satisfy(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen, Collection<String> nodesThenButNotIf, Collection<String> nodesMap,
-        Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, boolean injective, NeoMask mask) {
+        Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
         '''
-        «constraint_ifThen_matchQuery(nodesIf,nodesThen,attr,injective, mask, equalElem)»
+        «constraint_ifThen_matchQuery(nodesIf,nodesThen,attr,injective, mask, equalElem, injectiveElem)»
         «constraint_withQuery(nodesMap)»
         WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
         RETURN FALSE'''
     }
 
 	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, HashMap<String,String> equalElem) {
+		Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, HashMap<String,String> equalElem, Collection<String> injectiveElem) {
 		'''«matchQuery(nodes)»
 		«whereQuery(nodes,attr,injective,mask)»
 		«withQuery(nodes)»
 		OPTIONAL «matchQuery(nodes2)»
-		«whereQuery(nodes2,attr,injective,mask, equalElem)»
+		«whereQuery(nodes2,attr,injective,mask, equalElem,injectiveElem)»
 		'''
 	}
 

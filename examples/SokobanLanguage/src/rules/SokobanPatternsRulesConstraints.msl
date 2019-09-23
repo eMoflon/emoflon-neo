@@ -921,3 +921,14 @@ pattern oneEndFieldOnBoard {
 	}
 }
 constraint ifFieldThenEndField = if oneFieldOnBoard then oneEndFieldOnBoard
+
+pattern oneSpecialBoulder {
+	b:Boulder
+	b1:Block
+}
+pattern oneSpecialBlock {
+	b:Block
+	b2:Block
+	
+}
+constraint ifBoulderThenBlock = if oneSpecialBoulder then oneSpecialBlock

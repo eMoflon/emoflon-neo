@@ -74,7 +74,7 @@ public class NeoImplication extends NeoConstraint {
 
 		// create query
 		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen,
-				nodesThenButNotIf, queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), injective, mask);
+				nodesThenButNotIf, queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), queryData.getAllNodesRequireInjectivityChecksCondition(), injective, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -102,7 +102,7 @@ public class NeoImplication extends NeoConstraint {
 	@Override
 	public String getQuery() {
 		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf,
-				queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), injective, mask);
+				queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), queryData.getAllNodesRequireInjectivityChecksCondition(), injective, mask);
 	}
 
 	@Override
