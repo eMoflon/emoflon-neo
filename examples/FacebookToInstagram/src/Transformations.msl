@@ -16,7 +16,7 @@ tripleGrammar FacebookToInstagramGrammar {
 	}
 	
 	rules {
-		Followers
+		// Followers
 		FriendsParentsIgnoreRule
 		FriendsSiblingsIgnoreRule
 		FriendsSpouseIgnoreRule
