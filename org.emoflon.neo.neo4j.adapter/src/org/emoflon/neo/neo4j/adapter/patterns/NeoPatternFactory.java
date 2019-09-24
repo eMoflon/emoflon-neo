@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.List;
 
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Condition;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -30,6 +31,14 @@ public class NeoPatternFactory {
 		var name = flatPattern.getBody().getName();
 
 		return createNeoPattern(name, nodeBlocks, flatPattern.getCondition(), builder, mask);
+	}
+	
+	public static NeoPattern createNeoPattern(AtomicPattern pattern, IBuilder builder, NeoMask mask) {
+		var flatPattern = NeoUtil.getFlattenedPattern(pattern);
+		var nodeBlocks = flatPattern.getNodeBlocks();
+		var name = flatPattern.getName();
+
+		return createNeoPattern(name, nodeBlocks, null, builder, mask);
 	}
 
 	public static NeoPattern createNeoPattern(String name, List<ModelNodeBlock> nodeBlocks, Condition c, IBuilder builder, NeoMask mask) {

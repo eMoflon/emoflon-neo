@@ -193,6 +193,10 @@ class EMSLUtil {
 		thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
 	}
 
+	def static Collection<MetamodelRelationStatement> allRelationsOf(MetamodelNodeBlock type) {
+		thisAndAllSuperTypes(type).flatMap[t|t.relations].toSet
+	}
+
 	def static getAllTypes(ModelRelationStatement rel) {
 		rel.types.sortBy[t|t.type.name].map[t|t.type.name]
 	}

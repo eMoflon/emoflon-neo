@@ -16,11 +16,25 @@ tripleGrammar FacebookToInstagramGrammar {
 	}
 	
 	rules {
+		// Axioms
+		NetworkToNetworkIslandRule
+		UserToUserIslandRule
+		
+		// Connect users to networks
+		UserNetworkBridgeRule
+		
+		// Handle friendship/followership
+		HandleIntraNetworkFollowers
+		IgnoreIntraNetworkFollowers
+		IgnoreInterNetworkFollowers
+		
+		// Ignore all extra relationships
+		UserRelationIgnoreRule
+
 		// Followers
 		FriendsParentsIgnoreRule
-		FriendsSiblingsIgnoreRule
 		FriendsSpouseIgnoreRule
-		HandleIntraNetworkFollowers
+		FriendsSiblingsIgnoreRule		
 	}
 }
 
@@ -247,29 +261,6 @@ tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {
 		++ flu <-:FbUserToInUser-> ilu
 	}
 }
-
-tripleRule UserToUserExtensionRule : FacebookToInstagramGrammar {
-	source {
-		fl : Network {
-			++ -users-> flu
-		}
-		++ flu : User
-	}
-	
-	target {
-		il : Network {
-			++ -users-> ilu
-		}
-		
-		++ ilu : User
-	}
-	
-	correspondence {
-		fl <-:NetworkToNetwork-> il
-		++ flu <-:FbUserToInUser-> ilu
-	}
-}
-
 
 
 
