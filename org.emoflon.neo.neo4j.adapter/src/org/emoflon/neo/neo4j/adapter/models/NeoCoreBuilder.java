@@ -67,6 +67,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
+import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.ValueExpression;
@@ -89,6 +90,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	private static final Object TRANSLATION_MARKER = "_tr_";
+
+	private static final Object TYPE_AS_ATTRIBUTE = "_type_";
+
+	private static final Object CORR = "corr";
 
 	// Defaults for export
 	private int maxTransactionSizeEdges = 10000;
@@ -656,7 +661,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
 		
-		var typedValue = nodeType.getRelations().stream()//
+		if(propName.equals(TYPE_AS_ATTRIBUTE) && relName.equals(CORR)) {
+			return PrimitiveString.class.cast(value).getLiteral();
+		}
+		
+		var typedValue = EMSLUtil.allRelationsOf(nodeType).stream()//
 				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getProperties().stream())//
 				.filter(etPs -> etPs.getName().equals(propName))//

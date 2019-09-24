@@ -212,21 +212,6 @@ public final class BinaryILPProblem extends ILPProblem {
 			}
 		}
 
-		/**
-		 * Adds the constraint to the already existing expression. This is used to fuse
-		 * all implications over the same variable into one expression.
-		 *
-		 * @param expr The expression to add the constraint to
-		 */
-		private void generateILPConstraint(final ILPLinearExpression expr) {
-			this.leftVariables.stream().forEach(v -> {
-				expr.addTerm(v, 1);
-			});
-			this.rightVariables.stream().forEach(v -> {
-				expr.addTerm(v, -1);
-			});
-		}
-
 		@Override
 		boolean fixVariable(final int id, final boolean choice) {
 			if (this.leftVariables.contains(id)) {

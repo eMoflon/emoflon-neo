@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -17,6 +18,8 @@ import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.exceptions.DatabaseException;
+
+import com.google.common.collect.Streams;
 
 /**
  * Class for representing an in EMSL defined pattern for creating pattern
@@ -189,4 +192,12 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 		}
 	}
 	
+	
+	@Override
+	public Stream<String> getPatternElts() {
+		var nodeNames = nodes.stream().map(n -> n.getVarName());
+		var edgeNames = nodes.stream().flatMap(n -> n.getRelations().stream()).map(r -> r.getVarName());
+		
+		return Streams.concat(nodeNames, edgeNames);
+	}
 }

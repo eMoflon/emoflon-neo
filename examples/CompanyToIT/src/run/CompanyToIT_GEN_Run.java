@@ -27,7 +27,7 @@ public class CompanyToIT_GEN_Run {
 			api.exportMetamodelsForCompanyToIT();
 
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
-					new TimedTerminationCondition(10000), //
+					new TimedTerminationCondition(10000), 
 					new AllRulesAllMatchesScheduler(), //
 					new AllMatchesUpdatePolicy(), //
 					new ParanoidNeoReprocessor(), //
