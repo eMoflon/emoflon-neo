@@ -55,6 +55,7 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import org.apache.commons.lang3.StringUtils
+import org.emoflon.neo.emsl.eMSL.TargetNAC
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -881,7 +882,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			}
 			«IF entityCopy.nacs.size > 0»
-				«visualiseTripleRuleNACs(entity)»
+				«visualiseTripleRuleNACs(entityCopy)»
 			«ENDIF»
 		'''
 	}
@@ -964,6 +965,18 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR c : entity.nacs»
 				«IF c.pattern.eContainer !== null»
 					«visualiseEntity(c.pattern.eContainer as Pattern, false)»
+					«FOR nb : c.pattern.nodeBlocks»
+						«IF c instanceof SourceNAC»
+							«FOR other : entity.srcNodeBlocks»
+								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other)»#-[#DarkRed]-#«labelForPatternComponent(nb)»«ENDIF»
+							«ENDFOR»
+						«ENDIF»
+						«IF c instanceof TargetNAC»
+							«FOR other : entity.trgNodeBlocks»
+								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other)»#-[#DarkRed]-#«labelForPatternComponent(nb)»«ENDIF»
+							«ENDFOR»
+						«ENDIF»
+					«ENDFOR»
 				«ENDIF»
 			«ENDFOR»
 			
