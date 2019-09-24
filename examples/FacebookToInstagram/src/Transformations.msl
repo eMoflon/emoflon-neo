@@ -30,6 +30,8 @@ tripleGrammar FacebookToInstagramGrammar {
 		
 		// Ignore all extra relationships
 		UserRelationIgnoreRule
+
+		// Followers
 		FriendsParentsIgnoreRule
 		FriendsSpouseIgnoreRule
 		FriendsSiblingsIgnoreRule		
