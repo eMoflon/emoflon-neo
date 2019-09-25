@@ -17,11 +17,14 @@ import org.eclipse.xtext.scoping.impl.SimpleScope
 import org.eclipse.xtext.util.SimpleAttributeResolver
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.Constraint
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.CorrespondenceType
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.ImportStatement
+import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
@@ -34,15 +37,11 @@ import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.SuperType
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
-import org.emoflon.neo.emsl.eMSL.Constraint
-import org.emoflon.neo.emsl.eMSL.TripleGrammar
-import org.emoflon.neo.emsl.eMSL.CorrespondenceType
-import org.apache.log4j.Logger
 
 /**
  * This class contains custom scoping description.
@@ -51,8 +50,6 @@ import org.apache.log4j.Logger
  * on how and when to use it.
  */
 class EMSLScopeProvider extends AbstractEMSLScopeProvider {
-
-	static final Logger logger = Logger.getLogger(EMSLScopeProvider)
 
 	override getScope(EObject context, EReference reference) {
 		if (superTypeOfMetamodelNodeBlock(context, reference)) {
@@ -658,10 +655,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
 		for (st : importStatements) {
 			try {
-				val sp = EMSLUtil.loadEMSL_Spec(st.value, root)
+				EMSLUtil.loadEMSL_Spec(st.value, root).ifPresent([sp |
 				EcoreUtil2.getAllContentsOfType(sp, type).forEach [ o |
 					aliases.put(o, if(st.alias == "") null else st.alias)
-				]
+				]])
 			} catch (Exception e) {
 				println(e)
 			}
@@ -674,17 +671,18 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (!thisSpecDefinesNeoCore(aliases) &&
 			!importStatements.exists[it.value === EMSLUtil.ORG_EMOFLON_NEO_CORE_URI]) {
 			try {
-				val sp = EMSLUtil.loadEMSL_Spec(EMSLUtil.ORG_EMOFLON_NEO_CORE_URI, root)
-				EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
+				EMSLUtil.loadEMSL_Spec(EMSLUtil.ORG_EMOFLON_NEO_CORE_URI, root).ifPresent( [ sp |
+					EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
+				])
 			} catch (Exception e) {
-				logger.warn("Unable to load: " + EMSLUtil.ORG_EMOFLON_NEO_CORE_URI)
+				println("Unable to load: " + EMSLUtil.ORG_EMOFLON_NEO_CORE_URI)
 			}
 		}
 
 		aliases
 	}
 
-	private def <T extends EObject> thisSpecDefinesNeoCore(HashMap<T, String> aliases) {
+	private def <T extends EObject> thisSpecDefinesNeoCore(Map<T, String> aliases) {
 		aliases.keySet.exists [
 			it instanceof MetamodelNodeBlock &&
 				((it as MetamodelNodeBlock).eContainer as Metamodel).name == EMSLUtil.ORG_EMOFLON_NEO_CORE
@@ -741,40 +739,53 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 					else {
 						duplicateObjects.add(e)
 						for (other : aliases.keySet) {
-							if (e !== other && QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString.equals(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString) && aliases.get(e) === null && aliases.get(other) === null) {
+							if (e !== other &&
+								QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString.equals(
+									QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).
+										toString) && aliases.get(e) === null && aliases.get(other) === null) {
 								duplicateObjects.add(other)
-								duplicateNames.add(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
+								duplicateNames.add(
+									QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(e)).toString)
 							}
 						}
 					}
-						
+
 				]
 				for (o : duplicateObjects) {
 					for (other : duplicateObjects) {
-						if (o !== other && 
-								QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(o)).toString.
-									equals(QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString) &&
-								o.eContainer instanceof MetamodelNodeBlock && other.eContainer instanceof MetamodelNodeBlock &&
-								(o.eContainer as MetamodelNodeBlock).name.equals((other.eContainer as MetamodelNodeBlock).name)
-						) {
-							extendedDuplicateNames.add(QualifiedName.create((o.eContainer.eContainer as Metamodel).name, SimpleAttributeResolver.NAME_RESOLVER.apply(o)).toString)
+						if (o !== other &&
+							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(o)).toString.equals(
+								QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(other)).toString) &&
+							o.eContainer instanceof MetamodelNodeBlock &&
+							other.eContainer instanceof MetamodelNodeBlock &&
+							(o.eContainer as MetamodelNodeBlock).name.equals(
+								(other.eContainer as MetamodelNodeBlock).name)) {
+							extendedDuplicateNames.add(
+								QualifiedName.create((o.eContainer.eContainer as Metamodel).name,
+									SimpleAttributeResolver.NAME_RESOLVER.apply(o)).toString)
 						}
 					}
 				}
 				// create QualifiedNames for NodeBlocks
 				val eobName = SimpleAttributeResolver.NAME_RESOLVER.apply(eob)
-				if (eob.eContainer.eContainer instanceof Metamodel && extendedDuplicateNames.contains(QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, eobName).toString)) {
+				if (eob.eContainer.eContainer instanceof Metamodel &&
+					extendedDuplicateNames.contains(
+						QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, eobName).toString)) {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null)
-						QualifiedName.create(aliases.get(eob), QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName).toString)
+						QualifiedName.create(aliases.get(eob),
+							QualifiedName.create((eob.eContainer.eContainer as Metamodel).name,
+								SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName).toString)
 					else
-						QualifiedName.create((eob.eContainer.eContainer as Metamodel).name, SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
+						QualifiedName.create((eob.eContainer.eContainer as Metamodel).name,
+							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 				} else if (duplicateNames.contains(eobName)) {
 					if (aliases.containsKey(eob) && aliases.get(eob) !== null && !(eob.eContainer instanceof EMSL_Spec))
 						QualifiedName.create(aliases.get(eob),
 							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
-					else { 
+					else {
 						if (eob instanceof AtomicPattern) {
-							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer.eContainer), eobName)
+							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer.eContainer),
+								eobName)
 						} else {
 							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 						}
@@ -787,5 +798,5 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 				}
 			]
 		))
-	}
+	}	
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList
 import java.util.Collection
 import java.util.HashSet
 import java.util.List
+import java.util.Optional
 import java.util.Set
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.EObject
@@ -16,6 +17,7 @@ import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.emoflon.neo.emsl.EMSLStandaloneSetup
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.BinaryExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.DataType
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
@@ -34,7 +36,6 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
-import org.emoflon.neo.emsl.eMSL.BinaryExpression
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -80,9 +81,12 @@ class EMSLUtil {
 		loadEMSL_Spec(uri, rs)
 	}
 
-	def static loadEMSL_Spec(String uri, ResourceSet rs) {
+	def static Optional<EObject> loadEMSL_Spec(String uri, ResourceSet rs) {
+		if(uri === null || rs === null)
+			return Optional.empty
+			
 		val resource = rs.getResource(URI.createURI(uri), true)
-		resource.contents.get(0)
+		return Optional.of(resource.contents.get(0))
 	}
 
 	def static Set<MetamodelNodeBlock> thisAndAllSuperTypes(MetamodelNodeBlock block) {

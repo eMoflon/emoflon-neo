@@ -1,4 +1,3 @@
-
 package org.moflon.tutorial.sokobangamegui.controller;
 
 import java.util.ArrayList;

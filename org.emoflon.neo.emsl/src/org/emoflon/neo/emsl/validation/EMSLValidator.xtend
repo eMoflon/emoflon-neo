@@ -1100,10 +1100,11 @@ class EMSLValidator extends AbstractEMSLValidator {
 		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
 		for (st : importStatements) {
 			try {
-				val sp = EMSLUtil.loadEMSL_Spec(st.value, root)
-				EcoreUtil2.getAllContentsOfType(sp, TripleGrammar).forEach [ o |
-					grammars.add(o)
-				]
+				EMSLUtil.loadEMSL_Spec(st.value, root).ifPresent([ sp |
+					EcoreUtil2.getAllContentsOfType(sp, TripleGrammar).forEach [ o |
+						grammars.add(o)
+					]
+				])
 			} catch (Exception e) {
 				println(e)
 			}
@@ -1111,7 +1112,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 
 		// Don't forget all types in the same file
 		EcoreUtil2.getAllContentsOfType(root, TripleGrammar).forEach[o|grammars.add(o)]
-		
+
 		for (tg : grammars) {
 			if (tg.rules.contains(r)) {
 				return
