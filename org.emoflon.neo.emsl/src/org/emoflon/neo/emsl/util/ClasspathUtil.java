@@ -21,8 +21,8 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.jdt.ui.wizards.JavaCapabilityConfigurationPage;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * Utility class for manipulating and analyzing the classpath
@@ -31,7 +31,6 @@ import org.eclipse.jdt.ui.wizards.JavaCapabilityConfigurationPage;
  *
  */
 public final class ClasspathUtil {
-
 	static final Logger logger = Logger.getLogger(ClasspathUtil.class);
 
 	public static final String XTEXT_NATURE_ID = "org.eclipse.xtext.ui.shared.xtextNature";
