@@ -153,6 +153,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 
 	public Record getData(NeoMatch m) {
 		logger.info("Extract data from " + getName());
+		
 		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
 		logger.debug(cypherQuery);
 		StatementResult result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
@@ -172,13 +173,14 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	
 	public Collection<Record> getData(Collection<NeoMatch> m) {
 		logger.info("Extract data from " + getName());
+		
 		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
 
 		var list = new ArrayList<Map<String,Object>>();
 		m.forEach(match -> list.add(match.getParameters()));
 		
 		var map = new HashMap<String,Object>();
-		map.put("matches",(Object)list);
+		map.put("matches",list);
 		
 		logger.debug(map.toString() + "\n" + cypherQuery);
 		

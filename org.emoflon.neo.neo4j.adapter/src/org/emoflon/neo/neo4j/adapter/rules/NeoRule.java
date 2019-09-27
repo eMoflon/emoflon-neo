@@ -37,6 +37,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	protected boolean useSPOSemantics;
 	protected NeoPattern contextPattern;
+	protected NeoPattern coContextPattern;
 	protected IBuilder builder;
 	protected NeoMask mask;
 	protected NeoQueryData queryData;
@@ -57,7 +58,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private ArrayList<NeoAttributeExpression> attrAssign;
 
 	public NeoRule(Rule r, IBuilder builder, NeoMask mask, NeoQueryData neoQuery) {
-
 		if (mask == null)
 			this.mask = new EmptyMask();
 		else
@@ -87,6 +87,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		extractNodesAndRelations(nodeBlocks);
 
 		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
+				builder, mask);
+		
+		coContextPattern = NeoPatternFactory.createNeoCoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
 				builder, mask);
 	}
 
@@ -312,7 +315,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		} else {
 			if (result.hasNext()) {
 				var record = result.next();
-				return Optional.of(new NeoCoMatch(contextPattern, record, m.getHashCode()));
+				return Optional.of(new NeoCoMatch(coContextPattern, record, m.getHashCode()));
 			} else {
 				return Optional.empty();
 			}
@@ -330,7 +333,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		matches.forEach(match -> list.add(match.getParameters()));
 		
 		var map = new HashMap<String,Object>();
-		map.put("matches",(Object)list);
+		map.put("matches",list);
 		
 		logger.debug(map.toString() + "\n" + cypherQuery);
 		var result = builder.executeQueryWithParameters(cypherQuery, map);
