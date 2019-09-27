@@ -33,6 +33,7 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 
 /**
  * Provides labels for EObjects.
@@ -122,6 +123,13 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 	
 	def text(ModelPropertyStatement p){
 		EMSLUtil.getNameOfType(p) + " " + p?.op + " " + p?.value?.print
+	}
+	
+	dispatch def String print(PrimitiveDouble value){
+		if(value === null)
+			return "?"
+		
+		value.literal.toString
 	}
 		
 	dispatch def String print(PrimitiveInt value){

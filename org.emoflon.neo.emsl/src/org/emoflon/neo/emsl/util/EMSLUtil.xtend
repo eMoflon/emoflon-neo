@@ -36,6 +36,8 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
+import java.time.LocalDate
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -112,6 +114,16 @@ class EMSLUtil {
 					return PrimitiveInt.cast(value).literal
 				case EBOOLEAN:
 					return PrimitiveBoolean.cast(value).isTrue
+				case ECHAR:
+					return PrimitiveString.cast(value).literal.charAt(0)
+				case ELONG:
+					return PrimitiveInt.cast(value).literal as long
+				case EFLOAT:
+					return PrimitiveDouble.cast(value).literal as float
+				case EDOUBLE:
+					return PrimitiveDouble.cast(value).literal
+				case EDATE:
+					return LocalDate.parse(PrimitiveString.cast(value).literal)
 				default:
 					throw new IllegalStateException("This literal has to be handled: " + value)
 			}
@@ -139,6 +151,14 @@ class EMSLUtil {
 					return "boolean"
 				case EDATE:
 					return "LocalDate"
+				case EDOUBLE:
+					return "double"
+				case EFLOAT:
+					return "float"
+				case ECHAR:
+					return "String"
+				case ELONG:
+					return "long"
 				default:
 					throw new IllegalStateException("This type has to be handled: " + type)
 			}
