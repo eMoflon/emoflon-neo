@@ -104,16 +104,16 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	@Override
-	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor progressMonitor) {
 		logger.debug("Registering all matches...");
 
 		// Precedence information
-		registerMatches(matches.stream());
+		registerMatches(matches.streamAllMatches());
 		computeWeights();
 
 		logger.debug("Registered all matches.");
 
-		return Collections.emptySet();
+		return Collections.emptyMap();
 	}
 
 	protected void computeWeights() {

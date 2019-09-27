@@ -36,11 +36,10 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 		MatchContainer<M, C> matchContainer = new MatchContainer<>(allRules);
 		while (!terminationCondition.isReached()) {
 			ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor)//
-					.forEach((rule, count) -> rule.determineMatches(count)//
-							.forEach((match) -> matchContainer.add(match, rule)));
+					.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
 
 			updatePolicy.selectMatches(matchContainer, progressMonitor)//
-					.forEach((match) -> matchContainer.getRuleFor(match).apply(match));
+					.forEach((rule, matches) -> rule.applyAll(matches));
 
 			matchReprocessor.reprocess(matchContainer, progressMonitor);
 		}
