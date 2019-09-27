@@ -173,6 +173,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
+			import org.neo4j.driver.v1.Record;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoData;
@@ -182,6 +183,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import java.util.HashSet;
 			import java.util.HashMap;
 			import java.util.Map;
+			import java.util.stream.Stream;
 			import java.util.Optional;
 			import java.time.LocalDate;
 			
@@ -251,8 +253,9 @@ class EMSLGenerator extends AbstractGenerator {
 					}
 					
 					@Override
-					public «dataClassName» data(NeoMatch m) {
-						return new «dataClassName»(m);
+					public Stream<«dataClassName»> data(Collection<NeoMatch> matches) {
+						var data = NeoMatch.getData(matches);
+						return data.stream().map(d -> new «dataClassName»(d));
 					}
 					
 					@Override
@@ -355,8 +358,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) '''
-		public «fileName»(NeoMatch m) {
-			var data = m.getData();
+		public «fileName»(Record data) {
 			«FOR node : nodeBlocks.filter(nodeFilter)»
 				var «node.name» = data.get("«node.name»");
 				this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
@@ -508,13 +510,15 @@ class EMSLGenerator extends AbstractGenerator {
 					}
 					
 					@Override
-					public «dataClassName» data(NeoMatch m) {
-						return new «dataClassName»(m);
+					public Stream<«dataClassName»> data(Collection<NeoMatch> matches) {
+						var data = NeoMatch.getData(matches);
+						return data.stream().map(d -> new «dataClassName»(d));
 					}
 						
 					@Override
-					public «codataClassName» codata(NeoCoMatch m) {
-						return new «codataClassName»(m);
+					public Stream<«codataClassName»> codata(Collection<NeoCoMatch> matches) {
+						var data = NeoMatch.getData(matches);
+						return data.stream().map(d -> new «codataClassName»(d));
 					}
 					
 					@Override

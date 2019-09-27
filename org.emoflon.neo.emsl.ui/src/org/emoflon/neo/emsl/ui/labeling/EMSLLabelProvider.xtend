@@ -34,6 +34,7 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
+import org.emoflon.neo.emsl.eMSL.BinaryExpression
 
 /**
  * Provides labels for EObjects.
@@ -130,6 +131,13 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 			return "?"
 		
 		value.literal.toString
+	}
+	
+	dispatch def String print(BinaryExpression value){
+		if(value === null)
+			return "?"
+			
+		print(value?.left) + " " + print(value?.op) + " " + print(value?.right)
 	}
 		
 	dispatch def String print(PrimitiveInt value){

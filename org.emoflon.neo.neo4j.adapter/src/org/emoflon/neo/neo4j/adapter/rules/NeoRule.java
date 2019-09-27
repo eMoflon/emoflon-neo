@@ -33,7 +33,7 @@ import org.neo4j.driver.v1.exceptions.DatabaseException;
 import com.google.common.collect.Streams;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
-	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	protected static final Logger logger = Logger.getLogger(NeoRule.class);
 
 	protected boolean useSPOSemantics;
 	protected NeoPattern contextPattern;
@@ -303,7 +303,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch m) {
-		logger.info("Execute Rule " + getName());
+		logger.debug("Execute Rule " + getName());
 		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
 				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
@@ -324,7 +324,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	
 	@Override
 	public Optional<Collection<NeoCoMatch>> applyAll(Collection<NeoMatch> matches) {
-		logger.info("Execute Rule " + getName());
+		logger.debug("Execute Rule " + getName());
 		var cypherQuery = CypherPatternBuilder.ruleExecutionQueryCollection(nodes, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
 				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);

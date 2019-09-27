@@ -29,7 +29,7 @@ import com.google.common.collect.Streams;
  *
  */
 public abstract class NeoPattern implements IPattern<NeoMatch> {
-	protected static final Logger logger = Logger.getLogger(NeoPattern.class);
+	private static final Logger logger = Logger.getLogger(NeoPattern.class);
 
 	protected List<NeoNode> nodes;
 	protected boolean injective;
@@ -150,31 +150,11 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	public Collection<NeoMatch> determineMatches() {
 		return determineMatches(0);
 	}
-
-	public Record getData(NeoMatch m) {
-		logger.info("Extract data from " + getName());
-		
-		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
-		logger.debug(cypherQuery);
-		StatementResult result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
-
-		if(result == null) {
-			throw new DatabaseException("400", "Execution Error: See console log for more details.");
-		} else {
-			// Query is id-based and must be unique
-			var results = result.list();
-			if (results.size() != 1) {
-				throw new IllegalStateException("Unable to extract data from match.\n"
-						+ "There should be only one record but found: " + results.size());
-			}
-			return results.get(0);
-		}
-	}
 	
-	public Collection<Record> getData(Collection<NeoMatch> m) {
-		logger.info("Extract data from " + getName());
+	public Collection<Record> getData(Collection<? extends NeoMatch> m) {
+		logger.debug("Extract data from " + getName());
 		
-		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
+		var cypherQuery = CypherPatternBuilder.getDataQueryCollection(nodes, queryData.getAttributeExpressions(), injective);
 
 		var list = new ArrayList<Map<String,Object>>();
 		m.forEach(match -> list.add(match.getParameters()));

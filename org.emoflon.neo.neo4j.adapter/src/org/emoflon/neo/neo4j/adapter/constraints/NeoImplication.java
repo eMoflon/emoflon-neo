@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
@@ -21,7 +20,7 @@ import org.neo4j.driver.v1.exceptions.DatabaseException;
  *
  */
 public class NeoImplication extends NeoConstraint {
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	private static final Logger logger = Logger.getLogger(NeoImplication.class);
 
 	private String name;
 	private List<NeoNode> nodesIf;

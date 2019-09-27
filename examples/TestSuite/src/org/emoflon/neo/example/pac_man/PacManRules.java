@@ -3,6 +3,8 @@ package org.emoflon.neo.example.pac_man;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_PacMan;
 import org.emoflon.neo.example.ENeoTest;
@@ -23,7 +25,7 @@ public class PacManRules extends ENeoTest {
 		assertEquals(1, access.rule().countMatches());
 		var result = access.rule().apply();
 		assertTrue(result.isPresent());
-		var data = access.codata(result.get());
-		assertEquals(1, data.pacMan.marbles);
+		var data = access.codata(List.of(result.get()));
+		assertEquals(1, data.findAny().get().pacMan.marbles);
 	}
 }
