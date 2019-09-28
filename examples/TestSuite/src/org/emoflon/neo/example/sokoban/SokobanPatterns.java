@@ -851,10 +851,9 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			p.getData(match);
-			//if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
-			//	validMatches.remove(match);
-			//}
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
 		}
 		matches = validMatches;
 		assertEquals(1, matches.size());

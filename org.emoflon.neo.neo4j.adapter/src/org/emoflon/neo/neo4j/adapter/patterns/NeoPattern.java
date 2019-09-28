@@ -169,7 +169,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	
 	public Collection<Record> getData(Collection<NeoMatch> m) {
 		logger.info("Extract data from " + getName());
-		var cypherQuery = CypherPatternBuilder.getDataQueryCollection(nodes, queryData.getAttributeExpressions(), injective);
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
 
 		var list = new ArrayList<Map<String,Object>>();
 		m.forEach(match -> list.add(match.getParameters()));
