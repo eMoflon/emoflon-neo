@@ -906,4 +906,10 @@ public class SokobanPatterns extends ENeoTest {
 		var c = entities.getConstraint_IfBoulderThenBlock();
 		assertFalse(c.isSatisfied());
 	}
+	
+	@Test
+	public void test_ifSokobanSelectedFigureThenSokobanOnField() {
+		var c = entities.getConstraint_IfSokobanSelectedFigureThenOnField();
+		assertTrue(c.isSatisfied());
+	}
 }

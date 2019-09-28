@@ -627,7 +627,7 @@ class CypherPatternBuilder {
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
 	 	«ruleExecution_setQuery(attrAsgn)»
-	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)», matches.hash_id as hash_id
+	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«IF nodesK.size>0 || nodesR.size>0»,«ENDIF» matches.hash_id as hash_id
 	 	
 	 	'''
 	 	
