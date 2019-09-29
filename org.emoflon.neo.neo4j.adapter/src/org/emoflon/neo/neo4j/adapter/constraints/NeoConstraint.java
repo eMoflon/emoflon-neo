@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
@@ -21,7 +20,7 @@ import org.neo4j.driver.v1.exceptions.DatabaseException;
  * @author Jannik Hinz
  */
 public abstract class NeoConstraint implements IConstraint {
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	private static final Logger logger = Logger.getLogger(NeoConstraint.class);
 
 	protected IBuilder builder;
 	protected NeoQueryData queryData;
@@ -85,10 +84,10 @@ public abstract class NeoConstraint implements IConstraint {
 	 */
 	@Override
 	public boolean isSatisfied() {
-		logger.info("Check constraint: " + getName());
+		logger.debug("Check constraint: " + getName());
 		NeoReturn returnStmt = getConstraintData();
 
-		logger.info("Searching matches for Constraint: " + getName());
+		logger.debug("Searching matches for Constraint: " + getName());
 
 		var cypherQuery = CypherPatternBuilder.constraintQuery_Satisfied(returnStmt.getOptionalMatchString(),
 				returnStmt.getWhereClause());
@@ -100,10 +99,10 @@ public abstract class NeoConstraint implements IConstraint {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
 			if (result.hasNext()) {
-				logger.info("Found matches! Constraint: " + getName() + " is satisfied!");
+				logger.debug("Found matches! Constraint: " + getName() + " is satisfied!");
 				return true;
 			} else {
-				logger.info("Not matches found! Constraint: " + getName() + " is NOT satisfied!");
+				logger.debug("Not matches found! Constraint: " + getName() + " is NOT satisfied!");
 				return false;
 			}
 		}

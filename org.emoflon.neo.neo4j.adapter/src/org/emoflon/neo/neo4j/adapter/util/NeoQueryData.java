@@ -34,11 +34,10 @@ public class NeoQueryData {
     private ArrayList<NeoAttributeExpression> attrAssign;
 
 	private int constraintCount;
-
-	/**
-	 * initialize Helper
-	 */
-	public NeoQueryData() {
+	private boolean context;
+	
+	public NeoQueryData(boolean context) {
+		this.context = context;
 		this.patternElements = new HashMap<String, ArrayList<String>>();
 		this.patternNodes = new HashMap<String, ArrayList<String>>();
 		this.optionalElements = new HashMap<String, ArrayList<String>>();
@@ -408,17 +407,20 @@ public class NeoQueryData {
 
 	private List<ModelRelationStatement> extractContextRelations(EList<ModelRelationStatement> relations) {
 		return relations.stream()//
-				.filter(rel -> redOrBlack(rel.getAction()))//
+				.filter(rel -> isRelevant(rel.getAction()))//
 				.collect(Collectors.toList());
 	}
 
-	private boolean redOrBlack(Action action) {
-		return action == null || action.getOp().equals(ActionOperator.DELETE);
+	private boolean isRelevant(Action action) {
+		if(context )
+			return action == null || action.getOp().equals(ActionOperator.DELETE);
+		else
+			return action == null || action.getOp().equals(ActionOperator.CREATE);
 	}
-
+	
 	private List<ModelNodeBlock> extractContextNodes(List<ModelNodeBlock> mnb) {
 		return mnb.stream()//
-				.filter(n -> redOrBlack(n.getAction()))//
+				.filter(n -> isRelevant(n.getAction()))//
 				.collect(Collectors.toList());
 	}
 

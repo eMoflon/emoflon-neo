@@ -66,17 +66,21 @@ pattern alreadyHasBottomNeighbour {
 rule createAllOtherCells {
 	left:Cell {
 		.col : top::col - 1
+		-neighbours->topLeft
 		++ -neighbours->newCell
 	}
 	
 	top:Cell {
 		.row : topLeft::row
+		-neighbours->topLeft
 		++ -neighbours->newCell
 	}
 	
 	topLeft:Cell {
 		.row : left::row - 1
 		.col : top::col - 1
+		-neighbours->top
+		-neighbours->left
 		++ -neighbours->newCell
 	}
 	

@@ -38,6 +38,11 @@ public class NeoCoreBootstrapper {
 	static final String ESTRING = "EString";
 	static final String EINT = "EInt";
 	static final String EBOOLEAN = "EBoolean";
+	static final String ECHAR = "EChar";
+	static final String ELONG = "ELong";
+	static final String EFLOAT = "EFloat";
+	static final String EDOUBLE = "EDouble";
+	static final String EDATE = "EDate";
 
 	// Attributes
 	static final String NAME_PROP = "ename";
@@ -119,7 +124,22 @@ public class NeoCoreBootstrapper {
 
 	private static final List<NeoProp> eintProps = List.of(new NeoProp(NAME_PROP, EINT));
 	private static final List<String> eintLabels = LABELS_FOR_AN_EDATATYPE;
+	
+	private static final List<NeoProp> echarProps = List.of(new NeoProp(NAME_PROP, ECHAR));
+	private static final List<String> echarLabels = LABELS_FOR_AN_EDATATYPE;
 
+	private static final List<NeoProp> elongProps = List.of(new NeoProp(NAME_PROP, ELONG));
+	private static final List<String> elongLabels = LABELS_FOR_AN_EDATATYPE;
+	
+	private static final List<NeoProp> efloatProps = List.of(new NeoProp(NAME_PROP, EFLOAT));
+	private static final List<String> efloatLabels = LABELS_FOR_AN_EDATATYPE;
+	
+	private static final List<NeoProp> edoubleProps = List.of(new NeoProp(NAME_PROP, EDOUBLE));
+	private static final List<String> edoubleLabels = LABELS_FOR_AN_EDATATYPE;
+	
+	private static final List<NeoProp> edateProps = List.of(new NeoProp(NAME_PROP, EDATE));
+	private static final List<String> edateLabels = LABELS_FOR_AN_EDATATYPE;
+	
 	private static final List<NeoProp> eAttrTypeProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE_TYPE));
 	private static final List<String> eAttrTypeLabels = LABELS_FOR_AN_EREFERENCE;
 
@@ -185,6 +205,16 @@ public class NeoCoreBootstrapper {
 			var eString = cb.createNodeWithContAndType(eStringProps, eStringLabels, eDataType, neocore);
 			@SuppressWarnings("unused")
 			var eint = cb.createNodeWithContAndType(eintProps, eintLabels, eDataType, neocore);
+			@SuppressWarnings("unused")
+			var echar = cb.createNodeWithContAndType(echarProps, echarLabels, eDataType, neocore);
+			@SuppressWarnings("unused")
+			var elong = cb.createNodeWithContAndType(elongProps, elongLabels, eDataType, neocore);
+			@SuppressWarnings("unused")
+			var efloat = cb.createNodeWithContAndType(efloatProps, efloatLabels, eDataType, neocore);
+			@SuppressWarnings("unused")
+			var edate = cb.createNodeWithContAndType(edateProps, edateLabels, eDataType, neocore);
+			@SuppressWarnings("unused")
+			var edouble = cb.createNodeWithContAndType(edoubleProps, edoubleLabels, eDataType, neocore);
 			var eAttrType = cb.createNodeWithContAndType(eAttrTypeProps, eAttrTypeLabels, eref, neocore);
 			var eSupType = cb.createNodeWithContAndType(eSupTypeProps, eSupTypeLabels, eref, neocore);
 			var eclassifier = cb.createNodeWithContAndType(eclassifierProps, eclassifierLabels, eclass, neocore);

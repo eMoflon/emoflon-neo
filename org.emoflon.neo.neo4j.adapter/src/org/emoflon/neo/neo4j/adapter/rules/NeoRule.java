@@ -33,10 +33,11 @@ import org.neo4j.driver.v1.exceptions.DatabaseException;
 import com.google.common.collect.Streams;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
-	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	protected static final Logger logger = Logger.getLogger(NeoRule.class);
 
 	protected boolean useSPOSemantics;
 	protected NeoPattern contextPattern;
+	protected NeoPattern coContextPattern;
 	protected IBuilder builder;
 	protected NeoMask mask;
 	protected NeoQueryData queryData;
@@ -57,7 +58,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private ArrayList<NeoAttributeExpression> attrAssign;
 
 	public NeoRule(Rule r, IBuilder builder, NeoMask mask, NeoQueryData neoQuery) {
-
 		if (mask == null)
 			this.mask = new EmptyMask();
 		else
@@ -87,6 +87,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		extractNodesAndRelations(nodeBlocks);
 
 		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
+				builder, mask);
+		
+		coContextPattern = NeoPatternFactory.createNeoCoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
 				builder, mask);
 	}
 
@@ -300,7 +303,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch m) {
-		logger.info("Execute Rule " + getName());
+		logger.debug("Execute Rule " + getName());
 		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
 				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
@@ -312,7 +315,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		} else {
 			if (result.hasNext()) {
 				var record = result.next();
-				return Optional.of(new NeoCoMatch(contextPattern, record, m.getHashCode()));
+				return Optional.of(new NeoCoMatch(coContextPattern, record, m.getHashCode()));
 			} else {
 				return Optional.empty();
 			}
@@ -321,7 +324,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	
 	@Override
 	public Optional<Collection<NeoCoMatch>> applyAll(Collection<NeoMatch> matches) {
-		logger.info("Execute Rule " + getName());
+		logger.debug("Execute Rule " + getName());
 		var cypherQuery = CypherPatternBuilder.ruleExecutionQueryCollection(nodes, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
 				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
@@ -330,7 +333,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		matches.forEach(match -> list.add(match.getParameters()));
 		
 		var map = new HashMap<String,Object>();
-		map.put("matches",(Object)list);
+		map.put("matches",list);
 		
 		logger.debug(map.toString() + "\n" + cypherQuery);
 		var result = builder.executeQueryWithParameters(cypherQuery, map);

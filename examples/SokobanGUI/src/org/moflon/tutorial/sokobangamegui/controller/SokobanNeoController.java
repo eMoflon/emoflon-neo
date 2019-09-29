@@ -1,4 +1,3 @@
-
 package org.moflon.tutorial.sokobangamegui.controller;
 
 import java.util.ArrayList;
@@ -30,6 +29,8 @@ public class SokobanNeoController implements IController {
 	private int width = 0;
 	private int height = 0;
 	private List<Field> fields;
+	
+	private static final Logger logger = Logger.getLogger(SokobanNeoController.class);
 
 	public SokobanNeoController() {
 		this(c -> new View(c), (c) -> c.defaultBoard());
@@ -49,15 +50,18 @@ public class SokobanNeoController implements IController {
 		api2 = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI,
 				API_Common.PLATFORM_PLUGIN_URI);
 		
+		logger.info("Starting to build board...");
+		long tic = System.currentTimeMillis();
 		createBoard.accept(this);
-		
 		update();
 		view = createView.apply(this);
+		long toc = System.currentTimeMillis();
+		logger.info("Took: " + (toc-tic) / 1000.0 + "s");
 	}
 
 	public static void main(String[] args) {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
-		new SokobanNeoController(20, 20);
+		Logger.getRootLogger().setLevel(Level.INFO);
+		new SokobanNeoController(30, 30);
 	}
 
 	@Override
@@ -73,18 +77,16 @@ public class SokobanNeoController implements IController {
 	@Override
 	public List<String> getFigureTypes() {
 		var access = api1.getPattern_FigureTypes();
-		return access.matcher().determineMatches()//
-				.stream().map(m -> {
-					var data = access.data(m);
-					return data.eclass.ename;
-				}).collect(Collectors.toList());
+		var matches = access.matcher().determineMatches();
+		var data = access.data(matches);
+		return data.map(d -> d.eclass.ename).collect(Collectors.toList());
 	}
 
 	@Override
 	public Optional<Field> getSelectedField() {
 		var access = api1.getPattern_SelectedFigure();
 		return access.matcher().determineOneMatch().flatMap(m -> {
-			var data = access.data(m);
+			var data = access.data(List.of(m)).findAny().get();
 			return fields.stream()//
 					.filter(f -> f.getRow() == data.b_fields_1_f.row && f.getCol() == data.b_fields_1_f.col)//
 					.findFirst();
@@ -283,6 +285,7 @@ public class SokobanNeoController implements IController {
 			var language = new API_SokobanLanguage(builder, API_Common.PLATFORM_RESOURCE_URI,
 					API_Common.PLATFORM_PLUGIN_URI);
 			var metamodel = language.getMetamodel_SokobanLanguage();
+			builder.clearDataBase();
 			builder.exportEMSLEntityToNeo4j(metamodel);
 		} catch (FlattenerException e) {
 			e.printStackTrace();
@@ -309,7 +312,11 @@ public class SokobanNeoController implements IController {
 		var rest = api1.getRule_CreateRestOfFields().rule();
 		while(rest.apply().isPresent());
 		
+		logger.info("Finished board creation.");
+		
 		extractFields();
+		
+		logger.info("Finished extracting fields.");
 	}
 
 	private void defaultBoard() {
@@ -327,30 +334,29 @@ public class SokobanNeoController implements IController {
 	private void extractFields() {
 		var accessBoard = api1.getPattern_Board();
 		accessBoard.matcher().determineOneMatch().ifPresent(m -> {
-			var mData = accessBoard.data(m);
+			var mData = accessBoard.data(List.of(m)).findAny().get();
 			this.width = mData.board.width;
 			this.height = mData.board.height;
 
 			fields = new ArrayList<Field>();
+			
 			var accessEmptyFields = api1.getPattern_EmptyFields();
-			accessEmptyFields.matcher().determineMatches().forEach(f -> {
-				var fData = accessEmptyFields.data(f);
-				fields.add(new Field(//
-						fData.board_fields_0_field.row, //
-						fData.board_fields_0_field.col, //
-						fData.field.endPos, //
-						Optional.empty()));
-			});
+			var emptyFields = accessEmptyFields.matcher().determineMatches();
+			var emptyField = accessEmptyFields.data(emptyFields);
+			emptyField.forEach(f -> fields.add(new Field(//
+					f.board_fields_0_field.row, //
+					f.board_fields_0_field.col, //
+					f.field.endPos, //
+					Optional.empty())));
 
 			var accessOccupiedFields = api1.getPattern_OccupiedFields();
-			accessOccupiedFields.matcher().determineMatches().forEach(f -> {
-				var data = accessOccupiedFields.data(f);
-				fields.add(new Field(//
-						data.board_fields_0_field.row, //
-						data.board_fields_0_field.col, //
-						data.field.endPos, //
-						Optional.of(data.type.ename)));
-			});
+			var occupiedFields = accessOccupiedFields.matcher().determineMatches();
+			var occupiedField = accessOccupiedFields.data(occupiedFields);
+			occupiedField.forEach(d -> fields.add(new Field(//
+					d.board_fields_0_field.row, //
+					d.board_fields_0_field.col, //
+					d.field.endPos, //
+					Optional.of(d.type.ename))));
 		});
 	}
 
@@ -376,8 +382,9 @@ public class SokobanNeoController implements IController {
 	@Override
 	public void update() {
 		var accessEmptyFields = api1.getPattern_EmptyFields();
-		accessEmptyFields.matcher().determineMatches().forEach(f -> {
-			var fData = accessEmptyFields.data(f);
+		var emptyFields = accessEmptyFields.matcher().determineMatches();
+		var emptyFieldData = accessEmptyFields.data(emptyFields);
+		emptyFieldData.forEach(fData -> {
 			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col
 					&& fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
 						fld.setIsEndPos(fData.field.endPos);
@@ -386,8 +393,9 @@ public class SokobanNeoController implements IController {
 		});
 
 		var accessOccupiedFields = api1.getPattern_OccupiedFields();
-		accessOccupiedFields.matcher().determineMatches().forEach(f -> {
-			var fData = accessOccupiedFields.data(f);
+		var occupiedFields = accessOccupiedFields.matcher().determineMatches();
+		var occupiedFieldData = accessOccupiedFields.data(occupiedFields);
+		occupiedFieldData.forEach(fData -> {
 			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col
 					&& fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
 						fld.setIsEndPos(fData.field.endPos);
