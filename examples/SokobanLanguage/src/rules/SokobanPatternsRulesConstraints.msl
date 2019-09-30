@@ -83,12 +83,22 @@ constraint hasOneSokoban = oneSokobans && !twoSokobans
 
 constraint sokobanIsSelectedFigure = if oneSokoban then selectedFigureRequired
 
+constraint ifSokobanSelectedFigureThenOnField = if selectedFigureRequired then sokobanOnField
+
 pattern selectedFigureRequired {
 	b:SokobanLanguage.Board {
 		-selectedFigure->sokoban
 	}
 	sokoban:Sokoban
 }
+
+pattern sokobanOnField {
+	sokoban:Sokoban {
+		-field->f
+	}
+	f:Field
+}
+
 
 pattern oneBlock {
 	block : Block
@@ -342,7 +352,7 @@ pattern blockOnFieldCond {
 	fig: Block {
 		-field->field
 	}
-} when hasLeftNeighbor
+} when relevantConstr
 
 constraint forbidLeftSide = forbid hasLeft
 constraint forbidTopSide = forbid hasTop
@@ -351,7 +361,7 @@ constraint forbidBottomSide = forbid hasBottom
 
 constraint enforceHasLeft = enforce hasLeft
 constraint forbidHasTop = forbid hasTop
-constraint hasLeftNeighbor = enforceHasLeft || (!enforceHasLeft && forbidHasTop)
+constraint relevantConstr = enforceHasLeft || (!enforceHasLeft && forbidHasTop)
 
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide
@@ -911,3 +921,25 @@ rule moveBlockUp {
 		++ -field->f2
 	}
 }
+
+pattern oneFieldOnBoard {
+	f:Field
+}
+pattern oneEndFieldOnBoard {
+	f:Field {
+		.endPos: true
+	}
+}
+constraint ifFieldThenEndField = if oneFieldOnBoard then oneEndFieldOnBoard
+
+pattern oneSpecialBoulder {
+	b:Boulder
+	b1:Block
+}
+pattern oneSpecialBlock {
+	b:Block
+	b2:Block
+	
+}
+constraint ifBoulderThenBlock = if oneSpecialBoulder then oneSpecialBlock
+
