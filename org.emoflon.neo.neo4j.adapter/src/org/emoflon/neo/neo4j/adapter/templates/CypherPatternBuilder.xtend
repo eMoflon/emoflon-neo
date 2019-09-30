@@ -2,15 +2,14 @@ package org.emoflon.neo.neo4j.adapter.templates
 
 import java.util.ArrayList
 import java.util.Collection
-import org.emoflon.neo.neo4j.adapter.common.NeoNode
-import org.emoflon.neo.neo4j.adapter.common.NeoRelation
-import org.emoflon.neo.neo4j.adapter.common.NeoProperty
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMask
-import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch
 import java.util.HashMap
+import org.emoflon.neo.neo4j.adapter.common.NeoNode
+import org.emoflon.neo.neo4j.adapter.common.NeoProperty
+import org.emoflon.neo.neo4j.adapter.common.NeoRelation
+import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression
-import org.eclipse.xtend.lib.annotations.EqualsHashCodeProcessor.Util
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMask
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch
 
 class CypherPatternBuilder {
 
