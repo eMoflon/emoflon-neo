@@ -25,7 +25,9 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.emsl;bundle-version="1.0.0",
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
- org.emoflon.neo.engine.modules;bundle-version="1.0.0"
+ org.emoflon.neo.engine.modules;bundle-version="1.0.0",
+ org.emoflon.ibex.tgg.ui.debug;bundle-version="1.0.0",
+ org.emoflon.debug.eneo.adapter;bundle-version="1.0.0"
 Export-Package: CompanyToIT,
  metamodels,
  models,

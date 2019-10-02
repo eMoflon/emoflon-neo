@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.emoflon.debug.eneo.adapter;singleton:=true
+Bundle-Name: eMoflon::eNeo Victory Debugger Adapter
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: eMoflon::eNeo Developers
+Require-Bundle: net.sourceforge.plantuml.lib;visibility:=reexport,
+ com.google.guava,
+ org.eclipse.swt;visibility:=reexport,
+ org.emoflon.ibex.tgg.ui.debug;bundle-version="1.0.0",
+ org.emoflon.neo.emf;bundle-version="1.0.0",
+ org.emoflon.neo.emsl;bundle-version="1.0.0",
+ org.emoflon.neo.emsl.ide;bundle-version="1.0.0",
+ org.emoflon.neo.emsl.ui;bundle-version="1.0.0",
+ org.emoflon.neo.engine;bundle-version="1.0.0",
+ org.emoflon.neo.engine.modules;bundle-version="1.0.0",
+ org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
+ org.emoflon.neo.neocore;bundle-version="1.0.0"
+Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.emoflon.debug.eneo.adapter.EneoAdapter
+Automatic-Module-Name: org.emoflon.debug.eneo.adapter
+
+
+
