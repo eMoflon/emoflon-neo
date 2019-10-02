@@ -2,6 +2,7 @@ package org.emoflon.neo.neo4j.adapter.rules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -51,7 +52,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private HashMap<String, NeoRelation> redRel;
 	private HashMap<String, NeoNode> greenNodes;
 	private HashMap<String, NeoRelation> greenRel;
-	
+
 	private ArrayList<NeoAttributeExpression> attrExpr;
 	private ArrayList<NeoAttributeExpression> attrAssign;
 
@@ -69,14 +70,14 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		this.nodes = new ArrayList<NeoNode>();
 		this.modelNodes = new ArrayList<NeoNode>();
 		this.modelRel = new ArrayList<NeoRelation>();
-		this.modelEContainerRel = new HashMap<String,NeoRelation>();
+		this.modelEContainerRel = new HashMap<String, NeoRelation>();
 		this.blackNodes = new HashMap<String, NeoNode>();
 		this.blackRel = new HashMap<String, NeoRelation>();
 		this.redNodes = new HashMap<String, NeoNode>();
 		this.redRel = new HashMap<String, NeoRelation>();
 		this.greenNodes = new HashMap<String, NeoNode>();
 		this.greenRel = new HashMap<String, NeoRelation>();
-		
+
 		this.attrExpr = new ArrayList<NeoAttributeExpression>();
 		this.attrAssign = new ArrayList<NeoAttributeExpression>();
 
@@ -90,46 +91,42 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	private void extractNodesAndRelations(Collection<ModelNodeBlock> nodeBlocks) {
-		
 		for (var n : nodeBlocks) {
-
 			var labels = new ArrayList<String>(computeLabelsOfNode(n));
 			var neoNode = new NeoNode(labels, n.getName());
 
 			computePropertiesOfNode(n, neoNode, mask);
 
 			for (var r : n.getRelations()) {
-				
+
 				var varName = EMSLUtil.relationNameConvention(neoNode.getVarName(), EMSLUtil.getAllTypes(r),
 						r.getTarget().getName(), n.getRelations().indexOf(r));
-				
+
 				var propsR = queryData.getRelationPropertiesAndAttributes(r.getProperties(), varName, this.attrExpr);
 				attrExpr.addAll(propsR.getElemAttrExpr());
 				attrAssign.addAll(propsR.getElemAttrAsgn());
 
-				var neoRel = new NeoRelation(neoNode,
-						varName,
-						EMSLUtil.getAllTypes(r), //
+				var neoRel = new NeoRelation(neoNode, varName, EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
 						propsR.getElemProps(), //
 						r.getTarget().getType().getName(), //
 						r.getTarget().getName());
-				
-				var eCont = computeEContainerReferences(r,neoRel);
-				
+
+				var eCont = computeEContainerReferences(r, neoRel);
+
 				if (r.getAction() != null) {
 					switch (r.getAction().getOp()) {
 					case CREATE:
 						extractRelationPropertiesFromMask(neoRel);
 						greenRel.put(neoRel.getVarName(), neoRel);
-						if(eCont != null && !alreadyAContainer(eCont)) {
+						if (eCont != null && !alreadyAContainer(eCont)) {
 							greenRel.put(eCont.getVarName(), eCont);
 						}
 						break;
 					case DELETE:
 						if (!neoRel.isPath()) {
 							redRel.put(neoRel.getVarName(), neoRel);
-							if(eCont != null && !modelEContainerRel.containsKey(eCont.getFromNodeVar())) {
+							if (eCont != null && !modelEContainerRel.containsKey(eCont.getFromNodeVar())) {
 								redRel.put(eCont.getVarName(), eCont);
 								modelEContainerRel.put(eCont.getFromNodeVar(), eCont);
 							}
@@ -168,43 +165,36 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 		addModelNodesAndRefs();
 	}
-	
+
 	private NeoRelation computeEContainerReferences(ModelRelationStatement r, NeoRelation neoRel) {
-		
-		for(var t : r.getTypes()) {
-			
-			if (t.getType().getKind().getName().equals("COMPOSITION") || t.getType().getKind().getName().equals("AGGREGATION")) {
-				
+
+		for (var t : r.getTypes()) {
+			if (t.getType().getKind().getName().equals("COMPOSITION")
+					|| t.getType().getKind().getName().equals("AGGREGATION")) {
+
 				var oppositeNode = new NeoNode(neoRel.getToNodeLabel(), neoRel.getToNodeVar());
 				var typeRel = new ArrayList<String>();
 				typeRel.add("eContainer");
-				
-				var eConNeoRel = new NeoRelation(
-						oppositeNode,
-						"eContainer_" + neoRel.getVarName(),
-						typeRel, 
-						r.getLower(),
-						r.getUpper(),
-						new ArrayList<ModelPropertyStatement>(),
-						neoRel.getFromNodeLabel(),
+
+				var eConNeoRel = new NeoRelation(oppositeNode, "eContainer_" + neoRel.getVarName(), typeRel,
+						r.getLower(), r.getUpper(), new ArrayList<ModelPropertyStatement>(), neoRel.getFromNodeLabel(),
 						neoRel.getFromNodeVar());
-				
-				eConNeoRel.addProperty("isComposition", EMSLUtil.returnValueAsString(t.getType().getKind().getName().equals("COMPOSITION")));	
+
+				eConNeoRel.addProperty("isComposition",
+						EMSLUtil.returnValueAsString(t.getType().getKind().getName().equals("COMPOSITION")));
 				return eConNeoRel;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private boolean alreadyAContainer(NeoRelation rel) {
-		
 		var labels = rel.getRelTypes();
-		
-		for(var l : labels) {
-			for(var r : greenRel.values()) {
-					
-				if(r.getRelTypes().contains(l)) {
+
+		for (var l : labels) {
+			for (var r : greenRel.values()) {
+				if (r.getRelTypes().contains(l)) {
 					return true;
 				}
 			}
@@ -220,7 +210,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	private void extractNodePropertiesFromMask(NeoNode neoNode) {
-
 		for (var propMask : mask.getMaskedAttributes().entrySet()) {
 			var varName = mask.getVarName(propMask.getKey());
 			if (neoNode.getVarName().equals(varName)) {
@@ -232,7 +221,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	private void extractRelationPropertiesFromMask(NeoRelation neoRel) {
-
 		for (var propMask : mask.getMaskedAttributes().entrySet()) {
 			var varName = mask.getVarName(propMask.getKey());
 			if (neoRel.getVarName().equals(varName)) {
@@ -256,7 +244,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	protected void addModelNodesAndRefs() {
 		greenNodes.forEach((varName, n) -> {
-
 			// Match corresponding EClass Node
 			var eclassNode = new NeoNode("EClass", "eClass_" + n.getVarName());
 			eclassNode.addProperty("ename", EMSLUtil.returnValueAsString(n.getClassTypes().iterator().next()));
@@ -330,5 +317,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Stream<String> getCreatedElts() {
 		return Streams.concat(greenNodes.keySet().stream(), greenRel.keySet().stream());
+	}
+
+	public Collection<NeoNode> getNodes() {
+		return Collections.unmodifiableCollection(nodes);
 	}
 }

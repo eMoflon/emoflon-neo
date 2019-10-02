@@ -45,6 +45,7 @@ class EMSLGenerator extends AbstractGenerator {
 	public static final String TGG_GEN_FOLDER = "tgg-gen"
 	public static final String SRC_GEN_Folder = "src-gen"
 	public static final String API_ROOT = "org/emoflon/neo/api/"
+	public EMSL_Spec emslSpec;
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		if(resource.contents.isEmpty) return
@@ -53,7 +54,7 @@ class EMSLGenerator extends AbstractGenerator {
 		val apiName = getAPIName(resource)
 		val apiFile = getAPIFileName(resource)
 
-		var emslSpec = resource.contents.get(0) as EMSL_Spec		
+		emslSpec = resource.contents.get(0) as EMSL_Spec		
 		emslSpec.entities.filter[it instanceof TripleGrammar]
 						 .map[it as TripleGrammar]
 						 .forEach[
@@ -422,10 +423,18 @@ class EMSLGenerator extends AbstractGenerator {
 										.map["getRule_" + namingConvention(it.name) + "().rule()"]
 										.collect(Collectors.toSet)
 			'''
-				public Collection<IRule<NeoMatch, NeoCoMatch>> getAllRules() {
+				public Collection<IRule<NeoMatch, NeoCoMatch>> getAllRulesFor«namingConvention(gg.name)»() {
 					Collection<IRule<NeoMatch, NeoCoMatch>> rules = new HashSet<>();
 					«FOR access : ruleMethods»
 						rules.add(«access»);
+					«ENDFOR»
+					return rules;
+				}
+				
+				public Collection<Rule> getAllEMSLRulesFor«namingConvention(gg.name)»(){
+					var rules = new HashSet<Rule>();
+					«FOR r : gg.rules»
+						rules.add((Rule) spec.getEntities().get(«emslSpec.entities.indexOf(r)»));
 					«ENDFOR»
 					return rules;
 				}
@@ -451,6 +460,14 @@ class EMSLGenerator extends AbstractGenerator {
 							builder.exportEMSLEntityToNeo4j(api.getMetamodel_«mmName»());
 						}
 					«ENDFOR»
+				}
+				
+				public Collection<TripleRule> getTripleRulesOf«rootName»(){
+					var rules = new HashSet<TripleRule>();
+					«FOR tr : tgg.rules»
+						rules.add((TripleRule) spec.getEntities().get(«emslSpec.entities.indexOf(tr)»));
+					«ENDFOR»
+					return rules;
 				}
 			'''
 		} catch (Exception e) {

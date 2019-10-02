@@ -26,7 +26,7 @@ public class CompanyToIT_GEN_Run {
 			var api = new API_CompanyToIT(builder);
 			api.exportMetamodelsForCompanyToIT();
 
-			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
+			var generator = new Generator<NeoMatch, NeoCoMatch>(//
 					new TimedTerminationCondition(300000), //
 					new FixedNoOfMatchesRuleScheduler(10), //
 					new AnySingleMatchUpdatePolicy(), //
@@ -35,7 +35,7 @@ public class CompanyToIT_GEN_Run {
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
 
-			generator.generate(genAPI.getAllRules());
+			generator.generate(genAPI.getAllRulesForCompanyToIT__GEN());
 			
 			logger.info("Generation done.");
 		} finally {
