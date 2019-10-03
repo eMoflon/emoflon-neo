@@ -8,7 +8,7 @@ import org.emoflon.neo.neo4j.adapter.templates.NeoProp;
 public class NeoCoreBootstrapper {
 	public static final String META_TYPE = "metaType";
 	public static final String META_EL_OF = "elementOf";
-	static final String CORR = "corr";
+	public static final String CORR = "corr";
 	static final String ECONTAINER = "eContainer";
 
 	// EClasses
@@ -42,7 +42,7 @@ public class NeoCoreBootstrapper {
 	// Attributes
 	static final String NAME_PROP = "ename";
 	static final String ABSTRACT_PROP = "abstract";
-	static final String _TYPE_PROP = "_type_";
+	public static final String _TYPE_PROP = "_type_";
 	static final String _TR_PROP = "_tr_";
 	static final String ISCOMPOSITION_PROP = "isComposition";
 	static final String ISCONTAINMENT_PROP = "isContainment";
