@@ -29,12 +29,6 @@ public class NeoRuleAdapter implements Rule {
 
 		createNodes();
 		createEdges();
-		createCorrs();
-	}
-
-	private void createCorrs() {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void createEdges() {
