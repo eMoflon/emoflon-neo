@@ -23,6 +23,7 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.util.EMSLUtil
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -106,25 +107,44 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 	override completeImportStatement_Value(
 			EObject model, Assignment assignment, 
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		var plRes = '''"platform:/resource/'''
+		var pPlug = '''"platform:/plugin/'''
 		
-		super.completeImportStatement_Value(model, assignment, context, acceptor)
-		var prep = "\"platform:/resource"
+		// No prefix so ask for beginning of URI first
+		if(context.prefix == ""){
+			acceptor.accept(createCompletionProposal(plRes, context))
+			acceptor.accept(createCompletionProposal(pPlug, context))
+			return
+		}
+		
+		// Already a prefix so offer to complete it
 		val files = new HashSet<IResource>()
 		var root = ResourcesPlugin.workspace.root
 		root.accept(new IResourceVisitor() {
 			override visit(IResource resource) throws CoreException {
 				if (resource.type === IResource.FILE) {
-					if (resource.name.contains(".msl")) {
+					if (resource.name.contains(".msl"))
 						files.add(resource as IFile);
-					}
 				}
+				
 				return true;
 			}
 		})
-		val filteredFiles = files.filter[f | !f.fullPath.toString.contains("/bin/")]
-		for (f : filteredFiles) {
-			acceptor.accept(createCompletionProposal(prep + f.fullPath.toString + "\"", context))
-		}
+		
+		val filteredFiles = files //
+		.map [ f |
+			f.fullPath.toString.substring(1)
+		].filter [ f |
+			!f.contains('''/bin/''')
+		].filter [ f |
+			!f.contains('''/tgg-gen/''')
+		]
+		
+		// Add neocore
+		acceptor.accept(createCompletionProposal('''"«EMSLUtil.ORG_EMOFLON_NEO_CORE_URI»"''', context))
+		
+		for (f : filteredFiles)
+			acceptor.accept(createCompletionProposal(plRes + f + '''"''', context))
 	}
 	
 	override completeCorrespondence_Source(

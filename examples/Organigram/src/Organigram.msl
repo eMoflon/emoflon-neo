@@ -7,6 +7,12 @@ metamodel Company {
 	Employee {
 		.name : EString
 		.surname : EString
+		.group : EChar
+		.id : ELong
+		.salary : EDouble
+		.bonus : EFloat
+		.bda : EDate
+		.internal : EBoolean
 	}
 	
 	Staff : Employee
@@ -36,6 +42,19 @@ metamodel Company {
 	}
 	
 	SalesPerson : Staff
+}
+
+model TestEmployee {
+	emp:Employee {
+		.name : "Tony"
+		.surname : "Montana"
+		.group : "C"
+		.id : 1234
+		.salary : 4000.345
+		.bonus : 0.3
+		.bda : "2019-09-02"
+		.internal : true
+	}
 }
 
 model SimpleCompany {

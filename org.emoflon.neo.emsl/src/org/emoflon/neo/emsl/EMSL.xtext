@@ -54,10 +54,11 @@ BinaryExpression:
 	left=Value op=ValueOperator right=Value
 ;
 
-//TODO[Jannik/Tony] Add missing operators 
 enum ValueOperator:
 	PLUS  =  '+' |
-	MINUS =  '-'
+	MINUS =  '-' |
+	MUL = '*' |
+	DIV = '/'
 ;
 
 AttributeExpression:

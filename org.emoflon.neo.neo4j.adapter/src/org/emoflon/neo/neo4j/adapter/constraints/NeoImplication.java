@@ -1,16 +1,11 @@
 package org.emoflon.neo.neo4j.adapter.constraints;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
-import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
@@ -25,7 +20,7 @@ import org.neo4j.driver.v1.exceptions.DatabaseException;
  *
  */
 public class NeoImplication extends NeoConstraint {
-	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	private static final Logger logger = Logger.getLogger(NeoImplication.class);
 
 	private String name;
 	private List<NeoNode> nodesIf;
@@ -50,7 +45,7 @@ public class NeoImplication extends NeoConstraint {
 		var flatThen = NeoUtil.getFlattenedPattern(apThen);
 
 		// Extracts all necessary information data from the Atomic Pattern
-		this.nodesIf = this.queryData.extractConstraintNodesAndRelations(flatIf.getNodeBlocks());
+		this.nodesIf = this.queryData.extractPatternNodesAndRelations(flatIf.getNodeBlocks());
 		this.nodesThen = this.queryData.extractConstraintNodesAndRelations(flatThen.getNodeBlocks());
 		this.nodesThenButNotIf = NeoUtil.extractElementsOnlyInConclusionPattern(this.nodesIf, this.nodesThen);
 	}
@@ -63,35 +58,6 @@ public class NeoImplication extends NeoConstraint {
 	@Override
 	public String getName() {
 		return name;
-	}
-	
-	/**
-	 * Returns a collection of the Nodes from the If-Clause
-	 * 
-	 * @return NeoNode collection of the Nodes from the If-Clause
-	 */
-	public Collection<NeoNode> getIfNodes() {
-		return nodesIf;
-	}
-
-	/**
-	 * Return a collection of the Nodes from the Then-Clause
-	 * 
-	 * @return NeoNode collection of the Nodes from the Then-Clause
-	 */
-	public Collection<NeoNode> getThenNodes() {
-		return nodesThen;
-	}
-
-	/**
-	 * Return a collection of all nodes from the If- and the Then-Clause
-	 * 
-	 * @return NeoNode collection of all nodes from the If- and the Then-Clause
-	 */
-	public Collection<NeoNode> getNodes() {
-		var list = new HashSet<>(nodesIf);
-		list.addAll(nodesThen);
-		return list;
 	}
 
 	/**
@@ -107,7 +73,7 @@ public class NeoImplication extends NeoConstraint {
 
 		// create query
 		var cypherQuery = CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen,
-				nodesThenButNotIf, queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), injective, mask);
+				nodesThenButNotIf, queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), queryData.getAllNodesRequireInjectivityChecksCondition(), injective, mask);
 		logger.debug(cypherQuery);
 
 		// execute query
@@ -117,12 +83,7 @@ public class NeoImplication extends NeoConstraint {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
 			// analyze and return results
-			var matches = new ArrayList<IMatch>();
-			while (result.hasNext()) {
-				matches.add(new NeoConstraintMatch(nodesIf, result.next()));
-			}
-	
-			if (matches.isEmpty()) {
+			if (!result.hasNext()) {
 				logger.info("No invalid matches found. Constraint: " + name + " is complied!");
 				return true;
 			} else {
@@ -140,7 +101,7 @@ public class NeoImplication extends NeoConstraint {
 	@Override
 	public String getQuery() {
 		return CypherPatternBuilder.constraint_ifThen_readQuery_satisfy(nodesIf, nodesThen, nodesThenButNotIf,
-				queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), injective, mask);
+				queryData.getAllElements(), queryData.getAttributeExpressionsOptional(), queryData.getEqualElements(), queryData.getAllNodesRequireInjectivityChecksCondition(), injective, mask);
 	}
 
 	@Override

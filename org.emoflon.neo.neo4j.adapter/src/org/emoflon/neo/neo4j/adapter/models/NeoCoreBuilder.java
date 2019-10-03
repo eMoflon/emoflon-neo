@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -66,6 +67,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
+import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.eMSL.UserDefinedType;
 import org.emoflon.neo.emsl.eMSL.ValueExpression;
@@ -89,6 +91,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private static final Object TRANSLATION_MARKER = "_tr_";
 
+	private static final Object TYPE_AS_ATTRIBUTE = "_type_";
+
+	private static final Object CORR = "corr";
+
 	// Defaults for export
 	private int maxTransactionSizeEdges = 10000;
 	private int maxTransactionSizeNodes = 10000;
@@ -110,11 +116,21 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	@Override
 	public StatementResult executeQuery(String cypherStatement) {
+		return executeQueryWithParameters(cypherStatement, null);
+	}
+	
+	@Override
+	public StatementResult executeQueryWithParameters(String cypherStatement, Map<String,Object> parameters) {
 		var session = driver.session();
 		var transaction = session.beginTransaction();
-		
+
 		try {
-			var result = transaction.run(cypherStatement.trim());
+			StatementResult result;
+			if(parameters == null || parameters.isEmpty())
+				result = transaction.run(cypherStatement.trim());
+			else
+				result = transaction.run(cypherStatement.trim(), parameters);
+			
 			transaction.success();
 			transaction.close();
 			return result;
@@ -645,7 +661,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
 		
-		var typedValue = nodeType.getRelations().stream()//
+		if(propName.equals(TYPE_AS_ATTRIBUTE) && relName.equals(CORR)) {
+			return PrimitiveString.class.cast(value).getLiteral();
+		}
+		
+		var typedValue = EMSLUtil.allRelationsOf(nodeType).stream()//
 				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getProperties().stream())//
 				.filter(etPs -> etPs.getName().equals(propName))//

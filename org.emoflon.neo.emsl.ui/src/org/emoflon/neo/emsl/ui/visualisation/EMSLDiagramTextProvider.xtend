@@ -55,6 +55,7 @@ import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import org.apache.commons.lang3.StringUtils
+import org.emoflon.neo.emsl.eMSL.TargetNAC
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -235,7 +236,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForObject(nb)» --> «IF link.target !== null»«labelForObject(link.target)»«ELSE»"?"«ENDIF» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForObject(nb)» : «IF attr.type.name !== null»«attr.type.name»«ELSE»?«ENDIF» = «IF attr.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
+				«labelForObject(nb)» : «IF attr?.type?.name !== null»«attr.type.name»«ELSE»?«ENDIF» = «IF attr?.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
@@ -881,7 +882,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			}
 			«IF entityCopy.nacs.size > 0»
-				«visualiseTripleRuleNACs(entity)»
+				«visualiseTripleRuleNACs(entityCopy)»
 			«ENDIF»
 		'''
 	}
@@ -964,6 +965,18 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR c : entity.nacs»
 				«IF c.pattern.eContainer !== null»
 					«visualiseEntity(c.pattern.eContainer as Pattern, false)»
+					«FOR nb : c.pattern.nodeBlocks»
+						«IF c instanceof SourceNAC»
+							«FOR other : entity.srcNodeBlocks»
+								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other)»#-[#DarkRed]-#«labelForPatternComponent(nb)»«ENDIF»
+							«ENDFOR»
+						«ENDIF»
+						«IF c instanceof TargetNAC»
+							«FOR other : entity.trgNodeBlocks»
+								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other)»#-[#DarkRed]-#«labelForPatternComponent(nb)»«ENDIF»
+							«ENDFOR»
+						«ENDIF»
+					«ENDFOR»
 				«ENDIF»
 			«ENDFOR»
 			

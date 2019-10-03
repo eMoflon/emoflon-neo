@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.emoflon.neo.api.API_Common;
@@ -32,9 +33,9 @@ public class SokobanGUIFunctionality extends ENeoTest {
 	@Test
 	public void testFigureTypes() {
 		var access = entities.getPattern_FigureTypes();
-		var types = access.matcher().determineMatches().stream()//
-				.map(m -> access.data(m).eclass.ename).collect(Collectors.toList());
-
+		var matches = access.matcher().determineMatches();
+		var data = access.data(matches);
+		var types = data.map(m -> m.eclass.ename).collect(Collectors.toList());
 		assertEquals(3, types.size());
 
 		assertTrue(types.contains(IController.BLOCK));
@@ -57,8 +58,8 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		testMask.setField(fieldId);
 		assertEquals(1, testAccess.matcher(testMask).countMatches());
 
-		assertEquals(1, access.data(result.get()).b_fields_0_f.row);
-		assertEquals(1, access.data(result.get()).b_fields_0_f.col);
+		assertEquals(1, access.data(List.of(result.get())).findAny().get().b_fields_0_f.row);
+		assertEquals(1, access.data(List.of(result.get())).findAny().get().b_fields_0_f.col);
 	}
 
 	@Test
@@ -118,11 +119,11 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 			assertTrue(match.isPresent());
 			var m = match.get();
-			assertFalse(access.data(m).f.endPos);
+			assertFalse(access.data(List.of(m)).findAny().get().f.endPos);
 
 			access.rule().apply(m);
 
-			assertTrue(access.data(m).f.endPos);
+			assertTrue(access.data(List.of(m)).findAny().get().f.endPos);
 		}
 		{
 			var access = entities.getRule_SetNotEndField();
@@ -133,11 +134,11 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 			assertTrue(match.isPresent());
 			var m = match.get();
-			assertTrue(access.data(m).f.endPos);
+			assertTrue(access.data(List.of(m)).findAny().get().f.endPos);
 
 			access.rule().apply(m);
 
-			assertFalse(access.data(m).f.endPos);
+			assertFalse(access.data(List.of(m)).findAny().get().f.endPos);
 		}
 	}
 }

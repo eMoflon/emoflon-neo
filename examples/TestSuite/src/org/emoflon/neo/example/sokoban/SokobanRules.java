@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 import org.emoflon.neo.api.API_Common;
@@ -78,13 +80,15 @@ public class SokobanRules extends ENeoTest {
 		assertTrue(result.isPresent());
 	}
 	
-	@Test void testMoveSokobanDownPathsWithCond() {
+	@Test 
+	public void testMoveSokobanDownPathsWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownTest().rule();
 		var matches = rule.determineMatches();
 		assertTrue(matches.size() == 0);		
 	}
 	
-	@Test void testAssignEndPosToNeighboringEndPosField() {
+	@Test 
+	public void testAssignEndPosToNeighboringEndPosField() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_TestAttributeAssignmentsWithElementsValueAssign().rule();
 		var matches = rule.determineMatches();
 		assertEquals(2, matches.size());	
@@ -99,5 +103,73 @@ public class SokobanRules extends ENeoTest {
 		}
 	}
 	
+	@Test 
+	public void testMoveSokobanRightWhenForbidOccupiedField() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanRightWhenForbidOccupiedField().rule();
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());	
+		
+		var iterator = matches.iterator();
+		
+		while(iterator.hasNext()) {
+			var match = iterator.next();
+			Optional<NeoCoMatch> result = rule.apply(match);
+			assertTrue(result.isPresent());
+			assertFalse(match.isStillValid());
+		}
+	}
+	
+	@Test 
+	public void testChangeToEndField() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_ChangeToEndField().rule();
+		var matches = rule.determineMatches();
+		assertEquals(10, matches.size());	
+		
+		var iterator = matches.iterator();
+		
+		while(iterator.hasNext()) {
+			var match = iterator.next();
+			Optional<NeoCoMatch> result = rule.apply(match);
+			assertTrue(result.isPresent());
+			assertFalse(match.isStillValid());
+		}
+	}
+	
+	@Test
+	public void testMoveBlockUp() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveBlockUp().rule();
+		var matches = rule.determineMatches();
+		assertEquals(2, matches.size());
+		
+		var tempMatches = rule.isStillApplicable(matches);
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(2, matches.size());
+		
+		Optional<Collection<NeoCoMatch>> result = rule.applyAll(matches);
+		assertTrue(result.isPresent());
+		
+		var coMatches = new ArrayList<NeoMatch>();
+		for(var co : result.get()) {
+			coMatches.add((NeoMatch)co);
+		}
+		assertEquals(2,coMatches.size());
+		
+		tempMatches = rule.isStillApplicable(matches);
+		validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(0, matches.size());
+		
+	}
 	
 }

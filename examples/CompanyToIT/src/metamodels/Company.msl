@@ -20,3 +20,29 @@ metamodel Company {
 		.name : EString
 	}
 }
+
+pattern CEOOfMultipleCompanies {
+	ceo:CEO
+	
+	company1:Company {
+		-ceo->ceo
+	}
+	
+	company2:Company {
+		-ceo->ceo
+	}
+}
+
+constraint CEOOfMultipleCompanies = forbid CEOOfMultipleCompanies
+
+pattern MultipleAdmins {
+	a1:Admin
+	a2:Admin
+	
+	c:Company {
+		-admin->a1
+		-admin->a2
+	}
+}
+
+constraint MultipleAdmins = forbid MultipleAdmins

@@ -83,6 +83,8 @@ constraint hasOneSokoban = oneSokobans && !twoSokobans
 
 constraint sokobanIsSelectedFigure = if oneSokoban then selectedFigureRequired
 
+constraint ifSokobanSelectedFigureThenOnField = if selectedFigureRequired then sokobanOnField
+
 pattern selectedFigureRequired {
 	b:SokobanLanguage.Board {
 		-selectedFigure->sokoban
@@ -90,14 +92,32 @@ pattern selectedFigureRequired {
 	sokoban:Sokoban
 }
 
+pattern sokobanOnField {
+	sokoban:Sokoban {
+		-field->f
+	}
+	f:Field
+}
+
+
 pattern oneBlock {
 	block : Block
 }
 
 pattern oneNormalField {
 	f:Field
-}
+} when enforce oneNeighborField
 
+pattern oneNormalFieldNeg {
+	f:Field
+} when forbid oneNeighborField
+
+pattern oneNeighborField {
+	f:Field {
+		-right->f2
+	}
+	f2:Field
+}
 
 rule oneExtraField {
 	f:Field {
@@ -332,7 +352,7 @@ pattern blockOnFieldCond {
 	fig: Block {
 		-field->field
 	}
-} when hasLeftNeighbor
+} when relevantConstr
 
 constraint forbidLeftSide = forbid hasLeft
 constraint forbidTopSide = forbid hasTop
@@ -341,7 +361,7 @@ constraint forbidBottomSide = forbid hasBottom
 
 constraint enforceHasLeft = enforce hasLeft
 constraint forbidHasTop = forbid hasTop
-constraint hasLeftNeighbor = enforceHasLeft || (!enforceHasLeft && forbidHasTop)
+constraint relevantConstr = enforceHasLeft || (!enforceHasLeft && forbidHasTop)
 
 constraint topLeftCorner = forbidLeftSide && forbidTopSide
 constraint topRightCorner = forbidRightSide && forbidTopSide
@@ -509,6 +529,27 @@ rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
 		++ -field -> from
 	}
 }
+
+rule moveSokobanRightWhenForbidOccupiedField {
+	b: SokobanLanguage.Board {
+		-fields -> from
+		-fields -> to
+	}
+	
+	from: Field {
+		-right -> to
+	}
+	to: Field
+	
+	sok: Sokoban {
+		-- -field -> from
+		++ -field -> to
+	}
+	
+	++ boulder: Boulder {
+		++ -field -> from
+	}
+} when forbid occupiedField
 
 rule forTestOnlymoveSokobanDownWithConditionAndNewNodes -> moveSokobanDown
 	when forbid occupiedField
@@ -788,3 +829,117 @@ rule testAttributeAssignmentsWithElementsValueAssign {
 		.endPos := f::endPos
 	}
 }
+
+rule changeToEndField {
+	f:Field {
+		-right->f1
+		.endPos : false
+		.endPos := true
+		.ename := f1::ename + "b"
+	}
+	f1:Field
+}
+
+rule createThirdSokoban {
+	sok1: Sokoban 
+	sok2: Sokoban
+	f:Field
+	++ sok3: Sokoban {
+		++ -field->f
+	}
+}
+
+pattern twoEmptyEndFields {
+	f1:Field {
+		.endPos: true
+	}
+	f2:Field {
+		.endPos: true
+	}
+} when enforce connectedField
+
+pattern connectedField {
+	f1:Field {
+		-bottom->f2
+	}
+	f2:Field
+}
+
+pattern attrCondField {
+	b:SokobanLanguage.Board {
+		-fields->f {
+			.col > 2
+			.row > 2
+		}
+	}
+	f:Field
+}
+
+pattern attrCondField2 {
+	b:SokobanLanguage.Board {
+		-fields->f1 {
+			.col : 2
+			.row : 2
+		}
+	}
+	f1:Field
+}
+constraint enforceAttrField = enforce attrCondField
+constraint enforceAttrField2 = enforce attrCondField2
+constraint enforceAttrFieldC = enforceAttrField && enforceAttrField2
+
+pattern attrCondFieldZero {
+	b:SokobanLanguage.Board {
+		-fields->f2 {
+			.col <= 0
+			.row <= 0
+		}
+	}
+	f2:Field
+} when enforce attrCondField
+
+pattern attrCondFieldZero2 {
+	b:SokobanLanguage.Board {
+		-fields->f2 {
+			.col <= 0
+			.row <= 0
+		}
+	}
+	f2:Field
+} when enforceAttrFieldC
+
+rule moveBlockUp {
+	f1:Field {
+		-bottom->f2
+	}
+	f2:Field
+	b1:Block {
+		-- -field->f2
+		++ -field->f1
+	}
+	++ b2:Block {
+		++ -field->f2
+	}
+}
+
+pattern oneFieldOnBoard {
+	f:Field
+}
+pattern oneEndFieldOnBoard {
+	f:Field {
+		.endPos: true
+	}
+}
+constraint ifFieldThenEndField = if oneFieldOnBoard then oneEndFieldOnBoard
+
+pattern oneSpecialBoulder {
+	b:Boulder
+	b1:Block
+}
+pattern oneSpecialBlock {
+	b:Block
+	b2:Block
+	
+}
+constraint ifBoulderThenBlock = if oneSpecialBoulder then oneSpecialBlock
+

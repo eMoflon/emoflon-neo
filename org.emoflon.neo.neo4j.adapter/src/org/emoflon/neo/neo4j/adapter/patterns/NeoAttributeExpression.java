@@ -22,7 +22,6 @@ public class NeoAttributeExpression {
 	private String translateOpToString() {
 		
 		switch(op) {
-		case EQ: return "="; 
 		case GREATER: return ">"; 
 		case GREATEREQ: return ">="; 
 		case LESS: return "<";
@@ -44,10 +43,6 @@ public class NeoAttributeExpression {
 
 	public String getAttrValue() {
 		return attrValue;
-	}
-
-	public ConditionOperator getOp() {
-		return op;
 	}
 	
 	public String getOpString() {

@@ -1,31 +1,36 @@
 package org.emoflon.neo.engine.modules.updatepolicies;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
-import org.emoflon.neo.engine.api.rules.ITripleRule;
-import org.emoflon.neo.engine.generator.MatchContainer;
-import org.emoflon.neo.engine.generator.modules.IMonitor;
-import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
-import org.emoflon.neo.engine.modules.ilp.OPT;
+import org.emoflon.neo.engine.api.constraints.IConstraint;
+import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
-public class CheckOnlyOperationalStrategy extends OPT implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
+public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
 
-	public CheckOnlyOperationalStrategy(Collection<ITripleRule> tripleRules) {
-		// TODO[Anjorin] Keep for dependency analysis
+	public CheckOnlyOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules, Collection<IConstraint> negativeConstraints) {
+		super(genRules, negativeConstraints);
+	}
+
+	@Override
+	protected Set<Long> getContextElts(IMatch m) {
+		var genRule = genRules.get(m.getPattern().getName());
+		return extractIDs(genRule.getContextElts(), m);
+	}
+
+	@Override
+	protected Set<Long> getCreatedElts(IMatch m) {
+		var genRule = genRules.get(m.getPattern().getName());
+		return extractIDs(genRule.getCreatedElts(), m);
 	}
 	
-	@Override
-	protected void computeWeights() {
-		// TODO[Anjorin] Compute weights for matches (matchToWeight)
-	}
-
-	@Override
-	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> pMatches,
-			IMonitor pProgressMonitor) {
-		// TODO[Anjorin] Perform CheckOnly operation here
-		return Collections.emptySet();
+	public boolean isConsistent(SupportedILPSolver suppSolver) throws Exception {
+		var result = determineInconsistentElements(suppSolver, false);
+		return result.filter(elts -> elts.isEmpty()).isPresent();
 	}
 }

@@ -35,6 +35,7 @@ import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import java.util.function.Predicate
 
 /**
  * Generates code from your model files on save.
@@ -159,7 +160,6 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.util.FlattenerException;
 			import org.emoflon.neo.engine.api.patterns.IPattern;
 			import org.emoflon.neo.engine.api.rules.IRule;
-			import org.emoflon.neo.engine.api.rules.ITripleRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleAccess;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
@@ -167,21 +167,23 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.eMSL.Pattern;
 			import org.emoflon.neo.emsl.eMSL.Rule;
 			import org.emoflon.neo.emsl.eMSL.TripleRule;
-			import org.emoflon.neo.neo4j.adapter.rules.NeoTripleRule;
 			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
 			import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.emsl.eMSL.Constraint;
 			import org.neo4j.driver.v1.Value;
+			import org.neo4j.driver.v1.Record;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 			import org.emoflon.neo.neo4j.adapter.patterns.NeoData;
+			import org.emoflon.neo.neo4j.adapter.rules.NeoRuleCoAccess;
 			import org.emoflon.neo.api.API_Common;
 			import java.util.Collection;
 			import java.util.HashSet;
 			import java.util.HashMap;
 			import java.util.Map;
+			import java.util.stream.Stream;
 			import java.util.Optional;
 			import java.time.LocalDate;
 			
@@ -251,8 +253,9 @@ class EMSLGenerator extends AbstractGenerator {
 					}
 					
 					@Override
-					public «dataClassName» data(NeoMatch m) {
-						return new «dataClassName»(m);
+					public Stream<«dataClassName»> data(Collection<NeoMatch> matches) {
+						var data = NeoMatch.getData(matches);
+						return data.stream().map(d -> new «dataClassName»(d));
 					}
 					
 					@Override
@@ -298,12 +301,16 @@ class EMSLGenerator extends AbstractGenerator {
 		}
 		
 	'''
+	
+	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks){
+		helperClasses(nodeBlocks, [true], [true])
+	}
 
-	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks) '''
-		«FOR node : nodeBlocks»
+	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) '''
+		«FOR node : nodeBlocks.filter(nodeFilter)»
 			«helperNodeClass(node)»
 			
-			«FOR rel : node.relations.filter[!EMSLUtil.isVariableLink(it)]»
+			«FOR rel : node.relations.filter(edgeFilter).filter[!EMSLUtil.isVariableLink(it)]»
 				«helperRelClass(node, rel)»
 			«ENDFOR»
 		«ENDFOR»
@@ -346,14 +353,16 @@ class EMSLGenerator extends AbstractGenerator {
 			}
 		}
 	'''
+	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks){
+		constructor(fileName, nodeBlocks, [true], [true])
+	}
 
-	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks) '''
-		public «fileName»(NeoMatch m) {
-			var data = m.getData();
-			«FOR node : nodeBlocks»
+	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) '''
+		public «fileName»(Record data) {
+			«FOR node : nodeBlocks.filter(nodeFilter)»
 				var «node.name» = data.get("«node.name»");
 				this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
-				«FOR rel : node.relations.filter[!EMSLUtil.isVariableLink(it)]»
+				«FOR rel : node.relations.filter(edgeFilter).filter[!EMSLUtil.isVariableLink(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
 						rel.allTypes,//
@@ -367,11 +376,15 @@ class EMSLGenerator extends AbstractGenerator {
 		
 	'''
 
-	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks) {
+	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks){
+		classMembers(nodeBlocks, [true], [true])
+	}
+
+	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) {
 		'''
-			«FOR node : nodeBlocks»
+			«FOR node : nodeBlocks.filter(nodeFilter)»
 				public final «node.name.toFirstUpper»Node «node.name»;
-				«FOR rel : node.relations.filter[!EMSLUtil.isVariableLink(it)]»
+				«FOR rel : node.relations.filter(edgeFilter).filter[!EMSLUtil.isVariableLink(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
 						rel.allTypes,//
@@ -454,14 +467,6 @@ class EMSLGenerator extends AbstractGenerator {
 						}
 					«ENDFOR»
 				}
-				
-				public Collection<ITripleRule> getTripleRuleInfoFor«rootName»() {
-					Collection<ITripleRule> info = new HashSet<>();
-					«FOR tr : tgg.rules.filter[!it.abstract]»
-						info.add(getTripleRule_«tr.name»());
-					«ENDFOR»
-					return info;
-				}
 			'''
 		} catch (Exception e) {
 			e.printStackTrace
@@ -470,19 +475,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 	
 	dispatch def generateAccess(TripleRule tr, int index){
-		if(tr.abstract) return ""
-		try {
-			val rootName = namingConvention(tr.name)
-			'''
-				public ITripleRule getTripleRule_«rootName»() {
-					var tr = (TripleRule) spec.getEntities().get(«index»);
-					return new NeoTripleRule(tr);
-				}
-			'''
-		} catch (Exception e) {
-			e.printStackTrace
-			'''//FIXME Unable to generate API: «e.toString»  */ '''
-		}
+		'''/* No API at the moment */'''
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
@@ -491,6 +484,7 @@ class EMSLGenerator extends AbstractGenerator {
 			val rule = EMSLFlattener.flatten(r) as Rule;
 			val rootName = namingConvention(rule.name)
 			val dataClassName = rootName + "Data"
+			val codataClassName = rootName + "CoData"
 			val accessClassName = rootName + "Access"
 			val maskClassName = rootName + "Mask"
 			'''
@@ -498,7 +492,7 @@ class EMSLGenerator extends AbstractGenerator {
 					return new «accessClassName»();
 				}
 				
-				public class «accessClassName» extends NeoRuleAccess<«dataClassName»,«maskClassName»> {
+				public class «accessClassName» extends NeoRuleCoAccess<«dataClassName», «codataClassName», «maskClassName»> {
 					«FOR node : rule.nodeBlocks»
 						public final String «node.name» = "«node.name»";
 					«ENDFOR»
@@ -516,8 +510,15 @@ class EMSLGenerator extends AbstractGenerator {
 					}
 					
 					@Override
-					public «dataClassName» data(NeoMatch m) {
-						return new «dataClassName»(m);
+					public Stream<«dataClassName»> data(Collection<NeoMatch> matches) {
+						var data = NeoMatch.getData(matches);
+						return data.stream().map(d -> new «dataClassName»(d));
+					}
+						
+					@Override
+					public Stream<«codataClassName»> codata(Collection<NeoCoMatch> matches) {
+						var data = NeoMatch.getData(matches);
+						return data.stream().map(d -> new «codataClassName»(d));
 					}
 					
 					@Override
@@ -527,19 +528,28 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «dataClassName» extends NeoData {
-					«val blackAndGreenNodeBlocks = rule.nodeBlocks.filter[it.action === null || it.action.op !== ActionOperator.DELETE]»
-					«classMembers(blackAndGreenNodeBlocks)»
+					«val blackAndRedNodes = [ModelNodeBlock n | n.action === null || n.action.op == ActionOperator.DELETE]»
+					«val blackAndRedEdges = [ModelRelationStatement e | e.action === null || e.action.op == ActionOperator.DELETE]»
+					«classMembers(rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
 					
-					«constructor(dataClassName, blackAndGreenNodeBlocks)»
+					«constructor(dataClassName, rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
 					
-					«helperClasses(blackAndGreenNodeBlocks)»
+					«helperClasses(rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
+				}
+				
+				public class «codataClassName» extends NeoData {
+					«val blackAndGreenNodes = [ModelNodeBlock n | n.action === null || n.action.op == ActionOperator.CREATE]»
+					«val blackAndGreenEdges = [ModelRelationStatement e | e.action === null || e.action.op == ActionOperator.CREATE]»
+					«classMembers(rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
+				
+					«constructor(codataClassName, rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
+				
+					«helperClasses(rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
 				}
 				
 				public class «maskClassName» extends NeoMask {
-				
 					«maskClassMembers()»
 					
-					// Black and Red Nodes of a Rule
 					«maskMethods(rule.nodeBlocks, maskClassName)»
 				}
 			'''

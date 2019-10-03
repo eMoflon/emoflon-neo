@@ -118,3 +118,9 @@ model TranslatedState -> SimplePacManGame {
 	}
 }
 
+model SimpleGameWithMarbles -> SimplePacManGame {
+	marble:Marble {
+		-liesOn->$f01
+	}
+}
+

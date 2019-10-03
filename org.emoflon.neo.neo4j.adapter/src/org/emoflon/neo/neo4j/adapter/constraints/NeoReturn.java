@@ -8,9 +8,9 @@ import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 
 /**
  * Class collects and provides access to all relevant data during pattern
- * matching and constraint validtaion, store the nodes, relations and there
+ * matching and constraint validation, store the nodes, relations and there
  * variable including the query (parts) created during the constraint or
- * condition queryy creation
+ * condition query creation
  * 
  * @author Jannik Hinz
  *
@@ -65,15 +65,6 @@ public class NeoReturn {
 	 */
 	public Collection<NeoNode> getNodes() {
 		return nodesN;
-	}
-
-	/**
-	 * Return all current added NeoNode variable names as a list
-	 * 
-	 * @return NeoNode variable names as a list of all currently used nodes
-	 */
-	public Collection<String> getNodesAsString() {
-		return nodesS;
 	}
 
 	/**

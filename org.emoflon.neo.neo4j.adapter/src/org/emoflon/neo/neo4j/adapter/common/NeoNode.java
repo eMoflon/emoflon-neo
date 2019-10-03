@@ -99,8 +99,4 @@ public class NeoNode {
 		classTypes.add(label);
 	}
 	
-	public void removeLabel(String label) {
-		if(classTypes.contains(label))
-			classTypes.remove(label);
-	}
 }
