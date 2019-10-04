@@ -952,6 +952,9 @@ rule removeSokobanWithDanglingEdges {
 		-- -field->f
 	}
 	
+	b:SokobanLanguage.Board {
+		-- -selectedFigure->sok
+	}
 	f:Field
 }
 
