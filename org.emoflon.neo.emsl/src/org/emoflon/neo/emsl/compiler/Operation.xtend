@@ -8,6 +8,10 @@ import org.emoflon.neo.emsl.compiler.ops.MODELGEN
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.Parameter
+import java.util.Map
+import java.util.Collection
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
 
 interface Operation {
 	def static Operation[] getAllOps() {
@@ -19,6 +23,10 @@ interface Operation {
 	def String getAction(Action pAction, boolean pIsSrc)
 
 	def String getTranslation(Action pAction, boolean pIsSrc)
+
+	def String getConditionOperator(ConditionOperator propOp, boolean isSrc)
+
+	def void handleParameters(Map<Parameter, String> paramsToValues, Map<Parameter, String> paramsToProperty, Map<Parameter, Boolean> paramsToDomain, Map<String, Collection<Parameter>> paramGroups)
 
 	def String compileCorrespondence(Correspondence corr) {
 		val isGreen = (corr.action !== null && ActionOperator::CREATE.equals(corr.action.getOp()))
