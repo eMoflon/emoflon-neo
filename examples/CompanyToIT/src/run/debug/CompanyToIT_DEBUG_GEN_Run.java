@@ -27,8 +27,9 @@ public class CompanyToIT_DEBUG_GEN_Run {
 			api.exportMetamodelsForCompanyToIT();
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
-			var adapter = new NeoVictoryAdapter(genAPI.getAllEMSLRulesForCompanyToIT__GEN(), api.getTripleRulesOfCompanyToIT());
-			
+			var adapter = new NeoVictoryAdapter(genAPI.getAllEMSLRulesForCompanyToIT__GEN(), //
+					api.getTripleRulesOfCompanyToIT());
+
 			var generator = new Generator<NeoMatch, NeoCoMatch>(//
 					new NoTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //

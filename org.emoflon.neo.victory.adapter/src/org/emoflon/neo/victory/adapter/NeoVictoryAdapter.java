@@ -55,7 +55,7 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 			public void run() {
 				generator.generate(rules);
 			};
-		}.run();
+		}.start();		
 		
 		Victory.run();
 	}

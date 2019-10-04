@@ -1,6 +1,7 @@
 package org.emoflon.neo.victory.adapter;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.emoflon.ibex.tgg.ui.debug.api.Graph;
 import org.emoflon.ibex.tgg.ui.debug.api.Match;
@@ -45,7 +46,13 @@ public class NeoMatchAdapter implements Match {
 
 	@Override
 	public Graph getGraph(int pNeighbourhoodSize) {
-		// TODO Auto-generated method stub
-		return new GraphBuilder().build();
+		var rule = getRule();
+		var builder = new GraphBuilder();
+		var nameToNode = new HashMap<String, NeoNodeAdapter>();
+		
+		//1.  Do I have to build the entire graph consisting of both rule and match?
+		//2.  Domain and action for match nodes is rather weird...  Isn't this clear from the corresponding rule nodes?
+				
+		return builder.build();
 	}
 }
