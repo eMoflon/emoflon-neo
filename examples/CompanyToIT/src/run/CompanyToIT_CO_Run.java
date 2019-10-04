@@ -1,5 +1,6 @@
 package run;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -33,10 +34,11 @@ public class CompanyToIT_CO_Run {
 			api.exportMetamodelsForCompanyToIT();
 
 			var companyAPI = new API_Company(builder);
-			var negativeConstraints = List.of(
-					companyAPI.getConstraint_CEOOfMultipleCompanies()					
-					, companyAPI.getConstraint_MultipleAdmins()
-					);
+			var negativeConstraints = Collections.EMPTY_LIST;
+//					List.of(
+//					companyAPI.getConstraint_CEOOfMultipleCompanies()					
+//					, companyAPI.getConstraint_MultipleAdmins()
+//					);
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRules(), negativeConstraints);
