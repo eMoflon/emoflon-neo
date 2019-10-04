@@ -1139,13 +1139,31 @@ class EMSLValidator extends AbstractEMSLValidator {
 	}
 
 	/**
-	 * Checks that all parameters with the same name share the same inferred type. 
+	 * Checks that within a Rule, all parameters with the same name share the same inferred type. 
 	 */
 	@Check
-	def void checkParameterTypes(Model m) {
+	def void checkParameterTypes(Rule rule) {
+		checkParameterTypes(rule.nodeBlocks)
+	}
+	
+	/**
+	 * Checks that within a TripleRule, all parameters with the same name share the same inferred type.
+	 */
+	@Check
+	def void checkParameterTypes(TripleRule rule) {
+		val nodeBlocks = new ArrayList
+		nodeBlocks.addAll(rule.srcNodeBlocks)
+		nodeBlocks.addAll(rule.trgNodeBlocks)
+		checkParameterTypes(nodeBlocks)
+	}
+	
+	/**
+	 * Checks that within the given node-blocks, all parameters with the same name share the same inferred type.
+	 */
+	def checkParameterTypes(List<ModelNodeBlock> nodeBlocks) {
 		val paramTypeMap = new HashMap<Parameter, DataType>
 		val paramNameMap = new HashMap<String, HashSet<Parameter>>
-		for(nodeBlock : m.nodeBlocks)
+		for(nodeBlock : nodeBlocks)
 			for(prop : nodeBlock.properties)
 				if(prop.value instanceof Parameter) {
 					val param = prop.value as Parameter
