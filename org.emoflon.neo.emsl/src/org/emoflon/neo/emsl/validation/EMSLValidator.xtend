@@ -1161,14 +1161,22 @@ class EMSLValidator extends AbstractEMSLValidator {
 				var type = paramTypeMap.get(iterator.next)
 				var typesMatch = true
 				
-				while(typesMatch && iterator.hasNext)
-					typesMatch = type.equals(paramTypeMap.get(iterator.next))
+				while(typesMatch && iterator.hasNext) {
+					val otherType = paramTypeMap.get(iterator.next)
+					if(type instanceof BuiltInType && otherType instanceof BuiltInType)
+						typesMatch = (type as BuiltInType).reference === (otherType as BuiltInType).reference
+					else if(type instanceof UserDefinedType && otherType instanceof UserDefinedType)
+						typesMatch = (type as UserDefinedType).reference.equals((otherType as UserDefinedType).reference)
+					else
+						typesMatch = false
+				}
+					
 				
 				if(!typesMatch)
 					for(param : params)
 						error(NON_MATCHING_PARAMETER_TYPES,
 							param,
-							EMSLPackage.Literals.MODEL_PROPERTY_STATEMENT__VALUE)
+							EMSLPackage.Literals.PARAMETER__NAME)
 			}
 		]
 	}
