@@ -943,3 +943,15 @@ pattern oneSpecialBlock {
 }
 constraint ifBoulderThenBlock = if oneSpecialBoulder then oneSpecialBlock
 
+rule removeSokoban {
+	-- sok:Sokoban
+}
+
+rule removeSokobanWithDanglingEdges {
+	-- sok:Sokoban {
+		-- -field->f
+	}
+	
+	f:Field
+}
+

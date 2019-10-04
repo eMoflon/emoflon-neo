@@ -347,7 +347,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				
 				while (result.hasNext()) {
 					var next = result.next();
-					coMatches.add(new NeoCoMatch(this.contextPattern, next, next.get("hash_id").toString()));
+					coMatches.add(new NeoCoMatch(this.contextPattern, next, next.get("match_id").toString()));
 				}
 				logger.debug(coMatches.toString());
 				return Optional.of(coMatches);
