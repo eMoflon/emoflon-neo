@@ -15,14 +15,17 @@ import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private Collection<NeoRuleAdapter> rules;
+	private NeoCoreBuilder builder;
 
-	public NeoVictoryAdapter(Collection<org.emoflon.neo.emsl.eMSL.Rule> operationalRules,
+	public NeoVictoryAdapter(NeoCoreBuilder builder, Collection<org.emoflon.neo.emsl.eMSL.Rule> operationalRules,
 			Collection<TripleRule> tripleRules) {
+		this.builder = builder;
 		var tripleRuleItr = tripleRules.iterator();
 		this.rules = operationalRules.stream()//
 				.map(r -> new NeoRuleAdapter(r, tripleRuleItr.next()))//
@@ -42,7 +45,7 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 	@Override
 	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
 		var selection = new ArrayList<NeoMatch>();
-		var selected = Victory.selectMatch(new NeoDataPackageAdapter(matches, rules));
+		var selected = Victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
 		selection.add((NeoMatch) ((NeoMatchAdapter) selected).getWrappedMatch());
 		return selection;
 	}
