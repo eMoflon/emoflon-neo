@@ -10,7 +10,7 @@ model ES {
 	}
 	
 	ES:Company {
-		.name : "ES"
+		.name : <foo>
 		
 		-ceo->andy
 		-admin->ingo
@@ -19,7 +19,7 @@ model ES {
 	}
 	
 	ingo:Admin {
-		.name : "Ingo"
+		.name : <foo>
 		-ceo->andy
 	}
 	

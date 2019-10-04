@@ -56,6 +56,7 @@ import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import org.apache.commons.lang3.StringUtils
 import org.emoflon.neo.emsl.eMSL.TargetNAC
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -250,6 +251,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	
 	dispatch def printValue(Object o){
 		'''?'''
+	}
+
+	dispatch def printValue(Parameter value){
+		'''<«value.name»>'''
 	}
 
 	dispatch def String printValue(BinaryExpression value){

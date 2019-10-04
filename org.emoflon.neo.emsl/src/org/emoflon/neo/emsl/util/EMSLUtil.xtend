@@ -38,6 +38,7 @@ import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import java.time.LocalDate
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -199,6 +200,10 @@ class EMSLUtil {
 		
 		if(value instanceof BinaryExpression){
 			return handleValue(value.left) + value.op + handleValue(value.right)
+		}
+		
+		if(value instanceof Parameter){
+			return "<" + value.name + ">"
 		}
 
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
