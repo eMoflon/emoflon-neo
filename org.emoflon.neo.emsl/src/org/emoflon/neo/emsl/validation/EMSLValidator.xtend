@@ -104,6 +104,8 @@ class EMSLValidator extends AbstractEMSLValidator {
 	static final def String SENSELESS_MULTIPLICITIES(String type) '''Upper bounds must be at least as large as lower bounds.'''
 	static final String ENFORCING_NAMES_IN_EDGES = "Complex links (with more than one type) must have a name."
 	static final String NON_MATCHING_PARAMETER_TYPES = "This parameter is being used for more than one type."
+	static final String PARAMETERS_DISALLOWED_FOR_MODELS = "Parameter are not allowed within models."
+	static final String PARAMETERS_DISALLOWED_FOR_PATTERNS = "Parameter are not allowed within patterns."
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -1197,5 +1199,31 @@ class EMSLValidator extends AbstractEMSLValidator {
 							EMSLPackage.Literals.PARAMETER__NAME)
 			}
 		]
+	}
+
+	/**
+	 * Checks that there are no parameters in models.
+	 */
+	@Check
+	def void disallowParametersForModels(Model model) {
+		for(nodeBlock : model.nodeBlocks)
+			for(prop : nodeBlock.properties)
+				if(prop.value instanceof Parameter) 
+					error(PARAMETERS_DISALLOWED_FOR_MODELS,
+						prop.value,
+						EMSLPackage.Literals.PARAMETER__NAME)
+	}
+	
+	/**
+	 * Checks that there are no parameters in patterns.
+	 */
+	@Check
+	def void disallowParametersForModels(Pattern pattern) {
+		for(nodeBlock : pattern.body.nodeBlocks)
+			for(prop : nodeBlock.properties)
+				if(prop.value instanceof Parameter) 
+					error(PARAMETERS_DISALLOWED_FOR_PATTERNS,
+						prop.value,
+						EMSLPackage.Literals.PARAMETER__NAME)
 	}
 }
