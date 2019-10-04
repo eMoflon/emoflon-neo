@@ -1,7 +1,6 @@
 package org.emoflon.neo.victory.adapter;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.emoflon.ibex.tgg.ui.debug.api.Graph;
 import org.emoflon.ibex.tgg.ui.debug.api.Match;
@@ -48,14 +47,12 @@ public class NeoMatchAdapter implements Match {
 	}
 
 	@Override
-	public Graph getGraph(int pNeighbourhoodSize) {
-		var rule = getRule();
+	public Graph getGraph(int neighbourhoodSize) {
 		var graphBuilder = new GraphBuilder();
-		var nameToNode = new HashMap<String, NeoNodeAdapter>();
 		
-		//2.  Domain and action for match nodes is rather weird...  Isn't this clear from the corresponding rule nodes?
-		var result = builder.executeQuery("match p=(n)-[*1..2]-(m)  where id(n) = 66160 return relationships(p)");		
+		var result = builder.executeQuery(MatchQuery.create(match, getRule(), neighbourhoodSize));		
 		System.out.println(result.list().size());
+		System.out.println(result.keys());
 		
 		return graphBuilder.build();
 	}

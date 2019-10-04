@@ -112,3 +112,5 @@ examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeBuilder.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeRules.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_GameOfLifeSeeds.java
 examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_Errors.java
+org.emoflon.neo.victory.adapter/bin/org/emoflon/neo/victory/adapter/.MatchQuery.java._trace
+org.emoflon.neo.victory.adapter/xtend-gen/org/emoflon/neo/victory/adapter/.MatchQuery.java._trace
