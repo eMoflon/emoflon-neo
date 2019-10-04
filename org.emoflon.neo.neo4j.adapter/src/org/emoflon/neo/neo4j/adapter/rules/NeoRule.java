@@ -293,6 +293,20 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			
 			modelEContainerRel.put(metaTypeRel.getVarName(),metaTypeRel);
 			redRel.put(metaTypeRel.getVarName(),metaTypeRel);
+			
+			// Match corresponding Model elementOf relations
+			
+			var modelNode = new NeoNode("Model", "model_" + n.getVarName());
+			modelNodes.add(modelNode);
+
+			var elementOf = new ArrayList<String>();
+			elementOf.add("elementOf");
+
+			var elementOfRel = new NeoRelation(n, n.getVarName() + "_elementOf_" + "model_" + n.getVarName(), elementOf,
+					"", "", new ArrayList<>(), "Model", "model_" + n.getVarName());
+			
+			modelEContainerRel.put(elementOfRel.getVarName(),elementOfRel);
+			redRel.put(elementOfRel.getVarName(),elementOfRel);
 
 		});
 	}
