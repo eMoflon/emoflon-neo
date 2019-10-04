@@ -187,7 +187,6 @@ public class SokobanRules extends ENeoTest {
 		
 	}
 	
-	// FIXME
 	@Test
 	public void testRemoveSokoobanForDangelingEdgesDPO() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokoban().rule();
@@ -231,8 +230,12 @@ public class SokobanRules extends ENeoTest {
 		
 		var match = matches.iterator().next();
 		
-		var comatches = rule.apply(match);
-		assertTrue(comatches.isPresent());
+		try {
+			rule.apply(match);
+			assertTrue(false);
+		} catch (Exception e) {
+			assertTrue(true);
+		}
 		
 	}
 }

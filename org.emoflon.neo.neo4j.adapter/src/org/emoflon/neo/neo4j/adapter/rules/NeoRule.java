@@ -171,7 +171,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 
 		addModelNodesAndRefs();
-		removeModelNodesAndRefs();
+		
 	}
 	
 	private NeoRelation computeEContainerReferences(ModelRelationStatement r, NeoRelation neoRel) {
@@ -274,39 +274,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 					"", "", new ArrayList<>(), "EClass", "eClass_" + n.getVarName());
 
 			modelRel.add(metaTypeRel);
-		});
-	}
-	
-	protected void removeModelNodesAndRefs() {
-		redNodes.forEach((varName, n) -> {
-
-			// Match corresponding EClass Node
-			var eclassNode = new NeoNode("EClass", "eClass_" + n.getVarName());
-			eclassNode.addProperty("ename", EMSLUtil.returnValueAsString(n.getClassTypes().iterator().next()));
-			modelNodes.add(eclassNode);
-
-			var metaType = new ArrayList<String>();
-			metaType.add("metaType");
-
-			var metaTypeRel = new NeoRelation(n, n.getVarName() + "_metaType_" + "eClass_" + n.getVarName(), metaType,
-					"", "", new ArrayList<>(), "EClass", "eClass_" + n.getVarName());
-			
-			modelEContainerRel.put(metaTypeRel.getVarName(),metaTypeRel);
-			redRel.put(metaTypeRel.getVarName(),metaTypeRel);
-			
-			// Match corresponding Model 
-			var modelNode = new NeoNode("Model", "model_" + n.getVarName());
-			modelNodes.add(modelNode);
-
-			var elementOf = new ArrayList<String>();
-			elementOf.add("elementOf");
-
-			var elementOfRel = new NeoRelation(n, n.getVarName() + "_elementOf_" + "model_" + n.getVarName(), elementOf,
-					"", "", new ArrayList<>(), "Model", "model_" + n.getVarName());
-			
-			modelEContainerRel.put(elementOfRel.getVarName(),elementOfRel);
-			redRel.put(elementOfRel.getVarName(),elementOfRel);
-
 		});
 	}
 
