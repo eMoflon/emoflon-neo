@@ -145,7 +145,7 @@ class TGGCompiler {
 					val param = prop.value as Parameter
 					paramsToValues.put(param, '''<«param.name»>''')
 					paramsToDomain.put(param, domain)
-					paramsToProperty.put(param, '''«nodeBlock.name».«prop.type.name»''')
+					paramsToProperty.put(param, '''«nodeBlock.name»::«prop.type.name»''')
 					if(!paramGroups.containsKey(param.name))
 						paramGroups.put(param.name, new HashSet)
 					paramGroups.get(param.name).add(param)
