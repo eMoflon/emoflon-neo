@@ -393,4 +393,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public Map<String, Boolean> isStillApplicable(Collection<NeoMatch> matches) {
 		return contextPattern.isStillValid(matches);
 	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
