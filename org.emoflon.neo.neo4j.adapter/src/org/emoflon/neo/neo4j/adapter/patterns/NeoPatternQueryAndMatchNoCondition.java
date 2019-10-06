@@ -89,7 +89,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		var results = result.list();
 		var hashCode = new ArrayList<String>();
 		for(var r : results) {
-			hashCode.add(r.asMap().get("hash_id").toString());
+			hashCode.add(r.asMap().get("match_id").toString());
 		}
 		
 		var returnMap = new HashMap<String,Boolean>();

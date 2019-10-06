@@ -89,7 +89,7 @@ import com.google.common.collect.Streams;
 public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	private static final Object TRANSLATION_MARKER = "_tr_";
+	public static final Object TRANSLATION_MARKER = "_tr_";
 
 	private static final Object TYPE_AS_ATTRIBUTE = "_type_";
 

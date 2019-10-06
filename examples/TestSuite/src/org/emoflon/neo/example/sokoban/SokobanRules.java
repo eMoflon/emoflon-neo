@@ -172,4 +172,70 @@ public class SokobanRules extends ENeoTest {
 		
 	}
 	
+	@Test
+	public void testRemoveSokoobanForDangelingEdgesSPO() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokoban().rule();
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		rule.useSPOSemantics(true);
+		
+		var match = matches.iterator().next();
+		
+		var comatches = rule.apply(match);
+		assertTrue(comatches.isPresent());
+		
+	}
+	
+	@Test
+	public void testRemoveSokoobanForDangelingEdgesDPO() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokoban().rule();
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		rule.useSPOSemantics(false);
+		
+		var match = matches.iterator().next();
+		
+		try {
+			rule.apply(match);
+			assertTrue(false);
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+	}
+	
+	@Test
+	public void testRemoveSokoobanWithDangelingEdgesSPO() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokobanWithDanglingEdges().rule();
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		rule.useSPOSemantics(true);
+		
+		var match = matches.iterator().next();
+		
+		var comatches = rule.apply(match);
+		assertTrue(comatches.isPresent());
+		
+	}
+	
+	@Test
+	public void testRemoveSokoobanWithDangelingEdgesDPO() {
+		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokobanWithDanglingEdges().rule();
+		var matches = rule.determineMatches();
+		assertEquals(1, matches.size());
+		
+		rule.useSPOSemantics(false);
+		
+		var match = matches.iterator().next();
+		
+		try {
+			rule.apply(match);
+			assertTrue(false);
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+		
+	}
 }

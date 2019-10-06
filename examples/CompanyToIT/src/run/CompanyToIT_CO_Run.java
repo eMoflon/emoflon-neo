@@ -44,7 +44,7 @@ public class CompanyToIT_CO_Run {
 			
 			logger.info("Start check only...");
 			
-			generator.generate(coAPI.getAllRules());
+			generator.generate(coAPI.getAllRulesForCompanyToIT__CO());
 
 			if (checkOnly.isConsistent(solver))
 				logger.info("Your triple is consistent!");
