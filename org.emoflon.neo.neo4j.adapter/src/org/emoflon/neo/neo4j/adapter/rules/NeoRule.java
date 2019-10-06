@@ -171,6 +171,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 
 		addModelNodesAndRefs();
+		removeModelNodesAndRefs();
 	}
 	
 	private NeoRelation computeEContainerReferences(ModelRelationStatement r, NeoRelation neoRel) {
@@ -275,6 +276,26 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			modelRel.add(metaTypeRel);
 		});
 	}
+	
+	protected void removeModelNodesAndRefs() {
+		redNodes.forEach((varName, n) -> {
+
+			// Match corresponding EClass Node
+			var eclassNode = new NeoNode("EClass", "eClass_" + n.getVarName());
+			eclassNode.addProperty("ename", EMSLUtil.returnValueAsString(n.getClassTypes().iterator().next()));
+			modelNodes.add(eclassNode);
+
+			var metaType = new ArrayList<String>();
+			metaType.add("metaType");
+
+			var metaTypeRel = new NeoRelation(n, n.getVarName() + "_metaType_" + "eClass_" + n.getVarName(), metaType,
+					"", "", new ArrayList<>(), "EClass", "eClass_" + n.getVarName());
+			
+			modelEContainerRel.put(metaTypeRel.getVarName(),metaTypeRel);
+			redRel.put(metaTypeRel.getVarName(),metaTypeRel);
+
+		});
+	}
 
 	@Override
 	public void useSPOSemantics(boolean spoSemantics) {
@@ -309,7 +330,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
 		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
 		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
-
+		
 		if (result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
@@ -347,7 +368,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				
 				while (result.hasNext()) {
 					var next = result.next();
-					coMatches.add(new NeoCoMatch(this.contextPattern, next, next.get("hash_id").toString()));
+					coMatches.add(new NeoCoMatch(this.contextPattern, next, next.get("match_id").toString()));
 				}
 				logger.debug(coMatches.toString());
 				return Optional.of(coMatches);
