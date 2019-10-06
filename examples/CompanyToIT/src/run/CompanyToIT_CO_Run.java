@@ -39,9 +39,9 @@ public class CompanyToIT_CO_Run {
 					);
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRules(), negativeConstraints);
+			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(), false);
 
-			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
+			var generator = new Generator<NeoMatch, NeoCoMatch>(//
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
@@ -49,7 +49,7 @@ public class CompanyToIT_CO_Run {
 					new SimpleLoggerMonitor());
 
 			var coAPI = new API_CompanyToIT_CO(builder);
-			generator.generate(coAPI.getAllRules());
+			generator.generate(coAPI.getAllRulesForCompanyToIT__CO());
 
 			if (checkOnly.isConsistent(solver))
 				logger.info("Your triple is consistent!");

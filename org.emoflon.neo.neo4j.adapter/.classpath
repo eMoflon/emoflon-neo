@@ -6,7 +6,7 @@
 			<attribute name="ignore_optional_problems" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/neo4j-java-driver-1.7.2.jar">
+	<classpathentry kind="lib" path="lib/neo4j-java-driver-1.7.2.jar" sourcepath="lib/neo4j-java-driver-1.7.2-javadoc.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/org.emoflon.neo.neo4j.adapter/lib/neo4j-java-driver-1.7.2-javadoc.jar!/"/>
 		</attributes>
