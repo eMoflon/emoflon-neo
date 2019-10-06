@@ -26,7 +26,7 @@ public class NeoDataPackageAdapter implements DataPackage {
 
 	@Override
 	public Collection<Match> getMatches() {
-		return matches.stream().map(m -> new NeoMatchAdapter(builder, m, rules)).collect(Collectors.toList());
+		return matches.streamAllMatches().map(m -> new NeoMatchAdapter(builder, m, rules)).collect(Collectors.toList());
 	}
 
 	@Override

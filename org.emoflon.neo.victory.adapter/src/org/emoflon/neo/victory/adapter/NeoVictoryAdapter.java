@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.ui.debug.api.DataProvider;
@@ -43,11 +44,15 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 	}
 
 	@Override
-	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
 		var selection = new ArrayList<NeoMatch>();
-		var selected = Victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
-		selection.add((NeoMatch) ((NeoMatchAdapter) selected).getWrappedMatch());
-		return selection;
+		var selected = (NeoMatchAdapter) Victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
+		selection.add((NeoMatch)selected.getWrappedMatch());
+		
+		var ruleName = selected.getWrappedMatch().getPattern().getName();
+		var rule = matches.getAllRulesToMatches().keySet().stream().filter(r -> r.getName().equals(ruleName)).findAny();
+		
+		return Map.of(rule.get(), selection);
 	}
 
 	public void run(Generator<NeoMatch, NeoCoMatch> generator, Collection<IRule<NeoMatch, NeoCoMatch>> rules) {
