@@ -3,6 +3,7 @@ package org.emoflon.neo.engine.generator;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -27,12 +28,18 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		rulesToMatches.get(rule).addAll(matches);
 	}
 
-	public Collection<IRule<M, C>> getRulesWithoutMatches() {
+	public List<IRule<M, C>> getRulesWithoutMatches() {
 		return rulesToMatches.keySet().stream()//
 				.filter(rule -> rulesToMatches.get(rule).isEmpty())//
-				.collect(Collectors.toSet());
+				.collect(Collectors.toList());
 	}
 
+	public List<IRule<M, C>> getRulesWithMatches() {
+		return rulesToMatches.keySet().stream()//
+				.filter(rule -> !rulesToMatches.get(rule).isEmpty())//
+				.collect(Collectors.toList());
+	}
+	
 	public void clear() {
 		rulesToMatches.forEach((r, matches) -> matches.clear());
 	}
@@ -47,5 +54,9 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	
 	public Map<IRule<M, C>, Collection<M>> getAllRulesToMatches(){
 		return Map.copyOf(rulesToMatches);
+	}
+	
+	public Stream<M> matchesForRule(IRule<M, C> rule){
+		return rulesToMatches.get(rule).stream();
 	}
 }

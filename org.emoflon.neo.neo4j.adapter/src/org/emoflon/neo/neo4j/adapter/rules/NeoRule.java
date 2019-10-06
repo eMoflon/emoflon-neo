@@ -383,4 +383,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		return contextPattern.isStillValid(matches);
 	}
 
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
