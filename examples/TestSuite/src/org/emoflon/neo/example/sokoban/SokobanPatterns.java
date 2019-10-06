@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.emoflon.neo.api.API_Common;
@@ -89,6 +90,115 @@ public class SokobanPatterns extends ENeoTest {
 		builder.executeQueryForSideEffect("MATCH (s:Sokoban) SET s:Block REMOVE s:Sokoban");
 		expectValidMatches(matches, matches.size() - 1);
 	}
+	
+	@Test 
+	public void  test_allEndFieldValid() {
+		var p = entities.getPattern_OneEndField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(2, matches.size());
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(2, matches.size());
+	}
+	
+	@Test 
+	public void  test_allEndFieldValidWithSideEffects() {
+		var p = entities.getPattern_OneEndField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(2, matches.size());
+		builder.executeQueryForSideEffect("MATCH (f:Field {endPos:true})-[:bottom]->(f2:Field {endPos:true}) SET f2.endPos = false");
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
+	}
+	
+	@Test 
+	public void  test_oneNormalField() {
+		var p = entities.getPattern_OneNormalField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(12, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(12, matches.size());
+	}
+	
+	@Test 
+	public void  test_oneNormalFieldWithSideEffects() {
+		var p = entities.getPattern_OneNormalField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(12, matches.size());
+		
+		builder.executeQueryForSideEffect("MATCH (f:Field {endPos:true})-[rel:right]->(f2:Field) DELETE rel");
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(10, matches.size());
+	}
+	
+	@Test 
+	public void  test_oneNormalFieldNeg() {
+		var p = entities.getPattern_OneNormalFieldNeg().matcher();
+		var matches = p.determineMatches();
+		assertEquals(4, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(4, matches.size());
+	}
+	
+	@Test 
+	public void  test_oneNormalFieldNegWithSideEffects() {
+		var p = entities.getPattern_OneNormalFieldNeg().matcher();
+		var matches = p.determineMatches();
+		assertEquals(4, matches.size());
+		
+		builder.executeQueryForSideEffect("MATCH (f:Field)-[:bottom]->(f2:Field) CREATE (f)-[:right]->(f2)");
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
+	}
 
 	@Test
 	public void test_OneBlock() {
@@ -121,7 +231,41 @@ public class SokobanPatterns extends ENeoTest {
 		assertEquals(2, p.matcher(mask).countMatches());
 		
 		mask = p.mask().setFEndPos(false);
-		assertEquals(14, p.matcher(mask).countMatches());
+		assertEquals(10, p.matcher(mask).countMatches());
+	}
+	
+	@Test
+	public void test_OneFieldWithMaskValid() {
+		var p = entities.getPattern_OneNormalField();
+		var mask = p.mask().setFEndPos(true);
+		
+		var matches = p.matcher(mask).determineMatches();
+		assertEquals(2, matches.size());
+		
+		var tempMatches = p.matcher().isStillValid(matches);
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(2, matches.size());
+		
+		
+		var mask2 = p.mask().setFEndPos(false);
+		var matches2 = p.matcher(mask2).determineMatches();
+		assertEquals(10, matches2.size());
+		
+		var tempMatches2 = p.matcher().isStillValid(matches2);
+		var validMatches2 = new ArrayList<NeoMatch>(matches2);
+		for(var match : matches2) {
+			if(tempMatches2.containsKey(match.getHashCode()) && !tempMatches2.get(match.getHashCode())) {
+				validMatches2.remove(match);
+			}
+		}
+		matches2 = validMatches2;
+		assertEquals(10, matches2.size());
 	}
 	
 	@Test
@@ -695,5 +839,77 @@ public class SokobanPatterns extends ENeoTest {
 			assertTrue(result.isPresent());
 		}
 		
+	}
+	
+	@Test 
+	public void  test_attrCondField() {
+		var p = entities.getPattern_AttrCondField().matcher();
+		var matches = p.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
+	}
+	
+	@Test 
+	public void  test_attrCondFieldCond() {
+		var p = entities.getPattern_AttrCondFieldZero().matcher();
+		var matches = p.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
+	}
+	
+	@Test 
+	public void  test_attrCondFieldCondZero2() {
+		var p = entities.getPattern_AttrCondFieldZero2().matcher();
+		var matches = p.determineMatches();
+		assertEquals(1, matches.size());
+		
+		var tempMatches = p.isStillValid(matches);
+		
+		var validMatches = new ArrayList<NeoMatch>(matches);
+		for(var match : matches) {
+			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+				validMatches.remove(match);
+			}
+		}
+		matches = validMatches;
+		assertEquals(1, matches.size());
+	}
+	
+	@Test
+	public void test_notExtenedIfElseConstraintWithNewAttributesOnly() {
+		var c = entities.getConstraint_IfFieldThenEndField();
+		assertFalse(c.isSatisfied());
+	}
+	
+	@Test
+	public void test_notExtenedIfElseConstraintWithInjectivityOnly() {
+		var c = entities.getConstraint_IfBoulderThenBlock();
+		assertFalse(c.isSatisfied());
+	}
+	
+	@Test
+	public void test_ifSokobanSelectedFigureThenSokobanOnField() {
+		var c = entities.getConstraint_IfSokobanSelectedFigureThenOnField();
+		assertTrue(c.isSatisfied());
 	}
 }

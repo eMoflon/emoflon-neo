@@ -1,4 +1,5 @@
 import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
 
 model ES {
 	andy:CEO {
@@ -28,5 +29,62 @@ model ES {
 	
 	marius:Employee {
 		.name : "Marius"
+	}
+}
+
+model ExampleTriple {
+	c:Company {
+		.name : "MiddleEarth"
+		-admin->a1
+		-admin->a2
+		-corr->it {
+			._type_ : "CompanyToIT"
+		}
+		-ceo->ceo
+	}
+	
+	ceo:CEO {
+		.name : "Galadriel"
+	}
+	
+	a1:Admin {
+		.name : "Sauron"
+		-ceo->ceo
+		-corr->r1 {
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	a2:Admin {
+		.name : "Aragorn"
+		-ceo->ceo
+		-corr->r2 {
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	// Trg
+	
+	it:IT {
+		.name : "MiddleEarth"
+		-router->r1
+		-router->r2
+		-network->n1
+		-network->n2
+	}
+	
+	r1:Router {
+		.name : "Radargast"
+		-network->n1
+	}
+	r2:Router {
+		.name : "Gandalf"
+		-network->n2
+	}
+	n1:Network {
+		.name : "Mordor"
+	}
+	n2:Network {
+		.name : "Gondor"
 	}
 }

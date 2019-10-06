@@ -2,6 +2,7 @@ package org.emoflon.neo.engine.api.patterns;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface IPattern<M extends IMatch> {
 	/**
@@ -49,4 +50,6 @@ public interface IPattern<M extends IMatch> {
 	default int countMatches() {
 		return determineMatches().size();
 	}
+	
+	Stream<String> getPatternElts();
 }

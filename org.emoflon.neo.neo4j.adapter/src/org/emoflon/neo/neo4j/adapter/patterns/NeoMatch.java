@@ -1,5 +1,7 @@
 package org.emoflon.neo.neo4j.adapter.patterns;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,14 +67,11 @@ public class NeoMatch implements IMatch {
 		return edgeIDs.get(rel.getVarName());
 	}
 
-	public Record getData() {
-		return pattern.getData(this);
-	}
-	
 	public Map<String, Object> getParameters() {
 		var map = new HashMap<String,Object>();
 		map.putAll(nodeIDs);
 		map.putAll(edgeIDs);
+		map.put("match_id", getHashCode());
 		return map;
 	}
 
@@ -106,5 +105,17 @@ public class NeoMatch implements IMatch {
 	@Override
 	public Map<String, Long> getEdgeIDs() {
 		return edgeIDs;
+	}
+	
+	public String getHashCode() {
+		return Integer.toString(this.hashCode());
+	}
+	
+	public static Collection<Record> getData(Collection<? extends NeoMatch> matches) {
+		if (matches.size() > 0) {
+			var pattern = (NeoPattern) matches.iterator().next().getPattern();
+			return pattern.getData(matches);
+		} else
+			return Collections.emptyList();
 	}
 }
