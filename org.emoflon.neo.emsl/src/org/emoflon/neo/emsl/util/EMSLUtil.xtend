@@ -5,6 +5,7 @@ import java.util.ArrayList
 import java.util.Collection
 import java.util.HashSet
 import java.util.List
+import java.util.Optional
 import java.util.Set
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.EObject
@@ -16,6 +17,7 @@ import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.emoflon.neo.emsl.EMSLStandaloneSetup
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
+import org.emoflon.neo.emsl.eMSL.BinaryExpression
 import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.DataType
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
@@ -34,7 +36,8 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
-import org.emoflon.neo.emsl.eMSL.BinaryExpression
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
+import java.time.LocalDate
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -80,9 +83,12 @@ class EMSLUtil {
 		loadEMSL_Spec(uri, rs)
 	}
 
-	def static loadEMSL_Spec(String uri, ResourceSet rs) {
+	def static Optional<EObject> loadEMSL_Spec(String uri, ResourceSet rs) {
+		if(uri === null || rs === null)
+			return Optional.empty
+			
 		val resource = rs.getResource(URI.createURI(uri), true)
-		resource.contents.get(0)
+		return Optional.of(resource.contents.get(0))
 	}
 
 	def static Set<MetamodelNodeBlock> thisAndAllSuperTypes(MetamodelNodeBlock block) {
@@ -108,6 +114,16 @@ class EMSLUtil {
 					return PrimitiveInt.cast(value).literal
 				case EBOOLEAN:
 					return PrimitiveBoolean.cast(value).isTrue
+				case ECHAR:
+					return PrimitiveString.cast(value).literal.charAt(0)
+				case ELONG:
+					return PrimitiveInt.cast(value).literal as long
+				case EFLOAT:
+					return PrimitiveDouble.cast(value).literal as float
+				case EDOUBLE:
+					return PrimitiveDouble.cast(value).literal
+				case EDATE:
+					return LocalDate.parse(PrimitiveString.cast(value).literal)
 				default:
 					throw new IllegalStateException("This literal has to be handled: " + value)
 			}
@@ -135,6 +151,14 @@ class EMSLUtil {
 					return "boolean"
 				case EDATE:
 					return "LocalDate"
+				case EDOUBLE:
+					return "double"
+				case EFLOAT:
+					return "float"
+				case ECHAR:
+					return "String"
+				case ELONG:
+					return "long"
 				default:
 					throw new IllegalStateException("This type has to be handled: " + type)
 			}
@@ -191,6 +215,10 @@ class EMSLUtil {
 
 	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type) {
 		thisAndAllSuperTypes(type).flatMap[t|t.properties].toSet
+	}
+
+	def static Collection<MetamodelRelationStatement> allRelationsOf(MetamodelNodeBlock type) {
+		thisAndAllSuperTypes(type).flatMap[t|t.relations].toSet
 	}
 
 	def static getAllTypes(ModelRelationStatement rel) {

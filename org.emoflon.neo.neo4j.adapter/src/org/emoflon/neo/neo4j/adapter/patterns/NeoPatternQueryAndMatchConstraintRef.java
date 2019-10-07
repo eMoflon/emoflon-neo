@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
@@ -16,6 +17,8 @@ import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
+	private static final Logger logger = Logger.getLogger(NeoPatternQueryAndMatchConstraintRef.class);
+	
 	protected NeoConstraint referencedConstraint;
 	protected boolean isNegated;
 
@@ -27,7 +30,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
-		logger.info("Searching matches for Pattern: " + getName() + " WHEN " + referencedConstraint.getName());
+		logger.debug("Searching matches for Pattern: " + getName() + " WHEN " + referencedConstraint.getName());
 
 		// collecting the data
 		var condData = referencedConstraint.getConditionData();
@@ -97,7 +100,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 		matches.forEach(match -> list.add(match.getParameters()));
 		
 		var map = new HashMap<String,Object>();
-		map.put("matches",(Object)list);
+		map.put("matches",list);
 		
 		// Create Query
 		var helperNodes = new ArrayList<String>(queryData.getAllElements());
@@ -112,7 +115,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 		var results = result.list();
 		var hashCode = new ArrayList<String>();
 		for(var r : results) {
-			hashCode.add(r.asMap().get("hash_id").toString());
+			hashCode.add(r.asMap().get("match_id").toString());
 		}
 		
 		var returnMap = new HashMap<String,Boolean>();

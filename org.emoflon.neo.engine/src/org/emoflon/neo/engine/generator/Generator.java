@@ -20,29 +20,50 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	private IMonitor progressMonitor;
 
 	public Generator(//
-			ITerminationCondition pTerminationCondition, //
-			IRuleScheduler<M, C> pRuleScheduler, //
-			IUpdatePolicy<M, C> pUpdatePolicy, //
-			IMatchReprocessor<M, C> pMatchReprocessor, //
-			IMonitor pProgressMonitor) {
-		terminationCondition = pTerminationCondition;
-		ruleScheduler = pRuleScheduler;
-		updatePolicy = pUpdatePolicy;
-		matchReprocessor = pMatchReprocessor;
-		progressMonitor = pProgressMonitor;
+			ITerminationCondition terminationCondition, //
+			IRuleScheduler<M, C> ruleScheduler, //
+			IUpdatePolicy<M, C> updatePolicy, //
+			IMatchReprocessor<M, C> matchReprocessor, //
+			IMonitor progressMonitor) {
+		this.terminationCondition = terminationCondition;
+		this.ruleScheduler = ruleScheduler;
+		this.updatePolicy = updatePolicy;
+		this.matchReprocessor = matchReprocessor;
+		this.progressMonitor = progressMonitor;
 	}
 
-	public void generate(Collection<IRule<M, C>> pAllRules) {
-		MatchContainer<M, C> matchContainer = new MatchContainer<>(pAllRules);
+	public void generate(Collection<IRule<M, C>> allRules) {
+		MatchContainer<M, C> matchContainer = new MatchContainer<>(allRules);
 		while (!terminationCondition.isReached()) {
-			ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor)//
-					.forEach((rule, count) -> rule.determineMatches(count)//
-							.forEach((match) -> matchContainer.add(match, rule)));
-
-			updatePolicy.selectMatches(matchContainer, progressMonitor)//
-					.forEach((match) -> matchContainer.getRuleFor(match).apply(match));
-
+			// 1. Schedule rules for pattern matching
+			progressMonitor.startRuleScheduling();
+			var scheduledRules = ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor);
+			progressMonitor.finishRuleScheduling();
+			
+			// 2. Perform pattern matching
+			progressMonitor.startPatternMatching();
+			scheduledRules.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
+			progressMonitor.finishPatternMatching();
+			
+			// 3. Match selection
+			progressMonitor.startMatchSelection();
+			var selectedMatches = updatePolicy.selectMatches(matchContainer, progressMonitor);
+			progressMonitor.finishMatchSelection();
+			
+			// 4. Rule application
+			progressMonitor.startRuleApplication();
+			selectedMatches.forEach((rule, matches) -> rule.applyAll(matches));
+			progressMonitor.finishRuleApplication();
+			
+			// 5. Match reprocessing
+			progressMonitor.startReprocessingMatches();
 			matchReprocessor.reprocess(matchContainer, progressMonitor);
+			progressMonitor.finishReprocessingMatches();
+			
+			// Heartbeat for continuous feedback
+			progressMonitor.heartBeat();
 		}
+		
+		progressMonitor.finishGeneration();
 	}
 }

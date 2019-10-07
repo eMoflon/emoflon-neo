@@ -15,11 +15,11 @@ import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 
 public class NeoConstraintFactory {
 	public static NeoConstraint createNeoConstraint(Constraint constraint) {
-		return createNeoConstraint(constraint, new EmptyBuilder(), new NeoQueryData(), new EmptyMask());
+		return createNeoConstraint(constraint, new EmptyBuilder(), new NeoQueryData(false), new EmptyMask());
 	}
 
 	public static NeoConstraint createNeoConstraint(Constraint constraint, IBuilder builder) {
-		return createNeoConstraint(constraint, builder, new NeoQueryData(), new EmptyMask());
+		return createNeoConstraint(constraint, builder, new NeoQueryData(false), new EmptyMask());
 	}
 
 	public static NeoConstraint createNeoConstraint(Constraint constraint, IBuilder builder, NeoQueryData queryData,

@@ -32,10 +32,15 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	}
 
 	void useSPOSemantics(boolean spoSemantics);
-
-	Stream<String> getContextElts();
+	
+	@Override
+	default Stream<String> getPatternElts() {
+		return getContextElts();
+	}
 
 	Stream<String> getCreatedElts();
+	
+	Stream<String> getContextElts();
 	
 	boolean isStillApplicable(M m);
 

@@ -1,0 +1,152 @@
+import "platform:/resource/FacebookToInstagramFASE/src/Languages.msl"
+
+grammar FacebookToInstagramGrammarNAC__GEN {
+	NetworkToNetwork
+	UserToUser
+	RequestFriendship
+	AcceptFriendship
+}
+
+rule NetworkToNetwork {
+	++fl:FacebookLanguage.Network {
+		++-corr->il
+		{
+			._type_ := "NetworkToNetwork"
+		}
+	}
+
+	++il:InstagramLanguage.Network {
+	}
+}
+
+rule UserToUser {
+	++fu:FacebookLanguage.User {
+		++-corr->iu
+		{
+			._type_ := "FbUserToInUser"
+		}
+	}
+	
+	fn:FacebookLanguage.Network {
+		++-users->fu
+		-corr->in
+		{
+			._type_ : "NetworkToNetwork"
+		}
+	}
+
+	++iu:InstagramLanguage.User {
+	}
+	
+	in:InstagramLanguage.Network {
+		++-users->iu
+	}
+}
+
+rule RequestFriendship {
+	fu1:FacebookLanguage.User {
+		-corr->iu1
+		{
+			._type_ : "FbUserToInUser"
+		}
+	}
+	
+	fu2:FacebookLanguage.User {
+		-corr->iu2
+		{
+			._type_ : "FbUserToInUser"
+		}
+	}
+	
+	fn:FacebookLanguage.Network {
+		-users->fu1
+		-users->fu2
+		-corr->in
+		{
+			._type_ : "NetworkToNetwork"
+		}
+	}
+
+	in:InstagramLanguage.Network {
+		-users->iu1
+		-users->iu2
+	}
+	
+	iu2:InstagramLanguage.User {
+		++-follows->iu1
+	}
+	
+	iu1:InstagramLanguage.User {
+	}
+} when noFollowership
+
+rule AcceptFriendship {
+	fu1:FacebookLanguage.User {
+		-corr->iu1
+		{
+			._type_ : "FbUserToInUser"
+		}
+	}
+	
+	fu2:FacebookLanguage.User {
+		-corr->iu2
+		{
+			._type_ : "FbUserToInUser"
+		}
+	}
+	
+	fn:FacebookLanguage.Network {
+		-users->fu1
+		-users->fu2
+		-corr->in
+		{
+			._type_ : "NetworkToNetwork"
+		}
+	}
+	
+	++fri:Friendship {
+		++-friends->fu1
+		++-friends->fu2
+	}
+
+	iu1:InstagramLanguage.User {
+		-follows->iu2
+	}
+	
+	iu2:InstagramLanguage.User {
+		++-follows->iu1
+	}
+	
+	in:InstagramLanguage.Network {
+		-users->iu1
+		-users->iu2
+	}
+} when noDouble
+
+constraint noDouble = noDoubleFollowershipInstagram && noDoubleFriendshipFacebook
+constraint noDoubleFollowershipInstagram = forbid DoubleFollowershipInstagram
+constraint noDoubleFriendshipFacebook = forbid DoubleFriendshipFacebook
+
+constraint noSingleFollowershipInstagram = forbid SingleFollowershipInstagram
+constraint noFollowership = noDoubleFollowershipInstagram && noSingleFollowershipInstagram
+
+pattern DoubleFriendshipFacebook {
+	fu1 : FacebookLanguage.User
+	
+	fu2 : FacebookLanguage.User
+	
+	other : Friendship {
+		-friends-> fu1
+		-friends-> fu2
+	}
+}
+
+pattern DoubleFollowershipInstagram {
+	iu1 : InstagramLanguage.User
+	
+	iu2 : InstagramLanguage.User {
+		-follows-> iu1
+	}
+}
+
+pattern SingleFollowershipInstagram -> DoubleFollowershipInstagram[iu1->iu2, iu2->iu1]

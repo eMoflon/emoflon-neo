@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoPositiveConstraint;
@@ -15,7 +16,7 @@ import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.neo4j.driver.v1.exceptions.DatabaseException;
 
 public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
-
+	private static final Logger logger = Logger.getLogger(NeoPatternQueryAndMatchPositiveConstraint.class);
 	protected NeoPositiveConstraint pcond;
 
 	@Override
@@ -32,7 +33,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 	@Override
 	public Collection<NeoMatch> determineMatches(int limit) {
 		// Condition is positive Constraint (ENFORCE xyz)
-		logger.info("Searching matches for Pattern: " + getName() + " ENFORCE " + pcond.getName());
+		logger.debug("Searching matches for Pattern: " + getName() + " ENFORCE " + pcond.getName());
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),
@@ -60,7 +61,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 	@Override
 	public boolean isStillValid(NeoMatch m) {
 		// Condition is positive Constraint (ENFORCE xyz)
-		logger.info("Check if match for " + getName() + " WHEN " + pcond.getName() + " is still valid");
+		logger.debug("Check if match for " + getName() + " WHEN " + pcond.getName() + " is still valid");
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
@@ -80,15 +81,14 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 	
 	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
-		
 		// Condition is positive Constraint (ENFORCE xyz)
-		logger.info("Check if match for " + getName() + " WHEN " + pcond.getName() + " is still valid");
+		logger.debug("Check if match for " + getName() + " WHEN " + pcond.getName() + " is still valid");
 		
 		var list = new ArrayList<Map<String,Object>>();
 		matches.forEach(match -> list.add(match.getParameters()));
 		
 		var map = new HashMap<String,Object>();
-		map.put("matches",(Object)list);
+		map.put("matches",list);
 		
 		// Create Query
 		var helperNodes = new ArrayList<String>(queryData.getAllElements());
@@ -103,7 +103,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 		var results = result.list();
 		var hashCode = new ArrayList<String>();
 		for(var r : results) {
-			hashCode.add(r.asMap().get("hash_id").toString());
+			hashCode.add(r.asMap().get("match_id").toString());
 		}
 		
 		var returnMap = new HashMap<String,Boolean>();

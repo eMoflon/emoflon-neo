@@ -18,6 +18,6 @@ public class NeoRuleFactory {
 	}
 
 	public static NeoRule createNeoRule(Rule r, IBuilder builder, NeoMask mask) {
-		return new NeoRule(r, builder, mask, new NeoQueryData());
+		return new NeoRule(r, builder, mask, new NeoQueryData(false));
 	}
 }
