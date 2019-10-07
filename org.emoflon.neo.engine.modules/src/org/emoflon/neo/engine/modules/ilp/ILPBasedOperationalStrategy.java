@@ -41,7 +41,6 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private int auxVariableCounter;
 	protected Map<IMatch, Integer> matchToWeight;
 	private BinaryILPProblem ilpProblem;
-	private boolean optimise = true;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 	protected Collection<INegativeConstraint> negativeConstraints;
@@ -62,9 +61,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	protected void computeILPProblem(boolean optimise) {
-		this.optimise = optimise;
-
+	protected void computeILPProblem() {
 		// ILP definition
 		constraintCounter = 0;
 		variableCounter = 0;
@@ -104,7 +101,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	@Override
-	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor progressMonitor) {
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor progressMonitor) {
 		logger.debug("Registering all matches...");
 
 		// Precedence information
@@ -137,9 +135,6 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		for (var entry : elementToCreatingMatches.entrySet()) {
 			var creatingMatches = entry.getValue();
 			var dependentMatches = elementToDependentMatches.getOrDefault(entry.getKey(), Collections.emptySet());
-
-			if (!optimise && creatingMatches.size() == 1)
-				ilpProblem.fixVariable(varNameFor(creatingMatches.iterator().next()), true);
 
 			if (!creatingMatches.isEmpty() && !dependentMatches.isEmpty()) {
 				// If no creator is chosen, no dependent can be chosen
@@ -209,6 +204,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	private String varNameFor(IMatch m) {
+		if (!matchToId.containsKey(m)) {
+			throw new IllegalArgumentException(
+					"You're requesting a variable name for an id that hasn't been registered yet: " + m.getPattern());
+		}
+
 		return matchToId.get(m);
 	}
 
@@ -221,8 +221,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	protected void handleConstraintViolations() {
+		long tic = System.currentTimeMillis();
+		logger.info("Checking for constraint violations...");
 		var violations = negativeConstraints.stream().flatMap(nc -> nc.getViolations().stream());
-
+		logger.info("Completed in " + (System.currentTimeMillis() - tic)/1000.0 + "s");
+		
 		violations.forEach(v -> {
 			var elements = extractIDs(v.getPattern().getPatternElts(), v);
 
@@ -256,13 +259,9 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	public Optional<Set<Long>> determineConsistentElements(SupportedILPSolver suppSolver) throws Exception {
-		return determineConsistentElements(suppSolver, true);
-	}
-
-	protected Optional<Set<Long>> determineConsistentElements(SupportedILPSolver suppSolver, boolean optimise)
+	public Optional<Set<Long>> determineConsistentElements(SupportedILPSolver suppSolver)
 			throws Exception {
-		computeILPProblem(optimise);
+		computeILPProblem();
 		var solver = ILPFactory.createILPSolver(ilpProblem, suppSolver);
 
 		logger.debug(ilpProblem);
@@ -279,9 +278,9 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			return Optional.empty();
 	}
 
-	protected Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver, boolean optimise)
+	public Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver)
 			throws Exception {
-		var consistentElements = determineConsistentElements(suppSolver, optimise);
+		var consistentElements = determineConsistentElements(suppSolver);
 
 		if (consistentElements.isPresent()) {
 			var allElements = new HashSet<>(elementToCreatingMatches.keySet());
@@ -290,10 +289,6 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		} else {
 			return Optional.empty();
 		}
-	}
-
-	public Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
-		return determineInconsistentElements(suppSolver, true);
 	}
 
 	/**
