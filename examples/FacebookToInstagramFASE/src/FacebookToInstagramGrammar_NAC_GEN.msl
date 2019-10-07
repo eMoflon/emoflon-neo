@@ -1,6 +1,6 @@
 import "platform:/resource/FacebookToInstagramFASE/src/Languages.msl"
 
-grammar FacebookToInstagramGrammar__GEN {
+grammar FacebookToInstagramGrammarNAC__GEN {
 	NetworkToNetwork
 	UserToUser
 	RequestFriendship
