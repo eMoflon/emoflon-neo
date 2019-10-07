@@ -31,7 +31,7 @@ public class CompanyToIT_CO_Run {
 		try {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			Collection<IConstraint> negativeConstraints = Collections.emptyList();
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRules(), negativeConstraints);
+			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(), negativeConstraints);
 
 			var generator = new Generator<NeoMatch, NeoCoMatch>(//
 					new OneShotTerminationCondition(), //

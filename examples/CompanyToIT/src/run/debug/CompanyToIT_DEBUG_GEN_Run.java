@@ -7,7 +7,7 @@ import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
-import org.emoflon.neo.engine.modules.monitors.SimpleLoggerMonitor;
+import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.NoTerminationCondition;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
@@ -35,7 +35,7 @@ public class CompanyToIT_DEBUG_GEN_Run {
 					new AllRulesAllMatchesScheduler(), //
 					adapter, //
 					new ParanoidNeoReprocessor(), //
-					new SimpleLoggerMonitor());
+					new HeartBeatAndReportMonitor());
 
 			adapter.run(generator, genAPI.getAllRulesForCompanyToIT__GEN());
 
