@@ -1,5 +1,6 @@
 package run;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -8,6 +9,7 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_CO;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
@@ -31,12 +33,14 @@ public class FacebookToInstagramFASE_CO_Run {
 			var api = new API_Transformations(builder);
 			api.exportMetamodelsForFacebookToInstagramGrammar();
 
-			var negativeConstraints = 
-					List.of(api.getConstraint_NoDoubleFollowership(),					
-					api.getConstraint_NoDoubleFriendship());
+			Collection<IConstraint> negativeConstraints = List.of(//
+					api.getConstraint_NoDoubleFollowership(), //
+					api.getConstraint_NoDoubleFriendship()//
+			);
 
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(), negativeConstraints);
+			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
+					negativeConstraints);
 
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
 					new OneShotTerminationCondition(), //

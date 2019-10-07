@@ -41,7 +41,7 @@ public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
 	@Override
 	public Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
 		if (result == null)
-			result = super.determineConsistentElements(suppSolver);
+			result = super.determineInconsistentElements(suppSolver);
 
 		return result;
 	}
