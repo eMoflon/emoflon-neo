@@ -1,5 +1,8 @@
 package org.emoflon.neo.engine.modules.monitors;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 
@@ -30,9 +33,9 @@ public class HeartBeatAndReportMonitor implements IMonitor {
 
 		public double getTimeElapsedInSeconds() {
 			var now = System.currentTimeMillis();
-			return (now - start)/1000.0;
+			return (now - start) / 1000.0;
 		}
-		
+
 		public double getTimeSpentInSeconds() {
 			return timeSpentInSeconds;
 		}
@@ -100,13 +103,15 @@ public class HeartBeatAndReportMonitor implements IMonitor {
 
 	@Override
 	public void heartBeat() {
-		if(heartBeats == 0)
+		if (heartBeats == 0)
 			timerForHeartBeat.start();
-		
+
 		heartBeats++;
 
 		if (timerForHeartBeat.getTimeElapsedInSeconds() >= interval) {
-			logger.info("Heartbeats per second: " + heartBeats / timerForHeartBeat.getTimeElapsedInSeconds());
+			DecimalFormat df = new DecimalFormat("#.##");
+			df.setRoundingMode(RoundingMode.CEILING);
+			logger.info("Heartbeats/second: " + df.format(heartBeats / timerForHeartBeat.getTimeElapsedInSeconds()));
 			heartBeats = 0;
 		}
 	}
@@ -114,7 +119,7 @@ public class HeartBeatAndReportMonitor implements IMonitor {
 	@Override
 	public void finishGeneration() {
 		logger.debug("Finished generation.");
-		
+
 		synchronized (logger) {
 			logger.info("");
 			logger.info("********** Generation Report ************");
@@ -126,6 +131,6 @@ public class HeartBeatAndReportMonitor implements IMonitor {
 			logger.info("********** Generation Report ************");
 			logger.info("");
 		}
- 	}
+	}
 
 }
