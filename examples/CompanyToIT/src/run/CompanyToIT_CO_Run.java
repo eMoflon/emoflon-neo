@@ -50,8 +50,6 @@ public class CompanyToIT_CO_Run {
 				logger.info("Your triple is consistent!");
 			else {
 				logger.info("Your triple is inconsistent!");
-				
-				logger.info("Now trying to determine inconsistent elements (this might take much longer):");
 				var inconsistentElements = checkOnly.determineInconsistentElements(solver);
 				logger.info(inconsistentElements.get().size() + " elements of your triple are inconsistent!");
 			}
