@@ -24,15 +24,14 @@ public class NeoNode {
 	 * @param varName   the variable used later in Cypher
 	 */
 	public NeoNode(Collection<String> classTypes, String varName) {
-		this.classTypes = classTypes;
+		this.classTypes = new ArrayList<>(classTypes);
 		this.varName = varName;
 		this.properties = new ArrayList<>();
 		this.relations = new ArrayList<>();
 	}
-	
+
 	public NeoNode(String classType, String varName) {
-		super();
-		this.classTypes = new ArrayList<String>();
+		this.classTypes = new ArrayList<>();
 		this.classTypes.add(classType);
 		this.varName = varName;
 		this.properties = new ArrayList<>();
@@ -90,13 +89,13 @@ public class NeoNode {
 			List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
 		this.relations.add(new NeoRelation(this, varName, relTypes, lower, upper, props, toNodeLabel, toNodeVar));
 	}
-	
+
 	public void addRelation(NeoRelation rel) {
 		this.relations.add(rel);
 	}
-	
+
 	public void addLabel(String label) {
 		classTypes.add(label);
 	}
-	
+
 }

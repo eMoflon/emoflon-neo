@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
@@ -18,15 +19,26 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
  * random.
  */
 public class RandomSingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
+	
+	private static Logger logger = Logger.getLogger(RandomSingleMatchUpdatePolicy.class);
+	
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
 			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor progressMonitor) {
 		Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selection = new HashMap<>();
 		
-		var lst = matches.stream().collect(Collectors.toList());
-		var entry = lst.get((int) Math.random()*lst.size());
-		selection.put(entry.getKey(), entry.getValue());
-	
+		var rules = matches.getRulesWithMatches();
+		var randomRule = rules.get((int) (Math.random()*rules.size()));
+		
+		logger.debug("Chose: " + randomRule + " from " + rules);
+		
+		var matchesOfRule = matches.matchesForRule(randomRule).collect(Collectors.toList());
+		var randomMatch = matchesOfRule.get((int) (Math.random()*matchesOfRule.size()));
+		
+		logger.debug("Chose randomly from " + matchesOfRule.size() + " matches");
+		
+		selection.put(randomRule, List.of(randomMatch));
+		
 		return selection;
 	}
 }

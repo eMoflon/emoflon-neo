@@ -35,13 +35,35 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	public void generate(Collection<IRule<M, C>> allRules) {
 		MatchContainer<M, C> matchContainer = new MatchContainer<>(allRules);
 		while (!terminationCondition.isReached()) {
-			ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor)//
-					.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
-
-			updatePolicy.selectMatches(matchContainer, progressMonitor)//
-					.forEach((rule, matches) -> rule.applyAll(matches));
-
+			// 1. Schedule rules for pattern matching
+			progressMonitor.startRuleScheduling();
+			var scheduledRules = ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor);
+			progressMonitor.finishRuleScheduling();
+			
+			// 2. Perform pattern matching
+			progressMonitor.startPatternMatching();
+			scheduledRules.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
+			progressMonitor.finishPatternMatching();
+			
+			// 3. Match selection
+			progressMonitor.startMatchSelection();
+			var selectedMatches = updatePolicy.selectMatches(matchContainer, progressMonitor);
+			progressMonitor.finishMatchSelection();
+			
+			// 4. Rule application
+			progressMonitor.startRuleApplication();
+			selectedMatches.forEach((rule, matches) -> rule.applyAll(matches));
+			progressMonitor.finishRuleApplication();
+			
+			// 5. Match reprocessing
+			progressMonitor.startReprocessingMatches();
 			matchReprocessor.reprocess(matchContainer, progressMonitor);
+			progressMonitor.finishReprocessingMatches();
+			
+			// Heartbeat for continuous feedback
+			progressMonitor.heartBeat();
 		}
+		
+		progressMonitor.finishGeneration();
 	}
 }
