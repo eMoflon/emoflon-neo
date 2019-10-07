@@ -115,3 +115,17 @@ examples/GameOfLife/src-gen/org/emoflon/neo/api/spec/API_Errors.java
 org.emoflon.neo.victory.adapter/bin/org/emoflon/neo/victory/adapter/.MatchQuery.java._trace
 org.emoflon.neo.victory.adapter/xtend-gen/org/emoflon/neo/victory/adapter/.MatchQuery.java._trace
 examples/TestSuite/src-gen/org/emoflon/neo/api/API_NeoCore.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_GEN.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_FWD.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_CO.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_CC.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_BWD.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/API_Transformations.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/API_Languages.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/API_FacebookToInstagramGrammar_NAC_GEN.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/API_Common.java
+examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_BWD.msl
+examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_CC.msl
+examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_CO.msl
+examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_FWD.msl
+examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_GEN.msl
