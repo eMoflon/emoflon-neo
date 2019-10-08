@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.emoflon.neo.engine.modules
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
  gurobi,
+ org.emoflon.neo.engine.modules,
  org.emoflon.neo.engine.modules.ilp,
  org.emoflon.neo.engine.modules.matchreprocessors,
  org.emoflon.neo.engine.modules.monitors,

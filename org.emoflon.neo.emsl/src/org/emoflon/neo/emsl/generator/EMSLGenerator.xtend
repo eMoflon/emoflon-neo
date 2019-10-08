@@ -492,7 +492,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 	
 	dispatch def generateAccess(TripleRule tr, int index){
-		'''/* No API at the moment */'''
+		'''public static String «tr.type.name»_«tr.name» = "«tr.name»";'''
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
