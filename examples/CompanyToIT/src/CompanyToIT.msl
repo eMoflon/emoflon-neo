@@ -70,6 +70,18 @@ tripleRule AdminToRouterRule : CompanyToIT {
 		++ admin <-:AdminToRouter-> router
 		company <-:CompanyToIT-> it
 	}
+} forbid src(AlreadyHasAnAdmin)
+
+pattern AlreadyHasAnAdmin {
+	company:Company {
+		-admin->other
+	}
+	
+	other:Admin {
+		-ceo->ceo
+	}
+	
+	ceo:CEO
 }
 
 tripleRule EmployeeToPCRule : CompanyToIT {
