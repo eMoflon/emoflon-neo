@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <psf version="2.0">
 <provider id="org.eclipse.egit.core.GitProvider">
+<project reference="1.0,https://github.com/eMoflon/emoflon-ibex-ui.git,master,org.emoflon.ibex.tgg.ui.debug"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.emf"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.emsl"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.emsl.ide"/>
@@ -9,5 +10,6 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.engine.modules"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.neo4j.adapter"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.neocore"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,org.emoflon.neo.victory.adapter"/>
 </provider>
 </psf>

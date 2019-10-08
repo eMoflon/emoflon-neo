@@ -71,7 +71,7 @@ public class NeoMatch implements IMatch {
 		var map = new HashMap<String,Object>();
 		map.putAll(nodeIDs);
 		map.putAll(edgeIDs);
-		map.put("hash_id", getHashCode());
+		map.put("match_id", getHashCode());
 		return map;
 	}
 

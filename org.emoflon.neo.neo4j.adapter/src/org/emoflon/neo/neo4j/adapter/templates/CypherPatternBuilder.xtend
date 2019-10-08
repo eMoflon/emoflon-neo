@@ -345,7 +345,7 @@ class CypherPatternBuilder {
 		'''RETURN TRUE'''
 	}
 	def static String isStillValid_returnQueryCollection() {
-		'''RETURN matches.hash_id as hash_id'''
+		'''RETURN matches.match_id as match_id'''
 	}
 
 	/*****************************
@@ -608,7 +608,7 @@ class CypherPatternBuilder {
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
 	 	«ruleExecution_setQuery(attrAsgn)»
-	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
+	 	«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«ELSE»RETURN TRUE«ENDIF»
 	 	
 	 	'''
 	 	
@@ -626,7 +626,7 @@ class CypherPatternBuilder {
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
 	 	«ruleExecution_setQuery(attrAsgn)»
-	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«IF nodesK.size>0 || nodesR.size>0»,«ENDIF» matches.hash_id as hash_id
+	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»,«ENDIF» matches.match_id as match_id
 	 	
 	 	'''
 	 	
