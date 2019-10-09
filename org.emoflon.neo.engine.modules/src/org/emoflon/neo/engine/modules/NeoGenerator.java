@@ -60,7 +60,6 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 						paramValues.put(param.getName(), parameterValueGenerator.generateValueFor(param.getName()));
 //					prop.getType().getType() gets the DataType. Do we want to use this for more type safety?
 
-					// TODO what exactly does the mask need?
 					mask.maskAttribute(nodeBlock.getName() + "." + prop.getType().getName(),
 							paramValues.get(param.getName()));
 				}
