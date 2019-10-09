@@ -9,19 +9,18 @@ import java.util.Optional;
 
 import org.emoflon.neo.api.API_ChessBoard;
 import org.emoflon.neo.api.API_ChessPatterns;
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_FigureMoves;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.Test;
 
 class ChessTests extends ENeoTest {
 
-	private API_FigureMoves figureMoves = new API_FigureMoves(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
-	private API_ChessBoard models = new API_ChessBoard(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
-	private API_ChessPatterns patterns = new API_ChessPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_FigureMoves figureMoves = new API_FigureMoves(builder);
+	private API_ChessBoard models = new API_ChessBoard(builder);
+	private API_ChessPatterns patterns = new API_ChessPatterns(builder);
 	
 	@Test
 	void test_AllDiagonalReferences() {

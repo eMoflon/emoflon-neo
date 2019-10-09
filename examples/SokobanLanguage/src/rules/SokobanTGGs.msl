@@ -16,18 +16,15 @@ tripleGrammar SokobanImportExport {
 	}
 	
 	rules {
-		// BoardToBoardRule
 		BoardEndEntryRule
 		BoardNormalEntryRule
-		// EndRule
-		// NormalRule
-		// AllOtherFields
-		AllOtherFieldsEnd
-		AllOtherFieldsNormal
-		// FirstRowAllCols
+		
 		FirstColAllRows
 		FirstColAllRowsEnd
 		FirstColAllRowsNormal
+
+		AllOtherFieldsEnd
+		AllOtherFieldsNormal		
 	}
 }
 

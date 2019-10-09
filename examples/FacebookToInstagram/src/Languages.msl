@@ -26,17 +26,7 @@ metamodel InstagramLanguage {
 	
 	User {
 		.name : EString
-		<+>-followerships(0..1)-> Followership
+		-follows(0..*)-> User
 	}
-	
-	Followership {
-		<+>-to(0..1)-> To
-		<+>-from(0..1)-> From
-	}
-	
-	To {
-		-follows(0..*)-> From
-	}
-	
-	From
+ 	
 }

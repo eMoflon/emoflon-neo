@@ -7,11 +7,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
@@ -64,12 +61,6 @@ public class ENeoConsole extends AppenderSkeleton {
 
 	private void revealConsole(MessageConsole console) throws PartInitException {
 		String id = IConsoleConstants.ID_CONSOLE_VIEW;
-
-		if (activePage == null) {
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			activePage = win.getActivePage();
-		}
 
 		if (activePage != null) {
 			IConsoleView view = (IConsoleView) activePage.showView(id);

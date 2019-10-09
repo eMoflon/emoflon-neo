@@ -55,13 +55,13 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 		return Map.of(rule.get(), selection);
 	}
 
-	public void run(Generator<NeoMatch, NeoCoMatch> generator, Collection<IRule<NeoMatch, NeoCoMatch>> rules) {
+	public void run(Generator<NeoMatch, NeoCoMatch> generator) {
 		Victory.create(this);
 
 		new Thread("Data provider thread") {
 			@Override
 			public void run() {
-				generator.generate(rules);
+				generator.generate();
 			};
 		}.start();		
 		

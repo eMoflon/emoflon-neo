@@ -20,4 +20,8 @@ public class NeoRuleFactory {
 	public static NeoRule createNeoRule(Rule r, IBuilder builder, NeoMask mask) {
 		return new NeoRule(r, builder, mask, new NeoQueryData(false));
 	}
+	
+	public static NeoRule copyNeoRuleWithNewMask(NeoRule nr, NeoMask mask) {
+		return createNeoRule(nr.getEMSLRule(), nr.getBuilder(), mask);
+	}
 }

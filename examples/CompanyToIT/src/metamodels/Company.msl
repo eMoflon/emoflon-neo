@@ -36,13 +36,19 @@ pattern CEOOfMultipleCompanies {
 constraint CEOOfMultipleCompanies = forbid CEOOfMultipleCompanies
 
 pattern MultipleAdmins {
-	a1:Admin
-	a2:Admin
+	a1:Admin {
+		-ceo->ceo
+	}
+	a2:Admin {
+		-ceo->ceo
+	}
 	
 	c:Company {
 		-admin->a1
 		-admin->a2
 	}
+	
+	ceo:CEO
 }
 
 constraint MultipleAdmins = forbid MultipleAdmins
