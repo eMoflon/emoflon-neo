@@ -29,9 +29,6 @@ tripleGrammar FacebookToInstagramGrammar {
 		IgnoreInterNetworkFollowers
 		
 		// Ignore all extra relationships
-		UserRelationIgnoreRule
-
-		// Followers
 		FriendsParentsIgnoreRule
 		FriendsSpouseIgnoreRule
 		FriendsSiblingsIgnoreRule		
@@ -49,27 +46,9 @@ abstract tripleRule Followers : FacebookToInstagramGrammar {
 	}
 	
 	target {
-		iu : User {
-			-followerships-> fou
-		}
+		iu : User 
 		
-		fou : Followership {
-			-from-> fru
-		}
-		
-		fru : From
-		
-		in : User {
-			-followerships-> fon
-		}
-		
-		fon : Followership {
-			-to-> ton
-		}
-		
-		ton : To {
-			++ -follows-> fru
-		}
+		in : User 
 	}
 	
 	correspondence {
@@ -93,17 +72,9 @@ tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers
 	}
 	
 	target {
-		fou : Followership {
-			-to-> tou
+		iu : User {
+			++ -follows->$in
 		}
-		
-		tou : To
-		
-		fon : Followership {
-			-from-> frn
-		}
-		
-		frn : From
 	}
 } forbid src(noDoubleFriendshipFacebook) && trg(noDoubleFollowershipInstagram)
 
@@ -119,14 +90,14 @@ pattern noDoubleFriendshipFacebook {
 }
 
 pattern noDoubleFollowershipInstagram {
-	tou : To {
-		-follows-> frn
+	in : InstagramLanguage.User {
+		-follows-> iu
 	}
 	
-	frn : From
+	iu : InstagramLanguage.User
 }
 
-tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {
+abstract tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {
 	source {
 		fu : User
 		
@@ -164,38 +135,22 @@ tripleRule IgnoreInterNetworkFollowers : FacebookToInstagramGrammar -> Followers
 			-users-> $fu
 		}
 	}
+	
+	target {	
+		in : User {
+			++ -follows-> $iu
+		}
+	}
 }
 
 tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
 	target {
 		iu : User {
-			-followerships-> fou
+			-follows-> in
 		}
-		
-		fou : Followership {
-			-to-> tou
-			-from-> fru
-		}
-		
-		tou : To {
-			++ -follows-> frn
-		}
-		
-		fru : From
 		
 		in : User {
-			-followerships-> fon
-		}
-		
-		fon : Followership {
-			-to-> ton
-			-from-> frn
-		}
-		
-		frn : From
-		
-		ton : To {
-			-follows-> fru
+			++ -follows-> iu
 		}
 	}
 }
@@ -243,18 +198,7 @@ tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {
 	}
 	
 	target {
-		++ ilu : User {
-			++ -followerships-> fo
-		}
-		
-		++ fo : Followership {
-			++ -to-> to
-			++ -from-> fr
-		}
-		
-		++ to : To
-		
-		++ fr : From
+		++ ilu : User
 	}
 	
 	correspondence {
