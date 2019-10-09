@@ -6,7 +6,7 @@ public class StringValueGenerator implements IParameterValueGenerator {
 
 	@Override
 	public Object generateValueFor(String parameterName) {
-		return "value";
+		return LoremIpsum.getInstance().randomWord();
 	}
 
 }
