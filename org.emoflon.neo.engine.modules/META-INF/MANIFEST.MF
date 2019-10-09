@@ -11,7 +11,8 @@ Export-Package: .,
  org.emoflon.neo.engine.modules.monitors,
  org.emoflon.neo.engine.modules.ruleschedulers,
  org.emoflon.neo.engine.modules.terminationcondition,
- org.emoflon.neo.engine.modules.updatepolicies
+ org.emoflon.neo.engine.modules.updatepolicies,
+ org.emoflon.neo.engine.modules.valueGenerators
 Automatic-Module-Name: org.emoflon.neo.generator
 Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
