@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.generator.util;
+package org.emoflon.neo.engine.modules.valueGenerators;
 
 import java.util.Random;
 
