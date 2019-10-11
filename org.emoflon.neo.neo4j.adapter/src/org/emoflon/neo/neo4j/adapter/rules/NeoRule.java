@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -33,10 +34,11 @@ import org.neo4j.driver.v1.exceptions.DatabaseException;
 import com.google.common.collect.Streams;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
-	protected static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
+	protected static final Logger logger = Logger.getLogger(NeoRule.class);
 
 	protected boolean useSPOSemantics;
 	protected NeoPattern contextPattern;
+	protected NeoPattern coContextPattern;
 	protected IBuilder builder;
 	protected NeoMask mask;
 	protected NeoQueryData queryData;
@@ -57,7 +59,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private ArrayList<NeoAttributeExpression> attrAssign;
 
 	public NeoRule(Rule r, IBuilder builder, NeoMask mask, NeoQueryData neoQuery) {
-
 		if (mask == null)
 			this.mask = new EmptyMask();
 		else
@@ -87,6 +88,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		extractNodesAndRelations(nodeBlocks);
 
 		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
+				builder, mask);
+		
+		coContextPattern = NeoPatternFactory.createNeoCoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
 				builder, mask);
 	}
 
@@ -164,6 +168,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		}
 
 		addModelNodesAndRefs();
+		removeModelNodesAndRefs();
 	}
 
 	private NeoRelation computeEContainerReferences(ModelRelationStatement r, NeoRelation neoRel) {
@@ -258,6 +263,26 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 			modelRel.add(metaTypeRel);
 		});
 	}
+	
+	protected void removeModelNodesAndRefs() {
+		redNodes.forEach((varName, n) -> {
+
+			// Match corresponding EClass Node
+			var eclassNode = new NeoNode("EClass", "eClass_" + n.getVarName());
+			eclassNode.addProperty("ename", EMSLUtil.returnValueAsString(n.getClassTypes().iterator().next()));
+			modelNodes.add(eclassNode);
+
+			var metaType = new ArrayList<String>();
+			metaType.add("metaType");
+
+			var metaTypeRel = new NeoRelation(n, n.getVarName() + "_metaType_" + "eClass_" + n.getVarName(), metaType,
+					"", "", new ArrayList<>(), "EClass", "eClass_" + n.getVarName());
+			
+			modelEContainerRel.put(metaTypeRel.getVarName(),metaTypeRel);
+			redRel.put(metaTypeRel.getVarName(),metaTypeRel);
+
+		});
+	}
 
 	@Override
 	public void useSPOSemantics(boolean spoSemantics) {
@@ -286,19 +311,55 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Optional<NeoCoMatch> apply(NeoMatch m) {
-		logger.info("Execute Rule " + getName());
+		logger.debug("Execute Rule " + getName());
 		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(nodes, useSPOSemantics, redNodes.values(),
 				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
 				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
 		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
 		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
-
+		
 		if (result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
 		} else {
 			if (result.hasNext()) {
 				var record = result.next();
-				return Optional.of(new NeoCoMatch(contextPattern, record));
+				return Optional.of(new NeoCoMatch(coContextPattern, record, m.getHashCode()));
+			} else {
+				return Optional.empty();
+			}
+		}
+	}
+	
+	@Override
+	public Optional<Collection<NeoCoMatch>> applyAll(Collection<NeoMatch> matches) {
+		logger.debug("Execute Rule " + getName());
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQueryCollection(nodes, useSPOSemantics, redNodes.values(),
+				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
+				modelNodes, modelRel, modelEContainerRel.values(), attrExpr, attrAssign);
+		
+		var list = new ArrayList<Map<String,Object>>();
+		matches.forEach(match -> list.add(match.getParameters()));
+		
+		var map = new HashMap<String,Object>();
+		map.put("matches",list);
+		
+		logger.debug(map.toString() + "\n" + cypherQuery);
+		var result = builder.executeQueryWithParameters(cypherQuery, map);
+		
+		if (result == null) {
+			throw new DatabaseException("400", "Execution Error: See console log for more details.");
+		} else {
+			
+			if (result.hasNext()) {
+				var coMatches = new ArrayList<NeoCoMatch>();
+				
+				while (result.hasNext()) {
+					var next = result.next();
+					coMatches.add(new NeoCoMatch(this.contextPattern, next, next.get("match_id").toString()));
+				}
+				logger.debug(coMatches.toString());
+				return Optional.of(coMatches);
+
 			} else {
 				return Optional.empty();
 			}
@@ -321,5 +382,15 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	public Collection<NeoNode> getNodes() {
 		return Collections.unmodifiableCollection(nodes);
+	}
+	
+	@Override
+	public boolean isStillApplicable(NeoMatch m) {
+		return contextPattern.isStillValid(m);
+	}
+
+	@Override
+	public Map<String, Boolean> isStillApplicable(Collection<NeoMatch> matches) {
+		return contextPattern.isStillValid(matches);
 	}
 }

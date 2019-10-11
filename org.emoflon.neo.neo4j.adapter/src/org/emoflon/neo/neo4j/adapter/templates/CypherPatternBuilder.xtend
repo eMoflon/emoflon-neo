@@ -2,14 +2,14 @@ package org.emoflon.neo.neo4j.adapter.templates
 
 import java.util.ArrayList
 import java.util.Collection
-import org.emoflon.neo.neo4j.adapter.common.NeoNode
-import org.emoflon.neo.neo4j.adapter.common.NeoRelation
-import org.emoflon.neo.neo4j.adapter.common.NeoProperty
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMask
-import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch
 import java.util.HashMap
+import org.emoflon.neo.neo4j.adapter.common.NeoNode
+import org.emoflon.neo.neo4j.adapter.common.NeoProperty
+import org.emoflon.neo.neo4j.adapter.common.NeoRelation
+import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMask
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch
 
 class CypherPatternBuilder {
 
@@ -67,10 +67,17 @@ class CypherPatternBuilder {
 		«returnQuery_copyPaste(nodes)»'''
 	}
 
-	def static String getDataQuery(Collection<NeoNode> nodes, NeoMatch match, Collection<NeoAttributeExpression> attr, boolean injective) {
+	def static String getDataQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
 		'''
-		«matchQueryForData(nodes, match)»
-		«isStillValid_whereQueryUnparam(nodes, match, attr)»
+		«matchQueryForData(nodes)»
+		«isStillValid_whereQuery(nodes, attr)»
+		«returnDataQuery(nodes)»'''
+	}
+	def static String getDataQueryCollection(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
+		'''
+		«unwindQuery»
+		«matchQueryForData(nodes)»
+		«isStillValid_whereQueryCollection(nodes, attr)»
 		«returnDataQuery(nodes)»'''
 	}
 
@@ -103,6 +110,17 @@ class CypherPatternBuilder {
 			'''WHERE «out»'''
 		else	
 			''''''
+	}
+	
+	def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, HashMap<String,String> equalElem) {
+		
+		var out = whereQuery(nodes, attr, injective, mask)
+		var equalCond = whereEqualElementsConditionQuery(equalElem);
+		if(out.length == 0)
+			out += "WHERE "
+		else if(equalCond.length>0) 
+			out += " AND "
+		out += equalCond;
 	}
 	
 	def static attributeExpressionQuery(Collection<NeoAttributeExpression> attr) {
@@ -167,7 +185,7 @@ class CypherPatternBuilder {
 		«ENDFOR»'''
 	}
 
-	def static String matchQueryForData(Collection<NeoNode> nodes, NeoMatch match) {
+	def static String matchQueryForData(Collection<NeoNode> nodes) {
 		'''
 		MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
@@ -244,6 +262,10 @@ class CypherPatternBuilder {
 	def static String returnQuery_copyPaste(Collection<NeoNode> nodes, int limit) {
 		'''«returnQuery_copyPaste(nodes)» LIMIT «limit»'''
 	}
+	
+	def static String unwindQuery() {
+		'''UNWIND $matches AS matches'''
+	}
 
 	/*****************************
 	 * IsStillValid Functions
@@ -253,6 +275,13 @@ class CypherPatternBuilder {
 		«matchQuery(nodes)»
 		«isStillValid_whereQuery(nodes, attr)»
 		«isStillValid_returnQuery()»'''
+	}
+	def static String isStillValidQueryCollection(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
+		'''
+		«unwindQuery()»
+		«matchQuery(nodes)»
+		«isStillValid_whereQueryCollection(nodes, attr)»
+		«isStillValid_returnQueryCollection()»'''
 	}
 
 	def static String returnDataQuery(Collection<NeoNode> nodes) {
@@ -270,9 +299,9 @@ class CypherPatternBuilder {
 			WHERE «nodeIdBlock(nodes)»«IF attr.size > 0» AND «ENDIF»«attributeExpressionQuery(attr)»
 		'''
 	}
-	def static String isStillValid_whereQueryUnparam(Collection<NeoNode> nodes, NeoMatch match, Collection<NeoAttributeExpression> attr) {
+	def static String isStillValid_whereQueryCollection(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr) {
 		'''
-			WHERE «nodeIdBlockUnparam(nodes,match)»«IF attr.size > 0» AND «ENDIF»«attributeExpressionQuery(attr)»
+			WHERE «nodeIdBlockCollection(nodes)»«IF attr.size > 0» AND «ENDIF»«attributeExpressionQuery(attr)»
 		'''
 	}
 
@@ -283,6 +312,18 @@ class CypherPatternBuilder {
 			«IF n.relations.size > 0»
 				«FOR r : removePaths(n.relations) BEFORE " AND " SEPARATOR " AND "»
 					id(«r.varName») = {«r.varName»}
+				«ENDFOR»
+			«ENDIF»
+			«ENDFOR»'''
+	}
+	
+	def static String nodeIdBlockCollection(Collection<NeoNode> nodes) {
+		'''
+		«FOR n : nodes SEPARATOR " AND "»
+			id(«n.varName») = matches.«n.varName»
+			«IF n.relations.size > 0»
+				«FOR r : removePaths(n.relations) BEFORE " AND " SEPARATOR " AND "»
+					id(«r.varName») = matches.«r.varName»
 				«ENDFOR»
 			«ENDIF»
 			«ENDFOR»'''
@@ -302,6 +343,9 @@ class CypherPatternBuilder {
 
 	def static String isStillValid_returnQuery() {
 		'''RETURN TRUE'''
+	}
+	def static String isStillValid_returnQueryCollection() {
+		'''RETURN matches.match_id as match_id'''
 	}
 
 	/*****************************
@@ -348,6 +392,21 @@ class CypherPatternBuilder {
 		WHERE «whereCond»
 		«constraint_withQuery(helperNodes)»
 		RETURN TRUE
+		'''
+	}
+	
+	def static String constraintQuery_isStillValidCollection(Collection<NeoNode> nodes, Collection<String> helperNodes,
+		String matchCond, String whereCond, Collection<NeoAttributeExpression> attr, boolean injective) {
+
+		'''«unwindQuery()»
+		«IF nodes.size>0»«matchQuery(nodes)»
+		«isStillValid_whereQueryCollection(nodes, attr)»
+		«withQuery(nodes)», matches«ENDIF»
+		«matchCond»
+		«constraint_withQuery(helperNodes)»
+		WHERE «whereCond»
+		«constraint_withQuery(helperNodes)»
+		«isStillValid_returnQueryCollection()»
 		'''
 	}
 	
@@ -404,30 +463,30 @@ class CypherPatternBuilder {
 	}
 
 	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<String> nodesMap, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask) {
+		Collection<String> nodesMap, Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
 		'''
-		«constraint_ifThen_matchQuery(nodes,nodes2,attr,injective, mask)»
+		«constraint_ifThen_matchQuery(nodes,nodes2,attr,injective, mask, equalElem, injectiveElem)»
 		«constraint_withQuery(nodesMap)»
 		WHERE «whereNegativeConditionQuery_Nodes(nodes2)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
 	
 	def static String constraint_ifThen_readQuery_satisfy(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen, Collection<String> nodesThenButNotIf, Collection<String> nodesMap,
-        Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask) {
+        Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
         '''
-        «constraint_ifThen_matchQuery(nodesIf,nodesThen,attr,injective, mask)»
+        «constraint_ifThen_matchQuery(nodesIf,nodesThen,attr,injective, mask, equalElem, injectiveElem)»
         «constraint_withQuery(nodesMap)»
         WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
         RETURN FALSE'''
     }
 
 	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask) {
+		Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, HashMap<String,String> equalElem, Collection<String> injectiveElem) {
 		'''«matchQuery(nodes)»
 		«whereQuery(nodes,attr,injective,mask)»
 		«withQuery(nodes)»
 		OPTIONAL «matchQuery(nodes2)»
-		«whereQuery(nodes2,attr,injective,mask)»
+		«whereQuery(nodes2,attr,injective,mask, equalElem,injectiveElem)»
 		'''
 	}
 
@@ -469,12 +528,25 @@ class CypherPatternBuilder {
 	def static String conditionQuery_isStillValid(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
 		Collection<String> helperNodes, Collection<NeoAttributeExpression> attr, boolean isNegated) {
 		'''«IF nodes.size>0»«matchQuery(nodes)»
-	 	«isStillValid_whereQuery(nodes,attr)»
-	 	«withQuery(nodes)»«ENDIF»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	RETURN TRUE'''
+		«isStillValid_whereQuery(nodes,attr)»
+		«withQuery(nodes)»«ENDIF»
+		«optionalMatches»
+		«constraint_withQuery(helperNodes)»
+		WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+		RETURN TRUE'''
+	}
+	
+	def static String conditionQuery_isStillValidCollection(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
+		Collection<String> helperNodes, Collection<NeoAttributeExpression> attr, boolean isNegated) {
+		'''
+		«unwindQuery()»
+		«IF nodes.size>0»«matchQuery(nodes)»
+		«isStillValid_whereQueryCollection(nodes,attr)»
+		«withQuery(nodes)»«ENDIF», matches
+		«optionalMatches»
+		«constraint_withQuery(helperNodes)», matches
+		WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
+		«isStillValid_returnQueryCollection()»'''
 	}
 	
 	def static String whereNegativeConditionQuery_String(Collection<String> nodes) {
@@ -536,7 +608,25 @@ class CypherPatternBuilder {
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
 	 	«ruleExecution_setQuery(attrAsgn)»
-	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»
+	 	«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«ELSE»RETURN TRUE«ENDIF»
+	 	
+	 	'''
+	 	
+	 }
+	 
+	 def static String ruleExecutionQueryCollection(Collection<NeoNode> nodes, boolean spo, 
+	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
+	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
+	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel,
+	 	Collection<NeoAttributeExpression> attrExpr, Collection<NeoAttributeExpression> attrAsgn) {
+	 	'''
+	 	«unwindQuery()»
+	 	«matchQuery(nodes)»«IF nodes.size>0 && (modelNodes.size > 0 || modelEContRel.size > 0)», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«IF modelNodes.size > 0 && modelEContRel.size > 0», «ENDIF»«ruleExecution_matchModelEContainer(modelEContRel)»
+	 	«IF nodes.size>0»«isStillValid_whereQueryCollection(nodes, attrExpr)»«ENDIF»
+	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
+	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
+	 	«ruleExecution_setQuery(attrAsgn)»
+	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»,«ENDIF» matches.match_id as match_id
 	 	
 	 	'''
 	 	

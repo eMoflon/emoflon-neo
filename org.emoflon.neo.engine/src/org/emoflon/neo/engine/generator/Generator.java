@@ -20,27 +20,26 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	private IMonitor progressMonitor;
 
 	public Generator(//
-			ITerminationCondition pTerminationCondition, //
-			IRuleScheduler<M, C> pRuleScheduler, //
-			IUpdatePolicy<M, C> pUpdatePolicy, //
-			IMatchReprocessor<M, C> pMatchReprocessor, //
-			IMonitor pProgressMonitor) {
-		terminationCondition = pTerminationCondition;
-		ruleScheduler = pRuleScheduler;
-		updatePolicy = pUpdatePolicy;
-		matchReprocessor = pMatchReprocessor;
-		progressMonitor = pProgressMonitor;
+			ITerminationCondition terminationCondition, //
+			IRuleScheduler<M, C> ruleScheduler, //
+			IUpdatePolicy<M, C> updatePolicy, //
+			IMatchReprocessor<M, C> matchReprocessor, //
+			IMonitor progressMonitor) {
+		this.terminationCondition = terminationCondition;
+		this.ruleScheduler = ruleScheduler;
+		this.updatePolicy = updatePolicy;
+		this.matchReprocessor = matchReprocessor;
+		this.progressMonitor = progressMonitor;
 	}
 
-	public void generate(Collection<IRule<M, C>> pAllRules) {
-		MatchContainer<M, C> matchContainer = new MatchContainer<>(pAllRules);
+	public void generate(Collection<IRule<M, C>> allRules) {
+		MatchContainer<M, C> matchContainer = new MatchContainer<>(allRules);
 		while (!terminationCondition.isReached()) {
 			ruleScheduler.scheduleWith(matchContainer.getRulesWithoutMatches(), progressMonitor)//
-					.forEach((rule, count) -> rule.determineMatches(count)//
-							.forEach((match) -> matchContainer.add(match, rule)));
+					.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
 
 			updatePolicy.selectMatches(matchContainer, progressMonitor)//
-					.forEach((match) -> matchContainer.getRuleFor(match).apply(match));
+					.forEach((rule, matches) -> rule.applyAll(matches));
 
 			matchReprocessor.reprocess(matchContainer, progressMonitor);
 		}

@@ -2,6 +2,8 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Condition;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -31,22 +33,39 @@ public class NeoPatternFactory {
 
 		return createNeoPattern(name, nodeBlocks, flatPattern.getCondition(), builder, mask);
 	}
+	
+	public static NeoPattern createNeoPattern(AtomicPattern pattern, IBuilder builder, NeoMask mask) {
+		var flatPattern = NeoUtil.getFlattenedPattern(pattern);
+		var nodeBlocks = flatPattern.getNodeBlocks();
+		var name = flatPattern.getName();
+
+		return createNeoPattern(name, nodeBlocks, null, builder, mask);
+	}
 
 	public static NeoPattern createNeoPattern(String name, List<ModelNodeBlock> nodeBlocks, Condition c, IBuilder builder, NeoMask mask) {
+		return createNeoPattern(name, nodeBlocks, c, builder, mask, new NeoQueryData(true)); 
+	}
+	
+	public static NeoPattern createNeoPattern(String name, List<ModelNodeBlock> nodeBlocks, Condition c, IBuilder builder, NeoMask mask, NeoQueryData query) {
 		if (c == null)
-			return new NeoPatternQueryAndMatchNoCondition(nodeBlocks, name, builder, mask, new NeoQueryData());
+			return new NeoPatternQueryAndMatchNoCondition(nodeBlocks, name, builder, mask, query);
 		else if (c instanceof ConstraintReference) {
 			ConstraintReference ref = (ConstraintReference) c;
-			return new NeoPatternQueryAndMatchConstraintRef(nodeBlocks, name, ref, builder, mask, new NeoQueryData());
+			return new NeoPatternQueryAndMatchConstraintRef(nodeBlocks, name, ref, builder, mask, query);
 		} else if (c instanceof PositiveConstraint) {
 			PositiveConstraint pconstr = (PositiveConstraint) c;
 			return new NeoPatternQueryAndMatchPositiveConstraint(nodeBlocks, name, pconstr, builder, mask,
-					new NeoQueryData());
+					query);
 		} else if (c instanceof NegativeConstraint) {
 			NegativeConstraint nconstr = (NegativeConstraint) c;
 			return new NeoPatternQueryAndMatchNegativeConstraint(nodeBlocks, name, nconstr, builder, mask,
-					new NeoQueryData());
+					query);
 		} else
 			throw new IllegalArgumentException("Unknown type of pattern:" + name);
+	}
+
+	public static NeoPattern createNeoCoPattern(String name, EList<ModelNodeBlock> nodeBlocks, Condition condition,
+			IBuilder builder, NeoMask mask) {
+		return createNeoPattern(name, nodeBlocks, condition, builder, mask, new NeoQueryData(false));
 	}
 }

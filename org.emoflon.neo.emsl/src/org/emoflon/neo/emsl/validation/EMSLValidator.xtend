@@ -55,6 +55,11 @@ import java.util.List
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
+import org.eclipse.xtext.EcoreUtil2
+import org.emoflon.neo.emsl.eMSL.ImportStatement
+import org.emoflon.neo.emsl.util.EMSLUtil
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 /**
  * This class contains custom validation rules. 
@@ -125,9 +130,12 @@ class EMSLValidator extends AbstractEMSLValidator {
 		else if (expr instanceof PrimitiveBoolean)
 			propertyType == BuiltInDataTypes.EBOOLEAN
 		else if (expr instanceof PrimitiveString)
-		 	(propertyType == BuiltInDataTypes.ESTRING || propertyType == BuiltInDataTypes.ECHAR && expr.literal.toCharArray.size == 1)
+		 	(propertyType == BuiltInDataTypes.ESTRING || 
+		 		(propertyType == BuiltInDataTypes.ECHAR && expr.literal.toCharArray.size == 1) ||
+		 		(propertyType == BuiltInDataTypes.EDATE && isProperDate(expr.literal))
+		 	)
 		else if (expr instanceof PrimitiveDouble)
-			(propertyType == BuiltInDataTypes.EDOUBLE || propertyType == BuiltInDataTypes.EFLOAT)
+			(propertyType == BuiltInDataTypes.EDOUBLE || propertyType == BuiltInDataTypes.EFLOAT) 
 		else if (expr instanceof AttributeExpression)
 			expr.target.attribute.type instanceof BuiltInType && 
 			(expr.target.attribute.type as BuiltInType).reference.equals(propertyType)
@@ -135,6 +143,15 @@ class EMSLValidator extends AbstractEMSLValidator {
 			isOfCorrectBuiltInType(expr.left, propertyType) && isOfCorrectBuiltInType(expr.right, propertyType)
 		else 
 			false
+	}
+
+	def boolean isProperDate(String date){
+		try { 
+			LocalDate.parse(date)
+			return true
+		} catch (DateTimeParseException e){
+			return false
+		}
 	}
 
 	/**
@@ -1069,6 +1086,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 		val rules = new HashSet()
 		var counter = 0
 		for (r : tg.rules) {
+			if (r.abstract) {
+				error("Abstract rules in Triple Grammars are not allowed.", tg, EMSLPackage.Literals.TRIPLE_GRAMMAR__RULES, counter)
+			}
 			if (!rules.contains(r)) {
 				rules.add(r)
 			} else {
@@ -1076,5 +1096,42 @@ class EMSLValidator extends AbstractEMSLValidator {
 			}
 			counter++
 		}
+	}
+	
+	/**
+	 * Checks if a triple rules is contained in at least one triple grammar.
+	 * If not, a warning is shown.
+	 */
+	@Check(NORMAL)
+	def void checkIfTripleRuleIsInTripleGrammar(TripleRule r) {
+		if (r.abstract)
+			return
+		var root = EcoreUtil2.getRootContainer(r)
+		val grammars = new HashSet<TripleGrammar>()
+		if (root === null)
+			return
+
+		val importStatements = EcoreUtil2.getAllContentsOfType(root, ImportStatement)
+		for (st : importStatements) {
+			try {
+				EMSLUtil.loadEMSL_Spec(st.value, root).ifPresent([ sp |
+					EcoreUtil2.getAllContentsOfType(sp, TripleGrammar).forEach [ o |
+						grammars.add(o)
+					]
+				])
+			} catch (Exception e) {
+				println(e)
+			}
+		}
+
+		// Don't forget all types in the same file
+		EcoreUtil2.getAllContentsOfType(root, TripleGrammar).forEach[o|grammars.add(o)]
+
+		for (tg : grammars) {
+			if (tg.rules.contains(r)) {
+				return
+			}
+		}
+		warning("This rule is not contained in any triple grammar", r, EMSLPackage.Literals.SUPER_TYPE__NAME)
 	}
 }

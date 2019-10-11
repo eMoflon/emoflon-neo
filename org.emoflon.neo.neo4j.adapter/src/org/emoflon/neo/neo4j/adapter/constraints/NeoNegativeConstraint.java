@@ -5,10 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
+import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
+import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPattern;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
@@ -20,10 +24,11 @@ import org.emoflon.neo.neo4j.adapter.util.NeoUtil;
  * @author Jannik Hinz
  *
  */
-public class NeoNegativeConstraint extends NeoConstraint {
+public class NeoNegativeConstraint extends NeoConstraint implements INegativeConstraint {
 	private String name;
 	private List<NeoNode> nodes;
 	private final int uuid;
+	private NeoPattern negativePattern;
 
 	/**
 	 * 
@@ -38,6 +43,9 @@ public class NeoNegativeConstraint extends NeoConstraint {
 
 		this.uuid = queryData.incrementCounterForConstraintsInQuery();
 		this.name = ap.getName();
+		
+		this.negativePattern = NeoPatternFactory.createNeoPattern(ap, builder, mask);
+		
 		var flatPattern = NeoUtil.getFlattenedPattern(ap);
 
 		// Extracts all necessary information data from the Atomic Pattern
@@ -119,5 +127,10 @@ public class NeoNegativeConstraint extends NeoConstraint {
 		}
 		
 		return CypherPatternBuilder.whereNegativeConditionQuery(optionalElements);
+	}
+
+	@Override
+	public Collection<IMatch> getViolations() {
+		return new ArrayList<IMatch>(negativePattern.determineMatches());
 	}
 }
