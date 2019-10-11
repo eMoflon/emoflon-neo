@@ -10,12 +10,13 @@ import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public class MaximalRuleApplicationsScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 	private Map<IRule<NeoMatch, NeoCoMatch>, Integer> maxRuleApps;
 	private Map<String, IRule<NeoMatch, NeoCoMatch>> nameToRule;
 
-	public MaximalRuleApplicationsScheduler(Collection<IRule<NeoMatch, NeoCoMatch>> allRules, int defaultNoOfApps) {
+	public MaximalRuleApplicationsScheduler(Collection<NeoRule> allRules, int defaultNoOfApps) {
 		maxRuleApps = new HashMap<>();
 		nameToRule = new HashMap<>();
 		allRules.forEach(r -> {
@@ -31,9 +32,9 @@ public class MaximalRuleApplicationsScheduler implements IRuleScheduler<NeoMatch
 
 		for (var rule : matchContainer.getAllRulesToMatches().keySet()) {
 			var noOfApps = matchContainer.getNoOfRuleApplicationsFor(rule);
-			if(getMaxNoOfAppFor(rule) < 0)
-				allRules.put(rule,  -1);
-			else if(noOfApps < getMaxNoOfAppFor(rule))
+			if (getMaxNoOfAppFor(rule) < 0)
+				allRules.put(rule, -1);
+			else if (noOfApps < getMaxNoOfAppFor(rule))
 				allRules.put(rule, getRemainingApps(rule, noOfApps));
 		}
 

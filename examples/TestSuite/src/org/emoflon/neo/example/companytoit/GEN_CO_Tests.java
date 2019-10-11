@@ -14,6 +14,7 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.MaximalRuleApplicationsScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
+import org.emoflon.neo.engine.modules.valueGenerators.StringValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -95,7 +96,8 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 				ruleScheduler, //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
-				new HeartBeatAndReportMonitor());
+				new HeartBeatAndReportMonitor(), //
+				new StringValueGenerator());
 	}
 
 }
