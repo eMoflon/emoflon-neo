@@ -20,9 +20,9 @@ interface Operation {
 
 	def String getNameExtension()
 
-	def String getAction(Action pAction, boolean pIsSrc)
+	def String getAction(Action action, boolean isSrc)
 
-	def String getTranslation(Action pAction, boolean pIsSrc)
+	def String getTranslation(Action action, boolean isSrc)
 
 	def String getConditionOperator(ConditionOperator propOp, boolean isSrc)
 

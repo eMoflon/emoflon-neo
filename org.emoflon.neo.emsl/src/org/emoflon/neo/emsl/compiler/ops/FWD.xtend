@@ -13,14 +13,14 @@ class FWD implements Operation {
 		return "_FWD"
 	}
 
-	override String getAction(Action pAction, boolean pIsSrc) {
-		if(pIsSrc || pAction === null || !ActionOperator::CREATE.equals(pAction.getOp())) return "" else return "++"
+	override String getAction(Action action, boolean isSrc) {
+		if(isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
-	override String getTranslation(Action pAction, boolean pIsSrc) {
-		if(pIsSrc) if(pAction === null ||
+	override String getTranslation(Action action, boolean isSrc) {
+		if(isSrc) if(action === null ||
 			!ActionOperator::CREATE.equals(
-				pAction.getOp())) return "~_tr_ : true" else return "~_tr_ : false\n~_tr_ := true" else return ""
+				action.getOp())) return "~_tr_ : true" else return "~_tr_ : false\n~_tr_ := true" else return ""
 	}
 	
 	override handleParameters(Map<Parameter, String> paramsToValues, Map<Parameter, String> paramsToProperty, Map<Parameter, Boolean> paramsToDomain, Map<String, Collection<Parameter>> paramGroups) {

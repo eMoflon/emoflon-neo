@@ -13,14 +13,12 @@ class BWD implements Operation {
 		return "_BWD"
 	}
 
-	override String getAction(Action pAction, boolean pIsSrc_finalParam_) {
-		var pIsSrc = pIsSrc_finalParam_
-		if(!pIsSrc || pAction === null || !ActionOperator::CREATE.equals(pAction.getOp())) return "" else return "++"
+	override String getAction(Action action, boolean isSrc) {
+		if(!isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
-	override String getTranslation(Action pAction, boolean pIsSrc_finalParam_) {
-		var pIsSrc = pIsSrc_finalParam_
-		if(!pIsSrc) if(pAction === null ||
+	override String getTranslation(Action pAction, boolean isSrc) {
+		if(!isSrc) if(pAction === null ||
 			!ActionOperator::CREATE.equals(
 				pAction.getOp())) return "~_tr_ : true" else return "~_tr_ : false\n~_tr_ := true" else return ""
 	}

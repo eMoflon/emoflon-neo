@@ -13,11 +13,11 @@ class MODELGEN implements Operation {
 		return "_GEN"
 	}
 
-	override String getAction(Action pAction, boolean pIsSrc) {
-		if(pAction === null || !ActionOperator::CREATE.equals(pAction.getOp())) return "" else return "++"
+	override String getAction(Action action, boolean isSrc) {
+		if(action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
-	override String getTranslation(Action pAction, boolean pIsSrc) {
+	override String getTranslation(Action action, boolean isSrc) {
 		return ""
 	}
 	

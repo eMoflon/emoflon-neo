@@ -12,11 +12,11 @@ class CC implements Operation {
 		return "_CC"
 	}
 
-	override String getAction(Action pAction, boolean pIsSrc) {
+	override String getAction(Action action, boolean isSrc) {
 		return ""
 	}
 
-	override String getTranslation(Action pAction, boolean pIsSrc) {
+	override String getTranslation(Action action, boolean isSrc) {
 		return ""
 	}
 	
