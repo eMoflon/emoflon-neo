@@ -20,46 +20,46 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, NeoCoMatch> {
-	private Collection<NeoRuleAdapter> rules;
-	private NeoCoreBuilder builder;
+    private Collection<NeoRuleAdapter> rules;
+    private NeoCoreBuilder builder;
 
-	public NeoVictoryAdapter(NeoCoreBuilder builder, Collection<org.emoflon.neo.emsl.eMSL.Rule> operationalRules,
-			Collection<TripleRule> tripleRules) {
-		this.builder = builder;
-		var tripleRuleItr = tripleRules.iterator();
-		this.rules = operationalRules.stream()//
-				.map(r -> new NeoRuleAdapter(r, tripleRuleItr.next()))//
-				.collect(Collectors.toList());
-	}
+    public NeoVictoryAdapter(NeoCoreBuilder builder, Collection<org.emoflon.neo.emsl.eMSL.Rule> operationalRules,
+	    Collection<TripleRule> tripleRules) {
+	this.builder = builder;
+	var tripleRuleItr = tripleRules.iterator();
+	this.rules = operationalRules.stream()//
+		.map(r -> new NeoRuleAdapter(r, tripleRuleItr.next()))//
+		.collect(Collectors.toList());
+    }
 
-	@Override
-	public Collection<Rule> getAllRules() {
-		return Collections.unmodifiableCollection(rules);
-	}
+    @Override
+    public Collection<Rule> getAllRules() {
+	return Collections.unmodifiableCollection(rules);
+    }
 
-	@Override
-	public void saveModels() throws IOException {
-		// All models are always "saved" in the database
-	}
+    @Override
+    public void saveModels() throws IOException {
+	// All models are always "saved" in the database
+    }
 
-	@Override
-	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
-		var selection = new ArrayList<NeoMatch>();
-		var selected = Victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
-		selection.add((NeoMatch) ((NeoMatchAdapter) selected).getWrappedMatch());
-		return selection;
-	}
+    @Override
+    public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
+	var selection = new ArrayList<NeoMatch>();
+	var selected = Victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
+	selection.add((NeoMatch) ((NeoMatchAdapter) selected).getWrappedMatch());
+	return selection;
+    }
 
-	public void run(Generator<NeoMatch, NeoCoMatch> generator, Collection<IRule<NeoMatch, NeoCoMatch>> rules) {
-		Victory.create(this);
+    public void run(Generator<NeoMatch, NeoCoMatch> generator, Collection<IRule<NeoMatch, NeoCoMatch>> rules) {
+	Victory.create(this);
 
-		new Thread("Data provider thread") {
-			@Override
-			public void run() {
-				generator.generate(rules);
-			};
-		}.start();		
-		
-		Victory.run();
-	}
+	new Thread("Data provider thread") {
+	    @Override
+	    public void run() {
+		generator.generate(rules);
+	    };
+	}.start();
+
+	Victory.run();
+    }
 }

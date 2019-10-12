@@ -235,7 +235,7 @@ public class NeoMatchAdapter implements Match {
 	Map<Long, NeoNodeAdapter> nodeToNeoNode = new HashMap<>();
 	Map<Long, NeoModelEdgeAdapter> relations = new HashMap<>();
 
-	if (!(match.getEdgeIDs().isEmpty() && match.getNodeIDs().isEmpty())) {
+	if (!(match.getNodeIDs().isEmpty())) {
 
 	    var result = builder.executeQuery(MatchQuery.create(match, getRule(), neighbourhoodSize));
 

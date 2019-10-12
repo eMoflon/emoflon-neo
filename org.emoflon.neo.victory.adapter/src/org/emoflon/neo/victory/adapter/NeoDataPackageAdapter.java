@@ -14,25 +14,26 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class NeoDataPackageAdapter implements DataPackage {
-	private MatchContainer<NeoMatch, NeoCoMatch> matches;
-	private Collection<NeoRuleAdapter> rules;
-	private NeoCoreBuilder builder;
-	
-	public NeoDataPackageAdapter(NeoCoreBuilder builder, MatchContainer<NeoMatch, NeoCoMatch> matches, Collection<NeoRuleAdapter> rules) {
-		this.matches = matches;
-		this.rules = rules;
-		this.builder = builder;
-	}
+    private MatchContainer<NeoMatch, NeoCoMatch> matches;
+    private Collection<NeoRuleAdapter> rules;
+    private NeoCoreBuilder builder;
 
-	@Override
-	public Collection<Match> getMatches() {
-		return matches.stream().map(m -> new NeoMatchAdapter(builder, m, rules)).collect(Collectors.toList());
-	}
+    public NeoDataPackageAdapter(NeoCoreBuilder builder, MatchContainer<NeoMatch, NeoCoMatch> matches,
+	    Collection<NeoRuleAdapter> rules) {
+	this.matches = matches;
+	this.rules = rules;
+	this.builder = builder;
+    }
 
-	@Override
-	public List<RuleApplication> getRuleApplications() {
-		// TODO
-		return Collections.emptyList();
-	}
+    @Override
+    public Collection<Match> getMatches() {
+	return matches.stream().map(m -> new NeoMatchAdapter(builder, m, rules)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RuleApplication> getRuleApplications() {
+	// TODO
+	return Collections.emptyList();
+    }
 
 }

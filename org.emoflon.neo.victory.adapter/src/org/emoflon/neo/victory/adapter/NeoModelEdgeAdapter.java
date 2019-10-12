@@ -5,22 +5,22 @@ import org.emoflon.ibex.tgg.ui.debug.api.Node;
 
 import org.emoflon.ibex.tgg.ui.debug.api.enums.Action;
 import org.emoflon.ibex.tgg.ui.debug.api.enums.EdgeType;
-import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 
 public class NeoModelEdgeAdapter implements Edge {
     private Node src;
-	private Node trg;
-	private EdgeType type;
-	private String name;
-	private Action action;
-	
+    private Node trg;
+    private EdgeType type;
+    private String name;
+    private Action action;
+
     public NeoModelEdgeAdapter(Node src, Node trg, EdgeType type, String name) {
 	this.src = src;
 	this.trg = trg;
 	this.type = type;
 	this.name = name;
-	this.action= Action.CONTEXT;
-}
+	// TODO: logically assign action to model element
+	this.action = Action.CONTEXT;
+    }
 
     @Override
     public String getLabel() {

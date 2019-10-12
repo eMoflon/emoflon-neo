@@ -11,54 +11,55 @@ import org.emoflon.ibex.tgg.ui.debug.api.enums.Domain;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 
 public class NeoNodeAdapter implements Node {
-	private Domain domain;
-	private Action action;
-	private List<String> attributes;
-	private String type;
-	private String name; 
+    private Domain domain;
+    private Action action;
+    private List<String> attributes;
+    private String type;
+    private String name;
 
-	public NeoNodeAdapter(ModelNodeBlock node, Domain domain, Action action) {
-		this.domain = domain;
-		this.action = action;
-		attributes = node.getProperties().stream()//
-			.map(p -> p.getType().getName() + " " + p.getOp().getName() + " " + p.getValue())//
-			.collect(Collectors.toList());
-		type = node.getType().getName();
-		name = node.getName();
-	}
-	
-	public NeoNodeAdapter(org.neo4j.driver.v1.types.Node node) {
-	    
-		this.domain = domain.SRC;
-		this.action = action.CONTEXT;
-		
-		attributes = Arrays.asList(node.labels().toString());
-		name= node.labels().toString() + node.id();
-		type = node.asMap().get("ename").toString();
-	}
+    public NeoNodeAdapter(ModelNodeBlock node, Domain domain, Action action) {
+	this.domain = domain;
+	this.action = action;
+	attributes = node.getProperties().stream()//
+		.map(p -> p.getType().getName() + " " + p.getOp().getName() + " " + p.getValue())//
+		.collect(Collectors.toList());
+	type = node.getType().getName();
+	name = node.getName();
+    }
 
-	@Override
-	public String getType() {
-		return type;
-	}
+    public NeoNodeAdapter(org.neo4j.driver.v1.types.Node node) {
 
-	@Override
-	public String getName() {
-		return name;
-	}
+	// TODO: logically assign domain and action to model nodes
+	this.domain = domain.SRC;
+	this.action = action.CONTEXT;
 
-	@Override
-	public Domain getDomain() {
-		return domain;
-	}
+	attributes = Arrays.asList(node.labels().toString());
+	name = node.labels().toString() + node.id();
+	type = node.asMap().get("ename").toString();
+    }
 
-	@Override
-	public Action getAction() {
-		return action;
-	}
+    @Override
+    public String getType() {
+	return type;
+    }
 
-	@Override
-	public List<String> getAttributes() {
-	    return attributes;
-	}
+    @Override
+    public String getName() {
+	return name;
+    }
+
+    @Override
+    public Domain getDomain() {
+	return domain;
+    }
+
+    @Override
+    public Action getAction() {
+	return action;
+    }
+
+    @Override
+    public List<String> getAttributes() {
+	return attributes;
+    }
 }
