@@ -24,31 +24,27 @@ public class NeoModelEdgeAdapter implements Edge {
 
     @Override
     public String getLabel() {
-	// TODO Auto-generated method stub
 	return name;
     }
 
     @Override
     public Node getSrcNode() {
-	// TODO Auto-generated method stub
+	
 	return trg;
     }
 
     @Override
     public Node getTrgNode() {
-	// TODO Auto-generated method stub
 	return src;
     }
 
     @Override
     public EdgeType getType() {
-	// TODO Auto-generated method stub
 	return type;
     }
 
     @Override
     public Action getAction() {
-	// TODO Auto-generated method stub
 	return action;
     }
 
