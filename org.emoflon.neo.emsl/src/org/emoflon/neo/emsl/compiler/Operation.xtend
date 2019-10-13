@@ -12,6 +12,9 @@ import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Map
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import java.util.HashSet
 
 interface Operation {
 	def static Operation[] getAllOps() {
@@ -38,4 +41,9 @@ interface Operation {
 		'''
 	}
 
+	def Collection<AtomicPattern> compileNACs(Collection<TripleRuleNAC> nacs) {
+		val nacPatterns = new HashSet
+		nacs.forEach[nacPatterns.add(it.pattern)]
+		return nacPatterns
+	}
 }
