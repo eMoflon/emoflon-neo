@@ -206,6 +206,6 @@ class TGGCompiler {
 			val param = propertyStatement.value as Parameter
 			if(paramsToValues.get(param) === null) ""
 			else '''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramsToValues.get(param)»'''
-		} else '''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «EMSLUtil.handleValue(propertyStatement.value)»''' // TODO replace handleValue with own method
+		} else '''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 }
