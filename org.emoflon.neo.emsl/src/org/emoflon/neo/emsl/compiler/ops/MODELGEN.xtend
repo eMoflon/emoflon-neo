@@ -7,6 +7,9 @@ import java.util.Map
 import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import java.util.HashSet
+import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
 
 class MODELGEN implements Operation {
 	override String getNameExtension() {
@@ -27,5 +30,11 @@ class MODELGEN implements Operation {
 	
 	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
 		propOp.literal
+	}
+
+	override Collection<AtomicPattern> compileNACs(Collection<TripleRuleNAC> nacs) {
+		val nacPatterns = new HashSet
+		nacs.forEach[nacPatterns.add(it.pattern)]
+		return nacPatterns
 	}
 }
