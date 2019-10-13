@@ -10,6 +10,12 @@ import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.BinaryExpression
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import com.google.common.collect.BiMap
 
 class TGGCompilerUtils {
 	def static String handleValue(ValueExpression value) {
@@ -40,5 +46,46 @@ class TGGCompilerUtils {
 		}
 
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
+	}
+
+	def static String simplePrintAtomicPattern(AtomicPattern pattern, BiMap<MetamodelNodeBlock, String> nodeTypeNames) {
+		'''
+			pattern «pattern.name» {
+				«FOR nodeBlock : pattern.nodeBlocks»
+					«simplePrintNodeBlock(nodeBlock, nodeTypeNames)»
+				«ENDFOR»
+			}
+		'''
+	}
+	
+	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, BiMap<MetamodelNodeBlock, String> nodeTypeNames) {
+		val nodeTypeName = if(nodeTypeNames.containsKey(nodeBlock.type)) nodeTypeNames.get(nodeBlock.type) else nodeBlock.type.name
+		'''
+			«nodeBlock.name» : «nodeTypeName» {
+				«FOR relation : nodeBlock.relations»
+					«simplePrintRelationStatement(relation)»
+				«ENDFOR»
+				«FOR property : nodeBlock.properties»
+					«simplePrintPropertyStatement(property)»
+				«ENDFOR»
+			}
+		'''
+	}
+	
+	def static String simplePrintRelationStatement(ModelRelationStatement relationStatement) {
+		'''
+			-«FOR type : relationStatement.types SEPARATOR '|'»«type.type.name»«ENDFOR»->«relationStatement.target.name»
+			«IF  relationStatement.properties !== null && !relationStatement.properties.empty»
+				{
+					«FOR property : relationStatement.properties»
+						«simplePrintPropertyStatement(property)»
+					«ENDFOR»
+				}
+			«ENDIF»
+		'''
+	}
+	
+	def static String simplePrintPropertyStatement(ModelPropertyStatement propertyStatement) {
+		'''.«propertyStatement.type.name» «propertyStatement.op» «handleValue(propertyStatement.value)»'''
 	}
 }
