@@ -13,8 +13,8 @@ import java.util.Map
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import java.util.Collections
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import com.google.common.collect.BiMap
 
 interface Operation {
 	def static Operation[] getAllOps() {
@@ -41,7 +41,7 @@ interface Operation {
 		'''
 	}
 
-	def Collection<AtomicPattern> compileNACs(Collection<TripleRuleNAC> nacs) {
-		return Collections.emptySet
+	def String compileNACs(String ruleName, Collection<TripleRuleNAC> nacs, BiMap<MetamodelNodeBlock, String> nodeTypeNames) {
+		return ""
 	}
 }

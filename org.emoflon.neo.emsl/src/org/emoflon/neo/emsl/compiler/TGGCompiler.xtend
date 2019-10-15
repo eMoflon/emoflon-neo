@@ -23,7 +23,6 @@ import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Map
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
 
 class TGGCompiler {
 	
@@ -119,7 +118,7 @@ class TGGCompiler {
 			srcToCorr.get(corr.source).add(corr)
 		}
 		
-		val nacs = op.compileNACs(rule.nacs)
+		val nacString = op.compileNACs(rule.name, rule.nacs, nodeTypeNames)
 		
 		'''
 			rule «rule.name» {
@@ -130,32 +129,10 @@ class TGGCompiler {
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
 					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToValues)»
 				«ENDFOR»
-			} «IF !nacs.isEmpty»when «rule.name»NAC«ENDIF»
+			} «IF !nacString.isEmpty»when «rule.name»NAC«ENDIF»
 			
-			«compileNACs(rule.name, nacs)»
+			«nacString»
 		'''
-	}
-	
-	private def compileNACs(String ruleName, Collection<AtomicPattern> nacs) {
-		if(nacs.isEmpty)
-			""
-		else if(nacs.size === 1) {
-			val nac = nacs.head
-			'''
-				constraint «ruleName»NAC = forbid «nac.name»
-				
-				«TGGCompilerUtils.simplePrintAtomicPattern(nac, nodeTypeNames)»
-			'''
-		} else		
-			'''
-				constraint «ruleName»NAC = «FOR nac : nacs SEPARATOR '&&'»«nac.name»NAC«ENDFOR»
-				
-				«FOR nac : nacs»
-					constraint «nac.name»NAC = forbid «nac.name»
-				
-					«TGGCompilerUtils.simplePrintAtomicPattern(nac, nodeTypeNames)»
-				«ENDFOR»
-			'''
 	}
 	
 	private def collectParameters(Collection<ModelNodeBlock> nodeBlocks,

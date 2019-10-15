@@ -7,9 +7,10 @@ import java.util.Map
 import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import java.util.HashSet
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils
+import com.google.common.collect.BiMap
+import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 
 class MODELGEN implements Operation {
 	override String getNameExtension() {
@@ -32,9 +33,27 @@ class MODELGEN implements Operation {
 		propOp.literal
 	}
 
-	override Collection<AtomicPattern> compileNACs(Collection<TripleRuleNAC> nacs) {
-		val nacPatterns = new HashSet
-		nacs.forEach[nacPatterns.add(it.pattern)]
-		return nacPatterns
+	override String compileNACs(String ruleName, Collection<TripleRuleNAC> nacs, BiMap<MetamodelNodeBlock, String> nodeTypeNames) {
+		val nacPatterns = nacs.map[it.pattern]
+		if(nacPatterns.isEmpty)
+			""
+		else if(nacPatterns.size === 1) {
+			val nac = nacPatterns.head
+			'''
+				constraint «ruleName»NAC = forbid «nac.name»
+				
+				«TGGCompilerUtils.simplePrintAtomicPattern(nac, nodeTypeNames)»
+			'''
+		} else {
+			'''
+				constraint «ruleName»NAC = «FOR nac : nacPatterns SEPARATOR '&&'»«nac.name»NAC«ENDFOR»
+				
+				«FOR nac : nacPatterns»
+					constraint «nac.name»NAC = forbid «nac.name»
+				
+					«TGGCompilerUtils.simplePrintAtomicPattern(nac, nodeTypeNames)»
+				«ENDFOR»
+			'''
+		}
 	}
 }
