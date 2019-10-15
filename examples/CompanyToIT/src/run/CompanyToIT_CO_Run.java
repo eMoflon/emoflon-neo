@@ -24,7 +24,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class CompanyToIT_CO_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);
-	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	private static final SupportedILPSolver solver = SupportedILPSolver.Sat4J;
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
