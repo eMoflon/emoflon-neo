@@ -20,3 +20,4 @@ Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.sat4j.pb;bundle-version="2.3.5";visibility:=reexport
 Bundle-ClassPath: lib/gurobi.jar,
  .
+Bundle-RequiredExecutionEnvironment: JavaSE-12
