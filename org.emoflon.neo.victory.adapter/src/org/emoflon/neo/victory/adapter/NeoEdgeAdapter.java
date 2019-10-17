@@ -33,7 +33,7 @@ public class NeoEdgeAdapter implements Edge {
 		if (type.equals(EdgeType.CORR)) {
 			var name = relation.getProperties().stream()//
 					.filter(p -> p.getType().getName().equals(NeoCoreBootstrapper._TYPE_PROP))//
-					.map(p -> ((PrimitiveString)p.getValue()).getLiteral())//
+					.map(p -> ((PrimitiveString) p.getValue()).getLiteral())//
 					.findAny();
 
 			return name.orElse(label);

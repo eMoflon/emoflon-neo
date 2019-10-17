@@ -17,8 +17,9 @@ public class NeoDataPackageAdapter implements DataPackage {
 	private MatchContainer<NeoMatch, NeoCoMatch> matches;
 	private Collection<NeoRuleAdapter> rules;
 	private NeoCoreBuilder builder;
-	
-	public NeoDataPackageAdapter(NeoCoreBuilder builder, MatchContainer<NeoMatch, NeoCoMatch> matches, Collection<NeoRuleAdapter> rules) {
+
+	public NeoDataPackageAdapter(NeoCoreBuilder builder, MatchContainer<NeoMatch, NeoCoMatch> matches,
+			Collection<NeoRuleAdapter> rules) {
 		this.matches = matches;
 		this.rules = rules;
 		this.builder = builder;
@@ -31,7 +32,6 @@ public class NeoDataPackageAdapter implements DataPackage {
 
 	@Override
 	public List<RuleApplication> getRuleApplications() {
-		// TODO
 		return Collections.emptyList();
 	}
 

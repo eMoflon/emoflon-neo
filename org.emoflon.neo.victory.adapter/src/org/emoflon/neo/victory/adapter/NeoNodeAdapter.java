@@ -27,7 +27,7 @@ public class NeoNodeAdapter implements Node {
 	}
 
 	public NeoNodeAdapter(org.neo4j.driver.v1.types.Node node) {
-
+		// TODO: logically assign domain and action to model nodes
 		this.domain = Domain.SRC;
 		this.action = Action.CONTEXT;
 
