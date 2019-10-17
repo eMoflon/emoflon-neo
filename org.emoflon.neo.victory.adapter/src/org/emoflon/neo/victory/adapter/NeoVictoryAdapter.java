@@ -7,9 +7,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.ui.debug.api.DataProvider;
-import org.emoflon.ibex.tgg.ui.debug.api.Rule;
-import org.emoflon.ibex.tgg.ui.debug.api.Victory;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Generator;
@@ -19,6 +16,9 @@ import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.victory.ui.api.DataProvider;
+import org.emoflon.victory.ui.api.Rule;
+import org.emoflon.victory.ui.api.Victory;
 
 public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private Collection<NeoRuleAdapter> rules;

@@ -2,14 +2,14 @@ package org.emoflon.neo.victory.adapter;
 
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.ui.debug.api.Edge;
-import org.emoflon.ibex.tgg.ui.debug.api.Node;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.Action;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.EdgeType;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.victory.ui.api.Edge;
+import org.emoflon.victory.ui.api.Node;
+import org.emoflon.victory.ui.api.enums.Action;
+import org.emoflon.victory.ui.api.enums.EdgeType;
 
 public class NeoEdgeAdapter implements Edge {
 	private Node src;

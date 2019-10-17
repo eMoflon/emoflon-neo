@@ -1,8 +1,8 @@
 package org.emoflon.neo.victory.adapter;
 
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.emoflon.ibex.tgg.ui.debug.api.Rule;
 import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.victory.ui.api.Rule;
 
 @SuppressWarnings("all")
 public class MatchQuery {

@@ -3,10 +3,10 @@ package org.emoflon.neo.victory.adapter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.ui.debug.api.Node;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.Action;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.Domain;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.victory.ui.api.Node;
+import org.emoflon.victory.ui.api.enums.Action;
+import org.emoflon.victory.ui.api.enums.Domain;
 
 public class NeoNodeAdapter implements Node {
 	private ModelNodeBlock node;

@@ -2,12 +2,12 @@ package org.emoflon.neo.victory.adapter;
 
 import java.util.Collection;
 
-import org.emoflon.ibex.tgg.ui.debug.api.Graph;
-import org.emoflon.ibex.tgg.ui.debug.api.Match;
-import org.emoflon.ibex.tgg.ui.debug.api.Rule;
-import org.emoflon.ibex.tgg.ui.debug.api.impl.GraphBuilder;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.victory.ui.api.Graph;
+import org.emoflon.victory.ui.api.Match;
+import org.emoflon.victory.ui.api.Rule;
+import org.emoflon.victory.ui.api.impl.GraphBuilder;
 
 public class NeoMatchAdapter implements Match {
 	private IMatch match;
