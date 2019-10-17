@@ -26,7 +26,7 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.emoflon.neo.engine.modules;bundle-version="1.0.0",
- org.emoflon.ibex.tgg.ui.debug;bundle-version="1.0.0",
+ org.emoflon.victory.ui;bundle-version="1.0.0",
  org.emoflon.neo.victory.adapter;bundle-version="1.0.0",
  org.apache.commons.lang3;bundle-version="3.1.0"
 Export-Package: CompanyToIT,
