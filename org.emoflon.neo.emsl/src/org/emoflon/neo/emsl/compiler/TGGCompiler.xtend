@@ -23,6 +23,7 @@ import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Map
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 
 class TGGCompiler {
 	
@@ -103,13 +104,13 @@ class TGGCompiler {
 
 	private def compileRule(Operation op, TripleRule rule) {
 
-		val paramsToValues = new HashMap<Parameter, String>
-		val paramsToDomain = new HashMap<Parameter, Boolean>
+		val paramsToValue = new HashMap<Parameter, String>
+		val paramsToDomain = new HashMap<Parameter, ParameterDomain>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
-		val paramsToProperty = new HashMap<Parameter, String>
-		collectParameters(rule.srcNodeBlocks, paramsToValues, paramsToDomain, true, paramGroups, paramsToProperty)
-		collectParameters(rule.trgNodeBlocks, paramsToValues, paramsToDomain, false, paramGroups, paramsToProperty)
-		op.handleParameters(paramsToValues, paramsToProperty, paramsToDomain, paramGroups)
+		val paramsToContainingProperty = new HashMap<Parameter, String>
+		collectParameters(rule.srcNodeBlocks, paramsToValue, paramsToDomain, ParameterDomain.SRC, paramGroups, paramsToContainingProperty)
+		collectParameters(rule.trgNodeBlocks, paramsToValue, paramsToDomain, ParameterDomain.TRG, paramGroups, paramsToContainingProperty)
+		op.handleParameters(paramsToValue, paramsToContainingProperty, paramsToDomain, paramGroups)
 		
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
 		for (Correspondence corr : rule.correspondences) {
@@ -123,11 +124,11 @@ class TGGCompiler {
 		'''
 			rule «rule.name» {
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToValues)»
+					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToValue)»
 				«ENDFOR»
 			
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToValues)»
+					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToValue)»
 				«ENDFOR»
 			} «IF !nacString.isEmpty»when «rule.name»NAC«ENDIF»
 			
@@ -135,20 +136,20 @@ class TGGCompiler {
 		'''
 	}
 	
-	private def collectParameters(Collection<ModelNodeBlock> nodeBlocks,
-									Map<Parameter, String> paramsToValues,
-									Map<Parameter, Boolean> paramsToDomain,
-									boolean domain,
+	private def collectParameters(Iterable<ModelNodeBlock> nodeBlocks,
+									Map<Parameter, String> paramsToValue,
+									Map<Parameter, ParameterDomain> paramsToDomain,
+									ParameterDomain domain,
 									Map<String, Collection<Parameter>> paramGroups,
-									Map<Parameter, String> paramsToProperty
+									Map<Parameter, String> paramsToContainingProperty
 	) {
 		for(nodeBlock : nodeBlocks)
 			for(prop : nodeBlock.properties)
 				if(prop.value instanceof Parameter) {
 					val param = prop.value as Parameter
-					paramsToValues.put(param, '''<«param.name»>''')
+					paramsToValue.put(param, '''<«param.name»>''')
 					paramsToDomain.put(param, domain)
-					paramsToProperty.put(param, '''«nodeBlock.name»::«prop.type.name»''')
+					paramsToContainingProperty.put(param, '''«nodeBlock.name»::«prop.type.name»''')
 					if(!paramGroups.containsKey(param.name))
 						paramGroups.put(param.name, new HashSet)
 					paramGroups.get(param.name).add(param)

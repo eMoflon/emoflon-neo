@@ -18,6 +18,10 @@ import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import com.google.common.collect.BiMap
 
 class TGGCompilerUtils {
+	enum ParameterDomain {
+		SRC, TRG, NAC
+	}
+	
 	def static String handleValue(ValueExpression value) {
 		if(value instanceof PrimitiveString) return '''"«value.literal»"'''
 

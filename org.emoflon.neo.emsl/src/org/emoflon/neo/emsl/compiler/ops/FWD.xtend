@@ -7,6 +7,7 @@ import java.util.Map
 import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 
 class FWD implements Operation {
 	override String getNameExtension() {
@@ -23,13 +24,16 @@ class FWD implements Operation {
 				action.getOp())) return "~_tr_ : true" else return "~_tr_ : false\n~_tr_ := true" else return ""
 	}
 	
-	override handleParameters(Map<Parameter, String> paramsToValues, Map<Parameter, String> paramsToProperty, Map<Parameter, Boolean> paramsToDomain, Map<String, Collection<Parameter>> paramGroups) {
+	override handleParameters(Map<Parameter, String> paramsToValue,
+								Map<Parameter, String> paramsToContainingProperty,
+								Map<Parameter, ParameterDomain> paramsToDomain,
+								Map<String, Collection<Parameter>> paramGroups) {
 		 for(group : paramGroups.values) {
-		 	val representative = group.findFirst[param | paramsToDomain.get(param)]
+		 	val representative = group.findFirst[param | paramsToDomain.get(param).equals(ParameterDomain.SRC)]
 		 	if(representative !== null) {
 		 		for(param : group)
-		 			paramsToValues.put(param, paramsToProperty.get(representative)) 
-		 		paramsToValues.put(representative, null)
+		 			paramsToValue.put(param, paramsToContainingProperty.get(representative)) 
+		 		paramsToValue.put(representative, null)
 		 	}
 		 }
 	}

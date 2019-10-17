@@ -11,6 +11,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils
 import com.google.common.collect.BiMap
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 
 class MODELGEN implements Operation {
 	override String getNameExtension() {
@@ -25,7 +26,7 @@ class MODELGEN implements Operation {
 		return ""
 	}
 	
-	override handleParameters(Map<Parameter, String> paramsToValues, Map<Parameter, String> paramsToProperty, Map<Parameter, Boolean> paramsToDomain, Map<String, Collection<Parameter>> paramGroups) {
+	override handleParameters(Map<Parameter, String> paramsToValue, Map<Parameter, String> paramsToContainingProperty, Map<Parameter, ParameterDomain> paramsToDomain, Map<String, Collection<Parameter>> paramGroups) {
 		// Nothing to do here, all parameters are already mapped to their correct String representation
 	}
 	
@@ -33,7 +34,7 @@ class MODELGEN implements Operation {
 		propOp.literal
 	}
 
-	override String compileNACs(String ruleName, Collection<TripleRuleNAC> nacs, BiMap<MetamodelNodeBlock, String> nodeTypeNames) {
+	override String compileNACs(String ruleName, Collection<TripleRuleNAC> nacs, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, String> paramsToValue) {
 		val nacPatterns = nacs.map[it.pattern]
 		if(nacPatterns.isEmpty)
 			""
