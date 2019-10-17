@@ -1217,7 +1217,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	/**
 	 * Checks that there are no parameters in patterns.
 	 */
-	@Check
+//	@Check
 	def void disallowParametersForModels(Pattern pattern) {
 		for(nodeBlock : pattern.body.nodeBlocks)
 			for(prop : nodeBlock.properties)
