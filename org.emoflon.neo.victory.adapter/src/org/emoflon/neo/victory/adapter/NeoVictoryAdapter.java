@@ -35,10 +35,10 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 		victory = new Victory();
 	}
 
-	@Override
-	public Collection<Rule> getAllRules() {
-		return Collections.unmodifiableCollection(rules);
-	}
+    @Override
+    public Collection<Rule> getAllRules() {
+	return Collections.unmodifiableCollection(rules);
+    }
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {

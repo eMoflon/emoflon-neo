@@ -1,7 +1,7 @@
 package org.emoflon.neo.victory.adapter
 
 import org.emoflon.neo.engine.api.patterns.IMatch
-import org.emoflon.victory.ui.api.Rule
+import org.emoflon.ibex.tgg.ui.debug.api.Rule
 
 class MatchQuery {
 	static def String create(IMatch match, Rule rule, int neighbourhoodSize) {

@@ -1,5 +1,7 @@
 package org.emoflon.neo.victory.adapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,40 +11,55 @@ import org.emoflon.victory.ui.api.enums.Action;
 import org.emoflon.victory.ui.api.enums.Domain;
 
 public class NeoNodeAdapter implements Node {
-	private ModelNodeBlock node;
-	private Domain domain;
-	private Action action;
+    private Domain domain;
+    private Action action;
+    private List<String> attributes;
+    private String type;
+    private String name;
 
-	public NeoNodeAdapter(ModelNodeBlock node, Domain domain, Action action) {
-		this.node = node;
-		this.domain = domain;
-		this.action = action;
-	}
+    public NeoNodeAdapter(ModelNodeBlock node, Domain domain, Action action) {
+	this.domain = domain;
+	this.action = action;
+	attributes = node.getProperties().stream()//
+		.map(p -> p.getType().getName() + " " + p.getOp().getName() + " " + p.getValue())//
+		.collect(Collectors.toList());
+	type = node.getType().getName();
+	name = node.getName();
+    }
 
-	@Override
-	public String getType() {
-		return node.getType().getName();
-	}
+    public NeoNodeAdapter(org.neo4j.driver.v1.types.Node node) {
 
-	@Override
-	public String getName() {
-		return node.getName();
-	}
+	// TODO: logically assign domain and action to model nodes
+	this.domain = domain.SRC;
+	this.action = action.CONTEXT;
 
-	@Override
-	public Domain getDomain() {
-		return domain;
-	}
+	attributes = Arrays.asList(node.labels().toString());
+	name = node.labels().toString() + node.id();
+	type = node.asMap().get("ename").toString();
+    }
 
-	@Override
-	public Action getAction() {
-		return action;
-	}
+    @Override
+    public String getType() {
+	return type;
+    }
 
-	@Override
-	public List<String> getAttributes() {
-		return node.getProperties().stream()//
-				.map(p -> p.getType().getName() + " " + p.getOp().getName() + " " + p.getValue())//
-				.collect(Collectors.toList());
-	}
+    @Override
+    public String getName() {
+	return name;
+    }
+
+    @Override
+    public Domain getDomain() {
+	return domain;
+    }
+
+    @Override
+    public Action getAction() {
+	return action;
+    }
+
+    @Override
+    public List<String> getAttributes() {
+	return attributes;
+    }
 }
