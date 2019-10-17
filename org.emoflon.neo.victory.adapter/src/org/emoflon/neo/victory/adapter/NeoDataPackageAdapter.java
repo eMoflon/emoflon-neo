@@ -14,25 +14,25 @@ import org.emoflon.victory.ui.api.Match;
 import org.emoflon.victory.ui.api.RuleApplication;
 
 public class NeoDataPackageAdapter implements DataPackage {
-    private MatchContainer<NeoMatch, NeoCoMatch> matches;
-    private Collection<NeoRuleAdapter> rules;
-    private NeoCoreBuilder builder;
+	private MatchContainer<NeoMatch, NeoCoMatch> matches;
+	private Collection<NeoRuleAdapter> rules;
+	private NeoCoreBuilder builder;
 
-    public NeoDataPackageAdapter(NeoCoreBuilder builder, MatchContainer<NeoMatch, NeoCoMatch> matches,
-	    Collection<NeoRuleAdapter> rules) {
-	this.matches = matches;
-	this.rules = rules;
-	this.builder = builder;
-    }
+	public NeoDataPackageAdapter(NeoCoreBuilder builder, MatchContainer<NeoMatch, NeoCoMatch> matches,
+			Collection<NeoRuleAdapter> rules) {
+		this.matches = matches;
+		this.rules = rules;
+		this.builder = builder;
+	}
 
-    @Override
-    public Collection<Match> getMatches() {
-	return matches.streamAllMAtches().map(m -> new NeoMatchAdapter(builder, m, rules)).collect(Collectors.toList());
-    }
+	@Override
+	public Collection<Match> getMatches() {
+		return matches.streamAllMatches().map(m -> new NeoMatchAdapter(builder, m, rules)).collect(Collectors.toList());
+	}
 
-    @Override
-    public List<RuleApplication> getRuleApplications() {
-	return Collections.emptyList();
-    }
+	@Override
+	public List<RuleApplication> getRuleApplications() {
+		return Collections.emptyList();
+	}
 
 }

@@ -35,20 +35,21 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 		victory = new Victory();
 	}
 
-    @Override
-    public Collection<Rule> getAllRules() {
-	return Collections.unmodifiableCollection(rules);
-    }
+	@Override
+	public Collection<Rule> getAllRules() {
+		return Collections.unmodifiableCollection(rules);
+	}
 
 	@Override
-	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
 		var selection = new ArrayList<NeoMatch>();
 		var selected = (NeoMatchAdapter) victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
-		selection.add((NeoMatch)selected.getWrappedMatch());
-		
+		selection.add((NeoMatch) selected.getWrappedMatch());
+
 		var ruleName = selected.getWrappedMatch().getPattern().getName();
 		var rule = matches.getAllRulesToMatches().keySet().stream().filter(r -> r.getName().equals(ruleName)).findAny();
-		
+
 		return Map.of(rule.get(), selection);
 	}
 
@@ -58,8 +59,8 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 			public void run() {
 				generator.generate();
 			};
-		};		
-		
+		};
+
 		victory.run(this, matchProvider);
 	}
 
