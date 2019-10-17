@@ -42,7 +42,6 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
-import org.apache.log4j.Logger
 
 /**
  * This class contains custom scoping description.
@@ -51,8 +50,6 @@ import org.apache.log4j.Logger
  * on how and when to use it.
  */
 class EMSLScopeProvider extends AbstractEMSLScopeProvider {
-	
-	static Logger logger = Logger.getLogger(EMSLScopeProvider)
 
 	override getScope(EObject context, EReference reference) {
 		if (superTypeOfMetamodelNodeBlock(context, reference)) {

@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.ui.debug.api.DataPackage;
-import org.emoflon.ibex.tgg.ui.debug.api.Match;
-import org.emoflon.ibex.tgg.ui.debug.api.RuleApplication;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.victory.ui.api.DataPackage;
+import org.emoflon.victory.ui.api.Match;
+import org.emoflon.victory.ui.api.RuleApplication;
 
 public class NeoDataPackageAdapter implements DataPackage {
 	private MatchContainer<NeoMatch, NeoCoMatch> matches;

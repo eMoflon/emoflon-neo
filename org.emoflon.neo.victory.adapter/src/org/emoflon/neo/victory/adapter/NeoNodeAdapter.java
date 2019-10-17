@@ -1,39 +1,38 @@
 package org.emoflon.neo.victory.adapter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.ui.debug.api.Node;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.Action;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.Domain;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.victory.ui.api.Node;
+import org.emoflon.victory.ui.api.enums.Action;
+import org.emoflon.victory.ui.api.enums.Domain;
 
 public class NeoNodeAdapter implements Node {
 	private Domain domain;
 	private Action action;
 	private List<String> attributes;
 	private String type;
-	private String name; 
+	private String name;
 
 	public NeoNodeAdapter(ModelNodeBlock node, Domain domain, Action action) {
 		this.domain = domain;
 		this.action = action;
 		attributes = node.getProperties().stream()//
-			.map(p -> p.getType().getName() + " " + p.getOp().getName() + " " + p.getValue())//
-			.collect(Collectors.toList());
+				.map(p -> p.getType().getName() + " " + p.getOp().getName() + " " + p.getValue())//
+				.collect(Collectors.toList());
 		type = node.getType().getName();
 		name = node.getName();
 	}
-	
+
 	public NeoNodeAdapter(org.neo4j.driver.v1.types.Node node) {
-	    
-		this.domain = domain.SRC;
-		this.action = action.CONTEXT;
-		
+
+		this.domain = Domain.SRC;
+		this.action = Action.CONTEXT;
+
 		attributes = Arrays.asList(node.labels().toString());
-		name= node.labels().toString() + node.id();
+		name = node.labels().toString() + node.id();
 		type = node.asMap().get("ename").toString();
 	}
 
@@ -59,6 +58,6 @@ public class NeoNodeAdapter implements Node {
 
 	@Override
 	public List<String> getAttributes() {
-	    return attributes;
+		return attributes;
 	}
 }
