@@ -104,13 +104,14 @@ class TGGCompiler {
 
 	private def compileRule(Operation op, TripleRule rule) {
 
-		val paramsToValue = new HashMap<Parameter, String>
-		val paramsToDomain = new HashMap<Parameter, ParameterDomain>
+		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
-		val paramsToContainingProperty = new HashMap<Parameter, String>
-		collectParameters(rule.srcNodeBlocks, paramsToValue, paramsToDomain, ParameterDomain.SRC, paramGroups, paramsToContainingProperty)
-		collectParameters(rule.trgNodeBlocks, paramsToValue, paramsToDomain, ParameterDomain.TRG, paramGroups, paramsToContainingProperty)
-		op.handleParameters(paramsToValue, paramsToContainingProperty, paramsToDomain, paramGroups)
+		
+		collectParameters(rule.srcNodeBlocks, ParameterDomain.SRC, paramsToData, paramGroups)
+		collectParameters(rule.trgNodeBlocks, ParameterDomain.TRG, paramsToData, paramGroups)
+		collectParameters(rule.nacs.flatMap[it.pattern.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
+		
+		op.handleParameters(paramsToData, paramGroups)
 		
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
 		for (Correspondence corr : rule.correspondences) {
@@ -119,61 +120,71 @@ class TGGCompiler {
 			srcToCorr.get(corr.source).add(corr)
 		}
 		
-		val nacString = op.compileNACs(rule.name, rule.nacs, nodeTypeNames)
+		val nacPatterns = op.preprocessNACs(rule.nacs).map[it.pattern]
 		
 		'''
 			rule «rule.name» {
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToValue)»
+					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData)»
 				«ENDFOR»
 			
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToValue)»
+					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData)»
 				«ENDFOR»
-			} «IF !nacString.isEmpty»when «rule.name»NAC«ENDIF»
+			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
-			«nacString»
+			«IF(nacPatterns.size === 1)»
+				«val nac = nacPatterns.head»
+				constraint «rule.name»NAC = forbid «nac.name»
+
+				«TGGCompilerUtils.printAtomicPattern(nac, nodeTypeNames, paramsToData)»
+			«ELSEIF(nacPatterns.size > 1)»
+					constraint «rule.name»NAC = «FOR nac : nacPatterns SEPARATOR '&&'»«nac.name»NAC«ENDFOR»
+					
+					«FOR nac : nacPatterns»
+						constraint «nac.name»NAC = forbid «nac.name»
+					
+						«TGGCompilerUtils.printAtomicPattern(nac, nodeTypeNames, paramsToData)»
+					«ENDFOR»
+			«ENDIF»
 		'''
 	}
 	
 	private def collectParameters(Iterable<ModelNodeBlock> nodeBlocks,
-									Map<Parameter, String> paramsToValue,
-									Map<Parameter, ParameterDomain> paramsToDomain,
 									ParameterDomain domain,
-									Map<String, Collection<Parameter>> paramGroups,
-									Map<Parameter, String> paramsToContainingProperty
-	) {
+									Map<Parameter, ParameterData> paramsToData,
+									Map<String, Collection<Parameter>> paramGroups) {
 		for(nodeBlock : nodeBlocks)
 			for(prop : nodeBlock.properties)
 				if(prop.value instanceof Parameter) {
 					val param = prop.value as Parameter
-					paramsToValue.put(param, '''<«param.name»>''')
-					paramsToDomain.put(param, domain)
-					paramsToContainingProperty.put(param, '''«nodeBlock.name»::«prop.type.name»''')
+					
+					paramsToData.put(param, new ParameterData(param.name, domain, nodeBlock, prop.type.name))
+					
 					if(!paramGroups.containsKey(param.name))
 						paramGroups.put(param.name, new HashSet)
 					paramGroups.get(param.name).add(param)
 				}
 	}
 
-	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, String> paramsToValues) {
+	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
 		'''
 			«op.getAction(nodeBlock.action, isSrc)»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
 				«FOR relation : nodeBlock.relations»
-					«compileRelationStatement(op, relation, isSrc, paramsToValues)»
+					«compileRelationStatement(op, relation, isSrc, paramsToData)»
 				«ENDFOR»
 				«FOR corr : corrs»
 					«compileCorrespondence(op, corr)»
 				«ENDFOR»
 				«FOR property : nodeBlock.properties»
-					«compilePropertyStatement(op, property, isSrc, paramsToValues)»
+					«compilePropertyStatement(op, property, isSrc, paramsToData)»
 				«ENDFOR»
 				«op.getTranslation(nodeBlock.action, isSrc)»
 			}
 		'''
 	}
 
-	private def compileRelationStatement(Operation op, ModelRelationStatement relationStatement, boolean isSrc, Map<Parameter, String> paramsToValues) {
+	private def compileRelationStatement(Operation op, ModelRelationStatement relationStatement, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
 		val translate = op.getTranslation(relationStatement.action, isSrc)
 		val hasProperties = relationStatement.properties !== null && !relationStatement.properties.empty
 		'''
@@ -182,7 +193,7 @@ class TGGCompiler {
 				{
 					«IF hasProperties»
 						«FOR property : relationStatement.properties»
-							«compilePropertyStatement(op, property, isSrc, paramsToValues)»
+							«compilePropertyStatement(op, property, isSrc, paramsToData)»
 						«ENDFOR»
 					«ENDIF»
 					«translate»
@@ -205,11 +216,15 @@ class TGGCompiler {
 		op.compileCorrespondence(correspondence)
 	}
 
-	private def compilePropertyStatement(Operation op, ModelPropertyStatement propertyStatement, boolean isSrc, Map<Parameter, String> paramsToValues) {
+	private def compilePropertyStatement(Operation op, ModelPropertyStatement propertyStatement, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
 		if(propertyStatement.value instanceof Parameter) {
-			val param = propertyStatement.value as Parameter
-			if(paramsToValues.get(param) === null) ""
-			else '''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramsToValues.get(param)»'''
-		} else '''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
+			val paramValue = paramsToData.get(propertyStatement.value as Parameter).printValue
+			if(paramValue === null)
+				""
+			else
+				'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramValue»'''
+		}
+		else
+			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 }

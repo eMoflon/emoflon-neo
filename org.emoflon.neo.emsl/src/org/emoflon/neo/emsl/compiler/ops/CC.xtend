@@ -6,7 +6,9 @@ import java.util.Map
 import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
-import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.compiler.ParameterData
+import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
+import java.util.Collections
 
 class CC implements Operation {
 	override String getNameExtension() {
@@ -21,12 +23,12 @@ class CC implements Operation {
 		return ""
 	}
 	
-	override handleParameters(Map<Parameter, String> paramsToValue, Map<Parameter, String> paramsToContainingProperty, Map<Parameter, ParameterDomain> paramsToDomain, Map<String, Collection<Parameter>> paramGroups) {
+	override handleParameters(Map<Parameter, ParameterData> paramsToData, Map<String, Collection<Parameter>> paramGroups) {
 		 for(group : paramGroups.values) {
-		 	val representative = group.head
+			val representative = paramsToData.get(group.head)
 			for(param : group)
-				paramsToValue.put(param, paramsToContainingProperty.get(representative))
-	 		paramsToValue.put(representative, null)
+				paramsToData.get(param).map(representative.containingBlock, representative.containingPropertyName)
+	 		representative.map(null, null)
 		 }
 	}
 	
@@ -35,5 +37,9 @@ class CC implements Operation {
 			ConditionOperator.EQ.literal
 		else
 			propOp.literal
+	}
+
+	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {
+		return Collections.emptyList
 	}
 }

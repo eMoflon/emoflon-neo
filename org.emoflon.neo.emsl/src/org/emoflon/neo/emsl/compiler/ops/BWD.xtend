@@ -8,6 +8,9 @@ import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.compiler.ParameterData
+import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
+import org.emoflon.neo.emsl.eMSL.TargetNAC
 
 class BWD implements Operation {
 	override String getNameExtension() {
@@ -24,13 +27,13 @@ class BWD implements Operation {
 				pAction.getOp())) return "~_tr_ : true" else return "~_tr_ : false\n~_tr_ := true" else return ""
 	}
 	
-	override handleParameters(Map<Parameter, String> paramsToValue, Map<Parameter, String> paramsToContainingProperty, Map<Parameter, ParameterDomain> paramsToDomain, Map<String, Collection<Parameter>> paramGroups) {
+	override handleParameters(Map<Parameter, ParameterData> paramsToData, Map<String, Collection<Parameter>> paramGroups) {
 		 for(group : paramGroups.values) {
-		 	val representative = group.findFirst[param | paramsToDomain.get(param).equals(ParameterDomain.TRG)]
+		 	val representative = paramsToData.get(group.findFirst[param | paramsToData.get(param).domain.equals(ParameterDomain.TRG)])
 		 	if(representative !== null) {
 		 		for(param : group)
-		 			paramsToValue.put(param, paramsToContainingProperty.get(representative)) 
-		 		paramsToValue.put(representative, null)
+		 			paramsToData.get(param).map(representative.containingBlock, representative.containingPropertyName)
+		 		representative.map(null, null)
 		 	}
 		 }
 	}
@@ -40,5 +43,9 @@ class BWD implements Operation {
 			ConditionOperator.EQ.literal
 		else
 			propOp.literal
+	}
+
+	override preprocessNACs(Iterable<TripleRuleNAC> nacs) {
+		return nacs.reject[it instanceof TargetNAC]
 	}
 }

@@ -16,6 +16,9 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import com.google.common.collect.BiMap
+import java.util.Map
+import java.util.HashSet
+import java.util.Collection
 
 class TGGCompilerUtils {
 	enum ParameterDomain {
@@ -52,44 +55,60 @@ class TGGCompilerUtils {
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
 
-	def static String simplePrintAtomicPattern(AtomicPattern pattern, BiMap<MetamodelNodeBlock, String> nodeTypeNames) {
+	def static String printAtomicPattern(AtomicPattern pattern, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData) {
+		val requiredNodeBlocks = new HashSet
 		'''
 			pattern «pattern.name» {
 				«FOR nodeBlock : pattern.nodeBlocks»
-					«simplePrintNodeBlock(nodeBlock, nodeTypeNames)»
+					«simplePrintNodeBlock(nodeBlock, nodeTypeNames, paramsToData, requiredNodeBlocks)»
+				«ENDFOR»
+				
+				«FOR nodeBlock : requiredNodeBlocks»
+					«IF !pattern.nodeBlocks.exists[it.name.equals(nodeBlock.name)]»
+						«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)»
+					«ENDIF»
 				«ENDFOR»
 			}
 		'''
 	}
 	
-	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, BiMap<MetamodelNodeBlock, String> nodeTypeNames) {
-		val nodeTypeName = if(nodeTypeNames.containsKey(nodeBlock.type)) nodeTypeNames.get(nodeBlock.type) else nodeBlock.type.name
+	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks) {
 		'''
-			«nodeBlock.name» : «nodeTypeName» {
+			«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)» {
 				«FOR relation : nodeBlock.relations»
-					«simplePrintRelationStatement(relation)»
+					«simplePrintRelationStatement(relation, paramsToData, requiredNodeBlocks)»
 				«ENDFOR»
 				«FOR property : nodeBlock.properties»
-					«simplePrintPropertyStatement(property)»
+					«simplePrintPropertyStatement(property, paramsToData, requiredNodeBlocks)»
 				«ENDFOR»
 			}
 		'''
 	}
 	
-	def static String simplePrintRelationStatement(ModelRelationStatement relationStatement) {
+	def static String simplePrintRelationStatement(ModelRelationStatement relationStatement, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks) {
 		'''
 			-«FOR type : relationStatement.types SEPARATOR '|'»«type.type.name»«ENDFOR»->«relationStatement.target.name»
 			«IF  relationStatement.properties !== null && !relationStatement.properties.empty»
 				{
 					«FOR property : relationStatement.properties»
-						«simplePrintPropertyStatement(property)»
+						«simplePrintPropertyStatement(property, paramsToData, requiredNodeBlocks)»
 					«ENDFOR»
 				}
 			«ENDIF»
 		'''
 	}
 	
-	def static String simplePrintPropertyStatement(ModelPropertyStatement propertyStatement) {
-		'''.«propertyStatement.type.name» «propertyStatement.op» «handleValue(propertyStatement.value)»'''
+	def static String simplePrintPropertyStatement(ModelPropertyStatement propertyStatement, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks) {
+		if(propertyStatement.value instanceof Parameter) {
+			val paramData = paramsToData.get(propertyStatement.value as Parameter)
+			requiredNodeBlocks.add(paramData.containingBlock)
+			val paramValue = paramData.printValue
+			if(paramValue === null)
+				""
+			else
+				'''.«propertyStatement.type.name» «propertyStatement.op» «paramValue»'''
+		}
+		else
+			'''.«propertyStatement.type.name» «propertyStatement.op» «handleValue(propertyStatement.value)»'''
 	}
 }
