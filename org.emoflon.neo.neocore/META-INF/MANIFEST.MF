@@ -4,7 +4,9 @@ Bundle-Name: NeoCore
 Bundle-SymbolicName: org.emoflon.neo.neocore
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.emoflon.neo.neocore.Activator
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.emoflon.neo.neo4j.adapter
 Automatic-Module-Name: org.emoflon.neo.neocore
 Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.neo.neocore
+Bundle-RequiredExecutionEnvironment: JavaSE-12

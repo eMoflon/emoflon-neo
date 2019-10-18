@@ -47,6 +47,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 	public ILPBasedOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules,
 			Collection<IConstraint> negativeConstraints) {
+		matchToId = new HashMap<>();
+		matchToCreatedElements = new HashMap<>();
+		elementToCreatingMatches = new HashMap<>();
+		elementToDependentMatches = new HashMap<>();
+		
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
 
@@ -84,11 +89,6 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	protected void registerMatches(Stream<? extends IMatch> matches) {
-		matchToId = new HashMap<>();
-		matchToCreatedElements = new HashMap<>();
-		elementToCreatingMatches = new HashMap<>();
-		elementToDependentMatches = new HashMap<>();
-
 		matches.forEach(m -> {
 			matchToId.put(m, varName(variableCounter++));
 

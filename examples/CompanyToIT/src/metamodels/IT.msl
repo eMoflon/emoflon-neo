@@ -24,3 +24,21 @@ metamodel IT {
 		.name : EString
 	}
 }
+
+pattern DifferentITThanRouter {
+	it1:IT {
+		-router->r
+	}
+	
+	it2:IT {
+		-network->n
+	}
+	
+	r:Router {
+		-network->n
+	}
+	
+	n:Network
+}
+
+constraint NoDifferentITThanRouter = forbid DifferentITThanRouter

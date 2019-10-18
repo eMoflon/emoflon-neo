@@ -15,10 +15,15 @@ import org.emoflon.neo.engine.api.rules.IRule;
 
 public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	private Map<IRule<M, C>, Collection<M>> rulesToMatches;
+	private Map<IRule<M, C>, Integer> ruleApplications;
 
 	public MatchContainer(Collection<IRule<M, C>> allRules) {
 		rulesToMatches = new HashMap<>();
-		allRules.forEach(rule -> rulesToMatches.put(rule, new HashSet<>()));
+		ruleApplications = new HashMap<>();
+		allRules.forEach(rule -> {
+			rulesToMatches.put(rule, new HashSet<>());
+			ruleApplications.put(rule, 0);
+		});
 	}
 
 	public void addAll(Collection<M> matches, IRule<M, C> rule) {
@@ -39,24 +44,34 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 				.filter(rule -> !rulesToMatches.get(rule).isEmpty())//
 				.collect(Collectors.toList());
 	}
-	
+
 	public void clear() {
 		rulesToMatches.forEach((r, matches) -> matches.clear());
 	}
-	
+
 	public Stream<M> streamAllMatches() {
 		return rulesToMatches.values().stream().flatMap(matches -> matches.stream());
 	}
-	
+
 	public Stream<Entry<IRule<M, C>, Collection<M>>> stream() {
 		return rulesToMatches.entrySet().stream();
 	}
-	
-	public Map<IRule<M, C>, Collection<M>> getAllRulesToMatches(){
+
+	public Map<IRule<M, C>, Collection<M>> getAllRulesToMatches() {
 		return Map.copyOf(rulesToMatches);
 	}
-	
-	public Stream<M> matchesForRule(IRule<M, C> rule){
+
+	public Stream<M> matchesForRule(IRule<M, C> rule) {
 		return rulesToMatches.get(rule).stream();
+	}
+
+	public void appliedRule(IRule<M, C> rule, int noOfApplications) {
+		var before = ruleApplications.get(rule);
+		var after = before + noOfApplications;
+		ruleApplications.put(rule, after);
+	}
+
+	public int getNoOfRuleApplicationsFor(IRule<M, C> rule) {
+		return ruleApplications.get(rule);
 	}
 }

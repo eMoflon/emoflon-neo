@@ -1,7 +1,7 @@
 package org.emoflon.neo.victory.adapter;
 
-import org.emoflon.ibex.tgg.ui.debug.api.RuleApplication;
-import org.emoflon.ibex.tgg.ui.debug.api.RuleApplicationMerger;
+import org.emoflon.victory.ui.api.RuleApplication;
+import org.emoflon.victory.ui.api.RuleApplicationMerger;
 
 public class NeoProtocolStepAdapter implements RuleApplication {
 

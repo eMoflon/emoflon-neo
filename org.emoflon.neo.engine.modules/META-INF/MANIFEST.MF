@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.emoflon.neo.engine.modules
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
  gurobi,
+ org.emoflon.neo.engine.modules,
  org.emoflon.neo.engine.modules.ilp,
  org.emoflon.neo.engine.modules.matchreprocessors,
  org.emoflon.neo.engine.modules.monitors,
@@ -19,3 +20,4 @@ Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.sat4j.pb;bundle-version="2.3.5";visibility:=reexport
 Bundle-ClassPath: lib/gurobi.jar,
  .
+Bundle-RequiredExecutionEnvironment: JavaSE-12

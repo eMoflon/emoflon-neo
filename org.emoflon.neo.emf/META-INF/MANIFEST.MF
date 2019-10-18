@@ -13,3 +13,4 @@ Require-Bundle: org.apache.commons.io;bundle-version="2.2.0";visibility:=reexpor
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro
 Automatic-Module-Name: org.emoflon.neo.emf
+Bundle-RequiredExecutionEnvironment: JavaSE-12

@@ -4,8 +4,9 @@ Bundle-Name: Adapter
 Bundle-SymbolicName: org.emoflon.neo.victory.adapter
 Bundle-Version: 1.0.0.qualifier
 Export-Package: org.emoflon.neo.victory.adapter
-Require-Bundle: org.emoflon.ibex.tgg.ui.debug;bundle-version="1.0.0",
+Require-Bundle: org.emoflon.victory.ui;bundle-version="1.0.0",
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.emsl,
  org.emoflon.neo.neo4j.adapter
 Automatic-Module-Name: org.emoflon.neo.victory.adapter
+Bundle-RequiredExecutionEnvironment: JavaSE-12
