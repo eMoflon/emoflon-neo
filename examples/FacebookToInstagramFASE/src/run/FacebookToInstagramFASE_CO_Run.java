@@ -41,16 +41,19 @@ public class FacebookToInstagramFASE_CO_Run {
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
 					negativeConstraints);
-
+			
+			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
+			
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(),
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //
 					new HeartBeatAndReportMonitor());
 
-			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
-			generator.generate(coAPI.getAllRulesForFacebookToInstagramGrammar__CO());
+			
+			generator.generate();
 
 			logger.info("Invoking ILP solver...");
 			if (checkOnly.isConsistent(solver))

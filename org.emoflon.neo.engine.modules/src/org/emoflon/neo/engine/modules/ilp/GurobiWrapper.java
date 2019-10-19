@@ -149,7 +149,7 @@ final class GurobiWrapper extends ILPSolver {
 			solutionVariables.put(variableId, (int) gurobiVar.get(DoubleAttr.X));
 		}
 
-		ILPSolver.logger.debug("Gurobi found solution: " + optimum + " - Optimal: " + optimal);
+		ILPSolver.logger.info("Gurobi found solution: " + optimum + " - Optimal: " + optimal);
 
 		this.env.dispose();
 		this.model.dispose();

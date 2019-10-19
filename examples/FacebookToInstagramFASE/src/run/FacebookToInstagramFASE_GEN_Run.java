@@ -25,16 +25,17 @@ public class FacebookToInstagramFASE_GEN_Run {
 		try {
 			var api = new API_Transformations(builder);
 			api.exportMetamodelsForFacebookToInstagramGrammar();
-
+			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
+			
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
-					new TimedTerminationCondition(3000), 
+					genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(), new TimedTerminationCondition(3000), 
 					new AllRulesAllMatchesScheduler(), //
 					new RandomSingleMatchUpdatePolicy(), //
 					new ParanoidNeoReprocessor(), //
 					new HeartBeatAndReportMonitor());
 
-			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);			
-			generator.generate(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN());
+						
+			generator.generate();
 			
 			logger.info("Generation done.");
 		} finally {
