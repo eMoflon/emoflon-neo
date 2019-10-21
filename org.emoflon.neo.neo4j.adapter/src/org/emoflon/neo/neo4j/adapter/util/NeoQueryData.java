@@ -14,6 +14,7 @@ import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoProperty;
@@ -338,6 +339,8 @@ public class NeoQueryData {
 		var nodeAttrAsgn = new ArrayList<NeoAttributeExpression>();
 		
 		for(var p : props) {
+			if(p.getValue() instanceof Parameter)
+				continue;
             
             switch(p.getOp()) {
             case EQ:

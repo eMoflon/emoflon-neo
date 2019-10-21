@@ -21,17 +21,20 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
-import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.Parameter
+import java.util.Map
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 
 class TGGCompiler {
+	
 	final String BASE_FOLDER = "../" + EMSLGenerator.TGG_GEN_FOLDER + "/";
 	final String pathToGeneratedFiles
 	TripleGrammar tgg
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
 
-	new(TripleGrammar pTGG, String pathToGeneratedFiles) {
-		tgg = pTGG
+	new(TripleGrammar tgg, String pathToGeneratedFiles) {
+		this.tgg = tgg
 		this.pathToGeneratedFiles = pathToGeneratedFiles
 
 		val allMetamodels = tgg.srcMetamodels + tgg.trgMetamodels
@@ -39,36 +42,36 @@ class TGGCompiler {
 		mapTypeNames(allMetamodels)
 	}
 
-	def void compileAll(IFileSystemAccess2 pFSA) {
+	def void compileAll(IFileSystemAccess2 fsa) {
 		for (Operation operation : Operation.allOps) {
 			val fileLocation = BASE_FOLDER + pathToGeneratedFiles + "/" + tgg.name + operation.nameExtension + ".msl"
-			pFSA.generateFile(fileLocation, compile(operation))
+			fsa.generateFile(fileLocation, compile(operation))
 		}
 	}
 
-	private def String compile(Operation pOp) {
+	private def String compile(Operation op) {
 		val flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
 		'''
 			«importStatements»
 			
-			grammar «tgg.name»_«pOp.nameExtension» {
+			grammar «tgg.name»_«op.nameExtension» {
 				«FOR rule : flattenedRules»
 					«rule.name»
 				«ENDFOR»
 			}
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
-				«compileRule(pOp, rule)»
+				«compileRule(op, rule)»
 			«ENDFOR»
 		'''
 	}
 
-	private def mapTypeNames(Iterable<Metamodel> pMetamodels) {
+	private def mapTypeNames(Iterable<Metamodel> metamodels) {
 		nodeTypeNames = HashBiMap.create()
 
 		val nodeTypeToMetamodelName = new HashMap
 		val relationTypeToNodeName = new HashMap
-		for (Metamodel metamodel : pMetamodels)
+		for (Metamodel metamodel : metamodels)
 			for (MetamodelNodeBlock nodeType : metamodel.nodeBlocks) {
 				nodeTypeToMetamodelName.put(nodeType, metamodel.name)
 				for (MetamodelRelationStatement relationType : nodeType.relations)
@@ -90,8 +93,8 @@ class TGGCompiler {
 		}
 	}
 
-	private def buildImportStatement(Iterable<Metamodel> pMetamodels) {
-		val resourcesToImport = pMetamodels.map[it.eResource.URI].toSet
+	private def buildImportStatement(Iterable<Metamodel> metamodels) {
+		val resourcesToImport = metamodels.map[it.eResource.URI].toSet
 		importStatements = '''
 			«FOR uri : resourcesToImport»
 				import "«uri»"
@@ -99,55 +102,98 @@ class TGGCompiler {
 		'''
 	}
 
-	private def compileRule(Operation pOp, TripleRule pRule) {
+	private def compileRule(Operation op, TripleRule rule) {
 
+		val paramsToData = new HashMap<Parameter, ParameterData>
+		val paramGroups = new HashMap<String, Collection<Parameter>>
+		
+		collectParameters(rule.srcNodeBlocks, ParameterDomain.SRC, paramsToData, paramGroups)
+		collectParameters(rule.trgNodeBlocks, ParameterDomain.TRG, paramsToData, paramGroups)
+		collectParameters(rule.nacs.flatMap[it.pattern.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
+		
+		op.handleParameters(paramsToData, paramGroups)
+		
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
-		for (Correspondence corr : pRule.correspondences) {
+		for (Correspondence corr : rule.correspondences) {
 			if (!srcToCorr.containsKey(corr.source))
 				srcToCorr.put(corr.source, new HashSet())
 			srcToCorr.get(corr.source).add(corr)
 		}
-
+		
+		val nacPatterns = op.preprocessNACs(rule.nacs).map[it.pattern]
+		
 		'''
-			rule «pRule.name» {
-				«FOR srcBlock : pRule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(pOp, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true)»
+			rule «rule.name» {
+				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
+					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData)»
 				«ENDFOR»
 			
-				«FOR trgBlock : pRule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(pOp, trgBlock, Collections.emptySet, false)»
+				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
+					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData)»
 				«ENDFOR»
+			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
+			
+			«IF(nacPatterns.size === 1)»
+				«val nac = nacPatterns.head»
+				constraint «rule.name»NAC = forbid «nac.name»
+
+				«TGGCompilerUtils.printAtomicPattern(nac, nodeTypeNames, paramsToData)»
+			«ELSEIF(nacPatterns.size > 1)»
+					constraint «rule.name»NAC = «FOR nac : nacPatterns SEPARATOR '&&'»«nac.name»NAC«ENDFOR»
+					
+					«FOR nac : nacPatterns»
+						constraint «nac.name»NAC = forbid «nac.name»
+					
+						«TGGCompilerUtils.printAtomicPattern(nac, nodeTypeNames, paramsToData)»
+					«ENDFOR»
+			«ENDIF»
+		'''
+	}
+	
+	private def collectParameters(Iterable<ModelNodeBlock> nodeBlocks,
+									ParameterDomain domain,
+									Map<Parameter, ParameterData> paramsToData,
+									Map<String, Collection<Parameter>> paramGroups) {
+		for(nodeBlock : nodeBlocks)
+			for(prop : nodeBlock.properties)
+				if(prop.value instanceof Parameter) {
+					val param = prop.value as Parameter
+					
+					paramsToData.put(param, new ParameterData(param.name, domain, nodeBlock, prop.type.name))
+					
+					if(!paramGroups.containsKey(param.name))
+						paramGroups.put(param.name, new HashSet)
+					paramGroups.get(param.name).add(param)
+				}
+	}
+
+	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
+		'''
+			«op.getAction(nodeBlock.action, isSrc)»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
+				«FOR relation : nodeBlock.relations»
+					«compileRelationStatement(op, relation, isSrc, paramsToData)»
+				«ENDFOR»
+				«FOR corr : corrs»
+					«compileCorrespondence(op, corr)»
+				«ENDFOR»
+				«FOR property : nodeBlock.properties»
+					«compilePropertyStatement(op, property, isSrc, paramsToData)»
+				«ENDFOR»
+				«op.getTranslation(nodeBlock.action, isSrc)»
 			}
 		'''
 	}
 
-	private def compileModelNodeBlock(Operation pOp, ModelNodeBlock pNodeBlock, Collection<Correspondence> pCorrs, boolean pIsSrc) {
+	private def compileRelationStatement(Operation op, ModelRelationStatement relationStatement, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
+		val translate = op.getTranslation(relationStatement.action, isSrc)
+		val hasProperties = relationStatement.properties !== null && !relationStatement.properties.empty
 		'''
-			«pOp.getAction(pNodeBlock.action, pIsSrc)»«pNodeBlock.name»:«nodeTypeNames.get(pNodeBlock.type)» {
-				«FOR relation : pNodeBlock.relations»
-					«compileRelationStatement(pOp, relation, pIsSrc)»
-				«ENDFOR»
-				«FOR corr : pCorrs»
-					«compileCorrespondence(pOp, corr)»
-				«ENDFOR»
-				«FOR property : pNodeBlock.properties»
-					«compilePropertyStatement(property)»
-				«ENDFOR»
-				«pOp.getTranslation(pNodeBlock.action, pIsSrc)»
-			}
-		'''
-	}
-
-	private def compileRelationStatement(Operation pOp, ModelRelationStatement pRelationStatement, boolean pIsSrc) {
-		val translate = pOp.getTranslation(pRelationStatement.action, pIsSrc)
-		val hasProperties = pRelationStatement.properties !== null && !pRelationStatement.properties.empty
-		'''
-			«pOp.getAction(pRelationStatement.action, pIsSrc)»-«compileRelationTypes(pRelationStatement.types)»->«pRelationStatement.target.name»
+			«op.getAction(relationStatement.action, isSrc)»-«compileRelationTypes(relationStatement.types)»->«relationStatement.target.name»
 			«IF !translate.empty || hasProperties»
 				{
 					«IF hasProperties»
-						«FOR property : pRelationStatement.properties»
-							«compilePropertyStatement(property)»
+						«FOR property : relationStatement.properties»
+							«compilePropertyStatement(op, property, isSrc, paramsToData)»
 						«ENDFOR»
 					«ENDIF»
 					«translate»
@@ -156,23 +202,29 @@ class TGGCompiler {
 		'''
 	}
 
-	private def compileRelationTypes(List<ModelRelationStatementType> pTypes) {
-		var types = ""
-		for (ModelRelationStatementType type : pTypes) {
-			if (types !== "")
-				types += "|"
-			types += type.type.name
+	private def compileRelationTypes(List<ModelRelationStatementType> types) {
+		var typeString = ""
+		for (ModelRelationStatementType type : types) {
+			if (typeString !== "")
+				typeString += "|"
+			typeString += type.type.name
 		}
-		return types
+		return typeString
 	}
 
-	private def compileCorrespondence(Operation pOp, Correspondence pCorrespondence) {
-		pOp.compileCorrespondence(pCorrespondence)
+	private def compileCorrespondence(Operation op, Correspondence correspondence) {
+		op.compileCorrespondence(correspondence)
 	}
 
-	private def compilePropertyStatement(ModelPropertyStatement pPropertyStatement) {
-		'''
-			.«pPropertyStatement.type.name» «pPropertyStatement.op.literal» «EMSLUtil.handleValue(pPropertyStatement.value)»
-		'''
+	private def compilePropertyStatement(Operation op, ModelPropertyStatement propertyStatement, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
+		if(propertyStatement.value instanceof Parameter) {
+			val paramValue = paramsToData.get(propertyStatement.value as Parameter).printValue
+			if(paramValue === null)
+				""
+			else
+				'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramValue»'''
+		}
+		else
+			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 }

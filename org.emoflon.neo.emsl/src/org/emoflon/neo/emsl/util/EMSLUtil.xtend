@@ -38,6 +38,8 @@ import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import java.time.LocalDate
+import org.emoflon.neo.emsl.eMSL.Parameter
+import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -168,6 +170,13 @@ class EMSLUtil {
 			throw new IllegalArgumentException("Unknown type: " + type);
 		}
 	}
+	
+	def static Optional<BuiltInDataTypes> castToBuiltInType(DataType type){
+		if(type instanceof BuiltInType)
+			Optional.of(type.reference)
+		else
+			Optional.empty
+	}
 
 	def static String handleValue(ValueExpression value) {
 		if(value instanceof PrimitiveString) return "\"" + PrimitiveString.cast(value).getLiteral() + "\""
@@ -199,6 +208,10 @@ class EMSLUtil {
 		
 		if(value instanceof BinaryExpression){
 			return handleValue(value.left) + value.op + handleValue(value.right)
+		}
+		
+		if(value instanceof Parameter){
+			return "<" + value.name + ">"
 		}
 
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')

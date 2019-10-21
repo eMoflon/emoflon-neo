@@ -1,17 +1,18 @@
 package run.debug;
 
+import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
-import org.emoflon.neo.engine.generator.Generator;
+import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.NoTerminationCondition;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.victory.adapter.NeoVictoryAdapter;
 
 public class CompanyToIT_DEBUG_GEN_Run {
@@ -27,17 +28,20 @@ public class CompanyToIT_DEBUG_GEN_Run {
 			api.exportMetamodelsForCompanyToIT();
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
+			var allRules = genAPI.getAllRulesForCompanyToIT__GEN();
 			var adapter = new NeoVictoryAdapter(builder, genAPI.getAllEMSLRulesForCompanyToIT__GEN(), //
 					api.getTripleRulesOfCompanyToIT());
 
-			var generator = new Generator<NeoMatch, NeoCoMatch>(//
+			var generator = new NeoGenerator(//
+					allRules, //
 					new NoTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					adapter, //
 					new ParanoidNeoReprocessor(), //
-					new HeartBeatAndReportMonitor());
+					new HeartBeatAndReportMonitor(), //
+					List.of(new LoremIpsumStringValueGenerator()));
 
-			adapter.run(generator, genAPI.getAllRulesForCompanyToIT__GEN());
+			adapter.run(generator);
 
 			logger.info("Generation done.");
 		} finally {

@@ -5,7 +5,11 @@ Bundle-SymbolicName: FacebookToInstagram
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: FacebookToInstagramEMSL
 Bundle-RequiredExecutionEnvironment: JavaSE-10
-Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0"
+Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
+ org.apache.log4j;bundle-version="1.2.15",
+ org.emoflon.neo.engine.modules;bundle-version="1.0.0",
+ org.eclipse.xtext;bundle-version="2.19.0",
+ org.apache.commons.logging;bundle-version="1.2.0"
 Export-Package: .,
  Transformations,
  org.emoflon.neo.api,

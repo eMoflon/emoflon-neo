@@ -3,17 +3,17 @@ package org.emoflon.neo.victory.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.ui.debug.api.Graph;
-import org.emoflon.ibex.tgg.ui.debug.api.Node;
-import org.emoflon.ibex.tgg.ui.debug.api.Rule;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.Action;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.Domain;
-import org.emoflon.ibex.tgg.ui.debug.api.enums.EdgeType;
-import org.emoflon.ibex.tgg.ui.debug.api.impl.GraphBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
+import org.emoflon.victory.ui.api.Graph;
+import org.emoflon.victory.ui.api.Node;
+import org.emoflon.victory.ui.api.Rule;
+import org.emoflon.victory.ui.api.enums.Action;
+import org.emoflon.victory.ui.api.enums.Domain;
+import org.emoflon.victory.ui.api.enums.EdgeType;
+import org.emoflon.victory.ui.api.impl.GraphBuilder;
 
 public class NeoRuleAdapter implements Rule {
 	private org.emoflon.neo.emsl.eMSL.Rule operationalRule;

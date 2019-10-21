@@ -41,3 +41,4 @@ Export-Package: org.emoflon.neo.emsl.ui,
  org.emoflon.neo.emsl.ui.visualisation,
  org.emoflon.neo.emsl.validation
 Bundle-Activator: org.emoflon.neo.emsl.ui.internal.EmslActivator
+Bundle-RequiredExecutionEnvironment: JavaSE-12

@@ -438,8 +438,8 @@ class EMSLGenerator extends AbstractGenerator {
 										.map["getRule_" + namingConvention(it.name) + "().rule()"]
 										.collect(Collectors.toSet)
 			'''
-				public Collection<IRule<NeoMatch, NeoCoMatch>> getAllRulesFor«namingConvention(gg.name)»() {
-					Collection<IRule<NeoMatch, NeoCoMatch>> rules = new HashSet<>();
+				public Collection<NeoRule> getAllRulesFor«namingConvention(gg.name)»() {
+					Collection<NeoRule> rules = new HashSet<>();
 					«FOR access : ruleMethods»
 						rules.add(«access»);
 					«ENDFOR»
@@ -492,7 +492,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 	
 	dispatch def generateAccess(TripleRule tr, int index){
-		'''/* No API at the moment */'''
+		'''public static String «tr.type.name»_«tr.name» = "«tr.name»";'''
 	}
 
 	dispatch def generateAccess(Rule r, int index) {

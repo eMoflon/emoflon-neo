@@ -24,6 +24,7 @@ import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
@@ -45,8 +46,12 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 	protected Collection<INegativeConstraint> negativeConstraints;
 
-	public ILPBasedOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules,
-			Collection<IConstraint> negativeConstraints) {
+	public ILPBasedOperationalStrategy(Collection<NeoRule> genRules, Collection<IConstraint> negativeConstraints) {
+		matchToId = new HashMap<>();
+		matchToCreatedElements = new HashMap<>();
+		elementToCreatingMatches = new HashMap<>();
+		elementToDependentMatches = new HashMap<>();
+		
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
 
@@ -84,11 +89,6 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	protected void registerMatches(Stream<? extends IMatch> matches) {
-		matchToId = new HashMap<>();
-		matchToCreatedElements = new HashMap<>();
-		elementToCreatingMatches = new HashMap<>();
-		elementToDependentMatches = new HashMap<>();
-
 		matches.forEach(m -> {
 			matchToId.put(m, varName(variableCounter++));
 
