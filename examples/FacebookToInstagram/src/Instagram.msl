@@ -1,0 +1,31 @@
+metamodel InstagramLanguage {
+	Network {
+		.description : EString
+		<+>-users(0..*)-> User
+	}
+	
+	User {
+		.name : EString
+		-follows(0..*)-> User
+	}
+ 	
+}
+
+constraint NoDoubleInstagramUsers = forbid DoubleInstagramUsers
+pattern DoubleInstagramUsers {
+	n:Network {
+		-users->u
+		-users->u
+	}
+	
+	u:User
+}
+
+constraint NoDoubleFollowership = forbid DoubleFollowership
+pattern DoubleFollowership {
+	u1:User {
+		-follows->u2
+		-follows->u2
+	}
+	u2:User
+}

@@ -11,7 +11,7 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.FixedNoOfMatchesRuleScheduler;
+import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.MaxGeneratedElementsTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
@@ -46,7 +46,7 @@ public class FacebookToInstagram_GEN_Run {
 		return new NeoGenerator(//
 				allRules, //
 				new MaxGeneratedElementsTerminationCondition(1000, builder), //
-				new FixedNoOfMatchesRuleScheduler(10), //
+				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //

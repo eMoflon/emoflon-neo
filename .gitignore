@@ -130,3 +130,5 @@ examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGram
 examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_FWD.msl
 examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_GEN.msl
 org.emoflon.neo.victory.adapter/bin/
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Facebook.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Instagram.java

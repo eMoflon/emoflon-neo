@@ -1,11 +1,13 @@
 package run;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.API_Facebook;
+import org.emoflon.neo.api.API_Instagram;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_CO;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
@@ -38,7 +40,7 @@ public class FacebookToInstagram_CO_Run {
 
 			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
 			var generator = new Generator<NeoMatch, NeoCoMatch>(//
-					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(),//
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
@@ -61,6 +63,16 @@ public class FacebookToInstagram_CO_Run {
 	}
 
 	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		return Collections.emptyList();
+		var fb = new API_Facebook(builder);
+		var inst = new API_Instagram(builder);
+		return List.of(//
+				fb.getConstraint_NoDoubleFaceBookUsers(), //
+				fb.getConstraint_NoDoubleFriendship(), //
+				fb.getConstraint_NoInterFriendship(), //
+				fb.getConstraint_NoDoubleParents(), //
+				fb.getConstraint_NoDoubleSibling(), //
+				fb.getConstraint_NoDoubleSpouses(), //
+				inst.getConstraint_NoDoubleFollowership(), //
+				inst.getConstraint_NoDoubleInstagramUsers());
 	}
 }
