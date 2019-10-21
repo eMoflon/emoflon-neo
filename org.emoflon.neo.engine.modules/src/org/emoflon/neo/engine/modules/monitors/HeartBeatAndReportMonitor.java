@@ -16,12 +16,17 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 	private double heartBeats = 0;
 	private Timer timerForHeartBeat = new Timer();
 
+	private Timer totalTimeSpent = new Timer();
 	private Timer timerForRuleScheduling = new Timer();
 	private Timer timerForMatchSelection = new Timer();
 	private Timer timerForPatternMatching = new Timer();
 	private Timer timerForRuleApplication = new Timer();
 	private Timer timerForMatchReprocessing = new Timer();
 
+	public HeartBeatAndReportMonitor() {
+		totalTimeSpent.start();
+	}
+	
 	private class Timer {
 		private double start = 0;
 		private double timeSpentInSeconds = 0;
@@ -126,6 +131,7 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 		synchronized (logger) {
 			logger.info("");
 			logger.info("********** Generation Report ************");
+			logger.info("Total time spent: " + totalTimeSpent.getTimeElapsedInSeconds() + "s");
 			logger.info("Rule scheduling took: " + timerForRuleScheduling.getTimeSpentInSeconds() + "s");
 			logger.info("Match selection took: " + timerForMatchSelection.getTimeSpentInSeconds() + "s");
 			logger.info("Pattern matching took: " + timerForPatternMatching.getTimeSpentInSeconds() + "s");
