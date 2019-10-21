@@ -8,5 +8,5 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 
 public interface IRuleScheduler<M extends IMatch, C extends ICoMatch> {
-	public Map<IRule<M, C>, Integer> scheduleWith(MatchContainer<M, C> matchContainer, IMonitor progressMonitor);
+	public Map<IRule<M, C>, Integer> scheduleWith(MatchContainer<M, C> matchContainer, IMonitor<M, C> progressMonitor);
 }

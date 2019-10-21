@@ -11,7 +11,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
  */
 public class ParanoidNeoReprocessor implements IMatchReprocessor<NeoMatch, NeoCoMatch> {
 	@Override
-	public void reprocess(MatchContainer<NeoMatch, NeoCoMatch> pRemainingMatches, IMonitor pProgressMonitor) {
+	public void reprocess(MatchContainer<NeoMatch, NeoCoMatch> pRemainingMatches, IMonitor<NeoMatch, NeoCoMatch> pProgressMonitor) {
 		pRemainingMatches.clear();
 	}
 }

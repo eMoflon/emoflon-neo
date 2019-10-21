@@ -9,7 +9,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 public class NoOpReprocessor implements IMatchReprocessor<NeoMatch, NeoCoMatch> {
 
 	@Override
-	public void reprocess(MatchContainer<NeoMatch, NeoCoMatch> remainingMatches, IMonitor progressMonitor) {
+	public void reprocess(MatchContainer<NeoMatch, NeoCoMatch> remainingMatches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		// No op
 	}
 

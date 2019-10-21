@@ -102,7 +102,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
-			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor progressMonitor) {
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		logger.debug("Registering all matches...");
 
 		// Precedence information
