@@ -29,19 +29,27 @@ tripleRule CompanyToITRule : CompanyToIT {
 	source {
 		++ ceo : CEO
 		++ company : Company {
+			.name := <companyName>
 			++ -ceo-> ceo
 		}
 	}
 	
 	target {
-		++ it : IT
+		++ it : IT {
+			.name := <companyName>
+		}
 	}
 	
 	correspondence {
 		++ company <-:CompanyToIT-> it
 	}
-}
+} forbid src(companyNameIsTaken)
 
+pattern companyNameIsTaken {
+	company : Company {
+		.name : <companyName>
+	}
+}
 
 tripleRule AdminToRouterRule : CompanyToIT {
 	source {

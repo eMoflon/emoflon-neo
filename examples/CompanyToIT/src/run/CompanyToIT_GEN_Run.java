@@ -1,5 +1,7 @@
 package run;
 
+import java.util.Collection;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
@@ -12,6 +14,8 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
+import org.emoflon.neo.engine.modules.valueGenerators.StringValueGenerator;
+import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public class CompanyToIT_GEN_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);
@@ -37,7 +41,7 @@ public class CompanyToIT_GEN_Run {
 	}
 
 	protected NeoGenerator createGenerator(API_CompanyToIT_GEN genAPI) {
-		var allRules = genAPI.getAllRulesForCompanyToIT__GEN();
+		Collection<NeoRule> allRules = genAPI.getAllRulesForCompanyToIT__GEN();
 
 		return new NeoGenerator(//
 				allRules, //
@@ -45,6 +49,7 @@ public class CompanyToIT_GEN_Run {
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
-				new HeartBeatAndReportMonitor());
+				new HeartBeatAndReportMonitor(), //
+				new StringValueGenerator());
 	}
 }

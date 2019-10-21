@@ -21,7 +21,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	private ArrayList<IRule<M, C>> allRules;
 
 	public Generator(//
-			Collection<IRule<M, C>> allRules, //
+			Collection<? extends IRule<M, C>> allRules, //
 			ITerminationCondition<M, C> terminationCondition, //
 			IRuleScheduler<M, C> ruleScheduler, //
 			IUpdatePolicy<M, C> updatePolicy, //
@@ -57,8 +57,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 				// 4. Rule application
 				progressMonitor.startRuleApplication();
 				selectedMatches.forEach((rule, matches) -> {
-					rule.applyAll(matches);
-					matchContainer.appliedRule(rule, matches.size());
+					applyMatches(rule, matches, matchContainer);
 				});
 				progressMonitor.finishRuleApplication();
 			}
@@ -73,5 +72,10 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 		}
 
 		progressMonitor.finishGeneration();
+	}
+
+	protected void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer) {
+		rule.applyAll(matches);
+		matchContainer.appliedRule(rule, matches.size());
 	}
 }

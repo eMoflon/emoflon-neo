@@ -60,6 +60,11 @@ import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.util.EMSLUtil
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
+import org.emoflon.neo.emsl.eMSL.Parameter
+import org.emoflon.neo.emsl.eMSL.DataType
+import org.emoflon.neo.emsl.eMSL.ConstraintBody
+import org.emoflon.neo.emsl.eMSL.OrBody
+import org.emoflon.neo.emsl.eMSL.AndBody
 
 /**
  * This class contains custom validation rules. 
@@ -101,6 +106,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	final static String SAME_NAME_ENUMS_CLASSES = "Using the same name twice for enums and/or classes is not allowed."
 	static final def String SENSELESS_MULTIPLICITIES(String type) '''Upper bounds must be at least as large as lower bounds.'''
 	static final String ENFORCING_NAMES_IN_EDGES = "Complex links (with more than one type) must have a name."
+	static final String NON_MATCHING_PARAMETER_TYPES = "This parameter is being used for more than one type."
+	static final String PARAMETERS_DISALLOWED_FOR_MODELS = "Parameter are not allowed within models."
+	static final String PARAMETERS_DISALLOWED_FOR_PATTERNS = "Parameter are not allowed within patterns."
 
 	/**
 	 * Checks if the value given in ModelPropertyStatements is of the type that was defined for it 
@@ -108,7 +116,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def checkPropertyStatementOfNodeBlock(ModelPropertyStatement p) {
-		if (p.type instanceof MetamodelPropertyStatement) {
+		if (!(p.value instanceof Parameter) && p.type instanceof MetamodelPropertyStatement) {
 			if (p.type.type instanceof BuiltInType) {
 				var propertyType = (p.type.type as BuiltInType).reference
 				if (!isOfCorrectBuiltInType(p.value, propertyType))
@@ -1133,5 +1141,116 @@ class EMSLValidator extends AbstractEMSLValidator {
 			}
 		}
 		warning("This rule is not contained in any triple grammar", r, EMSLPackage.Literals.SUPER_TYPE__NAME)
+	}
+
+	/**
+	 * Checks that within a Rule, all parameters with the same name share the same inferred type. 
+	 */
+	@Check
+	def void checkParameterTypes(Rule rule) {
+		val nodeBlocks = new ArrayList
+		iteratePatterns(rule.condition as ConstraintBody, [nodeBlocks.addAll(it.nodeBlocks)])
+		nodeBlocks.addAll(rule.nodeBlocks)
+		checkParameterTypes(nodeBlocks)
+	}
+	
+	def void iteratePatterns(ConstraintBody body, Consumer<AtomicPattern> action) {
+		if(body instanceof NegativeConstraint)
+			action.accept(body.pattern)
+		else if(body instanceof PositiveConstraint)
+			action.accept(body.pattern)
+		else if(body instanceof Implication) {
+			action.accept(body.premise)
+			action.accept(body.conclusion)
+		}
+		else if(body instanceof OrBody) {
+			body.children.forEach[iteratePatterns(it, action)]
+		}
+		else if(body instanceof AndBody) {
+			body.children.forEach[iteratePatterns(it, action)]
+		}
+		else if(body instanceof ConstraintReference) {
+			iteratePatterns(body.reference.body, action)
+		}
+	}
+	
+	/**
+	 * Checks that within a TripleRule, all parameters with the same name share the same inferred type.
+	 */
+	@Check
+	def void checkParameterTypes(TripleRule rule) {
+		val nodeBlocks = new ArrayList
+		nodeBlocks.addAll(rule.srcNodeBlocks)
+		nodeBlocks.addAll(rule.trgNodeBlocks)
+		rule.nacs.forEach[nodeBlocks.addAll(it.pattern.nodeBlocks)]
+		checkParameterTypes(nodeBlocks)
+	}
+	
+	/**
+	 * Checks that within the given node-blocks, all parameters with the same name share the same inferred type.
+	 */
+	def checkParameterTypes(List<ModelNodeBlock> nodeBlocks) {
+		val paramTypeMap = new HashMap<Parameter, DataType>
+		val paramNameMap = new HashMap<String, HashSet<Parameter>>
+		for(nodeBlock : nodeBlocks)
+			for(prop : nodeBlock.properties)
+				if(prop.value instanceof Parameter) {
+					val param = prop.value as Parameter
+					paramTypeMap.put(param, prop.type.type)
+					if(!paramNameMap.containsKey(param.name))
+						paramNameMap.put(param.name, new HashSet)
+					paramNameMap.get(param.name).add(param)
+				}
+		
+		paramNameMap.forEach[name, params |
+			if(params.size >= 2) {
+				val iterator = params.iterator
+				var type = paramTypeMap.get(iterator.next)
+				var typesMatch = true
+				
+				while(typesMatch && iterator.hasNext) {
+					val otherType = paramTypeMap.get(iterator.next)
+					if(type instanceof BuiltInType && otherType instanceof BuiltInType)
+						typesMatch = (type as BuiltInType).reference === (otherType as BuiltInType).reference
+					else if(type instanceof UserDefinedType && otherType instanceof UserDefinedType)
+						typesMatch = (type as UserDefinedType).reference.equals((otherType as UserDefinedType).reference)
+					else
+						typesMatch = false
+				}
+					
+				
+				if(!typesMatch)
+					for(param : params)
+						error(NON_MATCHING_PARAMETER_TYPES,
+							param,
+							EMSLPackage.Literals.PARAMETER__NAME)
+			}
+		]
+	}
+
+	/**
+	 * Checks that there are no parameters in models.
+	 */
+	@Check
+	def void disallowParametersForModels(Model model) {
+		for(nodeBlock : model.nodeBlocks)
+			for(prop : nodeBlock.properties)
+				if(prop.value instanceof Parameter) 
+					error(PARAMETERS_DISALLOWED_FOR_MODELS,
+						prop.value,
+						EMSLPackage.Literals.PARAMETER__NAME)
+	}
+	
+	/**
+	 * Checks that there are no parameters in patterns.
+	 */
+//	@Check
+	def void disallowParametersForModels(Pattern pattern) {
+		for(nodeBlock : pattern.body.nodeBlocks)
+			for(prop : nodeBlock.properties)
+				if(prop.value instanceof Parameter) 
+					error(PARAMETERS_DISALLOWED_FOR_PATTERNS,
+						prop.value,
+						EMSLPackage.Literals.PARAMETER__NAME)
 	}
 }

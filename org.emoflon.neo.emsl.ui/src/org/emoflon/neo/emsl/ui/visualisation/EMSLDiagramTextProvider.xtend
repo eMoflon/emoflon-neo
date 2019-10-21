@@ -56,6 +56,8 @@ import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import org.apache.commons.lang3.StringUtils
 import org.emoflon.neo.emsl.eMSL.TargetNAC
+import org.emoflon.neo.emsl.eMSL.Parameter
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -236,7 +238,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForObject(nb)» --> «IF link.target !== null»«labelForObject(link.target)»«ELSE»"?"«ENDIF» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForObject(nb)» : «IF attr?.type?.name !== null»«attr.type.name»«ELSE»?«ENDIF» = «IF attr?.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
+				«labelForObject(nb)» : «getName(attr)» = «IF attr?.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
@@ -250,6 +252,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	
 	dispatch def printValue(Object o){
 		'''?'''
+	}
+
+	dispatch def printValue(Parameter value){
+		'''<«value.name»>'''
 	}
 
 	dispatch def String printValue(BinaryExpression value){
@@ -450,7 +456,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForPatternComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
+				«labelForPatternComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -484,7 +490,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForPatternComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
+				«labelForPatternComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -566,7 +572,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
+				«labelForRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -605,7 +611,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
+				«labelForRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
@@ -898,7 +904,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«link.target.name»:«link.target.type.name»":"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForTripleRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
+				«labelForTripleRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 		'''
 	}
@@ -928,7 +934,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForTripleRuleComponent(nb)» : «attr.type.name» «attr.op.toString» «printValue(attr.value)»
+				«labelForTripleRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (entityCopy as TripleRule).srcNodeBlocks.filter[n|n != nb]»
 				«incomingRefHelperForTripleRules(entityCopy as TripleRule, nb, incoming, mainSelection)»
@@ -1129,7 +1135,14 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		entity.name
 	}
 	
-	
+	def dispatch getName(ModelPropertyStatement entity) {
+		if(entity.type !== null)
+			entity.type.name
+		else if(entity.inferredType === null)
+			"?"
+		else
+			entity.inferredType
+	}
 
 
 	/*------------------------------*/
