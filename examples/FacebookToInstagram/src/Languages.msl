@@ -1,7 +1,7 @@
 metamodel FacebookLanguage {
 	Network {
 		.description : EString
-		<+>-fiendships(0..*)-> Friendship
+		<+>-friendships(0..*)-> Friendship
 		<+>-users(0..*)-> User
 	}
 	

@@ -62,7 +62,7 @@ tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers
 	source {
 		n : Network {
 			-users-> $fu
-			++ -fiendships-> fri
+			++ -friendships-> fri
 		}
 		
 		++ fri : Friendship {
@@ -76,9 +76,13 @@ tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers
 			++ -follows->$in
 		}
 	}
-} forbid src(noDoubleFriendshipFacebook) && trg(noDoubleFollowershipInstagram)
+} forbid src(NoDoubleFriendshipFacebook) && trg(NoRedundantFollowershipInstagram) && trg(NoDoubleFollowershipInstagram)
 
-pattern noDoubleFriendshipFacebook {
+pattern NoDoubleFriendshipFacebook {
+	n:FacebookLanguage.Network {
+		-friendships->other
+	}
+	
 	fn : FacebookLanguage.User
 	
 	fu : FacebookLanguage.User
@@ -89,13 +93,15 @@ pattern noDoubleFriendshipFacebook {
 	}
 }
 
-pattern noDoubleFollowershipInstagram {
+pattern NoDoubleFollowershipInstagram {
 	in : InstagramLanguage.User {
 		-follows-> iu
 	}
 	
 	iu : InstagramLanguage.User
 }
+
+pattern NoRedundantFollowershipInstagram -> NoDoubleFollowershipInstagram[in -> iu, iu -> in]
 
 abstract tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {
 	source {
@@ -111,6 +117,14 @@ tripleRule FriendsParentsIgnoreRule : FacebookToInstagramGrammar -> UserRelation
 			++ -parents-> $fn
 		}
 	}
+} forbid src(NoDoubleParent)
+
+pattern NoDoubleParent {
+	fn:FacebookLanguage.User
+	
+	fu : FacebookLanguage.User {
+		-parents-> fn
+	}
 }
 
 tripleRule FriendsSpouseIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
@@ -119,6 +133,14 @@ tripleRule FriendsSpouseIgnoreRule : FacebookToInstagramGrammar -> UserRelationI
 			++ -spouse-> $fn
 		}
 	}
+} forbid src(NoDoubleSpouse)
+
+pattern NoDoubleSpouse {
+	fn:FacebookLanguage.User
+	
+	fu : FacebookLanguage.User {
+		-spouse-> fn
+	}
 }
 
 tripleRule FriendsSiblingsIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
@@ -126,6 +148,14 @@ tripleRule FriendsSiblingsIgnoreRule : FacebookToInstagramGrammar -> UserRelatio
 		fu : User {
 			++ -siblings-> $fn
 		}
+	}
+} forbid src(NoDoubleSibling)
+
+pattern NoDoubleSibling {
+	fn:FacebookLanguage.User
+	
+	fu : FacebookLanguage.User {
+		-siblings-> fn
 	}
 }
 
@@ -141,7 +171,7 @@ tripleRule IgnoreInterNetworkFollowers : FacebookToInstagramGrammar -> Followers
 			++ -follows-> $iu
 		}
 	}
-}
+} forbid trg(NoDoubleFollowershipInstagram)
 
 tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
 	target {
@@ -153,7 +183,7 @@ tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
 			++ -follows-> iu
 		}
 	}
-}
+} forbid trg(NoDoubleFollowershipInstagram)
 
 tripleRule NetworkToNetworkIslandRule : FacebookToInstagramGrammar {
 	source {
@@ -190,6 +220,22 @@ tripleRule UserNetworkBridgeRule : FacebookToInstagramGrammar {
 		f <-:NetworkToNetwork-> i
 		fu <-:FbUserToInUser-> iu
 	}
+}  forbid src(AlreadyInFBNetwork) && trg(AlreadyInInstNetwork)
+
+pattern AlreadyInFBNetwork {
+	f:FacebookLanguage.Network {
+		-users->fu
+	}
+	
+	fu:FacebookLanguage.User
+}
+
+pattern AlreadyInInstNetwork {
+	i:InstagramLanguage.Network {
+		-users->iu
+	}
+	
+	iu:InstagramLanguage.User
 }
 
 tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {

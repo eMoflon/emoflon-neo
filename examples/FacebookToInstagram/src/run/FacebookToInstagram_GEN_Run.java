@@ -11,10 +11,11 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
-import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
+import org.emoflon.neo.engine.modules.ruleschedulers.FixedNoOfMatchesRuleScheduler;
+import org.emoflon.neo.engine.modules.terminationcondition.MaxGeneratedElementsTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
 public class FacebookToInstagram_GEN_Run {
 	private static final Logger logger = Logger.getLogger(FacebookToInstagram_GEN_Run.class);
@@ -31,7 +32,7 @@ public class FacebookToInstagram_GEN_Run {
 			api.exportMetamodelsForFacebookToInstagramGrammar();
 
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
-			var generator = createGenerator(genAPI);
+			var generator = createGenerator(genAPI, builder);
 
 			logger.info("Start model generation...");
 			generator.generate();
@@ -39,13 +40,13 @@ public class FacebookToInstagram_GEN_Run {
 		}
 	}
 
-	protected NeoGenerator createGenerator(API_FacebookToInstagramGrammar_GEN genAPI) {
+	protected NeoGenerator createGenerator(API_FacebookToInstagramGrammar_GEN genAPI, NeoCoreBuilder builder) {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
 
 		return new NeoGenerator(//
 				allRules, //
-				new TimedTerminationCondition(30000), //
-				new AllRulesAllMatchesScheduler(), //
+				new MaxGeneratedElementsTerminationCondition(1000, builder), //
+				new FixedNoOfMatchesRuleScheduler(10), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
