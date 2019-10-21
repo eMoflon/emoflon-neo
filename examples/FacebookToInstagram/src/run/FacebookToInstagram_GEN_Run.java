@@ -1,5 +1,7 @@
 package run;
 
+import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
@@ -12,6 +14,7 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 
 public class FacebookToInstagram_GEN_Run {
 	private static final Logger logger = Logger.getLogger(FacebookToInstagram_GEN_Run.class);
@@ -45,6 +48,7 @@ public class FacebookToInstagram_GEN_Run {
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
-				new HeartBeatAndReportMonitor());
+				new HeartBeatAndReportMonitor(), //
+				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

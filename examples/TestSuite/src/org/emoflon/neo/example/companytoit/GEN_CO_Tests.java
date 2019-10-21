@@ -2,6 +2,7 @@ package org.emoflon.neo.example.companytoit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Level;
@@ -14,9 +15,8 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.MaximalRuleApplicationsScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
-import org.emoflon.neo.engine.modules.valueGenerators.StringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import run.CompanyToIT_CO_Run;
@@ -45,7 +45,7 @@ public class GEN_CO_Tests extends ENeoTest {
 			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1);
 		});
 	}
-	
+
 	@Test
 	public void testOneOfEach() throws Exception {
 		runTest((scheduler) -> {
@@ -55,9 +55,8 @@ public class GEN_CO_Tests extends ENeoTest {
 			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 1);
 		});
 	}
-	
+
 	@Test
-	@Disabled("//TODO[Mario] Waiting for NACs for GEN")
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
 			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_CompanyToITRule, 10);
@@ -66,9 +65,8 @@ public class GEN_CO_Tests extends ENeoTest {
 			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 10);
 		});
 	}
-	
+
 	@Test
-	@Disabled("//TODO[Mario] Waiting for NACs for GEN")
 	public void tryLotsOfAdmins() throws Exception {
 		runTest((scheduler) -> {
 			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1);
@@ -97,7 +95,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new StringValueGenerator());
+				List.of(new LoremIpsumStringValueGenerator()));
 	}
 
 }

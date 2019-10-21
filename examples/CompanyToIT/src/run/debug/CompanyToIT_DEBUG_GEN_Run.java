@@ -1,5 +1,7 @@
 package run.debug;
 
+import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
@@ -10,7 +12,7 @@ import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.NoTerminationCondition;
-import org.emoflon.neo.engine.modules.valueGenerators.StringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.victory.adapter.NeoVictoryAdapter;
 
 public class CompanyToIT_DEBUG_GEN_Run {
@@ -37,7 +39,7 @@ public class CompanyToIT_DEBUG_GEN_Run {
 					adapter, //
 					new ParanoidNeoReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
-					new StringValueGenerator());
+					List.of(new LoremIpsumStringValueGenerator()));
 
 			adapter.run(generator);
 

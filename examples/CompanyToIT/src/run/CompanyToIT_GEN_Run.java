@@ -1,6 +1,7 @@
 package run;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -14,7 +15,7 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
-import org.emoflon.neo.engine.modules.valueGenerators.StringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public class CompanyToIT_GEN_Run {
@@ -50,6 +51,6 @@ public class CompanyToIT_GEN_Run {
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new StringValueGenerator());
+				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }
