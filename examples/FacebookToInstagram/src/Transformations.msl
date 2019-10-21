@@ -199,11 +199,15 @@ tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
 
 tripleRule NetworkToNetworkIslandRule : FacebookToInstagramGrammar {
 	source {
-		++ fl : Network
+		++ fl : Network {
+			.description := <networkDesc>
+		}
 	}
 	
 	target {
-		++ il : Network
+		++ il : Network {
+			.description := <networkDesc>
+		}
 	}
 	
 	correspondence {
@@ -252,11 +256,15 @@ pattern AlreadyInInstNetwork {
 
 tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {
 	source {
-		++ flu : User
+		++ flu : User {
+			.name := <userName>
+		}
 	}
 	
 	target {
-		++ ilu : User
+		++ ilu : User {
+			.name := <userName>
+		}
 	}
 	
 	correspondence {
