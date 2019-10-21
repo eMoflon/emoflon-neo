@@ -39,6 +39,7 @@ import org.emoflon.neo.emsl.eMSL.impl.EMSLPackageImpl
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import java.time.LocalDate
 import org.emoflon.neo.emsl.eMSL.Parameter
+import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -168,6 +169,13 @@ class EMSLUtil {
 		} else {
 			throw new IllegalArgumentException("Unknown type: " + type);
 		}
+	}
+	
+	def static Optional<BuiltInDataTypes> castToBuiltInType(DataType type){
+		if(type instanceof BuiltInType)
+			Optional.of(type.reference)
+		else
+			Optional.empty
 	}
 
 	def static String handleValue(ValueExpression value) {
