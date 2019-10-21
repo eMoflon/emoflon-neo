@@ -698,4 +698,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		else
 			throw new IllegalArgumentException("This type of entity cannot be exported: " + entity);
 	}
+
+	public long noOfElementsInDatabase() {
+		var result = executeQueryWithParameters("MATCH (n) return count(n)", null);
+		return (long) result.list().get(0).asMap().values().iterator().next();
+	}
 }
