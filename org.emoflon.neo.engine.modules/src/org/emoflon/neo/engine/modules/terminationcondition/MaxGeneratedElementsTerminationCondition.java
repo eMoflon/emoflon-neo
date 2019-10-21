@@ -1,5 +1,6 @@
 package org.emoflon.neo.engine.modules.terminationcondition;
 
+import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
@@ -7,6 +8,8 @@ import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class MaxGeneratedElementsTerminationCondition implements ITerminationCondition<NeoMatch, NeoCoMatch> {
+	private static final Logger logger = Logger.getLogger(MaxGeneratedElementsTerminationCondition.class);
+	
 	private long elementsAtStart;
 	private long maxNoOfElements;
 	private NeoCoreBuilder builder;
@@ -23,9 +26,12 @@ public class MaxGeneratedElementsTerminationCondition implements ITerminationCon
 
 	@Override
 	public boolean isReached(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-		if (builder.noOfElementsInDatabase() - elementsAtStart >= maxNoOfElements)
+		var currentNoOfElements = builder.noOfElementsInDatabase();
+		if (currentNoOfElements - elementsAtStart >= maxNoOfElements)
 			return true;
-		else
+		else {
+			logger.debug("Generated " + currentNoOfElements + " of " + maxNoOfElements);
 			return false;
+		}
 	}
 }
