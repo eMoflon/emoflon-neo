@@ -1,9 +1,12 @@
 package org.emoflon.neo.engine.modules;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.emoflon.neo.emsl.eMSL.DataType;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.Parameter;
@@ -25,14 +28,14 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 
 public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
-	private IParameterValueGenerator parameterValueGenerator;
+	private List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators;
 
 	public NeoGenerator(Collection<NeoRule> allRules, ITerminationCondition<NeoMatch, NeoCoMatch> terminationCondition,
 			IRuleScheduler<NeoMatch, NeoCoMatch> ruleScheduler, IUpdatePolicy<NeoMatch, NeoCoMatch> updatePolicy,
 			IMatchReprocessor<NeoMatch, NeoCoMatch> matchReprocessor, IMonitor progressMonitor,
-			IParameterValueGenerator parameterValueGenerator) {
+			List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators) {
 		super(allRules, terminationCondition, ruleScheduler, updatePolicy, matchReprocessor, progressMonitor);
-		this.parameterValueGenerator = parameterValueGenerator;
+		this.parameterValueGenerators = new ArrayList<>(parameterValueGenerators);
 	}
 
 	@Override
@@ -57,11 +60,20 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 					Parameter param = (Parameter) prop.getValue();
 
 					if (!paramValues.containsKey(param.getName()))
-						paramValues.put(param.getName(), parameterValueGenerator.generateValueFor(param.getName()));
-//					prop.getType().getType() gets the DataType. Do we want to use this for more type safety?
+						paramValues.put(param.getName(), generateValueFor(prop.getType().getType(), param.getName()));
 
 					mask.maskAttribute(nodeBlock.getName() + "." + prop.getType().getName(),
 							paramValues.get(param.getName()));
 				}
+	}
+
+	private Object generateValueFor(DataType dataType, String parameterName) {
+		var valueGen = parameterValueGenerators.stream()//
+				.filter(vg -> vg.generatesValueFor(parameterName, dataType))//
+				.findFirst();
+
+		return valueGen.map(vg -> vg.generateValueFor(parameterName))//
+				.orElseThrow(() -> new IllegalArgumentException(
+						"Unable to generate value for: " + parameterName + ":" + dataType.eClass().getName()));
 	}
 }
