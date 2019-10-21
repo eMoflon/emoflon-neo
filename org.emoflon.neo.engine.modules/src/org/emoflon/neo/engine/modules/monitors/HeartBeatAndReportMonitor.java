@@ -4,9 +4,12 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
-public class HeartBeatAndReportMonitor implements IMonitor {
+public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(HeartBeatAndReportMonitor.class);
 
 	private static final double interval = 5;
@@ -117,7 +120,7 @@ public class HeartBeatAndReportMonitor implements IMonitor {
 	}
 
 	@Override
-	public void finishGeneration() {
+	public void finishGeneration(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
 		logger.debug("Finished generation.");
 
 		synchronized (logger) {
@@ -128,6 +131,9 @@ public class HeartBeatAndReportMonitor implements IMonitor {
 			logger.info("Pattern matching took: " + timerForPatternMatching.getTimeSpentInSeconds() + "s");
 			logger.info("Rule application took: " + timerForRuleApplication.getTimeSpentInSeconds() + "s");
 			logger.info("Match reprocessing took: " + timerForMatchReprocessing.getTimeSpentInSeconds() + "s");
+			logger.info("Rules applied: ");
+			matchContainer.getRuleApplications().entrySet().stream()//
+					.forEach(entry -> logger.info(" =>  " + entry.getValue() + " @ " + entry.getKey()));
 			logger.info("********** Generation Report ************");
 			logger.info("");
 		}
