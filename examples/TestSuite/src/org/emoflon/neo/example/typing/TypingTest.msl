@@ -1,0 +1,66 @@
+metamodel T1 {
+	T
+}
+
+metamodel T2 {
+	T
+}
+
+metamodel T3 {
+	T
+}
+
+metamodel T4 {
+	T
+}
+
+metamodel T5 {
+	T
+}
+
+rule createTs {
+	++ t1:T1.T
+	
+	++ t2:T2.T
+	
+	++ t3:T3.T
+	
+	++ t4:T4.T
+	
+	++ t5:T5.T
+}
+
+constraint TestTyping = forbid MultipleInstancesOfSameType
+pattern MultipleInstancesOfSameType {
+	eclass:EClass {
+		.ename : "T"
+	}
+	
+	o1:EObject {
+		-metaType->eclass
+	}
+	
+	o2:EObject {
+		-metaType->eclass
+	}
+}
+
+constraint CorrectTyping = if EveryObject then HasAType
+
+pattern EveryObject {
+	o:EObject
+}
+
+pattern HasAType {
+	o:EObject {
+		-metaType->eClass
+	}
+	
+	eClass:EClass
+}
+
+
+
+
+
+

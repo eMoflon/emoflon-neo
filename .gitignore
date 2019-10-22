@@ -132,3 +132,4 @@ examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGram
 org.emoflon.neo.victory.adapter/bin/
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Facebook.java
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Instagram.java
+examples/TestSuite/src-gen/org/emoflon/neo/api/org/emoflon/neo/example/typing/API_TypingTest.java
