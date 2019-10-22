@@ -240,7 +240,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 				.collect(Collectors.toSet());
 	}
 
-	private Collection<Metamodel> collectReferencedMetamodels(Metamodel m) {
+	private Set<Metamodel> collectReferencedMetamodels(Metamodel m) {
 		var allRefs = new HashSet<Metamodel>();
 		collectReferencedMetamodels(m, allRefs);
 		return allRefs;
@@ -272,7 +272,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		EcoreUtil.resolveAll(rs);
 
 		var metamodels = collectReferencedMetamodels(m);
-
+		metamodels.add(m);
+		
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
