@@ -52,7 +52,9 @@ pattern MultipleInstancesOfSameType {
 constraint CorrectTyping = if EveryObject then HasAType
 
 pattern EveryObject {
-	o:EObject
+	o:EObject {
+		.ename != "EClass"
+	}
 }
 
 pattern HasAType {
