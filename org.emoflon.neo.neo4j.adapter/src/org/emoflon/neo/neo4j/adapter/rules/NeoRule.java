@@ -82,8 +82,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		var flatRule = NeoUtil.getFlattenedRule(r);
 		var nodeBlocks = flatRule.getNodeBlocks();
 
-		var rulePreprocessor = new RulePreProcessor();
-		var preprocessedBlocks = rulePreprocessor.preprocess(nodeBlocks);
+		var rulePreprocessor = new RulePreProcessor(nodeBlocks);
+		var preprocessedBlocks = rulePreprocessor.preprocess();
 		
 		extractNodesAndRelations(preprocessedBlocks);
 		
