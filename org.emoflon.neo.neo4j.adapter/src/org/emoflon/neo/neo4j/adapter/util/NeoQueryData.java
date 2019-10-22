@@ -205,14 +205,6 @@ public class NeoQueryData {
 							equal = true;
 						}
 					}
-					/*for (var l : labelsO) {
-						if (!equal && labelsP.contains(l)) {
-							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
-								elem.add(pElem + "<>" + oElem);
-							}
-							equal = true;
-						}
-					}*/
 				}
 			}
 		}
