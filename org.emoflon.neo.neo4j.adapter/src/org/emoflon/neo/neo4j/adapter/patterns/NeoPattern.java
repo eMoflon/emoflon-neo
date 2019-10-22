@@ -72,6 +72,10 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			}
 		}
 	}
+	
+	public void addExtraNodes(List<NeoNode> nodes) {
+		this.nodes.addAll(nodes);
+	}
 
 	/**
 	 * Set is the pattern should be injective or not
@@ -99,7 +103,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @return NeoNode list of nodes in the pattern
 	 */
 	public List<NeoNode> getNodes() {
-		return nodes;
+		return List.copyOf(nodes);
 	}
 
 

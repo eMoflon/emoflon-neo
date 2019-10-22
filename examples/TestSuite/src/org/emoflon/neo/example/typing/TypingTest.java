@@ -28,19 +28,28 @@ public class TypingTest extends ENeoTest {
 	@Test
 	public void testCorrectMetaTypes() {
 		assertTrue(entities.getConstraint_TestTyping().isSatisfied());
+		
+		// Apply the rule creatings Ts
 		var noOfNodes = builder.noOfNodesInDatabase();
 		var noOfEdges = builder.noOfEdgesInDatabase();
 		var result = entities.getRule_CreateTs().rule().apply();
 		var newNoOfNodes = builder.noOfNodesInDatabase();
 		var newNoOfEdges = builder.noOfEdgesInDatabase();
 		
+		// Was the rule applied?
 		assertTrue(result.isPresent());
 		
+		// Are Ts matched correctly?
+		assertEquals(1, entities.getPattern_MatchT1().matcher().countMatches());
+		
+		// Does every T have a type?
 		assertTrue(entities.getConstraint_CorrectTyping().isSatisfied());
 		
+		// Was the current number of elements created?
 		assertEquals(5, newNoOfNodes - noOfNodes);
 		assertEquals(5, newNoOfEdges - noOfEdges);
 		
+		// Are types unique?
 		assertTrue(entities.getConstraint_TestTyping().isSatisfied());
 	}
 }

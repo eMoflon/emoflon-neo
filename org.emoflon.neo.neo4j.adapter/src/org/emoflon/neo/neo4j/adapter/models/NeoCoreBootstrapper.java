@@ -13,14 +13,14 @@ public class NeoCoreBootstrapper {
 
 	// EClasses
 	static final String ECLASSIFIER = "EClassifier";
-	static final String ECLASS = "EClass";
+	public static final String ECLASS = "EClass";
 	static final String EATTRIBUTE = "EAttribute";
 	static final String EREFERENCE = "EReference";
 	static final String EDATA_TYPE = "EDataType";
 	static final String ESTRUCTURAL_FEATURE = "EStructuralFeature";
 	static final String ETYPED_ELEMENT = "ETypedElement";
 	static final String EATTRIBUTED_ELEMENT = "EAttributedElement";
-	static final String METAMODEL = "MetaModel";
+	public static final String METAMODEL = "MetaModel";
 	static final String MODEL = "Model";
 	static final String EOBJECT = "EObject";
 
@@ -45,7 +45,7 @@ public class NeoCoreBootstrapper {
 	static final String EDATE = "EDate";
 
 	// Attributes
-	static final String NAME_PROP = "ename";
+	public static final String NAME_PROP = "ename";
 	static final String ABSTRACT_PROP = "abstract";
 	public static final String _TYPE_PROP = "_type_";
 	static final String _TR_PROP = "_tr_";

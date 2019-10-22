@@ -30,6 +30,10 @@ rule createTs {
 	++ t5:T5.T
 }
 
+pattern MatchT1 {
+	t1:T1.T
+}
+
 constraint TestTyping = forbid MultipleInstancesOfSameType
 pattern MultipleInstancesOfSameType {
 	eclass:EClass {

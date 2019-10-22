@@ -44,6 +44,11 @@ public class NeoRelation {
 		properties = new ArrayList<>();
 		props.forEach(prop -> addProperty(EMSLUtil.getNameOfType(prop), EMSLUtil.handleValue(prop.getValue())));
 	}
+	
+	public NeoRelation(NeoNode from, String varName, String relType, String toNodeLabel, String toNodeVar) {
+		this(from, varName, List.of(relType), "", "", List.of(), toNodeLabel, toNodeVar);
+	}
+	
 
 	private String convertUpper(String length) {
 		if ("*".equals(length)) {
@@ -120,11 +125,6 @@ public class NeoRelation {
 		return properties;
 	}
 
-	/**
-	 * Return the variable name of the source node
-	 * 
-	 * @return variable name of the source node
-	 */
 	public String getVarName() {
 		if (isPath())
 			return "";
