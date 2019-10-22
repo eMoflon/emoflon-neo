@@ -107,10 +107,11 @@ class TGGCompiler {
 
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
+		val nacPatterns = op.preprocessNACs(rule.nacs).map[EMSLFlattener.flatten(it.pattern) as AtomicPattern].toList
 		
 		collectParameters(rule.srcNodeBlocks, ParameterDomain.SRC, paramsToData, paramGroups)
 		collectParameters(rule.trgNodeBlocks, ParameterDomain.TRG, paramsToData, paramGroups)
-		collectParameters(rule.nacs.flatMap[it.pattern.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
+		collectParameters(nacPatterns.flatMap[it.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
 		
 		op.handleParameters(paramsToData, paramGroups)
 		
@@ -121,7 +122,6 @@ class TGGCompiler {
 			srcToCorr.get(corr.source).add(corr)
 		}
 		
-		val nacPatterns = op.preprocessNACs(rule.nacs).map[EMSLFlattener.flatten(it.pattern) as AtomicPattern]
 		
 		'''
 			rule «rule.name» {
