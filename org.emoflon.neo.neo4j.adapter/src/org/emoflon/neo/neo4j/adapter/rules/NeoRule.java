@@ -6,12 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
-import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -19,7 +17,6 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression;
@@ -85,24 +82,16 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		var flatRule = NeoUtil.getFlattenedRule(r);
 		var nodeBlocks = flatRule.getNodeBlocks();
 
-		extractNodesAndRelations(nodeBlocks);
+		var rulePreprocessor = new RulePreProcessor();
+		var preprocessedBlocks = rulePreprocessor.preprocess(nodeBlocks);
 		
-		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
+		extractNodesAndRelations(preprocessedBlocks);
+		
+		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), preprocessedBlocks, flatRule.getCondition(),
 				builder, mask);
 		
-		coContextPattern = NeoPatternFactory.createNeoCoPattern(flatRule.getName(), nodeBlocks, flatRule.getCondition(),
-				builder, mask);
-		
-		addMissingNodes(contextPattern);
-	}
-
-	private void addMissingNodes(NeoPattern pattern) {
-		var varNamesInPattern = pattern.getNodes().stream().map(n -> n.getVarName()).collect(Collectors.toList());
-		for(var entry : blackNodes.entrySet()) {
-			if(!varNamesInPattern.contains(entry.getKey())) {
-				pattern.addExtraNodes(List.of(entry.getValue()));
-			}
-		}
+		coContextPattern = NeoPatternFactory.createNeoCoPattern(flatRule.getName(), preprocessedBlocks, flatRule.getCondition(),
+				builder, mask);		
 	}
 
 	private void extractNodesAndRelations(Collection<ModelNodeBlock> nodeBlocks) {
@@ -148,9 +137,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				}
 			}
 
-			var typeNode = createBlackElementsForTyping(n);
-			var typingEdge = createTypingEdge(typeNode, neoNode);
-
 			if (n.getAction() != null) {
 				switch (n.getAction().getOp()) {
 				case CREATE:
@@ -158,48 +144,17 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 					neoNode.addProperty("ename", EMSLUtil.returnValueAsString(neoNode.getVarName()));
 					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
-					greenRel.put(typingEdge.getVarName(), typingEdge);
 					break;
 				case DELETE:
 					redNodes.put(neoNode.getVarName(), neoNode);
-					neoNode.addRelation(typingEdge);
-					redRel.put(typingEdge.getVarName(), typingEdge);
 					break;
 				default:
 					throw new UnsupportedOperationException();
 				}
 			} else {
 				blackNodes.put(neoNode.getVarName(), neoNode);
-				neoNode.addRelation(typingEdge);
-				blackRel.put(typingEdge.getVarName(), typingEdge);
 			}
 		}
-	}
-
-	private NeoRelation createTypingEdge(NeoNode typeNode, NeoNode neoNode) {
-		return new NeoRelation(neoNode,
-				neoNode.getVarName() + "_" + NeoCoreBootstrapper.META_TYPE + "_" + typeNode.getVarName(),
-				NeoCoreBootstrapper.META_TYPE, NeoCoreBootstrapper.ECLASS, typeNode.getVarName());
-	}
-
-	private NeoNode createBlackElementsForTyping(ModelNodeBlock n) {
-		var varNameOfMMNode = ((Metamodel) n.getType().eContainer()).getName();
-		var mmNode = new NeoNode(NeoCoreBootstrapper.METAMODEL, varNameOfMMNode);
-		mmNode.addProperty(NeoCoreBootstrapper.NAME_PROP, EMSLUtil.returnValueAsString(varNameOfMMNode));
-		blackNodes.putIfAbsent(varNameOfMMNode, mmNode);
-
-		var varNameOfTypeNode = n.getType().getName() + "_" + varNameOfMMNode;
-		var typeNode = new NeoNode(NeoCoreBootstrapper.ECLASS, varNameOfTypeNode);
-		typeNode.addProperty(NeoCoreBootstrapper.NAME_PROP, EMSLUtil.returnValueAsString(n.getType().getName()));
-		blackNodes.putIfAbsent(varNameOfTypeNode, typeNode);
-
-		var varNameOfElOfRel = varNameOfTypeNode + "_" + NeoCoreBootstrapper.META_EL_OF + "_" + varNameOfMMNode;
-		var elOfRelnForTypeNode = new NeoRelation(blackNodes.get(varNameOfTypeNode), varNameOfElOfRel,
-				NeoCoreBootstrapper.META_EL_OF, NeoCoreBootstrapper.METAMODEL, mmNode.getVarName());
-		typeNode.addRelation(elOfRelnForTypeNode);
-		blackRel.putIfAbsent(varNameOfElOfRel, elOfRelnForTypeNode);
-
-		return blackNodes.get(varNameOfTypeNode);
 	}
 
 	private void computePropertiesOfNode(ModelNodeBlock node, NeoNode neoNode, NeoMask neoMask) {
