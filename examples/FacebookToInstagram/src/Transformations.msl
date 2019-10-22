@@ -102,7 +102,6 @@ pattern NoDoubleFollowershipInstagram {
 	iu : InstagramLanguage.User
 }
 
-//FIXME[Mario] This ends up being empty in the generated GEN operation -- did you perhaps forget to flatten all patterns before operationalisation?
 pattern NoRedundantFollowershipInstagram -> NoDoubleFollowershipInstagram[in -> iu, iu -> in]
 
 abstract tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {

@@ -24,6 +24,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Map
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 
 class TGGCompiler {
 	
@@ -120,7 +121,7 @@ class TGGCompiler {
 			srcToCorr.get(corr.source).add(corr)
 		}
 		
-		val nacPatterns = op.preprocessNACs(rule.nacs).map[it.pattern]
+		val nacPatterns = op.preprocessNACs(rule.nacs).map[EMSLFlattener.flatten(it.pattern) as AtomicPattern]
 		
 		'''
 			rule «rule.name» {
