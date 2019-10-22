@@ -172,9 +172,7 @@ tripleRule IgnoreInterNetworkFollowers : FacebookToInstagramGrammar -> Followers
 			++ -follows-> $iu
 		}
 	}
-}
-//FIXME [Mario]
-// forbid trg(NoDoubleFollowershipInstagram)
+} forbid trg(NoDoubleFollowershipInstagram)
 
 tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
 	target {
@@ -186,9 +184,7 @@ tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
 			++ -follows-> iu
 		}
 	}
-} 
-// FIXME[Mario]
-//forbid trg(NoDoubleFollowershipInstagram)
+} forbid trg(NoDoubleFollowershipInstagram) 
 
 tripleRule NetworkToNetworkIslandRule : FacebookToInstagramGrammar {
 	source {

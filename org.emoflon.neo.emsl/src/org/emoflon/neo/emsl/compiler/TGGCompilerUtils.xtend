@@ -55,10 +55,10 @@ class TGGCompilerUtils {
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
 
-	def static String printAtomicPattern(AtomicPattern pattern, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData) {
+	def static String printAtomicPattern(String newPatternName, AtomicPattern pattern, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData) {
 		val requiredNodeBlocks = new HashSet
 		'''
-			pattern «pattern.name» {
+			pattern «newPatternName» {
 				«FOR nodeBlock : pattern.nodeBlocks»
 					«simplePrintNodeBlock(nodeBlock, nodeTypeNames, paramsToData, requiredNodeBlocks)»
 				«ENDFOR»

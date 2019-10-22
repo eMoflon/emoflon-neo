@@ -136,19 +136,23 @@ class TGGCompiler {
 			
 			«IF(nacPatterns.size === 1)»
 				«val nac = nacPatterns.head»
-				constraint «rule.name»NAC = forbid «nac.name»
+				constraint «rule.name»NAC = forbid «getNacName(rule, nac)»
 
-				«TGGCompilerUtils.printAtomicPattern(nac, nodeTypeNames, paramsToData)»
+				«TGGCompilerUtils.printAtomicPattern(getNacName(rule, nac), nac, nodeTypeNames, paramsToData)»
 			«ELSEIF(nacPatterns.size > 1)»
-					constraint «rule.name»NAC = «FOR nac : nacPatterns SEPARATOR '&&'»«nac.name»NAC«ENDFOR»
+					constraint «rule.name»NAC = «FOR nac : nacPatterns SEPARATOR ' && '»«getNacName(rule, nac)»NAC«ENDFOR»
 					
 					«FOR nac : nacPatterns»
-						constraint «nac.name»NAC = forbid «nac.name»
+						constraint «getNacName(rule, nac)»NAC = forbid «getNacName(rule, nac)»
 					
-						«TGGCompilerUtils.printAtomicPattern(nac, nodeTypeNames, paramsToData)»
+						«TGGCompilerUtils.printAtomicPattern(getNacName(rule, nac), nac, nodeTypeNames, paramsToData)»
 					«ENDFOR»
 			«ENDIF»
 		'''
+	}
+	
+	private def String getNacName(TripleRule rule, AtomicPattern pattern) {
+		'''«rule.name»_«pattern.name»'''
 	}
 	
 	private def collectParameters(Iterable<ModelNodeBlock> nodeBlocks,
