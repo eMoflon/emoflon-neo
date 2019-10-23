@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
 import org.emoflon.neo.example.ENeoTest;
@@ -16,12 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.moflon.tutorial.sokobangamegui.controller.IController;
 
 public class SokobanGUIFunctionality extends ENeoTest {
-	private API_SokobanGUIPatterns entities = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI,
-			API_Common.PLATFORM_PLUGIN_URI);
+	private API_SokobanGUIPatterns entities = new API_SokobanGUIPatterns(builder);
 
 	@BeforeEach
 	public void initDB() {
-		initDB(new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI)
+		initDB(new API_SokobanSimpleTestField(builder)
 				.getModel_SokobanSimpleTestField());
 	}
 
@@ -64,7 +62,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 	@Test
 	public void testAxiom() {
-		builder.executeQueryForSideEffect("MATCH (f:Field), (b:Board), (m:Figure) DETACH DELETE f,b,m");
+		builder.executeQueryForSideEffect("MATCH (f:SokobanLanguage__Field), (b:SokobanLanguage__Board), (m:SokobanLanguage__Figure) DETACH DELETE f,b,m");
 
 		var access = entities.getRule_CreateTopLeft();
 		assertEquals(1, access.rule().countMatches(),

@@ -327,12 +327,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		bootstrapper.bootstrapNeoCore(this);
 
 		executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
-				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.METAMODEL)
+				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.MODEL)
 				+ ") ASSERT mm.ename IS UNIQUE");
-		executeQueryForSideEffect(//
-				"CREATE INDEX ON :" + //
-						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.METAMODEL) + //
-						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
 		executeQueryForSideEffect(//
 				"CREATE INDEX ON :" + //
 						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.ECLASS) + //

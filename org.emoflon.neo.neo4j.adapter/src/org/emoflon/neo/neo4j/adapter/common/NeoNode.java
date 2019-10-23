@@ -8,7 +8,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
 public class NeoNode {
-	private Collection<String> labels;
+	private List<String> labels;
 	private String varName;
 
 	private Collection<NeoProperty> properties;
@@ -19,10 +19,6 @@ public class NeoNode {
 		this.varName = varName;
 		this.properties = new ArrayList<>();
 		this.relations = new ArrayList<>();
-	}
-
-	public Collection<String> getLabels() {
-		return labels;
 	}
 
 	public String getVarName() {
@@ -48,5 +44,13 @@ public class NeoNode {
 
 	public void addRelation(NeoRelation rel) {
 		this.relations.add(rel);
+	}
+
+	public String getPrimaryLabel() {
+		return labels.get(0);
+	}
+	
+	public List<String> getLabels() {
+		return labels;
 	}
 }

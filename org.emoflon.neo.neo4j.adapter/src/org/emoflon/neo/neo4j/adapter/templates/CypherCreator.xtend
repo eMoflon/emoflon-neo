@@ -57,7 +57,7 @@ class CypherCreator extends CypherBuilder {
 		if (nodesToMatch.containsKey(key))
 			return nodesToMatch.get(key)
 		else {
-			val nc = new NodeCommand(props, labels)
+			val nc = new NodeCommand(props, labels.subList(0,1))
 			nodesToMatch.put(key, nc)
 			matchEdge(List.of, NeoCoreBootstrapper.META_EL_OF, nc, container)
 			return nc

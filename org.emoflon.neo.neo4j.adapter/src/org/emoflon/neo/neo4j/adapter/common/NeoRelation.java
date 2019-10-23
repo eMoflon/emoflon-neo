@@ -105,7 +105,7 @@ public class NeoRelation {
 	}
 	
 	public String getFromNodeLabel() {
-		return from.getLabels().iterator().next();
+		return from.getPrimaryLabel();
 	}
 
 	/**

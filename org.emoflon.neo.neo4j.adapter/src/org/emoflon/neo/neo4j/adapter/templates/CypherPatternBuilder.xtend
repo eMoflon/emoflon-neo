@@ -17,7 +17,7 @@ class CypherPatternBuilder {
 	 * Basic Cypher Strings
 	 ****************************/
 	def static String sourceNode(NeoNode n) {
-		'''(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«properties(n.properties)»)'''
+		'''(«n.varName»:«n.primaryLabel»«properties(n.properties)»)'''
 	}
 
 	def static String directedRelation(NeoRelation r) {
@@ -40,7 +40,20 @@ class CypherPatternBuilder {
 	}
 
 	protected def static CharSequence queryNode(NeoNode n) '''
-	(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
+	(«n.varName»:«n.primaryLabel»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
+	
+	protected def static CharSequence createNode(NeoNode n) 
+	'''
+		(«n.varName»
+			«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»
+			«IF n.properties.size > 0»
+				«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»
+					«p.name»:«p.value»
+				«ENDFOR»
+			«ENDIF»
+		)
+	'''
+	
 	
 	/*****************************
 	 * Standard Matching Functions
@@ -179,7 +192,7 @@ class CypherPatternBuilder {
 							«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 						«ENDIF»
 						«FOR r : n.relations SEPARATOR ', '»
-							(«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)-[«r.varName»]->(:«r.toNodeLabel»)
+							(:«n.primaryLabel»)-[«r.varName»]->(:«r.toNodeLabel»)
 						«ENDFOR»
 		«ENDFOR»'''
 	}
@@ -189,7 +202,7 @@ class CypherPatternBuilder {
 		MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 			«FOR r : n.relations SEPARATOR ', '»
-				(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
+				(«n.varName»:«n.primaryLabel»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
 			«ENDFOR»
 			«ENDFOR»'''
 	}
@@ -201,22 +214,12 @@ class CypherPatternBuilder {
 				var classTypesI = nodes.get(i).getLabels;
 				var classTypesJ = nodes.get(j).getLabels;
 				
-				var equalFound = false;
-				for(elem : classTypesI) {
-					if(classTypesJ.contains(elem)) {
-						equalFound = true;
-					}
-				}
-				for(elem : classTypesJ) {
-					if(classTypesI.contains(elem)) {
-						equalFound = true;
-					}
-				}
-				
-				if (equalFound)
+				if(classTypesJ.contains(nodes.get(i).primaryLabel) ||
+				   classTypesI.contains(nodes.get(j).primaryLabel))				
 					pairsToCheck.add(Pair.of(nodes.get(i).varName, nodes.get(j).varName))
 			}
 		}
+		
 		return pairsToCheck;
 	}
 
@@ -225,7 +228,6 @@ class CypherPatternBuilder {
 	}
 	
 	def static String injectiveBlock(Collection<NeoNode> nodes) {
-		
 		var pairsToCheck = new ArrayList<Pair<String,String>>(injectiveElem(nodes));
 		return injectiveCond(pairsToCheck);
 	}
@@ -666,7 +668,7 @@ class CypherPatternBuilder {
 	 }
 	 
 	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
-	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
+	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«createNode(n)»«ENDFOR»
 	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»
 	 	'''
 	 }
