@@ -290,12 +290,24 @@ public class NeoCoreBootstrapper {
 		});
 	}
 
+	public static String addNeoCoreNamespace(String label) {
+		var namespace = EMSLUtil.ORG_EMOFLON_NEO_CORE;
+		return addNameSpace(namespace, label);
+	}
+
+	public static String addNameSpace(String namespace, String label) {
+		return namespace + "__" + label;
+	}
+
 	public static List<String> addNeoCoreNamespace(String... labels) {
 		var namespace = EMSLUtil.ORG_EMOFLON_NEO_CORE;
 		return addNameSpace(namespace, labels);
 	}
 
 	public static List<String> addNameSpace(String namespace, String... labels) {
-		return List.of(labels).stream().map(l -> namespace + "__" + l).distinct().collect(Collectors.toList());
+		return List.of(labels).stream()//
+				.map(NeoCoreBootstrapper::addNeoCoreNamespace)//
+				.distinct()//
+				.collect(Collectors.toList());
 	}
 }

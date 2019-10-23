@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -108,19 +109,19 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	public StatementResult executeQuery(String cypherStatement) {
 		return executeQueryWithParameters(cypherStatement, null);
 	}
-	
+
 	@Override
-	public StatementResult executeQueryWithParameters(String cypherStatement, Map<String,Object> parameters) {
+	public StatementResult executeQueryWithParameters(String cypherStatement, Map<String, Object> parameters) {
 		var session = driver.session();
 		var transaction = session.beginTransaction();
 
 		try {
 			StatementResult result;
-			if(parameters == null || parameters.isEmpty())
+			if (parameters == null || parameters.isEmpty())
 				result = transaction.run(cypherStatement.trim());
 			else
 				result = transaction.run(cypherStatement.trim(), parameters);
-			
+
 			transaction.success();
 			transaction.close();
 			return result;
@@ -135,7 +136,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	public void executeQueryForSideEffect(String cypherStatement) {
 		var session = driver.session();
 		var transaction = session.beginTransaction();
-		
+
 		try {
 			var st = driver.session().run(cypherStatement.trim());
 			st.consume();
@@ -263,7 +264,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		var metamodels = collectReferencedMetamodels(m);
 		metamodels.add(m);
-		
+
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export metamodels: " + metamodelNames);
 		var newMetamodels = removeExistingMetamodels(metamodels);
@@ -324,6 +325,18 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private void bootstrapNeoCore() {
 		var bootstrapper = new NeoCoreBootstrapper();
 		bootstrapper.bootstrapNeoCore(this);
+
+		executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
+				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.METAMODEL)
+				+ ") ASSERT mm.ename IS UNIQUE");
+		executeQueryForSideEffect(//
+				"CREATE INDEX ON :" + //
+						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.METAMODEL) + //
+						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
+		executeQueryForSideEffect(//
+				"CREATE INDEX ON :" + //
+						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.ECLASS) + //
+						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) {
@@ -585,14 +598,16 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private void handleNodeBlocksInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
 			HashMap<Model, NodeCommand> mNodes, Model model, NodeCommand nodeCommandForModel) {
 
-		var mNode = cb.createNode(List.of(new NeoProp(NAME_PROP, model.getName())), NeoCoreBootstrapper.LABELS_FOR_A_MODEL);
+		var mNode = cb.createNode(List.of(new NeoProp(NAME_PROP, model.getName())),
+				NeoCoreBootstrapper.LABELS_FOR_A_MODEL);
 
 		mNodes.put(model, mNode);
 
 		model.getNodeBlocks().forEach(nb -> {
 			Metamodel mm = (Metamodel) nb.getType().eContainer();
 
-			var mmNode = cb.matchNode(List.of(new NeoProp(NAME_PROP, mm.getName())), NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
+			var mmNode = cb.matchNode(List.of(new NeoProp(NAME_PROP, mm.getName())),
+					NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
 
 			var typeOfNode = cb.matchNodeWithContainer(//
 					List.of(new NeoProp(NAME_PROP, nb.getType().getName())), //
@@ -621,15 +636,16 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public static List<String> computeLabelsFromType(MetamodelNodeBlock type) {
-		var namespace = ((Metamodel)type.eContainer()).getName();
-		var labels = NeoCoreBootstrapper.addNameSpace(namespace, type.getName());
-		
-		for (MetamodelNodeBlock st : type.getSuperTypes()) 
+		var labels = new LinkedHashSet<String>();
+		var namespace = ((Metamodel) type.eContainer()).getName();
+		labels.add(NeoCoreBootstrapper.addNameSpace(namespace, type.getName()));
+
+		for (MetamodelNodeBlock st : type.getSuperTypes())
 			labels.addAll(computeLabelsFromType(st));
 
-		labels.addAll(NeoCoreBootstrapper.addNeoCoreNamespace(EOBJECT));
-		
-		return labels.stream().distinct().collect(Collectors.toList());
+		labels.add(NeoCoreBootstrapper.addNeoCoreNamespace(EOBJECT));
+
+		return new ArrayList<>(labels);
 	}
 
 	private Object inferType(ModelPropertyStatement ps, ModelNodeBlock nb) {
@@ -648,14 +664,14 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private Object inferTypeForEdgeAttribute(ValueExpression value, String relName, String propName,
 			MetamodelNodeBlock nodeType) {
-		if(propName.equals(TRANSLATION_MARKER)) {
+		if (propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
-		
-		if(propName.equals(TYPE_AS_ATTRIBUTE) && relName.equals(CORR)) {
+
+		if (propName.equals(TYPE_AS_ATTRIBUTE) && relName.equals(CORR)) {
 			return PrimitiveString.class.cast(value).getLiteral();
 		}
-		
+
 		var typedValue = EMSLUtil.allRelationsOf(nodeType).stream()//
 				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getProperties().stream())//
@@ -668,10 +684,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private Object inferTypeForNodeAttribute(ValueExpression value, String propName, MetamodelNodeBlock nodeType) {
-		if(propName.equals(TRANSLATION_MARKER)) {
+		if (propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
-		
+
 		var typedValue = EMSLUtil.allPropertiesOf(nodeType).stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//
@@ -694,12 +710,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var result = executeQueryWithParameters("MATCH (n) return count(n)", null);
 		return (long) result.list().get(0).asMap().values().iterator().next();
 	}
-	
+
 	public long noOfEdgesInDatabase() {
 		var result = executeQueryWithParameters("MATCH ()-[r]->() return count(r)", null);
 		return (long) result.list().get(0).asMap().values().iterator().next();
 	}
-	
+
 	public long noOfElementsInDatabase() {
 		return noOfNodesInDatabase() + noOfEdgesInDatabase();
 	}
