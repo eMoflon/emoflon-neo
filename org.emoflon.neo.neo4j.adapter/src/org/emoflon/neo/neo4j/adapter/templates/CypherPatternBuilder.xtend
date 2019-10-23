@@ -461,12 +461,30 @@ class CypherPatternBuilder {
 		}
 	}
 
-	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<String> nodesMap, Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
+	def static String constraint_ifThen_readQuery(
+			Collection<NeoNode> nodesIf, 
+			Collection<NeoNode> nodesThen,
+			Collection<String> nodesMap, 
+			Collection<NeoAttributeExpression> attr, 
+			Collection<NeoAttributeExpression> attrOpt, 
+			HashMap<String,String> equalElem, 
+			Collection<String> injectiveElem, 
+			boolean injective, 
+			NeoMask mask
+		) {
 		'''
-		«constraint_ifThen_matchQuery(nodes,nodes2,attr,injective, mask, equalElem, injectiveElem)»
+		«constraint_ifThen_matchQuery(
+			nodesIf, 
+			nodesThen, 
+			attr, 
+			attrOpt, 
+			injective, 
+			mask, 
+			equalElem, 
+			injectiveElem
+		)»
 		«constraint_withQuery(nodesMap)»
-		WHERE «whereNegativeConditionQuery_Nodes(nodes2)» 
+		WHERE «whereNegativeConditionQuery_Nodes(nodesThen)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
 	
@@ -475,26 +493,47 @@ class CypherPatternBuilder {
 			Collection<NeoNode> nodesThen,
 			Collection<String> nodesThenButNotIf,
 			Collection<String> nodesMap,
-        	Collection<NeoAttributeExpression> attr, 
+        	Collection<NeoAttributeExpression> attr,
+        	Collection<NeoAttributeExpression> attrOpt, 
         	HashMap<String,String> equalElem, 
         	Collection<String> injectiveElem, 
         	boolean injective, 
         	NeoMask mask
         ) {
         '''
-        «constraint_ifThen_matchQuery(nodesIf, nodesThen, attr, injective, mask, equalElem, injectiveElem)»
+        «constraint_ifThen_matchQuery(
+        	nodesIf, 
+        	nodesThen, 
+        	attr, 
+        	attrOpt, 
+        	injective, 
+        	mask, 
+        	equalElem, 
+        	injectiveElem
+        )»
         «constraint_withQuery(nodesMap)»
-        WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
-        RETURN FALSE'''
+        WHERE 
+        	«whereNegativeConditionQuery_String(nodesThenButNotIf)»
+        RETURN FALSE
+        '''
     }
 
-	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen,
-		Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, HashMap<String,String> equalElem, Collection<String> injectiveElem) {
-		'''«matchQuery(nodesIf)»
-		«whereQuery(nodesIf,attr,injective,mask)»
+	def static String constraint_ifThen_matchQuery(
+			Collection<NeoNode> nodesIf, 
+			Collection<NeoNode> nodesThen,
+			Collection<NeoAttributeExpression> attr, 
+			Collection<NeoAttributeExpression> attrOpt, 
+			boolean injective, 
+			NeoMask mask, 
+			HashMap<String,String> equalElem, 
+			Collection<String> injectiveElem
+		) {
+		'''
+		«matchQuery(nodesIf)»
+		«whereQuery(nodesIf, attr, injective, mask)»
 		«withQuery(nodesIf)»
 		OPTIONAL «matchQuery(nodesThen)»
-		«whereQuery(nodesThen,attr,injective,mask, equalElem,injectiveElem)»
+		«whereQuery(nodesThen, attrOpt, injective, mask, equalElem, injectiveElem)»
 		'''
 	}
 
