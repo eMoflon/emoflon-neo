@@ -20,7 +20,7 @@ public class FixedNoOfMatchesRuleScheduler implements IRuleScheduler<NeoMatch, N
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Integer> scheduleWith(MatchContainer<NeoMatch, NeoCoMatch> matchContainer,
-			IMonitor progressMonitor) {
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		Map<IRule<NeoMatch, NeoCoMatch>, Integer> scheduleMap = new HashMap<>();
 		matchContainer.getRulesWithoutMatches().forEach(rule -> scheduleMap.put(rule, noOfMatches));
 		return scheduleMap;

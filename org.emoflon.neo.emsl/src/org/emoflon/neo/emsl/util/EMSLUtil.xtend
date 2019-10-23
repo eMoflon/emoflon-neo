@@ -45,9 +45,8 @@ class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
 	public static final String UI_PLUGIN_ID = "org.emoflon.neo.emsl.ui"
 
-	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
-	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/" + ORG_EMOFLON_NEO_CORE +
-		"/model/NeoCore.msl"
+	public static final String ORG_EMOFLON_NEO_CORE = "NeoCore";
+	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
 
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"

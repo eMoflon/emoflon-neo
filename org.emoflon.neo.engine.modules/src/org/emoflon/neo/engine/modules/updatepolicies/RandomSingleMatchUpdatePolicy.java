@@ -24,7 +24,7 @@ public class RandomSingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, Ne
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches,
-			IMonitor progressMonitor) {
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selection = new HashMap<>();
 
 		var rules = matches.getRulesWithMatches();

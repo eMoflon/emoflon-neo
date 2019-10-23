@@ -74,4 +74,8 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	public int getNoOfRuleApplicationsFor(IRule<M, C> rule) {
 		return ruleApplications.get(rule);
 	}
+
+	public Map<IRule<M, C>, Integer> getRuleApplications() {
+		return Map.copyOf(ruleApplications);
+	}
 }

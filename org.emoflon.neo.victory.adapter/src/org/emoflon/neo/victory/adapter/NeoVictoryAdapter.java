@@ -42,7 +42,7 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
-			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> pProgressMonitor) {
 		var selection = new ArrayList<NeoMatch>();
 		var selected = (NeoMatchAdapter) victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
 		selection.add((NeoMatch) selected.getWrappedMatch());

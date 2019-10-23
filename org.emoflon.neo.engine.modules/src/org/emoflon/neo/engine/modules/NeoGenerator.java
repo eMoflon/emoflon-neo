@@ -32,7 +32,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
 	public NeoGenerator(Collection<NeoRule> allRules, ITerminationCondition<NeoMatch, NeoCoMatch> terminationCondition,
 			IRuleScheduler<NeoMatch, NeoCoMatch> ruleScheduler, IUpdatePolicy<NeoMatch, NeoCoMatch> updatePolicy,
-			IMatchReprocessor<NeoMatch, NeoCoMatch> matchReprocessor, IMonitor progressMonitor,
+			IMatchReprocessor<NeoMatch, NeoCoMatch> matchReprocessor, IMonitor<NeoMatch, NeoCoMatch> progressMonitor,
 			List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators) {
 		super(allRules, terminationCondition, ruleScheduler, updatePolicy, matchReprocessor, progressMonitor);
 		this.parameterValueGenerators = new ArrayList<>(parameterValueGenerators);

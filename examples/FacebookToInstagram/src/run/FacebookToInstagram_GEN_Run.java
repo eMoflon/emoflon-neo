@@ -45,7 +45,7 @@ public class FacebookToInstagram_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new MaxGeneratedElementsTerminationCondition(1000, builder), //
+				new MaxGeneratedElementsTerminationCondition(10, builder), //
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //

@@ -17,7 +17,7 @@ class CypherPatternBuilder {
 	 * Basic Cypher Strings
 	 ****************************/
 	def static String sourceNode(NeoNode n) {
-		'''(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«properties(n.properties)»)'''
+		'''(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«properties(n.properties)»)'''
 	}
 
 	def static String directedRelation(NeoRelation r) {
@@ -40,7 +40,7 @@ class CypherPatternBuilder {
 	}
 
 	protected def static CharSequence queryNode(NeoNode n) '''
-	(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
+	(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
 	
 	/*****************************
 	 * Standard Matching Functions
@@ -91,7 +91,6 @@ class CypherPatternBuilder {
 	}
 	
 	def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask) {
-		
 		var out = "";
 		if(injective && nodes.size > 1){
 			out += injectiveBlock(nodes);
@@ -180,7 +179,7 @@ class CypherPatternBuilder {
 							«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 						«ENDIF»
 						«FOR r : n.relations SEPARATOR ', '»
-							(«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)-[«r.varName»]->(:«r.toNodeLabel»)
+							(«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)-[«r.varName»]->(:«r.toNodeLabel»)
 						«ENDFOR»
 		«ENDFOR»'''
 	}
@@ -190,7 +189,7 @@ class CypherPatternBuilder {
 		MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 			«FOR r : n.relations SEPARATOR ', '»
-				(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
+				(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
 			«ENDFOR»
 			«ENDFOR»'''
 	}
@@ -199,8 +198,8 @@ class CypherPatternBuilder {
 		var pairsToCheck = new ArrayList<Pair<String, String>>()
 		for (var i = 0; i < nodes.size; i++) {
 			for (var j = i + 1; j < nodes.size; j++) {
-				var classTypesI = nodes.get(i).classTypes;
-				var classTypesJ = nodes.get(j).classTypes;
+				var classTypesI = nodes.get(i).getLabels;
+				var classTypesJ = nodes.get(j).getLabels;
 				
 				var equalFound = false;
 				for(elem : classTypesI) {
@@ -462,31 +461,79 @@ class CypherPatternBuilder {
 		}
 	}
 
-	def static String constraint_ifThen_readQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<String> nodesMap, Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
+	def static String constraint_ifThen_readQuery(
+			Collection<NeoNode> nodesIf, 
+			Collection<NeoNode> nodesThen,
+			Collection<String> nodesMap, 
+			Collection<NeoAttributeExpression> attr, 
+			Collection<NeoAttributeExpression> attrOpt, 
+			HashMap<String,String> equalElem, 
+			Collection<String> injectiveElem, 
+			boolean injective, 
+			NeoMask mask
+		) {
 		'''
-		«constraint_ifThen_matchQuery(nodes,nodes2,attr,injective, mask, equalElem, injectiveElem)»
+		«constraint_ifThen_matchQuery(
+			nodesIf, 
+			nodesThen, 
+			attr, 
+			attrOpt, 
+			injective, 
+			mask, 
+			equalElem, 
+			injectiveElem
+		)»
 		«constraint_withQuery(nodesMap)»
-		WHERE «whereNegativeConditionQuery_Nodes(nodes2)» 
+		WHERE «whereNegativeConditionQuery_Nodes(nodesThen)» 
 		«constraint_returnQuery(nodesMap)»'''
 	}
 	
-	def static String constraint_ifThen_readQuery_satisfy(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen, Collection<String> nodesThenButNotIf, Collection<String> nodesMap,
-        Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
+	def static String constraint_ifThen_readQuery_satisfy(
+			Collection<NeoNode> nodesIf,
+			Collection<NeoNode> nodesThen,
+			Collection<String> nodesThenButNotIf,
+			Collection<String> nodesMap,
+        	Collection<NeoAttributeExpression> attr,
+        	Collection<NeoAttributeExpression> attrOpt, 
+        	HashMap<String,String> equalElem, 
+        	Collection<String> injectiveElem, 
+        	boolean injective, 
+        	NeoMask mask
+        ) {
         '''
-        «constraint_ifThen_matchQuery(nodesIf,nodesThen,attr,injective, mask, equalElem, injectiveElem)»
+        «constraint_ifThen_matchQuery(
+        	nodesIf, 
+        	nodesThen, 
+        	attr, 
+        	attrOpt, 
+        	injective, 
+        	mask, 
+        	equalElem, 
+        	injectiveElem
+        )»
         «constraint_withQuery(nodesMap)»
-        WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
-        RETURN FALSE'''
+        WHERE 
+        	«whereNegativeConditionQuery_String(nodesThenButNotIf)»
+        RETURN FALSE
+        '''
     }
 
-	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
-		Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, HashMap<String,String> equalElem, Collection<String> injectiveElem) {
-		'''«matchQuery(nodes)»
-		«whereQuery(nodes,attr,injective,mask)»
-		«withQuery(nodes)»
-		OPTIONAL «matchQuery(nodes2)»
-		«whereQuery(nodes2,attr,injective,mask, equalElem,injectiveElem)»
+	def static String constraint_ifThen_matchQuery(
+			Collection<NeoNode> nodesIf, 
+			Collection<NeoNode> nodesThen,
+			Collection<NeoAttributeExpression> attr, 
+			Collection<NeoAttributeExpression> attrOpt, 
+			boolean injective, 
+			NeoMask mask, 
+			HashMap<String,String> equalElem, 
+			Collection<String> injectiveElem
+		) {
+		'''
+		«matchQuery(nodesIf)»
+		«whereQuery(nodesIf, attr, injective, mask)»
+		«withQuery(nodesIf)»
+		OPTIONAL «matchQuery(nodesThen)»
+		«whereQuery(nodesThen, attrOpt, injective, mask, equalElem, injectiveElem)»
 		'''
 	}
 
@@ -596,40 +643,21 @@ class CypherPatternBuilder {
 	 * Basic Rule Functions
 	 ****************************/
 	 
-	 
-	 def static String ruleExecutionQuery(Collection<NeoNode> nodes, boolean spo, 
-	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
-	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
-	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel,
-	 	Collection<NeoAttributeExpression> attrExpr, Collection<NeoAttributeExpression> attrAsgn) {
-	 	'''
-	 	«matchQuery(nodes)»«IF nodes.size>0 && (modelNodes.size > 0 || modelEContRel.size > 0)», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«IF modelNodes.size > 0 && modelEContRel.size > 0», «ENDIF»«ruleExecution_matchModelEContainer(modelEContRel)»
-	 	«IF nodes.size>0»«isStillValid_whereQuery(nodes, attrExpr)»«ENDIF»
-	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
-	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
-	 	«ruleExecution_setQuery(attrAsgn)»
-	 	«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«ELSE»RETURN TRUE«ENDIF»
-	 	
-	 	'''
-	 	
-	 }
-	 
 	 def static String ruleExecutionQueryCollection(Collection<NeoNode> nodes, boolean spo, 
 	 	Collection<NeoNode> nodesL, Collection<NeoNode> nodesR, Collection<NeoNode> nodesK, 
 	 	Collection<NeoRelation> refL, Collection<NeoRelation> refR, Collection<NeoRelation> relK,
-	 	Collection<NeoNode> modelNodes, Collection<NeoRelation> modelRel, Collection<NeoRelation> modelEContRel,
 	 	Collection<NeoAttributeExpression> attrExpr, Collection<NeoAttributeExpression> attrAsgn) {
 	 	'''
 	 	«unwindQuery()»
-	 	«matchQuery(nodes)»«IF nodes.size>0 && (modelNodes.size > 0 || modelEContRel.size > 0)», «ENDIF»«ruleExecution_matchModelNodes(modelNodes)»«IF modelNodes.size > 0 && modelEContRel.size > 0», «ENDIF»«ruleExecution_matchModelEContainer(modelEContRel)»
-	 	«IF nodes.size>0»«isStillValid_whereQueryCollection(nodes, attrExpr)»«ENDIF»
+	 	«IF nodes.size>0»
+	 		«matchQuery(nodes)»
+	 		«isStillValid_whereQueryCollection(nodes, attrExpr)»
+	 	«ENDIF»
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
-	 	«ruleExecution_createQuery(nodesR,refR,modelNodes,modelRel)»
+	 	«ruleExecution_createQuery(nodesR,refR)»
 	 	«ruleExecution_setQuery(attrAsgn)»
 	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»,«ENDIF» matches.match_id as match_id
-	 	
 	 	'''
-	 	
 	 }
 	 
 	 def static String ruleExecution_deleteQuery(boolean spo, Collection<NeoNode> nodesL, Collection<NeoRelation> refL) {
@@ -637,10 +665,9 @@ class CypherPatternBuilder {
 	 			«IF nodesL.size > 0 && refL.size > 0», «ENDIF»«FOR n: nodesL SEPARATOR ', '»«n.varName»«ENDFOR»«ENDIF»'''
 	 }
 	 
-	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR, Collection<NeoNode> modelNode, Collection<NeoRelation> modelRel) {
+	 def static String ruleExecution_createQuery(Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
 	 	'''«IF nodesR.size > 0 || refR.size > 0»CREATE «FOR n: nodesR SEPARATOR ', '»«queryNode(n)»«ENDFOR»
 	 	«IF nodesR.size > 0 && refR.size > 0», «ENDIF»«FOR r: refR SEPARATOR ', '»(«r.fromNode.varName»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»«ENDIF»
-	 	«IF modelRel.size > 0»«ruleExecution_createModelRel(modelRel)»«ENDIF»
 	 	'''
 	 }
 	 
@@ -652,7 +679,6 @@ class CypherPatternBuilder {
 	 }
 	 
 	 def static String ruleExecution_returnQuery(Collection<NeoNode> nodesK, Collection<NeoRelation> refK, Collection<NeoNode> nodesR, Collection<NeoRelation> refR) {
-	 	
 	 	var nodes = new ArrayList<NeoNode>(nodesK);
 	 	nodes.addAll(nodesR);
 	 	var ref = new ArrayList<NeoRelation>(refK);
@@ -677,15 +703,4 @@ class CypherPatternBuilder {
 	 	}
 	 	return out;
 	 }
-	 
-	 def static String ruleExecution_matchModelNodes(Collection<NeoNode> nodes) {
-	 	'''«FOR n:nodes SEPARATOR ", "»«sourceNode(n)»«FOR r : n.relations»«directedRelation(r)»«targetNode(r)»«ENDFOR»«ENDFOR»'''
-	 }
-	 def static String ruleExecution_matchModelEContainer(Collection<NeoRelation> rel) {
-	 	'''«FOR r:rel SEPARATOR ", "»(«r.fromNodeVar»)«directedRelation(r)»(«r.toNodeVar»)«ENDFOR»'''
-	 }
-	 def static String ruleExecution_createModelRel(Collection<NeoRelation> rel) {
-	 	'''«FOR r:rel BEFORE ", " SEPARATOR ", "»(«r.fromNodeVar»)-[:metaType]->(«r.toNodeVar»)«ENDFOR»'''
-	 }
-
 }

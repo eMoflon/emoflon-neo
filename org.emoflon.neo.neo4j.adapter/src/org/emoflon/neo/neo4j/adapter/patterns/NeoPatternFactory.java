@@ -2,7 +2,6 @@ package org.emoflon.neo.neo4j.adapter.patterns;
 
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Condition;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
@@ -64,7 +63,7 @@ public class NeoPatternFactory {
 			throw new IllegalArgumentException("Unknown type of pattern:" + name);
 	}
 
-	public static NeoPattern createNeoCoPattern(String name, EList<ModelNodeBlock> nodeBlocks, Condition condition,
+	public static NeoPattern createNeoCoPattern(String name, List<ModelNodeBlock> nodeBlocks, Condition condition,
 			IBuilder builder, NeoMask mask) {
 		return createNeoPattern(name, nodeBlocks, condition, builder, mask, new NeoQueryData(false));
 	}

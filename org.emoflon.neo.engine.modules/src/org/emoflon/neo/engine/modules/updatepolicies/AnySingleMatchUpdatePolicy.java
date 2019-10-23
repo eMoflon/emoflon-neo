@@ -19,7 +19,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 public class AnySingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
-			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor progressMonitor) {
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selection = new HashMap<>();
 		matches.stream()//
 				.findAny()//

@@ -14,7 +14,7 @@ public class AllRulesAllMatchesScheduler implements IRuleScheduler<NeoMatch, Neo
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Integer> scheduleWith(MatchContainer<NeoMatch, NeoCoMatch> matchContainer,
-			IMonitor progressMonitor) {
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		var allRules = new HashMap<IRule<NeoMatch, NeoCoMatch>, Integer>();
 		matchContainer.getRulesWithoutMatches().forEach(r -> allRules.put(r, -1));
 		return allRules;

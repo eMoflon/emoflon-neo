@@ -4,21 +4,29 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
+import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
+import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
-public class HeartBeatAndReportMonitor implements IMonitor {
+public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(HeartBeatAndReportMonitor.class);
 
 	private static final double interval = 5;
 	private double heartBeats = 0;
 	private Timer timerForHeartBeat = new Timer();
 
+	private Timer totalTimeSpent = new Timer();
 	private Timer timerForRuleScheduling = new Timer();
 	private Timer timerForMatchSelection = new Timer();
 	private Timer timerForPatternMatching = new Timer();
 	private Timer timerForRuleApplication = new Timer();
 	private Timer timerForMatchReprocessing = new Timer();
 
+	public HeartBeatAndReportMonitor() {
+		totalTimeSpent.start();
+	}
+	
 	private class Timer {
 		private double start = 0;
 		private double timeSpentInSeconds = 0;
@@ -117,17 +125,21 @@ public class HeartBeatAndReportMonitor implements IMonitor {
 	}
 
 	@Override
-	public void finishGeneration() {
+	public void finishGeneration(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
 		logger.debug("Finished generation.");
 
 		synchronized (logger) {
 			logger.info("");
 			logger.info("********** Generation Report ************");
+			logger.info("Total time spent: " + totalTimeSpent.getTimeElapsedInSeconds() + "s");
 			logger.info("Rule scheduling took: " + timerForRuleScheduling.getTimeSpentInSeconds() + "s");
 			logger.info("Match selection took: " + timerForMatchSelection.getTimeSpentInSeconds() + "s");
 			logger.info("Pattern matching took: " + timerForPatternMatching.getTimeSpentInSeconds() + "s");
 			logger.info("Rule application took: " + timerForRuleApplication.getTimeSpentInSeconds() + "s");
 			logger.info("Match reprocessing took: " + timerForMatchReprocessing.getTimeSpentInSeconds() + "s");
+			logger.info("Rules applied: ");
+			matchContainer.getRuleApplications().entrySet().stream()//
+					.forEach(entry -> logger.info(" =>  " + entry.getValue() + " @ " + entry.getKey()));
 			logger.info("********** Generation Report ************");
 			logger.info("");
 		}

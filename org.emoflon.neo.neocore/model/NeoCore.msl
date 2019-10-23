@@ -1,4 +1,4 @@
-metamodel org.emoflon.neo.neocore {
+metamodel NeoCore {
 	EClass : EClassifier, EAttributedElement {
 		-eReferences(0..*)-> EReference 		
 		-eSuperType(0..*)->EClass

@@ -17,7 +17,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	private IRuleScheduler<M, C> ruleScheduler;
 	private IUpdatePolicy<M, C> updatePolicy;
 	private IMatchReprocessor<M, C> matchReprocessor;
-	private IMonitor progressMonitor;
+	private IMonitor<M, C> progressMonitor;
 	private ArrayList<IRule<M, C>> allRules;
 
 	public Generator(//
@@ -26,7 +26,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 			IRuleScheduler<M, C> ruleScheduler, //
 			IUpdatePolicy<M, C> updatePolicy, //
 			IMatchReprocessor<M, C> matchReprocessor, //
-			IMonitor progressMonitor) {
+			IMonitor<M, C> progressMonitor) {
 		this.allRules = new ArrayList<>(allRules);
 		this.terminationCondition = terminationCondition;
 		this.ruleScheduler = ruleScheduler;
@@ -71,7 +71,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 			progressMonitor.heartBeat();
 		}
 
-		progressMonitor.finishGeneration();
+		progressMonitor.finishGeneration(matchContainer);
 	}
 
 	protected void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer) {
