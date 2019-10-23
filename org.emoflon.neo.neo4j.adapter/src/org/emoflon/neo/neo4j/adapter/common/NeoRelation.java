@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
-/**
- * Class for representing an EMSL relation for creating Cypher queries
- * 
- * @author Jannik Hinz
- *
- */
+//FIXME[Anjorin]: Refactor so from and to nodes are treated symmetrically, return list of src and trg labels instead of single strings
 public class NeoRelation {
 	private NeoNode from;
 	private List<String> relTypes;
@@ -32,11 +29,11 @@ public class NeoRelation {
 	 * @param toNodeVar    the variable used in cypher of the target node
 	 */
 	public NeoRelation(NeoNode from, String varName, List<String> relTypes, String lower, String upper,
-			List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
+			List<ModelPropertyStatement> props, ModelNodeBlock target, String toNodeVar) {
 		this.from = from;
 		this.relTypes = new ArrayList<String>(relTypes);
 		this.toNodeVar = toNodeVar;
-		this.toNodeLabel = toNodeLabel;
+		this.toNodeLabel = NeoCoreBuilder.computeLabelsFromType(target.getType()).get(0);
 		this.varName = varName;
 		this.upper = convertUpper(upper);
 		this.lower = convertLower(lower);
@@ -44,11 +41,6 @@ public class NeoRelation {
 		properties = new ArrayList<>();
 		props.forEach(prop -> addProperty(EMSLUtil.getNameOfType(prop), EMSLUtil.handleValue(prop.getValue())));
 	}
-	
-	public NeoRelation(NeoNode from, String varName, String relType, String toNodeLabel, String toNodeVar) {
-		this(from, varName, List.of(relType), "", "", List.of(), toNodeLabel, toNodeVar);
-	}
-	
 
 	private String convertUpper(String length) {
 		if ("*".equals(length)) {
@@ -113,7 +105,7 @@ public class NeoRelation {
 	}
 	
 	public String getFromNodeLabel() {
-		return from.getClassTypes().iterator().next();
+		return from.getLabels().iterator().next();
 	}
 
 	/**

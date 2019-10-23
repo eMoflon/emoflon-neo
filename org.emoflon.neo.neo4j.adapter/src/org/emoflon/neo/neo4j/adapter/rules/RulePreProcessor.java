@@ -15,6 +15,7 @@ import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper;
 
 public class RulePreProcessor {
@@ -28,8 +29,13 @@ public class RulePreProcessor {
 	public RulePreProcessor(List<ModelNodeBlock> nodeBlocks) {
 		this.nodeBlocks = new HashMap<>();
 		nodeBlocks.forEach(nb -> this.nodeBlocks.putIfAbsent(nb.getName(), nb));
+		
+		var neocore = EMSLFactory.eINSTANCE.createMetamodel();
+		neocore.setName(EMSLUtil.ORG_EMOFLON_NEO_CORE);
+		
 		eClass = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
 		eClass.setName(NeoCoreBootstrapper.ECLASS);
+		neocore.getNodeBlocks().add(eClass);
 
 		eName = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
 		eName.setName(NeoCoreBootstrapper.NAME_PROP);
@@ -40,6 +46,7 @@ public class RulePreProcessor {
 
 		metamodelClass = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
 		metamodelClass.setName(NeoCoreBootstrapper.METAMODEL);
+		neocore.getNodeBlocks().add(metamodelClass);
 
 		elOfRel = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 		elOfRel.setName(NeoCoreBootstrapper.META_EL_OF);
@@ -56,20 +63,10 @@ public class RulePreProcessor {
 	private void addMetaTypeEdges() {
 		var originalBlocks = List.copyOf(nodeBlocks.values());
 		for (var nodeBlock : originalBlocks) {
-			var mmNode = addMetamodelNodeIfNecessary(nodeBlock);
-			var typeNode = addTypeNodeIfNecessary(nodeBlock, mmNode);
-
-			if (nodeBlock.getAction() != null) {
-				switch (nodeBlock.getAction().getOp()) {
-				case CREATE:
-					addGreenMetaTypeEdge(nodeBlock, typeNode);
-					break;
-				case DELETE:
-					addRedMetaTypeEdge(nodeBlock, typeNode);
-					break;
-				default:
-					throw new IllegalArgumentException();
-				}
+			if (nodeBlock.getAction() != null && nodeBlock.getAction().getOp().equals(ActionOperator.CREATE)) {
+				var mmNode = addMetamodelNodeIfNecessary(nodeBlock);
+				var typeNode = addTypeNodeIfNecessary(nodeBlock, mmNode);
+				addGreenMetaTypeEdge(nodeBlock, typeNode);
 			}
 		}
 	}
@@ -85,13 +82,6 @@ public class RulePreProcessor {
 		nodeBlock.getRelations().add(mt);
 
 		return mt;
-	}
-
-	private void addRedMetaTypeEdge(ModelNodeBlock nodeBlock, ModelNodeBlock typeNode) {
-		var mt = addBlackMetaTypeEdge(nodeBlock, typeNode);
-		var action = EMSLFactory.eINSTANCE.createAction();
-		action.setOp(ActionOperator.DELETE);
-		mt.setAction(action);
 	}
 
 	private void addGreenMetaTypeEdge(ModelNodeBlock nodeBlock, ModelNodeBlock typeNode) {

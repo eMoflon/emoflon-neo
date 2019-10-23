@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -84,19 +83,19 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 		var rulePreprocessor = new RulePreProcessor(nodeBlocks);
 		var preprocessedBlocks = rulePreprocessor.preprocess();
-		
+
 		extractNodesAndRelations(preprocessedBlocks);
-		
-		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), preprocessedBlocks, flatRule.getCondition(),
-				builder, mask);
-		
-		coContextPattern = NeoPatternFactory.createNeoCoPattern(flatRule.getName(), preprocessedBlocks, flatRule.getCondition(),
-				builder, mask);		
+
+		contextPattern = NeoPatternFactory.createNeoPattern(flatRule.getName(), preprocessedBlocks,
+				flatRule.getCondition(), builder, mask);
+
+		coContextPattern = NeoPatternFactory.createNeoCoPattern(flatRule.getName(), preprocessedBlocks,
+				flatRule.getCondition(), builder, mask);
 	}
 
 	private void extractNodesAndRelations(Collection<ModelNodeBlock> nodeBlocks) {
 		for (var n : nodeBlocks) {
-			var labels = new ArrayList<String>(computeLabelsOfNode(n));
+			var labels = computeLabelsOfNode(n);
 			var neoNode = new NeoNode(labels, n.getName());
 
 			computePropertiesOfNode(n, neoNode, mask);
@@ -113,7 +112,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				var neoRel = new NeoRelation(neoNode, varName, EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
 						propsR.getElemProps(), //
-						r.getTarget().getType().getName(), //
+						r.getTarget(), //
 						r.getTarget().getName());
 
 				if (r.getAction() != null) {
@@ -142,7 +141,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				case CREATE:
 					extractNodePropertiesFromMask(neoNode);
 					neoNode.addProperty("ename", EMSLUtil.returnValueAsString(neoNode.getVarName()));
-					neoNode.addLabel("EObject");
 					greenNodes.put(neoNode.getVarName(), neoNode);
 					break;
 				case DELETE:
@@ -188,13 +186,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	private Collection<String> computeLabelsOfNode(ModelNodeBlock node) {
-		var labels = new ArrayList<String>();
-		if (node.getAction() != null && node.getAction().getOp() == ActionOperator.CREATE) {
-			return NeoCoreBuilder.computeLabelsFromType(node.getType());
-		} else {
-			labels.add(node.getType().getName());
-			return labels;
-		}
+		return NeoCoreBuilder.computeLabelsFromType(node.getType());
 	}
 
 	@Override
@@ -230,9 +222,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Optional<Collection<NeoCoMatch>> applyAll(Collection<NeoMatch> matches) {
 		logger.debug("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQueryCollection(getNodes(), useSPOSemantics, redNodes.values(),
-				greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(), blackRel.values(),
-				attrExpr, attrAssign);
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQueryCollection(getNodes(), useSPOSemantics,
+				redNodes.values(), greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(),
+				blackRel.values(), attrExpr, attrAssign);
 
 		var list = new ArrayList<Map<String, Object>>();
 		matches.forEach(match -> list.add(match.getParameters()));

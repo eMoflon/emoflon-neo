@@ -78,7 +78,7 @@ public class SokobanPatterns extends ENeoTest {
 		var p = entities.getPattern_OneSokobanSelectedFigureRequired();
 		var matches = p.matcher().determineMatches();
 
-		builder.executeQueryForSideEffect("MATCH (:Board)-[rel:selectedFigure]->(:Sokoban) DELETE rel");
+		builder.executeQueryForSideEffect("MATCH (:SokobanLanguage__Board)-[rel:selectedFigure]->(:SokobanLanguage__Sokoban) DELETE rel");
 		expectValidMatches(matches, matches.size() - 1);
 	}
 
@@ -87,7 +87,7 @@ public class SokobanPatterns extends ENeoTest {
 		var p = entities.getPattern_OneSokoban();
 		var matches = p.matcher().determineMatches();
 
-		builder.executeQueryForSideEffect("MATCH (s:Sokoban) SET s:Block REMOVE s:Sokoban");
+		builder.executeQueryForSideEffect("MATCH (s:SokobanLanguage__Sokoban) SET s:Block REMOVE s:SokobanLanguage__Sokoban");
 		expectValidMatches(matches, matches.size() - 1);
 	}
 	
@@ -113,7 +113,7 @@ public class SokobanPatterns extends ENeoTest {
 		var p = entities.getPattern_OneEndField().matcher();
 		var matches = p.determineMatches();
 		assertEquals(2, matches.size());
-		builder.executeQueryForSideEffect("MATCH (f:Field {endPos:true})-[:bottom]->(f2:Field {endPos:true}) SET f2.endPos = false");
+		builder.executeQueryForSideEffect("MATCH (f:SokobanLanguage__Field {endPos:true})-[:bottom]->(f2:SokobanLanguage__Field {endPos:true}) SET f2.endPos = false");
 		var tempMatches = p.isStillValid(matches);
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
@@ -150,7 +150,7 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.determineMatches();
 		assertEquals(12, matches.size());
 		
-		builder.executeQueryForSideEffect("MATCH (f:Field {endPos:true})-[rel:right]->(f2:Field) DELETE rel");
+		builder.executeQueryForSideEffect("MATCH (f:SokobanLanguage__Field {endPos:true})-[rel:right]->(f2:SokobanLanguage__Field) DELETE rel");
 		var tempMatches = p.isStillValid(matches);
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
@@ -187,7 +187,7 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.determineMatches();
 		assertEquals(4, matches.size());
 		
-		builder.executeQueryForSideEffect("MATCH (f:Field)-[:bottom]->(f2:Field) CREATE (f)-[:right]->(f2)");
+		builder.executeQueryForSideEffect("MATCH (f:SokobanLanguage__Field)-[:bottom]->(f2:SokobanLanguage__Field) CREATE (f)-[:right]->(f2)");
 		var tempMatches = p.isStillValid(matches);
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
@@ -411,7 +411,7 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.matcher().determineMatches();
 
 		// removing 2 blocks, valid matches should be 2 less
-		builder.executeQueryForSideEffect("MATCH (b:Block) DETACH DELETE b");
+		builder.executeQueryForSideEffect("MATCH (b:SokobanLanguage__Block) DETACH DELETE b");
 
 		expectValidMatches(matches, matches.size() - 2);
 	}
@@ -423,7 +423,7 @@ public class SokobanPatterns extends ENeoTest {
 		expectSingleMatch(p);
 		
 		// removing 2 blocks, valid matches should be 2 less
-		builder.executeQueryForSideEffect("MATCH (f1:Field {endPos:true})-[:bottom]->(f2:Field {endPos: true}) SET f2.endPos = false");
+		builder.executeQueryForSideEffect("MATCH (f1:SokobanLanguage__Field {endPos:true})-[:bottom]->(f2:SokobanLanguage__Field {endPos: true}) SET f2.endPos = false");
 
 		expectValidMatches(matches, matches.size() - 1);
 	}
@@ -529,7 +529,7 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.matcher().determineMatches();
 
 		expectValidMatches(matches, matches.size());
-		builder.executeQueryForSideEffect("MATCH (b:Board) DETACH DELETE b");
+		builder.executeQueryForSideEffect("MATCH (b:SokobanLanguage__Board) DETACH DELETE b");
 		expectValidMatches(matches, 0);
 	}
 

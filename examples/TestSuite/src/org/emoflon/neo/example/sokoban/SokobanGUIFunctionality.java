@@ -86,7 +86,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 	@Test
 	public void testAxiomWithAppCond() {
-		builder.executeQueryForSideEffect("MATCH (f:Field), (b:Board), (m:Figure) DETACH DELETE f,b,m");
+		builder.executeQueryForSideEffect("MATCH (f:SokobanLanguage__Field), (b:SokobanLanguage__Board), (m:SokobanLanguage__Figure) DETACH DELETE f,b,m");
 
 		var access = entities.getRule_CreateTopLeftWithAppCond();
 		assertEquals(1, access.rule().countMatches(),

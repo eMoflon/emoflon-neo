@@ -47,7 +47,7 @@ tripleRule CompanyToITRule : CompanyToIT {
 
 pattern companyNameIsTaken {
 	company : Company {
-		.name : <companyName>
+		//.name : <companyName>
 	}
 }
 

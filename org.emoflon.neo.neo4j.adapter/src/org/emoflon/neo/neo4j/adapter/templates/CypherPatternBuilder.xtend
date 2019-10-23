@@ -17,7 +17,7 @@ class CypherPatternBuilder {
 	 * Basic Cypher Strings
 	 ****************************/
 	def static String sourceNode(NeoNode n) {
-		'''(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«properties(n.properties)»)'''
+		'''(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«properties(n.properties)»)'''
 	}
 
 	def static String directedRelation(NeoRelation r) {
@@ -40,7 +40,7 @@ class CypherPatternBuilder {
 	}
 
 	protected def static CharSequence queryNode(NeoNode n) '''
-	(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
+	(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
 	
 	/*****************************
 	 * Standard Matching Functions
@@ -91,7 +91,6 @@ class CypherPatternBuilder {
 	}
 	
 	def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask) {
-		
 		var out = "";
 		if(injective && nodes.size > 1){
 			out += injectiveBlock(nodes);
@@ -180,7 +179,7 @@ class CypherPatternBuilder {
 							«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 						«ENDIF»
 						«FOR r : n.relations SEPARATOR ', '»
-							(«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)-[«r.varName»]->(:«r.toNodeLabel»)
+							(«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)-[«r.varName»]->(:«r.toNodeLabel»)
 						«ENDFOR»
 		«ENDFOR»'''
 	}
@@ -190,7 +189,7 @@ class CypherPatternBuilder {
 		MATCH «FOR n : nodes SEPARATOR ', '»
 			«queryNode(n)»«IF n.relations.size > 0», «ENDIF»
 			«FOR r : n.relations SEPARATOR ', '»
-				(«n.varName»«FOR l : n.classTypes BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
+				(«n.varName»«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)«IF r.isPath»«directedRelation(r)»«ELSE»-[«r.varName»]->«ENDIF»(«r.toNodeVar»:«r.toNodeLabel»)
 			«ENDFOR»
 			«ENDFOR»'''
 	}
@@ -199,8 +198,8 @@ class CypherPatternBuilder {
 		var pairsToCheck = new ArrayList<Pair<String, String>>()
 		for (var i = 0; i < nodes.size; i++) {
 			for (var j = i + 1; j < nodes.size; j++) {
-				var classTypesI = nodes.get(i).classTypes;
-				var classTypesJ = nodes.get(j).classTypes;
+				var classTypesI = nodes.get(i).getLabels;
+				var classTypesJ = nodes.get(j).getLabels;
 				
 				var equalFound = false;
 				for(elem : classTypesI) {
@@ -471,22 +470,31 @@ class CypherPatternBuilder {
 		«constraint_returnQuery(nodesMap)»'''
 	}
 	
-	def static String constraint_ifThen_readQuery_satisfy(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen, Collection<String> nodesThenButNotIf, Collection<String> nodesMap,
-        Collection<NeoAttributeExpression> attr, HashMap<String,String> equalElem, Collection<String> injectiveElem, boolean injective, NeoMask mask) {
+	def static String constraint_ifThen_readQuery_satisfy(
+			Collection<NeoNode> nodesIf,
+			Collection<NeoNode> nodesThen,
+			Collection<String> nodesThenButNotIf,
+			Collection<String> nodesMap,
+        	Collection<NeoAttributeExpression> attr, 
+        	HashMap<String,String> equalElem, 
+        	Collection<String> injectiveElem, 
+        	boolean injective, 
+        	NeoMask mask
+        ) {
         '''
-        «constraint_ifThen_matchQuery(nodesIf,nodesThen,attr,injective, mask, equalElem, injectiveElem)»
+        «constraint_ifThen_matchQuery(nodesIf, nodesThen, attr, injective, mask, equalElem, injectiveElem)»
         «constraint_withQuery(nodesMap)»
         WHERE «whereNegativeConditionQuery_String(nodesThenButNotIf)» 
         RETURN FALSE'''
     }
 
-	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodes, Collection<NeoNode> nodes2,
+	def static String constraint_ifThen_matchQuery(Collection<NeoNode> nodesIf, Collection<NeoNode> nodesThen,
 		Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, HashMap<String,String> equalElem, Collection<String> injectiveElem) {
-		'''«matchQuery(nodes)»
-		«whereQuery(nodes,attr,injective,mask)»
-		«withQuery(nodes)»
-		OPTIONAL «matchQuery(nodes2)»
-		«whereQuery(nodes2,attr,injective,mask, equalElem,injectiveElem)»
+		'''«matchQuery(nodesIf)»
+		«whereQuery(nodesIf,attr,injective,mask)»
+		«withQuery(nodesIf)»
+		OPTIONAL «matchQuery(nodesThen)»
+		«whereQuery(nodesThen,attr,injective,mask, equalElem,injectiveElem)»
 		'''
 	}
 
