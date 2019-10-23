@@ -193,18 +193,7 @@ class TestSokobanBoardValidation extends ENeoTest {
 		view.createEndPos(4,5);
 		view.createEndPos(6,5);
 		assertTrue(controller.boardIsValid());
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
 		view.getController().clearBoard();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	@Test
@@ -220,17 +209,6 @@ class TestSokobanBoardValidation extends ENeoTest {
 		view.createEndPos(4,5);
 		view.createEndPos(6,5);
 		assertTrue(controller.boardIsValid());
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
 		view.getController().newBoard(width, height);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 }

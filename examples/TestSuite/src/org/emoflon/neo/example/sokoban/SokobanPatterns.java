@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_Simple3x3Field;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
@@ -23,13 +22,11 @@ import org.junit.jupiter.api.Test;
 
 public class SokobanPatterns extends ENeoTest {
 
-	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder,
-			API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder);
 
 	@BeforeEach
 	public void initDB() {
-		initDB(new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI)
-				.getModel_SokobanSimpleTestField());
+		initDB(new API_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
 	}
 
 	@Test
@@ -481,7 +478,7 @@ public class SokobanPatterns extends ENeoTest {
 		var matches = p.matcher().determineMatches();
 
 		// Removing all right edges
-		builder.executeQueryForSideEffect("MATCH (f:Field)-[r:right]->(g:Field) DETACH DELETE r");
+		builder.executeQueryForSideEffect("MATCH (f:SokobanLanguage__Field)-[r:right]->(g:SokobanLanguage__Field) DETACH DELETE r");
 
 		expectValidMatches(matches, 4);
 	}
@@ -541,7 +538,7 @@ public class SokobanPatterns extends ENeoTest {
 
 		// Removing all right and bottom edges of endPos fields
 		builder.executeQueryForSideEffect(
-				"MATCH (f:Field {endPos: true, ename: \"f32\"})-[r:right]->(g:Field) DETACH DELETE f");
+				"MATCH (f:SokobanLanguage__Field {endPos: true, ename: \"f32\"})-[r:right]->(g:SokobanLanguage__Field) DETACH DELETE f");
 
 		expectValidMatches(matches, matches.size() - 2);
 	}
@@ -555,7 +552,7 @@ public class SokobanPatterns extends ENeoTest {
 		expectValidMatches(matches, matches.size());
 
 		// removing all right and bottom edges of endPos fields
-		builder.executeQueryForSideEffect("MATCH (f:Field {ename: \"f00\"}) SET f:OddLabel REMOVE f:Field");
+		builder.executeQueryForSideEffect("MATCH (f:SokobanLanguage__Field {ename: \"f00\"}) SET f:OddLabel REMOVE f:SokobanLanguage__Field");
 
 		expectValidMatches(matches, matches.size() - 1);
 	}
@@ -756,7 +753,7 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	public void testEvenMoreNeighboringFields() {
 		clearDB();
-		initDB(new API_Simple3x3Field(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SimpleThreeByThreeField());
+		initDB(new API_Simple3x3Field(builder).getModel_SimpleThreeByThreeField());
 		assertThat(entities.getPattern_EvenMoreNeighbouringFields().matcher().countMatches(), is(12));
 	}
 	
