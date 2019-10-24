@@ -90,7 +90,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new TimedTerminationCondition(5000), //
+				new TimedTerminationCondition(3000), //
 				ruleScheduler, //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
