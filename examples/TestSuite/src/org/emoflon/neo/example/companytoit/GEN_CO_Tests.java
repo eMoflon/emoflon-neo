@@ -25,7 +25,7 @@ import run.CompanyToIT_GEN_Run;
 public class GEN_CO_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsScheduler> configurator) throws Exception {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+		Logger.getRootLogger().setLevel(Level.INFO);
 		var testCOApp = new CompanyToIT_CO_Run();
 		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
 		testGenApp.runGenerator();
@@ -90,7 +90,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new TimedTerminationCondition(3000), //
+				new TimedTerminationCondition(5000), //
 				ruleScheduler, //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //

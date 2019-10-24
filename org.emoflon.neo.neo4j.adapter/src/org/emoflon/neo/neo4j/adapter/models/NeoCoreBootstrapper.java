@@ -52,6 +52,7 @@ public class NeoCoreBootstrapper {
 	public static final String _TR_PROP = "_tr_";
 	public static final String ISCOMPOSITION_PROP = "isComposition";
 	public static final String ISCONTAINMENT_PROP = "isContainment";
+	public static final String NAMESPACE_PROP = "enamespace";
 
 	// Meta attributes and relations
 	public static final String CONFORMS_TO_PROP = "conformsTo";
@@ -71,23 +72,24 @@ public class NeoCoreBootstrapper {
 	public static final List<String> LABELS_FOR_AN_ENUM = addNeoCoreNamespace(EENUM, EDATA_TYPE, EOBJECT, ECLASSIFIER);
 	public static final List<String> LABELS_FOR_AN_ENUMLITERAL = //
 			addNeoCoreNamespace(EENUM_LITERAL, EOBJECT, EDATA_TYPE, ECLASSIFIER);
-
+	private static final NeoProp neocoreNamespaceProp = new NeoProp(NAMESPACE_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE);
+ 
 	public static final List<NeoProp> neoCoreProps = List.of(new NeoProp(NAME_PROP, EMSLUtil.ORG_EMOFLON_NEO_CORE));
 	public static final List<String> neoCoreLabels = LABELS_FOR_A_METAMODEL;
 
-	public static final List<NeoProp> eclassProps = List.of(new NeoProp(NAME_PROP, ECLASS));
+	public static final List<NeoProp> eclassProps = List.of(new NeoProp(NAME_PROP, ECLASS), neocoreNamespaceProp);
 	public static final List<String> eclassLabels = LABELS_FOR_AN_ECLASS;
 
-	public static final List<NeoProp> mmodelProps = List.of(new NeoProp(NAME_PROP, METAMODEL));
+	public static final List<NeoProp> mmodelProps = List.of(new NeoProp(NAME_PROP, METAMODEL), neocoreNamespaceProp);
 	public static final List<String> mmodelLabels = LABELS_FOR_AN_ECLASS;
 
-	public static final List<NeoProp> modelProps = List.of(new NeoProp(NAME_PROP, MODEL));
+	public static final List<NeoProp> modelProps = List.of(new NeoProp(NAME_PROP, MODEL), neocoreNamespaceProp);
 	public static final List<String> modelLabels = LABELS_FOR_AN_ECLASS;
 
-	public static final List<NeoProp> eobjectProps = List.of(new NeoProp(NAME_PROP, EOBJECT));
+	public static final List<NeoProp> eobjectProps = List.of(new NeoProp(NAME_PROP, EOBJECT), neocoreNamespaceProp);
 	public static final List<String> eobjectLabels = LABELS_FOR_AN_ECLASS;
 
-	public static final List<NeoProp> erefProps = List.of(new NeoProp(NAME_PROP, EREFERENCE));
+	public static final List<NeoProp> erefProps = List.of(new NeoProp(NAME_PROP, EREFERENCE), neocoreNamespaceProp);
 	public static final List<String> erefLabels = LABELS_FOR_AN_ECLASS;
 
 	private static final List<NeoProp> eleofProps = List.of(new NeoProp(NAME_PROP, META_EL_OF));
@@ -102,7 +104,7 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> eRefTypeProps = List.of(new NeoProp(NAME_PROP, EREFERENCE_TYPE));
 	private static final List<String> eRefTypeLabels = LABELS_FOR_AN_EREFERENCE;
 
-	static final List<NeoProp> eattrProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE));
+	static final List<NeoProp> eattrProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTE), neocoreNamespaceProp);
 	static final List<String> eattrLabels = LABELS_FOR_AN_ECLASS;
 
 	private static final List<NeoProp> nameProps = List.of(new NeoProp(NAME_PROP, NAME_PROP));
@@ -120,10 +122,10 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> isContainmentProps = List.of(new NeoProp(NAME_PROP, ISCONTAINMENT_PROP));
 	private static final List<String> isContainmentLabels = LABELS_FOR_AN_EATTRIBUTE;
 
-	static final List<NeoProp> eDataTypeProps = List.of(new NeoProp(NAME_PROP, EDATA_TYPE));
+	static final List<NeoProp> eDataTypeProps = List.of(new NeoProp(NAME_PROP, EDATA_TYPE), neocoreNamespaceProp);
 	static final List<String> eDataTypeLabels = LABELS_FOR_AN_ECLASS;
 
-	private static final List<NeoProp> eAttrEleProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTED_ELEMENT));
+	private static final List<NeoProp> eAttrEleProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTED_ELEMENT), neocoreNamespaceProp);
 	private static final List<String> eAttrEleLabels = LABELS_FOR_AN_ECLASS;
 
 	private static final List<NeoProp> eStringProps = List.of(new NeoProp(NAME_PROP, ESTRING));
@@ -153,10 +155,10 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> eSupTypeProps = List.of(new NeoProp(NAME_PROP, ESUPER_TYPE));
 	private static final List<String> eSupTypeLabels = LABELS_FOR_AN_EREFERENCE;
 
-	private static final List<NeoProp> eclassifierProps = List.of(new NeoProp(NAME_PROP, ECLASSIFIER));
+	private static final List<NeoProp> eclassifierProps = List.of(new NeoProp(NAME_PROP, ECLASSIFIER), neocoreNamespaceProp);
 	private static final List<String> eclassifierLabels = LABELS_FOR_AN_ECLASS;
 
-	private static final List<NeoProp> eTypedeleProps = List.of(new NeoProp(NAME_PROP, ETYPED_ELEMENT));
+	private static final List<NeoProp> eTypedeleProps = List.of(new NeoProp(NAME_PROP, ETYPED_ELEMENT), neocoreNamespaceProp);
 	private static final List<String> eTypedeleLabels = LABELS_FOR_AN_ECLASS;
 
 	private static final List<NeoProp> metaTypeProps = List.of(new NeoProp(NAME_PROP, META_TYPE));
@@ -171,19 +173,22 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> eAttributesProps = List.of(new NeoProp(NAME_PROP, EATTRIBUTES));
 	private static final List<String> eAttributesLabels = LABELS_FOR_AN_EREFERENCE;
 
-	private static final List<NeoProp> eStructProps = List.of(new NeoProp(NAME_PROP, ESTRUCTURAL_FEATURE));
+	private static final List<NeoProp> eStructProps = List.of(new NeoProp(NAME_PROP, ESTRUCTURAL_FEATURE), neocoreNamespaceProp);
 	private static final List<String> eStructLabels = LABELS_FOR_AN_ECLASS;
 
 	private static final List<NeoProp> abstractattrProps = List.of(new NeoProp(NAME_PROP, ABSTRACT_PROP));
 	private static final List<String> abstractattrLabels = LABELS_FOR_AN_EATTRIBUTE;
+	
+	private static final List<NeoProp> enamespaceProps = List.of(new NeoProp(NAME_PROP, NAMESPACE_PROP));
+	private static final List<String> enamespaceLabels = LABELS_FOR_AN_EATTRIBUTE;
 
 	private static final List<NeoProp> eBooleanProps = List.of(new NeoProp(NAME_PROP, EBOOLEAN));
 	private static final List<String> eBooleanLabels = LABELS_FOR_AN_EDATATYPE;
 
-	static final List<NeoProp> eenumProps = List.of(new NeoProp(NAME_PROP, EENUM));
+	static final List<NeoProp> eenumProps = List.of(new NeoProp(NAME_PROP, EENUM), neocoreNamespaceProp);
 	static final List<String> eenumLabels = LABELS_FOR_AN_ECLASS;
 
-	static final List<NeoProp> eenumLiteralProps = List.of(new NeoProp(NAME_PROP, EENUM_LITERAL));
+	static final List<NeoProp> eenumLiteralProps = List.of(new NeoProp(NAME_PROP, EENUM_LITERAL), neocoreNamespaceProp);
 	static final List<String> eenumLiteralLabels = LABELS_FOR_AN_ECLASS;
 
 	private static final List<NeoProp> eLiteralsProps = List.of(new NeoProp(NAME_PROP, ELITERALS));
@@ -230,6 +235,7 @@ public class NeoCoreBootstrapper {
 			var eAttributes = cb.createNodeWithContAndType(eAttributesProps, eAttributesLabels, eref, neocore);
 			var eStruct = cb.createNodeWithContAndType(eStructProps, eStructLabels, eclass, neocore);
 			var abstractattr = cb.createNodeWithContAndType(abstractattrProps, abstractattrLabels, eattr, neocore);
+			var enamespaceattr = cb.createNodeWithContAndType(enamespaceProps, enamespaceLabels, eattr, neocore);
 			var eBoolean = cb.createNodeWithContAndType(eBooleanProps, eBooleanLabels, eDataType, neocore);
 			var eenum = cb.createNodeWithContAndType(eenumProps, eenumLabels, eclass, neocore);
 			var eenumLiteral = cb.createNodeWithContAndType(eenumLiteralProps, eenumLabels, eclass, neocore);
@@ -264,6 +270,8 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EREFERENCE_TYPE, eAttributes, eattr);
 			cb.createEdge(EATTRIBUTES, eclass, abstractattr);
 			cb.createEdge(EATTRIBUTE_TYPE, abstractattr, eBoolean);
+			cb.createEdge(EATTRIBUTES, eclass, enamespaceattr);
+			cb.createEdge(EATTRIBUTE_TYPE, enamespaceattr, eString);
 			cb.createEdge(EREFERENCES, model, conformto);
 			cb.createEdge(EREFERENCE_TYPE, conformto, mmodel);
 			cb.createEdge(EREFERENCES, eobject, eleof);

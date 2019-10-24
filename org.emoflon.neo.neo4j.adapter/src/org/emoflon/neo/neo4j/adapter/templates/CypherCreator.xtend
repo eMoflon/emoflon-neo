@@ -57,9 +57,10 @@ class CypherCreator extends CypherBuilder {
 		if (nodesToMatch.containsKey(key))
 			return nodesToMatch.get(key)
 		else {
-			val nc = new NodeCommand(props, labels.subList(0,1))
+			val nc = new NodeCommand(props, labels.subList(0, 1))
 			nodesToMatch.put(key, nc)
-			matchEdge(List.of, NeoCoreBootstrapper.META_EL_OF, nc, container)
+			if (!props.exists[it.key == NeoCoreBootstrapper.NAMESPACE_PROP])
+				matchEdge(List.of, NeoCoreBootstrapper.META_EL_OF, nc, container)
 			return nc
 		}
 	}
@@ -87,10 +88,10 @@ class CypherCreator extends CypherBuilder {
 	}
 
 	def createEdge(String label, NodeCommand from, NodeCommand to) {
-		createEdgeWithProps(List.of, label, from ,to)
+		createEdgeWithProps(List.of, label, from, to)
 	}
-	
-	def createEdgeWithProps(List<NeoProp> props, String label, NodeCommand from, NodeCommand to){
+
+	def createEdgeWithProps(List<NeoProp> props, String label, NodeCommand from, NodeCommand to) {
 		val key = createKeyForEdge(props, label, from, to)
 		if (edgesToCreate.containsKey(key)) {
 			return edgesToCreate.get(key)
@@ -129,8 +130,8 @@ class CypherCreator extends CypherBuilder {
 		val result = runCypherCommand(session, //
 		''' 
 			MATCH
-			  «nodesToMatch.values.map[n| n.node()].join(",\n")»,
-			  «edgesToMatch.values.map[e| e.edge()].join(",\n")»
+			  «FOR n : nodesToMatch.values SEPARATOR ",\n"»«n.node»«ENDFOR»
+			  «FOR e : edgesToMatch.values BEFORE "," SEPARATOR ",\n"»«e.edge»«ENDFOR»
 			RETURN 
 			  «FOR n : nodesToMatch.values SEPARATOR ",\n"»id(«n.name»)«ENDFOR»
 		''')
@@ -161,7 +162,7 @@ class CypherCreator extends CypherBuilder {
 				RETURN 
 				  id(n)
 			''', params)
-			
+
 			chosenNodes.forEach[n|nodesToIds.put(n, result.next.get("id(n)").asNumber)]
 		}
 	}

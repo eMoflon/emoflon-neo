@@ -1,36 +1,6 @@
 package org.emoflon.neo.neo4j.adapter.models;
 
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ABSTRACT_PROP;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.CONFORMS_TO_PROP;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EATTRIBUTES;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EATTRIBUTE_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ELITERALS;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EOBJECT;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EREFERENCES;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EREFERENCE_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ESUPER_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.META_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.NAME_PROP;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eDataTypeLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eDataTypeProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eattrLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eattrProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eclassLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eclassProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumLiteralLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumLiteralProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eobjectLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eobjectProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.erefLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.erefProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.mmodelLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.mmodelProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.modelLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.modelProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.neoCoreLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.neoCoreProps;
+import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -347,8 +317,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
-			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
-			var model = cb.matchNodeWithContainer(modelProps, modelLabels, neocore);
+			var model = cb.matchNode(modelProps, modelLabels);
 
 			// Create nodes and edges in models
 			var mNodes = new HashMap<Model, NodeCommand>();
@@ -580,7 +549,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		metamodel.getNodeBlocks().forEach(nb -> {
 			var nbNode = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, nb.getName()), //
-							new NeoProp(ABSTRACT_PROP, nb.isAbstract())),
+							new NeoProp(ABSTRACT_PROP, nb.isAbstract()),
+							new NeoProp(NAMESPACE_PROP, metamodel.getName())),
 					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, eclass, mmNode);
 
 			if (nb.getSuperTypes().isEmpty()) {
@@ -606,7 +576,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 					NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
 
 			var typeOfNode = cb.matchNodeWithContainer(//
-					List.of(new NeoProp(NAME_PROP, nb.getType().getName())), //
+					List.of(new NeoProp(NAME_PROP, nb.getType().getName()), new NeoProp(NAMESPACE_PROP, mm.getName())), //
 					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, mmNode);
 
 			cb.createEdge(CONFORMS_TO_PROP, mNode, mmNode);
