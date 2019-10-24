@@ -2,6 +2,7 @@ package org.emoflon.neo.engine.generator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.ICoMatch;
@@ -45,7 +46,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 
 			// 2. Perform pattern matching
 			progressMonitor.startPatternMatching();
-			scheduledRules.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
+			determineMatches(scheduledRules, matchContainer);
 			progressMonitor.finishPatternMatching();
 
 			// 3. Match selection
@@ -77,5 +78,9 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	protected void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer) {
 		rule.applyAll(matches);
 		matchContainer.appliedRule(rule, matches.size());
+	}
+
+	protected void determineMatches(Map<IRule<M, C>, Integer> scheduledRules, MatchContainer<M, C> matchContainer) {
+		scheduledRules.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
 	}
 }

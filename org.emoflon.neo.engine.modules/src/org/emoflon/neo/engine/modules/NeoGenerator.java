@@ -29,6 +29,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
 	private List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators;
+	private Map<NeoRule, AttributeMask> ruleMasks = new HashMap<>();
 
 	public NeoGenerator(Collection<NeoRule> allRules, ITerminationCondition<NeoMatch, NeoCoMatch> terminationCondition,
 			IRuleScheduler<NeoMatch, NeoCoMatch> ruleScheduler, IUpdatePolicy<NeoMatch, NeoCoMatch> updatePolicy,
@@ -36,6 +37,24 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators) {
 		super(allRules, terminationCondition, ruleScheduler, updatePolicy, matchReprocessor, progressMonitor);
 		this.parameterValueGenerators = new ArrayList<>(parameterValueGenerators);
+	}
+
+	@Override
+	protected void determineMatches(Map<IRule<NeoMatch, NeoCoMatch>, Integer> scheduledRules,
+			MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
+		ruleMasks.clear();
+		scheduledRules.forEach((rule, count) -> {
+			if (!(rule instanceof NeoRule))
+				throw new IllegalStateException("Unexpected type of rule: " + rule.getClass());
+
+			NeoRule neoRule = (NeoRule) rule;
+			AttributeMask mask = new AttributeMask();
+
+			maskBoundParameters(neoRule.getEMSLRule(), mask);
+			ruleMasks.put(neoRule, mask);
+
+			matchContainer.addAll(NeoRuleFactory.copyNeoRuleWithNewMask(neoRule, mask).determineMatches(count), rule);
+		});
 	}
 
 	@Override
@@ -49,6 +68,10 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		maskParameters(rule.getEMSLRule(), mask);
 		NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
 		matchContainer.appliedRule(rule, matches.size());
+	}
+
+	private void maskBoundParameters(Rule rule, AttributeMask mask) {
+		// TODO
 	}
 
 	private void maskParameters(Rule rule, AttributeMask mask) {
