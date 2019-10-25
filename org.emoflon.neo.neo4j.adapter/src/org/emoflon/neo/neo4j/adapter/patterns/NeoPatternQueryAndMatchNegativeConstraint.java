@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoNegativeConstraint;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
@@ -91,7 +92,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 		
 		// Create Query
 		var helperNodes = new ArrayList<String>(queryData.getAllElements());
-		helperNodes.add("matches");
+		helperNodes.add(EMSLUtil.PARAM_NAME_FOR_MATCH);
 		
 		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValidCollection(nodes, helperNodes,
 				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);

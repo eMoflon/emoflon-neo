@@ -10,6 +10,7 @@ import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch
+import org.emoflon.neo.emsl.util.EMSLUtil
 
 class CypherPatternBuilder {
 
@@ -265,7 +266,7 @@ class CypherPatternBuilder {
 	}
 	
 	def static String unwindQuery() {
-		'''UNWIND $matches AS matches'''
+		'''UNWIND $matches AS «EMSLUtil.PARAM_NAME_FOR_MATCH»'''
 	}
 
 	/*****************************
@@ -321,10 +322,10 @@ class CypherPatternBuilder {
 	def static String nodeIdBlockCollection(Collection<NeoNode> nodes) {
 		'''
 		«FOR n : nodes SEPARATOR " AND "»
-			id(«n.varName») = matches.«n.varName»
+			id(«n.varName») = «EMSLUtil.PARAM_NAME_FOR_MATCH».«n.varName»
 			«IF n.relations.size > 0»
 				«FOR r : removePaths(n.relations) BEFORE " AND " SEPARATOR " AND "»
-					id(«r.varName») = matches.«r.varName»
+					id(«r.varName») = «EMSLUtil.PARAM_NAME_FOR_MATCH».«r.varName»
 				«ENDFOR»
 			«ENDIF»
 			«ENDFOR»'''
@@ -346,7 +347,7 @@ class CypherPatternBuilder {
 		'''RETURN TRUE'''
 	}
 	def static String isStillValid_returnQueryCollection() {
-		'''RETURN matches.match_id as match_id'''
+		'''RETURN «EMSLUtil.PARAM_NAME_FOR_MATCH».match_id as match_id'''
 	}
 
 	/*****************************
@@ -402,7 +403,7 @@ class CypherPatternBuilder {
 		'''«unwindQuery()»
 		«IF nodes.size>0»«matchQuery(nodes)»
 		«isStillValid_whereQueryCollection(nodes, attr)»
-		«withQuery(nodes)», matches«ENDIF»
+		«withQuery(nodes)», «EMSLUtil.PARAM_NAME_FOR_MATCH»«ENDIF»
 		«matchCond»
 		«constraint_withQuery(helperNodes)»
 		WHERE «whereCond»
@@ -591,9 +592,9 @@ class CypherPatternBuilder {
 		«unwindQuery()»
 		«IF nodes.size>0»«matchQuery(nodes)»
 		«isStillValid_whereQueryCollection(nodes,attr)»
-		«withQuery(nodes)»«ENDIF», matches
+		«withQuery(nodes)»«ENDIF», «EMSLUtil.PARAM_NAME_FOR_MATCH»
 		«optionalMatches»
-		«constraint_withQuery(helperNodes)», matches
+		«constraint_withQuery(helperNodes)», «EMSLUtil.PARAM_NAME_FOR_MATCH»
 		WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
 		«isStillValid_returnQueryCollection()»'''
 	}
@@ -658,7 +659,7 @@ class CypherPatternBuilder {
 	 	«ruleExecution_deleteQuery(spo, nodesL, refL)»
 	 	«ruleExecution_createQuery(nodesR,refR)»
 	 	«ruleExecution_setQuery(attrAsgn)»
-	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»,«ENDIF» matches.match_id as match_id
+	 	«ruleExecution_returnQuery(nodesK,relK,nodesR,refR)»«IF nodesK.size>0 || relK.size>0 || nodesR.size>0 || refR.size>0»,«ENDIF» «EMSLUtil.PARAM_NAME_FOR_MATCH».match_id as match_id
 	 	'''
 	 }
 	 

@@ -297,4 +297,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public IBuilder getBuilder() {
 		return builder;
 	}
+
+	@Override
+	public boolean hasApplicationConditions() {
+		return rule.getCondition() != null;
+	}
 }

@@ -18,7 +18,7 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	 *         not applicable.
 	 */
 	Optional<CM> apply(M match);
-	
+
 	Optional<Collection<CM>> applyAll(Collection<M> matches);
 
 	/**
@@ -32,16 +32,18 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	}
 
 	void useSPOSemantics(boolean spoSemantics);
-	
+
 	@Override
 	default Stream<String> getPatternElts() {
 		return getContextElts();
 	}
 
 	Stream<String> getCreatedElts();
-	
+
 	Stream<String> getContextElts();
-	
+
+	boolean hasApplicationConditions();
+
 	boolean isStillApplicable(M m);
 
 	public Map<String, Boolean> isStillApplicable(Collection<M> matches);

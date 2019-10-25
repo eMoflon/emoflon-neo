@@ -67,7 +67,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	 */
 	@Override
 	public boolean isStillValid(NeoMatch m) {
-		logger.info("Check if match for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
+		logger.debug("Check if match for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
 
 		// collecting the data
 		var condData = referencedConstraint.getConditionData();
@@ -91,7 +91,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		
-		logger.info("Check if matches for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
+		logger.debug("Check if matches for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
 
 		// collecting the data
 		var condData = referencedConstraint.getConditionData();
@@ -100,12 +100,9 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 		matches.forEach(match -> list.add(match.getParameters()));
 		
 		var map = new HashMap<String,Object>();
-		map.put("matches",list);
+		map.put("matches", list);
 		
 		// Create Query
-		var helperNodes = new ArrayList<String>(queryData.getAllElements());
-		helperNodes.add("matches");
-		
 		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValidCollection(getNodes(),
 				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
 

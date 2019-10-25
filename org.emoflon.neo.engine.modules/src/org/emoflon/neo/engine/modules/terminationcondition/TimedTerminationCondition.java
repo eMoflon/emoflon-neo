@@ -9,8 +9,8 @@ public class TimedTerminationCondition implements ITerminationCondition<NeoMatch
 	private long startTime;
 	private long maxDuration;
 
-	public TimedTerminationCondition(long pMaxDuration) {
-		maxDuration = pMaxDuration;
+	public TimedTerminationCondition(long maxDurationInMs) {
+		maxDuration = maxDurationInMs;
 		start();
 	}
 

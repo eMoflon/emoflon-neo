@@ -1,5 +1,6 @@
 package org.emoflon.neo.engine.generator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,23 +15,32 @@ import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 
 public class MatchContainer<M extends IMatch, C extends ICoMatch> {
+	private Collection<M> pristineMatches;
 	private Map<IRule<M, C>, Collection<M>> rulesToMatches;
 	private Map<IRule<M, C>, Integer> ruleApplications;
 
 	public MatchContainer(Collection<IRule<M, C>> allRules) {
 		rulesToMatches = new HashMap<>();
 		ruleApplications = new HashMap<>();
+		pristineMatches = new ArrayList<>();
 		allRules.forEach(rule -> {
 			rulesToMatches.put(rule, new HashSet<>());
 			ruleApplications.put(rule, 0);
 		});
 	}
 
+	public void removeRule(IRule<M, C> rule) {
+		var matches = rulesToMatches.remove(rule);
+		if(matches != null)
+			pristineMatches.removeAll(matches);
+	}
+	
 	public void addAll(Collection<M> matches, IRule<M, C> rule) {
 		if (!rulesToMatches.containsKey(rule))
 			throw new IllegalArgumentException("The specified rule does not exist in this MatchContainer");
 
 		rulesToMatches.get(rule).addAll(matches);
+		pristineMatches.addAll(matches);
 	}
 
 	public List<IRule<M, C>> getRulesWithoutMatches() {
@@ -65,10 +75,12 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		return rulesToMatches.get(rule).stream();
 	}
 
-	public void appliedRule(IRule<M, C> rule, int noOfApplications) {
+	public void appliedRule(IRule<M, C> rule, Collection<M> appliedMatches) {
+		int noOfApplications = appliedMatches.size();
 		var before = ruleApplications.get(rule);
 		var after = before + noOfApplications;
 		ruleApplications.put(rule, after);
+		pristineMatches.removeAll(appliedMatches);
 	}
 
 	public int getNoOfRuleApplicationsFor(IRule<M, C> rule) {
@@ -77,5 +89,18 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 
 	public Map<IRule<M, C>, Integer> getRuleApplications() {
 		return Map.copyOf(ruleApplications);
+	}
+
+	public void removeMatch(IRule<M, C> chosenRule, M chosenMatch) {
+		rulesToMatches.get(chosenRule).remove(chosenMatch);
+		pristineMatches.remove(chosenMatch);
+	}
+
+	public boolean hasNoMatches() {
+		return streamAllMatches().findAny().isEmpty();
+	}
+
+	public boolean isPristine(M chosenMatch) {
+		return pristineMatches.contains(chosenMatch);
 	}
 }
