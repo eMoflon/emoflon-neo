@@ -2,7 +2,6 @@ package org.emoflon.neo.engine.modules.ruleschedulers;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -13,6 +12,8 @@ import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.engine.modules.analysis.RuleAnalyser;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+
+import com.google.common.base.Functions;
 
 public class TwoPhaseRuleSchedulerForGEN implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 
@@ -46,11 +47,14 @@ public class TwoPhaseRuleSchedulerForGEN implements IRuleScheduler<NeoMatch, Neo
 		}
 
 		if (phase2 == null) {
-			logger.info("Executing Phase II of GEN");
+			logger.info("Executing Phase II of GEN: First round of pattern matching can take some time ...");
 			phase2 = new Phase2RuleSchedulerForGEN();
 		}
 
-		return phase2.scheduleWith(matchContainer, progressMonitor);
+		var scheduledRules = phase2.scheduleWith(matchContainer, progressMonitor);
+		logger.debug("Scheduled: " + scheduledRules + " for pattern matching.");
+		
+		return scheduledRules;
 	}
 }
 
@@ -77,8 +81,12 @@ class Phase2RuleSchedulerForGEN implements IRuleScheduler<NeoMatch, NeoCoMatch> 
 	) {
 		// TODO[Anjorin]: Determine activated rules
 		// TODO[Anjorin]: Only ask for "new" matches of activated rules
-		return matchContainer.getAllRulesToMatches().entrySet().stream()
-				.collect(Collectors.toMap(Entry::getKey, entry -> -1));
+		// TODO[Anjorin]: Only ask when enough new elements have been created perhaps
+		// (configurable)?
+//		return matchContainer.getAllRulesToMatches().entrySet().stream()
+//				.collect(Collectors.toMap(Entry::getKey, entry -> -1));
+		//TODO[Anjorin] Number of matches should be configurable?
+		return matchContainer.getRulesWithoutMatches().stream()
+				.collect(Collectors.toMap(Functions.identity(), Functions.constant(-1)));
 	}
-
 }
