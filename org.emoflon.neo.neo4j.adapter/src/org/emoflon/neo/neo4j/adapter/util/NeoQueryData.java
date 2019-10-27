@@ -143,64 +143,51 @@ public class NeoQueryData {
 		}
 	}
 
+	// FIXME[Anjorin]: Combine with similar functionality in CypherPatternBuilder
 	public ArrayList<String> getAllNodesRequireInjectivityChecksCondition() {
-
 		var elem = new ArrayList<String>();
-
 		for (var p1 : optionalNodes.keySet()) {
-
 			for (var p2 : optionalNodes.keySet()) {
-
 				if (!p1.equals(p2)) {
-
 					var l1 = optionalNodes.get(p1);
 					var l2 = optionalNodes.get(p2);
 
 					boolean equal = false;
 
-					for (var l : l1) {
-						if (!equal && l2.contains(l)) {
-							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
-								elem.add(p1 + "<>" + p2);
-							}
-							equal = true;
+					var l = l1.get(0);
+					if (!equal && l2.contains(l)) {
+						if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
+							elem.add(p1 + "<>" + p2);
 						}
+						equal = true;
 					}
-					/*
-					 * for (var l : l2) { if (!equal && l1.contains(l)) { if (!elem.contains(p1 +
-					 * "<>" + p2) && !elem.contains(p2 + "<>" + p1)) { elem.add(p1 + "<>" + p2); }
-					 * equal = true; } }
-					 */
 				}
 			}
 		}
+
 		var x = getAllNodesRequireInjectivityChecksPatternAndCondition();
 		elem.addAll(x);
 		return elem;
 	}
 
+	// FIXME[Anjorin]: Combine with similar functionality in CypherPatternBuilder
 	private ArrayList<String> getAllNodesRequireInjectivityChecksPatternAndCondition() {
-
 		var elem = new ArrayList<String>();
-
 		for (var pElem : patternNodes.keySet()) {
 			for (var oElem : optionalNodes.keySet()) {
-
 				if (equalElements.containsKey(pElem) && equalElements.get(pElem).equals(oElem)) {
 				} else {
-
 					var labelsP = patternNodes.get(pElem);
 					var labelsO = optionalNodes.get(oElem);
 
 					boolean equal = false;
-
-					for (var l : labelsP) {
-						if (!equal && labelsO.contains(l)) {
-							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
-								elem.add(pElem + "<>" + oElem);
-							}
-							equal = true;
+					var lp = labelsP.get(0);
+					var lo = labelsO.get(0);
+					if (!equal && (labelsO.contains(lp) || labelsP.contains(lo))) {
+						if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
+							elem.add(pElem + "<>" + oElem);
 						}
+						equal = true;
 					}
 				}
 			}
