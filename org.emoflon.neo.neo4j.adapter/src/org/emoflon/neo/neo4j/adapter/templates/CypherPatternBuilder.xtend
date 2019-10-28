@@ -39,10 +39,10 @@ class CypherPatternBuilder {
 		'''«IF props.size > 0»«FOR p:props BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»'''
 	}
 
-	protected def static CharSequence queryNode(NeoNode n) '''
+	protected def static String queryNode(NeoNode n) '''
 	(«n.varName»:«n.primaryLabel»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
 	
-	protected def static CharSequence createNode(NeoNode n) 
+	protected def static String createNode(NeoNode n) 
 	'''
 		(«n.varName»
 			«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»
@@ -97,6 +97,7 @@ class CypherPatternBuilder {
 		«ENDFOR»'''
 	}
 	
+	//FIXME[Anjorin] Meld this functions with the following
 	private def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask) {
 		var out = "";
 		if(injective && nodes.size > 1){
@@ -118,7 +119,36 @@ class CypherPatternBuilder {
 			''''''
 	}
 	
-	
+	//FIXME[Anjorin] Meld this functions with the previous
+	private def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, 
+		HashMap<String,String> equalElem, Collection<String> injElem) {
+		var out = "";
+		if(injective && nodes.size > 1) {
+			out += injectiveNodes(injElem);			
+		}
+		
+		var maskBlock = maskBlock(nodes, mask)
+		if(out.length > 0 && maskBlock.length > 0)
+			out += " AND "
+		out += maskBlock;
+		
+		var attrBlock = attributeExpressionQuery(attr);
+		if(out.length > 0 && attrBlock.length > 0)
+			out += " AND ";
+		out += attrBlock;
+		
+		var equalCond = whereEqualElementsConditionQuery(equalElem);
+		if(out.length > 0 && equalCond.length > 0)
+			out += " AND "
+		out += equalCond;
+						
+		if(out.length>0)
+			'''WHERE 
+				«out»
+			'''
+		else	
+			''''''
+	}	
 	
 	private def static attributeExpressionQuery(Collection<NeoAttributeExpression> attr) {
 		'''«FOR a:attr SEPARATOR " AND "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
@@ -128,35 +158,6 @@ class CypherPatternBuilder {
 		'''«FOR a:attr SEPARATOR ", "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
 	}
 	
-	private def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, 
-		HashMap<String,String> equalElem, Collection<String> injElem) {
-		var out = "";
-		if(injective) {
-			out += injectiveNodes(injElem);			
-		}
-		
-		var maskBlock = maskBlock(nodes, mask)
-		if(out.length > 0 && maskBlock.length > 0)
-			out += " AND "
-		out += maskBlock;
-		
-		var equalCond = whereEqualElementsConditionQuery(equalElem);
-		if(out.length > 0 && equalCond.length > 0)
-			out += " AND "
-		out += equalCond;
-		
-		var attrBlock = attributeExpressionQuery(attr);
-		if(out.length > 0 && attrBlock.length > 0)
-			out += " AND ";
-		out += attrBlock;
-						
-		if(out.length>0)
-			'''WHERE 
-				«out»
-			'''
-		else	
-			''''''
-	}
 	
 	//FIXME[Anjorin] Get rid of this
 	private def static String injectiveNodes(Collection<String> injElem) {
@@ -171,8 +172,6 @@ class CypherPatternBuilder {
 		'''«FOR entry : relevantEntries.entrySet SEPARATOR 'AND'»
 				id(«entry.key») = «entry.value»«ENDFOR»'''
 	}
-
-	
 
 	private def static String matchQueryForData(Collection<NeoNode> nodes) {
 		'''
