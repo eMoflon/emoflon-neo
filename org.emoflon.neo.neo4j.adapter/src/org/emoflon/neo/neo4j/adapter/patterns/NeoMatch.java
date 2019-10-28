@@ -98,18 +98,6 @@ public class NeoMatch implements IMatch {
 	public IPattern<NeoMatch> getPattern() {
 		return pattern;
 	}
-	
-	/**
-	 * Checks if the given match is still valid in the database by running a
-	 * specific query in the database and return if this is still valid or not
-	 * 
-	 * @return true if the given Match is still valid (existing in the database) or
-	 *         false if not
-	 */
-	@Override
-	public boolean isStillValid() {
-		return pattern.isStillValid(this);
-	}
 
 	@Override
 	public Map<String, Long> getNodeIDs() {

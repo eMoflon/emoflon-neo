@@ -3,6 +3,7 @@ package org.emoflon.neo.engine.modules.updatepolicies;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,13 +48,18 @@ public class TwoPhaseUpdatePolicyForGEN implements IUpdatePolicy<NeoMatch, NeoCo
 
 			if (matches.isPristine(chosenMatch)//
 					|| RuleAnalyser.isFree(RuleAnalyser.toRule(chosenRule)) //
-					|| chosenMatch.isStillValid())
+					|| isStillValid(chosenMatch))
 				return randomSelection;
 			else
 				matches.removeMatch(chosenRule, chosenMatch);
 		}
 
 		return Collections.emptyMap();
+	}
+
+	private boolean isStillValid(NeoMatch chosenMatch) {
+		return chosenMatch.getPattern().isStillValid(List.of(chosenMatch)).values().stream()//
+				.allMatch(res -> res == true);
 	}
 
 	private Collection<NeoMatch> maxCopies(IRule<NeoMatch, NeoCoMatch> rule, Collection<NeoMatch> singleMatch) {

@@ -44,7 +44,5 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 
 	boolean hasApplicationConditions();
 
-	boolean isStillApplicable(M m);
-
 	public Map<String, Boolean> isStillApplicable(Collection<M> matches);
 }

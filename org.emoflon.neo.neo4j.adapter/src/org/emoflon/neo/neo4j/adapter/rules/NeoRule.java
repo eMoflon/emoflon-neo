@@ -222,7 +222,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Optional<Collection<NeoCoMatch>> applyAll(Collection<NeoMatch> matches) {
 		logger.debug("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQueryCollection(getNodes(), useSPOSemantics,
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(getNodes(), useSPOSemantics,
 				redNodes.values(), greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(),
 				blackRel.values(), attrExpr, attrAssign);
 
@@ -276,12 +276,12 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	@Override
-	public boolean isStillApplicable(NeoMatch m) {
-		return contextPattern.isStillValid(m);
-	}
-
-	@Override
 	public Map<String, Boolean> isStillApplicable(Collection<NeoMatch> matches) {
+		return this.isStillValid(matches);
+	}
+	
+	@Override
+	public Map<String, Boolean> isStillValid(Collection<NeoMatch> matches) {
 		return contextPattern.isStillValid(matches);
 	}
 

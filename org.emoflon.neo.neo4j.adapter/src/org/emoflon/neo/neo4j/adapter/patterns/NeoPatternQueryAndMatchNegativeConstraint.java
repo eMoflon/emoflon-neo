@@ -59,27 +59,6 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 	}
 
 	@Override
-	public boolean isStillValid(NeoMatch m) {
-		// Condition is positive Constraint (ENFORCE xyz)
-		logger.debug("Check if match for " + getName() + " WHEN " + ncond.getName() + " is still valid");
-
-		// Create Query
-		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, queryData.getAllElements(),
-				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);
-
-		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
-
-		// Execute query
-		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
-		
-		if(result == null) {
-			throw new DatabaseException("400", "Execution Error: See console log for more details.");
-		} else {
-			return result.list().size() == 1;
-		}
-	}
-	
-	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		// Condition is positive Constraint (ENFORCE xyz)
 		logger.debug("Check if match for " + getName() + " WHEN " + ncond.getName() + " is still valid");
@@ -94,7 +73,7 @@ public class NeoPatternQueryAndMatchNegativeConstraint extends NeoPattern {
 		var helperNodes = new ArrayList<String>(queryData.getAllElements());
 		helperNodes.add(EMSLUtil.PARAM_NAME_FOR_MATCH);
 		
-		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValidCollection(nodes, helperNodes,
+		var cypherQuery = CypherPatternBuilder.constraintQuery_isStillValid(nodes, helperNodes,
 				ncond.getQueryString_MatchCondition(), ncond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);
 
 		logger.debug(map.toString() + "\n" + cypherQuery);

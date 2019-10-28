@@ -281,13 +281,12 @@ public class SokobanPatterns extends ENeoTest {
 		var nextMatch = iterator.next();
 		Optional<NeoCoMatch> result1 = rule.apply(nextMatch);
 		assertTrue(result1.isPresent());
-		assertFalse(nextMatch.isStillValid());
+		expectInvalidMatch(nextMatch);
 		
 		nextMatch = iterator.next();
 		Optional<NeoCoMatch> result2 = rule.apply(nextMatch);
 		assertTrue(result2.isPresent());
-		assertFalse(nextMatch.isStillValid());
-	
+		expectInvalidMatch(nextMatch);	
 	}
 	
 	@Test
@@ -307,7 +306,7 @@ public class SokobanPatterns extends ENeoTest {
 		try {
 			Optional<NeoCoMatch> result1 = rule.apply(nextMatch);
 			assertTrue(result1.isPresent());
-			assertFalse(nextMatch.isStillValid());
+			expectInvalidMatch(nextMatch);
 		} catch (Exception e) {
 			assertFalse(false);
 		}
@@ -317,7 +316,7 @@ public class SokobanPatterns extends ENeoTest {
 		try {
 			Optional<NeoCoMatch> result2 = rule.apply(nextMatch);
 			assertTrue(result2.isPresent());
-			assertFalse(nextMatch.isStillValid());
+			expectInvalidMatch(nextMatch);
 		} catch (Exception e) {
 			assertFalse(false);
 		}
@@ -353,8 +352,7 @@ public class SokobanPatterns extends ENeoTest {
 		rule.useSPOSemantics(true);
 		Optional<NeoCoMatch> result = rule.apply(nextMatch);
 		assertTrue(result.isPresent());
-		assertFalse(nextMatch.isStillValid());
-		
+		expectInvalidMatch(nextMatch);
 	}
 	
 	@Test
@@ -375,7 +373,7 @@ public class SokobanPatterns extends ENeoTest {
 		try {
 			Optional<NeoCoMatch> result = rule.apply(nextMatch);
 			assertTrue(result.isPresent());
-			assertFalse(nextMatch.isStillValid());
+			expectInvalidMatch(nextMatch);
 		} catch (Exception e) {
 			assertFalse(false);
 		}
@@ -808,7 +806,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		while(iterator.hasNext()) {
 			var onlyMatch = iterator.next();
-			assertTrue(onlyMatch.isStillValid());
+			expectValidMatch(onlyMatch);
 			
 			Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 			assertTrue(result.isPresent());
