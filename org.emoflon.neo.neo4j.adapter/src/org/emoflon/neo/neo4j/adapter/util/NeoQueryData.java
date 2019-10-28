@@ -175,7 +175,8 @@ public class NeoQueryData {
 		var elem = new ArrayList<String>();
 		for (var pElem : patternNodes.keySet()) {
 			for (var oElem : optionalNodes.keySet()) {
-				if (!equalElements.containsKey(pElem) || !equalElements.get(pElem).equals(oElem)) {
+				if (equalElements.containsKey(pElem) && equalElements.get(pElem).equals(oElem)) {
+				} else {
 					var labelsP = patternNodes.get(pElem);
 					var labelsO = optionalNodes.get(oElem);
 
