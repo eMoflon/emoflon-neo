@@ -52,14 +52,22 @@ class TGGCompiler {
 
 	private def String compile(Operation op) {
 		val flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
+		val creationRules = op.generateModelCreationRules(tgg.srcMetamodels.map[it.name], tgg.trgMetamodels.map[it.name])
 		'''
 			«importStatements»
 			
 			grammar «tgg.name»_«op.nameExtension» {
+				«FOR creationRuleName : creationRules.keySet»
+					«creationRuleName»
+				«ENDFOR»
 				«FOR rule : flattenedRules»
 					«rule.name»
 				«ENDFOR»
 			}
+			
+			«FOR creationRule : creationRules.values SEPARATOR "\n"»
+				«creationRule»
+			«ENDFOR»
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
 				«compileRule(op, rule)»

@@ -13,6 +13,7 @@ import java.util.Map
 import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
+import java.util.Collections
 
 interface Operation {
 	def static Operation[] getAllOps() {
@@ -40,4 +41,8 @@ interface Operation {
 	}
 
 	def Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs)
+	
+	def Map<String, String> generateModelCreationRules(Iterable<String> srcMetaModelNames, Iterable<String> trgMetaModelNames) {
+		Collections.emptyMap
+	}
 }
