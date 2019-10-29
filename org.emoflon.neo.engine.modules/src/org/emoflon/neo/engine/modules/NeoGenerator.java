@@ -97,6 +97,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		// TODO can we persist this data through multiple steps?
 		boundParameters.clear();
 		freeParameters.clear();
+		parameterData.clear();
 
 		for (IRule<NeoMatch, NeoCoMatch> iRule : rules) {
 			if (!(iRule instanceof NeoRule))
@@ -139,10 +140,14 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		if (mask == null || parameterNames == null || parameterNames.isEmpty())
 			return;
 
+		Map<String, Object> parameterValues = new HashMap<>();
 		parameterData.forEach((param, data) -> {
 			if (parameterNames.contains(param.getName())) {
-				if (!data.hasValue())
-					data.setValue(generateValueFor(data.getType(), param.getName()));
+				if (!data.hasValue()) {
+					if (!parameterValues.containsKey(param.getName()))
+						parameterValues.put(param.getName(), generateValueFor(data.getType(), param.getName()));
+					data.setValue(parameterValues.get(param.getName()));
+				}
 				mask.maskAttribute(data.getAttributeName(), data.getValue());
 			}
 		});
