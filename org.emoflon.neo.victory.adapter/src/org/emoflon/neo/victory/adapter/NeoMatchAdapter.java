@@ -37,13 +37,13 @@ public class NeoMatchAdapter implements Match {
 
 	@Override
 	public boolean isBlocked() {
-		// TODO Auto-generated method stub
+		// TODO[Victory]
 		return false;
 	}
 
 	@Override
 	public String getBlockingReason() {
-		// TODO Auto-generated method stub
+		// TODO[Victory]
 		return "";
 	}
 

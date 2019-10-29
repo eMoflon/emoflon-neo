@@ -95,7 +95,7 @@ public class RulePreProcessor {
 	private ModelNodeBlock addTypeNodeIfNecessary(ModelNodeBlock nodeBlock) {
 		var mm = (Metamodel) nodeBlock.getType().eContainer();
 		var mmName = mm.getName();
-		var typeName = "__" + mmName + "__" + nodeBlock.getType().getName();
+		var typeName = EMSLUtil.RESERVED_PREFIX + mmName + "__" + nodeBlock.getType().getName();
 
 		if (!nodeBlocks.containsKey(typeName)) {
 			var typeNode = EMSLFactory.eINSTANCE.createModelNodeBlock();

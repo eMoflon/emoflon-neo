@@ -34,12 +34,12 @@ public class SokobanRules extends ENeoTest {
 		assertTrue(matches.size() == 1);
 		
 		var onlyMatch = matches.iterator().next();
-		assertTrue(onlyMatch.isStillValid());
+		expectValidMatch(onlyMatch);
 		
 		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 		assertTrue(result.isPresent());
 		
-		assertFalse(onlyMatch.isStillValid());
+		expectInvalidMatch(onlyMatch);
 		
 		Optional<NeoCoMatch> notPossible = rule.apply(onlyMatch);
 		assertFalse(notPossible.isPresent());
@@ -59,12 +59,12 @@ public class SokobanRules extends ENeoTest {
 		assertTrue(matches.size() == 1);
 		
 		var onlyMatch = matches.iterator().next();
-		assertTrue(onlyMatch.isStillValid());
+		expectValidMatch(onlyMatch);
 		
 		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 		assertTrue(result.isPresent());
 		
-		assertFalse(onlyMatch.isStillValid());
+		expectInvalidMatch(onlyMatch);
 		
 		Optional<NeoCoMatch> notPossible = rule.apply(onlyMatch);
 		assertFalse(notPossible.isPresent());
@@ -99,7 +99,7 @@ public class SokobanRules extends ENeoTest {
 			var match = iterator.next();
 			Optional<NeoCoMatch> result = rule.apply(match);
 			assertTrue(result.isPresent());
-			assertFalse(match.isStillValid());
+			expectInvalidMatch(match);
 		}
 	}
 	
@@ -115,7 +115,7 @@ public class SokobanRules extends ENeoTest {
 			var match = iterator.next();
 			Optional<NeoCoMatch> result = rule.apply(match);
 			assertTrue(result.isPresent());
-			assertFalse(match.isStillValid());
+			expectInvalidMatch(match);
 		}
 	}
 	
@@ -131,7 +131,7 @@ public class SokobanRules extends ENeoTest {
 			var match = iterator.next();
 			Optional<NeoCoMatch> result = rule.apply(match);
 			assertTrue(result.isPresent());
-			assertFalse(match.isStillValid());
+			expectInvalidMatch(match);
 		}
 	}
 	

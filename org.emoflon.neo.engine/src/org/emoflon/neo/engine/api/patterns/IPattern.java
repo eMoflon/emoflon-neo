@@ -1,8 +1,10 @@
 package org.emoflon.neo.engine.api.patterns;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 
 public interface IPattern<M extends IMatch> {
 	/**
@@ -50,6 +52,15 @@ public interface IPattern<M extends IMatch> {
 	default int countMatches() {
 		return determineMatches().size();
 	}
-	
+
+	/**
+	 * Check if a collection of matches for this pattern are still valid.
+	 * 
+	 * @param matches
+	 * @return A map of match ids to bools signalling if the particular match is
+	 *         still valid or not.
+	 */
+	Map<String, Boolean> isStillValid(Collection<M> matches);
+
 	Stream<String> getPatternElts();
 }

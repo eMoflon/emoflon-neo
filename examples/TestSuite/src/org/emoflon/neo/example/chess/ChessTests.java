@@ -1,7 +1,6 @@
 package org.emoflon.neo.example.chess;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -53,7 +52,7 @@ class ChessTests extends ENeoTest {
 		Optional<NeoCoMatch> result = rule.apply(onlyMatch);
 		assertTrue(result.isPresent());
 		
-		assertFalse(onlyMatch.isStillValid());
+		expectInvalidMatch(onlyMatch);
 	}
 
 	@Test
@@ -65,6 +64,6 @@ class ChessTests extends ENeoTest {
 		
 		Optional<NeoCoMatch> result = rule.apply(matches.iterator().next());
 		assertTrue(result.isPresent());
-		assertFalse(((NeoMatch) matches.toArray()[0]).isStillValid());
+		expectInvalidMatch((NeoMatch) matches.toArray()[0]);
 	}
 }

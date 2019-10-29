@@ -57,41 +57,10 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 		}
 	}
 	
-	/**
-	 * Get the data and nodes from the (nested) conditions and runs the query in the
-	 * database, analyze the results and return the matches
-	 * 
-	 * @param limit number of matches, that should be returned - 0 if infinite
-	 * @return Collection<IMatch> return a list of all Matches of the pattern with
-	 *         condition matching
-	 */
-	@Override
-	public boolean isStillValid(NeoMatch m) {
-		logger.info("Check if match for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
-
-		// collecting the data
-		var condData = referencedConstraint.getConditionData();
-
-		// creating the query string
-		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(getNodes(),
-				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
-		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
-
-		// run the query
-		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
-
-		if(result == null) {
-			throw new DatabaseException("400", "Execution Error: See console log for more details.");
-		} else {
-			// analyze and return results
-			return result.hasNext();
-		}
-	}
-	
 	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		
-		logger.info("Check if matches for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
+		logger.debug("Check if matches for " + getName() + " WHEN " + referencedConstraint.getName() + " is still valid");
 
 		// collecting the data
 		var condData = referencedConstraint.getConditionData();
@@ -100,13 +69,10 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 		matches.forEach(match -> list.add(match.getParameters()));
 		
 		var map = new HashMap<String,Object>();
-		map.put("matches",list);
+		map.put("matches", list);
 		
 		// Create Query
-		var helperNodes = new ArrayList<String>(queryData.getAllElements());
-		helperNodes.add("matches");
-		
-		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValidCollection(getNodes(),
+		var cypherQuery = CypherPatternBuilder.conditionQuery_isStillValid(getNodes(),
 				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
 
 		logger.debug(map.toString() + "\n" + cypherQuery);

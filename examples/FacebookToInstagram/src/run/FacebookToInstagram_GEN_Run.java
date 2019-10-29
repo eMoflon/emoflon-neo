@@ -9,11 +9,12 @@ import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
-import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
+import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
-import org.emoflon.neo.engine.modules.terminationcondition.MaxGeneratedElementsTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
+import org.emoflon.neo.engine.modules.ruleschedulers.TwoPhaseRuleSchedulerForGEN;
+import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
+import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
+import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
@@ -43,12 +44,16 @@ public class FacebookToInstagram_GEN_Run {
 	protected NeoGenerator createGenerator(API_FacebookToInstagramGrammar_GEN genAPI, NeoCoreBuilder builder) {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
 
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule, 50);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule, 50);
+		
 		return new NeoGenerator(//
 				allRules, //
-				new MaxGeneratedElementsTerminationCondition(10, builder), //
-				new AllRulesAllMatchesScheduler(), //
-				new RandomSingleMatchUpdatePolicy(), //
-				new ParanoidNeoReprocessor(), //
+				new CompositeTerminationConditionForGEN(30000, maxRuleApps), //
+				new TwoPhaseRuleSchedulerForGEN(), //
+				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
+				new NoOpReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
