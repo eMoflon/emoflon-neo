@@ -125,6 +125,18 @@ class TGGCompiler {
 		
 		'''
 			rule «rule.name» {
+				«IF !rule.srcNodeBlocks.isEmpty»
+					srcM : Model {
+						.ename : <__srcModelName>
+					}
+				«ENDIF»
+				
+				«IF !rule.trgNodeBlocks.isEmpty»
+					trgM : Model {
+						.ename : <__trgModelName>
+					}
+				«ENDIF»
+				
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
 					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData)»
 				«ENDFOR»
@@ -173,8 +185,10 @@ class TGGCompiler {
 	}
 
 	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
+		val action = op.getAction(nodeBlock.action, isSrc)
 		'''
-			«op.getAction(nodeBlock.action, isSrc)»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
+			«action»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
+				«action»-elementOf->«IF isSrc»srcM«ELSE»trgM«ENDIF»
 				«FOR relation : nodeBlock.relations»
 					«compileRelationStatement(op, relation, isSrc, paramsToData)»
 				«ENDFOR»
