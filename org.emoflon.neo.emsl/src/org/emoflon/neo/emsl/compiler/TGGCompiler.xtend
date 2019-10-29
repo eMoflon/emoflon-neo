@@ -25,6 +25,7 @@ import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Map
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.SourceNAC
 
 class TGGCompiler {
 	
@@ -113,11 +114,11 @@ class TGGCompiler {
 
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
-		val nacPatterns = op.preprocessNACs(rule.nacs).map[EMSLFlattener.flatten(it.pattern) as AtomicPattern].toList
+		val nacPatterns = op.preprocessNACs(rule.nacs).toInvertedMap[EMSLFlattener.flatten(it.pattern) as AtomicPattern]
 		
 		collectParameters(rule.srcNodeBlocks, ParameterDomain.SRC, paramsToData, paramGroups)
 		collectParameters(rule.trgNodeBlocks, ParameterDomain.TRG, paramsToData, paramGroups)
-		collectParameters(nacPatterns.flatMap[it.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
+		collectParameters(nacPatterns.values.flatMap[it.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
 		
 		op.handleParameters(paramsToData, paramGroups)
 		
@@ -153,17 +154,18 @@ class TGGCompiler {
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
 			«IF(nacPatterns.size === 1)»
-				«val nac = nacPatterns.head»
-				constraint «rule.name»NAC = forbid «getNacName(rule, nac)»
+				«val nacName = getNacName(rule, nacPatterns.values.head)»
+				constraint «rule.name»NAC = forbid «nacName»
 
-				«TGGCompilerUtils.printAtomicPattern(getNacName(rule, nac), nac, nodeTypeNames, paramsToData)»
+				«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData)»
 			«ELSEIF(nacPatterns.size > 1)»
-					constraint «rule.name»NAC = «FOR nac : nacPatterns SEPARATOR ' && '»«getNacName(rule, nac)»NAC«ENDFOR»
+					constraint «rule.name»NAC = «FOR pattern : nacPatterns.values SEPARATOR ' && '»«getNacName(rule, pattern)»NAC«ENDFOR»
 					
-					«FOR nac : nacPatterns»
-						constraint «getNacName(rule, nac)»NAC = forbid «getNacName(rule, nac)»
+					«FOR nacPattern : nacPatterns.entrySet»
+						«val nacName = getNacName(rule, nacPattern.value)»
+						constraint «nacName»NAC = forbid «nacName»
 					
-						«TGGCompilerUtils.printAtomicPattern(getNacName(rule, nac), nac, nodeTypeNames, paramsToData)»
+						«TGGCompilerUtils.printAtomicPattern(nacName, nacPattern.value, nacPattern.key instanceof SourceNAC, nodeTypeNames, paramsToData)»
 					«ENDFOR»
 			«ENDIF»
 		'''
