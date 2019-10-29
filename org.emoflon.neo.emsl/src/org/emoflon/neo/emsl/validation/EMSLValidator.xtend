@@ -63,8 +63,6 @@ import java.time.format.DateTimeParseException
 import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.DataType
 import org.emoflon.neo.emsl.eMSL.ConstraintBody
-import org.emoflon.neo.emsl.eMSL.OrBody
-import org.emoflon.neo.emsl.eMSL.AndBody
 
 /**
  * This class contains custom validation rules. 
@@ -1149,29 +1147,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 	@Check
 	def void checkParameterTypes(Rule rule) {
 		val nodeBlocks = new ArrayList
-		iteratePatterns(rule.condition as ConstraintBody, [nodeBlocks.addAll(it.nodeBlocks)])
+		EMSLUtil.iterateConstraintPatterns(rule.condition as ConstraintBody, [nodeBlocks.addAll(it.nodeBlocks)])
 		nodeBlocks.addAll(rule.nodeBlocks)
 		checkParameterTypes(nodeBlocks)
-	}
-	
-	def void iteratePatterns(ConstraintBody body, Consumer<AtomicPattern> action) {
-		if(body instanceof NegativeConstraint)
-			action.accept(body.pattern)
-		else if(body instanceof PositiveConstraint)
-			action.accept(body.pattern)
-		else if(body instanceof Implication) {
-			action.accept(body.premise)
-			action.accept(body.conclusion)
-		}
-		else if(body instanceof OrBody) {
-			body.children.forEach[iteratePatterns(it, action)]
-		}
-		else if(body instanceof AndBody) {
-			body.children.forEach[iteratePatterns(it, action)]
-		}
-		else if(body instanceof ConstraintReference) {
-			iteratePatterns(body.reference.body, action)
-		}
 	}
 	
 	/**

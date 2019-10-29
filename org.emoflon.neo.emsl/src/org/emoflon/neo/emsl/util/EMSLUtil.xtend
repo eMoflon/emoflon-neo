@@ -40,6 +40,15 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import java.time.LocalDate
 import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes
+import org.emoflon.neo.emsl.eMSL.ConstraintBody
+import org.emoflon.neo.emsl.eMSL.NegativeConstraint
+import org.emoflon.neo.emsl.eMSL.PositiveConstraint
+import org.emoflon.neo.emsl.eMSL.Implication
+import org.emoflon.neo.emsl.eMSL.OrBody
+import org.emoflon.neo.emsl.eMSL.AndBody
+import org.emoflon.neo.emsl.eMSL.ConstraintReference
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import java.util.function.Consumer
 
 class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
@@ -256,5 +265,25 @@ class EMSLUtil {
 			p.type.name
 		else // Link has an inferred type
 			p.inferredType
+	}
+
+	def static void iterateConstraintPatterns(ConstraintBody body, Consumer<AtomicPattern> action) {
+		if(body instanceof NegativeConstraint)
+			action.accept(body.pattern)
+		else if(body instanceof PositiveConstraint)
+			action.accept(body.pattern)
+		else if(body instanceof Implication) {
+			action.accept(body.premise)
+			action.accept(body.conclusion)
+		}
+		else if(body instanceof OrBody) {
+			body.children.forEach[iterateConstraintPatterns(it, action)]
+		}
+		else if(body instanceof AndBody) {
+			body.children.forEach[iterateConstraintPatterns(it, action)]
+		}
+		else if(body instanceof ConstraintReference) {
+			iterateConstraintPatterns(body.reference.body, action)
+		}
 	}
 }
