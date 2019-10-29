@@ -45,4 +45,8 @@ interface Operation {
 	def Map<String, String> generateModelCreationRules(Iterable<String> srcMetaModelNames, Iterable<String> trgMetaModelNames) {
 		Collections.emptyMap
 	}
+	
+	def boolean requiresSrcModelCreation()
+	
+	def boolean requiresTrgModelCreation()
 }

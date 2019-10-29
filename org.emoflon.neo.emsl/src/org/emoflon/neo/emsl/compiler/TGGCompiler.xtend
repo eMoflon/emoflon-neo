@@ -52,22 +52,20 @@ class TGGCompiler {
 
 	private def String compile(Operation op) {
 		val flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
-		val creationRules = op.generateModelCreationRules(tgg.srcMetamodels.map[it.name], tgg.trgMetamodels.map[it.name])
 		'''
 			«importStatements»
 			
 			grammar «tgg.name»_«op.nameExtension» {
-				«FOR creationRuleName : creationRules.keySet»
-					«creationRuleName»
-				«ENDFOR»
+				«IF op.requiresSrcModelCreation»createSrcModel«ENDIF»
+				«IF op.requiresTrgModelCreation»createTrgModel«ENDIF»
 				«FOR rule : flattenedRules»
 					«rule.name»
 				«ENDFOR»
 			}
 			
-			«FOR creationRule : creationRules.values SEPARATOR "\n"»
-				«creationRule»
-			«ENDFOR»
+			«IF op.requiresSrcModelCreation»«generateSrcModelCreationRule(tgg.srcMetamodels.map[it.name])»«ENDIF»
+			
+			«IF op.requiresTrgModelCreation»«generateTrgModelCreationRule(tgg.trgMetamodels.map[it.name])»«ENDIF»
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
 				«compileRule(op, rule)»
@@ -253,5 +251,55 @@ class TGGCompiler {
 		}
 		else
 			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
+	}
+
+	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames) {
+		'''
+			rule createSrcModel {
+				++ srcM : Model {
+					.ename := <__srcModelName>
+					«FOR srcMetaModel : srcMetaModelNames»
+						++ -conformsTo-> mm«srcMetaModel»
+					«ENDFOR»
+				}
+			
+				«FOR srcMetaModel : srcMetaModelNames»
+					mm«srcMetaModel» : MetaModel {
+						.ename : "«srcMetaModel»"
+					}
+				«ENDFOR»
+			} when forbid srcModelExists
+			
+			pattern srcModelExists {
+				srcM : Model {
+					.ename : <__srcModelName>
+				}
+			}
+		'''
+	}
+	
+	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames) {
+		'''
+			rule createTrgModel {
+				++ trgM : Model {
+					.ename := <__trgModelName>
+					«FOR trgMetaModel : trgMetaModelNames»
+						++ -conformsTo-> mm«trgMetaModel»
+					«ENDFOR»
+				}
+			
+				«FOR trgMetaModel : trgMetaModelNames»
+					mm«trgMetaModel» : MetaModel {
+						.ename : "«trgMetaModel»"
+					}
+				«ENDFOR»
+			} when forbid trgModelExists
+			
+			pattern trgModelExists {
+				trgM : Model {
+					.ename : <__trgModelName>
+				}
+			}
+		'''
 	}
 }
