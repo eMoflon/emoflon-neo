@@ -127,7 +127,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @param m NeoMatch the match that should be checked
 	 * @return true if the match is still valid or false if not
 	 */
-	public abstract boolean isStillValid(NeoMatch neoMatch);
 	public abstract Map<String, Boolean> isStillValid(Collection<NeoMatch> neoMatch);
 
 	public abstract String getQuery();
@@ -158,7 +157,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	public Collection<Record> getData(Collection<? extends NeoMatch> m) {
 		logger.debug("Extract data from " + getName());
 		
-		var cypherQuery = CypherPatternBuilder.getDataQueryCollection(nodes, queryData.getAttributeExpressions(), injective);
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
 
 		var list = new ArrayList<Map<String,Object>>();
 		m.forEach(match -> list.add(match.getParameters()));

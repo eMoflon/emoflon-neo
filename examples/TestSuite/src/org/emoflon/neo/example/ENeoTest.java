@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Scanner;
 
 import org.apache.log4j.Level;
@@ -13,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.util.FlattenerException;
-import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
@@ -94,6 +94,16 @@ public abstract class ENeoTest {
 	}
 	
 	protected void expectValidMatches(Collection<NeoMatch> matches, long number) {
-		assertEquals(number, matches.stream().filter(IMatch::isStillValid).count());
+		var pattern = matches.iterator().next().getPattern();
+		var isStillValid = pattern.isStillValid(matches);
+		assertEquals(number, isStillValid.values().stream().filter(res -> res == true).count());
+	}
+	
+	protected void expectValidMatch(NeoMatch m) {
+		expectValidMatches(List.of(m), 1);
+	}
+	
+	protected void expectInvalidMatch(NeoMatch m) {
+		expectValidMatches(List.of(m), 0);
 	}
 }

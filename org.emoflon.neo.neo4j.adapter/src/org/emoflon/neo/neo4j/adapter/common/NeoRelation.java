@@ -9,7 +9,6 @@ import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
-//FIXME[Anjorin]: Refactor so from and to nodes are treated symmetrically, return list of src and trg labels instead of single strings
 public class NeoRelation {
 	private NeoNode from;
 	private List<String> relTypes;

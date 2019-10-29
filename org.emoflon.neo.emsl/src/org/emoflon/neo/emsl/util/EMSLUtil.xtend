@@ -51,6 +51,9 @@ class EMSLUtil {
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"
 	public static final String P_PASSWORD = "PasswordPreference"
+	
+	public static final String RESERVED_PREFIX = "____"
+	public static final String PARAM_NAME_FOR_MATCH = "match";
 
 	def static EMSL_Spec loadSpecification(String modelURI, String platformResourceURIRoot,
 		String platformPluginURIRoot) {

@@ -22,6 +22,7 @@ public class NeoMatch implements IMatch {
 	private NeoPattern pattern;
 	protected Map<String, Long> nodeIDs;
 	protected Map<String, Long> edgeIDs;
+	protected Map<String, Object> parameters;
 
 	/**
 	 * @param pattern the corresponding pattern to the match
@@ -33,6 +34,19 @@ public class NeoMatch implements IMatch {
 		nodeIDs = new HashMap<>();
 		edgeIDs = new HashMap<>();
 		extractIdsPattern(record);
+		
+		parameters = new HashMap<>();
+		parameters.putAll(nodeIDs);
+		parameters.putAll(edgeIDs);
+		parameters.put("match_id", getHashCode());
+	}
+	
+	public NeoMatch(NeoMatch other) {
+		pattern = other.pattern;
+		nodeIDs = other.nodeIDs;
+		edgeIDs = other.edgeIDs;
+		
+		parameters = new HashMap<>(other.parameters);
 	}
 	
 	/**
@@ -68,11 +82,11 @@ public class NeoMatch implements IMatch {
 	}
 
 	public Map<String, Object> getParameters() {
-		var map = new HashMap<String,Object>();
-		map.putAll(nodeIDs);
-		map.putAll(edgeIDs);
-		map.put("match_id", getHashCode());
-		return map;
+		return Collections.unmodifiableMap(parameters);
+	}
+	
+	public void addParameter(String key, Object value) {
+		parameters.put(key, value);
 	}
 
 	/**
@@ -83,18 +97,6 @@ public class NeoMatch implements IMatch {
 	@Override
 	public IPattern<NeoMatch> getPattern() {
 		return pattern;
-	}
-	
-	/**
-	 * Checks if the given match is still valid in the database by running a
-	 * specific query in the database and return if this is still valid or not
-	 * 
-	 * @return true if the given Match is still valid (existing in the database) or
-	 *         false if not
-	 */
-	@Override
-	public boolean isStillValid() {
-		return pattern.isStillValid(this);
 	}
 
 	@Override

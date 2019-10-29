@@ -13,6 +13,7 @@ import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 
 public class Generator<M extends IMatch, C extends ICoMatch> {
+
 	private ITerminationCondition<M, C> terminationCondition;
 	private IRuleScheduler<M, C> ruleScheduler;
 	private IUpdatePolicy<M, C> updatePolicy;
@@ -37,7 +38,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 
 	public void generate() {
 		MatchContainer<M, C> matchContainer = new MatchContainer<>(allRules);
-		while (!terminationCondition.isReached(matchContainer)) {
+		do {
 			// 1. Schedule rules for pattern matching
 			progressMonitor.startRuleScheduling();
 			var scheduledRules = ruleScheduler.scheduleWith(matchContainer, progressMonitor);
@@ -69,13 +70,13 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 
 			// Heartbeat for continuous feedback
 			progressMonitor.heartBeat();
-		}
+		} while (!terminationCondition.isReached(matchContainer));
 
 		progressMonitor.finishGeneration(matchContainer);
 	}
 
 	protected void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer) {
 		rule.applyAll(matches);
-		matchContainer.appliedRule(rule, matches.size());
+		matchContainer.appliedRule(rule, matches);
 	}
 }

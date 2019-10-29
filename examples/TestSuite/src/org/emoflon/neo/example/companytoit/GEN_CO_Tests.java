@@ -12,8 +12,9 @@ import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.MaximalRuleApplicationsScheduler;
-import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
+import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
+import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
@@ -24,13 +25,12 @@ import run.CompanyToIT_GEN_Run;
 
 public class GEN_CO_Tests extends ENeoTest {
 
-	private void runTest(Consumer<MaximalRuleApplicationsScheduler> configurator) throws Exception {
+	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var testCOApp = new CompanyToIT_CO_Run();
 		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
 		testGenApp.runGenerator();
 		assertTrue(testCOApp.runCheckOnly());
-
 	}
 
 	@Test
@@ -76,22 +76,22 @@ public class GEN_CO_Tests extends ENeoTest {
 }
 
 class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
-	private Consumer<MaximalRuleApplicationsScheduler> configurator;
+	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
 
-	public CompanyToIT_GEN_TEST(Consumer<MaximalRuleApplicationsScheduler> configureScheduler) {
+	public CompanyToIT_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
 		this.configurator = configureScheduler;
 	}
 
 	@Override
 	protected NeoGenerator createGenerator(API_CompanyToIT_GEN genAPI) {
 		var allRules = genAPI.getAllRulesForCompanyToIT__GEN();
-		var ruleScheduler = new MaximalRuleApplicationsScheduler(allRules, 0);
+		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
 
 		return new NeoGenerator(//
 				allRules, //
-				new TimedTerminationCondition(3000), //
-				ruleScheduler, //
+				new CompositeTerminationConditionForGEN(3000, ruleScheduler), //
+				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
