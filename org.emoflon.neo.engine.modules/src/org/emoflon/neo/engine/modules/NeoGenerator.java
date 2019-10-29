@@ -3,9 +3,11 @@ package org.emoflon.neo.engine.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.emoflon.neo.emsl.eMSL.ConstraintBody;
 import org.emoflon.neo.emsl.eMSL.DataType;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
@@ -31,6 +33,9 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
 	private List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators;
 	private Map<NeoRule, AttributeMask> ruleMasks = new HashMap<>();
+	private Map<NeoRule, Collection<String>> boundParameters = new HashMap<>();
+	private Map<NeoRule, Collection<String>> freeParameters = new HashMap<>();
+	private Map<Parameter, ParameterData> parameterData = new HashMap<>();
 
 	public NeoGenerator(//
 			Collection<NeoRule> allRules, //
@@ -55,6 +60,9 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	@Override
 	protected void determineMatches(Map<IRule<NeoMatch, NeoCoMatch>, Integer> scheduledRules,
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
+
+		mapParameters(scheduledRules.keySet());
+
 		ruleMasks.clear();
 		scheduledRules.forEach((rule, count) -> {
 			if (!(rule instanceof NeoRule))
@@ -63,7 +71,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			NeoRule neoRule = (NeoRule) rule;
 			AttributeMask mask = new AttributeMask();
 
-			maskBoundParameters(neoRule.getEMSLRule(), mask);
+			maskParameters(boundParameters.get(neoRule), mask);
 			ruleMasks.put(neoRule, mask);
 
 			matchContainer.addAll(NeoRuleFactory.copyNeoRuleWithNewMask(neoRule, mask).determineMatches(count), rule);
@@ -77,16 +85,70 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			throw new IllegalStateException("Unexpected type of rule: " + r.getClass());
 
 		NeoRule rule = (NeoRule) r;
-		AttributeMask mask = new AttributeMask();
-		maskParameters(rule.getEMSLRule(), mask, matches);
+		AttributeMask mask = ruleMasks.get(rule);
+		maskParameters(freeParameters.get(rule), mask);
+		matches.forEach(
+				match -> parameterData.forEach((param, data) -> match.addParameter(param.getName(), data.getValue())));
 		NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
 		matchContainer.appliedRule(rule, matches);
 	}
 
-	private void maskBoundParameters(Rule rule, AttributeMask mask) {
-		// TODO
+	private void mapParameters(Collection<IRule<NeoMatch, NeoCoMatch>> rules) {
+		// TODO can we persist this data through multiple steps?
+		boundParameters.clear();
+		freeParameters.clear();
+
+		for (IRule<NeoMatch, NeoCoMatch> iRule : rules) {
+			if (!(iRule instanceof NeoRule))
+				throw new IllegalStateException("Unexpected type of rule: " + iRule.getClass());
+			NeoRule rule = (NeoRule) iRule;
+			Collection<ModelNodeBlock> nodeBlocks = new HashSet<>();
+			nodeBlocks.addAll(rule.getEMSLRule().getNodeBlocks());
+			EMSLUtil.iterateConstraintPatterns((ConstraintBody) rule.getEMSLRule().getCondition(),
+					pattern -> nodeBlocks.addAll(pattern.getNodeBlocks()));
+			for (ModelNodeBlock nodeBlock : nodeBlocks)
+				for (ModelPropertyStatement prop : nodeBlock.getProperties())
+					if (prop.getValue() instanceof Parameter) {
+						Parameter param = (Parameter) prop.getValue();
+
+						parameterData.put(param, new ParameterData(prop.getType().getType(),
+								nodeBlock.getName() + "." + prop.getType().getName()));
+
+						if (nodeBlock.getAction() == null) { // -> bound
+							if (freeParameters.containsKey(rule))
+								freeParameters.get(rule).remove(param.getName());
+
+							if (!boundParameters.containsKey(rule))
+								boundParameters.put(rule, new HashSet<>());
+							boundParameters.get(rule).add(param.getName());
+						} else { // -> free
+							if (boundParameters.containsKey(rule)
+									&& boundParameters.get(rule).contains(param.getName()))
+								continue;
+							else {
+								if (!freeParameters.containsKey(rule))
+									freeParameters.put(rule, new HashSet<>());
+								freeParameters.get(rule).add(param.getName());
+							}
+						}
+					}
+		}
 	}
 
+	private void maskParameters(Collection<String> parameterNames, AttributeMask mask) {
+		if (mask == null || parameterNames == null || parameterNames.isEmpty())
+			return;
+
+		parameterData.forEach((param, data) -> {
+			if (parameterNames.contains(param.getName())) {
+				if (!data.hasValue())
+					data.setValue(generateValueFor(data.getType(), param.getName()));
+				mask.maskAttribute(data.getAttributeName(), data.getValue());
+			}
+		});
+	}
+
+	@Deprecated
 	private void maskParameters(Rule rule, AttributeMask mask, Collection<NeoMatch> matches) {
 		Map<String, DataType> params = new HashMap<>();
 
@@ -117,6 +179,38 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	}
 }
 
+class ParameterData {
+	private DataType type;
+	private String attributeName;
+	private Object value;
+
+	ParameterData(DataType type, String attributeName) {
+		this.type = type;
+		this.attributeName = attributeName;
+	}
+
+	public DataType getType() {
+		return type;
+	}
+
+	public String getAttributeName() {
+		return attributeName;
+	}
+
+	public boolean hasValue() {
+		return value != null;
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+}
+
+@Deprecated
 class ParameterPlaceHolder {
 	private String name;
 
