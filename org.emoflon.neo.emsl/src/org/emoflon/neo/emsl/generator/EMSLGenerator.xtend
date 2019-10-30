@@ -179,6 +179,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.api.API_Common;
 			import java.util.Collection;
 			import java.util.HashSet;
+			import java.util.List;
 			import java.util.HashMap;
 			import java.util.Map;
 			import java.util.stream.Stream;
@@ -486,11 +487,11 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public Collection<String> getSrcMetamodelsOf«rootName»(){
-					return List.of(«tgg.srcMetamodels.map[it.name].join(",")»);
+					return List.of(«tgg.srcMetamodels.map[it.name].join(", ")»);
 				}
 				
 				public Collection<String> getTrgMetamodelsOf«rootName»(){
-					return List.of(«tgg.trgMetamodels.map[it.name].join(",")»);
+					return List.of(«tgg.trgMetamodels.map['''"«it.name»"'''].join(", ")»);
 				}
 				
 				public Collection<String> getAllMetamodelsOf«rootName»(){
