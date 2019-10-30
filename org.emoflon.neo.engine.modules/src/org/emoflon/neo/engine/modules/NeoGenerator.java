@@ -63,8 +63,8 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		NeoRule rule = (NeoRule) r;
 		AttributeMask mask = new AttributeMask();
 		maskParameters(rule.getEMSLRule(), mask, matches);
-		NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
-		matchContainer.appliedRule(rule, matches);
+		var comatches = NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
+		matchContainer.appliedRule(rule, matches, comatches);
 	}
 
 	private void maskParameters(Rule rule, AttributeMask mask, Collection<NeoMatch> matches) {
@@ -94,6 +94,11 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		return valueGen.map(vg -> vg.generateValueFor(parameterName))//
 				.orElseThrow(() -> new IllegalArgumentException(
 						"Unable to generate value for: " + parameterName + ":" + dataType.eClass().getName()));
+	}
+
+	@Override
+	protected MatchContainer<NeoMatch, NeoCoMatch> createMatchContainer() {
+		return new NeoMatchContainer(allRules);
 	}
 }
 

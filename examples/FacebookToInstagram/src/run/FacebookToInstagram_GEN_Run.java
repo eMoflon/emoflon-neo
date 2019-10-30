@@ -9,7 +9,7 @@ import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
-import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
+import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.TwoPhaseRuleSchedulerForGEN;
 import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
@@ -33,7 +33,7 @@ public class FacebookToInstagram_GEN_Run {
 			api.exportMetamodelsForFacebookToInstagramGrammar();
 
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
-			var generator = createGenerator(genAPI, builder);
+			var generator = createGenerator(api, genAPI, builder);
 
 			logger.info("Start model generation...");
 			generator.generate();
@@ -41,19 +41,22 @@ public class FacebookToInstagram_GEN_Run {
 		}
 	}
 
-	protected NeoGenerator createGenerator(API_FacebookToInstagramGrammar_GEN genAPI, NeoCoreBuilder builder) {
+	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramGrammar_GEN genAPI, NeoCoreBuilder builder) {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
 
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule, 50);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule, 50);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule, 10);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule, 100000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserNetworkBridgeRule, -1);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers, 500000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers, 500000);
 		
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(30000, maxRuleApps), //
-				new TwoPhaseRuleSchedulerForGEN(), //
+				new CompositeTerminationConditionForGEN(builder, 5000000, maxRuleApps), //
+				new TwoPhaseRuleSchedulerForGEN(50, api.getSrcMetamodelsForFacebookToInstagramGrammar()), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
-				new NoOpReprocessor(), //
+				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}

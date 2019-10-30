@@ -31,12 +31,10 @@ public class RandomSingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, Ne
 		
 		var randomRule = rules.get((int) (Math.random() * rules.size()));
 
-		logger.debug("Chose: " + randomRule + " from " + rules);
-
 		var matchesOfRule = matches.matchesForRule(randomRule).collect(Collectors.toList());
 		var randomMatch = matchesOfRule.get((int) (Math.random() * matchesOfRule.size()));
 
-		logger.debug("Chose randomly from " + matchesOfRule.size() + " matches");
+		logger.info("Chose match@" + randomRule + " randomly from " + rules + " rules, " +  matchesOfRule.size() + "/" + matches.streamAllMatches().count() + " matches");
 
 		selection.put(randomRule, List.of(randomMatch));
 

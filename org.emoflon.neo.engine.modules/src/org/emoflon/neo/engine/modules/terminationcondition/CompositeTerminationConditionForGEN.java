@@ -61,8 +61,7 @@ public class CompositeTerminationConditionForGEN implements ITerminationConditio
 
 	@Override
 	public boolean isReached(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-		return matchContainer.hasNoMatches()//
-				|| timeout.isReached(matchContainer)//
+		return timeout.isReached(matchContainer)//
 				|| maxGeneratedElements.isReached(matchContainer)//
 				|| maxRuleApps.isReached(matchContainer);
 	}

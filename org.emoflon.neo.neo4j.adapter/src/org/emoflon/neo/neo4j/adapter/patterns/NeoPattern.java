@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.patterns.IPattern;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
@@ -137,9 +138,9 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 				queryData.getAllElements(), //
 				matchCond, //
 				whereCond, //
-				queryData.getAttributeExpressions(),
+				queryData.getAttributeExpressions(), //
 				injective, //
-				0);
+				Schedule.unlimited());
 	}
 
 	/**
@@ -151,7 +152,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public Collection<NeoMatch> determineMatches() {
-		return determineMatches(0);
+		return determineMatches(Schedule.unlimited());
 	}
 	
 	public Collection<Record> getData(Collection<? extends NeoMatch> m) {
@@ -167,7 +168,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 		
 		logger.debug(map.toString() + "\n" + cypherQuery);
 		
-		StatementResult result = builder.executeQueryWithParameters(cypherQuery, map);
+		StatementResult result = builder.executeQuery(cypherQuery, map);
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
