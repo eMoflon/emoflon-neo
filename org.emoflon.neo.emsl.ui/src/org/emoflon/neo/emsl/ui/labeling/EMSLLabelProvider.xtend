@@ -35,6 +35,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import org.emoflon.neo.emsl.eMSL.BinaryExpression
+import java.lang.reflect.Parameter
 
 /**
  * Provides labels for EObjects.
@@ -124,6 +125,10 @@ class EMSLLabelProvider extends DefaultEObjectLabelProvider {
 	
 	def text(ModelPropertyStatement p){
 		EMSLUtil.getNameOfType(p) + " " + p?.op + " " + p?.value?.print
+	}
+	
+	dispatch def String print(Parameter value){
+		'''<«value.name»>'''
 	}
 	
 	dispatch def String print(PrimitiveDouble value){
