@@ -18,6 +18,7 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	private Map<IRule<M, C>, Collection<M>> rulesToMatches;
 	protected Map<IRule<M, C>, Integer> ruleApplications;
 	private NodeRange currentNodeRange;
+	private long noOfGeneratedElements = 0;
 
 	public MatchContainer(Collection<IRule<M, C>> allRules) {
 		rulesToMatches = new HashMap<>();
@@ -77,6 +78,7 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 
 	protected void addCreatedElementIDsToRange(C m, IRule<M, C> rule) {
 		rule.getCreatedElts().forEach(elt -> {
+			noOfGeneratedElements++;
 			if (m.getNodeIDs().containsKey(elt))
 				currentNodeRange.addIDs(getTypesFor(rule, elt), m.getNodeIDs().get(elt));
 		});
@@ -109,7 +111,7 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	}
 
 	public long getNumberOfGeneratedElements() {
-		return currentNodeRange.getAllIDs().count();
+		return noOfGeneratedElements;
 	}
 
 	public int getNumberOfRuleApplications() {

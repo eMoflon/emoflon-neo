@@ -69,7 +69,7 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 			progressMonitor.finishReprocessingMatches();
 
 			// Heartbeat for continuous feedback
-			progressMonitor.heartBeat();
+			progressMonitor.heartBeat(matchContainer);
 		} while (!terminationCondition.isReached(matchContainer));
 
 		progressMonitor.finishGeneration(matchContainer);

@@ -1,5 +1,7 @@
 package org.emoflon.neo.engine.modules.terminationcondition;
 
+import java.util.concurrent.TimeUnit;
+
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
@@ -39,24 +41,26 @@ public class CompositeTerminationConditionForGEN implements ITerminationConditio
 	}
 
 	public CompositeTerminationConditionForGEN(//
-			long maxDurationInMs, //
+			long maxDuration, //
+			TimeUnit timeUnit, //
 			MaximalRuleApplicationsTerminationCondition maxRuleApps//
 	) {
 		this(//
-				new TimedTerminationCondition(maxDurationInMs), //
+				new TimedTerminationCondition(maxDuration, timeUnit), //
 				new NoTerminationCondition(), //
 				maxRuleApps);
 	}
 
 	public CompositeTerminationConditionForGEN(//
 			NeoCoreBuilder builder, //
-			long maxDurationInMs, //
+			long maxDuration, //
+			TimeUnit timeUnit, //
 			long maxNoOfElements, //
 			MaximalRuleApplicationsTerminationCondition maxRuleApps//
 	) {
 
 		this(//
-				new TimedTerminationCondition(maxDurationInMs), //
+				new TimedTerminationCondition(maxDuration, timeUnit), //
 				new MaxGeneratedElementsTerminationCondition(maxNoOfElements, builder), //
 				maxRuleApps);
 	}

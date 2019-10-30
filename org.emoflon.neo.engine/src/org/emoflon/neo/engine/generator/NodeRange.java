@@ -42,8 +42,4 @@ public class NodeRange {
 
 		return sampleIDs;
 	}
-
-	public Stream<Long> getAllIDs() {
-		return typeToIDs.entrySet().stream().flatMap(entry -> entry.getValue().stream());
-	}
 }

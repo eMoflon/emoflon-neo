@@ -1,6 +1,7 @@
 package run;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -50,8 +51,10 @@ public class FacebookToInstagram_GEN_Run {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule, 1000);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule, 100000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule,
+				1000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule,
+				100000);
 
 		var sampler = new NodeSampler() {
 			@Override
@@ -65,16 +68,16 @@ public class FacebookToInstagram_GEN_Run {
 				case API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers:
 					return 1;
 				case API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers:
-					return nodeName.equals("iu")? 1 : -1;
+					return nodeName.equals("iu") ? 1 : -1;
 				default:
-					 return type.equals("FacebookLanguage__User") || type.equals("FacebookLanguage__Network")? 1 : -1;
+					return type.equals("FacebookLanguage__User") || type.equals("FacebookLanguage__Network") ? 1 : -1;
 				}
 			}
 		};
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(builder, 5000000, maxRuleApps), //
+				new CompositeTerminationConditionForGEN(builder, 5, TimeUnit.HOURS, 5000000, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
