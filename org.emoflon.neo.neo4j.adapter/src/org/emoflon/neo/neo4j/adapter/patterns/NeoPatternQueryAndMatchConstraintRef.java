@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraint;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
@@ -29,7 +30,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	}
 
 	@Override
-	public Collection<NeoMatch> determineMatches(int limit) {
+	public Collection<NeoMatch> determineMatches(Schedule schedule) {
 		logger.debug("Searching matches for Pattern: " + getName() + " WHEN " + referencedConstraint.getName());
 
 		// collecting the data
@@ -37,11 +38,11 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 
 		// creating the query string
 		var cypherQuery = CypherPatternBuilder.conditionQuery(getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), queryData.getAllElements(), isNegated, queryData.getAttributeExpressions(), injective, limit, mask);
+				condData.getWhereClause(), queryData.getAllElements(), isNegated, queryData.getAttributeExpressions(), injective, schedule, mask);
 		logger.debug(cypherQuery);
 
 		// run the query
-		var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQuery(cypherQuery, schedule.getParameters());
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
@@ -76,7 +77,7 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 				condData.getOptionalMatchString(), condData.getWhereClause(), queryData.getAllElements(), queryData.getAttributeExpressions(), isNegated);
 
 		logger.debug(map.toString() + "\n" + cypherQuery);
-		var result = builder.executeQueryWithParameters(cypherQuery, map);
+		var result = builder.executeQuery(cypherQuery, map);
 
 		var results = result.list();
 		var hashCode = new ArrayList<String>();
@@ -96,7 +97,14 @@ public class NeoPatternQueryAndMatchConstraintRef extends NeoPattern {
 	@Override
 	public String getQuery() {
 		var condData = referencedConstraint.getConditionData();
-		return CypherPatternBuilder.conditionQuery_copyPaste(getNodes(), condData.getOptionalMatchString(),
-				condData.getWhereClause(), queryData.getAllElements(), isNegated, queryData.getAttributeExpressions(), injective, 0);
+		return CypherPatternBuilder.conditionQuery_copyPaste(//
+				getNodes(), //
+				condData.getOptionalMatchString(), //
+				condData.getWhereClause(), //
+				queryData.getAllElements(), //
+				isNegated, //
+				queryData.getAttributeExpressions(), //
+				injective, //
+				Schedule.unlimited());
 	}
 }

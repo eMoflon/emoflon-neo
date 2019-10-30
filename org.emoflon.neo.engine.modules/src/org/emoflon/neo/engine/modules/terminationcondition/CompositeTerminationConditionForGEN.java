@@ -1,5 +1,7 @@
 package org.emoflon.neo.engine.modules.terminationcondition;
 
+import java.util.concurrent.TimeUnit;
+
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
@@ -11,6 +13,8 @@ public class CompositeTerminationConditionForGEN implements ITerminationConditio
 	private ITerminationCondition<NeoMatch, NeoCoMatch> timeout;
 	private ITerminationCondition<NeoMatch, NeoCoMatch> maxGeneratedElements;
 	private MaximalRuleApplicationsTerminationCondition maxRuleApps;
+	private int ruleApplicationsInLastStep = 0;
+	private int noRulesApplied = 0;
 
 	protected CompositeTerminationConditionForGEN(//
 			ITerminationCondition<NeoMatch, NeoCoMatch> timeout, //
@@ -37,34 +41,40 @@ public class CompositeTerminationConditionForGEN implements ITerminationConditio
 	}
 
 	public CompositeTerminationConditionForGEN(//
-			long maxDurationInMs, //
+			long maxDuration, //
+			TimeUnit timeUnit, //
 			MaximalRuleApplicationsTerminationCondition maxRuleApps//
 	) {
 		this(//
-				new TimedTerminationCondition(maxDurationInMs), //
+				new TimedTerminationCondition(maxDuration, timeUnit), //
 				new NoTerminationCondition(), //
 				maxRuleApps);
 	}
 
 	public CompositeTerminationConditionForGEN(//
 			NeoCoreBuilder builder, //
-			long maxDurationInMs, //
+			long maxDuration, //
+			TimeUnit timeUnit, //
 			long maxNoOfElements, //
 			MaximalRuleApplicationsTerminationCondition maxRuleApps//
 	) {
 
 		this(//
-				new TimedTerminationCondition(maxDurationInMs), //
+				new TimedTerminationCondition(maxDuration, timeUnit), //
 				new MaxGeneratedElementsTerminationCondition(maxNoOfElements, builder), //
 				maxRuleApps);
 	}
 
 	@Override
 	public boolean isReached(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-		return matchContainer.hasNoMatches()//
+		var appliedRules = matchContainer.getNumberOfRuleApplications() - ruleApplicationsInLastStep;
+		ruleApplicationsInLastStep = matchContainer.getNumberOfRuleApplications();
+		noRulesApplied = appliedRules == 0 ? noRulesApplied + 1 : 0;
+
+		return matchContainer.hasNoRules()//
 				|| timeout.isReached(matchContainer)//
 				|| maxGeneratedElements.isReached(matchContainer)//
-				|| maxRuleApps.isReached(matchContainer);
+				|| maxRuleApps.isReached(matchContainer) || noRulesApplied > 500;
 	}
 
 }

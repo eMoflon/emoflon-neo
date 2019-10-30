@@ -13,6 +13,7 @@ import org.emoflon.neo.api.models.API_Simple3x3Field;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.example.ENeoTest;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
@@ -502,7 +503,7 @@ public class SokobanPatterns extends ENeoTest {
 	@Test
 	@Disabled
 	public void test_One3x3FieldsLimit() {
-		assertThat(entities.getPattern_All3x3Fields().matcher().determineMatches(1).size(), is(1));
+		assertThat(entities.getPattern_All3x3Fields().matcher().determineMatches(Schedule.once()).size(), is(1));
 	}
 
 	@Test
@@ -612,7 +613,7 @@ public class SokobanPatterns extends ENeoTest {
 
 	@Test
 	public void test_PatternOneTwoFields() {
-		assertThat(entities.getPattern_TwoField().matcher().determineMatches(1).size(), is(1));
+		assertThat(entities.getPattern_TwoField().matcher().determineMatches(Schedule.once()).size(), is(1));
 	}
 
 	@Test
@@ -622,7 +623,7 @@ public class SokobanPatterns extends ENeoTest {
 
 	@Test
 	public void test_PatternOneFourFields() {
-		assertThat(entities.getPattern_FourField().matcher().determineMatches(1).size(), is(1));
+		assertThat(entities.getPattern_FourField().matcher().determineMatches(Schedule.once()).size(), is(1));
 	}
 
 	/*
@@ -691,7 +692,7 @@ public class SokobanPatterns extends ENeoTest {
 
 	@Test
 	public void test_ConditionHasFieldOneMatches() {
-		assertThat(entities.getPattern_OneField().matcher().determineMatches(1).size(), is(1));
+		assertThat(entities.getPattern_OneField().matcher().determineMatches(Schedule.once()).size(), is(1));
 	}
 
 	@Test

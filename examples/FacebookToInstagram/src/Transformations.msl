@@ -5,7 +5,7 @@ tripleGrammar FacebookToInstagramGrammar {
 	source {
 		FacebookLanguage
 	}
-	
+  	
 	target {
 		InstagramLanguage
 	}
@@ -81,7 +81,7 @@ tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers
 			-follows->in
 		}
 	}
-} forbid src(NoDoubleFriendshipFacebook) && trg(NoRedundantFollowershipInstagram) && trg(NoDoubleFollowershipInstagram)
+} forbid src(NoDoubleFriendshipFacebook) && trg(NoDoubleFollowershipInstagram)
 
 pattern NoDoubleFriendshipFacebook {
 	n:FacebookLanguage.Network {
@@ -241,7 +241,9 @@ tripleRule UserNetworkBridgeRule : FacebookToInstagramGrammar {
 		f <-:NetworkToNetwork-> i
 		fu <-:FbUserToInUser-> iu
 	}
-}  forbid src(AlreadyInFBNetwork) && trg(AlreadyInInstNetwork)
+}  forbid src(AlreadyInFBNetwork) && src(AlreadyInAFBNetwork) && trg(AlreadyInInstNetwork) && trg(AlreadyInAnInstNetwork)
+
+pattern AlreadyInAFBNetwork -> AlreadyInFBNetwork[f -> other]
 
 pattern AlreadyInFBNetwork {
 	f:FacebookLanguage.Network {
@@ -250,6 +252,8 @@ pattern AlreadyInFBNetwork {
 	
 	fu:FacebookLanguage.User
 }
+
+pattern AlreadyInAnInstNetwork -> AlreadyInInstNetwork[i -> other]
 
 pattern AlreadyInInstNetwork {
 	i:InstagramLanguage.Network {

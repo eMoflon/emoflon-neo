@@ -3,6 +3,7 @@ package org.emoflon.neo.example.companytoit;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Level;
@@ -90,7 +91,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(3000, ruleScheduler), //
+				new CompositeTerminationConditionForGEN(30, TimeUnit.SECONDS, ruleScheduler), //
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
