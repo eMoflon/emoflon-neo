@@ -8,12 +8,14 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.emsl.util.FlattenerException;
+import org.emoflon.neo.engine.generator.NodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.TwoPhaseRuleSchedulerForGEN;
 import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
+import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
@@ -23,6 +25,8 @@ public class FacebookToInstagram_GEN_Run {
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getLogger(RandomSingleMatchUpdatePolicy.class).setLevel(Level.INFO);
+
 		var app = new FacebookToInstagram_GEN_Run();
 		app.runGenerator();
 	}
@@ -41,20 +45,37 @@ public class FacebookToInstagram_GEN_Run {
 		}
 	}
 
-	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramGrammar_GEN genAPI, NeoCoreBuilder builder) {
+	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramGrammar_GEN genAPI,
+			NeoCoreBuilder builder) {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
 
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule, 10);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule, 1000);
 		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule, 100000);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserNetworkBridgeRule, -1);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers, 500000);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers, 500000);
-		
+
+		var sampler = new NodeSampler() {
+			@Override
+			public boolean isEmpty(String ruleName) {
+				return false;
+			}
+
+			@Override
+			public int getSampleSizeFor(String type, String ruleName, String nodeName) {
+				switch (ruleName) {
+				case API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers:
+					return 1;
+				case API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers:
+					return nodeName.equals("iu")? 1 : -1;
+				default:
+					 return type.equals("FacebookLanguage__User") || type.equals("FacebookLanguage__Network")? 1 : -1;
+				}
+			}
+		};
+
 		return new NeoGenerator(//
 				allRules, //
 				new CompositeTerminationConditionForGEN(builder, 5000000, maxRuleApps), //
-				new TwoPhaseRuleSchedulerForGEN(50, api.getSrcMetamodelsForFacebookToInstagramGrammar()), //
+				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //

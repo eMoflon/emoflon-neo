@@ -484,18 +484,6 @@ class EMSLGenerator extends AbstractGenerator {
 					«ENDFOR»
 					return rules;
 				}
-				
-				public Collection<String> getSrcMetamodelsOf«rootName»(){
-					return List.of(«tgg.srcMetamodels.map[it.name].join(",")»);
-				}
-				
-				public Collection<String> getTrgMetamodelsOf«rootName»(){
-					return List.of(«tgg.trgMetamodels.map[it.name].join(",")»);
-				}
-				
-				public Collection<String> getAllMetamodelsOf«rootName»(){
-					return List.of(«(tgg.srcMetamodels + tgg.trgMetamodels).map[it.name].join(",")»);
-				}
 			'''
 		} catch (Exception e) {
 			e.printStackTrace
@@ -504,7 +492,7 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	dispatch def generateAccess(TripleRule tr, int index) {
-		'''public static String «tr.type.name»_«tr.name» = "«tr.name»";'''
+		'''public static final String «tr.type.name»_«tr.name» = "«tr.name»";'''
 	}
 
 	dispatch def generateAccess(Rule r, int index) {

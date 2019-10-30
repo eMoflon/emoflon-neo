@@ -124,7 +124,7 @@ class CypherPatternBuilder {
 		var injectiveBlock = injective? injectiveBlock(nodes) : ""
 		var maskBlock = maskBlock(nodes, mask)
 		var attrBlock = attributeExpressionQuery(attr)
-		var scheduleBlock = schedule.hasRestrictiveRange? scheduleBlock(nodes.filter[schedule.hasRangeFor(it.primaryLabel)], schedule) : ""
+		var scheduleBlock = schedule.hasRestrictiveRange? scheduleBlock(nodes.filter[schedule.hasRangeFor(it.primaryLabel, it.varName)], schedule) : ""
 
 		var blocks = List.of(injectiveBlock, maskBlock, attrBlock, scheduleBlock).toSet.reject[it.empty]
 
@@ -138,7 +138,7 @@ class CypherPatternBuilder {
 	private def static String scheduleBlock(Iterable<NeoNode> nodes, Schedule schedule){
 		'''
 			«FOR node : nodes SEPARATOR " AND "»
-				id(«node.varName») in $«schedule.getParameterFor(node.primaryLabel)»
+				id(«node.varName») in $«schedule.getParameterFor(node.primaryLabel, node.varName)»
 			«ENDFOR»
 		'''
 	}

@@ -78,7 +78,7 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	protected void addCreatedElementIDsToRange(C m, IRule<M, C> rule) {
 		rule.getCreatedElts().forEach(elt -> {
 			if (m.getNodeIDs().containsKey(elt))
-				currentNodeRange.addIDsForTypes(getTypesFor(rule, elt), m.getNodeIDs().get(elt));
+				currentNodeRange.addIDs(getTypesFor(rule, elt), m.getNodeIDs().get(elt));
 		});
 	}
 
@@ -93,7 +93,7 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	}
 
 	public boolean hasNoMatches() {
-		return streamAllMatches().findAny().isEmpty();
+		return streamAllMatches().count() == 0;
 	}
 
 	public NodeRange getNodeRange() {
@@ -102,5 +102,17 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 
 	public Stream<IRule<M, C>> streamAllRules() {
 		return rulesToMatches.keySet().stream();
+	}
+
+	public boolean hasNoRules() {
+		return rulesToMatches.keySet().isEmpty();
+	}
+
+	public long getNumberOfGeneratedElements() {
+		return currentNodeRange.getAllIDs().count();
+	}
+
+	public int getNumberOfRuleApplications() {
+		return ruleApplications.entrySet().stream().map(entry -> entry.getValue()).reduce(0, Integer::sum);
 	}
 }

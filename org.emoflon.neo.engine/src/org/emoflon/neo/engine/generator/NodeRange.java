@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class NodeRange {
-	private static final String NODE_RANGE_PARAM = "nodeRange";
 
 	private Map<String, List<Long>> typeToIDs;
 
@@ -22,38 +21,29 @@ public class NodeRange {
 		this.typeToIDs = new HashMap<>(typeToIDs);
 	}
 
-	public void addIDsForTypes(Stream<String> types, Long id) {
+	public void addIDs(Stream<String> types, Long id) {
 		types.forEach(type -> {
 			typeToIDs.putIfAbsent(type, new ArrayList<>());
 			typeToIDs.get(type).add(id);
 		});
 	}
 
-	public NodeRange randomSampling(int sampleSize, Collection<String> restrictedTypes) {
-		var reducedTypeToIDs = new HashMap<String, List<Long>>();
-		typeToIDs.entrySet().stream()//
-				.filter(entry -> restrictedTypes.contains(entry.getKey()))//
-				.forEach(entry -> {
-					Collections.shuffle(entry.getValue());
-					var endPos = Math.min(sampleSize, entry.getValue().size());
-					reducedTypeToIDs.put(entry.getKey(), entry.getValue().subList(0, endPos));
-				});
+	public Collection<Long> sampleIDs(String type, int sampleSize) {
+		var idsForType = typeToIDs.getOrDefault(type, Collections.emptyList());
 
-		return new NodeRange(reducedTypeToIDs);
+		if (idsForType.size() < sampleSize)
+			return idsForType;
+
+		var sampleIDs = new HashSet<Long>();
+		while (sampleIDs.size() < sampleSize) {
+			var randomIndex = (int) (Math.random() * idsForType.size());
+			sampleIDs.add(idsForType.get(randomIndex));
+		}
+
+		return sampleIDs;
 	}
 
-	public boolean hasRangeFor(String type) {
-		return typeToIDs.containsKey(type);
-	}
-
-	public String getParameterFor(String type) {
-		return NODE_RANGE_PARAM + "__" + type;
-	}
-
-	public Map<String, Object> getParameters() {
-		return typeToIDs.entrySet().stream().collect(Collectors.toMap(//
-				entry -> getParameterFor(entry.getKey()), //
-				entry -> entry.getValue()//
-		));
+	public Stream<Long> getAllIDs() {
+		return typeToIDs.entrySet().stream().flatMap(entry -> entry.getValue().stream());
 	}
 }

@@ -120,6 +120,7 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 			DecimalFormat df = new DecimalFormat("#.##");
 			df.setRoundingMode(RoundingMode.CEILING);
 			logger.info("Heartbeats/second: " + df.format(heartBeats / timerForHeartBeat.getTimeElapsedInSeconds()));
+			
 			heartBeats = 0;
 		}
 	}
@@ -140,6 +141,8 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 			logger.info("Rules applied: ");
 			matchContainer.getRuleApplications().entrySet().stream()//
 					.forEach(entry -> logger.info(" =>  " + entry.getValue() + " @ " + entry.getKey()));
+			logger.info("Elements generated:  " + matchContainer.getNumberOfGeneratedElements());
+			logger.info("Total rules applied: " + matchContainer.getNumberOfRuleApplications());
 			logger.info("********** Generation Report ************");
 			logger.info("");
 		}
