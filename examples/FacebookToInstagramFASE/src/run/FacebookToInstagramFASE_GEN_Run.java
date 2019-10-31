@@ -9,6 +9,7 @@ import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.terminationcondition.CounterTerminationCondition;
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
@@ -25,16 +26,18 @@ public class FacebookToInstagramFASE_GEN_Run {
 		try {
 			var api = new API_Transformations(builder);
 			api.exportMetamodelsForFacebookToInstagramGrammar();
-
+			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
+			
 			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
-					new TimedTerminationCondition(3000), 
+					genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(), //
+					new CounterTerminationCondition(5000), 
 					new AllRulesAllMatchesScheduler(), //
 					new RandomSingleMatchUpdatePolicy(), //
 					new ParanoidNeoReprocessor(), //
 					new HeartBeatAndReportMonitor());
 
-			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);			
-			generator.generate(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN());
+						
+			generator.generate();
 			
 			logger.info("Generation done.");
 		} finally {
