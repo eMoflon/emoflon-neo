@@ -124,7 +124,7 @@ class CypherPatternBuilder {
 		var injectiveBlock = injective? injectiveBlock(nodes) : ""
 		var maskBlock = maskBlock(nodes, mask)
 		var attrBlock = attributeExpressionQuery(attr)
-		var scheduleBlock = schedule.hasRestrictiveRange? scheduleBlock(nodes.filter[schedule.hasRangeFor(it.primaryLabel, it.varName)], schedule) : ""
+		var scheduleBlock = scheduleBlock(nodes.filter[schedule.hasRangeFor(it.primaryLabel, it.varName)], schedule)
 
 		var blocks = List.of(injectiveBlock, maskBlock, attrBlock, scheduleBlock).toSet.reject[it.empty]
 

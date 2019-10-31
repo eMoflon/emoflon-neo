@@ -6,10 +6,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.API_Facebook;
+import org.emoflon.neo.api.API_Instagram;
 import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.emsl.util.FlattenerException;
-import org.emoflon.neo.engine.generator.NodeSampler;
+import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -26,11 +28,11 @@ public class FacebookToInstagram_GEN_Run {
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(RandomSingleMatchUpdatePolicy.class).setLevel(Level.DEBUG);
+		Logger.getLogger(RandomSingleMatchUpdatePolicy.class).setLevel(Level.INFO);
 
 		var app = new FacebookToInstagram_GEN_Run();
-		
-		for (int i = 0; i < 500; i++) {			
+
+		for (int i = 0; i < 50; i++) {
 			app.runGenerator();
 		}
 	}
@@ -53,37 +55,39 @@ public class FacebookToInstagram_GEN_Run {
 			NeoCoreBuilder builder) {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
 
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 500);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule,
-				10);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule,
-				1000);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserNetworkBridgeRule,
-				1000);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers,
-				10000);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers,
-				5000);
-		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers,
-				500);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 500)//
+				.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetworkIslandRule, 10)
+				.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUserIslandRule, 1000)
+				.setMax(API_Transformations.FacebookToInstagramGrammar__UserNetworkBridgeRule, 1000)
+				.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreIntraNetworkFollowers, 10000)
+				.setMax(API_Transformations.FacebookToInstagramGrammar__HandleIntraNetworkFollowers, 5000)
+				.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreIntraNetworkFollowers, 500);
 
-		var sampler = new NodeSampler() {
-			@Override
-			public boolean isEmpty(String ruleName) {
-				return false;
-			}
-
-			@Override
-			public int getSampleSizeFor(String type, String ruleName, String nodeName) {
-				switch (ruleName) {
-				case API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers:
+		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
+			switch (ruleName) {
+			case API_Transformations.FacebookToInstagramGrammar__IgnoreIntraNetworkFollowers:
+				return 1;
+			case API_Transformations.FacebookToInstagramGrammar__HandleIntraNetworkFollowers:
+				switch (nodeName) {
+				case API_Transformations.FacebookToInstagramGrammar__HandleIntraNetworkFollowers__iu:
 					return 1;
-				case API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers:
-					return nodeName.equals("iu") ? 1 : -1;
-				case API_Transformations.FacebookToInstagramGrammar_IgnoreInterNetworkFollowers:
-					return type.equals("InstagramLanguage__User")? 1 : -1;
 				default:
-					return type.equals("FacebookLanguage__User") || type.equals("FacebookLanguage__Network") ? 1 : -1;
+					return -1;
+				}
+			case API_Transformations.FacebookToInstagramGrammar__IgnoreInterNetworkFollowers:
+				switch (type) {
+				case API_Instagram.InstagramLanguage__User:
+					return 1;
+				default:
+					return -1;
+				}
+			default:
+				switch (type) {
+				case API_Facebook.FacebookLanguage__User:
+				case API_Facebook.FacebookLanguage__Network:
+					return 1;
+				default:
+					return -1;
 				}
 			}
 		};

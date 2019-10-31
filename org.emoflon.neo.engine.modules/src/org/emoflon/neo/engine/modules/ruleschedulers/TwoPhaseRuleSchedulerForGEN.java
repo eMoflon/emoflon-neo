@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
-import org.emoflon.neo.engine.generator.NodeSampler;
+import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
@@ -16,11 +16,11 @@ public class TwoPhaseRuleSchedulerForGEN implements IRuleScheduler<NeoMatch, Neo
 
 	private static final Logger logger = Logger.getLogger(TwoPhaseRuleSchedulerForGEN.class);
 	private FreeAxiomsRuleSchedulerForGEN phase1 = new FreeAxiomsRuleSchedulerForGEN();
-	private NodeSampler sampler;
+	private INodeSampler sampler;
 	private ElementRangeRuleScheduler phase2 = null;
 	
 
-	public TwoPhaseRuleSchedulerForGEN(NodeSampler sampler) {
+	public TwoPhaseRuleSchedulerForGEN(INodeSampler sampler) {
 		this.sampler = sampler;
 	}
 
@@ -30,7 +30,7 @@ public class TwoPhaseRuleSchedulerForGEN implements IRuleScheduler<NeoMatch, Neo
 			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
 	) {
 		if (phase2 == null) {
-			logger.info("Executing Phase I of GEN");
+			logger.info("Applying all free axioms...");
 			var scheduledRules = phase1.scheduleWith(matchContainer, progressMonitor);
 			phase2 = new ElementRangeRuleScheduler(sampler);
 			return scheduledRules;

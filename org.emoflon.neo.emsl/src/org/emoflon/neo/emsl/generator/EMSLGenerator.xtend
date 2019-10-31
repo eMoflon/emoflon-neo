@@ -495,7 +495,12 @@ class EMSLGenerator extends AbstractGenerator {
 		if (tr.abstract)
 			return ""
 		else
-			'''public static final String «tr.type.name»_«tr.name» = "«tr.name»";'''
+			'''
+				public static final String «tr.type.name»__«tr.name» = "«tr.name»";
+				«FOR node : tr.srcNodeBlocks+tr.trgNodeBlocks»
+					public static final String «tr.type.name»__«tr.name»__«node.name» = "«node.name»";
+				«ENDFOR»
+			'''
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
@@ -593,6 +598,10 @@ class EMSLGenerator extends AbstractGenerator {
 			public Metamodel getMetamodel_«namingConvention(m.name)»(){
 				return (Metamodel) spec.getEntities().get(«index»);
 			}
+			
+			«FOR type : m.nodeBlocks»
+				public static final String «m.name»__«type.name» = "«m.name»__«type.name»";
+			«ENDFOR»
 		'''
 	}
 

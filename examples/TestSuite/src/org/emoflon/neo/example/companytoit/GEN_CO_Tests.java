@@ -43,35 +43,35 @@ public class GEN_CO_Tests extends ENeoTest {
 	@Test
 	public void testOnlyAxiom() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1);
 		});
 	}
 
 	@Test
 	public void testOneOfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1);
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 1);
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_EmployeeToLaptopRule, 1);
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 1);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToLaptopRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 1);
 		});
 	}
 
 	@Test
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_CompanyToITRule, 10);
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 10);
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_EmployeeToLaptopRule, 10);
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 10);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 10)
+					.setMax(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 10)
+					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToLaptopRule, 10)
+					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 10);
 		});
 	}
 
 	@Test
 	public void tryLotsOfAdmins() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1);
-			scheduler.setMaxNoOfApplicationsFor(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 100);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 100);
 		});
 	}
 }

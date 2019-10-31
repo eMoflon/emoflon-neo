@@ -5,20 +5,20 @@ import java.util.stream.Collectors;
 
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
-import org.emoflon.neo.engine.generator.NodeSampler;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.neo.engine.generator.INodeSampler;
 
 import com.google.common.base.Functions;
 
 public class ElementRangeRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 
-	private NodeSampler sampler;
+	private INodeSampler sampler;
 
-	public ElementRangeRuleScheduler(NodeSampler sampler) {
+	public ElementRangeRuleScheduler(INodeSampler sampler) {
 		this.sampler = sampler;
 	}
 

@@ -12,22 +12,22 @@ public class Schedule {
 	private int limit;
 	private Optional<IRule<?, ?>> rule;
 	private NodeRange nodeRange;
-	private NodeSampler sampler;
+	private INodeSampler sampler;
 	private Map<String, Object> parameters = new HashMap<>();
 
-	public Schedule(int limit, NodeRange nodeRange, Optional<IRule<?, ?>> rule, NodeSampler sampler) {
+	public Schedule(int limit, NodeRange nodeRange, Optional<IRule<?, ?>> rule, INodeSampler sampler) {
 		this.limit = limit;
 		this.nodeRange = nodeRange;
 		this.rule = rule;
 		this.sampler = sampler;
 	}
 
-	public Schedule(int limit, NodeRange nodeRange, IRule<?, ?> rule, NodeSampler sampler) {
+	public Schedule(int limit, NodeRange nodeRange, IRule<?, ?> rule, INodeSampler sampler) {
 		this(limit, nodeRange, Optional.of(rule), sampler);
 	}
 
 	public Schedule(int limit) {
-		this(limit, new NodeRange(), Optional.empty(), new NodeSampler());
+		this(limit, new NodeRange(), Optional.empty(), (type, ruleName, nodeName) -> INodeSampler.EMPTY);
 	}
 
 	public static Schedule unlimited() {
@@ -52,10 +52,6 @@ public class Schedule {
 			parameters.put(param, nodeRange.sampleIDs(type, sampler.getSampleSizeFor(type, r.getName(), nodeName)));
 			return param;
 		}).orElseThrow();
-	}
-
-	public boolean hasRestrictiveRange() {
-		return rule.map(r -> !sampler.isEmpty(r.getName())).orElse(false);
 	}
 
 	public boolean hasRangeFor(String type, String nodeName) {
