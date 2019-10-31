@@ -1,6 +1,7 @@
 package run;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -28,28 +29,27 @@ public class FacebookToInstagramFASE_Eval_Run {
 
 	private static final Logger logger = Logger.getLogger(FacebookToInstagramFASE_CO_Run.class);
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
-	private static final int nrOfIterations = 5;
+	private static final int nrOfIterations = 10;
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var builder = API_Common.createBuilder();
 		
-		int[] modelsizes = { 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000 };
+		int[] modelsizes = { /*1000, 2000, 5000, 10000, */20000/*, 50000*/ };
 		//int[] modelsizes = { 100, 200 };
-		int previousSize = 0;
+		//int previousSize = 0;
 
 		try {
 			
-			var api = new API_Transformations(builder);
-			api.exportMetamodelsForFacebookToInstagramGrammar();
-			var nacAPI = new API_FacebookToInstagramGrammar_GEN(builder);
-			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
-
-			Generator<NeoMatch, NeoCoMatch> generator;
-			
 			for (int size : modelsizes) {
-				generator = new Generator<NeoMatch, NeoCoMatch>(//
-						nacAPI.getAllRulesForFacebookToInstagramGrammar__GEN(), //
+				var api = new API_Transformations(builder);
+				api.exportMetamodelsForFacebookToInstagramGrammar();
+				//var nacAPI = new API_FacebookToInstagramGrammar_NAC_GEN(builder);
+				var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
+
+				Generator<NeoMatch, NeoCoMatch> generator;
+				/* = new Generator<NeoMatch, NeoCoMatch>(//
+						nacAPI.getAllRulesForFacebookToInstagramGrammarNAC__GEN(), //
 						new CounterTerminationCondition(size - previousSize), //
 						new AllRulesAllMatchesScheduler(), //
 						new RandomSingleMatchUpdatePolicy(), //
@@ -59,15 +59,17 @@ public class FacebookToInstagramFASE_Eval_Run {
 				generator.generate();
 
 				logger.info("Generation done for " + size + " elements.");
-				previousSize = size;
+				previousSize = size;*/
 
 				for (int i = 0; i < nrOfIterations; i++) {
 					var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
 					
-					Collection<IConstraint> negativeConstraints = List.of(//
-							api.getConstraint_NoDoubleFollowership(), //
-							api.getConstraint_NoDoubleFriendship()//
-					);
+//					Collection<IConstraint> negativeConstraints = List.of(//
+//							api.getConstraint_NoDoubleFollowership(), //
+//							api.getConstraint_NoDoubleFriendship()//
+//					);
+					Collection<IConstraint> negativeConstraints = Collections.emptyList();
+					
 					var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
 							negativeConstraints);
 					
