@@ -128,7 +128,8 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 					df.format((matchContainer.getNumberOfGeneratedElements() - elements) / timerForHeartBeat.getTimeElapsedInSeconds()));
 			logger.info("Applied rules/second: " + //
 					df.format((matchContainer.getNumberOfRuleApplications() - ruleApps) / timerForHeartBeat.getTimeElapsedInSeconds()));
-
+			logger.info("*********");
+			
 			heartBeats = 0;
 			elements = matchContainer.getNumberOfGeneratedElements();
 			ruleApps = matchContainer.getNumberOfRuleApplications();

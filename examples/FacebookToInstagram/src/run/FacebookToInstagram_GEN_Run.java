@@ -26,10 +26,13 @@ public class FacebookToInstagram_GEN_Run {
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(RandomSingleMatchUpdatePolicy.class).setLevel(Level.INFO);
+		Logger.getLogger(RandomSingleMatchUpdatePolicy.class).setLevel(Level.DEBUG);
 
 		var app = new FacebookToInstagram_GEN_Run();
-		app.runGenerator();
+		
+		for (int i = 0; i < 500; i++) {			
+			app.runGenerator();
+		}
 	}
 
 	public void runGenerator() throws FlattenerException, Exception {
@@ -50,11 +53,19 @@ public class FacebookToInstagram_GEN_Run {
 			NeoCoreBuilder builder) {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
 
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 500);
 		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_NetworkToNetworkIslandRule,
-				1000);
+				10);
 		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserToUserIslandRule,
-				100000);
+				1000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_UserNetworkBridgeRule,
+				1000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers,
+				10000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers,
+				5000);
+		maxRuleApps.setMaxNoOfApplicationsFor(API_Transformations.FacebookToInstagramGrammar_IgnoreIntraNetworkFollowers,
+				500);
 
 		var sampler = new NodeSampler() {
 			@Override
@@ -69,6 +80,8 @@ public class FacebookToInstagram_GEN_Run {
 					return 1;
 				case API_Transformations.FacebookToInstagramGrammar_HandleIntraNetworkFollowers:
 					return nodeName.equals("iu") ? 1 : -1;
+				case API_Transformations.FacebookToInstagramGrammar_IgnoreInterNetworkFollowers:
+					return type.equals("InstagramLanguage__User")? 1 : -1;
 				default:
 					return type.equals("FacebookLanguage__User") || type.equals("FacebookLanguage__Network") ? 1 : -1;
 				}
@@ -77,7 +90,7 @@ public class FacebookToInstagram_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(builder, 5, TimeUnit.HOURS, 5000000, maxRuleApps), //
+				new CompositeTerminationConditionForGEN(1, TimeUnit.HOURS, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
