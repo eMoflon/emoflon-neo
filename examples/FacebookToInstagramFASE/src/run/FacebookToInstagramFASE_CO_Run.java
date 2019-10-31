@@ -11,12 +11,14 @@ import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_CO;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.generator.Generator;
+import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
@@ -41,18 +43,18 @@ public class FacebookToInstagramFASE_CO_Run {
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
 					negativeConstraints);
-			
+
 			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
-			
-			Generator<NeoMatch, NeoCoMatch> generator = new Generator<NeoMatch, NeoCoMatch>(//
-					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(),
+
+			Generator<NeoMatch, NeoCoMatch> generator = new NeoGenerator(//
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //
-					new HeartBeatAndReportMonitor());
+					new HeartBeatAndReportMonitor(), //
+					List.of(new LoremIpsumStringValueGenerator()));
 
-			
 			generator.generate();
 
 			logger.info("Invoking ILP solver...");
