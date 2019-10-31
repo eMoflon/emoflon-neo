@@ -1,0 +1,14 @@
+import "platform:/resource/TestSuite/resources/expected/OCLGrammar.msl"
+
+model OCLExpression {
+	o1:Expression {
+		-callee->o2
+	}
+	
+	o2:Collection {
+		.type : SEQUENCE
+		-elements->o3
+	}
+	
+	o3:Literal
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="SheRememberedCaterpillars" nsURI="platform:/resource/SheRememberedCaterpillars/model/SheRememberedCaterpillars.ecore"
+    nsPrefix="SheRememberedCaterpillars">
+  <eClassifiers xsi:type="ecore:EClass" name="Game">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="characters" upperBound="-1"
+        eType="#//Character" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="objects" upperBound="-1"
+        eType="#//PlatformObject" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Character" eSuperTypes="#//Colored #//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="standsOn" lowerBound="1"
+        eType="#//Platform" eOpposite="#//Platform/charactersStandingOn"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PlatformObject" abstract="true" eSuperTypes="#//NamedElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Platform" abstract="true" eSuperTypes="#//PlatformObject">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="charactersStandingOn" upperBound="-1"
+        eType="#//Character" eOpposite="#//Character/standsOn"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="neighbors" upperBound="6"
+        eType="#//Platform"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SimplePlatform" eSuperTypes="#//Platform">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="connectedBy" eType="#//PlatformConnector"
+        eOpposite="#//PlatformConnector/connects"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExitPlatform" eSuperTypes="#//Platform"/>
+  <eClassifiers xsi:type="ecore:EClass" name="PlatformConnector" abstract="true" eSuperTypes="#//PlatformObject #//Colored">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="connects" lowerBound="2"
+        upperBound="2" eType="#//SimplePlatform" eOpposite="#//SimplePlatform/connectedBy"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Bridge" eSuperTypes="#//PlatformConnector"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Wall" eSuperTypes="#//PlatformConnector"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Colored" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="color" eType="#//COLOR"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="COLOR">
+    <eLiterals name="BLUE"/>
+    <eLiterals name="RED" value="1"/>
+    <eLiterals name="PURPLE" value="2"/>
+  </eClassifiers>
+</ecore:EPackage>
