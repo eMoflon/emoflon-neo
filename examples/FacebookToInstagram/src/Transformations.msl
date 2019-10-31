@@ -25,8 +25,8 @@ tripleGrammar FacebookToInstagramGrammar {
 		UserNetworkBridgeRule
 		
 		// Handle friendship/followership
-		HandleIntraNetworkFollowers
-		IgnoreIntraNetworkFollowers
+		RequestFriendship
+		AcceptFriendship
 		IgnoreInterNetworkFollowers
 		
 		// Ignore all extra relationships
@@ -59,7 +59,7 @@ abstract tripleRule Followers : FacebookToInstagramGrammar {
 	}
 }
 
-tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers {
+tripleRule AcceptFriendship : FacebookToInstagramGrammar -> Followers {
 	source {
 		n : Network {
 			-users-> $fu
@@ -187,12 +187,16 @@ tripleRule IgnoreInterNetworkFollowers : FacebookToInstagramGrammar -> Followers
 	
 	target {	
 		in : User {
-			++ -follows-> $iu
+			++ -follows-> iu
+		}
+		
+		iu : User {
+			-follows-> in
 		}
 	}
 } forbid trg(NoDoubleFollowershipInstagram)
 
-tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
+tripleRule RequestFriendship : FacebookToInstagramGrammar {
 	target {
 		iu : User
 		

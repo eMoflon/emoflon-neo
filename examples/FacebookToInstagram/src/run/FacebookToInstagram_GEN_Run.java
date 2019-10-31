@@ -59,17 +59,17 @@ public class FacebookToInstagram_GEN_Run {
 				.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetworkIslandRule, 10)
 				.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUserIslandRule, 1000)
 				.setMax(API_Transformations.FacebookToInstagramGrammar__UserNetworkBridgeRule, 1000)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreIntraNetworkFollowers, 10000)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__HandleIntraNetworkFollowers, 5000)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreIntraNetworkFollowers, 500);
+				.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 10000)
+				.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 5000)
+				.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreInterNetworkFollowers, 500);
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
 			switch (ruleName) {
-			case API_Transformations.FacebookToInstagramGrammar__IgnoreIntraNetworkFollowers:
+			case API_Transformations.FacebookToInstagramGrammar__RequestFriendship:
 				return 1;
-			case API_Transformations.FacebookToInstagramGrammar__HandleIntraNetworkFollowers:
+			case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship:
 				switch (nodeName) {
-				case API_Transformations.FacebookToInstagramGrammar__HandleIntraNetworkFollowers__iu:
+				case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship__iu:
 					return 1;
 				default:
 					return -1;
