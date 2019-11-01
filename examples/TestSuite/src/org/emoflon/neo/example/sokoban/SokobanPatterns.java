@@ -908,4 +908,10 @@ public class SokobanPatterns extends ENeoTest {
 		var c = entities.getConstraint_IfSokobanSelectedFigureThenOnField();
 		assertTrue(c.isSatisfied());
 	}
+	
+	@Test
+	public void test_twoOccupiedFields() {
+		var p = entities.getPattern_Test_twoOccupiedFields();
+		assertEquals(2, p.matcher().countMatches());
+	}
 }
