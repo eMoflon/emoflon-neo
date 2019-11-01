@@ -17,7 +17,7 @@ public class NeoModelEdgeAdapter implements Edge {
 		this.trg = trg;
 		this.type = type;
 		this.name = name;
-		// TODO: logically assign action to model element
+		// TODO[Victory] logically assign action to model element
 		this.action = Action.CONTEXT;
 	}
 

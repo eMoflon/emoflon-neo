@@ -5,14 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_PacMan;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PacManRules extends ENeoTest {
-	private API_PacMan entities = new API_PacMan(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_PacMan entities = new API_PacMan(builder);
 	
 	@BeforeEach
 	public void initDB() {

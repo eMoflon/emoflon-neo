@@ -24,19 +24,17 @@ public class RandomSingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, Ne
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches,
-			IMonitor progressMonitor) {
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selection = new HashMap<>();
 
 		var rules = matches.getRulesWithMatches();
 		
 		var randomRule = rules.get((int) (Math.random() * rules.size()));
 
-		logger.debug("Chose: " + randomRule + " from " + rules);
-
 		var matchesOfRule = matches.matchesForRule(randomRule).collect(Collectors.toList());
 		var randomMatch = matchesOfRule.get((int) (Math.random() * matchesOfRule.size()));
 
-		logger.debug("Chose randomly from " + matchesOfRule.size() + " matches");
+		logger.debug("Chose match@" + randomRule + " randomly from " + rules + " rules, " +  matchesOfRule.size() + "/" + matches.streamAllMatches().count() + " matches");
 
 		selection.put(randomRule, List.of(randomMatch));
 

@@ -4,6 +4,7 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Chess"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/CompanyToIT"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FacebookToInstagram"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FacebookToInstagramFASE"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FruitGardenLanguage"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/GameOfLife"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/NetworkTopology"/>

@@ -1,8 +1,10 @@
 package org.emoflon.neo.engine.generator.modules;
 
-public interface IMonitor {
-	public void heartBeat();
+import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.api.rules.ICoMatch;
+import org.emoflon.neo.engine.generator.MatchContainer;
 
+public interface IMonitor<M extends IMatch, C extends ICoMatch> {
 	public void startRuleScheduling();
 	public void finishRuleScheduling();
 	
@@ -18,5 +20,7 @@ public interface IMonitor {
 	public void startRuleApplication();
 	public void finishRuleApplication();
 	
-	public void finishGeneration();
+	public void finishGeneration(MatchContainer<M, C> matchContainer);
+
+	public void heartBeat(MatchContainer<M, C> matchContainer);
 }

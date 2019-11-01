@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
@@ -26,12 +27,12 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 	}
 
 	@Override
-	public Collection<NeoMatch> determineMatches(int limit) {
+	public Collection<NeoMatch> determineMatches(Schedule schedule) {
 		logger.debug("Searching matches for Pattern: " + getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, queryData.getAttributeExpressions(), injective, limit, mask);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, queryData.getAttributeExpressions(), injective, schedule, mask);
 		logger.debug(cypherQuery);
 
-		var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQuery(cypherQuery, schedule.getParameters());
 		var matches = new ArrayList<NeoMatch>();
 		
 		if(result == null) {
@@ -50,32 +51,11 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 			return matches;	
 		}
 	}
-
-	@Override
-	public boolean isStillValid(NeoMatch m) {
-		logger.debug("Check if match for " + getName() + " is still valid");
-		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, queryData.getAttributeExpressions(), injective);
-		
-		logger.debug(m.getParameters().toString() + "\n" + cypherQuery);
-		var result = builder.executeQueryWithParameters(cypherQuery, m.getParameters());
-
-		if(result == null) {
-			throw new DatabaseException("400", "Execution Error: See console log for more details.");
-		} else {
-			// Query is id-based and must be unique
-			var results = result.list();
-			if (results.size() > 1) {
-				throw new IllegalStateException("There should be at most one record found not " + results.size());
-			}
-	
-			return results.size() == 1;
-		}
-	}
 	
 	@Override
 	public Map<String,Boolean> isStillValid(Collection<NeoMatch> matches) {
 		logger.debug("Check if matches for " + getName() + " are still valid");
-		var cypherQuery = CypherPatternBuilder.isStillValidQueryCollection(nodes, queryData.getAttributeExpressions(), injective);
+		var cypherQuery = CypherPatternBuilder.isStillValidQuery(nodes, queryData.getAttributeExpressions(), injective);
 		
 		var list = new ArrayList<Map<String,Object>>();
 		matches.forEach(match -> list.add(match.getParameters()));
@@ -84,7 +64,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		map.put("matches",list);
 		
 		logger.debug(map.toString() + "\n" + cypherQuery);
-		var result = builder.executeQueryWithParameters(cypherQuery, map);
+		var result = builder.executeQuery(cypherQuery, map);
 
 		var results = result.list();
 		var hashCode = new ArrayList<String>();

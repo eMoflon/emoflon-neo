@@ -1,8 +1,12 @@
 package org.emoflon.neo.engine.api.patterns;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.emoflon.neo.engine.generator.Schedule;
+
 
 public interface IPattern<M extends IMatch> {
 	/**
@@ -30,7 +34,7 @@ public interface IPattern<M extends IMatch> {
 	 * 
 	 * @return at most limit random matches for the pattern.
 	 */
-	Collection<M> determineMatches(int limit);
+	Collection<M> determineMatches(Schedule schedule);
 
 	/**
 	 * Compute a single match for the pattern.
@@ -38,7 +42,7 @@ public interface IPattern<M extends IMatch> {
 	 * @return A single match or empty if there are no matches for the pattern.
 	 */
 	default Optional<M> determineOneMatch() {
-		return determineMatches(1).stream().findAny();
+		return determineMatches(Schedule.once()).stream().findAny();
 	}
 
 	/**
@@ -50,6 +54,15 @@ public interface IPattern<M extends IMatch> {
 	default int countMatches() {
 		return determineMatches().size();
 	}
-	
+
+	/**
+	 * Check if a collection of matches for this pattern are still valid.
+	 * 
+	 * @param matches
+	 * @return A map of match ids to bools signalling if the particular match is
+	 *         still valid or not.
+	 */
+	Map<String, Boolean> isStillValid(Collection<M> matches);
+
 	Stream<String> getPatternElts();
 }

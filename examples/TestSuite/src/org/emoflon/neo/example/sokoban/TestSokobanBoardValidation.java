@@ -12,7 +12,6 @@ import org.moflon.tutorial.sokobangamegui.controller.IController;
 import org.moflon.tutorial.sokobangamegui.controller.SokobanNeoController;
 
 class TestSokobanBoardValidation extends ENeoTest {
-
 	private TestView view;
 	private IController controller;
 	
@@ -193,44 +192,5 @@ class TestSokobanBoardValidation extends ENeoTest {
 		view.createEndPos(4,5);
 		view.createEndPos(6,5);
 		assertTrue(controller.boardIsValid());
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		view.getController().clearBoard();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Test
-	public void testGetNewBoardAction() {
-		int width = 8;
-		int height = 8;
-		view.createSokoban(2,2);
-		view.createBlock(5,6);
-		view.createBlock(6,6);
-		view.createBlock(7,6);
-		view.createBoulder(3,2);
-		view.createEndPos(2,5);
-		view.createEndPos(4,5);
-		view.createEndPos(6,5);
-		assertTrue(controller.boardIsValid());
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		view.getController().newBoard(width, height);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 }

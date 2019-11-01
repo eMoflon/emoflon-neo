@@ -43,7 +43,7 @@ abstract class CypherBuilder {
 		if (nodesToMatch.containsKey(key))
 			return nodesToMatch.get(key)
 		else {
-			val nc = new NodeCommand(props, labels)
+			val nc = new NodeCommand(props, labels.subList(0,1))
 			nodesToMatch.put(key, nc)
 			return nc
 		}

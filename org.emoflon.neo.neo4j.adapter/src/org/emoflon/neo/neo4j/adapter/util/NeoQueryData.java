@@ -29,14 +29,14 @@ public class NeoQueryData {
 	private HashMap<String, ArrayList<String>> optionalNodes;
 	private HashMap<String, ArrayList<String>> optionalElements;
 	private HashMap<String, String> equalElements;
-	
-    private ArrayList<NeoAttributeExpression> attrExprPattern;
-    private ArrayList<NeoAttributeExpression> attrExprOptional;
-    private ArrayList<NeoAttributeExpression> attrAssign;
+
+	private ArrayList<NeoAttributeExpression> attrExprPattern;
+	private ArrayList<NeoAttributeExpression> attrExprOptional;
+	private ArrayList<NeoAttributeExpression> attrAssign;
 
 	private int constraintCount;
 	private boolean context;
-	
+
 	public NeoQueryData(boolean context) {
 		this.context = context;
 		this.patternElements = new HashMap<String, ArrayList<String>>();
@@ -143,76 +143,52 @@ public class NeoQueryData {
 		}
 	}
 
+	// FIXME[Anjorin]: Combine with similar functionality in CypherPatternBuilder
 	public ArrayList<String> getAllNodesRequireInjectivityChecksCondition() {
-
 		var elem = new ArrayList<String>();
-
 		for (var p1 : optionalNodes.keySet()) {
-
 			for (var p2 : optionalNodes.keySet()) {
-
 				if (!p1.equals(p2)) {
-
 					var l1 = optionalNodes.get(p1);
 					var l2 = optionalNodes.get(p2);
 
 					boolean equal = false;
 
-					for (var l : l1) {
-						if (!equal && l2.contains(l)) {
-							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
-								elem.add(p1 + "<>" + p2);
-							}
-							equal = true;
+					var l = l1.get(0);
+					if (!equal && l2.contains(l)) {
+						if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
+							elem.add(p1 + "<>" + p2);
 						}
+						equal = true;
 					}
-					/*for (var l : l2) {
-						if (!equal && l1.contains(l)) {
-							if (!elem.contains(p1 + "<>" + p2) && !elem.contains(p2 + "<>" + p1)) {
-								elem.add(p1 + "<>" + p2);
-							}
-							equal = true;
-						}
-					}*/
 				}
 			}
 		}
+
 		var x = getAllNodesRequireInjectivityChecksPatternAndCondition();
 		elem.addAll(x);
 		return elem;
 	}
 
+	// FIXME[Anjorin]: Combine with similar functionality in CypherPatternBuilder
 	private ArrayList<String> getAllNodesRequireInjectivityChecksPatternAndCondition() {
-
 		var elem = new ArrayList<String>();
-
 		for (var pElem : patternNodes.keySet()) {
 			for (var oElem : optionalNodes.keySet()) {
-
 				if (equalElements.containsKey(pElem) && equalElements.get(pElem).equals(oElem)) {
 				} else {
-
 					var labelsP = patternNodes.get(pElem);
 					var labelsO = optionalNodes.get(oElem);
 
 					boolean equal = false;
-
-					for (var l : labelsP) {
-						if (!equal && labelsO.contains(l)) {
-							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
-								elem.add(pElem + "<>" + oElem);
-							}
-							equal = true;
+					var lp = labelsP.get(0);
+					var lo = labelsO.get(0);
+					if (!equal && (labelsO.contains(lp) || labelsP.contains(lo))) {
+						if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
+							elem.add(pElem + "<>" + oElem);
 						}
+						equal = true;
 					}
-					/*for (var l : labelsO) {
-						if (!equal && labelsP.contains(l)) {
-							if (!elem.contains(pElem + "<>" + oElem) && !elem.contains(oElem + "<>" + pElem)) {
-								elem.add(pElem + "<>" + oElem);
-							}
-							equal = true;
-						}
-					}*/
 				}
 			}
 		}
@@ -280,16 +256,18 @@ public class NeoQueryData {
 	public Collection<String> getOptionalMatchElements() {
 		return Collections.unmodifiableCollection(optionalElements.keySet());
 	}
-	
-    public Collection<NeoAttributeExpression> getAttributeExpressions() {
-        return attrExprPattern;
-    }
-    public Collection<NeoAttributeExpression> getAttributeExpressionsOptional() {
-        return attrExprOptional;
-    }
-    public Collection<NeoAttributeExpression> getAttributeAssignments() {
-        return attrAssign;
-    }
+
+	public Collection<NeoAttributeExpression> getAttributeExpressions() {
+		return attrExprPattern;
+	}
+
+	public Collection<NeoAttributeExpression> getAttributeExpressionsOptional() {
+		return attrExprOptional;
+	}
+
+	public Collection<NeoAttributeExpression> getAttributeAssignments() {
+		return attrAssign;
+	}
 
 	private List<NeoNode> extractNodesAndRelations(List<ModelNodeBlock> mnb,
 			BiFunction<String, Collection<String>, String> registerNewNode,
@@ -313,7 +291,7 @@ public class NeoQueryData {
 				if (r.getLower() == null && r.getUpper() == null) {
 					varName = registerNewRelation.apply(varName, r.getTypes().get(0).getType().getName());
 				}
-				
+
 				var propsR = getRelationPropertiesAndAttributes(r.getProperties(), varName, attrExpr);
 				attrExpr.addAll(propsR.getElemAttrExpr());
 				attrAssign.addAll(propsR.getElemAttrAsgn());
@@ -321,7 +299,7 @@ public class NeoQueryData {
 				node.addRelation(varName, EMSLUtil.getAllTypes(r), //
 						r.getLower(), r.getUpper(), //
 						propsR.getElemProps(), //
-						r.getTarget().getType().getName(), //
+						r.getTarget(), //
 						registerNewNode.apply(r.getTarget().getName(),
 								NeoCoreBuilder.computeLabelsFromType(r.getTarget().getType())));
 			}
@@ -331,81 +309,71 @@ public class NeoQueryData {
 
 		return nodes;
 	}
-	
-	public NeoAttributeReturn getNodePropertiesAndAttributes(Collection<ModelPropertyStatement> props, String nodeVarName, ArrayList<NeoAttributeExpression> attrExpr) {
-		
+
+	public NeoAttributeReturn getNodePropertiesAndAttributes(Collection<ModelPropertyStatement> props,
+			String nodeVarName, ArrayList<NeoAttributeExpression> attrExpr) {
+
 		var nodeProps = new ArrayList<NeoProperty>();
 		var nodeAttrExpr = new ArrayList<NeoAttributeExpression>();
 		var nodeAttrAsgn = new ArrayList<NeoAttributeExpression>();
-		
-		for(var p : props) {
-			if(p.getValue() instanceof Parameter)
+
+		for (var p : props) {
+			if (p.getValue() instanceof Parameter)
 				continue;
-            
-            switch(p.getOp()) {
-            case EQ:
-            	nodeProps.add(new NeoProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue())));
-                break;
-            case GREATER:
-            case GREATEREQ:
-            case LESS:
-            case LESSEQ:
-            case NOTEQ:
-            	nodeAttrExpr.add(new NeoAttributeExpression(
-            			nodeVarName, 
-                        p.getType().getName(), //
-                        EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp()));
-                break;
-            case ASSIGN:
-            	nodeAttrAsgn.add(new NeoAttributeExpression(
-            			nodeVarName, 
-                        p.getType().getName(), //
-                        EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp()));
-                break;
-            default:
-                throw new UnsupportedOperationException(p.getOp().toString());
-            }
-        }
+
+			switch (p.getOp()) {
+			case EQ:
+				nodeProps.add(new NeoProperty(p.getType().getName(), EMSLUtil.handleValue(p.getValue())));
+				break;
+			case GREATER:
+			case GREATEREQ:
+			case LESS:
+			case LESSEQ:
+			case NOTEQ:
+				nodeAttrExpr.add(new NeoAttributeExpression(nodeVarName, p.getType().getName(), //
+						EMSLUtil.handleValue(p.getValue()), p.getOp()));
+				break;
+			case ASSIGN:
+				nodeAttrAsgn.add(new NeoAttributeExpression(nodeVarName, p.getType().getName(), //
+						EMSLUtil.handleValue(p.getValue()), p.getOp()));
+				break;
+			default:
+				throw new UnsupportedOperationException(p.getOp().toString());
+			}
+		}
 		return new NeoAttributeReturn(nodeProps, nodeAttrExpr, nodeAttrAsgn);
 	}
-	
-	public NeoAttributeReturnRelation getRelationPropertiesAndAttributes(Collection<ModelPropertyStatement> props, String varName, ArrayList<NeoAttributeExpression> attrExpr) {
-		
+
+	public NeoAttributeReturnRelation getRelationPropertiesAndAttributes(Collection<ModelPropertyStatement> props,
+			String varName, ArrayList<NeoAttributeExpression> attrExpr) {
+
 		var relProps = new ArrayList<ModelPropertyStatement>();
 		var relAttrExpr = new ArrayList<NeoAttributeExpression>();
 		var relAttrAsgn = new ArrayList<NeoAttributeExpression>();
-		
-		for(var p : props) {
-			switch(p.getOp()) {
-            case EQ:
-            	relProps.add(p);
-                break;
-            case GREATER:
-            case GREATEREQ:
-            case LESS:
-            case LESSEQ:
-            case NOTEQ:
-            	relAttrExpr.add(new NeoAttributeExpression(
-                        varName, 
-                        p.getType().getName(), //
-                        EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp()));
-                break;
-            case ASSIGN:
-            	relAttrAsgn.add(new NeoAttributeExpression(
-                        varName, 
-                        p.getType().getName(), //
-                        EMSLUtil.handleValue(p.getValue()), 
-                        p.getOp()));
-                break;
-            default:
-                throw new UnsupportedOperationException(p.getOp().toString());
-            }
+
+		for (var p : props) {
+			switch (p.getOp()) {
+			case EQ:
+				relProps.add(p);
+				break;
+			case GREATER:
+			case GREATEREQ:
+			case LESS:
+			case LESSEQ:
+			case NOTEQ:
+				relAttrExpr.add(new NeoAttributeExpression(varName, p.getType().getName(), //
+						EMSLUtil.handleValue(p.getValue()), p.getOp()));
+				break;
+			case ASSIGN:
+				relAttrAsgn.add(new NeoAttributeExpression(varName, p.getType().getName(), //
+						EMSLUtil.handleValue(p.getValue()), p.getOp()));
+				break;
+			default:
+				throw new UnsupportedOperationException(p.getOp().toString());
+			}
 		}
 		return new NeoAttributeReturnRelation(relProps, relAttrExpr, relAttrAsgn);
-		
+
 	}
 
 	private List<ModelRelationStatement> extractContextRelations(EList<ModelRelationStatement> relations) {
@@ -415,12 +383,12 @@ public class NeoQueryData {
 	}
 
 	private boolean isRelevant(Action action) {
-		if(context )
+		if (context)
 			return action == null || action.getOp().equals(ActionOperator.DELETE);
 		else
 			return action == null || action.getOp().equals(ActionOperator.CREATE);
 	}
-	
+
 	private List<ModelNodeBlock> extractContextNodes(List<ModelNodeBlock> mnb) {
 		return mnb.stream()//
 				.filter(n -> isRelevant(n.getAction()))//
@@ -428,11 +396,13 @@ public class NeoQueryData {
 	}
 
 	public List<NeoNode> extractPatternNodesAndRelations(List<ModelNodeBlock> mnb) {
-		return extractNodesAndRelations(mnb, this::registerNewPatternNode, this::registerNewPatternRelation, attrExprPattern);
+		return extractNodesAndRelations(mnb, this::registerNewPatternNode, this::registerNewPatternRelation,
+				attrExprPattern);
 	}
 
 	public List<NeoNode> extractConstraintNodesAndRelations(List<ModelNodeBlock> mnb) {
-		return extractNodesAndRelations(mnb, this::registerNewConstraintNode, this::registerNewConstraintRelation, attrExprOptional);
+		return extractNodesAndRelations(mnb, this::registerNewConstraintNode, this::registerNewConstraintRelation,
+				attrExprOptional);
 	}
 
 }

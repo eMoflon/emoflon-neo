@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.patterns.IPattern;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
@@ -72,6 +73,10 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 			}
 		}
 	}
+	
+	public void addExtraNodes(List<NeoNode> nodes) {
+		this.nodes.addAll(nodes);
+	}
 
 	/**
 	 * Set is the pattern should be injective or not
@@ -99,7 +104,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @return NeoNode list of nodes in the pattern
 	 */
 	public List<NeoNode> getNodes() {
-		return nodes;
+		return List.copyOf(nodes);
 	}
 
 
@@ -123,7 +128,6 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @param m NeoMatch the match that should be checked
 	 * @return true if the match is still valid or false if not
 	 */
-	public abstract boolean isStillValid(NeoMatch neoMatch);
 	public abstract Map<String, Boolean> isStillValid(Collection<NeoMatch> neoMatch);
 
 	public abstract String getQuery();
@@ -134,9 +138,9 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 				queryData.getAllElements(), //
 				matchCond, //
 				whereCond, //
-				queryData.getAttributeExpressions(),
+				queryData.getAttributeExpressions(), //
 				injective, //
-				0);
+				Schedule.unlimited());
 	}
 
 	/**
@@ -148,13 +152,13 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 */
 	@Override
 	public Collection<NeoMatch> determineMatches() {
-		return determineMatches(0);
+		return determineMatches(Schedule.unlimited());
 	}
 	
 	public Collection<Record> getData(Collection<? extends NeoMatch> m) {
 		logger.debug("Extract data from " + getName());
 		
-		var cypherQuery = CypherPatternBuilder.getDataQueryCollection(nodes, queryData.getAttributeExpressions(), injective);
+		var cypherQuery = CypherPatternBuilder.getDataQuery(nodes, queryData.getAttributeExpressions(), injective);
 
 		var list = new ArrayList<Map<String,Object>>();
 		m.forEach(match -> list.add(match.getParameters()));
@@ -164,7 +168,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 		
 		logger.debug(map.toString() + "\n" + cypherQuery);
 		
-		StatementResult result = builder.executeQueryWithParameters(cypherQuery, map);
+		StatementResult result = builder.executeQuery(cypherQuery, map);
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");

@@ -45,13 +45,15 @@ class EMSLUtil {
 	public static final String PLUGIN_ID = "org.emoflon.neo.emsl";
 	public static final String UI_PLUGIN_ID = "org.emoflon.neo.emsl.ui"
 
-	public static final String ORG_EMOFLON_NEO_CORE = "org.emoflon.neo.neocore";
-	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/" + ORG_EMOFLON_NEO_CORE +
-		"/model/NeoCore.msl"
+	public static final String ORG_EMOFLON_NEO_CORE = "NeoCore";
+	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
 
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"
 	public static final String P_PASSWORD = "PasswordPreference"
+	
+	public static final String RESERVED_PREFIX = "____"
+	public static final String PARAM_NAME_FOR_MATCH = "match";
 
 	def static EMSL_Spec loadSpecification(String modelURI, String platformResourceURIRoot,
 		String platformPluginURIRoot) {

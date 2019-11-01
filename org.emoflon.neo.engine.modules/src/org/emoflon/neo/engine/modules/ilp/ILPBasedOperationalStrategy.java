@@ -102,7 +102,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
-			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor progressMonitor) {
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		logger.debug("Registering all matches...");
 
 		// Precedence information
@@ -305,5 +305,17 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 				.map(name -> m.getNodeIDs().containsKey(name) ? //
 						m.getNodeIDs().get(name) : -1 * m.getEdgeIDs().get(name))//
 				.collect(Collectors.toSet());
+	}
+	
+	public int getNrOfILPConstraints() {
+		return ilpProblem.getConstraints().size();
+	}
+	
+	public int getNroOfGraphConstraints() {
+		return negativeConstraints.size();
+	}
+	
+	public String getInfo() {
+		return ilpProblem.getProblemInformation();
 	}
 }

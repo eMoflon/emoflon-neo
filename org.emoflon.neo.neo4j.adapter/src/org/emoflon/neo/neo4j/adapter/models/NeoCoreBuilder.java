@@ -1,47 +1,10 @@
 package org.emoflon.neo.neo4j.adapter.models;
 
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ABSTRACT_PROP;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.CONFORMS_TO_PROP;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EATTRIBUTED_ELEMENT;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EATTRIBUTES;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EATTRIBUTE_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ECLASS;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ECLASSIFIER;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EDATA_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EENUM;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EENUM_LITERAL;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ELITERALS;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EOBJECT;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EREFERENCES;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.EREFERENCE_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.ESUPER_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.METAMODEL;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.META_TYPE;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.MODEL;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.NAME_PROP;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eDataTypeLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eDataTypeProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eattrLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eattrProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eclassLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eclassProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumLiteralLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumLiteralProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eenumProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eobjectLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.eobjectProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.erefLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.erefProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.mmodelLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.mmodelProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.modelLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.modelProps;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.neoCoreLabels;
-import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.neoCoreProps;
+import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -83,7 +46,6 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.StatementResult;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 
 public class NeoCoreBuilder implements AutoCloseable, IBuilder {
@@ -116,21 +78,21 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	@Override
 	public StatementResult executeQuery(String cypherStatement) {
-		return executeQueryWithParameters(cypherStatement, null);
+		return executeQuery(cypherStatement, Collections.emptyMap());
 	}
-	
+
 	@Override
-	public StatementResult executeQueryWithParameters(String cypherStatement, Map<String,Object> parameters) {
+	public StatementResult executeQuery(String cypherStatement, Map<String, Object> parameters) {
 		var session = driver.session();
 		var transaction = session.beginTransaction();
 
 		try {
 			StatementResult result;
-			if(parameters == null || parameters.isEmpty())
+			if (parameters.isEmpty())
 				result = transaction.run(cypherStatement.trim());
 			else
 				result = transaction.run(cypherStatement.trim(), parameters);
-			
+
 			transaction.success();
 			transaction.close();
 			return result;
@@ -145,7 +107,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	public void executeQueryForSideEffect(String cypherStatement) {
 		var session = driver.session();
 		var transaction = session.beginTransaction();
-		
+
 		try {
 			var st = driver.session().run(cypherStatement.trim());
 			st.consume();
@@ -240,7 +202,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 				.collect(Collectors.toSet());
 	}
 
-	private Collection<Metamodel> collectReferencedMetamodels(Metamodel m) {
+	private Set<Metamodel> collectReferencedMetamodels(Metamodel m) {
 		var allRefs = new HashSet<Metamodel>();
 		collectReferencedMetamodels(m, allRefs);
 		return allRefs;
@@ -272,6 +234,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		EcoreUtil.resolveAll(rs);
 
 		var metamodels = collectReferencedMetamodels(m);
+		metamodels.add(m);
 
 		var metamodelNames = metamodels.stream().map(Metamodel::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export metamodels: " + metamodelNames);
@@ -333,6 +296,14 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private void bootstrapNeoCore() {
 		var bootstrapper = new NeoCoreBootstrapper();
 		bootstrapper.bootstrapNeoCore(this);
+
+		executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
+				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.MODEL)
+				+ ") ASSERT mm.ename IS UNIQUE");
+		executeQueryForSideEffect(//
+				"CREATE INDEX ON :" + //
+						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.ECLASS) + //
+						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) {
@@ -347,8 +318,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
-			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
-			var model = cb.matchNodeWithContainer(modelProps, modelLabels, neocore);
+			var model = cb.matchNode(modelProps, modelLabels);
 
 			// Create nodes and edges in models
 			var mNodes = new HashMap<Model, NodeCommand>();
@@ -404,14 +374,14 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		metamodel.getEnums().forEach(eenumNode -> {
 			var eenumCommand = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, eenumNode.getName())), //
-					List.of(EENUM, EDATA_TYPE, EOBJECT, ECLASSIFIER), eenum, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_ENUM, eenum, mmNode);
 
 			blockToCommand.put(eenumNode, eenumCommand);
 
 			for (EnumLiteral literal : eenumNode.getLiterals()) {
 				var literalCommand = cb.createNodeWithContAndType(//
 						List.of(new NeoProp(NAME_PROP, literal.getName())), //
-						List.of(EENUM_LITERAL, EOBJECT, EDATA_TYPE, ECLASSIFIER), eenumLiteral, mmNode);
+						NeoCoreBootstrapper.LABELS_FOR_AN_ENUMLITERAL, eenumLiteral, mmNode);
 
 				cb.createEdge(ELITERALS, eenumCommand, literalCommand);
 			}
@@ -422,7 +392,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(METAMODEL));
+			var nc = cb.matchNode(List.of(), NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
@@ -434,7 +404,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var newModels = new ArrayList<Model>();
 		newModels.addAll(models);
 		StatementResult result = executeActionAsMatchTransaction(cb -> {
-			var nc = cb.matchNode(List.of(), List.of(MODEL));
+			var nc = cb.matchNode(List.of(), NeoCoreBootstrapper.LABELS_FOR_A_MODEL);
 			cb.returnWith(nc);
 		});
 		result.forEachRemaining(
@@ -570,7 +540,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			NodeCommand mmodel, NodeCommand eobject) {
 
 		var mmNode = cb.createNode(List.of(new NeoProp(NAME_PROP, metamodel.getName())),
-				List.of(METAMODEL, MODEL, EOBJECT));
+				NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
 
 		mmNodes.put(metamodel, mmNode);
 
@@ -578,10 +548,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		cb.createEdge(META_TYPE, mmNode, mmodel);
 
 		metamodel.getNodeBlocks().forEach(nb -> {
-
 			var nbNode = cb.createNodeWithContAndType(//
 					List.of(new NeoProp(NAME_PROP, nb.getName()), //
-							new NeoProp(ABSTRACT_PROP, nb.isAbstract())),
+							new NeoProp(ABSTRACT_PROP, nb.isAbstract()),
+							new NeoProp(NAMESPACE_PROP, metamodel.getName())),
 					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, eclass, mmNode);
 
 			if (nb.getSuperTypes().isEmpty()) {
@@ -595,18 +565,20 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private void handleNodeBlocksInModel(CypherCreator cb, HashMap<ModelNodeBlock, NodeCommand> blockToCommand,
 			HashMap<Model, NodeCommand> mNodes, Model model, NodeCommand nodeCommandForModel) {
 
-		var mNode = cb.createNode(List.of(new NeoProp(NAME_PROP, model.getName())), List.of(MODEL, EOBJECT));
+		var mNode = cb.createNode(List.of(new NeoProp(NAME_PROP, model.getName())),
+				NeoCoreBootstrapper.LABELS_FOR_A_MODEL);
 
 		mNodes.put(model, mNode);
 
 		model.getNodeBlocks().forEach(nb -> {
 			Metamodel mm = (Metamodel) nb.getType().eContainer();
 
-			var mmNode = cb.matchNode(List.of(new NeoProp(NAME_PROP, mm.getName())), List.of(METAMODEL));
+			var mmNode = cb.matchNode(List.of(new NeoProp(NAME_PROP, mm.getName())),
+					NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
 
 			var typeOfNode = cb.matchNodeWithContainer(//
-					List.of(new NeoProp(NAME_PROP, nb.getType().getName())), //
-					List.of(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT), mmNode);
+					List.of(new NeoProp(NAME_PROP, nb.getType().getName()), new NeoProp(NAMESPACE_PROP, mm.getName())), //
+					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, mmNode);
 
 			cb.createEdge(CONFORMS_TO_PROP, mNode, mmNode);
 			cb.createEdge(META_TYPE, mNode, nodeCommandForModel);
@@ -621,7 +593,6 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 			var allLabels = new ArrayList<String>();
 			allLabels.addAll(computeLabelsFromType(nb.getType()));
-			allLabels.add(EOBJECT);
 
 			var nbNode = cb.createNodeWithContAndType(//
 					props, allLabels, typeOfNode, mNode);
@@ -633,12 +604,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	public static List<String> computeLabelsFromType(MetamodelNodeBlock type) {
 		var labels = new LinkedHashSet<String>();
-		labels.add(type.getName());
-		for (MetamodelNodeBlock st : type.getSuperTypes()) {
-			labels.addAll(computeLabelsFromType(st));
-		}
+		var namespace = ((Metamodel) type.eContainer()).getName();
+		labels.add(NeoCoreBootstrapper.addNameSpace(namespace, type.getName()));
 
-		return Lists.newArrayList(labels);
+		for (MetamodelNodeBlock st : type.getSuperTypes())
+			labels.addAll(computeLabelsFromType(st));
+
+		labels.add(NeoCoreBootstrapper.addNeoCoreNamespace(EOBJECT));
+
+		return new ArrayList<>(labels);
 	}
 
 	private Object inferType(ModelPropertyStatement ps, ModelNodeBlock nb) {
@@ -657,14 +631,14 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private Object inferTypeForEdgeAttribute(ValueExpression value, String relName, String propName,
 			MetamodelNodeBlock nodeType) {
-		if(propName.equals(TRANSLATION_MARKER)) {
+		if (propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
-		
-		if(propName.equals(TYPE_AS_ATTRIBUTE) && relName.equals(CORR)) {
+
+		if (propName.equals(TYPE_AS_ATTRIBUTE) && relName.equals(CORR)) {
 			return PrimitiveString.class.cast(value).getLiteral();
 		}
-		
+
 		var typedValue = EMSLUtil.allRelationsOf(nodeType).stream()//
 				.filter(et -> et.getName().equals(relName))//
 				.flatMap(et -> et.getProperties().stream())//
@@ -677,10 +651,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private Object inferTypeForNodeAttribute(ValueExpression value, String propName, MetamodelNodeBlock nodeType) {
-		if(propName.equals(TRANSLATION_MARKER)) {
+		if (propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
-		
+
 		var typedValue = EMSLUtil.allPropertiesOf(nodeType).stream()//
 				.filter(t -> t.getName().equals(propName))//
 				.map(psType -> psType.getType())//
@@ -700,15 +674,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public long noOfNodesInDatabase() {
-		var result = executeQueryWithParameters("MATCH (n) return count(n)", null);
+		var result = executeQuery("MATCH (n) return count(n)");
 		return (long) result.list().get(0).asMap().values().iterator().next();
 	}
-	
+
 	public long noOfEdgesInDatabase() {
-		var result = executeQueryWithParameters("MATCH ()-[r]->() return count(r)", null);
+		var result = executeQuery("MATCH ()-[r]->() return count(r)");
 		return (long) result.list().get(0).asMap().values().iterator().next();
 	}
-	
+
 	public long noOfElementsInDatabase() {
 		return noOfNodesInDatabase() + noOfEdgesInDatabase();
 	}

@@ -13,7 +13,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 public class AllMatchesUpdatePolicy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches,
-			IMonitor progressMonitor) {
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		return matches.getAllRulesToMatches();
 	}
 }

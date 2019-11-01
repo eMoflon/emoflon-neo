@@ -12,13 +12,14 @@ import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 
-public class Generator<M extends IMatch, C extends ICoMatch> {
+public abstract class Generator<M extends IMatch, C extends ICoMatch> {
+
 	private ITerminationCondition<M, C> terminationCondition;
 	private IRuleScheduler<M, C> ruleScheduler;
 	private IUpdatePolicy<M, C> updatePolicy;
 	private IMatchReprocessor<M, C> matchReprocessor;
-	private IMonitor progressMonitor;
-	private ArrayList<IRule<M, C>> allRules;
+	private IMonitor<M, C> progressMonitor;
+	protected ArrayList<IRule<M, C>> allRules;
 
 	public Generator(//
 			Collection<? extends IRule<M, C>> allRules, //
@@ -26,7 +27,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 			IRuleScheduler<M, C> ruleScheduler, //
 			IUpdatePolicy<M, C> updatePolicy, //
 			IMatchReprocessor<M, C> matchReprocessor, //
-			IMonitor progressMonitor) {
+			IMonitor<M, C> progressMonitor) {
 		this.allRules = new ArrayList<>(allRules);
 		this.terminationCondition = terminationCondition;
 		this.ruleScheduler = ruleScheduler;
@@ -36,8 +37,8 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 	}
 
 	public void generate() {
-		MatchContainer<M, C> matchContainer = new MatchContainer<>(allRules);
-		while (!terminationCondition.isReached(matchContainer)) {
+		MatchContainer<M, C> matchContainer = createMatchContainer();
+		do {
 			// 1. Schedule rules for pattern matching
 			progressMonitor.startRuleScheduling();
 			var scheduledRules = ruleScheduler.scheduleWith(matchContainer, progressMonitor);
@@ -45,7 +46,7 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 
 			// 2. Perform pattern matching
 			progressMonitor.startPatternMatching();
-			scheduledRules.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
+			scheduledRules.forEach((rule, schedule) -> matchContainer.addAll(rule.determineMatches(schedule), rule));
 			progressMonitor.finishPatternMatching();
 
 			// 3. Match selection
@@ -68,14 +69,13 @@ public class Generator<M extends IMatch, C extends ICoMatch> {
 			progressMonitor.finishReprocessingMatches();
 
 			// Heartbeat for continuous feedback
-			progressMonitor.heartBeat();
-		}
+			progressMonitor.heartBeat(matchContainer);
+		} while (!terminationCondition.isReached(matchContainer));
 
-		progressMonitor.finishGeneration();
+		progressMonitor.finishGeneration(matchContainer);
 	}
 
-	protected void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer) {
-		rule.applyAll(matches);
-		matchContainer.appliedRule(rule, matches.size());
-	}
+	protected abstract MatchContainer<M, C> createMatchContainer();
+	
+	protected abstract void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer);
 }

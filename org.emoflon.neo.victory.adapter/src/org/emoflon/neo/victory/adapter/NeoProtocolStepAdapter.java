@@ -7,19 +7,19 @@ public class NeoProtocolStepAdapter implements RuleApplication {
 
 	@Override
 	public int getIndex() {
-		// TODO Auto-generated method stub
+		// TODO[Victory]
 		return 0;
 	}
 
 	@Override
 	public String getRuleName() {
-		// TODO Auto-generated method stub
+		// TODO[Victory]
 		return null;
 	}
 
 	@Override
 	public RuleApplicationMerger getMerger() {
-		// TODO Auto-generated method stub
+		// TODO[Victory]
 		return null;
 	}
 

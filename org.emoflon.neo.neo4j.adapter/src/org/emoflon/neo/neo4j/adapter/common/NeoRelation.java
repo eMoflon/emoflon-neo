@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
-/**
- * Class for representing an EMSL relation for creating Cypher queries
- * 
- * @author Jannik Hinz
- *
- */
 public class NeoRelation {
 	private NeoNode from;
 	private List<String> relTypes;
@@ -32,11 +28,11 @@ public class NeoRelation {
 	 * @param toNodeVar    the variable used in cypher of the target node
 	 */
 	public NeoRelation(NeoNode from, String varName, List<String> relTypes, String lower, String upper,
-			List<ModelPropertyStatement> props, String toNodeLabel, String toNodeVar) {
+			List<ModelPropertyStatement> props, ModelNodeBlock target, String toNodeVar) {
 		this.from = from;
 		this.relTypes = new ArrayList<String>(relTypes);
 		this.toNodeVar = toNodeVar;
-		this.toNodeLabel = toNodeLabel;
+		this.toNodeLabel = NeoCoreBuilder.computeLabelsFromType(target.getType()).get(0);
 		this.varName = varName;
 		this.upper = convertUpper(upper);
 		this.lower = convertLower(lower);
@@ -108,7 +104,7 @@ public class NeoRelation {
 	}
 	
 	public String getFromNodeLabel() {
-		return from.getClassTypes().iterator().next();
+		return from.getPrimaryLabel();
 	}
 
 	/**
@@ -120,11 +116,6 @@ public class NeoRelation {
 		return properties;
 	}
 
-	/**
-	 * Return the variable name of the source node
-	 * 
-	 * @return variable name of the source node
-	 */
 	public String getVarName() {
 		if (isPath())
 			return "";

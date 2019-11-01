@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,9 +14,11 @@ import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 
-public class MatchContainer<M extends IMatch, C extends ICoMatch> {
+public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	private Map<IRule<M, C>, Collection<M>> rulesToMatches;
-	private Map<IRule<M, C>, Integer> ruleApplications;
+	protected Map<IRule<M, C>, Integer> ruleApplications;
+	private NodeRange currentNodeRange;
+	private long noOfGeneratedElements = 0;
 
 	public MatchContainer(Collection<IRule<M, C>> allRules) {
 		rulesToMatches = new HashMap<>();
@@ -24,6 +27,12 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 			rulesToMatches.put(rule, new HashSet<>());
 			ruleApplications.put(rule, 0);
 		});
+		
+		currentNodeRange = new NodeRange();
+	}
+
+	public void removeRule(IRule<M, C> rule) {
+		rulesToMatches.remove(rule);
 	}
 
 	public void addAll(Collection<M> matches, IRule<M, C> rule) {
@@ -65,13 +74,47 @@ public class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		return rulesToMatches.get(rule).stream();
 	}
 
-	public void appliedRule(IRule<M, C> rule, int noOfApplications) {
-		var before = ruleApplications.get(rule);
-		var after = before + noOfApplications;
-		ruleApplications.put(rule, after);
+	public abstract void appliedRule(IRule<M, C> rule, Collection<M> appliedMatches, Optional<Collection<C>> comatches);
+
+	protected void addCreatedElementIDsToRange(C m, IRule<M, C> rule) {
+		rule.getCreatedElts().forEach(elt -> {
+			noOfGeneratedElements++;
+			if (m.getNodeIDs().containsKey(elt))
+				currentNodeRange.addIDs(getTypesFor(rule, elt), m.getNodeIDs().get(elt));
+		});
 	}
+
+	protected abstract Stream<String> getTypesFor(IRule<M, C> rule, String elt);
 
 	public int getNoOfRuleApplicationsFor(IRule<M, C> rule) {
 		return ruleApplications.get(rule);
+	}
+
+	public Map<IRule<M, C>, Integer> getRuleApplications() {
+		return Map.copyOf(ruleApplications);
+	}
+
+	public boolean hasNoMatches() {
+		return streamAllMatches().count() == 0;
+	}
+
+	public NodeRange getNodeRange() {
+		return currentNodeRange;
+	}
+
+	public Stream<IRule<M, C>> streamAllRules() {
+		return rulesToMatches.keySet().stream();
+	}
+
+	public boolean hasNoRules() {
+		return rulesToMatches.keySet().isEmpty();
+	}
+
+	public long getNumberOfGeneratedElements() {
+		return noOfGeneratedElements;
+	}
+
+	public int getNumberOfRuleApplications() {
+		return ruleApplications.entrySet().stream().map(entry -> entry.getValue()).reduce(0, Integer::sum);
 	}
 }

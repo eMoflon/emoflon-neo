@@ -32,11 +32,6 @@ class TestSokobanMovement extends ENeoTest {
 		assertTrue(controller.boardIsValid());
 		view.setPlayModus(true);
 		view.moveFigure(view.getField(2,2), view.getField(2,3));
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	@Test
@@ -49,17 +44,7 @@ class TestSokobanMovement extends ENeoTest {
 		assertTrue(controller.boardIsValid());
 		view.setPlayModus(true);
 		view.moveFigure(view.getField(2,2), view.getField(2,3));
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		view.moveFigure(view.getField(2,3), view.getField(2,4));
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		assertEquals(ExpectedBoards.validBoardMoveBlockAfterMove(), view.printBoard());
 	}
 	
@@ -73,11 +58,6 @@ class TestSokobanMovement extends ENeoTest {
 		assertTrue(controller.boardIsValid());
 		view.setPlayModus(true);
 		view.moveFigure(view.getField(2,2), view.getField(2,3));
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		assertEquals(ExpectedBoards.validBoardMoveBoulder(), view.printBoard());
 	}
 
