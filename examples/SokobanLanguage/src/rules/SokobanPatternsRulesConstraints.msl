@@ -958,3 +958,26 @@ rule removeSokobanWithDanglingEdges {
 	f:Field
 }
 
+pattern test_twoOccupiedFields {
+	f1: Field
+	f2: Field
+} when occF1F2
+
+pattern occF1Field {
+	b: Block {
+		-field->f1
+	}
+	f1:Field
+}
+
+pattern occF2Field {
+	s: Sokoban {
+		-field->f2
+	}
+	f2:Field
+}
+constraint occF1 = enforce occF1Field
+constraint occF2 = enforce occF2Field
+constraint occF1F2 = occF1 && occF2
+
+

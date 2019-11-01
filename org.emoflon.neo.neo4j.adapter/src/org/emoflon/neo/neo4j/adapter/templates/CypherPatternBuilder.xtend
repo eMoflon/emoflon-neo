@@ -41,10 +41,10 @@ class CypherPatternBuilder {
 		'''«IF props.size > 0»«FOR p:props BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»'''
 	}
 
-	protected def static CharSequence queryNode(NeoNode n) '''
+	protected def static String queryNode(NeoNode n) '''
 	(«n.varName»:«n.primaryLabel»«IF n.properties.size > 0»«FOR p:n.properties BEFORE ' {' SEPARATOR ',' AFTER '}'»«p.name»:«p.value»«ENDFOR»«ENDIF»)'''
 	
-	protected def static CharSequence createNode(NeoNode n) 
+	protected def static String createNode(NeoNode n) 
 	'''
 		(«n.varName»
 			«FOR l : n.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»
@@ -154,7 +154,7 @@ class CypherPatternBuilder {
 	private def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, 
 		HashMap<String,String> equalElem, Collection<String> injElem) {
 		var out = "";
-		if(injective) {
+		if(injective && nodes.size > 1) {
 			out += injectiveNodes(injElem);			
 		}
 		

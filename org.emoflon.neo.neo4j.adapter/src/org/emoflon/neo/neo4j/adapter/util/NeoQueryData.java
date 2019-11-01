@@ -59,6 +59,7 @@ public class NeoQueryData {
 	public int incrementCounterForConstraintsInQuery() {
 		optionalNodes.clear();
 		attrExprOptional.clear();
+		equalElements.clear();
 		return constraintCount++;
 	}
 
