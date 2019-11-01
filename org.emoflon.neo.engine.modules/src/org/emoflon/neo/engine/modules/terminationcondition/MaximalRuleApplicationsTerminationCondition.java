@@ -45,13 +45,15 @@ public class MaximalRuleApplicationsTerminationCondition implements ITermination
 		return maxRuleApps.get(rule);
 	}
 
-	public void setMaxNoOfApplicationsFor(String rule, int value) {
+	public MaximalRuleApplicationsTerminationCondition setMax(String rule, int value) {
 		if (!nameToRule.containsKey(rule)) {
 			throw new IllegalArgumentException(rule + " is not a valid name of a TGG rule in: " + nameToRule.keySet());
 		}
 
 		var r = nameToRule.get(rule);
 		maxRuleApps.put(r, value);
+		
+		return this;
 	}
 
 	public void requireMaxForFreeAxioms() {

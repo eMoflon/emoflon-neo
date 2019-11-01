@@ -2,6 +2,7 @@ package run;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -46,7 +47,7 @@ public class CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new TimedTerminationCondition(30000), //
+				new TimedTerminationCondition(30, TimeUnit.SECONDS), //
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //

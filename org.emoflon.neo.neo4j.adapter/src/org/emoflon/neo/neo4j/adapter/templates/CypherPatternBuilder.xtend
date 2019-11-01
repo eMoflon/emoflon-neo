@@ -3,7 +3,9 @@ package org.emoflon.neo.neo4j.adapter.templates
 import java.util.ArrayList
 import java.util.Collection
 import java.util.HashMap
+import java.util.List
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.engine.generator.Schedule
 import org.emoflon.neo.neo4j.adapter.common.NeoNode
 import org.emoflon.neo.neo4j.adapter.common.NeoProperty
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation
@@ -58,68 +60,97 @@ class CypherPatternBuilder {
 	/*****************************
 	 * Standard Matching Functions
 	 ****************************/
-	
-	def static String readQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, int limit, NeoMask mask) {
+	def static String readQuery( //
+		Collection<NeoNode> nodes, //
+		Collection<NeoAttributeExpression> attr, //
+		boolean injective, //
+		Schedule schedule, //
+		NeoMask mask //
+	) {
 		'''
-		«IF nodes.size>0»«matchQuery(nodes)»
-		«whereQuery(nodes, attr, injective, mask)»
-		«returnQuery(nodes)» «IF limit > 0»LIMIT «limit»«ENDIF»
-		«ELSE»
-		RETURN TRUE
-		«ENDIF»'''
+			«IF nodes.size > 0»
+				«matchQuery(nodes)»
+				«whereQuery(nodes, attr, injective, mask, schedule)»
+				«returnQuery(nodes)» «IF schedule.limit > 0»LIMIT «schedule.limit»«ENDIF»
+			«ELSE»
+				RETURN TRUE
+			«ENDIF»
+		'''
 	}
 	
 	
 
 	def static String readQuery_copyPaste(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
 		'''
-		«matchQuery(nodes)»
-		«whereQuery(nodes, attr, injective, new EmptyMask)»
-		«returnQuery_copyPaste(nodes)»'''
+			«matchQuery(nodes)»
+			«whereQuery(nodes, attr, injective, new EmptyMask, Schedule.unlimited)»
+			«returnQuery_copyPaste(nodes)»
+		'''
 	}
 
 	
 	
 	def static String getDataQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective) {
 		'''
-		«unwindQuery»
-		«matchQueryForData(nodes)»
-		«isStillValid_whereQuery(nodes, attr)»
-		«returnDataQuery(nodes)»'''
+			«unwindQuery»
+			«matchQueryForData(nodes)»
+			«isStillValid_whereQuery(nodes, attr)»
+			«returnDataQuery(nodes)»
+		'''
 	}
 
 	private def static String matchQuery(Collection<NeoNode> nodes) {
-		'''MATCH «FOR n : nodes SEPARATOR ', '»
-			«IF n.relations.size > 0 »
-				«FOR r:n.relations SEPARATOR ', '»«sourceNode(n)»«directedRelation(r)»«targetNode(r)»«ENDFOR»
-			«ELSE»«queryNode(n)»
-			«ENDIF»
-		«ENDFOR»'''
+		'''
+			MATCH 
+			«FOR n : nodes SEPARATOR ', '»
+				«IF n.relations.size > 0 »
+					«FOR r:n.relations SEPARATOR ', '»
+						«sourceNode(n)»«directedRelation(r)»«targetNode(r)»
+					«ENDFOR»
+				«ELSE»
+					«queryNode(n)»
+				«ENDIF»
+			«ENDFOR»
+		'''
 	}
 	
-	//FIXME[Anjorin] Meld this functions with the following
-	private def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask) {
-		var out = "";
-		if(injective && nodes.size > 1){
-			out += injectiveBlock(nodes);
-		}
+	private def static String whereQuery( //
+		Collection<NeoNode> nodes, //
+		Collection<NeoAttributeExpression> attr, //
+		boolean injective, //
+		NeoMask mask, //
+		Schedule schedule//
+	) {
+		var injectiveBlock = injective? injectiveBlock(nodes) : ""
 		var maskBlock = maskBlock(nodes, mask)
-		if(out.length > 0 && maskBlock.length > 0)
-			out += " AND "
-		out += maskBlock;	
-		
-		var attrBlock = attributeExpressionQuery(attr);
-		if(out.length > 0 && attrBlock.length > 0)
-			out += " AND ";
-		out += attrBlock;
-						
-		if(out.length > 0)
-			'''WHERE «out»'''
-		else	
-			''''''
+		var attrBlock = attributeExpressionQuery(attr)
+		var scheduleBlock = scheduleBlock(nodes.filter[schedule.hasRangeFor(it.primaryLabel, it.varName)], schedule)
+
+		var blocks = List.of(injectiveBlock, maskBlock, attrBlock, scheduleBlock).toSet.reject[it.empty]
+
+		'''
+			«FOR block : blocks BEFORE "WHERE " SEPARATOR " AND "»
+				«block»
+			«ENDFOR»
+		'''
 	}
 	
-	//FIXME[Anjorin] Meld this functions with the previous
+	private def static String scheduleBlock(Iterable<NeoNode> nodes, Schedule schedule){
+		'''
+			«FOR node : nodes SEPARATOR " AND "»
+				id(«node.varName») in $«schedule.getParameterFor(node.primaryLabel, node.varName)»
+			«ENDFOR»
+		'''
+	}
+		
+	private def static String attributeExpressionQuery(Collection<NeoAttributeExpression> attr) {
+		'''«FOR a:attr SEPARATOR " AND "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
+	}
+	
+	private def static attributeExpressionQueryList(Collection<NeoAttributeExpression> attr) {
+		'''«FOR a:attr SEPARATOR ", "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
+	}
+	
 	private def static String whereQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, NeoMask mask, 
 		HashMap<String,String> equalElem, Collection<String> injElem) {
 		var out = "";
@@ -132,15 +163,15 @@ class CypherPatternBuilder {
 			out += " AND "
 		out += maskBlock;
 		
-		var attrBlock = attributeExpressionQuery(attr);
-		if(out.length > 0 && attrBlock.length > 0)
-			out += " AND ";
-		out += attrBlock;
-		
 		var equalCond = whereEqualElementsConditionQuery(equalElem);
 		if(out.length > 0 && equalCond.length > 0)
 			out += " AND "
 		out += equalCond;
+		
+		var attrBlock = attributeExpressionQuery(attr);
+		if(out.length > 0 && attrBlock.length > 0)
+			out += " AND ";
+		out += attrBlock;
 						
 		if(out.length>0)
 			'''WHERE 
@@ -148,16 +179,7 @@ class CypherPatternBuilder {
 			'''
 		else	
 			''''''
-	}	
-	
-	private def static attributeExpressionQuery(Collection<NeoAttributeExpression> attr) {
-		'''«FOR a:attr SEPARATOR " AND "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
 	}
-	
-	private def static attributeExpressionQueryList(Collection<NeoAttributeExpression> attr) {
-		'''«FOR a:attr SEPARATOR ", "»«a.varName».«a.attrKey» «a.opString» «a.attrValue»«ENDFOR»'''
-	}
-	
 	
 	//FIXME[Anjorin] Get rid of this
 	private def static String injectiveNodes(Collection<String> injElem) {
@@ -172,6 +194,8 @@ class CypherPatternBuilder {
 		'''«FOR entry : relevantEntries.entrySet SEPARATOR 'AND'»
 				id(«entry.key») = «entry.value»«ENDFOR»'''
 	}
+
+	
 
 	private def static String matchQueryForData(Collection<NeoNode> nodes) {
 		'''
@@ -290,33 +314,66 @@ class CypherPatternBuilder {
 	/*****************************
 	 * Basic Constraint Functions
 	 ****************************/
-	def static String constraintQuery(Collection<NeoNode> nodes, Collection<String> helperNodes, String matchCond,
-		String whereCond, Collection<NeoAttributeExpression> attr, boolean injective, int limit, NeoMask mask) {
-
-		'''«IF nodes.size>0»«matchQuery(nodes)»
-		«whereQuery(nodes, attr, injective, mask)»
-		«withQuery(nodes)»«ENDIF»
-		«matchCond»
-		«constraint_withQuery(helperNodes)»
-		WHERE «whereCond»
-		«constraint_withQuery(helperNodes)»
-		«IF nodes.size>0»«IF limit>0»«returnQuery(nodes, limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
-		«ELSE»RETURN TRUE«ENDIF»
+	def static String constraintQuery( //
+		Collection<NeoNode> nodes, //
+		Collection<String> helperNodes, //
+		String matchCond, //
+		String whereCond, //
+		Collection<NeoAttributeExpression> attr, //
+		boolean injective, //
+		Schedule schedule, //
+		NeoMask mask //
+	) {
+		'''
+			«IF nodes.size > 0»
+				«matchQuery(nodes)»
+				«whereQuery(nodes, attr, injective, mask, schedule)»
+				«withQuery(nodes)»
+			«ENDIF»
+			«matchCond»
+			«constraint_withQuery(helperNodes)»
+			WHERE «whereCond»
+			«constraint_withQuery(helperNodes)»
+			«IF nodes.size> 0 »
+				«IF schedule.limit > 0»
+					«returnQuery(nodes, schedule.limit)»
+				«ELSE»
+					«returnQuery(nodes)»
+				«ENDIF»
+			«ELSE»
+				RETURN TRUE
+			«ENDIF»
 		'''
 	}
 
-	def static String constraintQuery_copyPaste(Collection<NeoNode> nodes, Collection<String> helperNodes,
-		String matchCond, String whereCond, Collection<NeoAttributeExpression> attr, boolean injective, int limit) {
-
-		'''«IF nodes.size>0»«matchQuery(nodes)»
-		«whereQuery(nodes, attr, injective, new EmptyMask)»
-		«withQuery(nodes)»«ENDIF»
-		«matchCond»
-		«constraint_withQuery(helperNodes)»
-		WHERE «whereCond»
-		«constraint_withQuery(helperNodes)»
-		«IF nodes.size>0»«IF limit>0»«returnQuery_copyPaste(nodes, limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»
-		«ELSE»RETURN TRUE«ENDIF»
+	def static String constraintQuery_copyPaste(//
+		Collection<NeoNode> nodes,//
+		Collection<String> helperNodes,//
+		String matchCond,// 
+		String whereCond,// 
+		Collection<NeoAttributeExpression> attr,// 
+		boolean injective,//
+		Schedule schedule//
+	) {
+		'''
+			«IF nodes.size > 0»
+				«matchQuery(nodes)»
+				«whereQuery(nodes, attr, injective, new EmptyMask, schedule)»
+				«withQuery(nodes)»
+			«ENDIF»
+			«matchCond»
+			«constraint_withQuery(helperNodes)»
+			WHERE «whereCond»
+			«constraint_withQuery(helperNodes)»
+			«IF nodes.size > 0»
+				«IF schedule.limit > 0»
+					«returnQuery_copyPaste(nodes, schedule.limit)»
+				«ELSE»
+					«returnQuery_copyPaste(nodes)»
+				«ENDIF»
+			«ELSE»
+				RETURN TRUE
+			«ENDIF»
 		'''
 	}
 	
@@ -344,7 +401,7 @@ class CypherPatternBuilder {
 	def static String constraint_matchQuery(Collection<NeoNode> nodes, Collection<NeoAttributeExpression> attr, boolean injective, int idForScope, NeoMask mask) {
 		'''
 			 OPTIONAL «matchQuery(nodes)»
-			«whereQuery(nodes,attr,injective, mask)»
+			«whereQuery(nodes,attr,injective, mask, Schedule.unlimited)»
 			«withCountQuery(nodes, idForScope)»
 		'''
 	}
@@ -411,7 +468,7 @@ class CypherPatternBuilder {
 		) {
 		'''
 		«matchQuery(nodesIf)»
-		«whereQuery(nodesIf, attr, injective, mask)»
+		«whereQuery(nodesIf, attr, injective, mask, Schedule.unlimited)»
 		«withQuery(nodesIf)»
 		OPTIONAL «matchQuery(nodesThen)»
 		«whereQuery(nodesThen, attrOpt, injective, mask, equalElem, injectiveElem)»
@@ -427,28 +484,74 @@ class CypherPatternBuilder {
 	/*****************************
 	 * Basic Condition Functions
 	 ****************************/
-	def static String conditionQuery(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
-		Collection<String> helperNodes, boolean isNegated, Collection<NeoAttributeExpression> attr, boolean injective, int limit, NeoMask mask) {
-		'''«IF nodes.size>0»«matchQuery(nodes)»
-		«whereQuery(nodes, attr, injective, mask)»
-	 	«withQuery(nodes)»«ENDIF»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	«IF nodes.size>0»«IF limit>0»«returnQuery(nodes,limit)»«ELSE»«returnQuery(nodes)»«ENDIF»
-	 	«ELSE»RETURN TRUE«ENDIF»'''
+	def static String conditionQuery( //
+		Collection<NeoNode> nodes, //
+		String optionalMatches, //
+		String whereClause, //
+		Collection<String> helperNodes, //
+		boolean isNegated, //
+		Collection<NeoAttributeExpression> attr, //
+		boolean injective, //
+		Schedule schedule, //
+		NeoMask mask //
+	) {
+		'''
+			«IF nodes.size > 0»
+				«matchQuery(nodes)»
+				«whereQuery(nodes, attr, injective, mask, schedule)»
+				«withQuery(nodes)»
+				«ENDIF»
+			«optionalMatches»
+			«constraint_withQuery(helperNodes)»
+			WHERE «IF isNegated»NOT(«ENDIF»
+			«whereClause»
+			«IF isNegated»)«ENDIF»
+			«IF nodes.size > 0»
+				«IF schedule.limit > 0»
+					«returnQuery(nodes, schedule.limit)»
+				«ELSE»
+					«returnQuery(nodes)»
+				«ENDIF»
+			«ELSE»
+				RETURN TRUE
+			«ENDIF»
+		'''
 	}
 
-	def static String conditionQuery_copyPaste(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
-		Collection<String> helperNodes, boolean isNegated, Collection<NeoAttributeExpression> attr, boolean injective, int limit) {
-		'''«IF nodes.size>0»«matchQuery(nodes)»
-		«whereQuery(nodes, attr, injective, new EmptyMask)»
-	 	«withQuery(nodes)»«ENDIF»
-	 	«optionalMatches»
-	 	«constraint_withQuery(helperNodes)»
-	 	WHERE «IF isNegated»NOT(«ENDIF»«whereClause»«IF isNegated»)«ENDIF»
-	 	«IF nodes.size>0»«IF limit>0»«returnQuery_copyPaste(nodes,limit)»«ELSE»«returnQuery_copyPaste(nodes)»«ENDIF»
-	 	«ELSE»RETURN TRUE«ENDIF»'''
+	def static String conditionQuery_copyPaste( //
+		Collection<NeoNode> nodes, //
+		String optionalMatches, //
+		String whereClause, //
+		Collection<String> helperNodes, //
+		boolean isNegated, //
+		Collection<NeoAttributeExpression> attr, //
+		boolean injective, //
+		Schedule schedule //
+	) {
+		'''
+			«IF nodes.size > 0»
+				«matchQuery(nodes)»
+				«whereQuery(nodes, attr, injective, new EmptyMask, schedule)»
+				«withQuery(nodes)»
+			«ENDIF»
+			«optionalMatches»
+			«constraint_withQuery(helperNodes)»
+			WHERE 
+			«IF isNegated»
+				NOT(«whereClause»)
+			«ELSE»
+				«whereClause»
+			«ENDIF»
+			«IF nodes.size > 0»
+				«IF schedule.limit > 0»
+					«returnQuery_copyPaste(nodes, schedule.limit)»
+				«ELSE»
+					«returnQuery_copyPaste(nodes)»
+				«ENDIF»
+			«ELSE»
+				RETURN TRUE
+			«ENDIF»
+		'''
 	}
 	
 	def static String conditionQuery_isStillValid(Collection<NeoNode> nodes, String optionalMatches, String whereClause,
@@ -456,7 +559,7 @@ class CypherPatternBuilder {
 		'''
 		«unwindQuery()»
 		«IF nodes.size>0»«matchQuery(nodes)»
-		«org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder.isStillValid_whereQuery(nodes,attr)»
+		«CypherPatternBuilder.isStillValid_whereQuery(nodes,attr)»
 		«withQuery(nodes)»«ENDIF», «EMSLUtil.PARAM_NAME_FOR_MATCH»
 		«optionalMatches»
 		«constraint_withQuery(helperNodes)», «EMSLUtil.PARAM_NAME_FOR_MATCH»

@@ -306,4 +306,16 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 						m.getNodeIDs().get(name) : -1 * m.getEdgeIDs().get(name))//
 				.collect(Collectors.toSet());
 	}
+	
+	public int getNrOfILPConstraints() {
+		return ilpProblem.getConstraints().size();
+	}
+	
+	public int getNroOfGraphConstraints() {
+		return negativeConstraints.size();
+	}
+	
+	public String getInfo() {
+		return ilpProblem.getProblemInformation();
+	}
 }

@@ -11,16 +11,15 @@ import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
 import org.emoflon.neo.api.metamodels.API_IT;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
-import org.emoflon.neo.engine.generator.Generator;
+import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class CompanyToIT_CO_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);
@@ -39,13 +38,14 @@ public class CompanyToIT_CO_Run {
 					getNegativeConstraints(builder));
 
 			var coAPI = new API_CompanyToIT_CO(builder);
-			var generator = new Generator<NeoMatch, NeoCoMatch>(//
+			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForCompanyToIT__CO(),//
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //
-					new HeartBeatAndReportMonitor());
+					new HeartBeatAndReportMonitor(), //
+					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");
 			generator.generate();

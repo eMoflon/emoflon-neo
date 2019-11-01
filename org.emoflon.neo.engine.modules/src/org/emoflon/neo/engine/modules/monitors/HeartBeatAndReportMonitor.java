@@ -14,6 +14,8 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 
 	private static final double interval = 5;
 	private double heartBeats = 0;
+	private double elements = 0;
+	private double ruleApps = 0;
 	private Timer timerForHeartBeat = new Timer();
 
 	private Timer totalTimeSpent = new Timer();
@@ -26,7 +28,7 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 	public HeartBeatAndReportMonitor() {
 		totalTimeSpent.start();
 	}
-	
+
 	private class Timer {
 		private double start = 0;
 		private double timeSpentInSeconds = 0;
@@ -110,7 +112,7 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 	}
 
 	@Override
-	public void heartBeat() {
+	public void heartBeat(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
 		if (heartBeats == 0)
 			timerForHeartBeat.start();
 
@@ -119,8 +121,18 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 		if (timerForHeartBeat.getTimeElapsedInSeconds() >= interval) {
 			DecimalFormat df = new DecimalFormat("#.##");
 			df.setRoundingMode(RoundingMode.CEILING);
-			logger.info("Heartbeats/second: " + df.format(heartBeats / timerForHeartBeat.getTimeElapsedInSeconds()));
+			logger.info("*********");
+			logger.info("Heartbeats/second: " + //
+					df.format(heartBeats / timerForHeartBeat.getTimeElapsedInSeconds()));
+			logger.info("Generated elements/second: " + //
+					df.format((matchContainer.getNumberOfGeneratedElements() - elements) / timerForHeartBeat.getTimeElapsedInSeconds()));
+			logger.info("Applied rules/second: " + //
+					df.format((matchContainer.getNumberOfRuleApplications() - ruleApps) / timerForHeartBeat.getTimeElapsedInSeconds()));
+			logger.info("*********");
+			
 			heartBeats = 0;
+			elements = matchContainer.getNumberOfGeneratedElements();
+			ruleApps = matchContainer.getNumberOfRuleApplications();
 		}
 	}
 
@@ -140,6 +152,8 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 			logger.info("Rules applied: ");
 			matchContainer.getRuleApplications().entrySet().stream()//
 					.forEach(entry -> logger.info(" =>  " + entry.getValue() + " @ " + entry.getKey()));
+			logger.info("Elements generated:  " + matchContainer.getNumberOfGeneratedElements());
+			logger.info("Total rules applied: " + matchContainer.getNumberOfRuleApplications());
 			logger.info("********** Generation Report ************");
 			logger.info("");
 		}
