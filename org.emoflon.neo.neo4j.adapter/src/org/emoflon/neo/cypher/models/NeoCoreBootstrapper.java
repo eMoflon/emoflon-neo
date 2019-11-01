@@ -1,10 +1,10 @@
-package org.emoflon.neo.neo4j.adapter.models;
+package org.emoflon.neo.cypher.models;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.cypher.models.templates.NeoProp;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.neo4j.adapter.templates.NeoProp;
 
 public class NeoCoreBootstrapper {
 	public static final String META_TYPE = "metaType";

@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.models.IBuilder;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
@@ -16,8 +18,6 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
-import org.emoflon.neo.neo4j.adapter.models.IBuilder;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.EmptyMask;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;

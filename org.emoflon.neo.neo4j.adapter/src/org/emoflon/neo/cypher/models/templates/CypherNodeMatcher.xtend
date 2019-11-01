@@ -1,4 +1,4 @@
-package org.emoflon.neo.neo4j.adapter.templates
+package org.emoflon.neo.cypher.models.templates
 
 import java.util.ArrayList
 import java.util.List
@@ -12,7 +12,7 @@ class CypherNodeMatcher extends CypherBuilder {
 		nodesToReturn = new ArrayList
 	}
 
-	def String buildCommand() {
+	private def String buildCommand() {
 		if (nodesToReturn.size == 0)
 			throw new IllegalStateException("You have to return something!")
 

@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.models.IBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.patterns.IPattern;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
-import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 import org.neo4j.driver.v1.Record;
@@ -128,6 +128,7 @@ public abstract class NeoPattern implements IPattern<NeoMatch> {
 	 * @param m NeoMatch the match that should be checked
 	 * @return true if the match is still valid or false if not
 	 */
+	@Override
 	public abstract Map<String, Boolean> isStillValid(Collection<NeoMatch> neoMatch);
 
 	public abstract String getQuery();

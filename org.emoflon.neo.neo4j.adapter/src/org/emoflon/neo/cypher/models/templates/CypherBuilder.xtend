@@ -1,4 +1,4 @@
-package org.emoflon.neo.neo4j.adapter.templates
+package org.emoflon.neo.cypher.models.templates
 
 import java.util.HashMap
 import java.util.List
@@ -49,7 +49,7 @@ abstract class CypherBuilder {
 		}
 	}
 
-	def String createKeyForNode(List<NeoProp> props, List<String> labels) {
+	private def String createKeyForNode(List<NeoProp> props, List<String> labels) {
 		'''«props.join("-")»-«labels.join("-")»'''
 	}
 }

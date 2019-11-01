@@ -1,4 +1,4 @@
-package org.emoflon.neo.neo4j.adapter.templates
+package org.emoflon.neo.cypher.models.templates
 
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Data
@@ -12,13 +12,4 @@ import org.eclipse.xtend.lib.annotations.Data
 
 		properties = props
 	}
-}
-
-@Data class NeoProp {
-	val String key
-	val Object value
-
-	override toString() '''
-		«key» : «IF value instanceof String»"«value»"«ELSE»«value»«ENDIF»
-	'''
 }

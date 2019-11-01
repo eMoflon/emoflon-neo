@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes;
 import org.emoflon.neo.emsl.eMSL.ConditionOperator;
@@ -16,7 +17,6 @@ import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper;
 
 public class RulePreProcessor {
 	Map<String, ModelNodeBlock> nodeBlocks;

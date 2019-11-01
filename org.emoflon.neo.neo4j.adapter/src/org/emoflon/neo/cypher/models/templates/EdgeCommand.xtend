@@ -1,4 +1,4 @@
-package org.emoflon.neo.neo4j.adapter.templates
+package org.emoflon.neo.cypher.models.templates
 
 import org.eclipse.xtend.lib.annotations.Data
 

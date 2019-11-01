@@ -43,35 +43,35 @@ public class GEN_CO_Tests extends ENeoTest {
 	@Test
 	public void testOnlyAxiom() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 1);
 		});
 	}
 
 	@Test
 	public void testOneOfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1)
-					.setMax(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 1)
-					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToLaptopRule, 1)
-					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 1);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToLaptopRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToPCRule, 1);
 		});
 	}
 
 	@Test
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 10)
-					.setMax(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 10)
-					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToLaptopRule, 10)
-					.setMax(API_CompanyToIT.CompanyToIT_EmployeeToPCRule, 10);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 10)
+					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 10)
+					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToLaptopRule, 10)
+					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToPCRule, 10);
 		});
 	}
 
 	@Test
 	public void tryLotsOfAdmins() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT_CompanyToITRule, 1)
-					.setMax(API_CompanyToIT.CompanyToIT_AdminToRouterRule, 100);
+			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 1)
+					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 100);
 		});
 	}
 }

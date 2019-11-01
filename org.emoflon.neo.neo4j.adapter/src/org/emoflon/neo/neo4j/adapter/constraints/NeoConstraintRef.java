@@ -1,7 +1,7 @@
 package org.emoflon.neo.neo4j.adapter.constraints;
 
+import org.emoflon.neo.cypher.models.IBuilder;
 import org.emoflon.neo.emsl.eMSL.ConstraintReference;
-import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 

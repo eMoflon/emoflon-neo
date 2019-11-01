@@ -1,4 +1,4 @@
-package org.emoflon.neo.neo4j.adapter.models;
+package org.emoflon.neo.cypher.models;
 
 import java.util.Map;
 

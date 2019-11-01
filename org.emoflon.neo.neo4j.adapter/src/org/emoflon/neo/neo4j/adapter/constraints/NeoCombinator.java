@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.emoflon.neo.neo4j.adapter.models.IBuilder;
+import org.emoflon.neo.cypher.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMask;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
 

@@ -9,6 +9,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.Action;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
@@ -18,7 +19,6 @@ import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoProperty;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeExpression;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeReturn;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoAttributeReturnRelation;

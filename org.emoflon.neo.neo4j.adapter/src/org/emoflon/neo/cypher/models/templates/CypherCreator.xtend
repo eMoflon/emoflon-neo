@@ -1,4 +1,4 @@
-package org.emoflon.neo.neo4j.adapter.templates
+package org.emoflon.neo.cypher.models.templates
 
 import java.util.ArrayList
 import java.util.HashMap
@@ -6,7 +6,7 @@ import java.util.List
 import java.util.Map
 import org.neo4j.driver.v1.Driver
 import org.neo4j.driver.v1.Session
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper
+import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.*
 
 class CypherCreator extends CypherBuilder {
 	// Use to split into chunks
@@ -31,25 +31,25 @@ class CypherCreator extends CypherBuilder {
 		nodesToCreate = new ArrayList
 	}
 
-	def createNode(List<NeoProp> props, List<String> labels) {
-		val nc = new NodeCommand(props, labels)
+	def createNode(List< NeoProp> props, List<String> labels) {
+		val nc = new  NodeCommand(props, labels)
 		nodesToCreate.add(nc)
 		return nc
 	}
 
-	def createNodeWithCont(List<NeoProp> props, List<String> labels, NodeCommand container) {
+	def createNodeWithCont(List< NeoProp> props, List<String> labels,  NodeCommand container) {
 		val nc = createNode(props, labels)
-		createEdge(NeoCoreBootstrapper.META_EL_OF, nc, container)
+		createEdge(META_EL_OF, nc, container)
 		return nc
 	}
 
-	def createNodeWithContAndType(List<NeoProp> props, List<String> labels, NodeCommand type, NodeCommand container) {
+	def createNodeWithContAndType(List< NeoProp> props, List<String> labels,  NodeCommand type,  NodeCommand container) {
 		val nc = createNodeWithCont(props, labels, container)
-		createEdge(NeoCoreBootstrapper.META_TYPE, nc, type)
+		createEdge(META_TYPE, nc, type)
 		return nc
 	}
 
-	def matchNodeWithContainer(List<NeoProp> props, List<String> labels, NodeCommand container) {
+	def matchNodeWithContainer(List< NeoProp> props, List<String> labels,  NodeCommand container) {
 		if (!nodesToMatch.values.contains(container))
 			throw new IllegalArgumentException("A node's container must be matched: " + container)
 
@@ -57,19 +57,19 @@ class CypherCreator extends CypherBuilder {
 		if (nodesToMatch.containsKey(key))
 			return nodesToMatch.get(key)
 		else {
-			val nc = new NodeCommand(props, labels.subList(0, 1))
+			val nc = new  NodeCommand(props, labels.subList(0, 1))
 			nodesToMatch.put(key, nc)
-			if (!props.exists[it.key == NeoCoreBootstrapper.NAMESPACE_PROP])
-				matchEdge(List.of, NeoCoreBootstrapper.META_EL_OF, nc, container)
+			if (!props.exists[it.key == NAMESPACE_PROP])
+				matchEdge(List.of, META_EL_OF, nc, container)
 			return nc
 		}
 	}
 
-	def String createKeyForNodeWithContainer(List<NeoProp> props, List<String> labels, NodeCommand container) {
+	private def String createKeyForNodeWithContainer(List< NeoProp> props, List<String> labels,  NodeCommand container) {
 		'''«props.join("-")»-«labels.join("-")»-«container.name»'''
 	}
 
-	def matchEdge(List<NeoProp> props, String label, NodeCommand from, NodeCommand to) {
+	private def matchEdge(List< NeoProp> props, String label,  NodeCommand from,  NodeCommand to) {
 		if (props === null)
 			throw new IllegalArgumentException("Property list should not be null")
 
@@ -77,26 +77,26 @@ class CypherCreator extends CypherBuilder {
 		if (edgesToMatch.containsKey(key))
 			return edgesToMatch.get(key)
 		else {
-			val ec = new EdgeCommand(props, label, from, to)
+			val ec = new  EdgeCommand(props, label, from, to)
 			edgesToMatch.put(key, ec)
 			return ec
 		}
 	}
 
-	def String createKeyForEdge(List<NeoProp> props, String label, NodeCommand from, NodeCommand to) {
+	private def String createKeyForEdge(List< NeoProp> props, String label,  NodeCommand from,  NodeCommand to) {
 		'''«props.join("-")»-«label»-«from.name»-«to.name»'''
 	}
 
-	def createEdge(String label, NodeCommand from, NodeCommand to) {
+	def createEdge(String label,  NodeCommand from,  NodeCommand to) {
 		createEdgeWithProps(List.of, label, from, to)
 	}
 
-	def createEdgeWithProps(List<NeoProp> props, String label, NodeCommand from, NodeCommand to) {
+	def createEdgeWithProps(List< NeoProp> props, String label,  NodeCommand from,  NodeCommand to) {
 		val key = createKeyForEdge(props, label, from, to)
 		if (edgesToCreate.containsKey(key)) {
 			return edgesToCreate.get(key)
 		} else {
-			val ec = new EdgeCommand(props, label, from, to)
+			val ec = new  EdgeCommand(props, label, from, to)
 			edgesToCreate.put(key, ec)
 			return ec
 		}
@@ -104,26 +104,26 @@ class CypherCreator extends CypherBuilder {
 
 	def void run(Driver driver) {
 		val session = driver.session
-		val nodesToIds = new HashMap<NodeCommand, Number>
+		val nodesToIds = new HashMap< NodeCommand, Number>
 		matchNodesAndEdges(session, nodesToIds)
 		createGreenNodesAccordingToLabels(session, nodesToIds)
 		createGreenEdgesAccordingToLabels(session, nodesToIds)
 		session.close
 	}
 
-	def createGreenNodesAccordingToLabels(Session session, HashMap<NodeCommand, Number> nodesToIds) {
+	private def createGreenNodesAccordingToLabels(Session session, HashMap< NodeCommand, Number> nodesToIds) {
 		val nodesGroupedByLabel = nodesToCreate.groupBy[n|n.labels.join(":")]
 		for (nodesWithSameLabel : nodesGroupedByLabel.entrySet)
 			createGreenNodesInBatches(session, nodesWithSameLabel.key, nodesWithSameLabel.value, nodesToIds)
 	}
 
-	def createGreenEdgesAccordingToLabels(Session session, HashMap<NodeCommand, Number> nodesToIds) {
+	private def createGreenEdgesAccordingToLabels(Session session, HashMap< NodeCommand, Number> nodesToIds) {
 		val edgesGroupedByLabel = edgesToCreate.values.groupBy[e|e.label]
 		for (edgesWithSameLabel : edgesGroupedByLabel.entrySet)
 			createGreenEdgesInBatches(session, edgesWithSameLabel.key, edgesWithSameLabel.value, nodesToIds)
 	}
 
-	def matchNodesAndEdges(Session session, HashMap<NodeCommand, Number> nodesToIds) {
+	private def matchNodesAndEdges(Session session, HashMap< NodeCommand, Number> nodesToIds) {
 		if (nodesToMatch.empty && edgesToMatch.empty)
 			return
 
@@ -139,8 +139,8 @@ class CypherCreator extends CypherBuilder {
 		nodesToMatch.values.forEach[n|nodesToIds.put(n, record.get('''id(«n.name»)''').asNumber)]
 	}
 
-	def createGreenNodesInBatches(Session session, String labels, List<NodeCommand> nodesWithSameLabel,
-		HashMap<NodeCommand, Number> nodesToIds) {
+	private def createGreenNodesInBatches(Session session, String labels, List< NodeCommand> nodesWithSameLabel,
+		HashMap< NodeCommand, Number> nodesToIds) {
 		val itr = nodesWithSameLabel.iterator
 		while (itr.hasNext) {
 			val chosenNodes = itr.take(maxTransactionSizeNodes).toList
@@ -167,8 +167,8 @@ class CypherCreator extends CypherBuilder {
 		}
 	}
 
-	def createGreenEdgesInBatches(Session session, String label, List<EdgeCommand> edgesWithSameLabel,
-		HashMap<NodeCommand, Number> nodesToIds) {
+	private def createGreenEdgesInBatches(Session session, String label, List< EdgeCommand> edgesWithSameLabel,
+		HashMap< NodeCommand, Number> nodesToIds) {
 		val itr = edgesWithSameLabel.iterator
 		while (itr.hasNext) {
 			val edges = itr.take(maxTransactionSizeEdges).toList

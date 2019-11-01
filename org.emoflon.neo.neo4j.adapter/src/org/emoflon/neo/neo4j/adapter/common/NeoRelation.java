@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
 public class NeoRelation {
 	private NeoNode from;
