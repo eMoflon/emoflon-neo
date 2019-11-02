@@ -3,7 +3,6 @@ package org.emoflon.neo.engine.modules.updatepolicies;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,7 +11,6 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
-import org.emoflon.neo.engine.modules.analysis.RuleAnalyser;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
@@ -43,23 +41,10 @@ public class TwoPhaseUpdatePolicyForGEN implements IUpdatePolicy<NeoMatch, NeoCo
 
 		while (!matches.hasNoMatches()) {
 			var randomSelection = randomSingleChoice.selectMatches(matches, progressMonitor);
-			var chosenRule = randomSelection.keySet().iterator().next();
-			var chosenMatch = randomSelection.get(chosenRule).iterator().next();
-
-			if (matches.isPristine(chosenMatch)//
-					|| RuleAnalyser.isFree(RuleAnalyser.toRule(chosenRule)) //
-					|| isStillValid(chosenMatch))
-				return randomSelection;
-			else
-				matches.removeMatch(chosenRule, chosenMatch);
+			return randomSelection;
 		}
 
 		return Collections.emptyMap();
-	}
-
-	private boolean isStillValid(NeoMatch chosenMatch) {
-		return chosenMatch.getPattern().isStillValid(List.of(chosenMatch)).values().stream()//
-				.allMatch(res -> res == true);
 	}
 
 	private Collection<NeoMatch> maxCopies(IRule<NeoMatch, NeoCoMatch> rule, Collection<NeoMatch> singleMatch) {

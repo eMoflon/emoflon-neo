@@ -13,6 +13,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.common.NeoNode;
 import org.emoflon.neo.neo4j.adapter.common.NeoRelation;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
@@ -210,8 +211,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	@Override
-	public Collection<NeoMatch> determineMatches(int limit) {
-		return contextPattern.determineMatches(limit);
+	public Collection<NeoMatch> determineMatches(Schedule schedule) {
+		return contextPattern.determineMatches(schedule);
 	}
 
 	@Override
@@ -222,7 +223,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Optional<Collection<NeoCoMatch>> applyAll(Collection<NeoMatch> matches) {
 		logger.debug("Execute Rule " + getName());
-		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(getNodes(), useSPOSemantics,
+		var cypherQuery = CypherPatternBuilder.ruleExecutionQuery(getContextNodes(), useSPOSemantics,
 				redNodes.values(), greenNodes.values(), blackNodes.values(), redRel.values(), greenRel.values(),
 				blackRel.values(), attrExpr, attrAssign);
 
@@ -233,7 +234,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		map.put("matches", list);
 
 		logger.debug(map.toString() + "\n" + cypherQuery);
-		var result = builder.executeQueryWithParameters(cypherQuery, map);
+		var result = builder.executeQuery(cypherQuery, map);
 
 		if (result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
@@ -268,11 +269,15 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		return Streams.concat(greenNodes.keySet().stream(), greenRel.keySet().stream());
 	}
 
-	public Collection<NeoNode> getNodes() {
+	public Collection<NeoNode> getContextNodes() {
 		var nodes = new ArrayList<NeoNode>();
 		nodes.addAll(blackNodes.values());
 		nodes.addAll(redNodes.values());
 		return nodes;
+	}
+	
+	public Map<String, NeoNode> getCreatedNodes(){
+		return greenNodes;
 	}
 
 	@Override

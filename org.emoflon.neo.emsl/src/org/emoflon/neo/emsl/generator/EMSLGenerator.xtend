@@ -55,29 +55,26 @@ class EMSLGenerator extends AbstractGenerator {
 		val apiName = getAPIName(resource)
 		val apiFile = getAPIFileName(resource)
 
-		emslSpec = resource.contents.get(0) as EMSL_Spec		
-		emslSpec.entities.filter[it instanceof TripleGrammar]
-						 .map[it as TripleGrammar]
-						 .forEach[
-						 	new TGGCompiler(it, apiPath + "/" + apiName)
-						 	.compileAll(fsa)
-						 ]
+		emslSpec = resource.contents.get(0) as EMSL_Spec
+		emslSpec.entities.filter[it instanceof TripleGrammar].map[it as TripleGrammar].forEach [
+			new TGGCompiler(it, apiPath + "/" + apiName).compileAll(fsa)
+		]
 
 		fsa.generateFile(API_ROOT + "API_Common.java", generateCommon())
 		fsa.generateFile(API_ROOT + apiPath + "/" + apiFile + ".java",
 			generateAPIFor(apiFile, apiPath, emslSpec, resource))
 	}
 
-	def getAPIName(Resource resource){
+	def getAPIName(Resource resource) {
 		val segments = resource.URI.trimFileExtension.segmentsList
 		return segments.last
 	}
 
-	def getAPIFileName(Resource resource){
+	def getAPIFileName(Resource resource) {
 		return "API_" + getAPIName(resource)
 	}
 
-	def getAPIPath(Resource resource){
+	def getAPIPath(Resource resource) {
 		val segments = resource.URI.trimFileExtension.segmentsList
 
 		// Always remove:  resource/projectName
@@ -89,7 +86,7 @@ class EMSLGenerator extends AbstractGenerator {
 		val apiPath = segments //
 		.drop(prefixSegments).take(segments.size - (prefixSegments + 1)) // only take path up to EMSL file
 		.join("/");
-		
+
 		return apiPath
 	}
 
@@ -104,8 +101,8 @@ class EMSLGenerator extends AbstractGenerator {
 		ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
 		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder(SRC_GEN_Folder))
 		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder(TGG_GEN_FOLDER))
-		
-		if(project.getFolder(TGG_GEN_FOLDER).exists) 
+
+		if (project.getFolder(TGG_GEN_FOLDER).exists)
 			project.getFolder(TGG_GEN_FOLDER).touch(new NullProgressMonitor)
 	}
 
@@ -302,12 +299,13 @@ class EMSLGenerator extends AbstractGenerator {
 		}
 		
 	'''
-	
-	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks){
+
+	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks) {
 		helperClasses(nodeBlocks, [true], [true])
 	}
 
-	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) '''
+	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter,
+		Predicate<ModelRelationStatement> edgeFilter) '''
 		«FOR node : nodeBlocks.filter(nodeFilter)»
 			«helperNodeClass(node)»
 			
@@ -354,11 +352,13 @@ class EMSLGenerator extends AbstractGenerator {
 			}
 		}
 	'''
-	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks){
+
+	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks) {
 		constructor(fileName, nodeBlocks, [true], [true])
 	}
 
-	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) '''
+	protected def CharSequence constructor(String fileName, Iterable<ModelNodeBlock> nodeBlocks,
+		Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) '''
 		public «fileName»(Record data) {
 			«FOR node : nodeBlocks.filter(nodeFilter)»
 				var «node.name» = data.get("«node.name»");
@@ -377,11 +377,12 @@ class EMSLGenerator extends AbstractGenerator {
 		
 	'''
 
-	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks){
+	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks) {
 		classMembers(nodeBlocks, [true], [true])
 	}
 
-	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) {
+	def CharSequence classMembers(Iterable<ModelNodeBlock> nodeBlocks, Predicate<ModelNodeBlock> nodeFilter,
+		Predicate<ModelRelationStatement> edgeFilter) {
 		'''
 			«FOR node : nodeBlocks.filter(nodeFilter)»
 				public final «node.name.toFirstUpper»Node «node.name»;
@@ -434,9 +435,8 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(GraphGrammar gg, int index) {
 		if(gg.abstract) return ""
 		try {
-			val ruleMethods = gg.rules.stream
-										.map["getRule_" + namingConvention(it.name) + "().rule()"]
-										.collect(Collectors.toSet)
+			val ruleMethods = gg.rules.stream.map["getRule_" + namingConvention(it.name) + "().rule()"].collect(
+				Collectors.toSet)
 			'''
 				public Collection<NeoRule> getAllRulesFor«namingConvention(gg.name)»() {
 					Collection<NeoRule> rules = new HashSet<>();
@@ -459,8 +459,8 @@ class EMSLGenerator extends AbstractGenerator {
 			'''//FIXME Unable to generate API: «e.toString»  */ '''
 		}
 	}
-	
-	dispatch def generateAccess(TripleGrammar tgg, int index){
+
+	dispatch def generateAccess(TripleGrammar tgg, int index) {
 		if(tgg.abstract) return ""
 		try {
 			val rootName = namingConvention(tgg.name)
@@ -490,9 +490,17 @@ class EMSLGenerator extends AbstractGenerator {
 			'''//FIXME Unable to generate API: «e.toString»  */ '''
 		}
 	}
-	
-	dispatch def generateAccess(TripleRule tr, int index){
-		'''public static String «tr.type.name»_«tr.name» = "«tr.name»";'''
+
+	dispatch def generateAccess(TripleRule tr, int index) {
+		if (tr.abstract)
+			return ""
+		else
+			'''
+				public static final String «tr.type.name»__«tr.name» = "«tr.name»";
+				«FOR node : tr.srcNodeBlocks+tr.trgNodeBlocks»
+					public static final String «tr.type.name»__«tr.name»__«node.name» = "«node.name»";
+				«ENDFOR»
+			'''
 	}
 
 	dispatch def generateAccess(Rule r, int index) {
@@ -590,6 +598,10 @@ class EMSLGenerator extends AbstractGenerator {
 			public Metamodel getMetamodel_«namingConvention(m.name)»(){
 				return (Metamodel) spec.getEntities().get(«index»);
 			}
+			
+			«FOR type : m.nodeBlocks»
+				public static final String «m.name»__«type.name» = "«m.name»__«type.name»";
+			«ENDFOR»
 		'''
 	}
 

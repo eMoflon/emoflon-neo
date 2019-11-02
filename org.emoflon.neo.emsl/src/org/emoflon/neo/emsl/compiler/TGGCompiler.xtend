@@ -47,6 +47,7 @@ class TGGCompiler {
 	def void compileAll(IFileSystemAccess2 fsa) {
 		for (Operation operation : Operation.allOps) {
 			val fileLocation = BASE_FOLDER + pathToGeneratedFiles + "/" + tgg.name + operation.nameExtension + ".msl"
+			fsa.deleteFile(fileLocation);
 			fsa.generateFile(fileLocation, compile(operation))
 		}
 	}

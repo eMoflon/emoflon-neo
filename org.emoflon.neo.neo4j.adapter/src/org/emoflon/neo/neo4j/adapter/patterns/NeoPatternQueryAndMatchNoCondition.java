@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
 import org.emoflon.neo.neo4j.adapter.util.NeoQueryData;
@@ -26,12 +27,12 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 	}
 
 	@Override
-	public Collection<NeoMatch> determineMatches(int limit) {
+	public Collection<NeoMatch> determineMatches(Schedule schedule) {
 		logger.debug("Searching matches for Pattern: " + getName());
-		var cypherQuery = CypherPatternBuilder.readQuery(nodes, queryData.getAttributeExpressions(), injective, limit, mask);
+		var cypherQuery = CypherPatternBuilder.readQuery(nodes, queryData.getAttributeExpressions(), injective, schedule, mask);
 		logger.debug(cypherQuery);
 
-		var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQuery(cypherQuery, schedule.getParameters());
 		var matches = new ArrayList<NeoMatch>();
 		
 		if(result == null) {
@@ -63,7 +64,7 @@ public class NeoPatternQueryAndMatchNoCondition extends NeoPattern {
 		map.put("matches",list);
 		
 		logger.debug(map.toString() + "\n" + cypherQuery);
-		var result = builder.executeQueryWithParameters(cypherQuery, map);
+		var result = builder.executeQuery(cypherQuery, map);
 
 		var results = result.list();
 		var hashCode = new ArrayList<String>();
