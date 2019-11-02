@@ -189,7 +189,8 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	}
 
 	@Override
-	protected MatchContainer<NeoMatch, NeoCoMatch> createMatchContainer() {
+	protected MatchContainer<NeoMatch, NeoCoMatch> createMatchContainer(
+			Collection<? extends IRule<NeoMatch, NeoCoMatch>> allRules) {
 		return new NeoMatchContainer(allRules);
 	}
 }
@@ -225,7 +226,6 @@ class ParameterData {
 	}
 }
 
-@Deprecated
 class ParameterPlaceHolder {
 	private String name;
 

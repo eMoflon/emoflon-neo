@@ -12,7 +12,7 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public class NeoMatchContainer extends MatchContainer<NeoMatch, NeoCoMatch> {
 
-	public NeoMatchContainer(Collection<IRule<NeoMatch, NeoCoMatch>> allRules) {
+	public NeoMatchContainer(Collection<? extends IRule<NeoMatch, NeoCoMatch>> allRules) {
 		super(allRules);
 	}
 
@@ -23,7 +23,7 @@ public class NeoMatchContainer extends MatchContainer<NeoMatch, NeoCoMatch> {
 		var before = ruleApplications.get(rule);
 		var after = before + noOfApplications;
 		ruleApplications.put(rule, after);
-		
+
 		comatches.ifPresent(cms -> cms.forEach(cm -> addCreatedElementIDsToRange(cm, rule)));
 	}
 
