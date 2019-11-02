@@ -17,6 +17,7 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMatchReprocessor;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IParameterValueGenerator;
@@ -58,7 +59,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	}
 
 	@Override
-	protected void determineMatches(Map<IRule<NeoMatch, NeoCoMatch>, Integer> scheduledRules,
+	protected void determineMatches(Map<IRule<NeoMatch, NeoCoMatch>, Schedule> scheduledRules,
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
 
 		mapParameters(scheduledRules.keySet());
@@ -89,8 +90,12 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		maskParameters(freeParameters.get(rule), mask);
 		matches.forEach(
 				match -> parameterData.forEach((param, data) -> match.addParameter(param.getName(), data.getValue())));
-		NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
-		matchContainer.appliedRule(rule, matches);
+		var comatches = NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
+		matchContainer.appliedRule(rule, matches, comatches);
+//		AttributeMask mask = new AttributeMask();
+//		maskParameters(rule.getEMSLRule(), mask, matches);
+//		var comatches = NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
+//		matchContainer.appliedRule(rule, matches, comatches);
 	}
 
 	private void mapParameters(Collection<IRule<NeoMatch, NeoCoMatch>> rules) {
@@ -181,6 +186,11 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		return valueGen.map(vg -> vg.generateValueFor(parameterName))//
 				.orElseThrow(() -> new IllegalArgumentException(
 						"Unable to generate value for: " + parameterName + ":" + dataType.eClass().getName()));
+	}
+
+	@Override
+	protected MatchContainer<NeoMatch, NeoCoMatch> createMatchContainer() {
+		return new NeoMatchContainer(allRules);
 	}
 }
 

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.neo4j.adapter.constraints.NeoPositiveConstraint;
 import org.emoflon.neo.neo4j.adapter.models.IBuilder;
 import org.emoflon.neo.neo4j.adapter.templates.CypherPatternBuilder;
@@ -32,18 +33,18 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 	}
 
 	@Override
-	public Collection<NeoMatch> determineMatches(int limit) {
+	public Collection<NeoMatch> determineMatches(Schedule schedule) {
 		// Condition is positive Constraint (ENFORCE xyz)
 		logger.debug("Searching matches for Pattern: " + getName() + " ENFORCE " + pcond.getName());
 
 		// Create Query
 		var cypherQuery = CypherPatternBuilder.constraintQuery(nodes, queryData.getAllElements(),
-				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective, limit, mask);
+				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective, schedule, mask);
 
 		logger.debug(cypherQuery);
 
 		// Execute query
-		var result = builder.executeQuery(cypherQuery);
+		var result = builder.executeQuery(cypherQuery, schedule.getParameters());
 
 		if(result == null) {
 			throw new DatabaseException("400", "Execution Error: See console log for more details.");
@@ -78,7 +79,7 @@ public class NeoPatternQueryAndMatchPositiveConstraint extends NeoPattern {
 				pcond.getQueryString_MatchCondition(), pcond.getQueryString_WhereCondition(), queryData.getAttributeExpressions(), injective);
 
 		logger.debug(map.toString() + "\n" + cypherQuery);
-		var result = builder.executeQueryWithParameters(cypherQuery, map);
+		var result = builder.executeQuery(cypherQuery, map);
 
 		var results = result.list();
 		var hashCode = new ArrayList<String>();

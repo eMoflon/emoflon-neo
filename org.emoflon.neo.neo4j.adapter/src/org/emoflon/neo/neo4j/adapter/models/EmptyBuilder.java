@@ -12,7 +12,7 @@ public class EmptyBuilder implements IBuilder {
 	}
 
 	@Override
-	public StatementResult executeQueryWithParameters(String cypherQuery, Map<String, Object> params) {
+	public StatementResult executeQuery(String cypherQuery, Map<String, Object> params) {
 		throw new UnsupportedOperationException();
 	}
 

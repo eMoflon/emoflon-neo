@@ -1,7 +1,6 @@
 package org.emoflon.neo.engine.modules.ruleschedulers;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.emoflon.neo.engine.api.rules.IRule;
@@ -11,16 +10,27 @@ import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
 import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
+import org.emoflon.neo.engine.generator.INodeSampler;
 
-public class AllRulesAllMatchesScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
+import com.google.common.base.Functions;
+
+public class ElementRangeRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
+
+	private INodeSampler sampler;
+
+	public ElementRangeRuleScheduler(INodeSampler sampler) {
+		this.sampler = sampler;
+	}
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Schedule> scheduleWith(//
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
 			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
 	) {
-		return matchContainer.getAllRulesToMatches().entrySet().stream()//
-				.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
-	}
+		var scheduledRules = matchContainer.streamAllRules()//
+				.collect(Collectors.toMap(Functions.identity(), //
+						r -> new Schedule(-1, matchContainer.getNodeRange(), r, sampler)));
 
+		return scheduledRules;
+	}
 }

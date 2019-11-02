@@ -4,6 +4,7 @@ import static org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -77,17 +78,17 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	@Override
 	public StatementResult executeQuery(String cypherStatement) {
-		return executeQueryWithParameters(cypherStatement, null);
+		return executeQuery(cypherStatement, Collections.emptyMap());
 	}
 
 	@Override
-	public StatementResult executeQueryWithParameters(String cypherStatement, Map<String, Object> parameters) {
+	public StatementResult executeQuery(String cypherStatement, Map<String, Object> parameters) {
 		var session = driver.session();
 		var transaction = session.beginTransaction();
 
 		try {
 			StatementResult result;
-			if (parameters == null || parameters.isEmpty())
+			if (parameters.isEmpty())
 				result = transaction.run(cypherStatement.trim());
 			else
 				result = transaction.run(cypherStatement.trim(), parameters);
@@ -673,12 +674,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public long noOfNodesInDatabase() {
-		var result = executeQueryWithParameters("MATCH (n) return count(n)", null);
+		var result = executeQuery("MATCH (n) return count(n)");
 		return (long) result.list().get(0).asMap().values().iterator().next();
 	}
 
 	public long noOfEdgesInDatabase() {
-		var result = executeQueryWithParameters("MATCH ()-[r]->() return count(r)", null);
+		var result = executeQuery("MATCH ()-[r]->() return count(r)");
 		return (long) result.list().get(0).asMap().values().iterator().next();
 	}
 
