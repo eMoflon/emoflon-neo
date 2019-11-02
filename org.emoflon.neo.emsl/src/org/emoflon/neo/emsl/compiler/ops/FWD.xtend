@@ -48,4 +48,12 @@ class FWD implements Operation {
 	override preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return nacs.reject[it instanceof SourceNAC]
 	}
+	
+	override requiresSrcModelCreation() {
+		false
+	}
+	
+	override requiresTrgModelCreation() {
+		true
+	}
 }

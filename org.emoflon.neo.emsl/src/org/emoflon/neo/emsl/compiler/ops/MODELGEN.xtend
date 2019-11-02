@@ -34,4 +34,12 @@ class MODELGEN implements Operation {
 	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return nacs
 	}
+
+	override requiresSrcModelCreation() {
+		true
+	}
+	
+	override requiresTrgModelCreation() {
+		true
+	}
 }

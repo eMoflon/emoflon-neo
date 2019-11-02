@@ -48,4 +48,12 @@ class BWD implements Operation {
 	override preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return nacs.reject[it instanceof TargetNAC]
 	}
+
+	override requiresSrcModelCreation() {
+		true
+	}
+	
+	override requiresTrgModelCreation() {
+		false
+	}
 }

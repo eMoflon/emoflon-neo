@@ -55,26 +55,46 @@ class TGGCompilerUtils {
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
 
-	def static String printAtomicPattern(String newPatternName, AtomicPattern pattern, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData) {
+	def static String printAtomicPattern(String newPatternName, AtomicPattern pattern, boolean isSrc, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData) {
 		val requiredNodeBlocks = new HashSet
+		val modelDomain = if(isSrc) "src" else "trg"
+		val externalDomain = if(isSrc) "trg" else "src"
+		
+		val nodeBlocks = 
+		'''
+			«FOR nodeBlock : pattern.nodeBlocks»
+				«simplePrintNodeBlock(nodeBlock, modelDomain, nodeTypeNames, paramsToData, requiredNodeBlocks)»
+			«ENDFOR»
+		'''
+		val requiredExternalBlocks = requiredNodeBlocks.filter[block | !pattern.nodeBlocks.exists[it.name.equals(block.name)]]
+		
 		'''
 			pattern «newPatternName» {
-				«FOR nodeBlock : pattern.nodeBlocks»
-					«simplePrintNodeBlock(nodeBlock, nodeTypeNames, paramsToData, requiredNodeBlocks)»
-				«ENDFOR»
+				«modelDomain»M : Model {
+					.ename : <__«modelDomain»ModelName>
+				}
 				
-				«FOR nodeBlock : requiredNodeBlocks»
-					«IF !pattern.nodeBlocks.exists[it.name.equals(nodeBlock.name)]»
-						«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)»
-					«ENDIF»
+				«nodeBlocks»
+				
+				«IF !requiredExternalBlocks.isEmpty»
+					«externalDomain»M : Model {
+						.ename : <__«externalDomain»ModelName>
+					}
+				«ENDIF»
+				
+				«FOR nodeBlock : requiredExternalBlocks»
+					«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)» {
+						-elementOf->«externalDomain»M
+					}
 				«ENDFOR»
 			}
 		'''
 	}
 	
-	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks) {
+	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, String domain, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks) {
 		'''
 			«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)» {
+				-elementOf->«domain»M
 				«FOR relation : nodeBlock.relations»
 					«simplePrintRelationStatement(relation, paramsToData, requiredNodeBlocks)»
 				«ENDFOR»

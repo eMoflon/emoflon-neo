@@ -25,6 +25,7 @@ import org.emoflon.neo.emsl.eMSL.Parameter
 import java.util.Map
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.SourceNAC
 
 class TGGCompiler {
 	
@@ -56,10 +57,16 @@ class TGGCompiler {
 			«importStatements»
 			
 			grammar «tgg.name»_«op.nameExtension» {
+				«IF op.requiresSrcModelCreation»createSrcModel«ENDIF»
+				«IF op.requiresTrgModelCreation»createTrgModel«ENDIF»
 				«FOR rule : flattenedRules»
 					«rule.name»
 				«ENDFOR»
 			}
+			
+			«IF op.requiresSrcModelCreation»«generateSrcModelCreationRule(tgg.srcMetamodels.map[it.name])»«ENDIF»
+			
+			«IF op.requiresTrgModelCreation»«generateTrgModelCreationRule(tgg.trgMetamodels.map[it.name])»«ENDIF»
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
 				«compileRule(op, rule)»
@@ -107,11 +114,11 @@ class TGGCompiler {
 
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
-		val nacPatterns = op.preprocessNACs(rule.nacs).map[EMSLFlattener.flatten(it.pattern) as AtomicPattern].toList
+		val nacPatterns = op.preprocessNACs(rule.nacs).toInvertedMap[EMSLFlattener.flatten(it.pattern) as AtomicPattern]
 		
 		collectParameters(rule.srcNodeBlocks, ParameterDomain.SRC, paramsToData, paramGroups)
 		collectParameters(rule.trgNodeBlocks, ParameterDomain.TRG, paramsToData, paramGroups)
-		collectParameters(nacPatterns.flatMap[it.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
+		collectParameters(nacPatterns.values.flatMap[it.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
 		
 		op.handleParameters(paramsToData, paramGroups)
 		
@@ -125,6 +132,18 @@ class TGGCompiler {
 		
 		'''
 			rule «rule.name» {
+				«IF !rule.srcNodeBlocks.isEmpty»
+					srcM : Model {
+						.ename : <__srcModelName>
+					}
+				«ENDIF»
+				
+				«IF !rule.trgNodeBlocks.isEmpty»
+					trgM : Model {
+						.ename : <__trgModelName>
+					}
+				«ENDIF»
+				
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
 					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData)»
 				«ENDFOR»
@@ -135,17 +154,18 @@ class TGGCompiler {
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
 			«IF(nacPatterns.size === 1)»
-				«val nac = nacPatterns.head»
-				constraint «rule.name»NAC = forbid «getNacName(rule, nac)»
+				«val nacName = getNacName(rule, nacPatterns.values.head)»
+				constraint «rule.name»NAC = forbid «nacName»
 
-				«TGGCompilerUtils.printAtomicPattern(getNacName(rule, nac), nac, nodeTypeNames, paramsToData)»
+				«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData)»
 			«ELSEIF(nacPatterns.size > 1)»
-					constraint «rule.name»NAC = «FOR nac : nacPatterns SEPARATOR ' && '»«getNacName(rule, nac)»NAC«ENDFOR»
+					constraint «rule.name»NAC = «FOR pattern : nacPatterns.values SEPARATOR ' && '»«getNacName(rule, pattern)»NAC«ENDFOR»
 					
-					«FOR nac : nacPatterns»
-						constraint «getNacName(rule, nac)»NAC = forbid «getNacName(rule, nac)»
+					«FOR nacPattern : nacPatterns.entrySet»
+						«val nacName = getNacName(rule, nacPattern.value)»
+						constraint «nacName»NAC = forbid «nacName»
 					
-						«TGGCompilerUtils.printAtomicPattern(getNacName(rule, nac), nac, nodeTypeNames, paramsToData)»
+						«TGGCompilerUtils.printAtomicPattern(nacName, nacPattern.value, nacPattern.key instanceof SourceNAC, nodeTypeNames, paramsToData)»
 					«ENDFOR»
 			«ENDIF»
 		'''
@@ -173,8 +193,10 @@ class TGGCompiler {
 	}
 
 	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
+		val action = op.getAction(nodeBlock.action, isSrc)
 		'''
-			«op.getAction(nodeBlock.action, isSrc)»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
+			«action»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
+				«action»-elementOf->«IF isSrc»srcM«ELSE»trgM«ENDIF»
 				«FOR relation : nodeBlock.relations»
 					«compileRelationStatement(op, relation, isSrc, paramsToData)»
 				«ENDFOR»
@@ -231,5 +253,55 @@ class TGGCompiler {
 		}
 		else
 			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
+	}
+
+	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames) {
+		'''
+			rule createSrcModel {
+				++ srcM : Model {
+					.ename := <__srcModelName>
+					«FOR srcMetaModel : srcMetaModelNames»
+						++ -conformsTo-> mm«srcMetaModel»
+					«ENDFOR»
+				}
+			
+				«FOR srcMetaModel : srcMetaModelNames»
+					mm«srcMetaModel» : MetaModel {
+						.ename : "«srcMetaModel»"
+					}
+				«ENDFOR»
+			} when forbid srcModelExists
+			
+			pattern srcModelExists {
+				srcM : Model {
+					.ename : <__srcModelName>
+				}
+			}
+		'''
+	}
+	
+	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames) {
+		'''
+			rule createTrgModel {
+				++ trgM : Model {
+					.ename := <__trgModelName>
+					«FOR trgMetaModel : trgMetaModelNames»
+						++ -conformsTo-> mm«trgMetaModel»
+					«ENDFOR»
+				}
+			
+				«FOR trgMetaModel : trgMetaModelNames»
+					mm«trgMetaModel» : MetaModel {
+						.ename : "«trgMetaModel»"
+					}
+				«ENDFOR»
+			} when forbid trgModelExists
+			
+			pattern trgModelExists {
+				trgM : Model {
+					.ename : <__trgModelName>
+				}
+			}
+		'''
 	}
 }
