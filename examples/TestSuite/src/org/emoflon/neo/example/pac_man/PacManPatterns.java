@@ -4,6 +4,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_PacMan;
 import org.emoflon.neo.example.ENeoTest;
@@ -25,7 +27,7 @@ public class PacManPatterns extends ENeoTest {
 	
 	@Test
 	public void test_GhostOnField() {
-		assertThat(entities.getPattern_GhostOnField().matcher().countMatches(), is(2));
+		assertThat(entities.getPattern_GhostOnField().pattern().countMatches(), is(2));
 	}
 	
 	@Test
@@ -40,6 +42,6 @@ public class PacManPatterns extends ENeoTest {
 	
 	@Test
 	public void test_Paths() {
-		assertEquals(1, entities.getPattern_RelatedFields().matcher().countMatches());
+		assertEquals(1, entities.getPattern_RelatedFields().pattern().countMatches());
 	}
 }

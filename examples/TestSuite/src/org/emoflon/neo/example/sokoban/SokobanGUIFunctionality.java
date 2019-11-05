@@ -31,7 +31,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 	@Test
 	public void testFigureTypes() {
 		var access = entities.getPattern_FigureTypes();
-		var matches = access.matcher().determineMatches();
+		var matches = access.pattern().determineMatches();
 		var data = access.data(matches);
 		var types = data.map(m -> m.eclass.ename).collect(Collectors.toList());
 		assertEquals(3, types.size());
@@ -47,14 +47,14 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		var mask = access.mask();
 		mask.setB_fields_0_fCol(1);
 		mask.setB_fields_0_fRow(1);
-		var result = access.rule(mask).apply();
+		var result = access.apply(mask);
 		assertTrue(result.isPresent());
 		var fieldId = result.get().getIdForNode(access.f);
 
 		var testAccess = entities.getPattern_Occupied();
 		var testMask = testAccess.mask();
 		testMask.setField(fieldId);
-		assertEquals(1, testAccess.matcher(testMask).countMatches());
+		assertEquals(1, testAccess.countMatches(testMask));
 
 		assertEquals(1, access.data(List.of(result.get())).findAny().get().b_fields_0_f.row);
 		assertEquals(1, access.data(List.of(result.get())).findAny().get().b_fields_0_f.col);
@@ -113,7 +113,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(1);
 			mask.setB_fields_0_fRow(1);
-			var match = access.rule(mask).determineOneMatch();
+			var match = access.determineOneMatch(mask);
 
 			assertTrue(match.isPresent());
 			var m = match.get();
@@ -128,7 +128,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(1);
 			mask.setB_fields_0_fRow(1);
-			var match = access.rule(mask).determineOneMatch();
+			var match = access.determineOneMatch(mask);
 
 			assertTrue(match.isPresent());
 			var m = match.get();

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
@@ -17,7 +18,6 @@ import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public class CompanyToIT_GEN_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);

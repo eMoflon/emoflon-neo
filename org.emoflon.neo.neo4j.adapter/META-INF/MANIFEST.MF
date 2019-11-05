@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Neo4JAdapter
 Bundle-SymbolicName: org.emoflon.neo.neo4j.adapter
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.emoflon.neo.neo4j.adapter.Activator
+Bundle-Activator: org.emoflon.neo.cypher.Activator
 Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  com.google.guava;visibility:=reexport,
  org.eclipse.xtext.xbase.lib;visibility:=reexport,
@@ -16,15 +16,14 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.emoflon.neo.engine;visibility:=reexport
 Automatic-Module-Name: org.emoflon.neo.neo4j.adapter
 Bundle-ActivationPolicy: lazy
-Export-Package: org.emoflon.neo.cypher.models,
+Export-Package: org.emoflon.neo.cypher.common,
+ org.emoflon.neo.cypher.constraints,
+ org.emoflon.neo.cypher.factories,
+ org.emoflon.neo.cypher.models,
  org.emoflon.neo.cypher.models.templates,
+ org.emoflon.neo.cypher.patterns,
+ org.emoflon.neo.cypher.rules,
  org.emoflon.neo.neo4j.adapter,
- org.emoflon.neo.neo4j.adapter.common,
- org.emoflon.neo.neo4j.adapter.constraints,
- org.emoflon.neo.neo4j.adapter.patterns,
- org.emoflon.neo.neo4j.adapter.rules,
- org.emoflon.neo.neo4j.adapter.templates,
- org.emoflon.neo.neo4j.adapter.util,
  org.neo4j.driver.internal,
  org.neo4j.driver.internal.async,
  org.neo4j.driver.internal.async.inbound,

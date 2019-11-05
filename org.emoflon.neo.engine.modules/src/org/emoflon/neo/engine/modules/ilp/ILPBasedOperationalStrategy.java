@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
@@ -22,9 +25,6 @@ import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
@@ -227,7 +227,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		logger.info("Completed in " + (System.currentTimeMillis() - tic)/1000.0 + "s");
 		
 		violations.forEach(v -> {
-			var elements = extractIDs(v.getPattern().getPatternElts(), v);
+			var elements = extractIDs(v.getPattern().getElements(), v);
 
 			var auxVariables = new ArrayList<String>();
 			var elementsThatCanNeverBeMarked = new ArrayList<Long>();
@@ -299,8 +299,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	 * @param m
 	 * @return
 	 */
-	protected Set<Long> extractIDs(Stream<String> elements, IMatch m) {
-		return elements//
+	protected Set<Long> extractIDs(Collection<String> elements, IMatch m) {
+		return elements.stream()//
 				.filter(name -> m.getNodeIDs().containsKey(name) || m.getEdgeIDs().containsKey(name))//
 				.map(name -> m.getNodeIDs().containsKey(name) ? //
 						m.getNodeIDs().get(name) : -1 * m.getEdgeIDs().get(name))//

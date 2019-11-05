@@ -27,7 +27,7 @@ import run.CompanyToIT_GEN_Run;
 public class GEN_CO_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		var testCOApp = new CompanyToIT_CO_Run();
 		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
 		testGenApp.runGenerator();

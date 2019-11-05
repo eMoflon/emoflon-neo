@@ -2,10 +2,10 @@ package org.emoflon.neo.engine.modules.terminationcondition;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class MaxGeneratedElementsTerminationCondition implements ITerminationCondition<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(MaxGeneratedElementsTerminationCondition.class);

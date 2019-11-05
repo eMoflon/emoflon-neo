@@ -13,10 +13,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.patterns.NeoPatternAccess;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.util.FlattenerException;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternAccess;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -82,7 +82,7 @@ public abstract class ENeoTest {
 	
 	
 	protected void expectMatches(NeoPatternAccess<?,?> p, Number no) {
-		assertThat(p.matcher().countMatches(), is(no));
+		assertThat(p.pattern().countMatches(), is(no));
 	}
 	
 	protected void expectSingleMatch(NeoPatternAccess<?,?> p) {

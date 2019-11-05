@@ -67,7 +67,7 @@ public class GoLNeoController implements IController {
 			var mask = creator.getRule_MakeCellAlive().mask();
 			mask.setCellRow(configuration[i][0]);
 			mask.setCellCol(configuration[i][1]);
-			creator.getRule_MakeCellAlive().rule(mask).apply();
+			creator.getRule_MakeCellAlive().apply(mask);
 		}
 		
 		logger.info("Set configuration in board.");
@@ -80,7 +80,7 @@ public class GoLNeoController implements IController {
 			for (int row = 0; row < height; row++)
 				fields[row][col].setIsAlive(false);
 
-		var liveCells = creator.getPattern_ALiveCell().matcher().determineMatches();
+		var liveCells = creator.getPattern_ALiveCell().pattern().determineMatches();
 		var data = creator.getPattern_ALiveCell().data(liveCells);
 		
 		data.forEach(d -> {
