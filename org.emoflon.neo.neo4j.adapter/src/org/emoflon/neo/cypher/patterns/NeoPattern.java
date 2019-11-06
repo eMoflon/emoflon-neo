@@ -84,7 +84,7 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 			var subPattern = new NeoImplicationPattern(condition, allSubPatterns.size(), this);
 			subImplicationPatterns.add(subPattern);
 			allSubPatterns.add(subPattern);
-			return "NOT("+subPattern.getLogicVariable()+")";
+			return "NOT(" + subPattern.getLogicVariable() + ")";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return e.getMessage();
@@ -191,7 +191,8 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 		if (result == null) {
 			throw new NeoDatabaseException();
 		} else {
-			var hashCode = result.list().stream().map(res -> res.asMap().get(NeoMatch.getIdParameter()).toString())//
+			var hashCode = result.list().stream()//
+					.map(res -> res.asMap().get(NeoMatch.getIdParameter()).toString())//
 					.collect(Collectors.toList());
 
 			var returnMap = matches.stream()//

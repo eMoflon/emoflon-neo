@@ -62,19 +62,19 @@ class CypherRuleQueryGenerator {
 		'''
 	}
 
-	def static createRelation(NeoRelation relation) {
+	private def static createRelation(NeoRelation relation) {
 		'''
 			(«relation.srcNode.name»)-[«relation.name»:«relation.type»]->(«relation.trgNode.name»)
 		'''
 	}
 
-	def static createNode(NeoNode node) {
+	private def static createNode(NeoNode node) {
 		'''
 			(«node.name» «FOR l : node.getLabels BEFORE ":" SEPARATOR ":"»«l»«ENDFOR»)
 		'''
 	}
 
-	def static bindElementsUsingMatch(NeoRule rule) {
+	private def static bindElementsUsingMatch(NeoRule rule) {
 		'''
 			«IF rule.contextElts.isEmpty»
 				TRUE
