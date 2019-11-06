@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.emoflon.neo.cypher.common.NeoMask;
 import org.emoflon.neo.engine.generator.Schedule;
 
 public abstract class NeoPatternAccess<Data extends NeoData, Mask extends NeoMask> {

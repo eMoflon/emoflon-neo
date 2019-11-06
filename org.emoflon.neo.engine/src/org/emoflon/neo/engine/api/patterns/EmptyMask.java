@@ -20,4 +20,19 @@ public class EmptyMask implements IMask {
 		return Collections.emptyMap();
 	}
 
+	@Override
+	public void maskNode(String node, Long value) {
+
+	}
+
+	@Override
+	public void maskAttribute(String attribute, Object value) {
+
+	}
+
+	@Override
+	public void addParameter(String parameter, Object value) {
+
+	}
+
 }

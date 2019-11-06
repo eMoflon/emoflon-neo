@@ -3,8 +3,8 @@ package org.emoflon.neo.cypher.rules;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import org.emoflon.neo.cypher.common.NeoMask;
 import org.emoflon.neo.cypher.patterns.NeoData;
-import org.emoflon.neo.cypher.patterns.NeoMask;
 
 public abstract class NeoRuleCoAccess<Data extends NeoData, CoData extends NeoData, Mask extends NeoMask> extends NeoRuleAccess<Data, Mask> {
 	

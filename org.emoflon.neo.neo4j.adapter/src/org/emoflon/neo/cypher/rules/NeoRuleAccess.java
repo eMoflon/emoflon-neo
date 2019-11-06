@@ -2,8 +2,8 @@ package org.emoflon.neo.cypher.rules;
 
 import java.util.Optional;
 
+import org.emoflon.neo.cypher.common.NeoMask;
 import org.emoflon.neo.cypher.patterns.NeoData;
-import org.emoflon.neo.cypher.patterns.NeoMask;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPattern;
 import org.emoflon.neo.cypher.patterns.NeoPatternAccess;

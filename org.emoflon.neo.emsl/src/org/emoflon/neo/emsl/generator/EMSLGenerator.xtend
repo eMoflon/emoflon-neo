@@ -148,11 +148,11 @@ class EMSLGenerator extends AbstractGenerator {
 			 */
 			package org.emoflon.neo.api«subPackagePath(apiPath)»;
 			
-			import org.emoflon.neo.cypher.models.*;
+			import org.emoflon.neo.cypher.common.*;
 			import org.emoflon.neo.cypher.factories.*;
+			import org.emoflon.neo.cypher.models.*;
 			import org.emoflon.neo.cypher.patterns.*;
 			import org.emoflon.neo.cypher.rules.*;
-			import org.emoflon.neo.cypher.patterns.NeoPattern;			
 			import org.emoflon.neo.engine.api.patterns.*;
 			import org.emoflon.neo.engine.api.constraints.*;
 			import org.emoflon.neo.engine.api.rules.*;
@@ -249,9 +249,6 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «maskClassName» extends NeoMask {
-				
-					«maskClassMembers()»
-				
 					«maskMethods(patternBody.nodeBlocks, maskClassName)»
 				
 				}
@@ -261,22 +258,6 @@ class EMSLGenerator extends AbstractGenerator {
 			'''//FIXME Unable to generate API: «e.toString»  */ '''
 		}
 	}
-
-	private def CharSequence maskClassMembers() '''
-		private HashMap<String, Long> nodeMask = new HashMap<>();
-		private HashMap<String, Object> attributeMask = new HashMap<>();
-		
-		@Override
-		public Map<String, Long> getMaskedNodes() {
-			return nodeMask;
-		}
-		
-		@Override
-		public Map<String, Object> getMaskedAttributes() {
-			return attributeMask;
-		}
-		
-	'''
 
 	protected def CharSequence helperClasses(Iterable<ModelNodeBlock> nodeBlocks) {
 		helperClasses(nodeBlocks, [true], [true])
@@ -545,8 +526,6 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «maskClassName» extends NeoMask {
-					«maskClassMembers()»
-					
 					«maskMethods(rule.nodeBlocks, maskClassName)»
 				}
 			'''

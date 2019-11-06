@@ -93,6 +93,8 @@ pattern oneEatsAnotherAfterTransport {
 	}
 	r1: RiverSide
 	
+	f1: Figure
+	
 	f: Farmer {
 		-on->r1
 	}

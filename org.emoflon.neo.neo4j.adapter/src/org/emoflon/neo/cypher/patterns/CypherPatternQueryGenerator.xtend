@@ -11,12 +11,11 @@ import static org.emoflon.neo.cypher.patterns.NeoMatch.getMatchParameter
 import static org.emoflon.neo.cypher.patterns.NeoMatch.getMatchesParameter
 import static org.emoflon.neo.emsl.util.EMSLUtil.returnValueAsString
 
-//FIXME: Handle schedule.ranges
 class CypherPatternQueryGenerator {
 	def static query(NeoPattern pattern, Schedule schedule, IMask mask) {
 		'''
 			// Match query for: «pattern.name»
-			«matchMainPattern(pattern, mask)»
+			«matchMainPattern(pattern, schedule, mask)»
 			«matchSubPatterns(pattern)»
 			
 			WHERE
@@ -64,23 +63,31 @@ class CypherPatternQueryGenerator {
 		'''
 	}
 
-	private def static CharSequence matchMainPattern(NeoPattern pattern, IMask mask) {
-		matchMainPattern(pattern, mask, false);
+	private def static CharSequence matchMainPattern(NeoPattern pattern, Schedule schedule, IMask mask) {
+		matchMainPattern(pattern, schedule, mask, false);
 	}
 
-	private def static CharSequence matchMainPattern(NeoPattern pattern, IMask mask, boolean passOnMatchParameter) {
+	private def static CharSequence matchMainPattern(NeoPattern pattern, Schedule schedule, IMask mask, boolean passOnMatchParameter) {
 		'''
 			«matchAllElements(pattern)»
 			
 			WHERE
+				// Injectivity
 				«injectivityCheck(pattern.getInjectiveChecks())»
+				
+				// Attribute Conditions
 				«FOR inequalityCheck : pattern.inequalityChecks BEFORE " AND " SEPARATOR " AND "»
 					«inequalityCheck.element».«inequalityCheck.name» «inequalityCheck.operator» «inequalityCheck.value»
 				«ENDFOR»
 				
+				// Masking
 				«maskedAttributeEqualityChecks(pattern, mask)»
-				
 				«maskedNodesBlock(pattern.nodes, mask)»
+				
+				// Node Sampling
+				«FOR node : pattern.nodes.filter[schedule.hasRangeFor(it.type, it.name)] BEFORE " AND " SEPARATOR " AND "»
+					id(«node.name») in «schedule.getParameterFor(node.type, node.name)»
+				«ENDFOR»
 			
 			WITH
 				«FOR name : pattern.elements SEPARATOR ", "»
@@ -126,7 +133,7 @@ class CypherPatternQueryGenerator {
 			// Is-still-valid query for: «pattern.name»
 			UNWIND $«matchesParameter» AS «matchParameter»
 			
-			«matchMainPattern(pattern, IMask.empty, true)»
+			«matchMainPattern(pattern, Schedule.unlimited, IMask.empty, true)»
 			«matchSubPatterns(pattern, true)»
 			
 			WHERE
@@ -278,10 +285,13 @@ class CypherPatternQueryGenerator {
 				«FOR name : subPattern.conclusion.elements SEPARATOR ", " AFTER ", "»
 					«name»
 				«ENDFOR»
-				«subPattern.logicVariable»_if OR count(«subPattern.conclusion.nodes.get(0).name») > 0 AS «subPattern.logicVariable»
+				«subPattern.logicVariable»_if OR count(«subPattern.conclusion.nodes.get(0).name») > 0 AS «subPattern.logicVariable»_then
 				«IF passOnMatchParameter»
 					,«matchParameter»
 				«ENDIF»
+				
+			WITH
+				reduce(result = TRUE, val IN collect(«subPattern.logicVariable»_then) | result AND val) AS «subPattern.logicVariable»
 		'''
 	}
 
