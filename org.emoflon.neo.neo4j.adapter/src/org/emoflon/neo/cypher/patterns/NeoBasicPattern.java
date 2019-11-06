@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.emoflon.neo.cypher.common.NeoAssertion;
 import org.emoflon.neo.cypher.common.NeoElement;
 import org.emoflon.neo.cypher.common.NeoNode;
 import org.emoflon.neo.cypher.common.NeoRelation;
@@ -116,5 +117,15 @@ public class NeoBasicPattern {
 		}
 
 		return pairsToCheck;
+	}
+	
+	public Collection<NeoAssertion> getInequalityChecks() {
+		var relevantElements = new ArrayList<NeoElement>();
+		relevantElements.addAll(nodes);
+		relevantElements.addAll(relations);
+
+		return relevantElements.stream()//
+				.flatMap(elt -> elt.getInequalityChecks().stream())//
+				.collect(Collectors.toList());
 	}
 }

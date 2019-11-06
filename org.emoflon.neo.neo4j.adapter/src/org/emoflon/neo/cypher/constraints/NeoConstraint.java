@@ -29,6 +29,8 @@ public class NeoConstraint extends NeoPattern implements IConstraint {
 		if (result == null)
 			throw new NeoDatabaseException();
 
-		return result.hasNext();
+		var results = result.list();
+		
+		return results.size() == 1 && results.get(0).get(0).asBoolean();
 	}
 }

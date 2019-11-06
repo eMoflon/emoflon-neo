@@ -6,23 +6,16 @@ class CypherConstraintQueryGenerator {
 	def static query(NeoConstraint constraint) {
 		'''
 			// Constraint: «constraint.name»
-			
-			// ------------- Subpatterns [begin]
-			
+						
 			«FOR predicate : constraint.subPredicatePatterns SEPARATOR "\n"»				
 				«matchPredicatePattern(predicate, constraint)»
 			«ENDFOR»
 			«FOR implication : constraint.subImplicationPatterns SEPARATOR "\n"»				
 				«matchImplicationPattern(implication, constraint)»
 			«ENDFOR»
-			
-			// ------------- Subpatterns [end]
-			
-			WHERE
-				«constraint.logicalExprForWhere»
-			
+						
 			RETURN DISTINCT
-				TRUE
+				«constraint.logicalExprForWhere»
 		'''
 	}
 }

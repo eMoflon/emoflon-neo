@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.cypher.common.NeoAssertion;
 import org.emoflon.neo.cypher.common.NeoDatabaseException;
-import org.emoflon.neo.cypher.common.NeoElement;
 import org.emoflon.neo.cypher.models.IBuilder;
 import org.emoflon.neo.emsl.eMSL.AndBody;
 import org.emoflon.neo.emsl.eMSL.Condition;
@@ -239,15 +237,5 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 
 	public String getLogicalExprForWhere() {
 		return logicalExprForWhere;
-	}
-
-	public Collection<NeoAssertion> getInequalityChecks() {
-		var relevantElements = new ArrayList<NeoElement>();
-		relevantElements.addAll(nodes);
-		relevantElements.addAll(relations);
-
-		return relevantElements.stream()//
-				.flatMap(elt -> elt.getInequalityChecks().stream())//
-				.collect(Collectors.toList());
 	}
 }

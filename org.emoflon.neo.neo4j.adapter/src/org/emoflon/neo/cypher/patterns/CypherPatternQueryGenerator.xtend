@@ -91,12 +91,12 @@ class CypherPatternQueryGenerator {
 				«ENDIF»
 		'''
 	}
-	
-	private def static maskedAttributeEqualityChecks(NeoPattern pattern, IMask mask){
+
+	private def static maskedAttributeEqualityChecks(NeoPattern pattern, IMask mask) {
 		var relevantEntries = mask.maskedAttributes.filter [ nodeAttr, value |
 			pattern.elements.exists[it == nodeAttr.split("\\.").get(0)]
 		]
-		
+
 		'''
 			«FOR attrCheck : relevantEntries.entrySet BEFORE " AND " SEPARATOR " AND "»
 				«attrCheck.key» = «returnValueAsString(attrCheck.value)»
@@ -173,7 +173,8 @@ class CypherPatternQueryGenerator {
 		matchPredicatePattern(subPattern, pattern, false)
 	}
 
-	private def static matchPredicatePattern(NeoPredicatePattern subPattern, NeoPattern pattern, boolean passOnMatchParameter) {
+	private def static matchPredicatePattern(NeoPredicatePattern subPattern, NeoPattern pattern,
+		boolean passOnMatchParameter) {
 		'''
 			// Subpattern «subPattern.getIndex»: «subPattern.name»
 			«optionalMatchOfBasicPattern(subPattern)»
@@ -182,6 +183,9 @@ class CypherPatternQueryGenerator {
 					«match.key.name» = «match.value.name»
 				«ENDFOR»
 				«injectivityCheck(subPattern.injectiveChecks)»
+				«FOR inequalityCheck : subPattern.inequalityChecks BEFORE " AND " SEPARATOR " AND "»
+					«inequalityCheck.element».«inequalityCheck.name» «inequalityCheck.operator» «inequalityCheck.value»
+				«ENDFOR»
 			
 			WITH
 				«FOR name : pattern.elements SEPARATOR ", " AFTER ", "»
@@ -229,6 +233,9 @@ class CypherPatternQueryGenerator {
 					id(«match.key.name») = id(«match.value.name»)
 				«ENDFOR»
 				«injectivityCheck(subPattern.premise.injectiveChecks)»
+				«FOR inequalityCheck : subPattern.premise.inequalityChecks BEFORE " AND " SEPARATOR " AND "»
+					«inequalityCheck.element».«inequalityCheck.name» «inequalityCheck.operator» «inequalityCheck.value»
+				«ENDFOR»
 			
 			WITH
 				«FOR name : pattern.elements SEPARATOR ", " AFTER ", "»
@@ -253,7 +260,10 @@ class CypherPatternQueryGenerator {
 					«match.key.name» = «match.value.name»
 				«ENDFOR»
 				«injectivityCheck(subPattern.conclusion.injectiveChecks)» AND
-				«subPattern.conclusion.nodes.get(0).name» IS NULL
+				«subPattern.conclusion.nodes.get(0).name» IS NOT NULL
+				«FOR inequalityCheck : subPattern.conclusion.inequalityChecks BEFORE " AND " SEPARATOR " AND "»
+					«inequalityCheck.element».«inequalityCheck.name» «inequalityCheck.operator» «inequalityCheck.value»
+				«ENDFOR»
 			
 			WITH
 				«FOR name : pattern.elements SEPARATOR ", " AFTER ", "»
@@ -261,6 +271,12 @@ class CypherPatternQueryGenerator {
 				«ENDFOR»
 				«FOR precedingSubPatterns : pattern.allSubPatterns.take(subPattern.index) SEPARATOR ", " AFTER ", "»
 					«precedingSubPatterns.logicVariable»
+				«ENDFOR»
+				«FOR name : subPattern.premise.elements SEPARATOR ", " AFTER ", "»
+					«name»
+				«ENDFOR»
+				«FOR name : subPattern.conclusion.elements SEPARATOR ", " AFTER ", "»
+					«name»
 				«ENDFOR»
 				«subPattern.logicVariable»_if OR count(«subPattern.conclusion.nodes.get(0).name») > 0 AS «subPattern.logicVariable»
 				«IF passOnMatchParameter»

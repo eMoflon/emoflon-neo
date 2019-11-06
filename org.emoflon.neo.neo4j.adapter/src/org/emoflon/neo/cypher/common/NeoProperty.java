@@ -1,5 +1,6 @@
 package org.emoflon.neo.cypher.common;
 
+import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 
@@ -11,27 +12,22 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
  *
  */
 public class NeoProperty {
-	private String element;
-	private String name;
+	private NeoElement element;
+	private MetamodelPropertyStatement type;
 	private String value;
 
-	/**
-	 * 
-	 * @param name  or key of the attribute/property
-	 * @param value value of the attribute/property
-	 */
-	public NeoProperty(String element, String name, String value) {
-		this.name = name;
-		this.value = value;
+	public NeoProperty(NeoElement element, MetamodelPropertyStatement type, String value) {
 		this.element = element;
+		this.type = type;
+		this.value = value;
 	}
 
 	public NeoProperty(ModelPropertyStatement prop, NeoElement element) {
-		this(element.getName(), prop.getType().getName(), EMSLUtil.handleValue(prop.getValue()));
+		this(element, prop.getType(), EMSLUtil.handleValue(prop.getValue()));
 	}
 
 	public String getElement() {
-		return element;
+		return element.getName();
 	}
 	
 	/**
@@ -40,7 +36,7 @@ public class NeoProperty {
 	 * @return name of the attribute property
 	 */
 	public String getName() {
-		return name;
+		return type.getName();
 	}
 
 	/**
