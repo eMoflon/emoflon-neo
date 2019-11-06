@@ -24,12 +24,12 @@ public class OrganigramPatterns extends ENeoTest {
 	
 	@Test
 	public void test_ManagerIsEmployed() {
-		assertThat(entities.getPattern_ManagersMustBeEmployed().matcher().countMatches(), is(2));
+		assertThat(entities.getPattern_ManagersMustBeEmployed().pattern().countMatches(), is(2));
 	}
 	
 	@Test
 	public void test_CeoAndManagerEmployed() {
-		assertThat(entities.getPattern_CeoAndManagerEmployed().matcher().countMatches(), is(2));
+		assertThat(entities.getPattern_CeoAndManagerEmployed().pattern().countMatches(), is(2));
 	}
 	
 }

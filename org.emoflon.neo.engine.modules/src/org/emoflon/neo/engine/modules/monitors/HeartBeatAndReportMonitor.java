@@ -4,10 +4,10 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(HeartBeatAndReportMonitor.class);

@@ -9,6 +9,8 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_CO;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -19,8 +21,6 @@ import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class FacebookToInstagramFASE_CO_Run {
 	private static final Logger logger = Logger.getLogger(FacebookToInstagramFASE_CO_Run.class);

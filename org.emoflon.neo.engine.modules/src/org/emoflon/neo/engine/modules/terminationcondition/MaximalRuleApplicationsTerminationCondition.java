@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.modules.analysis.RuleAnalyser;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public class MaximalRuleApplicationsTerminationCondition implements ITerminationCondition<NeoMatch, NeoCoMatch> {
 	private Map<NeoRule, Integer> maxRuleApps;

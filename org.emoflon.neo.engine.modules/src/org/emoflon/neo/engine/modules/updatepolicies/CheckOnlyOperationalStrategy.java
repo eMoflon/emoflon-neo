@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
 

@@ -233,17 +233,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		var sizeOfTypeList = 0
 		var sizeOfIncomingRefTypeList = 0
 		'''
-			class «labelForObject(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			class «labelForObject(nb, true, false)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
-				«labelForObject(nb)» --> «IF link.target !== null»«labelForObject(link.target)»«ELSE»"?"«ENDIF» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				class «labelForObject(link.target, true, false)»
+				«labelForObject(nb, false, true)» --> «IF link.target !== null»«labelForObject(link.target, false, true)»«ELSE»"?"«ENDIF» : "«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForObject(nb)» : «getName(attr)» = «IF attr?.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
+				«labelForObject(nb, false, true)» : «getName(attr)» = «IF attr?.value !== null»«printValue(attr.value)»«ELSE»?«ENDIF»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Model).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»«{sizeOfIncomingRefTypeList = incomingRef.types.size - 1;""}»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForObject(incoming)» --> «labelForObject(nb)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+						class «labelForObject(incoming, true, false)»
+						«labelForObject(incoming, false, true)» --> «labelForObject(nb, false, true)» : "«FOR t : incomingRef.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfIncomingRefTypeList > 0» | «ENDIF»«{sizeOfIncomingRefTypeList = sizeOfIncomingRefTypeList - 1;""}»«ENDFOR»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -301,9 +303,31 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for the name of an object in a Model.
 	 */
-	private def labelForObject(ModelNodeBlock nb) {
+	private def labelForObject(ModelNodeBlock nb, boolean addNaming, boolean onlyName) {
 		val entity = nb?.eContainer as Model
-		'''"«IF entity !== null && entity.abstract»//«ENDIF»«IF entity?.name !== null»«entity?.name»«ELSE»?«ENDIF»«IF entity !== null && entity.abstract»//«ENDIF».«IF nb?.name !== null»«nb?.name»«ELSE»?«ENDIF»:«IF nb?.type?.name !== null»«nb?.type?.name»«ELSE»?«ENDIF»"'''
+		var entityName = "?"
+		var nbName = "?"
+		var nbTypeName = "?"
+		
+		if (entity !== null) {
+			if (entity?.name !== null)
+				entityName = entity.name
+			if (nb?.name !== null)
+				nbName = nb.name
+			if (nb?.type?.name !== null)
+				nbTypeName = nb.type.name
+				
+			var duplicateNames = new ArrayList<String>()
+			for (node : entity.nodeBlocks) {
+				if (node.type.name.equals(nb.type.name) && node.type !== nb.type && node !== nb && !duplicateNames.contains(nb.type.name))
+					duplicateNames.add(nb.type.name)
+			}
+			if (!onlyName)
+				'''"«nbName»:«IF duplicateNames.contains(nb.type.name)»«(nb.type.eContainer as Metamodel).name».«ENDIF»«nbTypeName»" «IF addNaming»as «IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»«ENDIF»'''
+			else
+				'''"«IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»"'''
+		} else
+			'''"?"'''
 	}
 	
 	/**
@@ -451,17 +475,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val nb = node
 		
 		'''
-			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			class «labelForPatternComponent(nb, true, false)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
-				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				class «labelForPatternComponent(link.target, true, false)»
+				«labelForPatternComponent(nb, false, true)» --> «labelForPatternComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForPatternComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
+				«labelForPatternComponent(nb, false, true)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+						class «labelForPatternComponent(incoming, true, false)»
+						«labelForPatternComponent(incoming, false, true)» --> «labelForPatternComponent(nb, false, true)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -485,17 +511,19 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val nb = node
 		
 		'''
-			class «labelForPatternComponent(nb)» «IF mainSelection»<<Selection>>«ENDIF»
+			class «labelForPatternComponent(nb, true, false)» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
-				«labelForPatternComponent(nb)» --> «labelForPatternComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				class «labelForPatternComponent(link.target, true, false)»
+				«labelForPatternComponent(nb, false, true)» --> «labelForPatternComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForPatternComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
+				«labelForPatternComponent(nb, false, true)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as AtomicPattern).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
 					«IF incomingRef.target == nb && mainSelection»
-						«labelForPatternComponent(incoming)» --> «labelForPatternComponent(nb)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+						class «labelForPatternComponent(incoming, true, false)»
+						«labelForPatternComponent(incoming, false, true)» --> «labelForPatternComponent(nb, false, true)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -510,7 +538,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for the name of an object in a Pattern.
 	 */
-	private def labelForPatternComponent(ModelNodeBlock nb) {
+	private def labelForPatternComponent(ModelNodeBlock nb, boolean addNaming, boolean onlyName) {
 		var entityName = "?"
 		var nbName = "?"
 		var nbTypeName = "?"
@@ -523,7 +551,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			if (nb.type !== null && nb.type.name !== null)
 				nbTypeName = nb.type.name
 
-			'''"«IF (nb.eContainer as AtomicPattern).abstract»//«ENDIF»«entityName»«IF (nb.eContainer as AtomicPattern).abstract»//«ENDIF».«nbName»:«nbTypeName»"'''
+			var duplicateNames = new ArrayList<String>()
+			for (node : entity.nodeBlocks) {
+				if (node.type.name.equals(nb.type.name) && node.type !== nb.type && node !== nb && !duplicateNames.contains(nb.type.name))
+					duplicateNames.add(nb.type.name)
+			}
+			if (!onlyName)
+				'''"«nbName»:«IF duplicateNames.contains(nb.type.name)»«(nb.type.eContainer as Metamodel).name».«ENDIF»«nbTypeName»" «IF addNaming»as «IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»«ENDIF»'''
+			else
+				'''"«IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»"'''
+
 		} else
 			'''"?"'''
 	}	
@@ -563,22 +600,22 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val nb = node
 		
 		'''
-			class «labelForRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
+			class «labelForRuleComponent(nb, true, false)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
+				class «labelForRuleComponent(link.target, true, false)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
-				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+					«labelForRuleComponent(nb, false, true)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(nb, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				«ELSE»«labelForRuleComponent(nb, false, true)» --> «labelForRuleComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 				«ENDIF»
-				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
+				«labelForRuleComponent(nb, false, true)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
 					«IF incomingRef.target == nb && mainSelection»
-						class «labelForRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
-						«labelForRuleComponent(incoming)» -«IF incomingRef.action !== null &&  incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForRuleComponent(nb)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+						class «labelForRuleComponent(incoming, true, false)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+						«labelForRuleComponent(incoming, false, true)» -«IF incomingRef.action !== null &&  incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForRuleComponent(nb, false, true)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -602,22 +639,22 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		val nb = node
 		
 		'''
-			class «labelForRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
+			class «labelForRuleComponent(nb, true, false)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»
 			«FOR link : nb.relations»
+				class «labelForRuleComponent(link.target, true, false)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
-				«ELSE»«labelForRuleComponent(nb)» --> «labelForRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+					«labelForRuleComponent(nb, false, true)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				«ELSE»«labelForRuleComponent(nb, false, true)» --> «labelForRuleComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 				«ENDIF»
-				class «labelForRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
+				«labelForRuleComponent(nb, false, true)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (nb.eContainer as Rule).nodeBlocks.filter[n|n != nb]»
 				«FOR incomingRef : incoming.relations»
 					«IF incomingRef.target == nb && mainSelection»
-						class «labelForRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
-						«labelForRuleComponent(incoming)» -«IF incomingRef.action !== null &&  incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForRuleComponent(nb)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+						class «labelForRuleComponent(incoming, true, false)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
+						«labelForRuleComponent(incoming, false, true)» -«IF incomingRef.action !== null &&  incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForRuleComponent(nb, false, true)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
@@ -632,7 +669,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for the name of an object in a Rule.
 	 */
-	private def labelForRuleComponent(ModelNodeBlock nb) {
+	private def labelForRuleComponent(ModelNodeBlock nb, boolean addNaming, boolean onlyName) {
 		val entity = nb?.eContainer as Rule
 		var entityName = "?"
 		var nbName = "?"
@@ -645,12 +682,20 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				nbName = nb.name
 			if (nb?.type?.name !== null)
 				nbTypeName = nb.type.name
-
-			'''"«IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»:«nbTypeName»"'''
+				
+			var duplicateNames = new ArrayList<String>()
+			for (node : entity.nodeBlocks) {
+				if (node.type.name.equals(nb.type.name) && node.type !== nb.type && node !== nb && !duplicateNames.contains(nb.type.name))
+					duplicateNames.add(nb.type.name)
+			}
+			if (!onlyName)
+				'''"«nbName»:«IF duplicateNames.contains(nb.type.name)»«(nb.type.eContainer as Metamodel).name».«ENDIF»«nbTypeName»" «IF addNaming»as «IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»«ENDIF»'''
+			else
+				'''"«IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«nbName»"'''
 		} else
 			'''"?"'''
 	}
-
+	
 	/**
 	 * Returns the diagram text for a GraphGrammar.
 	 */
@@ -700,7 +745,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«FOR nb : entity.nodeBlocksOfEntity»
 					«FOR p : copiesOfConditionPatterns»
 						«FOR otherNB : (p as Pattern).body.nodeBlocks»
-							«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb)»«ELSE»«labelForPatternComponent(nb)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB)»«ENDIF»
+							«IF otherNB.name.equals(nb.name)»«IF (entity instanceof Rule)»«labelForRuleComponent(nb, false, true)»«ELSE»«labelForPatternComponent(nb, false, true)»«ENDIF»#-[#DarkRed]-#«labelForPatternComponent(otherNB, false, true)»«ENDIF»
 						«ENDFOR»
 					«ENDFOR»
 				«ENDFOR»
@@ -723,10 +768,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 						for (ModelNodeBlock otherNB : other.nodeBlocks) {
 							if (otherNB.name.equals(nb.name)) {
 								// create link if not already created
-								if (!text.contains(labelForPatternComponent(nb) + "#-[#DarkRed]-#" + labelForPatternComponent(otherNB)) &&
-									!text.contains(labelForPatternComponent(otherNB) + "#-[#DarkRed]-#" + labelForPatternComponent(nb))
+								if (!text.contains(labelForPatternComponent(nb, false, true) + "#-[#DarkRed]-#" + labelForPatternComponent(otherNB, false, true)) &&
+									!text.contains(labelForPatternComponent(otherNB, false, true) + "#-[#DarkRed]-#" + labelForPatternComponent(nb, false, true))
 								)
-									text += labelForPatternComponent(nb) + "#-[#DarkRed]-#" + labelForPatternComponent(otherNB) + "\n"
+									text += labelForPatternComponent(nb, false, true) + "#-[#DarkRed]-#" + labelForPatternComponent(otherNB, false, true) + "\n"
 							}
 						}
 					}
@@ -884,7 +929,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			
 				«FOR corr : entityCopy.correspondences»
-				"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.source.name»:«corr.source.type.name»" ...«IF corr.action !== null»[#SpringGreen]«ENDIF»"«IF entityCopy.abstract»//«ENDIF»«entityCopy.name»«IF entityCopy.abstract»//«ENDIF».«corr.target.name»:«corr.target.type.name»": :«corr.type.name»
+				«labelForTripleRuleComponent(corr.source, false, true)» ...«IF corr.action !== null»[#SpringGreen]«ENDIF»«labelForTripleRuleComponent(corr.target, false, true)»: :«corr.type.name»
 				«ENDFOR»
 			}
 			«IF entityCopy.nacs.size > 0»
@@ -898,13 +943,13 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseTripleRuleNodeBlocks(TripleRule entity, ModelNodeBlock nb, String type) {
 		var sizeOfTypeList = 0
-		'''class "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
+		'''class «labelForTripleRuleComponent(nb, true, false)» «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
 			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
-				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF entity.srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
-				"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«nb.type.name»" -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> "«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«link.target.name»:«link.target.type.name»":"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				class «labelForTripleRuleComponent(link.target, true, false)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF entity.srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+				«labelForTripleRuleComponent(nb, false, true)» -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> «labelForTripleRuleComponent(link.target, false, true)»:"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForTripleRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
+				«labelForTripleRuleComponent(nb, false, true)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 		'''
 	}
@@ -925,16 +970,16 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		}
 		val nb = node	
 		'''
-			class «labelForTripleRuleComponent(nb)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»«IF rule.srcNodeBlocks.contains(nb)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+			class «labelForTripleRuleComponent(nb, true, false)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»«IF rule.srcNodeBlocks.contains(nb)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 			«FOR link : nb.relations»
-				class «labelForTripleRuleComponent(link.target)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entityCopy as TripleRule).srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+				class «labelForTripleRuleComponent(link.target, true, false)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entityCopy as TripleRule).srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 				«IF link.action !== null»
-					«labelForTripleRuleComponent(nb)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
-				«ELSE»«labelForTripleRuleComponent(nb)» --> «labelForTripleRuleComponent(link.target)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+					«labelForTripleRuleComponent(nb, false, true)» -«IF link.action.op.toString === '++'»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				«ELSE»«labelForTripleRuleComponent(nb, false, true)» --> «labelForTripleRuleComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 				«ENDIF»
 			«ENDFOR»
 			«FOR attr : nb.properties»
-				«labelForTripleRuleComponent(nb)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
+				«labelForTripleRuleComponent(nb, false, true)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
 			«ENDFOR»
 			«FOR incoming : (entityCopy as TripleRule).srcNodeBlocks.filter[n|n != nb]»
 				«incomingRefHelperForTripleRules(entityCopy as TripleRule, nb, incoming, mainSelection)»
@@ -948,8 +993,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	private def incomingRefHelperForTripleRules(TripleRule entity, ModelNodeBlock nb, ModelNodeBlock incoming, boolean mainSelection) {
 		'''«FOR incomingRef : incoming.relations»
 			«IF incomingRef.target == nb && mainSelection»
-				class «labelForTripleRuleComponent(incoming)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entity as TripleRule).srcNodeBlocks.contains(incoming)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
-				«labelForTripleRuleComponent(incoming)» -«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForTripleRuleComponent(nb)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+				class «labelForTripleRuleComponent(incoming, true, false)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entity as TripleRule).srcNodeBlocks.contains(incoming)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+				«labelForTripleRuleComponent(incoming, false, true)» -«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForTripleRuleComponent(nb, false, true)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
 			«ENDIF»
 		«ENDFOR»'''
 	}
@@ -957,9 +1002,38 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for the name of an object in a TripleRule.
 	 */
-	private def labelForTripleRuleComponent(ModelNodeBlock nb) {
-		val entity = nb.eContainer as TripleRule
-		'''"«IF entity.abstract»//«ENDIF»«entity.name»«IF entity.abstract»//«ENDIF».«nb.name»:«IF nb.type.name !== null »«nb.type.name»«ELSE»?«ENDIF»"'''
+	private def labelForTripleRuleComponent(ModelNodeBlock nb, boolean addNaming, boolean onlyName) {
+		val entity = nb?.eContainer as TripleRule
+		var entityName = "?"
+		var nbName = "?"
+		var nbTypeName = "?"
+		
+		if (entity !== null) {
+			if (entity?.name !== null)
+				entityName = entity.name
+			if (nb?.name !== null)
+				nbName = nb.name
+			if (nb?.type?.name !== null)
+				nbTypeName = nb.type.name
+				
+			var duplicateNames = new ArrayList<String>()
+			if (entity.srcNodeBlocks.contains(nb)) {
+				for (node : entity.srcNodeBlocks) {
+					if (node.type.name.equals(nb.type.name) && node.type !== nb.type && node !== nb && !duplicateNames.contains(nb.type.name))
+						duplicateNames.add(nb.type.name)
+				}	
+			} else if (entity.trgNodeBlocks.contains(nb)) {
+				for (node : entity.trgNodeBlocks) {
+					if (node.type.name.equals(nb.type.name) && node.type !== nb.type && node !== nb && !duplicateNames.contains(nb.type.name))
+						duplicateNames.add(nb.type.name)
+				}
+			}
+			if (!onlyName)
+				'''"«nbName»:«IF duplicateNames.contains(nb.type.name)»«(nb.type.eContainer as Metamodel).name».«ENDIF»«nbTypeName»" «IF addNaming»as «IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«IF entity.srcNodeBlocks.contains(nb)»src«ELSE»trg«ENDIF»«nbName»«ENDIF»'''
+			else
+				'''"«IF entity.abstract»//«ENDIF»«entityName»«IF entity.abstract»//«ENDIF».«IF entity.srcNodeBlocks.contains(nb)»src«ELSE»trg«ENDIF»«nbName»"'''
+		} else
+			'''"?"'''
 	}
 
 	/**
@@ -971,15 +1045,15 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR c : entity.nacs»
 				«IF c.pattern.eContainer !== null»
 					«visualiseEntity(c.pattern.eContainer as Pattern, false)»
-					«FOR nb : c.pattern.nodeBlocks»
+					«FOR nb : EMSLFlattener.flatten(c.pattern).nodeBlocks»
 						«IF c instanceof SourceNAC»
 							«FOR other : entity.srcNodeBlocks»
-								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other)»#-[#DarkRed]-#«labelForPatternComponent(nb)»«ENDIF»
+								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other, false, true)»#-[#DarkRed]-#«labelForPatternComponent(nb, false, true)»«ENDIF»
 							«ENDFOR»
 						«ENDIF»
 						«IF c instanceof TargetNAC»
 							«FOR other : entity.trgNodeBlocks»
-								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other)»#-[#DarkRed]-#«labelForPatternComponent(nb)»«ENDIF»
+								«IF other.name.equals(nb.name)»«labelForTripleRuleComponent(other, false, true)»#-[#DarkRed]-#«labelForPatternComponent(nb, false, true)»«ENDIF»
 							«ENDFOR»
 						«ENDIF»
 					«ENDFOR»

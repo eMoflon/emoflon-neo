@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.emoflon.neo.cypher.common.NeoMask;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.eMSL.DataType;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
@@ -21,11 +25,6 @@ import org.emoflon.neo.engine.generator.modules.IParameterValueGenerator;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
-import org.emoflon.neo.neo4j.adapter.patterns.AttributeMask;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
 
 public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
@@ -61,13 +60,13 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			throw new IllegalStateException("Unexpected type of rule: " + r.getClass());
 
 		NeoRule rule = (NeoRule) r;
-		AttributeMask mask = new AttributeMask();
+		var mask = new NeoMask();
 		maskParameters(rule.getEMSLRule(), mask, matches);
-		var comatches = NeoRuleFactory.copyNeoRuleWithNewMask(rule, mask).applyAll(matches);
+		var comatches = rule.applyAll(matches, mask);
 		matchContainer.appliedRule(rule, matches, comatches);
 	}
 
-	private void maskParameters(Rule rule, AttributeMask mask, Collection<NeoMatch> matches) {
+	private void maskParameters(Rule rule, NeoMask mask, Collection<NeoMatch> matches) {
 		Map<String, DataType> params = new HashMap<>();
 
 		for (ModelNodeBlock nodeBlock : rule.getNodeBlocks())
