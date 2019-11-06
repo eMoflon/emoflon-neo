@@ -61,16 +61,14 @@ class CypherPatternQueryGenerator {
 				«FOR rel : pattern.relations.filter[!it.isPath] BEFORE "," SEPARATOR ", "»
 					«rel.name» AS «rel.name»
 				«ENDFOR»
-			
-			LIMIT 1
 		'''
 	}
 
-	def static CharSequence matchMainPattern(NeoPattern pattern, IMask mask) {
+	private def static CharSequence matchMainPattern(NeoPattern pattern, IMask mask) {
 		matchMainPattern(pattern, mask, false);
 	}
 
-	def static CharSequence matchMainPattern(NeoPattern pattern, IMask mask, boolean passOnMatchParameter) {
+	private def static CharSequence matchMainPattern(NeoPattern pattern, IMask mask, boolean passOnMatchParameter) {
 		'''
 			«matchAllElements(pattern)»
 			
@@ -94,7 +92,7 @@ class CypherPatternQueryGenerator {
 		'''
 	}
 	
-	def static maskedAttributeEqualityChecks(NeoPattern pattern, IMask mask){
+	private def static maskedAttributeEqualityChecks(NeoPattern pattern, IMask mask){
 		var relevantEntries = mask.maskedAttributes.filter [ nodeAttr, value |
 			pattern.elements.exists[it == nodeAttr.split("\\.").get(0)]
 		]
@@ -106,22 +104,19 @@ class CypherPatternQueryGenerator {
 		'''
 	}
 
-	def static matchSubPatterns(NeoPattern pattern) {
+	private def static matchSubPatterns(NeoPattern pattern) {
 		matchSubPatterns(pattern, false)
 	}
 
-	def static matchSubPatterns(NeoPattern pattern, boolean passOnMatchParameter) {
-		'''
-			// ------------- Subpatterns [begin]
-			
+	private def static matchSubPatterns(NeoPattern pattern, boolean passOnMatchParameter) {
+		'''		
+				
 			«FOR predicate : pattern.subPredicatePatterns SEPARATOR "\n"»				
 				«matchPredicatePattern(predicate, pattern, passOnMatchParameter)»
 			«ENDFOR»
 			«FOR implication : pattern.subImplicationPatterns SEPARATOR "\n"»				
 				«matchImplicationPattern(implication, pattern, passOnMatchParameter)»
 			«ENDFOR»
-			
-			// ------------- Subpatterns [end]
 				
 		'''
 	}
@@ -142,8 +137,6 @@ class CypherPatternQueryGenerator {
 			
 			RETURN
 				«matchParameter».«idParameter» AS «idParameter»
-			
-			LIMIT 1
 		'''
 	}
 
@@ -164,7 +157,7 @@ class CypherPatternQueryGenerator {
 		'''
 	}
 
-	def static injectivityCheck(Iterable<Pair<NeoNode, NeoNode>> injectiveChecks) {
+	private def static injectivityCheck(Iterable<Pair<NeoNode, NeoNode>> injectiveChecks) {
 		'''
 			«IF injectiveChecks.empty»
 				TRUE
@@ -180,7 +173,7 @@ class CypherPatternQueryGenerator {
 		matchPredicatePattern(subPattern, pattern, false)
 	}
 
-	def static matchPredicatePattern(NeoPredicatePattern subPattern, NeoPattern pattern, boolean passOnMatchParameter) {
+	private def static matchPredicatePattern(NeoPredicatePattern subPattern, NeoPattern pattern, boolean passOnMatchParameter) {
 		'''
 			// Subpattern «subPattern.getIndex»: «subPattern.name»
 			«optionalMatchOfBasicPattern(subPattern)»
@@ -197,14 +190,14 @@ class CypherPatternQueryGenerator {
 				«FOR precedingSubPatterns : pattern.allSubPatterns.take(subPattern.getIndex) SEPARATOR ", " AFTER ", "»
 					«precedingSubPatterns.logicVariable»
 				«ENDFOR»
-				count («subPattern.nodes.get(0).name») «IF subPattern.positive»>«ELSE»=«ENDIF» 0 AS «subPattern.logicVariable»
+				count(«subPattern.nodes.get(0).name») «IF subPattern.positive»>«ELSE»=«ENDIF» 0 AS «subPattern.logicVariable»
 				«IF passOnMatchParameter»
 					,«matchParameter»
 				«ENDIF»
 		'''
 	}
 
-	def static optionalMatchOfBasicPattern(NeoBasicPattern subPattern) {
+	private def static optionalMatchOfBasicPattern(NeoBasicPattern subPattern) {
 		'''
 			OPTIONAL MATCH 
 				// Match all nodes
@@ -223,7 +216,7 @@ class CypherPatternQueryGenerator {
 		matchImplicationPattern(subPattern, pattern, false)
 	}
 
-	def static matchImplicationPattern(NeoImplicationPattern subPattern, NeoPattern pattern,
+	private def static matchImplicationPattern(NeoImplicationPattern subPattern, NeoPattern pattern,
 		boolean passOnMatchParameter) {
 		'''
 			// Subpattern «subPattern.index»: «subPattern.name»
@@ -247,7 +240,7 @@ class CypherPatternQueryGenerator {
 				«FOR precedingSubPatterns : pattern.allSubPatterns.take(subPattern.index) SEPARATOR ", " AFTER ", "»
 					«precedingSubPatterns.logicVariable»
 				«ENDFOR»
-				count(«subPattern.premise.nodes.get(0).name») > 0 AS «subPattern.logicVariable»_if
+				count(«subPattern.premise.nodes.get(0).name») = 0 AS «subPattern.logicVariable»_if
 				«IF passOnMatchParameter»
 					,«matchParameter»
 				«ENDIF»
@@ -259,7 +252,8 @@ class CypherPatternQueryGenerator {
 				«FOR match : subPattern.boundNodesInConclusion.entrySet SEPARATOR " AND " AFTER " AND "»
 					«match.key.name» = «match.value.name»
 				«ENDFOR»
-				«injectivityCheck(subPattern.conclusion.injectiveChecks)»
+				«injectivityCheck(subPattern.conclusion.injectiveChecks)» AND
+				«subPattern.conclusion.nodes.get(0).name» IS NULL
 			
 			WITH
 				«FOR name : pattern.elements SEPARATOR ", " AFTER ", "»
@@ -268,7 +262,7 @@ class CypherPatternQueryGenerator {
 				«FOR precedingSubPatterns : pattern.allSubPatterns.take(subPattern.index) SEPARATOR ", " AFTER ", "»
 					«precedingSubPatterns.logicVariable»
 				«ENDFOR»
-				«subPattern.logicVariable»_if AND count(«subPattern.conclusion.nodes.get(0).name») = 0 AS «subPattern.logicVariable»
+				«subPattern.logicVariable»_if OR count(«subPattern.conclusion.nodes.get(0).name») > 0 AS «subPattern.logicVariable»
 				«IF passOnMatchParameter»
 					,«matchParameter»
 				«ENDIF»

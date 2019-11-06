@@ -33,13 +33,12 @@ public interface IPattern<M extends IMatch> {
 		return determineMatches(schedule, IMask.empty());
 	}
 
-	/**
-	 * Compute a single match for the pattern.
-	 * 
-	 * @return A single match or empty if there are no matches for the pattern.
-	 */
 	default Optional<M> determineOneMatch() {
-		return determineMatches(Schedule.once()).stream().findAny();
+		return determineOneMatch(IMask.empty());
+	}
+	
+	default Optional<M> determineOneMatch(IMask mask) {
+		return determineMatches(Schedule.once(), mask).stream().findAny();
 	}
 
 	/**

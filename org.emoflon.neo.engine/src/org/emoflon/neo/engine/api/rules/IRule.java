@@ -25,12 +25,12 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 		return apply(match, IMask.empty());
 	}
 
-	default Optional<CM> apply(IMask mask) {
-		return determineOneMatch().flatMap(m -> apply(m, mask));
+	default Optional<CM> apply(IMask preMask, IMask postMask) {
+		return determineOneMatch(preMask).flatMap(m -> apply(m, postMask));
 	}
 
 	default Optional<CM> apply() {
-		return apply(IMask.empty());
+		return apply(IMask.empty(), IMask.empty());
 	}
 
 	void setSPOSemantics(boolean spoSemantics);

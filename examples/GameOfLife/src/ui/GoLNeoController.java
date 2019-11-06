@@ -67,7 +67,7 @@ public class GoLNeoController implements IController {
 			var mask = creator.getRule_MakeCellAlive().mask();
 			mask.setCellRow(configuration[i][0]);
 			mask.setCellCol(configuration[i][1]);
-			creator.getRule_MakeCellAlive().apply(mask);
+			creator.getRule_MakeCellAlive().apply(mask, creator.getRule_MakeCellAlive().mask());
 		}
 		
 		logger.info("Set configuration in board.");

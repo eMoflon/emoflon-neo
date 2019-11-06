@@ -138,7 +138,7 @@ public class SokobanNeoController implements IController {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			result = access.apply(mask);
+			result = access.apply(mask, access.mask());
 			break;
 		}
 		case BLOCK: {
@@ -146,7 +146,7 @@ public class SokobanNeoController implements IController {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			result = access.apply(mask);
+			result = access.apply(mask, access.mask());
 			break;
 		}
 		case BOULDER: {
@@ -154,7 +154,7 @@ public class SokobanNeoController implements IController {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			result = access.apply(mask);
+			result = access.apply(mask, access.mask());
 			break;
 		}
 		default:
@@ -162,7 +162,7 @@ public class SokobanNeoController implements IController {
 			var mask = access.mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			result = access.apply(mask);
+			result = access.apply(mask, access.mask());
 			break;
 		}
 
@@ -179,7 +179,8 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_MoveSokobanDownWithCondition().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_MoveSokobanDownWithCondition().apply(mask);
+			comatch = api2.getRule_MoveSokobanDownWithCondition().apply(mask,
+					api2.getRule_MoveSokobanDownWithCondition().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -189,7 +190,7 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_PushBlockDown().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_PushBlockDown().apply(mask);
+			comatch = api2.getRule_PushBlockDown().apply(mask, api2.getRule_PushBlockDown().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -199,7 +200,8 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_MoveSokobanUpWithCondition().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_MoveSokobanUpWithCondition().apply(mask);
+			comatch = api2.getRule_MoveSokobanUpWithCondition().apply(mask,
+					api2.getRule_MoveSokobanUpWithCondition().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -209,7 +211,7 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_PushBlockUp().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_PushBlockUp().apply(mask);
+			comatch = api2.getRule_PushBlockUp().apply(mask, api2.getRule_PushBlockUp().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -219,7 +221,8 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_MoveSokobanRightWithCondition().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_MoveSokobanRightWithCondition().apply(mask);
+			comatch = api2.getRule_MoveSokobanRightWithCondition().apply(mask,
+					api2.getRule_MoveSokobanRightWithCondition().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -229,7 +232,7 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_PushBlockRight().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_PushBlockRight().apply(mask);
+			comatch = api2.getRule_PushBlockRight().apply(mask, api2.getRule_PushBlockRight().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -239,7 +242,8 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_MoveSokobanLeftWithCondition().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_MoveSokobanLeftWithCondition().apply(mask);
+			comatch = api2.getRule_MoveSokobanLeftWithCondition().apply(mask,
+					api2.getRule_MoveSokobanLeftWithCondition().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -249,7 +253,7 @@ public class SokobanNeoController implements IController {
 			var mask = api2.getRule_PushBlockLeft().mask();
 			mask.setB_fields_1_toCol(field.getCol());
 			mask.setB_fields_1_toRow(field.getRow());
-			comatch = api2.getRule_PushBlockLeft().apply(mask);
+			comatch = api2.getRule_PushBlockLeft().apply(mask, api2.getRule_PushBlockLeft().mask());
 
 			if (comatch.isPresent())
 				return;
@@ -259,8 +263,8 @@ public class SokobanNeoController implements IController {
 		api1.getRule_SelectFigure().apply(//
 				api1.getRule_SelectFigure().mask()//
 						.setB_fields_0_fCol(field.getCol())//
-						.setB_fields_0_fRow(field.getRow()))//
-		;
+						.setB_fields_0_fRow(field.getRow()), //
+				api1.getRule_SelectFigure().mask());
 	}
 
 	@Override
@@ -269,12 +273,12 @@ public class SokobanNeoController implements IController {
 			var mask = api1.getRule_SetEndField().mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			api1.getRule_SetEndField().apply(mask);
+			api1.getRule_SetEndField().apply(mask, api1.getRule_SetEndField().mask());
 		} else {
 			var mask = api1.getRule_SetNotEndField().mask();
 			mask.setB_fields_0_fCol(field.getCol());
 			mask.setB_fields_0_fRow(field.getRow());
-			api1.getRule_SetNotEndField().apply(mask);
+			api1.getRule_SetNotEndField().apply(mask, api1.getRule_SetNotEndField().mask());
 		}
 	}
 
@@ -295,7 +299,7 @@ public class SokobanNeoController implements IController {
 		maskTopLeft.setBHeight(height);
 
 		// Top-left corner
-		api1.getRule_CreateTopLeft().apply(maskTopLeft);
+		api1.getRule_CreateTopLeft().apply(api1.getRule_CreateTopLeft().mask(), maskTopLeft);
 
 		// First row
 		for (int col = 0; col < width - 1; col++) {

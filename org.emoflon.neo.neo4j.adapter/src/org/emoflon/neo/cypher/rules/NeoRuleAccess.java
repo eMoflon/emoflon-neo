@@ -20,7 +20,7 @@ public abstract class NeoRuleAccess<Data extends NeoData, Mask extends NeoMask> 
 		return rule().apply(match, mask);
 	}
 	
-	public Optional<NeoCoMatch> apply(Mask mask) {
-		return rule().apply(mask);
+	public Optional<NeoCoMatch> apply(Mask preMask, Mask postMask) {
+		return rule().apply(preMask, postMask);
 	}
 }

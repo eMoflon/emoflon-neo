@@ -84,7 +84,7 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 			var subPattern = new NeoImplicationPattern(condition, allSubPatterns.size(), this);
 			subImplicationPatterns.add(subPattern);
 			allSubPatterns.add(subPattern);
-			return "NOT(" + subPattern.getLogicVariable() + ")";
+			return subPattern.getLogicVariable();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return e.getMessage();

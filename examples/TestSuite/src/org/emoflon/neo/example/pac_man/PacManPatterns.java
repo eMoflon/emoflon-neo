@@ -4,8 +4,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_PacMan;
 import org.emoflon.neo.example.ENeoTest;
