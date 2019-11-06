@@ -86,7 +86,7 @@ class CypherPatternQueryGenerator {
 				
 				// Node Sampling
 				«FOR node : pattern.nodes.filter[schedule.hasRangeFor(it.type, it.name)] BEFORE " AND " SEPARATOR " AND "»
-					id(«node.name») in «schedule.getParameterFor(node.type, node.name)»
+					id(«node.name») in $«schedule.getParameterFor(node.type, node.name)»
 				«ENDFOR»
 			
 			WITH
