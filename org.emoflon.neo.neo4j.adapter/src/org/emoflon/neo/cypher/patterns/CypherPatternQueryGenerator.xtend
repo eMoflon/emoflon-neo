@@ -43,7 +43,7 @@ class CypherPatternQueryGenerator {
 			// Data query for: «pattern.name»
 			UNWIND $«matchesParameter» AS «matchParameter»
 			
-			«matchAllElements(pattern)»
+			«matchAllElements(pattern, false)»
 			
 			WHERE
 				«FOR element : pattern.elements SEPARATOR " AND "»
@@ -67,9 +67,10 @@ class CypherPatternQueryGenerator {
 		matchMainPattern(pattern, schedule, mask, false);
 	}
 
-	private def static CharSequence matchMainPattern(NeoPattern pattern, Schedule schedule, IMask mask, boolean passOnMatchParameter) {
+	private def static CharSequence matchMainPattern(NeoPattern pattern, Schedule schedule, IMask mask,
+		boolean passOnMatchParameter) {
 		'''
-			«matchAllElements(pattern)»
+			«matchAllElements(pattern, false)»
 			
 			WHERE
 				// Injectivity
@@ -147,18 +148,18 @@ class CypherPatternQueryGenerator {
 		'''
 	}
 
-	def static matchAllElements(NeoPattern pattern) {
+	def static matchAllElements(NeoPattern pattern, boolean withMatchParams) {
 		'''
 			«IF !pattern.elements.isEmpty»
 				MATCH
 					// Match all nodes
 					«FOR node : pattern.nodes SEPARATOR ", "»
-						«matchNode(node)»
+						«matchNode(node, withMatchParams)»
 					«ENDFOR»
 				
 					// Match all relations (including paths)
 					«FOR rel : pattern.relations BEFORE "," SEPARATOR ", "»
-						«matchRelation(rel)»
+						«matchRelation(rel, withMatchParams)»
 					«ENDFOR»
 			«ENDIF»
 		'''
@@ -213,12 +214,12 @@ class CypherPatternQueryGenerator {
 			OPTIONAL MATCH 
 				// Match all nodes
 				«FOR node : subPattern.nodes SEPARATOR ", "»
-					«matchNode(node)»
+					«matchNode(node, false)»
 				«ENDFOR»
 				
 				// Match all relations
 				«FOR rel : subPattern.relations BEFORE "," SEPARATOR ", "»
-					«matchRelation(rel)»
+					«matchRelation(rel, false)»
 				«ENDFOR»
 		'''
 	}
@@ -295,19 +296,26 @@ class CypherPatternQueryGenerator {
 		'''
 	}
 
-	private def static matchNode(NeoNode node) {
+	private def static matchNode(NeoNode node, boolean withMatchParams) {
 		'''
-			(«node.name»:«node.type»«matchProperties(node.getEqualityChecks)»)
+			(«node.name»:«node.type»«matchProperties(node.getEqualityChecks, withMatchParams)»)
 		'''
 	}
 
-	private def static matchProperties(Iterable<NeoProperty> properties) {
-		'''«FOR prop : properties BEFORE " {" SEPARATOR ", " AFTER "}"»«prop.name»:«prop.value»«ENDFOR»'''
+	private def static matchProperties(Iterable<NeoProperty> properties, boolean withMatchParams) {
+		'''«FOR prop : properties BEFORE " {" SEPARATOR ", " AFTER "}"»«prop.name»:«toParamValue(prop.value, withMatchParams)»«ENDFOR»'''
 	}
 
-	private def static matchRelation(NeoRelation relation) {
+	def static toParamValue(String propValue, boolean withMatchParams) {
+		if (propValue.startsWith("$") && withMatchParams) {
+			return propValue.replace("$", NeoMatch.matchParameter + ".")
+		} else
+			return propValue
+	}
+
+	private def static matchRelation(NeoRelation relation, boolean withMatchParams) {
 		'''
-			(«relation.srcNode.name»)-[«relation.name»:«relation.type»«matchProperties(relation.getEqualityChecks)»]->(«relation.trgNode.name»)
+			(«relation.srcNode.name»)-[«relation.name»:«relation.type»«matchProperties(relation.getEqualityChecks, withMatchParams)»]->(«relation.trgNode.name»)
 		'''
 	}
 

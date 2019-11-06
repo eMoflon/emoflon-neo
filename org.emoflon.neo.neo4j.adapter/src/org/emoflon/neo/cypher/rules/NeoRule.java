@@ -102,10 +102,18 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public Collection<NeoCoMatch> applyAll(Collection<NeoMatch> matches, IMask mask) {
 		var cypherQuery = getQuery(mask);
 
+		// Parameters from match and mask
 		var parameters = new ArrayList<Map<String, Object>>();
-		matches.forEach(m -> parameters.add(m.getParameters()));
+		matches.forEach(m -> {
+			var paramsForMatch = new HashMap<>(m.getParameters());
+			paramsForMatch.putAll(mask.getParameters());
+			parameters.add(paramsForMatch);
+		});
 
-		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), parameters));
+		// Parameters from mask
+		var params = new HashMap<String, Object>(Map.of(NeoMatch.getMatchesParameter(), parameters));
+		var result = builder.executeQuery(cypherQuery, params);
+
 		logger.debug(parameters);
 		logger.debug("\n" + cypherQuery);
 		return extractCoMatches(result);
@@ -166,8 +174,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public Map<String, NeoNode> getCreatedNodes() {
 		return greenNodes;
 	}
-	
-	public Map<String, NeoRelation> getCreatedEdges(){
+
+	public Map<String, NeoRelation> getCreatedEdges() {
 		return greenEdges;
 	}
 
@@ -201,7 +209,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public Collection<String> getElements() {
 		return precondition.getElements();
 	}
-	
+
 	public NeoPattern getPrecondition() {
 		return precondition;
 	}

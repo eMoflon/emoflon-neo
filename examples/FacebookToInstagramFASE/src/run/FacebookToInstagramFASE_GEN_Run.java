@@ -26,7 +26,7 @@ public class FacebookToInstagramFASE_GEN_Run {
 	private static final Logger logger = Logger.getLogger(FacebookToInstagramFASE_GEN_Run.class);
 
 	public static void main(String[] pArgs) throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		Logger.getLogger(RandomSingleMatchUpdatePolicy.class).setLevel(Level.INFO);
 
 		var app = new FacebookToInstagramFASE_GEN_Run();

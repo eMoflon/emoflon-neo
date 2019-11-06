@@ -23,7 +23,7 @@ public class NeoProperty {
 	}
 
 	public NeoProperty(ModelPropertyStatement prop, NeoElement element) {
-		this(element, prop.getType(), EMSLUtil.handleValue(prop.getValue()));
+		this(element, prop.getType(), EMSLUtil.handleValueForCypher(prop.getValue()));
 	}
 
 	public String getElement() {

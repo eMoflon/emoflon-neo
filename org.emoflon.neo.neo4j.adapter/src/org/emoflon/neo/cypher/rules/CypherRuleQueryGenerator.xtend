@@ -5,6 +5,7 @@ import org.emoflon.neo.cypher.common.NeoRelation
 import org.emoflon.neo.engine.api.patterns.IMask
 
 import static org.emoflon.neo.cypher.patterns.CypherPatternQueryGenerator.matchAllElements
+import static org.emoflon.neo.cypher.patterns.CypherPatternQueryGenerator.toParamValue
 import static org.emoflon.neo.cypher.patterns.NeoMatch.getIdParameter
 import static org.emoflon.neo.cypher.patterns.NeoMatch.getMatchParameter
 import static org.emoflon.neo.cypher.patterns.NeoMatch.getMatchesParameter
@@ -16,7 +17,7 @@ class CypherRuleQueryGenerator {
 			// Execute rule query for: «rule.name» 
 			UNWIND $«matchesParameter» AS «matchParameter»
 			
-			«matchAllElements(rule.getPrecondition())»
+			«matchAllElements(rule.getPrecondition(), true)»
 			
 			WHERE
 				«bindElementsUsingMatch(rule)»
@@ -40,10 +41,10 @@ class CypherRuleQueryGenerator {
 			«IF !rule.attributeAssignments.isEmpty»
 				SET
 					«FOR maskedAssignment : mask.maskedAttributes.entrySet SEPARATOR "," AFTER rule.attributeAssignments.isEmpty? "":","»
-						«maskedAssignment.key» = «returnValueAsString(maskedAssignment.value)»
+						«maskedAssignment.key» = «toParamValue(returnValueAsString(maskedAssignment.value), true)»
 					«ENDFOR»
 					«FOR assg : rule.attributeAssignments SEPARATOR ","»
-						«assg.element».«assg.name» = «assg.value»
+						«assg.element».«assg.name» = «toParamValue(assg.value, true)»
 					«ENDFOR»
 			«ENDIF»
 			

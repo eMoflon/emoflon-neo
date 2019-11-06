@@ -15,7 +15,6 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.emsl.eMSL.Rule;
-import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.generator.MatchContainer;
@@ -76,9 +75,6 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
 					if (!params.containsKey(param.getName()))
 						params.put(param.getName(), prop.getType().getType());
-
-					mask.maskAttribute(nodeBlock.getName() + "." + prop.getType().getName(),
-							new ParameterPlaceHolder(param.getName()));
 				}
 
 		matches.forEach(m -> params.forEach(
@@ -98,18 +94,5 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	@Override
 	protected MatchContainer<NeoMatch, NeoCoMatch> createMatchContainer() {
 		return new NeoMatchContainer(allRules);
-	}
-}
-
-class ParameterPlaceHolder {
-	private String name;
-
-	public ParameterPlaceHolder(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String toString() {
-		return EMSLUtil.PARAM_NAME_FOR_MATCH + "." + name;
 	}
 }
