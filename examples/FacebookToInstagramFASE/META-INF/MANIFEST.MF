@@ -14,4 +14,5 @@ Export-Package: .,
  org.emoflon.neo.api,
  org.emoflon.neo.api.Transformations
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.log4j
+Import-Package: org.apache.log4j,
+ org.emoflon.neo.api
