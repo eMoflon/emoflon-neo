@@ -61,7 +61,7 @@ public class SokobanNeoController implements IController {
 
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		new SokobanNeoController(30, 30);
+		new SokobanNeoController(10, 10);
 	}
 
 	@Override
