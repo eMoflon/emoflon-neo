@@ -128,4 +128,9 @@ public class NeoBasicPattern {
 				.flatMap(elt -> elt.getInequalityChecks().stream())//
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }
