@@ -20,6 +20,7 @@ import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class CompanyToIT_CO_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);
@@ -39,12 +40,13 @@ public class CompanyToIT_CO_Run {
 
 			var coAPI = new API_CompanyToIT_CO(builder);
 			var generator = new NeoGenerator(//
-					coAPI.getAllRulesForCompanyToIT__CO(),//
+					coAPI.getAllRulesForCompanyToIT__CO(), //
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator("TheSource", "TheTarget"), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");

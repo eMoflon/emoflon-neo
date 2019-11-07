@@ -22,6 +22,7 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class FacebookToInstagram_GEN_Run {
 	private static final Logger logger = Logger.getLogger(FacebookToInstagram_GEN_Run.class);
@@ -99,6 +100,7 @@ public class FacebookToInstagram_GEN_Run {
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator("Facebook", "Instagram"), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

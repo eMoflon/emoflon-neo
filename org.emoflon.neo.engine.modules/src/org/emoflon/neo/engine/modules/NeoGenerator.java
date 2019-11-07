@@ -27,6 +27,7 @@ import org.emoflon.neo.engine.generator.modules.IParameterValueGenerator;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
@@ -43,6 +44,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			IUpdatePolicy<NeoMatch, NeoCoMatch> updatePolicy, //
 			IMatchReprocessor<NeoMatch, NeoCoMatch> matchReprocessor, //
 			IMonitor<NeoMatch, NeoCoMatch> progressMonitor, //
+			ModelNameValueGenerator modelNameGenerator, //
 			List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators//
 	) {
 		super(//
@@ -53,7 +55,13 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 				matchReprocessor, //
 				progressMonitor//
 		);
-		this.parameterValueGenerators = new ArrayList<>(parameterValueGenerators);
+
+		this.parameterValueGenerators = new ArrayList<>();
+		if (modelNameGenerator == null)
+			modelNameGenerator = new ModelNameValueGenerator(null, null);
+		this.parameterValueGenerators.add(modelNameGenerator);
+		this.parameterValueGenerators.addAll(parameterValueGenerators);
+
 		mapParameters(allRules);
 	}
 

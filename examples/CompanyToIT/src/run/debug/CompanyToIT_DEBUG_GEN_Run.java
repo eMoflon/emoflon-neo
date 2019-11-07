@@ -13,6 +13,7 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.NoTerminationCondition;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.victory.adapter.NeoVictoryAdapter;
 
 public class CompanyToIT_DEBUG_GEN_Run {
@@ -39,6 +40,7 @@ public class CompanyToIT_DEBUG_GEN_Run {
 					adapter, //
 					new ParanoidNeoReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator("TheSource", "TheTarget"), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			adapter.run(generator);
