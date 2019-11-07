@@ -213,4 +213,9 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public NeoPattern getPrecondition() {
 		return precondition;
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
