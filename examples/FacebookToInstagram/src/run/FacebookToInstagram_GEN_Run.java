@@ -10,6 +10,7 @@ import org.emoflon.neo.api.API_Facebook;
 import org.emoflon.neo.api.API_Instagram;
 import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -21,7 +22,6 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
 public class FacebookToInstagram_GEN_Run {
 	private static final Logger logger = Logger.getLogger(FacebookToInstagram_GEN_Run.class);

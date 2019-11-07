@@ -8,6 +8,7 @@ import org.emoflon.neo.engine.api.rules.IRule;
 
 public class Schedule {
 
+	public static final int UNLIMITED = -1;
 	private static final String NODE_RANGE_PARAM = "nodeRange";
 	private int limit;
 	private Optional<IRule<?, ?>> rule;
@@ -31,7 +32,7 @@ public class Schedule {
 	}
 
 	public static Schedule unlimited() {
-		return new Schedule(-1);
+		return new Schedule(Schedule.UNLIMITED);
 	}
 
 	public static Schedule once() {

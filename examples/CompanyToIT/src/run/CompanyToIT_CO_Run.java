@@ -10,6 +10,7 @@ import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_CO;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
 import org.emoflon.neo.api.metamodels.API_IT;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
@@ -19,7 +20,6 @@ import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 
 public class CompanyToIT_CO_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);

@@ -42,7 +42,7 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 	
 	@Test
 	public void testColouredThingsOnPlatforms() {
-		assertThat(entities.getPattern_ColouredThingOnPlatform().matcher().countMatches(), is(2));
+		assertThat(entities.getPattern_ColouredThingOnPlatform().pattern().countMatches(), is(2));
 	}
 	
 	@Test

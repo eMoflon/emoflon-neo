@@ -3,14 +3,14 @@ package org.emoflon.neo.engine.modules.ruleschedulers;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.engine.modules.analysis.RuleAnalyser;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public class FreeAxiomsRuleSchedulerForGEN implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 	@Override
