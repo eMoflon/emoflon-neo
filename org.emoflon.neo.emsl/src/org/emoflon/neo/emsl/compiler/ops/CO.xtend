@@ -52,4 +52,12 @@ class CO implements Operation {
 	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return Collections.emptyList
 	}
+
+	override requiresSrcModelCreation() {
+		false
+	}
+	
+	override requiresTrgModelCreation() {
+		false
+	}
 }

@@ -18,6 +18,7 @@ import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler
 import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class CompanyToIT_GEN_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);
@@ -52,6 +53,7 @@ public class CompanyToIT_GEN_Run {
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator("TheSource", "TheTarget"), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

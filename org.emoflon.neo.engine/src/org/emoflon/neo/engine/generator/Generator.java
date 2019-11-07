@@ -1,7 +1,7 @@
 package org.emoflon.neo.engine.generator;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.ICoMatch;
@@ -19,7 +19,7 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 	private IUpdatePolicy<M, C> updatePolicy;
 	private IMatchReprocessor<M, C> matchReprocessor;
 	private IMonitor<M, C> progressMonitor;
-	protected ArrayList<IRule<M, C>> allRules;
+	private MatchContainer<M, C> matchContainer;
 
 	public Generator(//
 			Collection<? extends IRule<M, C>> allRules, //
@@ -28,16 +28,16 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 			IUpdatePolicy<M, C> updatePolicy, //
 			IMatchReprocessor<M, C> matchReprocessor, //
 			IMonitor<M, C> progressMonitor) {
-		this.allRules = new ArrayList<>(allRules);
 		this.terminationCondition = terminationCondition;
 		this.ruleScheduler = ruleScheduler;
 		this.updatePolicy = updatePolicy;
 		this.matchReprocessor = matchReprocessor;
 		this.progressMonitor = progressMonitor;
+		matchContainer = createMatchContainer(allRules);
 	}
 
 	public void generate() {
-		MatchContainer<M, C> matchContainer = createMatchContainer();
+
 		do {
 			// 1. Schedule rules for pattern matching
 			progressMonitor.startRuleScheduling();
@@ -46,7 +46,7 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 
 			// 2. Perform pattern matching
 			progressMonitor.startPatternMatching();
-			scheduledRules.forEach((rule, schedule) -> matchContainer.addAll(rule.determineMatches(schedule), rule));
+			determineMatches(scheduledRules, matchContainer);
 			progressMonitor.finishPatternMatching();
 
 			// 3. Match selection
@@ -75,7 +75,14 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 		progressMonitor.finishGeneration(matchContainer);
 	}
 
-	protected abstract MatchContainer<M, C> createMatchContainer();
-	
-	protected abstract void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer);
+	protected void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer) {
+		var comatches = rule.applyAll(matches);
+		matchContainer.appliedRule(rule, matches, comatches);
+	}
+
+	protected void determineMatches(Map<IRule<M, C>, Schedule> scheduledRules, MatchContainer<M, C> matchContainer) {
+		scheduledRules.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
+	}
+
+	protected abstract MatchContainer<M, C> createMatchContainer(Collection<? extends IRule<M, C>> allRules);
 }

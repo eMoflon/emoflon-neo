@@ -20,6 +20,7 @@ import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class FacebookToInstagramFASE_CO_Run {
 	private static final Logger logger = Logger.getLogger(FacebookToInstagramFASE_CO_Run.class);
@@ -45,6 +46,7 @@ public class FacebookToInstagramFASE_CO_Run {
 					checkOnly, //
 					new NoOpReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator("Facebook", "Instagram"), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");

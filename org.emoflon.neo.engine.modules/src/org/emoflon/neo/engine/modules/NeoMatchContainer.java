@@ -11,7 +11,7 @@ import org.emoflon.neo.engine.generator.MatchContainer;
 
 public class NeoMatchContainer extends MatchContainer<NeoMatch, NeoCoMatch> {
 
-	public NeoMatchContainer(Collection<IRule<NeoMatch, NeoCoMatch>> allRules) {
+	public NeoMatchContainer(Collection<? extends IRule<NeoMatch, NeoCoMatch>> allRules) {
 		super(allRules);
 	}
 

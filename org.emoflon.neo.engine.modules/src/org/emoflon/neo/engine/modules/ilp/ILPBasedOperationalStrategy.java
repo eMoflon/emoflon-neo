@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.constraints.NeoNegativeConstraint;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
-import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
@@ -44,21 +44,21 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private BinaryILPProblem ilpProblem;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
-	protected Collection<INegativeConstraint> negativeConstraints;
+	protected Collection<NeoNegativeConstraint> negativeConstraints;
 
 	public ILPBasedOperationalStrategy(Collection<NeoRule> genRules, Collection<IConstraint> negativeConstraints) {
 		matchToId = new HashMap<>();
 		matchToCreatedElements = new HashMap<>();
 		elementToCreatingMatches = new HashMap<>();
 		elementToDependentMatches = new HashMap<>();
-		
+
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
 
 		this.negativeConstraints = new ArrayList<>();
 		negativeConstraints.forEach(nc -> {
-			if (nc instanceof INegativeConstraint) {
-				this.negativeConstraints.add((INegativeConstraint) nc);
+			if (nc instanceof NeoNegativeConstraint) {
+				this.negativeConstraints.add((NeoNegativeConstraint) nc);
 			} else {
 				throw new IllegalArgumentException(
 						"Only negative domain constraints are supported at the moment: " + nc);
@@ -224,8 +224,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		long tic = System.currentTimeMillis();
 		logger.info("Checking for constraint violations...");
 		var violations = negativeConstraints.stream().flatMap(nc -> nc.getViolations().stream());
-		logger.info("Completed in " + (System.currentTimeMillis() - tic)/1000.0 + "s");
-		
+		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
+
 		violations.forEach(v -> {
 			var elements = extractIDs(v.getPattern().getElements(), v);
 
@@ -259,8 +259,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	public Optional<Set<Long>> determineConsistentElements(SupportedILPSolver suppSolver)
-			throws Exception {
+	public Optional<Set<Long>> determineConsistentElements(SupportedILPSolver suppSolver) throws Exception {
 		computeILPProblem();
 		var solver = ILPFactory.createILPSolver(ilpProblem, suppSolver);
 
@@ -278,8 +277,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			return Optional.empty();
 	}
 
-	public Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver)
-			throws Exception {
+	public Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
 		var consistentElements = determineConsistentElements(suppSolver);
 
 		if (consistentElements.isPresent()) {
@@ -306,15 +304,15 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 						m.getNodeIDs().get(name) : -1 * m.getEdgeIDs().get(name))//
 				.collect(Collectors.toSet());
 	}
-	
+
 	public int getNrOfILPConstraints() {
 		return ilpProblem.getConstraints().size();
 	}
-	
+
 	public int getNroOfGraphConstraints() {
 		return negativeConstraints.size();
 	}
-	
+
 	public String getInfo() {
 		return ilpProblem.getProblemInformation();
 	}

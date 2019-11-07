@@ -19,14 +19,14 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	private NodeRange currentNodeRange;
 	private long noOfGeneratedElements = 0;
 
-	public MatchContainer(Collection<IRule<M, C>> allRules) {
+	public MatchContainer(Collection<? extends IRule<M, C>> allRules) {
 		rulesToMatches = new HashMap<>();
 		ruleApplications = new HashMap<>();
 		allRules.forEach(rule -> {
 			rulesToMatches.put(rule, new HashSet<>());
 			ruleApplications.put(rule, 0);
 		});
-		
+
 		currentNodeRange = new NodeRange();
 	}
 
