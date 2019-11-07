@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.generator.MatchContainer;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.emoflon.victory.ui.api.DataPackage;
 import org.emoflon.victory.ui.api.Match;
 import org.emoflon.victory.ui.api.RuleApplication;

@@ -29,7 +29,7 @@ public class FruitGardenTests extends ENeoTest {
 	
 	@Test
 	public void testMatchesForPatterns() {
-		assertEquals(4, entities.getPattern_OneFruitOnTree().matcher().countMatches());
+		assertEquals(4, entities.getPattern_OneFruitOnTree().pattern().countMatches());
 	}
 	
 	@Test

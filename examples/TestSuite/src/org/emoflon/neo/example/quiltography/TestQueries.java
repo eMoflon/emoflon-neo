@@ -27,19 +27,19 @@ public class TestQueries extends ENeoTest {
 				.setSomeAuthorName("Jean Ann")//
 				.setSomeAuthorSurname("Wright");
 
-		assertEquals(1, access.matcher(mask).countMatches());
+		assertEquals(1, access.countMatches(mask));
 		
-		access.matcher(mask).determineOneMatch().ifPresent(m -> {
+		access.determineOneMatch(mask).ifPresent(m -> {
 			var authorId = m.getIdForNode(access.someAuthor);
 			var newMask = access.mask().setSomeAuthor(authorId);
-			assertEquals(1, access.matcher(newMask).countMatches());
+			assertEquals(1, access.countMatches(newMask));
 		});
 
 		mask = access.mask()//
 				.setSomeAuthorName("Hui")//
 				.setSomeAuthorSurname("Boo");
 
-		assertEquals(0, access.matcher(mask).countMatches());
+		assertEquals(0, access.countMatches(mask));
 	}
 
 	@Test
@@ -47,42 +47,42 @@ public class TestQueries extends ENeoTest {
 		var access = queries.getPattern_AllBooksWithAParticularClassification();
 		var mask = access.mask().setClassificationName("Mixed");
 
-		assertEquals(1, access.matcher(mask).countMatches());
+		assertEquals(1, access.countMatches(mask));
 		
 		mask = access.mask().setClassificationName("Using Strips");
 		
-		assertEquals(1, access.matcher(mask).countMatches());
+		assertEquals(1, access.countMatches(mask));
 		
 		mask = access.mask().setClassificationName("Rubbish");
 		
-		assertEquals(0, access.matcher(mask).countMatches());
+		assertEquals(0, access.countMatches(mask));
 		
-		assertEquals(2, access.matcher().countMatches());
+		assertEquals(2, access.pattern().countMatches());
 	}
 	
 	@Test
 	public void test_PageOfSomeBook() {
 		var access = queries.getPattern_AllPagesOfAParticularBook();
 		var mask = access.mask().setBookTitle("Jambalaya Quilts");
-		assertEquals(17, access.matcher(mask).countMatches());
+		assertEquals(17, access.countMatches(mask));
 		
 		mask = access.mask().setBookTitle("Pillows");
-		assertEquals(37, access.matcher(mask).countMatches());
+		assertEquals(37, access.countMatches(mask));
 		
-		assertEquals(54, access.matcher().countMatches());
+		assertEquals(54, access.pattern().countMatches());
 	}
 	
 	@Test
 	public void testAllPagesOnQuiltsWithACertainPattern() {
 		var access = queries.getPattern_AllPagesOnQuiltsWithACertainPattern();
 		var mask = access.mask().setPatName("Weave");
-		assertEquals(2, access.matcher(mask).countMatches());
+		assertEquals(2, access.countMatches(mask));
 	}
 	
 	@Test
 	public void testAllPagesOnPillowsWithACertainPattern() {
 		var access = queries.getPattern_AllPagesOnPillowsWithACertainPattern();
 		var mask = access.mask().setPatName("Rectangle");
-		assertEquals(8, access.matcher(mask).countMatches());
+		assertEquals(8, access.countMatches(mask));
 	}
 }

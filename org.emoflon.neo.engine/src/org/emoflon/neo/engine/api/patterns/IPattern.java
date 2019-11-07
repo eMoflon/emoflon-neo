@@ -3,10 +3,8 @@ package org.emoflon.neo.engine.api.patterns;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.emoflon.neo.engine.generator.Schedule;
-
 
 public interface IPattern<M extends IMatch> {
 	/**
@@ -15,34 +13,32 @@ public interface IPattern<M extends IMatch> {
 	String getName();
 
 	/**
-	 * Used to configure if pattern matching should be injective or not.
-	 * 
-	 * @param injective
-	 */
-	void setMatchInjectively(Boolean injective);
-
-	/**
 	 * Compute and return all matches. Note: every time this method is invoked
 	 * pattern matching is performed anew.
 	 * 
 	 * @return Collection of all determined matches.
 	 */
-	Collection<M> determineMatches();
+	default Collection<M> determineMatches() {
+		return determineMatches(Schedule.unlimited());
+	}
 
 	/**
 	 * Only compute as most as many matches as required.
 	 * 
 	 * @return at most limit random matches for the pattern.
 	 */
-	Collection<M> determineMatches(Schedule schedule);
+	Collection<M> determineMatches(Schedule schedule, IMask mask);
 
-	/**
-	 * Compute a single match for the pattern.
-	 * 
-	 * @return A single match or empty if there are no matches for the pattern.
-	 */
+	default Collection<M> determineMatches(Schedule schedule) {
+		return determineMatches(schedule, IMask.empty());
+	}
+
 	default Optional<M> determineOneMatch() {
-		return determineMatches(Schedule.once()).stream().findAny();
+		return determineOneMatch(IMask.empty());
+	}
+	
+	default Optional<M> determineOneMatch(IMask mask) {
+		return determineMatches(Schedule.once(), mask).stream().findAny();
 	}
 
 	/**
@@ -51,8 +47,12 @@ public interface IPattern<M extends IMatch> {
 	 * 
 	 * @return
 	 */
+	default int countMatches(IMask mask) {
+		return determineMatches(Schedule.unlimited(), mask).size();
+	}
+
 	default int countMatches() {
-		return determineMatches().size();
+		return countMatches(IMask.empty());
 	}
 
 	/**
@@ -64,5 +64,5 @@ public interface IPattern<M extends IMatch> {
 	 */
 	Map<String, Boolean> isStillValid(Collection<M> matches);
 
-	Stream<String> getPatternElts();
+	Collection<String> getElements();
 }

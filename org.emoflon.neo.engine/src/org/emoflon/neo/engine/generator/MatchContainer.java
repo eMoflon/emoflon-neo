@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,7 +73,7 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		return rulesToMatches.get(rule).stream();
 	}
 
-	public abstract void appliedRule(IRule<M, C> rule, Collection<M> appliedMatches, Optional<Collection<C>> comatches);
+	public abstract void appliedRule(IRule<M, C> rule, Collection<M> appliedMatches, Collection<C> comatches);
 
 	protected void addCreatedElementIDsToRange(C m, IRule<M, C> rule) {
 		rule.getCreatedElts().forEach(elt -> {

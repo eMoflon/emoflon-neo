@@ -8,13 +8,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -84,7 +86,7 @@ public class SokobanRules extends ENeoTest {
 	public void testMoveSokobanDownPathsWithCond() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveSokobanDownTest().rule();
 		var matches = rule.determineMatches();
-		assertTrue(matches.size() == 0);		
+		assertEquals(0, matches.size());		
 	}
 	
 	@Test 
@@ -137,6 +139,7 @@ public class SokobanRules extends ENeoTest {
 	
 	@Test
 	public void testMoveBlockUp() {
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_MoveBlockUp().rule();
 		var matches = rule.determineMatches();
 		assertEquals(2, matches.size());
@@ -151,14 +154,14 @@ public class SokobanRules extends ENeoTest {
 		matches = validMatches;
 		assertEquals(2, matches.size());
 		
-		Optional<Collection<NeoCoMatch>> result = rule.applyAll(matches);
-		assertTrue(result.isPresent());
+		Collection<NeoCoMatch> result = rule.applyAll(matches);
+		assertTrue(!result.isEmpty());
 		
 		var coMatches = new ArrayList<NeoMatch>();
-		for(var co : result.get()) {
+		for(var co : result) {
 			coMatches.add((NeoMatch)co);
 		}
-		assertEquals(2,coMatches.size());
+		assertEquals(2, coMatches.size());
 		
 		tempMatches = rule.isStillApplicable(matches);
 		validMatches = new ArrayList<NeoMatch>(matches);
@@ -178,7 +181,7 @@ public class SokobanRules extends ENeoTest {
 		var matches = rule.determineMatches();
 		assertEquals(1, matches.size());
 		
-		rule.useSPOSemantics(true);
+		rule.setSPOSemantics(true);
 		
 		var match = matches.iterator().next();
 		
@@ -188,12 +191,12 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 	@Test
-	public void testRemoveSokoobanForDangelingEdgesDPO() {
+	public void testRemoveSokoobanForDanglingEdgesDPO() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokoban().rule();
 		var matches = rule.determineMatches();
 		assertEquals(1, matches.size());
 		
-		rule.useSPOSemantics(false);
+		rule.setSPOSemantics(false);
 		
 		var match = matches.iterator().next();
 		
@@ -206,12 +209,12 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 	@Test
-	public void testRemoveSokoobanWithDangelingEdgesSPO() {
+	public void testRemoveSokoobanWithDanglingEdgesSPO() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokobanWithDanglingEdges().rule();
 		var matches = rule.determineMatches();
 		assertEquals(1, matches.size());
 		
-		rule.useSPOSemantics(true);
+		rule.setSPOSemantics(true);
 		
 		var match = matches.iterator().next();
 		
@@ -226,7 +229,7 @@ public class SokobanRules extends ENeoTest {
 		var matches = rule.determineMatches();
 		assertEquals(1, matches.size());
 		
-		rule.useSPOSemantics(false);
+		rule.setSPOSemantics(false);
 		
 		var match = matches.iterator().next();
 		

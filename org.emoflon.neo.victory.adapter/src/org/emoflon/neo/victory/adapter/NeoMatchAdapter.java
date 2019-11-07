@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.patterns.IMatch;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.victory.ui.api.Graph;
 import org.emoflon.victory.ui.api.Match;
 import org.emoflon.victory.ui.api.Rule;

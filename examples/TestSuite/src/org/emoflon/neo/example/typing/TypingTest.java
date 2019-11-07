@@ -50,6 +50,6 @@ public class TypingTest extends ENeoTest {
 		assertTrue(entities.getConstraint_CorrectTyping().isSatisfied());
 
 		// Are Ts matched correctly?
-		assertEquals(1, entities.getPattern_MatchT1().matcher().countMatches());
+		assertEquals(1, entities.getPattern_MatchT1().pattern().countMatches());
 	}
 }

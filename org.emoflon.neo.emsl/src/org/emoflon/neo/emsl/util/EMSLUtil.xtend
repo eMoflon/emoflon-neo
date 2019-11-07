@@ -60,7 +60,7 @@ class EMSLUtil {
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"
 	public static final String P_PASSWORD = "PasswordPreference"
-	
+
 	public static final String RESERVED_PREFIX = "____"
 	public static final String PARAM_NAME_FOR_MATCH = "match";
 
@@ -97,9 +97,9 @@ class EMSLUtil {
 	}
 
 	def static Optional<EObject> loadEMSL_Spec(String uri, ResourceSet rs) {
-		if(uri === null || rs === null)
+		if (uri === null || rs === null)
 			return Optional.empty
-			
+
 		val resource = rs.getResource(URI.createURI(uri), true)
 		return Optional.of(resource.contents.get(0))
 	}
@@ -181,15 +181,15 @@ class EMSLUtil {
 			throw new IllegalArgumentException("Unknown type: " + type);
 		}
 	}
-	
-	def static Optional<BuiltInDataTypes> castToBuiltInType(DataType type){
-		if(type instanceof BuiltInType)
+
+	def static Optional<BuiltInDataTypes> castToBuiltInType(DataType type) {
+		if (type instanceof BuiltInType)
 			Optional.of(type.reference)
 		else
 			Optional.empty
 	}
 
-	def static String handleValue(ValueExpression value) {
+	def static String handleValueForCypher(ValueExpression value) {
 		if(value instanceof PrimitiveString) return "\"" + PrimitiveString.cast(value).getLiteral() + "\""
 
 		if(value instanceof PrimitiveInt) return Integer.toString(PrimitiveInt.cast(value).getLiteral())
@@ -216,25 +216,35 @@ class EMSLUtil {
 					indexOf(link, node, trgBlock)) + "." + attr.name
 			}
 		}
-		
-		if(value instanceof BinaryExpression){
-			return handleValue(value.left) + value.op + handleValue(value.right)
+
+		if (value instanceof BinaryExpression) {
+			return org.emoflon.neo.emsl.util.EMSLUtil.handleValueForCypher(value.left) + value.op +
+				org.emoflon.neo.emsl.util.EMSLUtil.handleValueForCypher(value.right)
 		}
-		
-		if(value instanceof Parameter){
-			return "<" + value.name + ">"
+
+		if (value instanceof Parameter) {
+			return "$" + value.name
 		}
 
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
-	
-	private def static int indexOf(MetamodelRelationStatement ref, ModelNodeBlock node, ModelNodeBlock trg){
-		val rel = node.relations.filter[!isVariableLink(it) && getOnlyType(it).equals(ref) && it.target.equals(trg)].get(0)
+
+	private def static int indexOf(MetamodelRelationStatement ref, ModelNodeBlock node, ModelNodeBlock trg) {
+		val rel = node.relations.filter[!isVariableLink(it) && getOnlyType(it).equals(ref) && it.target.equals(trg)].
+			get(0)
 		return node.relations.indexOf(rel)
 	}
 
 	def static String returnValueAsString(Object value) {
-		if(value instanceof String) return "\"" + value + "\"" else return value.toString;
+		if (value instanceof String) {
+			if (value.startsWith("$"))
+				return value
+			else if (value.startsWith("\"") && value.endsWith("\""))
+				return value
+			else
+				return "\"" + value + "\""
+		} else
+			return value.toString;
 	}
 
 	def static Collection<MetamodelPropertyStatement> allPropertiesOf(MetamodelNodeBlock type) {

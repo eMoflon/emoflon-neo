@@ -2,10 +2,10 @@ package org.emoflon.neo.victory.adapter;
 
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.victory.ui.api.Edge;
 import org.emoflon.victory.ui.api.Node;
 import org.emoflon.victory.ui.api.enums.Action;

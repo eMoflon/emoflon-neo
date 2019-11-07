@@ -1,8 +1,8 @@
 package org.emoflon.neo.engine.modules.analysis;
 
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.engine.api.rules.IRule;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRule;
 
 /**
  * Some Basic Terminology:

@@ -3,10 +3,10 @@ package org.emoflon.neo.victory.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBootstrapper;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
 import org.emoflon.victory.ui.api.Graph;
 import org.emoflon.victory.ui.api.Node;
 import org.emoflon.victory.ui.api.Rule;
