@@ -2,7 +2,6 @@ package org.emoflon.neo.engine.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -62,8 +61,8 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		boundParameters = new HashMap<>();
 		freeParameters = new HashMap<>();
 		rules.forEach(rule -> {
-			boundParameters.put(rule, Collections.emptySet());
-			freeParameters.put(rule, Collections.emptySet());
+			boundParameters.put(rule, new HashSet<>());
+			freeParameters.put(rule, new HashSet<>());
 		});
 		parameterDataTypes = new HashMap<>();
 
