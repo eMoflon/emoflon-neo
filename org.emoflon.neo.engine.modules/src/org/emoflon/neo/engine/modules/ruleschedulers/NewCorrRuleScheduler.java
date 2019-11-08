@@ -22,7 +22,7 @@ import com.google.common.base.Functions;
 public class NewCorrRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 
 	private Collection<Long> allCorrIDsUpToLastStep = new ArrayList<>();
-	
+
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Schedule> scheduleWith(//
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
@@ -30,12 +30,15 @@ public class NewCorrRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch
 	) {
 		var latestCorrIDs = matchContainer.getRelRange().remove(allCorrIDsUpToLastStep);
 		allCorrIDsUpToLastStep = matchContainer.getRelRange().getIDs();
-		
-		IRelSampler sampler = (ruleName, type) -> type.equals(NeoCoreBootstrapper.CORR)? latestCorrIDs.size() : IRelSampler.EMPTY;
-		
+
+		IRelSampler sampler = (type, ruleName) -> {
+			return type.equals(NeoCoreBootstrapper.CORR) ? latestCorrIDs.size() : IRelSampler.EMPTY;
+		};
+
 		var scheduledRules = matchContainer.streamAllRules()//
 				.collect(Collectors.toMap(Functions.identity(), //
-						r -> new Schedule(-1, new ElementRange(), latestCorrIDs, r, (type, ruleName, nodeName) -> INodeSampler.EMPTY, sampler)));
+						r -> new Schedule(-1, new ElementRange(), latestCorrIDs, r,
+								(type, ruleName, nodeName) -> INodeSampler.EMPTY, sampler)));
 
 		return scheduledRules;
 	}
