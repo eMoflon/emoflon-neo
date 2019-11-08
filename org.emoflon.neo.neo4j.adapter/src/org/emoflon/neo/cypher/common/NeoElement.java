@@ -25,7 +25,7 @@ public abstract class NeoElement {
 			NeoProperty neoProp = null;
 			if (ConditionOperator.EQ.equals(prop.getOp()) || //
 					ConditionOperator.ASSIGN.equals(prop.getOp()))
-				if (!prop.getInferredType().equals(null))
+				if (prop.getInferredType() != null)
 					neoProp = new NeoInternalProperty(prop, this);
 				else
 					neoProp = new NeoProperty(prop, this);
