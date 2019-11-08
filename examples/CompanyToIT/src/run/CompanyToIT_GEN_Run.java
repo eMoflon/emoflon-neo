@@ -62,7 +62,7 @@ public class CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(30, TimeUnit.MINUTES, maxRuleApps), //
+				new CompositeTerminationConditionForGEN(30, TimeUnit.SECONDS, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //

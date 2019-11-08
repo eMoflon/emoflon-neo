@@ -5,11 +5,13 @@ import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 
-public class OneShotTerminationCondition implements ITerminationCondition<NeoMatch, NeoCoMatch> {
+public class NoMoreMatchesTerminationCondition implements ITerminationCondition<NeoMatch, NeoCoMatch> {
+	private int totalRuleApplicationsInLastStep = 0;
 
 	@Override
 	public boolean isReached(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-		return true;
+		var appliedRules = matchContainer.getNumberOfRuleApplications() - totalRuleApplicationsInLastStep;
+		totalRuleApplicationsInLastStep = matchContainer.getNumberOfRuleApplications();
+		return appliedRules == 0;
 	}
-
 }

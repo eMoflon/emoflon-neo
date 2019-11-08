@@ -35,10 +35,9 @@ public class FacebookToInstagram_CO_Run {
 	public boolean runCheckOnly() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
-					getNegativeConstraints(builder));
-
 			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
+			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), getNegativeConstraints(builder));
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
 					new OneShotTerminationCondition(), //
@@ -58,7 +57,7 @@ public class FacebookToInstagram_CO_Run {
 			} else {
 				logger.info("Your triple is inconsistent!");
 				var inconsistentElements = checkOnly.determineInconsistentElements(solver);
-				logger.info(inconsistentElements.get().size() + " elements of your triple are inconsistent!");
+				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
 				return false;
 			}
 		}

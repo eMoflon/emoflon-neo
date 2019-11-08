@@ -1,26 +1,26 @@
 package org.emoflon.neo.engine.modules.ruleschedulers;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.ElementRange;
 import org.emoflon.neo.engine.generator.INodeSampler;
+import org.emoflon.neo.engine.generator.IRelSampler;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 
-public class TwoPhaseRuleSchedulerForGEN implements IRuleScheduler<NeoMatch, NeoCoMatch> {
+import com.google.common.base.Functions;
 
-	private static final Logger logger = Logger.getLogger(TwoPhaseRuleSchedulerForGEN.class);
-	private FreeAxiomsRuleSchedulerForGEN phase1 = new FreeAxiomsRuleSchedulerForGEN();
+public class NodeRangeRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
+
 	private INodeSampler sampler;
-	private NodeRangeRuleScheduler phase2 = null;
-	
 
-	public TwoPhaseRuleSchedulerForGEN(INodeSampler sampler) {
+	public NodeRangeRuleScheduler(INodeSampler sampler) {
 		this.sampler = sampler;
 	}
 
@@ -29,13 +29,10 @@ public class TwoPhaseRuleSchedulerForGEN implements IRuleScheduler<NeoMatch, Neo
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
 			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
 	) {
-		if (phase2 == null) {
-			logger.info("Applying all free axioms...");
-			var scheduledRules = phase1.scheduleWith(matchContainer, progressMonitor);
-			phase2 = new NodeRangeRuleScheduler(sampler);
-			return scheduledRules;
-		}
+		var scheduledRules = matchContainer.streamAllRules()//
+				.collect(Collectors.toMap(Functions.identity(), //
+						r -> new Schedule(-1, matchContainer.getNodeRange(), new ElementRange(), r, sampler, (type, ruleName) -> IRelSampler.EMPTY)));
 
-		return phase2.scheduleWith(matchContainer, progressMonitor);
+		return scheduledRules;
 	}
 }

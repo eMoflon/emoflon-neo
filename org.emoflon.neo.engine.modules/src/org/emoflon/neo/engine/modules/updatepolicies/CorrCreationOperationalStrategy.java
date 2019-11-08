@@ -1,7 +1,6 @@
 package org.emoflon.neo.engine.modules.updatepolicies;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -13,25 +12,35 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
-public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
+public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy {
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
+	private MatchContainer<NeoMatch, NeoCoMatch> matchContainer;
 
-	public CheckOnlyOperationalStrategy(Collection<NeoRule> genRules, Collection<NeoRule> opRules, Collection<IConstraint> negativeConstraints) {
+	public CorrCreationOperationalStrategy(Collection<NeoRule> genRules, Collection<NeoRule> opRules,
+			Collection<IConstraint> negativeConstraints) {
 		super(genRules, opRules, negativeConstraints);
 	}
-	
+
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
-			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
+			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
+		if (this.matchContainer == null)
+			this.matchContainer = matchContainer;
+		return matchContainer.getAllRulesToMatches();
+	}
+
+	@Override
+	public boolean isConsistent(SupportedILPSolver suppSolver) throws Exception {
 		logger.debug("Registering all matches...");
 
 		// Precedence information
-		registerMatches(matches.streamAllMatches());
+		registerMatches(matchContainer.streamAllCoMatches());
 		computeWeights();
 
 		logger.debug("Registered all matches.");
 
-		return Collections.emptyMap();
+		return super.isConsistent(suppSolver);
 	}
 }
