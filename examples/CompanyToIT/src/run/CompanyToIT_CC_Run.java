@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_CO;
+import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_CC;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
 import org.emoflon.neo.api.metamodels.API_IT;
@@ -14,36 +14,36 @@ import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
+import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
-import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
+import org.emoflon.neo.engine.modules.ruleschedulers.NewCorrRuleScheduler;
+import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
-public class CompanyToIT_CO_Run {
-	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);
-	private static final SupportedILPSolver solver = SupportedILPSolver.Sat4J;
+public class CompanyToIT_CC_Run {
+	private static final Logger logger = Logger.getLogger(CompanyToIT_CC_Run.class);
+	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	public static void main(String[] pArgs) throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
-		var app = new CompanyToIT_CO_Run();
-		app.runCheckOnly();
+		Logger.getRootLogger().setLevel(Level.DEBUG);
+		var app = new CompanyToIT_CC_Run();
+		app.runCorrCreation();
 	}
 
-	public boolean runCheckOnly() throws Exception {
+	public boolean runCorrCreation() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
-			var coAPI = new API_CompanyToIT_CO(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(), coAPI.getAllRulesForCompanyToIT__CO(),
-					getNegativeConstraints(builder));
+			var ccAPI = new API_CompanyToIT_CC(builder);
+			var corrCreation = new CorrCreationOperationalStrategy(builder, genAPI.getAllRulesForCompanyToIT__GEN(),
+					ccAPI.getAllRulesForCompanyToIT__CC(), getNegativeConstraints(builder));
 			var generator = new NeoGenerator(//
-					coAPI.getAllRulesForCompanyToIT__CO(), //
-					new OneShotTerminationCondition(), //
-					new AllRulesAllMatchesScheduler(), //
-					checkOnly, //
-					new NoOpReprocessor(), //
+					ccAPI.getAllRulesForCompanyToIT__CC(), //
+					new NoMoreMatchesTerminationCondition(), //
+					new NewCorrRuleScheduler(), //
+					corrCreation, //
+					new ParanoidNeoReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator("TheSource", "TheTarget"), //
 					List.of(new LoremIpsumStringValueGenerator()));
@@ -51,13 +51,13 @@ public class CompanyToIT_CO_Run {
 			logger.info("Start check only...");
 			generator.generate();
 
-			if (checkOnly.isConsistent(solver)) {
+			if (corrCreation.isConsistent(solver)) {
 				logger.info("Your triple is consistent!");
 				return true;
 			} else {
 				logger.info("Your triple is inconsistent!");
-				var inconsistentElements = checkOnly.determineInconsistentElements(solver);
-				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
+				var inconsistentElements = corrCreation.determineInconsistentElements(solver);
+				logger.info(inconsistentElements + " elements of your triple are inconsistent!");
 				return false;
 			}
 		}

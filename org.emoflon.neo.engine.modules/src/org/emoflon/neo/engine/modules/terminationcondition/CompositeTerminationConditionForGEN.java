@@ -13,7 +13,7 @@ public class CompositeTerminationConditionForGEN implements ITerminationConditio
 	private ITerminationCondition<NeoMatch, NeoCoMatch> timeout;
 	private ITerminationCondition<NeoMatch, NeoCoMatch> maxGeneratedElements;
 	private MaximalRuleApplicationsTerminationCondition maxRuleApps;
-	private int ruleApplicationsInLastStep = 0;
+	private int totalRuleApplicationsInLastStep = 0;
 	private int noRulesApplied = 0;
 
 	protected CompositeTerminationConditionForGEN(//
@@ -67,8 +67,8 @@ public class CompositeTerminationConditionForGEN implements ITerminationConditio
 
 	@Override
 	public boolean isReached(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-		var appliedRules = matchContainer.getNumberOfRuleApplications() - ruleApplicationsInLastStep;
-		ruleApplicationsInLastStep = matchContainer.getNumberOfRuleApplications();
+		var appliedRules = matchContainer.getNumberOfRuleApplications() - totalRuleApplicationsInLastStep;
+		totalRuleApplicationsInLastStep = matchContainer.getNumberOfRuleApplications();
 		noRulesApplied = appliedRules == 0 ? noRulesApplied + 1 : 0;
 
 		return matchContainer.hasNoRules()//

@@ -24,12 +24,19 @@ public class NeoMatchContainer extends MatchContainer<NeoMatch, NeoCoMatch> {
 		ruleApplications.put(rule, after);
 
 		comatches.forEach(cm -> addCreatedElementIDsToRange(cm, rule));
+		this.coMatches.addAll(comatches);
 	}
 
 	@Override
-	protected Stream<String> getTypesFor(IRule<NeoMatch, NeoCoMatch> rule, String elt) {
+	protected Stream<String> getTypesForNode(IRule<NeoMatch, NeoCoMatch> rule, String nodeName) {
 		var neoRule = (NeoRule) rule;
-		return neoRule.getCreatedNodes().get(elt).getLabels().stream();
+		return neoRule.getCreatedNodes().get(nodeName).getLabels().stream();
+	}
+
+	@Override
+	protected String getTypeForRel(IRule<NeoMatch, NeoCoMatch> rule, String relNameAccordingToConvention) {
+		var neoRule = (NeoRule) rule;
+		return neoRule.getCreatedEdges().get(relNameAccordingToConvention).getType();
 	}
 
 }
