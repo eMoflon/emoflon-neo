@@ -32,7 +32,7 @@ public class NewCorrRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch
 		allCorrIDsUpToLastStep = matchContainer.getRelRange().getIDs();
 
 		IRelSampler sampler = (type, ruleName) -> {
-			return type.equals(NeoCoreBootstrapper.CORR) ? latestCorrIDs.size() : IRelSampler.EMPTY;
+			return type.equals(NeoCoreBootstrapper.CORR) ? Integer.MAX_VALUE : IRelSampler.EMPTY;
 		};
 
 		var scheduledRules = matchContainer.streamAllRules()//

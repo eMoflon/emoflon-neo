@@ -1,5 +1,6 @@
 package org.emoflon.neo.engine.modules.analysis;
 
+import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.engine.api.rules.IRule;
@@ -31,11 +32,11 @@ import org.emoflon.neo.engine.api.rules.IRule;
  * @author aanjorin
  */
 public class RuleAnalyser {
-	
-	public static Rule toRule(IRule<?,?> rule) {
-		return ((NeoRule)rule).getEMSLRule();
+
+	public static Rule toRule(IRule<?, ?> rule) {
+		return ((NeoRule) rule).getEMSLRule();
 	}
-	
+
 	public static boolean isFreeAxiom(Rule rule) {
 		return isAxiom(rule) && isFree(rule);
 	}
@@ -44,7 +45,14 @@ public class RuleAnalyser {
 		return rule.getCondition() == null;
 	}
 
-	private static boolean isAxiom(Rule rule) {
+	public static boolean isAxiom(Rule rule) {
 		return rule.getNodeBlocks().stream().noneMatch(nb -> nb.getAction() == null);
+	}
+
+	public static boolean noCorrContext(Rule rule) {
+		return rule.getNodeBlocks().stream()//
+				.flatMap(nb -> nb.getRelations().stream())//
+				.noneMatch(rel -> rel.getAction() == null//
+						&& rel.getTypes().get(0).getType().getName().equals(NeoCoreBootstrapper.CORR));
 	}
 }

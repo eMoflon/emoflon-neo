@@ -48,10 +48,6 @@ public class ElementRange {
 		return sampleIDs;
 	}
 
-	public int size() {
-		return typeToIDs.keySet().size();
-	}
-
 	public ElementRange remove(Collection<Long> ids) {
 		var range = new ElementRange();
 		typeToIDs.entrySet().stream()//

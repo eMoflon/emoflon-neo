@@ -36,7 +36,7 @@ public class CompanyToIT_CC_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
-			var corrCreation = new CorrCreationOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(),
+			var corrCreation = new CorrCreationOperationalStrategy(builder, genAPI.getAllRulesForCompanyToIT__GEN(),
 					ccAPI.getAllRulesForCompanyToIT__CC(), getNegativeConstraints(builder));
 			var generator = new NeoGenerator(//
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
