@@ -42,10 +42,9 @@ public class FacebookToInstagramFASE_CO_Run {
 			);
 
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
-					negativeConstraints);
-
 			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
+			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), negativeConstraints);
 
 			Generator<NeoMatch, NeoCoMatch> generator = new NeoGenerator(//
 					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
@@ -65,7 +64,7 @@ public class FacebookToInstagramFASE_CO_Run {
 			else {
 				logger.info("Your triple is inconsistent!");
 				var inconsistentElements = checkOnly.determineInconsistentElements(solver);
-				logger.info(inconsistentElements.get().size() + " elements of your triple are inconsistent!");
+				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
 			}
 		} finally {
 			builder.close();

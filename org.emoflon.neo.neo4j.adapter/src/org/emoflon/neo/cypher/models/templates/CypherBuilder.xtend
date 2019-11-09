@@ -52,4 +52,11 @@ abstract class CypherBuilder {
 	private def String createKeyForNode(List<NeoProp> props, List<String> labels) {
 		'''«props.join("-")»-«labels.join("-")»'''
 	}
+	
+	def static String deleteCorrQuery(String ids){
+		'''
+			UNWIND $«ids» as eltID
+			MATCH ()-[r:corr]->() where id(r) = eltID delete r
+		'''
+	}
 }

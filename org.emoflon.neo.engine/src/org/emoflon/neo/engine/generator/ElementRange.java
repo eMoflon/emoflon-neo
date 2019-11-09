@@ -7,25 +7,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class NodeRange {
+public class ElementRange {
 
 	private Map<String, List<Long>> typeToIDs;
 
-	public NodeRange() {
+	public ElementRange() {
 		typeToIDs = new HashMap<>();
 	}
 
-	public NodeRange(Map<String, List<Long>> typeToIDs) {
+	public ElementRange(Map<String, List<Long>> typeToIDs) {
 		this.typeToIDs = new HashMap<>(typeToIDs);
 	}
 
 	public void addIDs(Stream<String> types, Long id) {
 		types.forEach(type -> {
-			typeToIDs.putIfAbsent(type, new ArrayList<>());
-			typeToIDs.get(type).add(id);
+			addID(type, id);
 		});
+	}
+
+	public void addID(String type, Long id) {
+		typeToIDs.putIfAbsent(type, new ArrayList<>());
+		typeToIDs.get(type).add(id);
 	}
 
 	public Collection<Long> sampleIDs(String type, int sampleSize) {
@@ -41,5 +46,24 @@ public class NodeRange {
 		}
 
 		return sampleIDs;
+	}
+
+	public ElementRange remove(Collection<Long> ids) {
+		var range = new ElementRange();
+		typeToIDs.entrySet().stream()//
+				.forEach(entry -> {
+					entry.getValue().forEach(id -> {
+						if (!ids.contains(id)) {
+							range.addID(entry.getKey(), id);
+						}
+					});
+				});
+		return range;
+	}
+
+	public Collection<Long> getIDs() {
+		return typeToIDs.values().stream()//
+				.flatMap(ids -> ids.stream())//
+				.collect(Collectors.toSet());
 	}
 }

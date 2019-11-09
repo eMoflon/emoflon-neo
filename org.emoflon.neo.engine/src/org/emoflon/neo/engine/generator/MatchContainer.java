@@ -1,5 +1,6 @@
 package org.emoflon.neo.engine.generator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,18 +17,22 @@ import org.emoflon.neo.engine.api.rules.IRule;
 public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	private Map<IRule<M, C>, Collection<M>> rulesToMatches;
 	protected Map<IRule<M, C>, Integer> ruleApplications;
-	private NodeRange currentNodeRange;
+	protected Collection<C> coMatches;
+	private ElementRange currentNodeRange;
+	private ElementRange currentRelRange;
 	private long noOfGeneratedElements = 0;
 
 	public MatchContainer(Collection<? extends IRule<M, C>> allRules) {
 		rulesToMatches = new HashMap<>();
 		ruleApplications = new HashMap<>();
+		coMatches = new ArrayList<>();
 		allRules.forEach(rule -> {
 			rulesToMatches.put(rule, new HashSet<>());
 			ruleApplications.put(rule, 0);
 		});
 
-		currentNodeRange = new NodeRange();
+		currentNodeRange = new ElementRange();
+		currentRelRange = new ElementRange();
 	}
 
 	public void removeRule(IRule<M, C> rule) {
@@ -79,11 +84,15 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		rule.getCreatedElts().forEach(elt -> {
 			noOfGeneratedElements++;
 			if (m.getNodeIDs().containsKey(elt))
-				currentNodeRange.addIDs(getTypesFor(rule, elt), m.getNodeIDs().get(elt));
+				currentNodeRange.addIDs(getTypesForNode(rule, elt), m.getNodeIDs().get(elt));
+			if(m.getEdgeIDs().containsKey(elt))
+				currentRelRange.addID(getTypeForRel(rule, elt), m.getEdgeIDs().get(elt));
 		});
 	}
 
-	protected abstract Stream<String> getTypesFor(IRule<M, C> rule, String elt);
+	protected abstract String getTypeForRel(IRule<M, C> rule, String relNameAccordingToConvention);
+
+	protected abstract Stream<String> getTypesForNode(IRule<M, C> rule, String nodeName);
 
 	public int getNoOfRuleApplicationsFor(IRule<M, C> rule) {
 		return ruleApplications.get(rule);
@@ -97,8 +106,12 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		return streamAllMatches().count() == 0;
 	}
 
-	public NodeRange getNodeRange() {
+	public ElementRange getNodeRange() {
 		return currentNodeRange;
+	}
+	
+	public ElementRange getRelRange() {
+		return currentRelRange;
 	}
 
 	public Stream<IRule<M, C>> streamAllRules() {
@@ -115,5 +128,9 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 
 	public int getNumberOfRuleApplications() {
 		return ruleApplications.entrySet().stream().map(entry -> entry.getValue()).reduce(0, Integer::sum);
+	}
+
+	public Stream<? extends ICoMatch> streamAllCoMatches() {
+		return coMatches.stream();
 	}
 }

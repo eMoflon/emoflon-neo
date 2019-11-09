@@ -1,45 +1,37 @@
 package org.emoflon.neo.engine.modules.updatepolicies;
 
 import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.Collections;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
-import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
-import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
 public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
+	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 
-	private Optional<Set<Long>> result;
-
-	public CheckOnlyOperationalStrategy(Collection<NeoRule> genRules, Collection<IConstraint> negativeConstraints) {
-		super(genRules, negativeConstraints);
+	public CheckOnlyOperationalStrategy(Collection<NeoRule> genRules, Collection<NeoRule> opRules, Collection<IConstraint> negativeConstraints) {
+		super(genRules, opRules, negativeConstraints);
 	}
-
+	
 	@Override
-	protected Set<Long> getContextElts(IMatch m) {
-		var genRule = genRules.get(m.getPattern().getName());
-		return extractIDs(genRule.getContextElts(), m);
-	}
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
+		logger.debug("Registering all matches...");
 
-	@Override
-	protected Set<Long> getCreatedElts(IMatch m) {
-		var genRule = genRules.get(m.getPattern().getName());
-		return extractIDs(genRule.getCreatedElts(), m);
-	}
+		// Precedence information
+		registerMatches(matches.streamAllMatches());
+		computeWeights();
 
-	public boolean isConsistent(SupportedILPSolver suppSolver) throws Exception {
-		determineInconsistentElements(suppSolver);
-		return result.filter(elts -> elts.isEmpty()).isPresent();
-	}
+		logger.debug("Registered all matches.");
 
-	@Override
-	public Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
-		if (result == null)
-			result = super.determineInconsistentElements(suppSolver);
-
-		return result;
+		return Collections.emptyMap();
 	}
 }
