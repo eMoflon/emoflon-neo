@@ -24,6 +24,8 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 public class CompanyToIT_FWD_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_FWD_Run.class);
 
+	private static final String srcModelName = "TheSource";
+
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_FWD_Run();
@@ -34,6 +36,8 @@ public class CompanyToIT_FWD_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var api = new API_CompanyToIT(builder);
 			api.exportMetamodelsForCompanyToIT();
+
+			builder.prepareModelWithTranslateAttribute(srcModelName);
 
 			var genAPI = new API_CompanyToIT_FWD(builder);
 			var generator = createGenerator(genAPI);
@@ -56,7 +60,7 @@ public class CompanyToIT_FWD_Run {
 				new AnySingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("TheSource", "TheTarget"), //
+				new ModelNameValueGenerator(srcModelName, "TheTarget"), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }
