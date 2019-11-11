@@ -27,7 +27,7 @@ public class CompanyToIT_CC_Run {
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	public static void main(String[] pArgs) throws Exception {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_CC_Run();
 		app.runCorrCreation();
 	}
@@ -48,7 +48,7 @@ public class CompanyToIT_CC_Run {
 					new ModelNameValueGenerator("TheSource", "TheTarget"), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
-			logger.info("Start check only...");
+			logger.info("Start corr creation...");
 			generator.generate();
 
 			if (corrCreation.isConsistent(solver)) {

@@ -49,7 +49,7 @@ public class CompanyToIT_GEN_Run {
 	protected NeoGenerator createGenerator(API_CompanyToIT_GEN genAPI) {
 		Collection<NeoRule> allRules = genAPI.getAllRulesForCompanyToIT__GEN();
 
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 5);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
 			switch (type) {
@@ -62,7 +62,7 @@ public class CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(60, TimeUnit.SECONDS, maxRuleApps), //
+				new CompositeTerminationConditionForGEN(5, TimeUnit.MINUTES, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //

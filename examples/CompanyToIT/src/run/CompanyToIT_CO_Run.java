@@ -24,7 +24,7 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class CompanyToIT_CO_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);
-	private static final SupportedILPSolver solver = SupportedILPSolver.Sat4J;
+	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
