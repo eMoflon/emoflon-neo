@@ -723,12 +723,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		nodeQuery.append("match (n)-[:elementOf]-(m:NeoCore__Model {ename: \"");
 		nodeQuery.append(modelName);
 		nodeQuery.append("\"}) set n._tr_ = false");
-		executeQuery(nodeQuery.toString());
+		executeQueryForSideEffect(nodeQuery.toString());
 
 		StringBuilder edgeQuery = new StringBuilder();
 		edgeQuery.append("match (m:NeoCore__Model {ename: \"");
 		edgeQuery.append(modelName);
 		edgeQuery.append("\"}), (a)-[r]-(b), (a)-[:elementOf]-(m), (b)-[:elementOf]-(m) with r set r._tr_ = false");
-		executeQuery(edgeQuery.toString());
+		executeQueryForSideEffect(edgeQuery.toString());
 	}
 }
