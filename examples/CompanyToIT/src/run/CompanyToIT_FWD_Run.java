@@ -35,7 +35,9 @@ public class CompanyToIT_FWD_Run {
 			var api = new API_CompanyToIT(builder);
 			api.exportMetamodelsForCompanyToIT();
 
+			logger.info("Preparing model...");
 			builder.prepareModelWithTranslateAttribute(srcModelName);
+			logger.info("Model preparation done.");
 
 			var genAPI = new API_CompanyToIT_FWD(builder);
 			var generator = createGenerator(genAPI);
@@ -43,6 +45,10 @@ public class CompanyToIT_FWD_Run {
 			logger.info("Start model generation...");
 			generator.generate();
 			logger.info("Generation done.");
+
+			logger.info("Cleaning up model...");
+			builder.removeTranslateAttributesFromModel(srcModelName);
+			logger.info("Model cleanup done.");
 		}
 	}
 
