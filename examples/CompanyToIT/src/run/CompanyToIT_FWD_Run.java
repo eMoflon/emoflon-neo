@@ -2,7 +2,6 @@ package run;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -15,7 +14,7 @@ import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
-import org.emoflon.neo.engine.modules.terminationcondition.TimedTerminationCondition;
+import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
@@ -52,7 +51,7 @@ public class CompanyToIT_FWD_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new TimedTerminationCondition(1, TimeUnit.MINUTES), //
+				new NoMoreMatchesTerminationCondition(), //
 				new AllRulesAllMatchesScheduler(), //
 				new AnySingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
