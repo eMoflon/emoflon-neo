@@ -8,7 +8,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD;
+import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_BWD;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -20,14 +20,14 @@ import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
-public class CompanyToIT_FWD_Run {
-	private static final Logger logger = Logger.getLogger(CompanyToIT_FWD_Run.class);
+public class CompanyToIT_BWD_Run {
+	private static final Logger logger = Logger.getLogger(CompanyToIT_BWD_Run.class);
 
-	private static final String srcModelName = "TheSource";
+	private static final String trgModelName = "TheTarget";
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		var app = new CompanyToIT_FWD_Run();
+		var app = new CompanyToIT_BWD_Run();
 		app.runGenerator();
 	}
 
@@ -36,9 +36,9 @@ public class CompanyToIT_FWD_Run {
 			var api = new API_CompanyToIT(builder);
 			api.exportMetamodelsForCompanyToIT();
 
-			builder.prepareModelWithTranslateAttribute(srcModelName);
+			builder.prepareModelWithTranslateAttribute(trgModelName);
 
-			var genAPI = new API_CompanyToIT_FWD(builder);
+			var genAPI = new API_CompanyToIT_BWD(builder);
 			var generator = createGenerator(genAPI);
 
 			logger.info("Start model generation...");
@@ -47,8 +47,8 @@ public class CompanyToIT_FWD_Run {
 		}
 	}
 
-	protected NeoGenerator createGenerator(API_CompanyToIT_FWD genAPI) {
-		Collection<NeoRule> allRules = genAPI.getAllRulesForCompanyToIT__FWD();
+	protected NeoGenerator createGenerator(API_CompanyToIT_BWD genAPI) {
+		Collection<NeoRule> allRules = genAPI.getAllRulesForCompanyToIT__BWD();
 
 		return new NeoGenerator(//
 				allRules, //
@@ -57,7 +57,7 @@ public class CompanyToIT_FWD_Run {
 				new AnySingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator(srcModelName, "TheTarget"), //
+				new ModelNameValueGenerator("TheSource", trgModelName), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }
