@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
+import org.emoflon.neo.api.rules.API_SokobanTGGs;
+import org.emoflon.neo.api.rules.SokobanTGGs.API_SokobanImportExport_GEN;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
@@ -21,23 +21,22 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-import org.emoflon.neo.api.metamodels.API_Company;
 
-public class CompanyToIT_GEN_Run {
-	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);
+public class SokobanImportExport_GEN_Run {
+	private static final Logger logger = Logger.getLogger(SokobanImportExport_GEN_Run.class);
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		var app = new CompanyToIT_GEN_Run();
+		var app = new SokobanImportExport_GEN_Run();
 		app.runGenerator();
 	}
 
 	public void runGenerator() throws FlattenerException, Exception {
 		try (var builder = API_Common.createBuilder()) {
-			var api = new API_CompanyToIT(builder);
-			api.exportMetamodelsForCompanyToIT();
+			var api = new API_SokobanTGGs(builder);
+			api.exportMetamodelsForSokobanImportExport();
 
-			var genAPI = new API_CompanyToIT_GEN(builder);
+			var genAPI = new API_SokobanImportExport_GEN(builder);
 			var generator = createGenerator(genAPI);
 
 			logger.info("Start model generation...");
@@ -46,23 +45,18 @@ public class CompanyToIT_GEN_Run {
 		}
 	}
 
-	protected NeoGenerator createGenerator(API_CompanyToIT_GEN genAPI) {
-		Collection<NeoRule> allRules = genAPI.getAllRulesForCompanyToIT__GEN();
+	protected NeoGenerator createGenerator(API_SokobanImportExport_GEN genAPI) {
+		Collection<NeoRule> allRules = genAPI.getAllRulesForSokobanImportExport__GEN();
 
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 5);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
-			switch (type) {
-			case API_Company.Company__Company:
-				return 1;
-			default:
-				return INodeSampler.EMPTY;
-			}
+			return INodeSampler.EMPTY;
 		};
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(60, TimeUnit.SECONDS, maxRuleApps), //
+				new CompositeTerminationConditionForGEN(5, TimeUnit.MINUTES, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //

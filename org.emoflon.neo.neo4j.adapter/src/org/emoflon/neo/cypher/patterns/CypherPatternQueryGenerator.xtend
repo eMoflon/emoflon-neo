@@ -86,8 +86,13 @@ class CypherPatternQueryGenerator {
 				«maskedNodesBlock(pattern.nodes, mask)»
 				
 				// Node Sampling
-				«FOR node : pattern.nodes.filter[schedule.hasRangeFor(it.type, it.name)] BEFORE " AND " SEPARATOR " AND "»
-					id(«node.name») in $«schedule.getParameterFor(node.type, node.name)»
+				«FOR node : pattern.nodes.filter[schedule.hasRangeForNode(it.type, it.name)] BEFORE " AND (" SEPARATOR schedule.isNodeRangeOred? " OR " : " AND " AFTER ")"»
+					id(«node.name») in $«schedule.getParameterForNode(node.type, node.name)»
+				«ENDFOR»
+				
+				// Edge Sampling
+				«FOR rel : pattern.relations.filter[schedule.hasRangeForRel(it.type)] BEFORE " AND (" SEPARATOR schedule.isRelRangeOred? " OR " : " AND " AFTER ")"»
+					id(«rel.name») in $«schedule.getParameterForRel(rel.type)»
 				«ENDFOR»
 			
 			WITH
