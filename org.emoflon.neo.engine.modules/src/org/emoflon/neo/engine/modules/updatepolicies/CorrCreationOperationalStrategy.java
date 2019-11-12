@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.cypher.models.IBuilder;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
@@ -23,9 +23,9 @@ import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy {
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 	private MatchContainer<NeoMatch, NeoCoMatch> matchContainer;
-	private IBuilder builder;
+	private NeoCoreBuilder builder;
 
-	public CorrCreationOperationalStrategy(IBuilder builder, Collection<NeoRule> genRules, Collection<NeoRule> opRules,
+	public CorrCreationOperationalStrategy(NeoCoreBuilder builder, Collection<NeoRule> genRules, Collection<NeoRule> opRules,
 			Collection<IConstraint> negativeConstraints) {
 		super(genRules, opRules, negativeConstraints);
 		this.builder = builder;
@@ -68,7 +68,7 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 				.map(Math::abs)//
 				.filter(x -> greenElements.contains(x))//
 				.collect(Collectors.toList());
-		builder.deleteAll(corrs);
+		builder.deleteEdges(corrs);
 		remaining.removeAll(corrs.stream().map(x -> -1*x).collect(Collectors.toSet()));
 		return remaining;
 	}

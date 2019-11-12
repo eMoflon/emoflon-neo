@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.neo.cypher.models.templates.CypherBuilder;
 import org.emoflon.neo.cypher.models.templates.CypherCreator;
 import org.emoflon.neo.cypher.models.templates.CypherNodeMatcher;
 import org.emoflon.neo.cypher.models.templates.NeoProp;
@@ -716,5 +717,43 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	public long noOfElementsInDatabase() {
 		return noOfNodesInDatabase() + noOfEdgesInDatabase();
+	}
+
+	public void prepareModelWithTranslateAttribute(String modelName) {
+		StringBuilder nodeQuery = new StringBuilder();
+		nodeQuery.append("match (n)-[:elementOf]-(m:NeoCore__Model {ename: \"");
+		nodeQuery.append(modelName);
+		nodeQuery.append("\"}) set n._tr_ = false");
+		executeQueryForSideEffect(nodeQuery.toString());
+
+		StringBuilder edgeQuery = new StringBuilder();
+		edgeQuery.append("match (m:NeoCore__Model {ename: \"");
+		edgeQuery.append(modelName);
+		edgeQuery.append("\"}), (a)-[r]-(b), (a)-[:elementOf]-(m), (b)-[:elementOf]-(m) with r set r._tr_ = false");
+		executeQueryForSideEffect(edgeQuery.toString());
+	}
+
+	public void removeTranslateAttributesFromModel(String modelName) {
+		StringBuilder nodeQuery = new StringBuilder();
+		nodeQuery.append("match (n)-[:elementOf]-(m:NeoCore__Model {ename: \"");
+		nodeQuery.append(modelName);
+		nodeQuery.append("\"}) remove n._tr_");
+		executeQueryForSideEffect(nodeQuery.toString());
+
+		StringBuilder edgeQuery = new StringBuilder();
+		edgeQuery.append("match (m:NeoCore__Model {ename: \"");
+		edgeQuery.append(modelName);
+		edgeQuery.append("\"}), (a)-[r]-(b), (a)-[:elementOf]-(m), (b)-[:elementOf]-(m) with r remove r._tr_");
+		executeQueryForSideEffect(edgeQuery.toString());
+	}
+	
+	public void deleteEdges(Collection<Long> ids) {
+		Map<String, Object> params = Map.of("ids", ids);
+		executeQuery(CypherBuilder.deleteEdgesQuery("ids"), params);
+	}
+	
+	public void deleteNodes(Collection<Long> ids) {
+		Map<String, Object> params = Map.of("ids", ids);
+		executeQuery(CypherBuilder.deleteNodesQuery("ids"), params);
 	}
 }

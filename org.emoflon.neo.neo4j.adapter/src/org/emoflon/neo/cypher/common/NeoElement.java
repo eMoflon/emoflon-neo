@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.emoflon.neo.emsl.eMSL.ConditionOperator;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 
 public abstract class NeoElement {
@@ -21,12 +22,20 @@ public abstract class NeoElement {
 		this.assignments = new ArrayList<>();
 		this.inequalityChecks = new ArrayList<>();
 		for (var prop : properties) {
+			NeoProperty neoProp = null;
+			if (ConditionOperator.EQ.equals(prop.getOp()) || //
+					ConditionOperator.ASSIGN.equals(prop.getOp()))
+				if (prop.getInferredType() != null)
+					neoProp = new NeoInternalProperty(prop, this);
+				else
+					neoProp = new NeoProperty(prop, this);
+
 			switch (prop.getOp()) {
 			case EQ:
-				this.equalityChecks.add(new NeoProperty(prop, this));
+				this.equalityChecks.add(neoProp);
 				break;
 			case ASSIGN:
-				this.assignments.add(new NeoProperty(prop, this));
+				this.assignments.add(neoProp);
 				break;
 			default:
 				this.inequalityChecks.add(new NeoAssertion(prop, this));
@@ -49,7 +58,7 @@ public abstract class NeoElement {
 	public Collection<NeoProperty> getAttributeAssignments() {
 		return assignments;
 	}
-	
+
 	public Collection<NeoAssertion> getInequalityChecks() {
 		return inequalityChecks;
 	}
