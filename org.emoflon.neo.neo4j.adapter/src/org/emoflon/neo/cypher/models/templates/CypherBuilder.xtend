@@ -83,7 +83,7 @@ abstract class CypherBuilder {
 
 	def static String matchAllNodesInModel(String modelName, String node) {
 		'''
-			MATCH («node»)-[:elementOf]-(m:NeoCore__Model {ename: "«modelName»"})
+			MATCH («node»)-[:elementOf]->(m:NeoCore__Model {ename: "«modelName»"})
 		'''
 	}
 
@@ -100,7 +100,7 @@ abstract class CypherBuilder {
 				(m:NeoCore__Model {ename: "«modelName»"}), 
 				(a)-[:elementOf]->(m), 
 				(b)-[:elementOf]->(m),
-				(a)-[«relation»]-(b)
+				(a)-[«relation»]->(b)
 		'''
 	}
 
@@ -121,14 +121,14 @@ abstract class CypherBuilder {
 	def static String getAllNodesInModel(String modelName) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
-			RETURN id(n)
+			RETURN DISTINCT id(n)
 		'''
 	}
 
 	def static String getAllRelsInModel(String modelName) {
 		'''
 			«matchAllEdgesInModel(modelName, "r")»
-			RETURN id(r)
+			RETURN DISTINCT id(r)
 		'''
 	}
 
@@ -140,7 +140,7 @@ abstract class CypherBuilder {
 				(a)-[:elementOf]->(src), 
 				(b)-[:elementOf]->(trg),
 				(a)-[r:«NeoCoreBootstrapper.CORR»]->(b)
-			RETURN id(r)
+			RETURN DISTINCT id(r)
 		'''
 	}
 }

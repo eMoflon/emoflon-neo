@@ -749,11 +749,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
 		
 		var allIDs = new ArrayList<Long>();
-		allSrcNodes.list().get(0).values().forEach(v -> allIDs.add(v.asLong()));
-		allTrgNodes.list().get(0).values().forEach(v -> allIDs.add(v.asLong()));
-		allSrcEdges.list().get(0).values().forEach(v -> allIDs.add(v.asLong() * -1));
-		allTrgEdges.list().get(0).values().forEach(v -> allIDs.add(v.asLong() * -1));
-		allCorrs.list().get(0).values().forEach(v -> allIDs.add(v.asLong() * -1));
+		allSrcNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
+		allTrgNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
+		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allCorrs.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		
 		return allIDs;
 	}

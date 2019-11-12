@@ -36,8 +36,17 @@ public class FacebookToInstagram_CO_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
 			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
-					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), getNegativeConstraints(builder), builder);
+
+			var sourceModel = "Facebook";
+			var targetModel = "Instagram";
+			var checkOnly = new CheckOnlyOperationalStrategy(//
+					genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(), //
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
+					getNegativeConstraints(builder), //
+					builder, //
+					sourceModel, //
+					targetModel);
+
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
 					new OneShotTerminationCondition(), //
@@ -45,7 +54,7 @@ public class FacebookToInstagram_CO_Run {
 					checkOnly, //
 					new NoOpReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator("Facebook", "Instagram"), //
+					new ModelNameValueGenerator(sourceModel, targetModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");

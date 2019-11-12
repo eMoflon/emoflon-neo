@@ -43,8 +43,17 @@ public class FacebookToInstagramFASE_CO_Run {
 
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
 			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
-					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), negativeConstraints, builder);
+
+			var sourceModel = "Facebook";
+			var targetModel = "Instagram";
+
+			var checkOnly = new CheckOnlyOperationalStrategy(//
+					genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(), //
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
+					negativeConstraints, //
+					builder, //
+					sourceModel, //
+					targetModel);
 
 			Generator<NeoMatch, NeoCoMatch> generator = new NeoGenerator(//
 					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
@@ -53,7 +62,7 @@ public class FacebookToInstagramFASE_CO_Run {
 					checkOnly, //
 					new NoOpReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator("Facebook", "Instagram"), //
+					new ModelNameValueGenerator(sourceModel, targetModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			generator.generate();

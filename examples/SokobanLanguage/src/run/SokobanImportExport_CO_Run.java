@@ -34,8 +34,18 @@ public class SokobanImportExport_CO_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_SokobanImportExport_GEN(builder);
 			var coAPI = new API_SokobanImportExport_CO(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForSokobanImportExport__GEN(),
-					coAPI.getAllRulesForSokobanImportExport__CO(), getNegativeConstraints(builder), builder);
+
+			var sourceModel = "TheSource";
+			var targetModel = "TheTarget";
+
+			var checkOnly = new CheckOnlyOperationalStrategy(//
+					genAPI.getAllRulesForSokobanImportExport__GEN(), //
+					coAPI.getAllRulesForSokobanImportExport__CO(), //
+					getNegativeConstraints(builder), //
+					builder, //
+					sourceModel, //
+					targetModel);
+
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForSokobanImportExport__CO(), //
 					new OneShotTerminationCondition(), //
@@ -43,7 +53,7 @@ public class SokobanImportExport_CO_Run {
 					checkOnly, //
 					new NoOpReprocessor(), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator("TheSource", "TheTarget"), //
+					new ModelNameValueGenerator(sourceModel, targetModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");

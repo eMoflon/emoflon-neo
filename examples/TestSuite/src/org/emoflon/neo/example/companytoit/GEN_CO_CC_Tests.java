@@ -1,6 +1,5 @@
 package org.emoflon.neo.example.companytoit;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -32,21 +31,21 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 		var testCOApp = new CompanyToIT_CO_Run();
 		var testCCApp = new CompanyToIT_CC_Run();
 		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
-		
+
 		// Step 1. Run GEN to produce a triple
 		testGenApp.runGenerator();
-		
+
 		// Step 2. Check that produced triple is consistent with CO
 		assertTrue(testCOApp.runCheckOnly());
-		
+
 		// Step 3. Remove corrs to produce input for CC
-		var builder = API_Common.createBuilder();
-		builder.deleteAllCorrs();
-		assertFalse(testCOApp.runCheckOnly());
-		
+		try (var builder = API_Common.createBuilder()) {
+			builder.deleteAllCorrs();
+		}
+
 		// Step 4: Create corrs
 		assertTrue(testCCApp.runCorrCreation());
-		
+
 		// Step 5: Check that consistency has been restored
 		assertTrue(testCOApp.runCheckOnly());
 	}
@@ -87,7 +86,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	@Test
 	public void tryLotsOfAdmins() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 1)
+			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 100)
 					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 100);
 		});
 	}
@@ -108,7 +107,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(30, TimeUnit.SECONDS, ruleScheduler), //
+				new CompositeTerminationConditionForGEN(1, TimeUnit.MINUTES, ruleScheduler), //
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //

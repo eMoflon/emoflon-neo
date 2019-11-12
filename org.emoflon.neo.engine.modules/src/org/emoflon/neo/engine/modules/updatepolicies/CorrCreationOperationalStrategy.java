@@ -6,6 +6,7 @@ import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.toRule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -22,8 +23,7 @@ import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
 public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy {
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
-	private MatchContainer<NeoMatch, NeoCoMatch> matchContainer;
-	private NeoCoreBuilder builder;
+	private Optional<MatchContainer<NeoMatch, NeoCoMatch>> matchContainer = Optional.empty();
 
 	public CorrCreationOperationalStrategy(NeoCoreBuilder builder, Collection<NeoRule> genRules,
 			Collection<NeoRule> opRules, Collection<IConstraint> negativeConstraints, String sourceModel,
@@ -34,8 +34,8 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
-		if (this.matchContainer == null)
-			this.matchContainer = matchContainer;
+		if (this.matchContainer.isEmpty())
+			this.matchContainer = Optional.of(matchContainer);
 
 		if (matchContainer.getNumberOfRuleApplications() > 0)
 			matchContainer.getAllRulesToMatches().keySet().forEach(rule -> {
@@ -50,7 +50,7 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 	@Override
 	public boolean isConsistent(SupportedILPSolver suppSolver) throws Exception {
 		logger.debug("Registering all matches...");
-		registerMatches(matchContainer.streamAllCoMatches());
+		matchContainer.ifPresent(mc -> registerMatches(mc.streamAllCoMatches()));
 		computeWeights();
 		logger.debug("Registered all matches.");
 
@@ -61,15 +61,19 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 	}
 
 	private Collection<Long> deleteInconsistentCorrs(Collection<Long> inconsistentElts) {
-		var greenElements = matchContainer.getRelRange().getIDs();
-
 		var remaining = new ArrayList<>(inconsistentElts);
-		var corrs = inconsistentElts.stream()//
-				.map(Math::abs)//
-				.filter(x -> greenElements.contains(x))//
-				.collect(Collectors.toList());
-		builder.deleteEdges(corrs);
-		remaining.removeAll(corrs.stream().map(x -> -1 * x).collect(Collectors.toSet()));
+
+		matchContainer.ifPresent(mc -> {
+			var greenElements = mc.getRelRange().getIDs();
+
+			var corrs = inconsistentElts.stream()//
+					.map(Math::abs)//
+					.filter(x -> greenElements.contains(x))//
+					.collect(Collectors.toList());
+			builder.deleteEdges(corrs);
+			remaining.removeAll(corrs.stream().map(x -> -1 * x).collect(Collectors.toSet()));
+		});
+
 		return remaining;
 	}
 }

@@ -61,6 +61,7 @@ public class CompanyToIT_CO_Run {
 				logger.info("Your triple is inconsistent!");
 				var inconsistentElements = checkOnly.determineInconsistentElements(solver);
 				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
+				logger.info(inconsistentElements);
 				return false;
 			}
 		}
