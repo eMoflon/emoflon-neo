@@ -6,6 +6,7 @@ import java.util.Map
 import org.neo4j.driver.v1.Session
 import org.neo4j.driver.v1.StatementResult
 import org.apache.log4j.Logger
+import org.emoflon.neo.cypher.models.NeoCoreBootstrapper
 
 abstract class CypherBuilder {
 	static Logger logger = Logger.getLogger(CypherBuilder)
@@ -75,45 +76,71 @@ abstract class CypherBuilder {
 
 	def static String prepareTranslateAttributeForNodes(String modelName) {
 		'''			
-			«matchAllNodesInModel(modelName)»
+			«matchAllNodesInModel(modelName, "n")»
 			SET n._tr_ = false
 		'''
 	}
-	
-	def static String matchAllNodesInModel(String modelName){
+
+	def static String matchAllNodesInModel(String modelName, String node) {
 		'''
-			MATCH (n)-[:elementOf]-(m:NeoCore__Model {ename: "«modelName»"})
+			MATCH («node»)-[:elementOf]->(m:NeoCore__Model {ename: "«modelName»"})
 		'''
 	}
-	
+
 	def static String prepareTranslateAttributeForEdges(String modelName) {
 		'''			
-			«matchAllEdgesInModel(modelName)»
+			«matchAllEdgesInModel(modelName, "r")»
 			SET r._tr_ = false
 		'''
 	}
-	
-	def static String matchAllEdgesInModel(String modelName){
+
+	def static String matchAllEdgesInModel(String modelName, String relation) {
 		'''
 			MATCH 
 				(m:NeoCore__Model {ename: "«modelName»"}), 
 				(a)-[:elementOf]->(m), 
 				(b)-[:elementOf]->(m),
-				(a)-[r]-(b)
+				(a)-[«relation»]->(b)
 		'''
 	}
-	
-	def static String removeTranslationAttributeForNodes(String modelName){
+
+	def static String removeTranslationAttributeForNodes(String modelName) {
 		'''
-			«matchAllNodesInModel(modelName)»
+			«matchAllNodesInModel(modelName, "n")»
 			remove n._tr_
 		'''
 	}
-	
-	def static String removeTranslationAttributeForEdges(String modelName){
+
+	def static String removeTranslationAttributeForEdges(String modelName) {
 		'''
-			«matchAllEdgesInModel(modelName)»
+			«matchAllEdgesInModel(modelName, "r")»
 			remove r._tr_
+		'''
+	}
+
+	def static String getAllNodesInModel(String modelName) {
+		'''
+			«matchAllNodesInModel(modelName, "n")»
+			RETURN DISTINCT id(n)
+		'''
+	}
+
+	def static String getAllRelsInModel(String modelName) {
+		'''
+			«matchAllEdgesInModel(modelName, "r")»
+			RETURN DISTINCT id(r)
+		'''
+	}
+
+	def static String getAllCorrs(String src, String trg) {
+		'''
+			MATCH 
+				(src:NeoCore__Model {ename: "«src»"}),
+				(trg:NeoCore__Model {ename: "«trg»"}),
+				(a)-[:elementOf]->(src), 
+				(b)-[:elementOf]->(trg),
+				(a)-[r:«NeoCoreBootstrapper.CORR»]->(b)
+			RETURN DISTINCT id(r)
 		'''
 	}
 }

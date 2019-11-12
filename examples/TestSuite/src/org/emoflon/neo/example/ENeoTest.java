@@ -29,7 +29,7 @@ public abstract class ENeoTest {
 	
 	@BeforeAll
 	public static void startDBConnection() throws Exception {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+		Logger.getRootLogger().setLevel(Level.INFO);
 		
 		logger.info("Database Connection established.");
 		builder = API_Common.createBuilder();
