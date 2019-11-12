@@ -14,10 +14,12 @@ import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
 import java.util.Collections
+import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
+import org.emoflon.neo.emsl.compiler.ops.FWD_OPT
 
 interface Operation {
 	def static Operation[] getAllOps() {
-		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC()] as Operation[])
+		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC(), new BWD_OPT(), new FWD_OPT()] as Operation[])
 	}
 
 	def String getNameExtension()
