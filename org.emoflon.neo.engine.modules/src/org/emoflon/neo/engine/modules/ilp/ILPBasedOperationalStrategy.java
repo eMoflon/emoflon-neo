@@ -26,7 +26,7 @@ import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
 
-	protected Set<Long> result;
+	protected Collection<Long> result;
 
 	protected Map<IMatch, String> matchToId;
 	protected Map<Long, Set<IMatch>> elementToCreatingMatches;
@@ -283,7 +283,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			throw new IllegalStateException("There should always be an optimal (= consistent) solution!");
 	}
 
-	public Set<Long> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
+	public Collection<Long> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
 		if (result == null) {
 			var consistentElements = determineConsistentElements(suppSolver);
 			var allElements = new HashSet<>(elementToCreatingMatches.keySet());

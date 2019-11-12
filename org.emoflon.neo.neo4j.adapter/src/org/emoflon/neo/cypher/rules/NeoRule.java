@@ -2,7 +2,9 @@ package org.emoflon.neo.cypher.rules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,8 @@ import com.google.common.collect.Streams;
 
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(NeoRule.class);
+
+	public static final int BATCH_SIZE = 50000;
 
 	private boolean useSPO;
 	private Rule emslRule;
@@ -100,35 +104,53 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 
 	@Override
 	public Collection<NeoCoMatch> applyAll(Collection<NeoMatch> matches, IMask mask) {
+		if(matches.isEmpty())
+			return Collections.emptyList();
+		
 		var cypherQuery = getQuery(mask);
+		logger.debug("\n" + cypherQuery);
 
+		var numberOfMatches = matches.size();
+		var batches = numberOfMatches / BATCH_SIZE;
+		var matchItr = matches.iterator();
+		var comatches = new ArrayList<NeoCoMatch>();
+		logger.debug("Applying " + matches.size() + " matches, in " + batches + " batches of size " + BATCH_SIZE);
+		for (int i = 0; i <= batches; i++)
+			applyBatch(cypherQuery, matchItr, i, mask, comatches);
+
+		return comatches;
+	}
+
+	private void applyBatch(String cypherQuery, Iterator<NeoMatch> matchItr, int batchNr, IMask mask,
+			Collection<NeoCoMatch> comatches) {
 		// Parameters from match and mask
 		var parameters = new ArrayList<Map<String, Object>>();
-		matches.forEach(m -> {
+		var start = batchNr * BATCH_SIZE;
+		var end = start + BATCH_SIZE;
+		for (int i = start; i < end && matchItr.hasNext(); i++) {
+			var m = matchItr.next();
 			var paramsForMatch = new HashMap<>(m.getParameters());
 			paramsForMatch.putAll(mask.getParameters());
 			parameters.add(paramsForMatch);
-		});
+		}
 
-		// Parameters from mask
+		// Execute rule
 		var params = new HashMap<String, Object>(Map.of(NeoMatch.getMatchesParameter(), parameters));
 		var result = builder.executeQuery(cypherQuery, params);
 
-		logger.debug(parameters);
-		logger.debug("\n" + cypherQuery);
-		return extractCoMatches(result);
+		logger.debug("Applied Batch: " + batchNr);
+		
+		extractCoMatches(result, comatches);
 	}
 
-	private Collection<NeoCoMatch> extractCoMatches(StatementResult result) {
+	private void extractCoMatches(StatementResult result, Collection<NeoCoMatch> comatches) {
 		if (result == null) {
 			throw new NeoDatabaseException();
 		} else {
-			var matches = new ArrayList<NeoCoMatch>();
 			while (result.hasNext()) {
 				var record = result.next();
-				matches.add(new NeoCoMatch(postcondition, record));
+				comatches.add(new NeoCoMatch(postcondition, record));
 			}
-			return matches;
 		}
 	}
 
@@ -213,7 +235,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	public NeoPattern getPrecondition() {
 		return precondition;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();

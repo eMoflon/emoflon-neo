@@ -39,6 +39,9 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 	public void generate() {
 
 		do {
+			// Heartbeat for continuous feedback
+			progressMonitor.heartBeat(matchContainer);
+			
 			// 1. Schedule rules for pattern matching
 			progressMonitor.startRuleScheduling();
 			var scheduledRules = ruleScheduler.scheduleWith(matchContainer, progressMonitor);
@@ -67,22 +70,14 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 			progressMonitor.startReprocessingMatches();
 			matchReprocessor.reprocess(matchContainer, progressMonitor);
 			progressMonitor.finishReprocessingMatches();
-
-			// Heartbeat for continuous feedback
-			progressMonitor.heartBeat(matchContainer);
 		} while (!terminationCondition.isReached(matchContainer));
 
 		progressMonitor.finishGeneration(matchContainer);
 	}
 
-	protected void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer) {
-		var comatches = rule.applyAll(matches);
-		matchContainer.appliedRule(rule, matches, comatches);
-	}
+	protected abstract void applyMatches(IRule<M, C> rule, Collection<M> matches, MatchContainer<M, C> matchContainer);
 
-	protected void determineMatches(Map<IRule<M, C>, Schedule> scheduledRules, MatchContainer<M, C> matchContainer) {
-		scheduledRules.forEach((rule, count) -> matchContainer.addAll(rule.determineMatches(count), rule));
-	}
+	protected abstract void determineMatches(Map<IRule<M, C>, Schedule> scheduledRules, MatchContainer<M, C> matchContainer);
 
 	protected abstract MatchContainer<M, C> createMatchContainer(Collection<? extends IRule<M, C>> allRules);
 }
