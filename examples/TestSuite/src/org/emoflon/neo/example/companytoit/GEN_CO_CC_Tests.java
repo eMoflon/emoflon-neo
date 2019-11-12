@@ -1,13 +1,13 @@
 package org.emoflon.neo.example.companytoit;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -22,16 +22,32 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
+import run.CompanyToIT_CC_Run;
 import run.CompanyToIT_CO_Run;
 import run.CompanyToIT_GEN_Run;
 
-public class GEN_CO_Tests extends ENeoTest {
+public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
 		var testCOApp = new CompanyToIT_CO_Run();
+		var testCCApp = new CompanyToIT_CC_Run();
 		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
+		
+		// Step 1. Run GEN to produce a triple
 		testGenApp.runGenerator();
+		
+		// Step 2. Check that produced triple is consistent with CO
+		assertTrue(testCOApp.runCheckOnly());
+		
+		// Step 3. Remove corrs to produce input for CC
+		var builder = API_Common.createBuilder();
+		builder.deleteAllCorrs();
+		assertFalse(testCOApp.runCheckOnly());
+		
+		// Step 4: Create corrs
+		assertTrue(testCCApp.runCorrCreation());
+		
+		// Step 5: Check that consistency has been restored
 		assertTrue(testCOApp.runCheckOnly());
 	}
 

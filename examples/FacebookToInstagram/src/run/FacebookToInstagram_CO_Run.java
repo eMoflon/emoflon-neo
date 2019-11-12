@@ -37,7 +37,7 @@ public class FacebookToInstagram_CO_Run {
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
 			var coAPI = new API_FacebookToInstagramGrammar_CO(builder);
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForFacebookToInstagramGrammar__GEN(),
-					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), getNegativeConstraints(builder));
+					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), getNegativeConstraints(builder), builder);
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
 					new OneShotTerminationCondition(), //

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.cypher.constraints.NeoNegativeConstraint;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
@@ -25,6 +26,8 @@ import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
+
+	protected NeoCoreBuilder builder;
 
 	protected Collection<Long> result;
 
@@ -46,8 +49,16 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> opRules;
 	protected Collection<NeoNegativeConstraint> negativeConstraints;
 
+	protected String sourceModel;
+	protected String targetModel;
+
 	public ILPBasedOperationalStrategy(Collection<NeoRule> genRules, Collection<NeoRule> opRules,
-			Collection<IConstraint> negativeConstraints) {
+			Collection<IConstraint> negativeConstraints, NeoCoreBuilder builder, String sourceModel,
+			String targetModel) {
+		this.sourceModel = sourceModel;
+		this.targetModel = targetModel;
+		this.builder = builder;
+		
 		matchToId = new HashMap<>();
 		matchToCreatedElements = new HashMap<>();
 		elementToCreatingMatches = new HashMap<>();
@@ -286,7 +297,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	public Collection<Long> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
 		if (result == null) {
 			var consistentElements = determineConsistentElements(suppSolver);
-			var allElements = new HashSet<>(elementToCreatingMatches.keySet());
+			var allElements = builder.getAllElementIDsInTriple(sourceModel, targetModel);
 			allElements.removeAll(consistentElements);
 			result = allElements;
 		}

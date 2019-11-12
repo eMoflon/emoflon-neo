@@ -25,10 +25,10 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 	private MatchContainer<NeoMatch, NeoCoMatch> matchContainer;
 	private NeoCoreBuilder builder;
 
-	public CorrCreationOperationalStrategy(NeoCoreBuilder builder, Collection<NeoRule> genRules, Collection<NeoRule> opRules,
-			Collection<IConstraint> negativeConstraints) {
-		super(genRules, opRules, negativeConstraints);
-		this.builder = builder;
+	public CorrCreationOperationalStrategy(NeoCoreBuilder builder, Collection<NeoRule> genRules,
+			Collection<NeoRule> opRules, Collection<IConstraint> negativeConstraints, String sourceModel,
+			String targetModel) {
+		super(genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
 	}
 
 	@Override
@@ -62,14 +62,14 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 
 	private Collection<Long> deleteInconsistentCorrs(Collection<Long> inconsistentElts) {
 		var greenElements = matchContainer.getRelRange().getIDs();
-		
+
 		var remaining = new ArrayList<>(inconsistentElts);
 		var corrs = inconsistentElts.stream()//
 				.map(Math::abs)//
 				.filter(x -> greenElements.contains(x))//
 				.collect(Collectors.toList());
 		builder.deleteEdges(corrs);
-		remaining.removeAll(corrs.stream().map(x -> -1*x).collect(Collectors.toSet()));
+		remaining.removeAll(corrs.stream().map(x -> -1 * x).collect(Collectors.toSet()));
 		return remaining;
 	}
 }

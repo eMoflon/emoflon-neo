@@ -35,7 +35,7 @@ public class SokobanImportExport_CO_Run {
 			var genAPI = new API_SokobanImportExport_GEN(builder);
 			var coAPI = new API_SokobanImportExport_CO(builder);
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForSokobanImportExport__GEN(),
-					coAPI.getAllRulesForSokobanImportExport__CO(), getNegativeConstraints(builder));
+					coAPI.getAllRulesForSokobanImportExport__CO(), getNegativeConstraints(builder), builder);
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForSokobanImportExport__CO(), //
 					new OneShotTerminationCondition(), //
