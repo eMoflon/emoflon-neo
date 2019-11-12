@@ -2,9 +2,9 @@ package org.emoflon.neo.emsl.compiler.ops
 
 import org.emoflon.neo.emsl.compiler.ILPOperation
 
-class CC extends ILPOperation {
+class FWD_OPT extends ILPOperation {
 	override String getNameExtension() {
-		return "_CC"
+		return "_FWD_OPT"
 	}
 
 	override requiresSrcModelCreation() {
@@ -12,7 +12,7 @@ class CC extends ILPOperation {
 	}
 	
 	override requiresTrgModelCreation() {
-		false
+		true
 	}
 	
 	override requiresCorrModelCreation() {

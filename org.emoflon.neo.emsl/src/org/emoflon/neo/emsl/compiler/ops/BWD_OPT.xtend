@@ -2,13 +2,13 @@ package org.emoflon.neo.emsl.compiler.ops
 
 import org.emoflon.neo.emsl.compiler.ILPOperation
 
-class CC extends ILPOperation {
+class BWD_OPT extends ILPOperation {
 	override String getNameExtension() {
-		return "_CC"
+		return "_BWD_OPT"
 	}
 
 	override requiresSrcModelCreation() {
-		false
+		true
 	}
 	
 	override requiresTrgModelCreation() {

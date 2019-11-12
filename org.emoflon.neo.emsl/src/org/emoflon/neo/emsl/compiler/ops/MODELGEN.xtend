@@ -42,4 +42,8 @@ class MODELGEN implements Operation {
 	override requiresTrgModelCreation() {
 		true
 	}
+	
+	override requiresCorrModelCreation() {
+		true
+	}
 }

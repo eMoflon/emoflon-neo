@@ -56,4 +56,8 @@ class BWD implements Operation {
 	override requiresTrgModelCreation() {
 		false
 	}
+	
+	override requiresCorrModelCreation() {
+		true
+	}
 }

@@ -31,7 +31,7 @@ interface Operation {
 	def void handleParameters(Map<Parameter, ParameterData> paramsToData, Map<String, Collection<Parameter>> paramGroups)
 
 	def String compileCorrespondence(Correspondence corr) {
-		val isGreen = (corr.action !== null && ActionOperator::CREATE.equals(corr.action.getOp()))
+		val isGreen = (corr.action !== null && ActionOperator::CREATE.equals(corr.action.getOp()) && requiresCorrModelCreation())
 		'''
 			«IF isGreen»++«ENDIF»-corr->«corr.target.name»
 			{
@@ -49,4 +49,6 @@ interface Operation {
 	def boolean requiresSrcModelCreation()
 	
 	def boolean requiresTrgModelCreation()
+	
+	def boolean requiresCorrModelCreation()
 }
