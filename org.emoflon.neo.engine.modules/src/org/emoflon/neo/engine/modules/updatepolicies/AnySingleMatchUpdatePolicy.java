@@ -22,6 +22,7 @@ public class AnySingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, NeoCo
 			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selection = new HashMap<>();
 		matches.stream()//
+				.filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())//
 				.findAny()//
 				.ifPresent(entry -> entry.getValue().stream()//
 						.findAny()//
