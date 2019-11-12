@@ -1,4 +1,5 @@
-import "platform:/resource/FacebookToInstagramFASE/src/Languages.msl"
+import "platform:/resource/FacebookToInstagramFASE/src/Facebook.msl"
+import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
 
 tripleGrammar FacebookToInstagramGrammar {
 	source {

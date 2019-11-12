@@ -6,8 +6,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_Languages;
 import org.emoflon.neo.api.API_Transformations;
+import org.emoflon.neo.api.API_Facebook;
+import org.emoflon.neo.api.API_Instagram;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -72,7 +73,7 @@ public class FacebookToInstagramFASE_GEN_Run {
 				}
 			case API_Transformations.FacebookToInstagramGrammar__RequestFriendship:
 				switch (type) {
-				case API_Languages.InstagramLanguage__User:
+				case API_Instagram.InstagramLanguage__User:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;
