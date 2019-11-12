@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_CC;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
@@ -49,7 +48,7 @@ public class CompanyToIT_FWD_OPT_Run {
 					new ModelNameValueGenerator("TheSource", "TheTarget"), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
-			logger.info("Start corr creation...");
+			logger.info("Start forward transformation...");
 			generator.generate();
 
 			if (forwardTransformation.isConsistent(solver)) {
