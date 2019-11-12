@@ -53,10 +53,17 @@ abstract class CypherBuilder {
 		'''«props.join("-")»-«labels.join("-")»'''
 	}
 	
-	def static String deleteCorrQuery(String ids){
+	def static String deleteEdgesQuery(String ids){
 		'''
 			UNWIND $«ids» as eltID
-			MATCH ()-[r:corr]->() where id(r) = eltID delete r
+			MATCH ()-[r]->() where id(r) = eltID delete r
+		'''
+	}
+	
+	def static String deleteNodesQuery(String ids){
+		'''
+			UNWIND $«ids» as eltID
+			MATCH (n) where id(n) = eltID detach delete n
 		'''
 	}
 }

@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.neo.cypher.models.templates.CypherBuilder;
 import org.emoflon.neo.cypher.models.templates.CypherCreator;
 import org.emoflon.neo.cypher.models.templates.CypherNodeMatcher;
 import org.emoflon.neo.cypher.models.templates.NeoProp;
@@ -744,5 +745,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		edgeQuery.append(modelName);
 		edgeQuery.append("\"}), (a)-[r]-(b), (a)-[:elementOf]-(m), (b)-[:elementOf]-(m) with r remove r._tr_");
 		executeQueryForSideEffect(edgeQuery.toString());
+	}
+	
+	public void deleteEdges(Collection<Long> ids) {
+		Map<String, Object> params = Map.of("ids", ids);
+		executeQuery(CypherBuilder.deleteEdgesQuery("ids"), params);
+	}
+	
+	public void deleteNodes(Collection<Long> ids) {
+		Map<String, Object> params = Map.of("ids", ids);
+		executeQuery(CypherBuilder.deleteNodesQuery("ids"), params);
 	}
 }
