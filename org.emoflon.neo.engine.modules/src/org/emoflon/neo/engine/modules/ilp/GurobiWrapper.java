@@ -78,7 +78,7 @@ final class GurobiWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws GRBException {
-		ILPSolver.logger.info(this.ilpProblem.getProblemInformation());
+		ILPSolver.logger.debug(this.ilpProblem.getProblemInformation());
 
 		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
 		currentTimeout = GurobiWrapper.MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
@@ -149,12 +149,12 @@ final class GurobiWrapper extends ILPSolver {
 			solutionVariables.put(variableId, (int) gurobiVar.get(DoubleAttr.X));
 		}
 
-		ILPSolver.logger.info("Gurobi found solution: " + optimum + " - Optimal: " + optimal);
+		ILPSolver.logger.debug("Gurobi found solution: " + optimum + " - Optimal: " + optimal);
 
 		this.env.dispose();
 		this.model.dispose();
 		ILPSolution solution = this.ilpProblem.createILPSolution(solutionVariables, optimal, optimum);
-		ILPSolver.logger.info(solution.getSolutionInformation());
+		ILPSolver.logger.debug(solution.getSolutionInformation());
 		return solution;
 	}
 

@@ -3,10 +3,9 @@ package org.emoflon.neo.engine.modules.updatepolicies;
 import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.noCorrContext;
 import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.toRule;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -61,18 +60,16 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 		return result.isEmpty();
 	}
 
-	private Set<Long> deleteInconsistentCorrs(Set<Long> inconsistentElts) {
-		var remaining = new HashSet<>(inconsistentElts);
+	private Collection<Long> deleteInconsistentCorrs(Collection<Long> inconsistentElts) {
+		var greenElements = matchContainer.getRelRange().getIDs();
+		
+		var remaining = new ArrayList<>(inconsistentElts);
 		var corrs = inconsistentElts.stream()//
 				.map(Math::abs)//
-				.filter(this::isCreatedCorr)//
-				.collect(Collectors.toSet());
+				.filter(x -> greenElements.contains(x))//
+				.collect(Collectors.toList());
 		builder.deleteAll(corrs);
 		remaining.removeAll(corrs.stream().map(x -> -1*x).collect(Collectors.toSet()));
 		return remaining;
-	}
-
-	private boolean isCreatedCorr(Long element) {
-		return matchContainer.getRelRange().getIDs().contains(element);
 	}
 }

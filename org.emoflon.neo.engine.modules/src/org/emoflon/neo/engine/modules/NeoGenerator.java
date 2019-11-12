@@ -105,8 +105,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	@Override
 	protected void determineMatches(Map<IRule<NeoMatch, NeoCoMatch>, Schedule> scheduledRules,
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-
-		ruleMasks.clear();
+		ruleMasks = new HashMap<>();
 		scheduledRules.forEach((rule, schedule) -> {
 			if (!(rule instanceof NeoRule))
 				throw new IllegalStateException("Unexpected type of rule: " + rule.getClass());
