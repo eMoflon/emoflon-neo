@@ -34,7 +34,7 @@ abstract class ILPOperation implements Operation {
 		 }
 	}
 	
-	override preprocessNACs(Iterable<TripleRuleNAC> nacs) {
+	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return Collections.emptyList
 	}
 }
