@@ -1,8 +1,5 @@
 package org.emoflon.neo.engine.modules.updatepolicies;
 
-import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.noCorrContext;
-import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.toRule;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -36,13 +33,6 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
 		if (this.matchContainer.isEmpty())
 			this.matchContainer = Optional.of(matchContainer);
-
-		if (matchContainer.getNumberOfRuleApplications() > 0)
-			matchContainer.getAllRulesToMatches().keySet().forEach(rule -> {
-				if (noCorrContext(toRule(genRules.get(rule.getName())))) {
-					matchContainer.removeRule(rule);
-				}
-			});
 
 		return matchContainer.getAllRulesToMatches();
 	}

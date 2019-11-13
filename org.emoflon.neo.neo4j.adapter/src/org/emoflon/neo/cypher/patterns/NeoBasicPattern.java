@@ -24,8 +24,10 @@ import com.google.common.collect.Streams;
 
 public class NeoBasicPattern {
 	private String name;
+	
 	protected List<NeoNode> nodes;
-	protected Collection<NeoRelation> relations;
+	protected List<NeoRelation> relations;
+	
 	protected Map<ModelNodeBlock, NeoNode> nodeBlockToNeoNode;
 
 	public NeoBasicPattern(AtomicPattern pattern) throws FlattenerException {
@@ -88,7 +90,7 @@ public class NeoBasicPattern {
 	 * 
 	 * @return
 	 */
-	public Collection<String> getElements() {
+	public List<String> getElements() {
 		return Streams//
 				.concat(nodes.stream(), relations.stream())//
 				.map(NeoElement::getName)//
@@ -96,11 +98,11 @@ public class NeoBasicPattern {
 				.collect(Collectors.toList());
 	}
 
-	public Collection<NeoNode> getNodes() {
+	public List<NeoNode> getNodes() {
 		return nodes;
 	}
 
-	public Collection<NeoRelation> getRelations() {
+	public List<NeoRelation> getRelations() {
 		return relations;
 	}
 

@@ -67,7 +67,7 @@ public class CompanyToIT_GEN_Run {
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("TheSource", "TheTarget"), //
+				new ModelNameValueGenerator("Source", "Target"), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

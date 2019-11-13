@@ -69,3 +69,50 @@ model ExtraCEO -> ConsistentTriple {
 		-ceo->ceo2
 	}
 }
+
+model ConsistentTripleWithEmployees -> ConsistentTriple {
+	c:Company {
+		-admin->admin
+		-employee->employee
+	}
+	
+	ceo:CEO {
+		-employee->employee
+	}
+	
+	admin:Admin {
+		-ceo->ceo
+		-elementOf->$Source
+		
+		-corr->router {
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	router:Router {
+		-network->network
+		-elementOf->$Target
+	}
+	
+	network:Network {
+		-pc->computer
+		-elementOf->$Target
+	}
+	
+	it:IT {
+		-router->router
+		-network->network
+	}
+	
+	employee:Employee {
+		-corr->computer {
+			._type_ : "EmployeeToPC"
+		}
+		
+		-elementOf->$Source
+	}
+	
+	computer:PC {
+		-elementOf->$Target
+	}
+}

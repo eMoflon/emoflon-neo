@@ -315,9 +315,9 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	 */
 	protected Set<Long> extractIDs(Collection<String> elements, IMatch m) {
 		return elements.stream()//
-				.filter(name -> m.getNodeIDs().containsKey(name) || m.getEdgeIDs().containsKey(name))//
-				.map(name -> m.getNodeIDs().containsKey(name) ? //
-						m.getNodeIDs().get(name) : -1 * m.getEdgeIDs().get(name))//
+				.filter(name -> m.containsNode(name) || m.containsRel(name))//
+				.map(name -> m.containsNode(name) ? //
+						m.getNodeIDFor(name) : -1 * m.getRelIDFor(name))//
 				.collect(Collectors.toSet());
 	}
 

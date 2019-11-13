@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -39,9 +38,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 		assertTrue(testCOApp.runCheckOnly());
 
 		// Step 3. Remove corrs to produce input for CC
-		try (var builder = API_Common.createBuilder()) {
-			builder.deleteAllCorrs();
-		}
+		builder.deleteAllCorrs();
 
 		// Step 4: Create corrs
 		assertTrue(testCCApp.runCorrCreation());
@@ -112,7 +109,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("TheSource", "TheTarget"), //
+				new ModelNameValueGenerator("Source", "Target"), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 

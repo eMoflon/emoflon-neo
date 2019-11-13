@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.emoflon.neo.cypher.common.NeoNode;
-import org.emoflon.neo.cypher.common.NeoRelation;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;
 import org.neo4j.driver.v1.Record;
@@ -20,8 +18,8 @@ import org.neo4j.driver.v1.Record;
  */
 public class NeoMatch implements IMatch {
 	private NeoPattern pattern;
-	protected Map<String, Long> nodeIDs;
-	protected Map<String, Long> edgeIDs;
+	protected long[] nodeIDs;
+	protected long[] edgeIDs;
 	protected Map<String, Object> parameters;
 
 	/**
@@ -31,14 +29,9 @@ public class NeoMatch implements IMatch {
 	public NeoMatch(NeoPattern pattern, Record record) {
 		this.pattern = pattern;
 
-		nodeIDs = new HashMap<>();
-		edgeIDs = new HashMap<>();
+		nodeIDs = new long[pattern.getNodes().size()];
+		edgeIDs = new long[pattern.getRelations().size()];
 		extractIdsPattern(record);
-
-		parameters = new HashMap<>();
-		parameters.putAll(nodeIDs);
-		parameters.putAll(edgeIDs);
-		parameters.put("match_id", getHashCode());
 	}
 
 	public NeoMatch(NeoMatch other) {
@@ -60,63 +53,58 @@ public class NeoMatch implements IMatch {
 
 		for (var n : pattern.getNodes()) {
 			if (recMap.containsKey(n.getName()))
-				nodeIDs.put(n.getName(), (Long) recMap.get(n.getName()));
+				nodeIDs[pattern.getNodes().indexOf(n)] = (Long) recMap.get(n.getName());
 		}
 
 		for (var r : pattern.getRelations()) {
 			if (recMap.containsKey(r.getName()))
-				edgeIDs.put(r.getName(), (Long) recMap.get(r.getName()));
+				edgeIDs[pattern.getRelations().indexOf(r)] = (Long) recMap.get(r.getName());
 		}
 	}
 
-	public long getIdForNode(NeoNode node) {
-		return nodeIDs.get(node.getName());
-	}
-
-	public long getIdForNode(String varName) {
-		return nodeIDs.get(varName);
-	}
-
-	public long getIdForRelation(NeoRelation rel) {
-		return edgeIDs.get(rel.getName());
-	}
-
 	public Map<String, Object> getParameters() {
-		return Collections.unmodifiableMap(parameters);
+		var params = new HashMap<String, Object>();
+		if(parameters != null)
+			params.putAll(parameters);
+			
+		for (var n : pattern.getNodes())
+			params.put(n.getName(), nodeIDs[pattern.getNodes().indexOf(n)]);
+		for (var e : pattern.getRelations())
+			params.put(e.getName(), edgeIDs[pattern.getRelations().indexOf(e)]);
+		params.put("match_id", getHashCode());
+		
+		return Collections.unmodifiableMap(params);
+	}
+
+	public String getHashCode() {
+		return String.valueOf(hashCode());
 	}
 
 	public void addParameter(String key, Object value) {
+		if(parameters == null)
+			parameters = new HashMap<>();
+		
 		parameters.put(key, value);
 	}
 
-	/**
-	 * Return the corresponding pattern of the match
-	 * 
-	 * @return NeoPattern corresponding to the match
-	 */
-	@Override
 	public IPattern<NeoMatch> getPattern() {
 		return pattern;
 	}
 
 	@Override
-	public Map<String, Long> getNodeIDs() {
+	public long[] getNodeIDs() {
 		return nodeIDs;
 	}
 
 	@Override
-	public Map<String, Long> getEdgeIDs() {
+	public long[] getRelIDs() {
 		return edgeIDs;
 	}
 
-	public String getHashCode() {
-		return Integer.toString(this.hashCode());
-	}
-	
 	public static String getIdParameter() {
 		return "match_id";
 	}
-	
+
 	public static String getMatchesParameter() {
 		return "matches";
 	}
@@ -131,5 +119,53 @@ public class NeoMatch implements IMatch {
 			return pattern.getData(matches);
 		} else
 			return Collections.emptyList();
+	}
+
+	@Override
+	public boolean containsNode(String nodeName) {
+		return pattern.getNodes().stream().anyMatch(n -> n.getName().equals(nodeName));
+	}
+
+	@Override
+	public boolean containsRel(String relName) {
+		return pattern.getRelations().stream().anyMatch(r -> r.getName().equals(relName));
+	}
+
+	@Override
+	public long getNodeIDFor(String nodeName) {
+		return pattern.getNodes().stream()//
+				.filter(n -> n.getName().equals(nodeName))//
+				.map(n -> nodeIDs[pattern.getNodes().indexOf(n)])//
+				.findAny()//
+				.orElseThrow();
+	}
+
+	@Override
+	public long getRelIDFor(String relName) {
+		return pattern.getRelations().stream()//
+				.filter(r -> r.getName().equals(relName))//
+				.map(r -> edgeIDs[pattern.getRelations().indexOf(r)])//
+				.findAny()//
+				.orElseThrow();
+	}
+
+	@Override
+	public String getNameOfNode(long nodeID) {
+		for (int i = 0; i < nodeIDs.length; i++) {
+			if(nodeIDs[i] == nodeID)
+				return pattern.getNodes().get(i).getName();
+		}
+		
+		throw new IllegalArgumentException("Not in match: " + nodeID);
+	}
+
+	@Override
+	public String getNameOfRel(long relID) {
+		for (int i = 0; i < edgeIDs.length; i++) {
+			if(edgeIDs[i] == relID)
+				return pattern.getRelations().get(i).getName();
+		}
+		
+		throw new IllegalArgumentException("Not in match: " + relID);
 	}
 }

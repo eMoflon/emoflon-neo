@@ -15,7 +15,7 @@ import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
+import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.NewCorrRuleScheduler;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
@@ -28,7 +28,7 @@ public class CompanyToIT_CC_Run {
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	public static void main(String[] pArgs) throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		Logger.getLogger(NeoRule.class).setLevel(Level.DEBUG);
 		var app = new CompanyToIT_CC_Run();
 		app.runCorrCreation();
@@ -38,16 +38,17 @@ public class CompanyToIT_CC_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
-			var sourceModel = "TheSource";
-			var targetModel = "TheTarget";
-			var corrCreation = new CorrCreationOperationalStrategy(builder, genAPI.getAllRulesForCompanyToIT__GEN(),
+			var sourceModel = "Source";
+			var targetModel = "Target";
+			var genRules = genAPI.getAllRulesForCompanyToIT__GEN();
+			var corrCreation = new CorrCreationOperationalStrategy(builder, genRules,
 					ccAPI.getAllRulesForCompanyToIT__CC(), getNegativeConstraints(builder), sourceModel, targetModel);
 			var generator = new NeoGenerator(//
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
 					new NoMoreMatchesTerminationCondition(), //
 					new NewCorrRuleScheduler(), //
 					corrCreation, //
-					new ParanoidNeoReprocessor(), //
+					new CCReprocessor(genRules), //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(sourceModel, targetModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
@@ -61,7 +62,8 @@ public class CompanyToIT_CC_Run {
 			} else {
 				logger.info("Your triple is inconsistent!");
 				var inconsistentElements = corrCreation.determineInconsistentElements(solver);
-				logger.info(inconsistentElements + " elements of your triple are inconsistent!");
+				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
+				logger.debug("Inconsistent element IDs: " + inconsistentElements);
 				return false;
 			}
 		}
