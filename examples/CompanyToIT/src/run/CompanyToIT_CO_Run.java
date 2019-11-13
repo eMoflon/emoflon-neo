@@ -36,8 +36,8 @@ public class CompanyToIT_CO_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var coAPI = new API_CompanyToIT_CO(builder);
-			var sourceModel = "TheSource";
-			var targetModel = "TheTarget";
+			var sourceModel = "Source";
+			var targetModel = "Target";
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(),
 					coAPI.getAllRulesForCompanyToIT__CO(), getNegativeConstraints(builder), builder, sourceModel,
 					targetModel);

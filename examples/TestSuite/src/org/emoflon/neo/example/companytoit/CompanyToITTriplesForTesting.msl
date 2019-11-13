@@ -1,0 +1,71 @@
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+
+abstract model ContainedInModels {
+	Source : Model
+	Target : Model
+}
+
+model MissingCEO -> ContainedInModels {
+	c : Company {
+		.name : "foo"
+		-corr->it {
+			._type_ : "CompanyToIT"
+		}	
+		
+		-elementOf->$Source
+	}
+
+	it:IT {
+		.name : "foo"
+		
+		-elementOf->$Target
+	}
+}
+
+model WrongNames -> ContainedInModels {
+	c : Company {
+		.name : "bar"
+		-corr->it {
+			._type_ : "CompanyToIT"
+		}
+		-ceo->ceo
+		
+		-elementOf->$Source
+	}
+	
+	ceo:CEO {
+		.name : "Tony"
+		
+		-elementOf->$Source
+	}
+
+	it:IT {
+		.name : "foo"
+		
+		-elementOf->$Target
+	}
+}
+
+model ConsistentTriple -> MissingCEO {
+	ceo:CEO {
+		.name : "Tony"
+		
+		-elementOf->$Source
+	}
+	
+	c:Company {
+		-ceo->ceo
+	}
+}
+
+model ExtraCEO -> ConsistentTriple {
+	ceo2:CEO {
+		.name : "Montana"
+		-elementOf->$Source
+	}
+	
+	c : Company {
+		-ceo->ceo2
+	}
+}

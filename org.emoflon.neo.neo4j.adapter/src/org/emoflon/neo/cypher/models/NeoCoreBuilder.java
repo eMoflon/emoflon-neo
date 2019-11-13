@@ -540,13 +540,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			});
 
 			cb.createEdgeWithProps(props, EMSLUtil.getOnlyType(rs).getName(), refOwner, typeOfRef);
-
-			if (isContainment(rs)) {
-				createContainerEdge(cb, rs, typeOfRef, refOwner);
-			}
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void createContainerEdge(CypherCreator cb, ModelRelationStatement rs, NodeCommand container,
 			NodeCommand containee) {
 		var prop = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
@@ -554,6 +551,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		cb.createEdgeWithProps(List.of(prop), NeoCoreBootstrapper.ECONTAINER, container, containee);
 	}
 
+	@SuppressWarnings("unused")
 	private boolean isContainment(ModelRelationStatement rs) {
 		return EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.AGGREGATION)
 				|| EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.COMPOSITION);
@@ -738,23 +736,23 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		Map<String, Object> params = Map.of("ids", ids);
 		executeQueryForSideEffect(CypherBuilder.deleteNodesQuery("ids"), params);
 	}
-	
-	public Collection<Long> getAllElementIDsInTriple(String sourceModel, String targetModel){
+
+	public Collection<Long> getAllElementIDsInTriple(String sourceModel, String targetModel) {
 		var allSrcNodes = executeQuery(CypherBuilder.getAllNodesInModel(sourceModel));
 		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));
-		
+
 		var allSrcEdges = executeQuery(CypherBuilder.getAllRelsInModel(sourceModel));
 		var allTrgEdges = executeQuery(CypherBuilder.getAllRelsInModel(targetModel));
-		
+
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
-		
+
 		var allIDs = new ArrayList<Long>();
 		allSrcNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
 		allTrgNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
 		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		allCorrs.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		
+
 		return allIDs;
 	}
 }
