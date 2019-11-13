@@ -1,18 +1,19 @@
 metamodel SimpleFamilies {
 	FamilyRegister {
-		-families(0..5)->Family
+		<>-families(0..5)->Family
 	}
 	
 	Family {
-		.name: EString
+		.name : EString
 		
-		-father(0..1)->FamilyMember
-		-mother(0..1)->FamilyMember
-		-sons(0..*)->FamilyMember
-		-daughters(0..*)->FamilyMember
+		<>-father(0..1)->FamilyMember
+		<>-mother(0..1)->FamilyMember
+		<>-sons(0..*)->FamilyMember
+		<>-daughters(0..*)->FamilyMember
 	}
 	
 	FamilyMember {
-		.name: EString
+		.name : EString
 	}
+	
 }
