@@ -1,6 +1,8 @@
 package run;
 
-import java.util.Collection;
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -8,12 +10,13 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_BWD;
-import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.RemoveTranslateAttributes;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.startup.PrepareTranslateAttributes;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
@@ -21,8 +24,6 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class CompanyToIT_BWD_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_BWD_Run.class);
-
-	private static final String trgModelName = "TheTarget";
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
@@ -32,37 +33,23 @@ public class CompanyToIT_BWD_Run {
 
 	public void runGenerator() throws FlattenerException, Exception {
 		try (var builder = API_Common.createBuilder()) {
-			var api = new API_CompanyToIT(builder);
-			api.exportMetamodelsForCompanyToIT();
+			new API_CompanyToIT(builder).exportMetamodelsForCompanyToIT();
 
-			logger.info("Preparing model...");
-			builder.prepareModelWithTranslateAttribute(trgModelName);
-			logger.info("Model preparation done.");
-
-			var genAPI = new API_CompanyToIT_BWD(builder);
-			var generator = createGenerator(genAPI);
+			var generator = new NeoGenerator(//
+					new API_CompanyToIT_BWD(builder).getAllRulesForCompanyToIT__BWD(), //
+					new PrepareTranslateAttributes(builder, TRG_MODEL_NAME), //
+					new NoMoreMatchesTerminationCondition(), //
+					new AllRulesAllMatchesScheduler(), //
+					new AnySingleMatchUpdatePolicy(), //
+					new ParanoidNeoReprocessor(), //
+					new RemoveTranslateAttributes(builder, TRG_MODEL_NAME), //
+					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start model generation...");
 			generator.generate();
 			logger.info("Generation done.");
-
-			logger.info("Cleaning up model...");
-			builder.removeTranslateAttributesFromModel(trgModelName);
-			logger.info("Model cleanup done.");
 		}
-	}
-
-	protected NeoGenerator createGenerator(API_CompanyToIT_BWD genAPI) {
-		Collection<NeoRule> allRules = genAPI.getAllRulesForCompanyToIT__BWD();
-
-		return new NeoGenerator(//
-				allRules, //
-				new NoMoreMatchesTerminationCondition(), //
-				new AllRulesAllMatchesScheduler(), //
-				new AnySingleMatchUpdatePolicy(), //
-				new ParanoidNeoReprocessor(), //
-				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("TheSource", trgModelName), //
-				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

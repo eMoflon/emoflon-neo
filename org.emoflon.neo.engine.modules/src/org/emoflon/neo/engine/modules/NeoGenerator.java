@@ -21,10 +21,12 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.Schedule;
+import org.emoflon.neo.engine.generator.modules.ICleanupModule;
 import org.emoflon.neo.engine.generator.modules.IMatchReprocessor;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IParameterValueGenerator;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
+import org.emoflon.neo.engine.generator.modules.IStartupModule;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
@@ -39,20 +41,24 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
 	public NeoGenerator(//
 			Collection<NeoRule> allRules, //
+			IStartupModule startupModule, //
 			ITerminationCondition<NeoMatch, NeoCoMatch> terminationCondition, //
 			IRuleScheduler<NeoMatch, NeoCoMatch> ruleScheduler, //
 			IUpdatePolicy<NeoMatch, NeoCoMatch> updatePolicy, //
 			IMatchReprocessor<NeoMatch, NeoCoMatch> matchReprocessor, //
+			ICleanupModule cleanupModule, //
 			IMonitor<NeoMatch, NeoCoMatch> progressMonitor, //
 			ModelNameValueGenerator modelNameGenerator, //
 			List<IParameterValueGenerator<DataType, ?>> parameterValueGenerators//
 	) {
 		super(//
 				allRules, //
+				startupModule, //
 				terminationCondition, //
 				ruleScheduler, //
 				updatePolicy, //
 				matchReprocessor, //
+				cleanupModule, //
 				progressMonitor//
 		);
 

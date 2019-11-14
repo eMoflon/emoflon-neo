@@ -1,5 +1,8 @@
 package run;
 
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -14,10 +17,12 @@ import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.NewCorrRuleScheduler;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
@@ -38,19 +43,20 @@ public class CompanyToIT_CC_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
-			var sourceModel = "Source";
-			var targetModel = "Target";
 			var genRules = genAPI.getAllRulesForCompanyToIT__GEN();
 			var corrCreation = new CorrCreationOperationalStrategy(builder, genRules,
-					ccAPI.getAllRulesForCompanyToIT__CC(), getNegativeConstraints(builder), sourceModel, targetModel);
+					ccAPI.getAllRulesForCompanyToIT__CC(), getNegativeConstraints(builder), SRC_MODEL_NAME,
+					TRG_MODEL_NAME);
 			var generator = new NeoGenerator(//
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
+					new NoOpStartup(), // FIXME[Tony]: Replace this with the proper startup module for CC
 					new NoMoreMatchesTerminationCondition(), //
 					new NewCorrRuleScheduler(), //
 					corrCreation, //
 					new CCReprocessor(genRules), //
+					new NoOpCleanup(), // FIXME[Tony]: Replace this with the proper cleanup module for CC
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(sourceModel, targetModel), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start corr creation...");

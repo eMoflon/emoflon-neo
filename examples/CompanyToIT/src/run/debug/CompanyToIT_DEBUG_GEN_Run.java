@@ -8,9 +8,11 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoTerminationCondition;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
@@ -35,10 +37,12 @@ public class CompanyToIT_DEBUG_GEN_Run {
 
 			var generator = new NeoGenerator(//
 					allRules, //
+					new NoOpStartup(), //
 					new NoTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					adapter, //
 					new ParanoidNeoReprocessor(), //
+					new NoOpCleanup(), //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator("TheSource", "TheTarget"), //
 					List.of(new LoremIpsumStringValueGenerator()));
