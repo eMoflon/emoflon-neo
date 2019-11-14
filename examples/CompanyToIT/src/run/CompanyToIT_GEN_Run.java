@@ -9,6 +9,7 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -36,33 +37,37 @@ public class CompanyToIT_GEN_Run {
 		try (var builder = API_Common.createBuilder()) {
 			new API_CompanyToIT(builder).exportMetamodelsForCompanyToIT();
 
-			var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT__GEN();
-			var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
-
-			INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
-				switch (type) {
-				case API_Company.Company__Company:
-					return 1;
-				default:
-					return INodeSampler.EMPTY;
-				}
-			};
-
-			var generator = new NeoGenerator(//
-					allRules, //
-					new NoOpStartup(), //
-					new CompositeTerminationConditionForGEN(2, TimeUnit.MINUTES, maxRuleApps), //
-					new TwoPhaseRuleSchedulerForGEN(sampler), //
-					new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
-					new ParanoidNeoReprocessor(), //
-					new NoOpCleanup(), //
-					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator("Source", "Target"), //
-					List.of(new LoremIpsumStringValueGenerator()));
+			var generator = createGenerator(builder);
 
 			logger.info("Start model generation...");
 			generator.generate();
 			logger.info("Generation done.");
 		}
+	}
+
+	protected NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT__GEN();
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
+
+		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
+			switch (type) {
+			case API_Company.Company__Company:
+				return 1;
+			default:
+				return INodeSampler.EMPTY;
+			}
+		};
+
+		return new NeoGenerator(//
+				allRules, //
+				new NoOpStartup(), //
+				new CompositeTerminationConditionForGEN(2, TimeUnit.MINUTES, maxRuleApps), //
+				new TwoPhaseRuleSchedulerForGEN(sampler), //
+				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
+				new ParanoidNeoReprocessor(), //
+				new NoOpCleanup(), //
+				new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator("Source", "Target"), //
+				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

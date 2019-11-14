@@ -13,9 +13,11 @@ import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.TwoPhaseRuleSchedulerForGEN;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
@@ -56,10 +58,12 @@ public class SokobanImportExport_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
+				new NoOpStartup(), //
 				new CompositeTerminationConditionForGEN(5, TimeUnit.MINUTES, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
+				new NoOpCleanup(), //
 				new HeartBeatAndReportMonitor(), //
 				new ModelNameValueGenerator("TheSource", "TheTarget"), //
 				List.of(new LoremIpsumStringValueGenerator()));
