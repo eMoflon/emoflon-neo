@@ -19,11 +19,13 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 	private Timer timerForHeartBeat = new Timer();
 
 	private Timer totalTimeSpent = new Timer();
+	private Timer timerForStartup = new Timer();
 	private Timer timerForRuleScheduling = new Timer();
 	private Timer timerForMatchSelection = new Timer();
 	private Timer timerForPatternMatching = new Timer();
 	private Timer timerForRuleApplication = new Timer();
 	private Timer timerForMatchReprocessing = new Timer();
+	private Timer timerForCleanup = new Timer();
 
 	public HeartBeatAndReportMonitor() {
 		totalTimeSpent.start();
@@ -49,6 +51,18 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 		public double getTimeSpentInSeconds() {
 			return timeSpentInSeconds;
 		}
+	}
+
+	@Override
+	public void startStartup(String startupDescription) {
+		logger.debug("Running Startup: " + startupDescription);
+		timerForStartup.start();
+	}
+
+	@Override
+	public void finishStartup() {
+		logger.debug("Finished startup.");
+		timerForStartup.stop();
 	}
 
 	@Override
@@ -112,6 +126,18 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 	}
 
 	@Override
+	public void startCleanup(String cleanupDescription) {
+		logger.debug("Running Cleanup: " + cleanupDescription);
+		timerForCleanup.start();
+	}
+
+	@Override
+	public void finishCleanup() {
+		logger.debug("Finished cleanup.");
+		timerForCleanup.stop();
+	}
+
+	@Override
 	public void heartBeat(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
 		if (heartBeats == 0)
 			timerForHeartBeat.start();
@@ -144,11 +170,13 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 			logger.info("");
 			logger.info("********** Generation Report ************");
 			logger.info("Total time spent: " + totalTimeSpent.getTimeElapsedInSeconds() + "s");
+			logger.info("Startup took: " + timerForStartup.getTimeSpentInSeconds() + "s");
 			logger.info("Rule scheduling took: " + timerForRuleScheduling.getTimeSpentInSeconds() + "s");
 			logger.info("Match selection took: " + timerForMatchSelection.getTimeSpentInSeconds() + "s");
 			logger.info("Pattern matching took: " + timerForPatternMatching.getTimeSpentInSeconds() + "s");
 			logger.info("Rule application took: " + timerForRuleApplication.getTimeSpentInSeconds() + "s");
 			logger.info("Match reprocessing took: " + timerForMatchReprocessing.getTimeSpentInSeconds() + "s");
+			logger.info("Cleanup took: " + timerForCleanup.getTimeSpentInSeconds() + "s");
 			logger.info("Rules applied: ");
 			matchContainer.getRuleApplications().entrySet().stream()//
 					.forEach(entry -> logger.info(" =>  " + entry.getValue() + " @ " + entry.getKey()));

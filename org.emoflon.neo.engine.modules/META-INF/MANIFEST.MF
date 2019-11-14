@@ -6,10 +6,12 @@ Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
  gurobi,
  org.emoflon.neo.engine.modules,
+ org.emoflon.neo.engine.modules.cleanup,
  org.emoflon.neo.engine.modules.ilp,
  org.emoflon.neo.engine.modules.matchreprocessors,
  org.emoflon.neo.engine.modules.monitors,
  org.emoflon.neo.engine.modules.ruleschedulers,
+ org.emoflon.neo.engine.modules.startup,
  org.emoflon.neo.engine.modules.terminationcondition,
  org.emoflon.neo.engine.modules.updatepolicies,
  org.emoflon.neo.engine.modules.valueGenerators

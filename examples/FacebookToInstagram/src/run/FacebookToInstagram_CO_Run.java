@@ -13,10 +13,12 @@ import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
@@ -49,10 +51,12 @@ public class FacebookToInstagram_CO_Run {
 
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForFacebookToInstagramGrammar__CO(), //
+					new NoOpStartup(), //
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //
+					new NoOpCleanup(), //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(sourceModel, targetModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
