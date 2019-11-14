@@ -64,7 +64,7 @@ class TGGCompiler {
 		'''
 			«importStatements»
 			
-			grammar «tgg.name»_«op.nameExtension» {
+			grammar «tgg.name»«op.nameExtension» {
 				«IF op.requiresSrcModelCreation»«CREATE_SRC_MODEL_RULE»«ENDIF»
 				«IF op.requiresTrgModelCreation»«CREATE_TRG_MODEL_RULE»«ENDIF»
 				«FOR rule : flattenedRules»
@@ -321,9 +321,11 @@ class TGGCompiler {
 			import org.apache.log4j.Level;
 			import org.apache.log4j.Logger;
 			
+			«op.additionalImports»
+			
 			public class «appName» {
+				«op.additionalFields»
 				private static final Logger logger = Logger.getLogger(«appName».class);
-				««« TODO fields
 				
 				public static void main(String[] args) {
 					Logger.getRootLogger().setLevel(Level.INFO);
@@ -332,10 +334,22 @@ class TGGCompiler {
 				}
 			
 				public void run() {
-					««« TODO run method
+					try (var builder = API_Common.createBuilder()) {
+						new API_«tgg.name»(builder).exportMetamodelsFor«tgg.name»();
+				
+						var generator = createGenerator(builder);
+				
+						logger.info("Start model generation...");
+						generator.generate();
+						logger.info("Generation done.");
+					}
+				}
+				
+				public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+					«op.createGeneratorMethodBody()»
 				}
 			
-				««« TODO additional methods
+				«op.additionalMethods»
 			}
 		'''
 	}

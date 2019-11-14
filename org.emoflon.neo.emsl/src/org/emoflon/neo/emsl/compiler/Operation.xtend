@@ -20,6 +20,12 @@ interface Operation {
 		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC()] as Operation[])
 	}
 
+	/*
+	 * --------------------------------
+	 * GT rule generation methods
+	 * --------------------------------
+	 */
+	 
 	def String getNameExtension()
 
 	def String getAction(Action action, boolean isSrc)
@@ -49,4 +55,18 @@ interface Operation {
 	def boolean requiresSrcModelCreation()
 	
 	def boolean requiresTrgModelCreation()
+
+	/*
+	 * --------------------------------
+	 * app generation methods
+	 * --------------------------------
+	 */
+	
+	def String additionalImports()
+	
+	def String additionalFields()
+	
+	def String createGeneratorMethodBody()
+	
+	def String additionalMethods()
 }
