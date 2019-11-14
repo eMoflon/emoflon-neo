@@ -1,5 +1,8 @@
 package run;
 
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -22,8 +25,6 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 public class CompanyToIT_FWD_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_FWD_Run.class);
 
-	private static final String srcModelName = "TheSource";
-
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_FWD_Run();
@@ -36,14 +37,14 @@ public class CompanyToIT_FWD_Run {
 
 			var generator = new NeoGenerator(//
 					new API_CompanyToIT_FWD(builder).getAllRulesForCompanyToIT__FWD(), //
-					new PrepareTranslateAttributes(builder, srcModelName), //
+					new PrepareTranslateAttributes(builder, SRC_MODEL_NAME), //
 					new NoMoreMatchesTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					new AnySingleMatchUpdatePolicy(), //
 					new ParanoidNeoReprocessor(), //
-					new RemoveTranslateAttributes(builder, srcModelName), //
+					new RemoveTranslateAttributes(builder, SRC_MODEL_NAME), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(srcModelName, "TheTarget"), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start model generation...");

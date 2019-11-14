@@ -1,5 +1,8 @@
 package run;
 
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -38,11 +41,9 @@ public class CompanyToIT_CO_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var coAPI = new API_CompanyToIT_CO(builder);
-			var sourceModel = "Source";
-			var targetModel = "Target";
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(),
-					coAPI.getAllRulesForCompanyToIT__CO(), getNegativeConstraints(builder), builder, sourceModel,
-					targetModel);
+					coAPI.getAllRulesForCompanyToIT__CO(), getNegativeConstraints(builder), builder, SRC_MODEL_NAME,
+					TRG_MODEL_NAME);
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForCompanyToIT__CO(), //
 					new NoOpStartup(), // FIXME[Tony]: Replace this with the proper startup module for CO
@@ -52,7 +53,7 @@ public class CompanyToIT_CO_Run {
 					new NoOpReprocessor(), //
 					new NoOpCleanup(), // FIXME[Tony]: Replace this with the proper cleanup module for CO
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(sourceModel, targetModel), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");

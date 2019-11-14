@@ -25,6 +25,9 @@ import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGener
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class CompanyToIT_GEN_Run {
+	public static final String SRC_MODEL_NAME = "CompanyToIT_Source";
+	public static final String TRG_MODEL_NAME = "CompanyToIT_Target";
+
 	private static final Logger logger = Logger.getLogger(CompanyToIT_GEN_Run.class);
 
 	public static void main(String[] pArgs) throws Exception {
@@ -67,7 +70,7 @@ public class CompanyToIT_GEN_Run {
 				new ParanoidNeoReprocessor(), //
 				new NoOpCleanup(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("Source", "Target"), //
+				new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }
