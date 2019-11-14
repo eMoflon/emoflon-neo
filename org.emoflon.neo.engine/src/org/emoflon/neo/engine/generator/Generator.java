@@ -6,37 +6,49 @@ import java.util.Map;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.ICoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.modules.ICleanupModule;
 import org.emoflon.neo.engine.generator.modules.IMatchReprocessor;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
+import org.emoflon.neo.engine.generator.modules.IStartupModule;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 
 public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 
+	private IStartupModule startupModule;
 	private ITerminationCondition<M, C> terminationCondition;
 	private IRuleScheduler<M, C> ruleScheduler;
 	private IUpdatePolicy<M, C> updatePolicy;
 	private IMatchReprocessor<M, C> matchReprocessor;
+	private ICleanupModule cleanupModule;
 	private IMonitor<M, C> progressMonitor;
 	private MatchContainer<M, C> matchContainer;
 
 	public Generator(//
 			Collection<? extends IRule<M, C>> allRules, //
+			IStartupModule startupModule, //
 			ITerminationCondition<M, C> terminationCondition, //
 			IRuleScheduler<M, C> ruleScheduler, //
 			IUpdatePolicy<M, C> updatePolicy, //
 			IMatchReprocessor<M, C> matchReprocessor, //
+			ICleanupModule cleanupModule, //
 			IMonitor<M, C> progressMonitor) {
+		this.startupModule = startupModule;
 		this.terminationCondition = terminationCondition;
 		this.ruleScheduler = ruleScheduler;
 		this.updatePolicy = updatePolicy;
 		this.matchReprocessor = matchReprocessor;
+		this.cleanupModule = cleanupModule;
 		this.progressMonitor = progressMonitor;
 		matchContainer = createMatchContainer(allRules);
 	}
 
 	public void generate() {
+
+		progressMonitor.startStartup(startupModule.description());
+		startupModule.startup();
+		progressMonitor.finishStartup();
 
 		do {
 			// Heartbeat for continuous feedback
@@ -71,6 +83,10 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 			matchReprocessor.reprocess(matchContainer, progressMonitor);
 			progressMonitor.finishReprocessingMatches();
 		} while (!terminationCondition.isReached(matchContainer));
+
+		progressMonitor.startCleanup(cleanupModule.description());
+		cleanupModule.cleanup();
+		progressMonitor.finishCleanup();
 
 		progressMonitor.finishGeneration(matchContainer);
 	}
