@@ -1,5 +1,8 @@
 package org.emoflon.neo.engine.modules.ruleschedulers;
 
+import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.noCorrContext;
+import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.toRule;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -16,7 +19,6 @@ import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
-import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.*;
 
 import com.google.common.base.Functions;
 
@@ -29,7 +31,7 @@ import com.google.common.base.Functions;
  */
 public class NewCorrRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 
-	private Collection<Long> allCorrIDsUpToLastStep = new ArrayList<>();
+	private Collection<Object> allCorrIDsUpToLastStep = new ArrayList<>();
 
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Schedule> scheduleWith(//

@@ -81,13 +81,18 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	public abstract void appliedRule(IRule<M, C> rule, Collection<M> appliedMatches, Collection<C> comatches);
 
 	protected void addCreatedElementIDsToRange(C m, IRule<M, C> rule) {
-		rule.getCreatedElts().forEach(elt -> {
+		rule.getCreatedNodeLabels().forEach(elt -> {
 			noOfGeneratedElements++;
-			if (m.containsNode(elt))
-				currentNodeRange.addIDs(getTypesForNode(rule, elt), m.getNodeIDFor(elt));
-			if(m.containsRel(elt))
-				currentRelRange.addID(getTypeForRel(rule, elt), m.getRelIDFor(elt));
+			if (m.containsKey(elt))
+				currentNodeRange.addIDs(getTypesForNode(rule, elt), m.get(elt));
 		});
+		
+		rule.getCreatedRelLabels().forEach(elt -> {
+			noOfGeneratedElements++;
+			if(m.containsKey(elt))
+				currentRelRange.addID(getTypeForRel(rule, elt), m.get(elt));
+		});
+		
 	}
 
 	protected abstract String getTypeForRel(IRule<M, C> rule, String relNameAccordingToConvention);
@@ -130,7 +135,7 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 		return ruleApplications.entrySet().stream().map(entry -> entry.getValue()).reduce(0, Integer::sum);
 	}
 
-	public Stream<? extends ICoMatch> streamAllCoMatches() {
+	public Stream<C> streamAllCoMatches() {
 		return coMatches.stream();
 	}
 }

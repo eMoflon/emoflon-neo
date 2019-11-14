@@ -2,8 +2,8 @@ import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
 import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
 
 abstract model ContainedInModels {
-	Source : Model
-	Target : Model
+	CompanyToIT_Source : Model
+	CompanyToIT_Target : Model
 }
 
 model MissingCEO -> ContainedInModels {
@@ -13,13 +13,13 @@ model MissingCEO -> ContainedInModels {
 			._type_ : "CompanyToIT"
 		}	
 		
-		-elementOf->$Source
+		-elementOf->$CompanyToIT_Source
 	}
 
 	it:IT {
 		.name : "foo"
 		
-		-elementOf->$Target
+		-elementOf->$CompanyToIT_Target
 	}
 }
 
@@ -31,19 +31,19 @@ model WrongNames -> ContainedInModels {
 		}
 		-ceo->ceo
 		
-		-elementOf->$Source
+		-elementOf->$CompanyToIT_Source
 	}
 	
 	ceo:CEO {
 		.name : "Tony"
 		
-		-elementOf->$Source
+		-elementOf->$CompanyToIT_Source
 	}
 
 	it:IT {
 		.name : "foo"
 		
-		-elementOf->$Target
+		-elementOf->$CompanyToIT_Target
 	}
 }
 
@@ -51,7 +51,7 @@ model ConsistentTriple -> MissingCEO {
 	ceo:CEO {
 		.name : "Tony"
 		
-		-elementOf->$Source
+		-elementOf->$CompanyToIT_Source
 	}
 	
 	c:Company {
@@ -62,7 +62,7 @@ model ConsistentTriple -> MissingCEO {
 model ExtraCEO -> ConsistentTriple {
 	ceo2:CEO {
 		.name : "Montana"
-		-elementOf->$Source
+		-elementOf->$CompanyToIT_Source
 	}
 	
 	c : Company {
@@ -82,7 +82,7 @@ model ConsistentTripleWithEmployees -> ConsistentTriple {
 	
 	admin:Admin {
 		-ceo->ceo
-		-elementOf->$Source
+		-elementOf->$CompanyToIT_Source
 		
 		-corr->router {
 			._type_ : "AdminToRouter"
@@ -91,12 +91,12 @@ model ConsistentTripleWithEmployees -> ConsistentTriple {
 	
 	router:Router {
 		-network->network
-		-elementOf->$Target
+		-elementOf->$CompanyToIT_Target
 	}
 	
 	network:Network {
 		-pc->computer
-		-elementOf->$Target
+		-elementOf->$CompanyToIT_Target
 	}
 	
 	it:IT {
@@ -109,10 +109,10 @@ model ConsistentTripleWithEmployees -> ConsistentTriple {
 			._type_ : "EmployeeToPC"
 		}
 		
-		-elementOf->$Source
+		-elementOf->$CompanyToIT_Source
 	}
 	
 	computer:PC {
-		-elementOf->$Target
+		-elementOf->$CompanyToIT_Target
 	}
 }

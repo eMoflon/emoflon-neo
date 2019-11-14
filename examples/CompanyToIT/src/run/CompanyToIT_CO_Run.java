@@ -1,5 +1,8 @@
 package run;
 
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -13,10 +16,12 @@ import org.emoflon.neo.api.metamodels.API_IT;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
@@ -36,19 +41,19 @@ public class CompanyToIT_CO_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var coAPI = new API_CompanyToIT_CO(builder);
-			var sourceModel = "Source";
-			var targetModel = "Target";
 			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(),
-					coAPI.getAllRulesForCompanyToIT__CO(), getNegativeConstraints(builder), builder, sourceModel,
-					targetModel);
+					coAPI.getAllRulesForCompanyToIT__CO(), getNegativeConstraints(builder), builder, SRC_MODEL_NAME,
+					TRG_MODEL_NAME);
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForCompanyToIT__CO(), //
+					new NoOpStartup(), // FIXME[Tony]: Replace this with the proper startup module for CO
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //
+					new NoOpCleanup(), // FIXME[Tony]: Replace this with the proper cleanup module for CO
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(sourceModel, targetModel), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");

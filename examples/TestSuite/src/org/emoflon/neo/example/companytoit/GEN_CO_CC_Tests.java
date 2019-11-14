@@ -8,10 +8,13 @@ import java.util.function.Consumer;
 
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
@@ -97,17 +100,19 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 	}
 
 	@Override
-	protected NeoGenerator createGenerator(API_CompanyToIT_GEN genAPI) {
-		var allRules = genAPI.getAllRulesForCompanyToIT__GEN();
+	protected NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT__GEN();
 		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
 
 		return new NeoGenerator(//
 				allRules, //
+				new NoOpStartup(), //
 				new CompositeTerminationConditionForGEN(1, TimeUnit.MINUTES, ruleScheduler), //
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
+				new NoOpCleanup(), //
 				new HeartBeatAndReportMonitor(), //
 				new ModelNameValueGenerator("Source", "Target"), //
 				List.of(new LoremIpsumStringValueGenerator()));
