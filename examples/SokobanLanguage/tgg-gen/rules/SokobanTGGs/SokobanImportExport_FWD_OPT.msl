@@ -1,0 +1,413 @@
+import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
+
+grammar SokobanImportExport__FWD_OPT {
+	createTrgModel
+	BoardEndEntryRule
+	BoardNormalEntryRule
+	FirstColAllRows
+	FirstColAllRowsEnd
+	FirstColAllRowsNormal
+	AllOtherFieldsEnd
+	AllOtherFieldsNormal
+}
+
+
+rule createTrgModel {
+	++ trgM : Model {
+		.ename := <__trgModelName>
+		++ -conformsTo-> mmSokobanLanguage
+	}
+
+	mmSokobanLanguage : MetaModel {
+		.ename : "SokobanLanguage"
+	}
+} when forbid trgModelExists
+
+pattern trgModelExists {
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+}
+
+rule BoardEndEntryRule {
+	srcM : Model {
+		.ename : <__srcModelName>
+	}
+	
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+	
+	sokBoard:sokobanExchangeFormat.Board {
+		-elementOf->srcM
+		-firstRow->row
+		++-corr->board
+		{
+			._type_ := "BoardToBoard"
+		}
+	}
+	
+	ne:End {
+		-elementOf->srcM
+		++-corr->nf
+		{
+			._type_ := "EntryToField"
+		}
+	}
+	
+	row:Row {
+		-elementOf->srcM
+		-firstEntry->ne
+	}
+
+	++nf:Field {
+		++-elementOf->trgM
+		.endPos : true
+	}
+	
+	++board:SokobanLanguage.Board {
+		++-elementOf->trgM
+		++-fields->nf
+		{
+			.col : 0
+			.row : 0
+		}
+	}
+} 
+
+
+rule BoardNormalEntryRule {
+	srcM : Model {
+		.ename : <__srcModelName>
+	}
+	
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+	
+	sokBoard:sokobanExchangeFormat.Board {
+		-elementOf->srcM
+		-firstRow->row
+		++-corr->board
+		{
+			._type_ := "BoardToBoard"
+		}
+	}
+	
+	ne:Normal {
+		-elementOf->srcM
+		++-corr->nf
+		{
+			._type_ := "EntryToField"
+		}
+	}
+	
+	row:Row {
+		-elementOf->srcM
+		-firstEntry->ne
+	}
+
+	++nf:Field {
+		++-elementOf->trgM
+		.endPos : false
+	}
+	
+	++board:SokobanLanguage.Board {
+		++-elementOf->trgM
+		++-fields->nf
+		{
+			.col : 0
+			.row : 0
+		}
+	}
+} 
+
+
+rule FirstColAllRows {
+	srcM : Model {
+		.ename : <__srcModelName>
+	}
+	
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+	
+	r:Row {
+		-elementOf->srcM
+		-next->nr
+		-firstEntry->e
+	}
+	
+	nr:Row {
+		-elementOf->srcM
+		-firstEntry->ne
+	}
+	
+	e:Entry {
+		-elementOf->srcM
+		-corr->f
+		{
+			._type_ : "EntryToField"
+		}
+	}
+	
+	ne:Entry {
+		-elementOf->srcM
+		++-corr->nf
+		{
+			._type_ := "EntryToField"
+		}
+	}
+
+	b:SokobanLanguage.Board {
+		-elementOf->trgM
+		-fields->f
+		{
+			.row : 0
+		}
+		++-fields->nf
+		{
+			.row : 0
+		}
+	}
+	
+	f:Field {
+		-elementOf->trgM
+		++-bottom->nf
+	}
+	
+	++nf:Field {
+		++-elementOf->trgM
+	}
+} 
+
+
+rule FirstColAllRowsEnd {
+	srcM : Model {
+		.ename : <__srcModelName>
+	}
+	
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+	
+	r:Row {
+		-elementOf->srcM
+		-next->nr
+		-firstEntry->e
+	}
+	
+	nr:Row {
+		-elementOf->srcM
+		-firstEntry->ne
+	}
+	
+	e:Entry {
+		-elementOf->srcM
+		-corr->f
+		{
+			._type_ : "EntryToField"
+		}
+	}
+	
+	ne:End {
+		-elementOf->srcM
+		++-corr->nf
+		{
+			._type_ := "EntryToField"
+		}
+	}
+
+	b:SokobanLanguage.Board {
+		-elementOf->trgM
+		-fields->f
+		{
+			.row : 0
+		}
+		++-fields->nf
+		{
+			.row : 0
+		}
+	}
+	
+	f:Field {
+		-elementOf->trgM
+		++-bottom->nf
+	}
+	
+	++nf:Field {
+		++-elementOf->trgM
+		.endPos : true
+	}
+} 
+
+
+rule FirstColAllRowsNormal {
+	srcM : Model {
+		.ename : <__srcModelName>
+	}
+	
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+	
+	r:Row {
+		-elementOf->srcM
+		-next->nr
+		-firstEntry->e
+	}
+	
+	nr:Row {
+		-elementOf->srcM
+		-firstEntry->ne
+	}
+	
+	e:Entry {
+		-elementOf->srcM
+		-corr->f
+		{
+			._type_ : "EntryToField"
+		}
+	}
+	
+	ne:Normal {
+		-elementOf->srcM
+		++-corr->nf
+		{
+			._type_ := "EntryToField"
+		}
+	}
+
+	b:SokobanLanguage.Board {
+		-elementOf->trgM
+		-fields->f
+		{
+			.row : 0
+		}
+		++-fields->nf
+		{
+			.row : 0
+		}
+	}
+	
+	f:Field {
+		-elementOf->trgM
+		++-bottom->nf
+	}
+	
+	++nf:Field {
+		++-elementOf->trgM
+		.endPos : false
+	}
+} 
+
+
+rule AllOtherFieldsEnd {
+	srcM : Model {
+		.ename : <__srcModelName>
+	}
+	
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+	
+	ne:End {
+		-elementOf->srcM
+		++-corr->nf
+		{
+			._type_ := "EntryToField"
+		}
+	}
+	
+	ble:Entry {
+		-elementOf->srcM
+		-next->ne
+		++-corr->bl
+		{
+			._type_ := "EntryToField"
+		}
+	}
+
+	b:SokobanLanguage.Board {
+		-elementOf->trgM
+		-fields->ul
+		++-fields->nf
+	}
+	
+	ul:Field {
+		-elementOf->trgM
+		-bottom->bl
+		-right->ur
+	}
+	
+	++nf:Field {
+		++-elementOf->trgM
+		.endPos : true
+	}
+	
+	bl:Field {
+		-elementOf->trgM
+		++-right->nf
+	}
+	
+	ur:Field {
+		-elementOf->trgM
+		++-bottom->nf
+	}
+} 
+
+
+rule AllOtherFieldsNormal {
+	srcM : Model {
+		.ename : <__srcModelName>
+	}
+	
+	trgM : Model {
+		.ename : <__trgModelName>
+	}
+	
+	ne:Normal {
+		-elementOf->srcM
+		++-corr->nf
+		{
+			._type_ := "EntryToField"
+		}
+	}
+	
+	ble:Entry {
+		-elementOf->srcM
+		-next->ne
+		++-corr->bl
+		{
+			._type_ := "EntryToField"
+		}
+	}
+
+	b:SokobanLanguage.Board {
+		-elementOf->trgM
+		-fields->ul
+		++-fields->nf
+	}
+	
+	ul:Field {
+		-elementOf->trgM
+		-bottom->bl
+		-right->ur
+	}
+	
+	++nf:Field {
+		++-elementOf->trgM
+		.endPos : false
+	}
+	
+	bl:Field {
+		-elementOf->trgM
+		++-right->nf
+	}
+	
+	ur:Field {
+		-elementOf->trgM
+		++-bottom->nf
+	}
+} 
+

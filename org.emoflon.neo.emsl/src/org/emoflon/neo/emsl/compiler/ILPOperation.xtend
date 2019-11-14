@@ -10,10 +10,6 @@ import java.util.Collections
 
 abstract class ILPOperation implements Operation {
 	
-	override getAction(Action action, boolean isSrc) {
-		return ""
-	}
-	
 	override getTranslation(Action action, boolean isSrc) {
 		return ""
 	}
