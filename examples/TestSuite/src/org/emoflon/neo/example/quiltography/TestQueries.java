@@ -30,7 +30,7 @@ public class TestQueries extends ENeoTest {
 		assertEquals(1, access.countMatches(mask));
 		
 		access.determineOneMatch(mask).ifPresent(m -> {
-			var authorId = m.getNodeIDFor(access.someAuthor);
+			var authorId = m.getAsLong(access.someAuthor);
 			var newMask = access.mask().setSomeAuthor(authorId);
 			assertEquals(1, access.countMatches(newMask));
 		});

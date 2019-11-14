@@ -37,11 +37,8 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 
 	boolean getSPOSemantics();
 
-	Collection<String> getCreatedElts();
-
-	default Collection<String> getContextElts() {
-		return getElements();
-	}
+	Collection<String> getCreatedNodeLabels();
+	Collection<String> getCreatedRelLabels();
 
 	boolean hasApplicationConditions();
 

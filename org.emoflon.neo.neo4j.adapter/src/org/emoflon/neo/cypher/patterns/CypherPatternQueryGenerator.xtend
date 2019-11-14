@@ -62,6 +62,10 @@ class CypherPatternQueryGenerator {
 				«ENDFOR»
 		'''
 	}
+	
+	private def static elements(NeoBasicPattern pattern){
+		return pattern.contextNodeLabels + pattern.contextRelLabels
+	}
 
 	private def static CharSequence matchMainPattern(NeoPattern pattern, Schedule schedule, IMask mask) {
 		matchMainPattern(pattern, schedule, mask, false);

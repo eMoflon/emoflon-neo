@@ -36,7 +36,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private Rule emslRule;
 	private IBuilder builder;
 	private Map<String, NeoNode> greenNodes;
-	private Map<String, NeoRelation> greenEdges;
+	private Map<String, NeoRelation> greenRels;
 	private Map<String, NeoNode> redNodes;
 	private Map<String, NeoRelation> redEdges;
 	private Map<String, NeoNode> blackNodes;
@@ -53,7 +53,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		this.builder = builder;
 
 		greenNodes = new HashMap<>();
-		greenEdges = new HashMap<>();
+		greenRels = new HashMap<>();
 		redNodes = new HashMap<>();
 		redEdges = new HashMap<>();
 		blackNodes = new HashMap<>();
@@ -85,7 +85,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 				if (rel.getAction() != null) {
 					switch (rel.getAction().getOp()) {
 					case CREATE:
-						greenEdges.put(neoRelation.getName(), neoRelation);
+						greenRels.put(neoRelation.getName(), neoRelation);
 						break;
 					case DELETE:
 						redEdges.put(neoRelation.getName(), neoRelation);
@@ -129,9 +129,8 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		var end = start + BATCH_SIZE;
 		for (int i = start; i < end && matchItr.hasNext(); i++) {
 			var m = matchItr.next();
-			var paramsForMatch = new HashMap<>(m.getParameters());
-			paramsForMatch.putAll(mask.getParameters());
-			parameters.add(paramsForMatch);
+			m.putAll(mask.getParameters());
+			parameters.add(m);
 		}
 
 		// Execute rule
@@ -180,13 +179,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		return useSPO;
 	}
 
-	@Override
-	public Collection<String> getCreatedElts() {
-		var createdNodes = greenNodes.keySet().stream();
-		var createdEdges = greenEdges.keySet().stream();
-		return Streams.concat(createdNodes, createdEdges).collect(Collectors.toList());
-	}
-
 	public Collection<String> getDeletedElts() {
 		var deletedNodes = redNodes.keySet().stream();
 		var deletedEdges = redEdges.keySet().stream();
@@ -198,7 +190,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	}
 
 	public Map<String, NeoRelation> getCreatedEdges() {
-		return greenEdges;
+		return greenRels;
 	}
 
 	@Override
@@ -215,7 +207,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		relevantElements.addAll(blackNodes.values());
 		relevantElements.addAll(blackEdges.values());
 		relevantElements.addAll(greenNodes.values());
-		relevantElements.addAll(greenEdges.values());
+		relevantElements.addAll(greenRels.values());
 
 		return relevantElements.stream()//
 				.flatMap(elt -> elt.getAttributeAssignments().stream())//
@@ -227,11 +219,6 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		return emslRule.getName();
 	}
 
-	@Override
-	public Collection<String> getElements() {
-		return precondition.getElements();
-	}
-
 	public NeoPattern getPrecondition() {
 		return precondition;
 	}
@@ -239,5 +226,25 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	@Override
+	public Collection<String> getContextNodeLabels() {
+		return precondition.getContextNodeLabels();
+	}
+
+	@Override
+	public Collection<String> getContextRelLabels() {
+		return precondition.getContextRelLabels();
+	}
+
+	@Override
+	public Collection<String> getCreatedNodeLabels() {
+		return greenNodes.keySet();
+	}
+
+	@Override
+	public Collection<String> getCreatedRelLabels() {
+		return greenRels.keySet();
 	}
 }

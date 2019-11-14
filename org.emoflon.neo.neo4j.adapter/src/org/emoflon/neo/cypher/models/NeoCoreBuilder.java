@@ -131,7 +131,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		} catch (Exception e) {
 			transaction.failure();
 			transaction.close();
-			logger.error(e.getMessage());
+			logger.error(e);
+			e.printStackTrace();
 			return null;
 		}
 	}

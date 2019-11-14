@@ -163,9 +163,9 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 				var record = result.next();
 				matches.add(new NeoMatch(this, record));
 			}
-			
+
 			logger.debug("Found: " + matches.size() + " matches!");
-			
+
 			return matches;
 		}
 	}
@@ -182,11 +182,8 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	public Map<String, Boolean> isStillValid(Collection<NeoMatch> matches) {
 		var cypherQuery = getIsStillValidQuery();
 
-		var parameters = new ArrayList<Map<String, Object>>();
-		matches.forEach(m -> parameters.add(m.getParameters()));
-
-		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), parameters));
-		logger.debug(parameters);
+		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), matches));
+		logger.debug(matches);
 		logger.debug("\n" + cypherQuery);
 
 		if (result == null) {
@@ -207,11 +204,8 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	public Collection<Record> getData(Collection<? extends NeoMatch> matches) {
 		var cypherQuery = getDataQuery();
 
-		var parameters = new ArrayList<Map<String, Object>>();
-		matches.forEach(m -> parameters.add(m.getParameters()));
-
-		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), parameters));
-		logger.debug(parameters);
+		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), matches));
+		logger.debug(matches);
 		logger.debug("\n" + cypherQuery);
 
 		if (result == null) {

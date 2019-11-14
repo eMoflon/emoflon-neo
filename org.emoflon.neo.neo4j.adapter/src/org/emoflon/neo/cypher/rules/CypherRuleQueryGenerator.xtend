@@ -50,12 +50,12 @@ class CypherRuleQueryGenerator {
 			
 			RETURN
 				// Created elements
-				«FOR element : rule.createdElts SEPARATOR "," AFTER ","»
+				«FOR element : rule.createdNodeLabels + rule.createdRelLabels SEPARATOR "," AFTER ","»
 					id(«element») AS «element»
 				«ENDFOR»
 				
 				// Preserved elements
-				«FOR element : rule.contextElts.reject[rule.deletedElts.contains(it)] SEPARATOR "," AFTER ","»
+				«FOR element : (rule.contextNodeLabels + rule.contextRelLabels).reject[rule.deletedElts.contains(it)] SEPARATOR "," AFTER ","»
 					id(«element») AS «element»
 				«ENDFOR»
 				
@@ -77,10 +77,10 @@ class CypherRuleQueryGenerator {
 
 	private def static bindElementsUsingMatch(NeoRule rule) {
 		'''
-			«IF rule.contextElts.isEmpty»
+			«IF rule.contextNodeLabels.isEmpty»
 				TRUE
 			«ELSE»
-				«FOR element : rule.contextElts SEPARATOR " AND "»
+				«FOR element : rule.contextNodeLabels + rule.contextRelLabels SEPARATOR " AND "»
 					id(«element») = «matchParameter».«element»
 				«ENDFOR»
 			«ENDIF»
