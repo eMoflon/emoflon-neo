@@ -48,9 +48,14 @@ class TGGCompiler {
 
 	def void compileAll(IFileSystemAccess2 fsa) {
 		for (Operation operation : Operation.allOps) {
-			val fileLocation = BASE_FOLDER + pathToGeneratedFiles + "/" + tgg.name + operation.nameExtension + ".msl"
-			fsa.deleteFile(fileLocation);
-			fsa.generateFile(fileLocation, compile(operation))
+			val ruleFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/«tgg.name»«operation.nameExtension».msl'''
+			fsa.deleteFile(ruleFileLocation);
+			fsa.generateFile(ruleFileLocation, compile(operation))
+			
+			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
+			val appFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
+			fsa.deleteFile(appFileLocation);
+			fsa.generateFile(appFileLocation, generateApp(operation, appName))
 		}
 	}
 
@@ -304,6 +309,33 @@ class TGGCompiler {
 				trgM : Model {
 					.ename : <__trgModelName>
 				}
+			}
+		'''
+	}
+
+	private def generateApp(Operation op, String appName) {
+		'''
+			package «tgg.name».run;
+			
+			««« TODO imports
+			import org.apache.log4j.Level;
+			import org.apache.log4j.Logger;
+			
+			public class «appName» {
+				private static final Logger logger = Logger.getLogger(«appName».class);
+				««« TODO fields
+				
+				public static void main(String[] args) {
+					Logger.getRootLogger().setLevel(Level.INFO);
+					var app = new «appName»();
+					app.run();
+				}
+			
+				public void run() {
+					««« TODO run method
+				}
+			
+				««« TODO additional methods
 			}
 		'''
 	}
