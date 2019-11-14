@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -22,16 +20,30 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
+import run.CompanyToIT_CC_Run;
 import run.CompanyToIT_CO_Run;
 import run.CompanyToIT_GEN_Run;
 
-public class GEN_CO_Tests extends ENeoTest {
+public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
 		var testCOApp = new CompanyToIT_CO_Run();
+		var testCCApp = new CompanyToIT_CC_Run();
 		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
+
+		// Step 1. Run GEN to produce a triple
 		testGenApp.runGenerator();
+
+		// Step 2. Check that produced triple is consistent with CO
+		assertTrue(testCOApp.runCheckOnly());
+
+		// Step 3. Remove corrs to produce input for CC
+		builder.deleteAllCorrs();
+
+		// Step 4: Create corrs
+		assertTrue(testCCApp.runCorrCreation());
+
+		// Step 5: Check that consistency has been restored
 		assertTrue(testCOApp.runCheckOnly());
 	}
 
@@ -71,7 +83,7 @@ public class GEN_CO_Tests extends ENeoTest {
 	@Test
 	public void tryLotsOfAdmins() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 1)
+			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 100)
 					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 100);
 		});
 	}
@@ -92,12 +104,12 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(30, TimeUnit.SECONDS, ruleScheduler), //
+				new CompositeTerminationConditionForGEN(1, TimeUnit.MINUTES, ruleScheduler), //
 				new AllRulesAllMatchesScheduler(), //
 				new RandomSingleMatchUpdatePolicy(), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("TheSource", "TheTarget"), //
+				new ModelNameValueGenerator("Source", "Target"), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 

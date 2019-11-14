@@ -28,12 +28,14 @@ import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.SourceNAC
 
 class TGGCompiler {
-	
 	final String BASE_FOLDER = "../" + EMSLGenerator.TGG_GEN_FOLDER + "/";
 	final String pathToGeneratedFiles
 	TripleGrammar tgg
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
+	
+	public final static String CREATE_SRC_MODEL_RULE = "createSrcModel"
+	public final static String CREATE_TRG_MODEL_RULE = "createTrgModel"
 
 	new(TripleGrammar tgg, String pathToGeneratedFiles) {
 		this.tgg = tgg
@@ -58,8 +60,8 @@ class TGGCompiler {
 			«importStatements»
 			
 			grammar «tgg.name»_«op.nameExtension» {
-				«IF op.requiresSrcModelCreation»createSrcModel«ENDIF»
-				«IF op.requiresTrgModelCreation»createTrgModel«ENDIF»
+				«IF op.requiresSrcModelCreation»«CREATE_SRC_MODEL_RULE»«ENDIF»
+				«IF op.requiresTrgModelCreation»«CREATE_TRG_MODEL_RULE»«ENDIF»
 				«FOR rule : flattenedRules»
 					«rule.name»
 				«ENDFOR»
@@ -258,7 +260,7 @@ class TGGCompiler {
 
 	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames) {
 		'''
-			rule createSrcModel {
+			rule «CREATE_SRC_MODEL_RULE» {
 				++ srcM : Model {
 					.ename := <__srcModelName>
 					«FOR srcMetaModel : srcMetaModelNames»
@@ -283,7 +285,7 @@ class TGGCompiler {
 	
 	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames) {
 		'''
-			rule createTrgModel {
+			rule «CREATE_TRG_MODEL_RULE» {
 				++ trgM : Model {
 					.ename := <__trgModelName>
 					«FOR trgMetaModel : trgMetaModelNames»

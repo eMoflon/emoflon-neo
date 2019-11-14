@@ -62,12 +62,12 @@ public class CompanyToIT_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
-				new CompositeTerminationConditionForGEN(1, TimeUnit.MINUTES, maxRuleApps), //
+				new CompositeTerminationConditionForGEN(2, TimeUnit.MINUTES, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("TheSource", "TheTarget"), //
+				new ModelNameValueGenerator("Source", "Target"), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

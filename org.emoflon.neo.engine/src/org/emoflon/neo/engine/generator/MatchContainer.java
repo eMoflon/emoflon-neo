@@ -83,10 +83,10 @@ public abstract class MatchContainer<M extends IMatch, C extends ICoMatch> {
 	protected void addCreatedElementIDsToRange(C m, IRule<M, C> rule) {
 		rule.getCreatedElts().forEach(elt -> {
 			noOfGeneratedElements++;
-			if (m.getNodeIDs().containsKey(elt))
-				currentNodeRange.addIDs(getTypesForNode(rule, elt), m.getNodeIDs().get(elt));
-			if(m.getEdgeIDs().containsKey(elt))
-				currentRelRange.addID(getTypeForRel(rule, elt), m.getEdgeIDs().get(elt));
+			if (m.containsNode(elt))
+				currentNodeRange.addIDs(getTypesForNode(rule, elt), m.getNodeIDFor(elt));
+			if(m.containsRel(elt))
+				currentRelRange.addID(getTypeForRel(rule, elt), m.getRelIDFor(elt));
 		});
 	}
 

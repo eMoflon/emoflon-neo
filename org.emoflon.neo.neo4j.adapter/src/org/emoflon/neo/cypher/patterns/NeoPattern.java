@@ -163,6 +163,9 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 				var record = result.next();
 				matches.add(new NeoMatch(this, record));
 			}
+			
+			logger.debug("Found: " + matches.size() + " matches!");
+			
 			return matches;
 		}
 	}

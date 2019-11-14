@@ -11,7 +11,7 @@ import org.emoflon.neo.engine.generator.modules.IMonitor;
  */
 public class ParanoidNeoReprocessor implements IMatchReprocessor<NeoMatch, NeoCoMatch> {
 	@Override
-	public void reprocess(MatchContainer<NeoMatch, NeoCoMatch> pRemainingMatches, IMonitor<NeoMatch, NeoCoMatch> pProgressMonitor) {
-		pRemainingMatches.clear();
+	public void reprocess(MatchContainer<NeoMatch, NeoCoMatch> remainingMatches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
+		remainingMatches.clear();
 	}
 }

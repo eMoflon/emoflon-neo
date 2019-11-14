@@ -1,10 +1,17 @@
 package org.emoflon.neo.engine.api.patterns;
 
-import java.util.Map;
-
 public interface IMatch {
 	IPattern<?> getPattern();
 	
-	Map<String, Long> getNodeIDs();
-	Map<String, Long> getEdgeIDs();
+	long[] getNodeIDs();
+	long[] getRelIDs();
+	
+	boolean containsNode(String nodeName);
+	boolean containsRel(String relName);
+	
+	long getNodeIDFor(String nodeName);
+	long getRelIDFor(String relName);
+	
+	String getNameOfNode(long nodeID);
+	String getNameOfRel(long relID);
 }

@@ -16,9 +16,17 @@ import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
+import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.*;
 
 import com.google.common.base.Functions;
 
+/**
+ * This scheduler exploits the fact that rules with corr context can never match
+ * for CC if there were no corrs created in the last step (they must have been
+ * collected already).
+ * 
+ * @author aanjorin
+ */
 public class NewCorrRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 
 	private Collection<Long> allCorrIDsUpToLastStep = new ArrayList<>();
@@ -36,6 +44,7 @@ public class NewCorrRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch
 		};
 
 		var scheduledRules = matchContainer.streamAllRules()//
+				.filter(r -> noCorrContext(toRule(r)) || latestCorrIDs.getIDs().size() > 0)//
 				.collect(Collectors.toMap(Functions.identity(), //
 						r -> new Schedule(-1, new ElementRange(), latestCorrIDs, r,
 								(type, ruleName, nodeName) -> INodeSampler.EMPTY, sampler)));

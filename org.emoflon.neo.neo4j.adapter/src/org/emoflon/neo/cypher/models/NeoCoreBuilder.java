@@ -137,19 +137,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public void executeQueryForSideEffect(String cypherStatement) {
-		var session = driver.session();
-		var transaction = session.beginTransaction();
+		executeQueryForSideEffect(cypherStatement, Collections.emptyMap());
+	}
 
-		try {
-			var st = driver.session().run(cypherStatement.trim());
-			st.consume();
-			transaction.success();
-			transaction.close();
-		} catch (Exception e) {
-			transaction.failure();
-			transaction.close();
-			logger.error(e.getMessage());
-		}
+	public void executeQueryForSideEffect(String cypherStatement, Map<String, Object> parameters) {
+		var result = executeQuery(cypherStatement, parameters);
+		result.consume();
 	}
 
 	public void clearDataBase() {
@@ -330,8 +323,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		bootstrapper.bootstrapNeoCore(this);
 
 		executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
-				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.MODEL)
-				+ ") ASSERT mm.ename IS UNIQUE");
+				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.MODEL) + ") ASSERT mm.ename IS UNIQUE");
 		executeQueryForSideEffect(//
 				"CREATE INDEX ON :" + //
 						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.ECLASS) + //
@@ -548,13 +540,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			});
 
 			cb.createEdgeWithProps(props, EMSLUtil.getOnlyType(rs).getName(), refOwner, typeOfRef);
-
-			if (isContainment(rs)) {
-				createContainerEdge(cb, rs, typeOfRef, refOwner);
-			}
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void createContainerEdge(CypherCreator cb, ModelRelationStatement rs, NodeCommand container,
 			NodeCommand containee) {
 		var prop = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
@@ -562,6 +551,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		cb.createEdgeWithProps(List.of(prop), NeoCoreBootstrapper.ECONTAINER, container, containee);
 	}
 
+	@SuppressWarnings("unused")
 	private boolean isContainment(ModelRelationStatement rs) {
 		return EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.AGGREGATION)
 				|| EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.COMPOSITION);
@@ -720,40 +710,49 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public void prepareModelWithTranslateAttribute(String modelName) {
-		StringBuilder nodeQuery = new StringBuilder();
-		nodeQuery.append("match (n)-[:elementOf]-(m:NeoCore__Model {ename: \"");
-		nodeQuery.append(modelName);
-		nodeQuery.append("\"}) set n._tr_ = false");
-		executeQueryForSideEffect(nodeQuery.toString());
-
-		StringBuilder edgeQuery = new StringBuilder();
-		edgeQuery.append("match (m:NeoCore__Model {ename: \"");
-		edgeQuery.append(modelName);
-		edgeQuery.append("\"}), (a)-[r]-(b), (a)-[:elementOf]-(m), (b)-[:elementOf]-(m) with r set r._tr_ = false");
-		executeQueryForSideEffect(edgeQuery.toString());
+		executeQueryForSideEffect(CypherBuilder.prepareTranslateAttributeForNodes(modelName));
+		executeQueryForSideEffect(CypherBuilder.prepareTranslateAttributeForEdges(modelName));
 	}
 
 	public void removeTranslateAttributesFromModel(String modelName) {
-		StringBuilder nodeQuery = new StringBuilder();
-		nodeQuery.append("match (n)-[:elementOf]-(m:NeoCore__Model {ename: \"");
-		nodeQuery.append(modelName);
-		nodeQuery.append("\"}) remove n._tr_");
-		executeQueryForSideEffect(nodeQuery.toString());
-
-		StringBuilder edgeQuery = new StringBuilder();
-		edgeQuery.append("match (m:NeoCore__Model {ename: \"");
-		edgeQuery.append(modelName);
-		edgeQuery.append("\"}), (a)-[r]-(b), (a)-[:elementOf]-(m), (b)-[:elementOf]-(m) with r remove r._tr_");
-		executeQueryForSideEffect(edgeQuery.toString());
+		executeQueryForSideEffect(CypherBuilder.removeTranslationAttributeForNodes(modelName));
+		executeQueryForSideEffect(CypherBuilder.removeTranslationAttributeForEdges(modelName));
 	}
-	
+
 	public void deleteEdges(Collection<Long> ids) {
 		Map<String, Object> params = Map.of("ids", ids);
-		executeQuery(CypherBuilder.deleteEdgesQuery("ids"), params);
+		executeQueryForSideEffect(CypherBuilder.deleteEdgesQuery("ids"), params);
 	}
-	
+
+	public void deleteEdgesOfType(String type) {
+		executeQueryForSideEffect(CypherBuilder.deleteEdgesOfType(type));
+	}
+
+	public void deleteAllCorrs() {
+		deleteEdgesOfType(NeoCoreBootstrapper.CORR);
+	}
+
 	public void deleteNodes(Collection<Long> ids) {
 		Map<String, Object> params = Map.of("ids", ids);
-		executeQuery(CypherBuilder.deleteNodesQuery("ids"), params);
+		executeQueryForSideEffect(CypherBuilder.deleteNodesQuery("ids"), params);
+	}
+
+	public Collection<Long> getAllElementIDsInTriple(String sourceModel, String targetModel) {
+		var allSrcNodes = executeQuery(CypherBuilder.getAllNodesInModel(sourceModel));
+		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));
+
+		var allSrcEdges = executeQuery(CypherBuilder.getAllRelsInModel(sourceModel));
+		var allTrgEdges = executeQuery(CypherBuilder.getAllRelsInModel(targetModel));
+
+		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
+
+		var allIDs = new ArrayList<Long>();
+		allSrcNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
+		allTrgNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
+		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allCorrs.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+
+		return allIDs;
 	}
 }
