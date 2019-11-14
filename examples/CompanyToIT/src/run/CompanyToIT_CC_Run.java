@@ -14,10 +14,12 @@ import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.NewCorrRuleScheduler;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
@@ -45,10 +47,12 @@ public class CompanyToIT_CC_Run {
 					ccAPI.getAllRulesForCompanyToIT__CC(), getNegativeConstraints(builder), sourceModel, targetModel);
 			var generator = new NeoGenerator(//
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
+					new NoOpStartup(), // FIXME[Tony]: Replace this with the proper startup module for CC
 					new NoMoreMatchesTerminationCondition(), //
 					new NewCorrRuleScheduler(), //
 					corrCreation, //
 					new CCReprocessor(genRules), //
+					new NoOpCleanup(), // FIXME[Tony]: Replace this with the proper cleanup module for CC
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(sourceModel, targetModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
