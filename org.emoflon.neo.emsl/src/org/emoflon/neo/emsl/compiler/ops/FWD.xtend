@@ -13,6 +13,13 @@ import org.emoflon.neo.emsl.compiler.ParameterData
 import org.emoflon.neo.emsl.eMSL.SourceNAC
 
 class FWD implements Operation {
+
+	/*
+	 * --------------------------------
+	 * GT rule generation methods
+	 * --------------------------------
+	 */
+
 	override String getNameExtension() {
 		return "_FWD"
 	}
@@ -55,5 +62,35 @@ class FWD implements Operation {
 	
 	override requiresTrgModelCreation() {
 		true
+	}
+
+	/*
+	 * --------------------------------
+	 * app generation methods
+	 * --------------------------------
+	 */
+	
+	override additionalImports() {
+		// TODO
+		'''
+		'''
+	}
+	
+	override additionalFields(String tggName) {
+		// TODO
+		'''
+		'''
+	}
+	
+	override createGeneratorMethodBody(String tggName) {
+		// TODO
+		'''
+		'''
+	}
+	
+	override additionalMethods() {
+		// TODO
+		'''
+		'''
 	}
 }

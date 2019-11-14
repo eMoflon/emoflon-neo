@@ -317,23 +317,27 @@ class TGGCompiler {
 		'''
 			package «tgg.name».run;
 			
-			««« TODO imports
 			import org.apache.log4j.Level;
 			import org.apache.log4j.Logger;
+			import org.emoflon.neo.api.API_Common;
+			import org.emoflon.neo.api.API_«tgg.name»;
+			import org.emoflon.neo.api.«tgg.name».API_«tgg.name»«op.nameExtension»;
+			import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+			import org.emoflon.neo.engine.modules.NeoGenerator;
 			
 			«op.additionalImports»
 			
 			public class «appName» {
-				«op.additionalFields»
+				«op.additionalFields(tgg.name)»
 				private static final Logger logger = Logger.getLogger(«appName».class);
 				
-				public static void main(String[] args) {
+				public static void main(String[] args) throws Exception {
 					Logger.getRootLogger().setLevel(Level.INFO);
 					var app = new «appName»();
 					app.run();
 				}
 			
-				public void run() {
+				public void run() throws Exception {
 					try (var builder = API_Common.createBuilder()) {
 						new API_«tgg.name»(builder).exportMetamodelsFor«tgg.name»();
 				
@@ -346,7 +350,7 @@ class TGGCompiler {
 				}
 				
 				public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-					«op.createGeneratorMethodBody()»
+					«op.createGeneratorMethodBody(tgg.name)»
 				}
 			
 				«op.additionalMethods»

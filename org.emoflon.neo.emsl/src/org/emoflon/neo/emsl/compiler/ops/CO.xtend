@@ -12,6 +12,13 @@ import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
 import java.util.Collections
 
 class CO implements Operation {
+
+	/*
+	 * --------------------------------
+	 * GT rule generation methods
+	 * --------------------------------
+	 */
+
 	override String getNameExtension() {
 		return "_CO"
 	}
@@ -59,5 +66,35 @@ class CO implements Operation {
 	
 	override requiresTrgModelCreation() {
 		false
+	}
+
+	/*
+	 * --------------------------------
+	 * app generation methods
+	 * --------------------------------
+	 */
+	
+	override additionalImports() {
+		// TODO
+		'''
+		'''
+	}
+	
+	override additionalFields(String tggName) {
+		// TODO
+		'''
+		'''
+	}
+	
+	override createGeneratorMethodBody(String tggName) {
+		// TODO
+		'''
+		'''
+	}
+	
+	override additionalMethods() {
+		// TODO
+		'''
+		'''
 	}
 }

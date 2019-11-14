@@ -64,9 +64,9 @@ interface Operation {
 	
 	def String additionalImports()
 	
-	def String additionalFields()
+	def String additionalFields(String tggName)
 	
-	def String createGeneratorMethodBody()
+	def String createGeneratorMethodBody(String tggName)
 	
 	def String additionalMethods()
 }
