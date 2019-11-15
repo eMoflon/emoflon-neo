@@ -114,7 +114,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		var batches = numberOfMatches / BATCH_SIZE;
 		var matchItr = matches.iterator();
 		var comatches = new ArrayList<NeoCoMatch>();
-		logger.info("Applying " + matches.size() + " matches, in " + batches + " batches of size " + BATCH_SIZE);
+		logger.info("Applying " + matches.size() + " matches, in " + batches+1 + " batches of size " + BATCH_SIZE);
 		for (int i = 0; i <= batches; i++)
 			applyBatch(cypherQuery, matchItr, i, mask, comatches);
 
