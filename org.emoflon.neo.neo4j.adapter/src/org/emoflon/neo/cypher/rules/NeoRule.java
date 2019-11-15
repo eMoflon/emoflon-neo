@@ -30,7 +30,7 @@ import com.google.common.collect.Streams;
 public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(NeoRule.class);
 
-	public static final int BATCH_SIZE = 50000;
+	public static final int BATCH_SIZE = 25000;
 
 	private boolean useSPO;
 	private Rule emslRule;
@@ -114,7 +114,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		var batches = numberOfMatches / BATCH_SIZE;
 		var matchItr = matches.iterator();
 		var comatches = new ArrayList<NeoCoMatch>();
-		logger.debug("Applying " + matches.size() + " matches, in " + batches + " batches of size " + BATCH_SIZE);
+		logger.info("Applying " + matches.size() + " matches, in " + batches + " batches of size " + BATCH_SIZE);
 		for (int i = 0; i <= batches; i++)
 			applyBatch(cypherQuery, matchItr, i, mask, comatches);
 
@@ -137,7 +137,7 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		var params = new HashMap<String, Object>(Map.of(NeoMatch.getMatchesParameter(), parameters));
 		var result = builder.executeQuery(cypherQuery, params);
 
-		logger.debug("Applied Batch: " + batchNr);
+		logger.info("Applied Batch: " + batchNr);
 		
 		extractCoMatches(result, comatches);
 	}

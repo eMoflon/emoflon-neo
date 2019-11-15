@@ -1,6 +1,5 @@
 package org.emoflon.neo.engine.modules.updatepolicies;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -44,26 +43,22 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 		computeWeights();
 		logger.debug("Registered all matches.");
 
-		var intermediateResult = determineInconsistentElements(suppSolver);
-		result = deleteInconsistentCorrs(intermediateResult);
+		result = determineInconsistentElements(suppSolver);
+		removeInconsistentCorrs(result);
 
 		return result.isEmpty();
 	}
 
-	private Collection<Long> deleteInconsistentCorrs(Collection<Long> inconsistentElts) {
-		var remaining = new ArrayList<>(inconsistentElts);
-
+	private void removeInconsistentCorrs(Collection<Long> inconsistentElts) {
 		matchContainer.ifPresent(mc -> {
-			var greenElements = mc.getRelRange().getIDs();
+			var inconsistentCorrs = mc.getRelRange().getIDs().stream()//
+					.map(x -> -1 * (Long) x)//
+					.filter(x -> inconsistentElts.contains(x))//
+					.collect(Collectors.toSet());
+					
+			builder.deleteEdges(inconsistentCorrs);
 
-			var corrs = inconsistentElts.stream()//
-					.map(Math::abs)//
-					.filter(x -> greenElements.contains(x))//
-					.collect(Collectors.toList());
-			builder.deleteEdges(corrs);
-			remaining.removeAll(corrs.stream().map(x -> -1 * x).collect(Collectors.toSet()));
+			inconsistentElts.removeAll(inconsistentCorrs);
 		});
-
-		return remaining;
 	}
 }

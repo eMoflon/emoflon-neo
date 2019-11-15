@@ -720,6 +720,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeQueryForSideEffect(CypherBuilder.removeTranslationAttributeForEdges(modelName));
 	}
 
+	/**
+	 * Ids can contain negative or positive ids -- absolute values are used in Neo4j
+	 * for deletion.
+	 * 
+	 * @param ids
+	 */
 	public void deleteEdges(Collection<Long> ids) {
 		Map<String, Object> params = Map.of("ids", ids);
 		executeQueryForSideEffect(CypherBuilder.deleteEdgesQuery("ids"), params);
@@ -747,7 +753,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
 
-		var allIDs = new ArrayList<Long>();
+		var allIDs = new HashSet<Long>(allSrcNodes.keys().size()//
+				+ allTrgNodes.keys().size()//
+				+ allSrcEdges.keys().size()//
+				+ allTrgEdges.keys().size()//
+				+ allCorrs.keys().size());
+		
 		allSrcNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
 		allTrgNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
 		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));

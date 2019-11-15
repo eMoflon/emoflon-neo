@@ -57,7 +57,7 @@ abstract class CypherBuilder {
 	def static String deleteEdgesQuery(String ids) {
 		'''
 			UNWIND $«ids» as eltID
-			MATCH ()-[r]->() where id(r) = eltID delete r
+			MATCH ()-[r]->() where id(r) = abs(eltID) delete r
 		'''
 	}
 
