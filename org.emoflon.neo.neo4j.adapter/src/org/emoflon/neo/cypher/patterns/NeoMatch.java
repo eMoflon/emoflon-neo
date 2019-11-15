@@ -77,7 +77,7 @@ public class NeoMatch implements IMatch {
 
 	@Override
 	public void addAllParameters(Map<String, Object> parameters) {
-		parameters.putAll(parameters);
+		this.parameters.putAll(parameters);
 	}
 
 	@Override
