@@ -20,15 +20,23 @@ import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 
-	public CheckOnlyOperationalStrategy(SupportedILPSolver solver, Collection<NeoRule> genRules,
-			Collection<NeoRule> opRules, Collection<IConstraint> negativeConstraints, NeoCoreBuilder builder,
-			String sourceModel, String targetModel) {
+	public CheckOnlyOperationalStrategy(//
+			SupportedILPSolver solver, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			NeoCoreBuilder builder, //
+			String sourceModel, //
+			String targetModel//
+	) {
 		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
 	}
 
 	@Override
-	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
-			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
+			MatchContainer<NeoMatch, NeoCoMatch> matches, //
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
+	) {
 		logger.debug("Registering all matches...");
 
 		// Precedence information
@@ -58,6 +66,6 @@ public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy im
 
 	@Override
 	public String description() {
-		return "Clean Up:  Solve ILP problem to determine consistency of provided triple.";
+		return "ILP solving";
 	}
 }

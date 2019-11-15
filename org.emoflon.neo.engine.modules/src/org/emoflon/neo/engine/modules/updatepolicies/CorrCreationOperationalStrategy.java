@@ -89,6 +89,6 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 
 	@Override
 	public String description() {
-		return "Clean Up:  Solve ILP problem to determine consistency of provided triple.";
+		return "ILP solving, deletion of inconsistent corrs";
 	}
 }
