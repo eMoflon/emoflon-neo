@@ -322,8 +322,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	 */
 	protected Set<Long> extractNodeIDs(Collection<String> nodes, NeoMatch m) {
 		return nodes.stream()//
-				.filter(name -> m.containsKey(name))//
-				.map(name -> m.getAsLong(name))//
+				.filter(name -> m.containsElement(name))//
+				.map(name -> m.getElement(name))//
 				.collect(Collectors.toSet());
 	}
 
@@ -337,8 +337,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	 */
 	protected Set<Long> extractRelIDs(Collection<String> rels, NeoMatch m) {
 		return rels.stream()//
-				.filter(name -> m.containsKey(name))//
-				.map(name -> -1 * m.getAsLong(name))//
+				.filter(name -> m.containsElement(name))//
+				.map(name -> -1 * m.getElement(name))//
 				.collect(Collectors.toSet());
 	}
 

@@ -140,7 +140,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 
 		// mask free parameters
 		freeParameters.get(rule).forEach(param -> {
-			matches.forEach(match -> match.put(param, generateValueFor(parameterDataTypes.get(param), param)));
+			matches.forEach(match -> match.addParameter(param, generateValueFor(parameterDataTypes.get(param), param)));
 		});
 
 		var comatches = neoRule.applyAll(matches, ruleMasks.get(neoRule));

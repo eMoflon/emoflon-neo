@@ -3,6 +3,7 @@ package org.emoflon.neo.cypher.patterns;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;
@@ -15,26 +16,23 @@ import org.neo4j.driver.v1.Record;
  * @author Jannik Hinz
  *
  */
-public class NeoMatch extends HashMap<String, Object> implements IMatch {
-	private static final long serialVersionUID = 1L;
+public class NeoMatch implements IMatch {
 	protected NeoPattern pattern;
+	private Record record; 
+	private Map<String, Object> parameters = new HashMap<>();
 	
 	/**
 	 * @param pattern the corresponding pattern to the match
 	 * @param record  one result record of the query execution
 	 */
 	public NeoMatch(NeoPattern pattern, Record record) {
-		super(record.asMap()); 
 		this.pattern = pattern;
+		this.record = record;
 	}
 
 	public NeoMatch(NeoMatch other) {
 		pattern = other.pattern;
-		putAll(other);
-	}
-
-	public String getHashCode() {
-		return String.valueOf(hashCode());
+		record = other.record;
 	}
 
 	@Override
@@ -62,7 +60,36 @@ public class NeoMatch extends HashMap<String, Object> implements IMatch {
 			return Collections.emptyList();
 	}
 
-	public long getAsLong(String element) {
-		return (Long) get(element);
+	@Override
+	public boolean containsElement(String elt) {
+		return record.containsKey(elt);
 	}
+
+	@Override
+	public long getElement(String elt) {
+		return record.get(elt).asLong();
+	}
+
+	@Override
+	public void addParameter(String key, Object value) {
+		parameters.put(key, value);
+	}
+
+	@Override
+	public void addAllParameters(Map<String, Object> parameters) {
+		parameters.putAll(parameters);
+	}
+
+	@Override
+	public Map<String, Object> convertToMap() {
+		var map = new HashMap<String, Object>(record.keys().size());
+		map.putAll(parameters);
+		map.putAll(record.asMap());
+		map.put(getIdParameter(), hashCode());
+		return map;
+	}
+
+	public String getMatchID() {
+		return String.valueOf(hashCode());
+	}	
 }
