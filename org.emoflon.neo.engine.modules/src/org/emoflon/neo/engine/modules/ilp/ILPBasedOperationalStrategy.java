@@ -52,9 +52,17 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected String sourceModel;
 	protected String targetModel;
 
-	public ILPBasedOperationalStrategy(Collection<NeoRule> genRules, Collection<NeoRule> opRules,
-			Collection<IConstraint> negativeConstraints, NeoCoreBuilder builder, String sourceModel,
-			String targetModel) {
+	protected SupportedILPSolver solver;
+
+	public ILPBasedOperationalStrategy(//
+			SupportedILPSolver solver, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			NeoCoreBuilder builder, //
+			String sourceModel, //
+			String targetModel//
+	) {
 		this.sourceModel = sourceModel;
 		this.targetModel = targetModel;
 		this.builder = builder;
@@ -63,6 +71,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		matchToCreatedElements = new HashMap<>();
 		elementToCreatingMatches = new HashMap<>();
 		elementToDependentMatches = new HashMap<>();
+
+		this.solver = solver;
 
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
@@ -283,13 +293,13 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	public Collection<Long> determineConsistentElements(SupportedILPSolver suppSolver) throws Exception {
+	public Collection<Long> determineConsistentElements() throws Exception {
 		computeILPProblem();
-		var solver = ILPFactory.createILPSolver(ilpProblem, suppSolver);
+		var ilpSolver = ILPFactory.createILPSolver(ilpProblem, solver);
 
 		logger.debug(ilpProblem);
 
-		var solution = solver.solveILP();
+		var solution = ilpSolver.solveILP();
 
 		logger.debug(solution);
 
@@ -301,9 +311,9 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			throw new IllegalStateException("There should always be an optimal (= consistent) solution!");
 	}
 
-	public Collection<Long> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
+	public Collection<Long> determineInconsistentElements() throws Exception {
 		if (result == null) {
-			var consistentElements = determineConsistentElements(suppSolver);
+			var consistentElements = determineConsistentElements();
 			var allElements = builder.getAllElementIDsInTriple(sourceModel, targetModel);
 			allElements.removeAll(consistentElements);
 			result = allElements;
@@ -354,8 +364,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		return ilpProblem.getProblemInformation();
 	}
 
-	public boolean isConsistent(SupportedILPSolver suppSolver) throws Exception {
-		determineInconsistentElements(suppSolver);
+	public boolean isConsistent() throws Exception {
+		determineInconsistentElements();
 		return result.isEmpty();
 	}
 }

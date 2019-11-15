@@ -14,10 +14,8 @@ import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
 import org.emoflon.neo.api.metamodels.API_IT;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
-import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -34,7 +32,6 @@ public class CompanyToIT_CC_Run {
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(NeoRule.class).setLevel(Level.INFO);
 		var app = new CompanyToIT_CC_Run();
 		app.runCorrCreation();
 	}
@@ -44,34 +41,29 @@ public class CompanyToIT_CC_Run {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
 			var genRules = genAPI.getAllRulesForCompanyToIT__GEN();
-			var corrCreation = new CorrCreationOperationalStrategy(builder, genRules,
-					ccAPI.getAllRulesForCompanyToIT__CC(), getNegativeConstraints(builder), SRC_MODEL_NAME,
-					TRG_MODEL_NAME);
+			var corrCreation = new CorrCreationOperationalStrategy(//
+					solver, //
+					builder, //
+					genRules, //
+					ccAPI.getAllRulesForCompanyToIT__CC(), //
+					getNegativeConstraints(builder), //
+					SRC_MODEL_NAME, //
+					TRG_MODEL_NAME//
+			);
 			var generator = new NeoGenerator(//
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
-					new NoOpStartup(), // FIXME[Tony]: Replace this with the proper startup module for CC
-					new NoMoreMatchesTerminationCondition(), //
+					new NoOpStartup(), new NoMoreMatchesTerminationCondition(), //
 					new NewCorrRuleScheduler(), //
 					corrCreation, //
 					new CCReprocessor(genRules), //
-					new NoOpCleanup(), // FIXME[Tony]: Replace this with the proper cleanup module for CC
-					new HeartBeatAndReportMonitor(), //
+					corrCreation, new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start corr creation...");
 			generator.generate();
 
-			if (corrCreation.isConsistent(solver)) {
-				logger.info("Your triple is consistent!");
-				return true;
-			} else {
-				logger.info("Your triple is inconsistent!");
-				var inconsistentElements = corrCreation.determineInconsistentElements(solver);
-				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
-				logger.debug("Inconsistent element IDs: " + inconsistentElements);
-				return false;
-			}
+			return corrCreation.isConsistent();
 		}
 	}
 
