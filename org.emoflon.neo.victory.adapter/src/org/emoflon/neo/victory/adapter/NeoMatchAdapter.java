@@ -66,7 +66,7 @@ public class NeoMatchAdapter implements Match {
 		Map<Long, NeoNodeAdapter> nodeToNeoNode = new HashMap<>();
 		Map<Long, NeoModelEdgeAdapter> relations = new HashMap<>();
 
-		if (!(match.values().size() == 0)) {
+		if (!(match.convertToMap().values().size() == 0)) {
 
 			var result = builder.executeQuery(MatchQuery.create(match, getRule(), neighbourhoodSize));
 
@@ -99,8 +99,8 @@ public class NeoMatchAdapter implements Match {
 
 			// populate edges when neighbourhoodSize=0
 			if (neighbourhoodSize == 0) {
-				for (var id : match.keySet()) {
-					var matchEdges = builder.executeQuery(MatchQuery.getMatchEdges(match.getAsLong(id)));
+				for (var id : match.convertToMap().keySet()) {
+					var matchEdges = builder.executeQuery(MatchQuery.getMatchEdges(match.getElement(id)));
 					matchEdges.list().forEach(n -> {
 						for (var val : n.asMap().values()) {
 							var edge = (Relationship) val;
@@ -131,10 +131,10 @@ public class NeoMatchAdapter implements Match {
 
 	// Adding MATCH edges between rule and match nodes
 	private void addMatchTypeEdge(GraphBuilder graphBuilder, Map<Long, NeoNodeAdapter> nodeToNeoNode) {
-		for (var id : match.keySet()) {
+		for (var id : match.convertToMap().keySet()) {
 			var ruleNode = getRule().getGraph().getNodes().stream().filter(n -> n.getName().equals(id)).findFirst()
 					.get();
-			graphBuilder.addEdge(new NeoModelEdgeAdapter(ruleNode, nodeToNeoNode.get(match.get(id)), EdgeType.MATCH, ""));
+			graphBuilder.addEdge(new NeoModelEdgeAdapter(ruleNode, nodeToNeoNode.get(match.getElement(id)), EdgeType.MATCH, ""));
 		}
 		;
 	}
