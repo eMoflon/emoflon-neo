@@ -1,0 +1,118 @@
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+
+abstract model ContainedInModels {
+	Source : Model
+	Target : Model
+}
+
+model MissingCEO -> ContainedInModels {
+	c : Company {
+		.name : "foo"
+		-corr->it {
+			._type_ : "CompanyToIT"
+		}	
+		
+		-elementOf->$Source
+	}
+
+	it:IT {
+		.name : "foo"
+		
+		-elementOf->$Target
+	}
+}
+
+model WrongNames -> ContainedInModels {
+	c : Company {
+		.name : "bar"
+		-corr->it {
+			._type_ : "CompanyToIT"
+		}
+		-ceo->ceo
+		
+		-elementOf->$Source
+	}
+	
+	ceo:CEO {
+		.name : "Tony"
+		
+		-elementOf->$Source
+	}
+
+	it:IT {
+		.name : "foo"
+		
+		-elementOf->$Target
+	}
+}
+
+model ConsistentTriple -> MissingCEO {
+	ceo:CEO {
+		.name : "Tony"
+		
+		-elementOf->$Source
+	}
+	
+	c:Company {
+		-ceo->ceo
+	}
+}
+
+model ExtraCEO -> ConsistentTriple {
+	ceo2:CEO {
+		.name : "Montana"
+		-elementOf->$Source
+	}
+	
+	c : Company {
+		-ceo->ceo2
+	}
+}
+
+model ConsistentTripleWithEmployees -> ConsistentTriple {
+	c:Company {
+		-admin->admin
+		-employee->employee
+	}
+	
+	ceo:CEO {
+		-employee->employee
+	}
+	
+	admin:Admin {
+		-ceo->ceo
+		-elementOf->$Source
+		
+		-corr->router {
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	router:Router {
+		-network->network
+		-elementOf->$Target
+	}
+	
+	network:Network {
+		-pc->computer
+		-elementOf->$Target
+	}
+	
+	it:IT {
+		-router->router
+		-network->network
+	}
+	
+	employee:Employee {
+		-corr->computer {
+			._type_ : "EmployeeToPC"
+		}
+		
+		-elementOf->$Source
+	}
+	
+	computer:PC {
+		-elementOf->$Target
+	}
+}

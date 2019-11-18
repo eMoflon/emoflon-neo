@@ -51,7 +51,8 @@ public class CompanyToIT_CO_Run {
 			);
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForCompanyToIT__CO(), //
-					new NoOpStartup(), new OneShotTerminationCondition(), //
+					new NoOpStartup(), //
+					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //

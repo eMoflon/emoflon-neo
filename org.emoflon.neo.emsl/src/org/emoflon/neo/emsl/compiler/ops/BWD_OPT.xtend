@@ -1,19 +1,20 @@
 package org.emoflon.neo.emsl.compiler.ops
 
 import org.emoflon.neo.emsl.compiler.ILPOperation
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.Action
 
-class CO extends ILPOperation {
+class BWD_OPT extends ILPOperation {
 	override String getNameExtension() {
-		return "_CO"
+		return "_BWD_OPT"
 	}
 	
-	override getAction(Action action, boolean isSrc) {
-		return ""
+	override String getAction(Action action, boolean isSrc) {
+		if(!isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 	
 	override requiresSrcModelCreation() {
-		false
+		true
 	}
 	
 	override requiresTrgModelCreation() {
@@ -21,6 +22,6 @@ class CO extends ILPOperation {
 	}
 	
 	override requiresCorrModelCreation() {
-		false
+		true
 	}
 }

@@ -56,4 +56,8 @@ class FWD implements Operation {
 	override requiresTrgModelCreation() {
 		true
 	}
+	
+	override requiresCorrModelCreation() {
+		true
+	}
 }
