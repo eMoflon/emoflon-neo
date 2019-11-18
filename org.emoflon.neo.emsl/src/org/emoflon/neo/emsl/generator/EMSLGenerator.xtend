@@ -5,7 +5,9 @@ package org.emoflon.neo.emsl.generator
 
 import java.net.URI
 import java.util.List
+import java.util.function.Predicate
 import java.util.stream.Collectors
+import org.eclipse.core.resources.IncrementalProjectBuilder
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
@@ -30,12 +32,12 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
+import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.eclipse.core.runtime.NullProgressMonitor
-import org.emoflon.neo.emsl.eMSL.TripleRule
-import java.util.function.Predicate
+import org.eclipse.core.resources.IResource
+import org.eclipse.core.resources.IFolder
 
 /**
  * Generates code from your model files on save.
@@ -93,17 +95,29 @@ class EMSLGenerator extends AbstractGenerator {
 	override void afterGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val segments = resource.URI.trimFileExtension.segmentsList
 		val projectName = segments.get(1)
-
 		val project = ResourcesPlugin.workspace.root.getProject(projectName)
+		val srcFolder = project.getFolder(SRC_GEN_Folder)
+		val tggFolder = project.getFolder(TGG_GEN_FOLDER)
+
 		ClasspathUtil.setUpAsJavaProject(project)
 		ClasspathUtil.setUpAsPluginProject(project)
 		ClasspathUtil.setUpAsXtextProject(project)
 		ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
-		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder(SRC_GEN_Folder))
-		ClasspathUtil.makeSourceFolderIfNecessary(project.getFolder(TGG_GEN_FOLDER))
-
-		if (project.getFolder(TGG_GEN_FOLDER).exists)
-			project.getFolder(TGG_GEN_FOLDER).touch(new NullProgressMonitor)
+		ClasspathUtil.makeSourceFolderIfNecessary(srcFolder)
+		ClasspathUtil.makeSourceFolderIfNecessary(tggFolder)
+		
+		if (tggFolder.exists && tggFolder.allMembers.map [
+			it.localTimeStamp
+		].max > srcFolder.allMembers.map [
+			it.localTimeStamp
+		].max) {
+			project.build(IncrementalProjectBuilder.CLEAN_BUILD, null)
+			project.build(IncrementalProjectBuilder.FULL_BUILD, null)
+		}
+	}
+	
+	def Iterable<IResource> allMembers(IFolder folder){
+		return folder.members + folder.members.filter[it instanceof IFolder].flatMap[(it as IFolder).allMembers]
 	}
 
 	def generateCommon() {
