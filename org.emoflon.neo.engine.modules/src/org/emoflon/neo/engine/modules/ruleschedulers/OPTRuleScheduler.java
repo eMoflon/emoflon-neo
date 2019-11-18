@@ -37,8 +37,11 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 	private boolean CORR;
 	private boolean TRG;
 	
-	public OPTRuleScheduler(Collection<TripleRule> tripleRules) {
+	public OPTRuleScheduler(Collection<TripleRule> tripleRules, boolean SRC, boolean CORR, boolean TRG) {
 		this.tripleRules = tripleRules;
+		this.SRC = SRC;
+		this.CORR = CORR;
+		this.TRG = TRG;
 	}
 
 	@Override

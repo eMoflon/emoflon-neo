@@ -1,6 +1,7 @@
 package org.emoflon.neo.engine.modules.analysis;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.eMSL.Rule;
@@ -59,10 +60,14 @@ public class RuleAnalyser {
 	 * @param relevantMetamodels
 	 * @return
 	 */
-	public static boolean noRelevantContext(TripleRule rule, boolean CORR, boolean SRC, boolean TRG) {
+	public static boolean noRelevantContext(TripleRule rule, boolean SRC, boolean CORR, boolean TRG) {
 		return noRelevantNodeContext(rule, SRC, TRG)//
 				&& noRelevantRelContext(rule, SRC, TRG)//
 				&& noCorrContext(rule, CORR);
+	}
+
+	public static boolean noRelevantContext(Optional<TripleRule> tripleRule, boolean SRC, boolean CORR, boolean TRG) {
+		return tripleRule.map(tr -> noRelevantContext(tr, SRC, CORR, TRG)).orElse(true);
 	}
 
 	private static boolean noRelevantRelContext(TripleRule rule, boolean SRC, boolean TRG) {
@@ -70,11 +75,11 @@ public class RuleAnalyser {
 		if (SRC)
 			noRelevantRelContext = noRelevantRelContext && rule.getSrcNodeBlocks().stream()//
 					.flatMap(n -> n.getRelations().stream())//
-					.noneMatch(r -> r.getAction() != null);
+					.noneMatch(r -> r.getAction() == null);
 		if (TRG)
 			noRelevantRelContext = noRelevantRelContext && rule.getTrgNodeBlocks().stream()//
 					.flatMap(n -> n.getRelations().stream())//
-					.noneMatch(r -> r.getAction() != null);
+					.noneMatch(r -> r.getAction() == null);
 
 		return noRelevantRelContext;
 	}
@@ -83,23 +88,22 @@ public class RuleAnalyser {
 		var noRelevantNodeContext = true;
 		if (SRC)
 			noRelevantNodeContext = noRelevantNodeContext
-					&& rule.getSrcNodeBlocks().stream().noneMatch(n -> n.getAction() != null);
+					&& rule.getSrcNodeBlocks().stream().noneMatch(n -> n.getAction() == null);
 		if (TRG)
 			noRelevantNodeContext = noRelevantNodeContext
-					&& rule.getTrgNodeBlocks().stream().noneMatch(n -> n.getAction() != null);
+					&& rule.getTrgNodeBlocks().stream().noneMatch(n -> n.getAction() == null);
 
 		return noRelevantNodeContext;
 	}
 
 	private static boolean noCorrContext(TripleRule rule, boolean CORR) {
 		return CORR && rule.getCorrespondences().stream()//
-				.noneMatch(r -> r.getAction() != null);
+				.noneMatch(r -> r.getAction() == null);
 	}
 
-	public static TripleRule toTripleRule(String ruleName, Collection<TripleRule> tripleRules) {
+	public static Optional<TripleRule> toTripleRule(String ruleName, Collection<TripleRule> tripleRules) {
 		return tripleRules.stream()//
 				.filter(tr -> tr.getName().equals(ruleName))//
-				.findAny()
-				.get();
+				.findAny();
 	}
 }

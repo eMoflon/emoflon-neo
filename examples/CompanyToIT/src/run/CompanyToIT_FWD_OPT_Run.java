@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD_OPT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
@@ -17,10 +18,9 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
-import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
+import org.emoflon.neo.engine.modules.matchreprocessors.FWD_OPTReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.OPTRuleScheduler;
+import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
@@ -51,6 +51,7 @@ public class CompanyToIT_FWD_OPT_Run {
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var fwdAPI = new API_CompanyToIT_FWD_OPT(builder);
+			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
 
 			var forwardTransformation = new CorrCreationOperationalStrategy(solver, builder,
 					genAPI.getAllRulesForCompanyToIT__GEN(), fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(),
@@ -59,9 +60,9 @@ public class CompanyToIT_FWD_OPT_Run {
 					fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(), //
 					new NoOpStartup(),// FIXME[Nils] Implement start up for OPT
 					new NoMoreMatchesTerminationCondition(), //
-					new OPTRuleScheduler(), //
+					new FWD_OPTRuleScheduler(tripleRules), //
 					forwardTransformation, //
-					new CCReprocessor(genAPI.getAllRulesForCompanyToIT__GEN()), //
+					new FWD_OPTReprocessor(tripleRules), //
 					new NoOpCleanup(), // FIXME [Nils] Implement clean up for OPT
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(sourceModel, targetModel), //

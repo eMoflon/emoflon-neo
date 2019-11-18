@@ -30,6 +30,9 @@ public abstract class OPTReprocessor implements IMatchReprocessor<NeoMatch, NeoC
 
 	public OPTReprocessor(Collection<TripleRule> tripleRules, boolean SRC, boolean CORR, boolean TRG) {
 		this.tripleRules = tripleRules;
+		this.SRC = SRC;
+		this.CORR = CORR;
+		this.TRG = TRG;
 	}
 
 	@Override
