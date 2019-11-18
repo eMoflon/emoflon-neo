@@ -19,7 +19,7 @@ import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.NewCorrRuleScheduler;
+import org.emoflon.neo.engine.modules.ruleschedulers.OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
@@ -53,7 +53,7 @@ public class CompanyToIT_CC_Run {
 			var generator = new NeoGenerator(//
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
 					new NoOpStartup(), new NoMoreMatchesTerminationCondition(), //
-					new NewCorrRuleScheduler(), //
+					new OPTRuleScheduler(), //
 					corrCreation, //
 					new CCReprocessor(genRules), //
 					corrCreation, new HeartBeatAndReportMonitor(), //

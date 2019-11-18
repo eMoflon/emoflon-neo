@@ -17,9 +17,10 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+import org.emoflon.neo.engine.modules.ruleschedulers.OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
@@ -58,9 +59,9 @@ public class CompanyToIT_FWD_OPT_Run {
 					fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(), //
 					new NoOpStartup(),// FIXME[Nils] Implement start up for OPT
 					new NoMoreMatchesTerminationCondition(), //
-					new AllRulesAllMatchesScheduler(), //
+					new OPTRuleScheduler(), //
 					forwardTransformation, //
-					new ParanoidNeoReprocessor(), //
+					new CCReprocessor(genAPI.getAllRulesForCompanyToIT__GEN()), //
 					new NoOpCleanup(), // FIXME [Nils] Implement clean up for OPT
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(sourceModel, targetModel), //
