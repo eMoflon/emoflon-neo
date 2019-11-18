@@ -134,3 +134,11 @@ examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Facebook.java
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/API_Instagram.java
 examples/TestSuite/src-gen/org/emoflon/neo/api/org/emoflon/neo/example/typing/API_TypingTest.java
 examples/TestSuite/src-gen/org/emoflon/neo/api/org/emoflon/neo/example/companytoit/API_CompanyToITTriplesForTesting.java
+examples/CompanyToIT/tgg-gen/CompanyToIT/CompanyToIT_BWD_OPT.msl
+examples/CompanyToIT/tgg-gen/CompanyToIT/CompanyToIT_FWD_OPT.msl
+examples/FacebookToInstagram/tgg-gen/Transformations/FacebookToInstagramGrammar_BWD_OPT.msl
+examples/FacebookToInstagram/tgg-gen/Transformations/FacebookToInstagramGrammar_FWD_OPT.msl
+examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_BWD_OPT.msl
+examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_FWD_OPT.msl
+examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_BWD_OPT.msl
+examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_FWD_OPT.msl
