@@ -157,7 +157,7 @@ class TestEMFImporter {
 	}
 	
 	/*
-	 * Test Model Import with Object References
+	 * Test Model Import with fields of basic types
 	 */
 	@Test
 	void testModelImportWithBasicFieldTypes() throws IOException {
@@ -168,6 +168,70 @@ class TestEMFImporter {
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "Block.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Block.msl"),
+				Charset.defaultCharset());
+		assertEquals(expected, importer.generateEMSLModel(rs));
+	}
+	
+	/*
+	 * Test Model Import with deep hierarchy
+	 */
+	@Test
+	void testModelImportWithDeepHierarchy() throws IOException {
+		var importer = new EMFImporter();
+
+		var rs = new ResourceSetImpl();
+		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getResource(URI.createFileURI("./resources/in/model/" + "Game.xmi"), true);
+
+		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Game.msl"),
+				Charset.defaultCharset());
+		assertEquals(expected, importer.generateEMSLModel(rs));
+	}
+	
+	/*
+	 * Test Model Import with deep hierarchy and not siblings
+	 */
+	@Test
+	void testModelImportWithDeepHierarchy2() throws IOException {
+		var importer = new EMFImporter();
+
+		var rs = new ResourceSetImpl();
+		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getResource(URI.createFileURI("./resources/in/model/" + "Expression.xmi"), true);
+
+		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Expression.msl"),
+				Charset.defaultCharset());
+		assertEquals(expected, importer.generateEMSLModel(rs));
+	}
+	
+	/*
+	 * Test Model Import with multiple references to same Class
+	 */
+	@Test
+	void testModelImportWithMultipleReferencesToSameClass() throws IOException {
+		var importer = new EMFImporter();
+
+		var rs = new ResourceSetImpl();
+		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getResource(URI.createFileURI("./resources/in/model/" + "Platform.xmi"), true);
+
+		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Platform.msl"),
+				Charset.defaultCharset());
+		assertEquals(expected, importer.generateEMSLModel(rs));
+	}
+	
+	/*
+	 * Test Model Import with missing reference
+	 */
+	@Test
+	void testModelImportWithMissingReference() throws IOException {
+		var importer = new EMFImporter();
+
+		var rs = new ResourceSetImpl();
+		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getResource(URI.createFileURI("./resources/in/model/" + "Call.xmi"), true);
+
+		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Call.msl"),
 				Charset.defaultCharset());
 		assertEquals(expected, importer.generateEMSLModel(rs));
 	}
