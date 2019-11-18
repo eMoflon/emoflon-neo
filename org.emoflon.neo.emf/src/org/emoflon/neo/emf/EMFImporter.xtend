@@ -12,9 +12,10 @@ import org.eclipse.emf.ecore.EClass
 import java.nio.charset.Charset
 import org.eclipse.emf.ecore.EEnum
 import org.eclipse.emf.ecore.EObject
-import com.google.common.collect.Multimap
-import com.google.common.collect.ArrayListMultimap
 import java.util.HashMap
+import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.common.util.EList
+import java.util.List
 
 /**
  * Transforms EMF to EMSL
@@ -23,7 +24,7 @@ import java.util.HashMap
 class EMFImporter {
 	
 	HashMap<String , EEnum> metaModelEnum = new HashMap()
-	
+		
 	def String generateEMSLSpecification(ResourceSet rs) {
 		'''
 			«FOR r : rs.resources»
@@ -66,20 +67,39 @@ class EMFImporter {
 	}
 	
 	def String generateEMSLModel(ResourceSet rs) {
-		var modelname = ""
-		var objectCount = 1
-		val Multimap<String, String> objName = ArrayListMultimap.create()
-		val HashMap<String, String> objCreate = new HashMap()
+		var HashMap<EObject, String> objCreate = new HashMap()
 		'''
 			«generateEMSLSpecification(rs)»
 			
 			«FOR r : rs.resources»
-				«{var filename = r.URI.segment(r.URI.segmentCount-1); modelname = filename.substring(0,filename.length-4);""}»
 				«FOR o : r.contents.filter[o | o instanceof EObject && !(o instanceof EPackage)] SEPARATOR "\n"»
 					«var p = o as EObject»
-					model «modelname» {
-						«FOR c : p.eContents»
-							o«objectCount++»: «c.eClass.name» {«{objName.put(c.eClass.name,"o"+(objectCount-1));""}»
+					model «extractModelName(r.URI)» {
+						«{objCreate = storeObjectsCreated(p as EObject);""}»
+						«objCreate.get(p)» : «p.eClass.name» {
+							«FOR attr : p.eClass.EAttributes»
+								«IF attr.EType instanceof EEnum»«var attEnum = attr.EType as EEnum»
+									.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(p.eGet(attr).toString).name»
+								«ELSE»
+									.«attr.name» : «IF attr.EType.name=="EString" || attr.EType.name=="EChar"»"«p.eGet(attr)»"«ELSE»«p.eGet(attr)»«ENDIF»
+								«ENDIF»
+							«ENDFOR»
+							«IF !p.eClass.EAttributes.isEmpty && !p.eClass.EReferences.isEmpty»
+							
+							«ENDIF»
+							«FOR ref : p.eClass.EAllReferences»
+								«IF p.eGet(ref)!== null && p.eGet(ref) instanceof EList»
+									«FOR reference : (p.eGet(ref) as EList<EObject>)»
+										-«ref.name» -> «objCreate.get(reference)»
+									«ENDFOR»
+								«ELSEIF p.eGet(ref)!== null»
+									-«ref.name» -> «objCreate.get(p.eGet(ref))»
+								«ENDIF»
+							«ENDFOR»
+						}
+						
+						«FOR c: p.eAllContents.toIterable»
+							«objCreate.get(c)» : «c.eClass.name» {
 								«FOR attr : c.eClass.EAttributes»
 									«IF attr.EType instanceof EEnum»«var attEnum = attr.EType as EEnum»
 									.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(c.eGet(attr).toString).name»
@@ -90,30 +110,17 @@ class EMFImporter {
 								«IF !c.eClass.EAttributes.isEmpty && !c.eClass.EReferences.isEmpty»
 
 								«ENDIF»
-								«FOR ref : c.eClass.EReferences»
-									-«ref.name» ->«IF !objName.containsKey(ref.EType.name)» o«objectCount++»«{objCreate.put(ref.EType.name,"o"+(objectCount-1));""}»«ELSE» «objName.get(ref.EType.name).findFirst[true]»«{objName.remove(ref.EType.name,objName.get(ref.EType.name).findFirst[true]);""}»«ENDIF»
+								«FOR ref : c.eClass.EAllReferences»
+									«IF c.eGet(ref)!== null && c.eGet(ref) instanceof EList»
+										«FOR reference : (c.eGet(ref) as EList<EObject>)»
+											-«ref.name» -> «objCreate.get(reference)»
+										«ENDFOR»
+									«ELSEIF c.eGet(ref)!== null»
+										-«ref.name» -> «objCreate.get(c.eGet(ref))»
+									«ENDIF»
 								«ENDFOR»
 							}
-						«ENDFOR»
-						o«objectCount++»: «p.eClass.name» {
-						«FOR attr : p.eClass.EAttributes»
-						«IF attr.EType instanceof EEnum»«var attEnum = attr.EType as EEnum»
-							.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(p.eGet(attr).toString).name»
-						«ELSE»
-							.«attr.name» : «IF attr.EType.name=="EString" || attr.EType.name=="EChar"»"«p.eGet(attr)»"«ELSE»«p.eGet(attr)»«ENDIF»
-						«ENDIF»
-						«ENDFOR»
-							«IF !p.eClass.EAttributes.isEmpty && !p.eClass.EReferences.isEmpty»
-								
-							«ENDIF»
-							«FOR ref : p.eClass.EReferences»
-								-«ref.name» ->«IF !objName.containsKey(ref.EType.name)» o«objectCount++»«{objCreate.put(ref.EType.name,"o"+(objectCount-1));""}»«ELSE» «objName.get(ref.EType.name).findFirst[true]»«{objName.remove(ref.EType.name,objName.get(ref.EType.name).findFirst[true]);""}»«ENDIF»
-							«ENDFOR»							
-						}
-						«FOR obj : objCreate.entrySet»
-							«obj.value»: «obj.key»{ 
-								
-							}
+							
 						«ENDFOR»
 					}
 				«ENDFOR»				
@@ -123,6 +130,26 @@ class EMFImporter {
 	
 	def saveEMSLSpecification(ResourceSet rs, File f) {
 		FileUtils.writeStringToFile(f, generateEMSLSpecification(rs), Charset.defaultCharset())
+	}
+	
+	def String extractModelName(URI uri) {
+		var filename = uri.segment(uri.segmentCount-1);
+		var modelname = filename.substring(0,filename.length-4);
+		return modelname;
+	}
+	
+	def HashMap<EObject, String> storeObjectsCreated(EObject p) {
+		var HashMap<EObject, String> objects = new HashMap()
+		var objectCount = 1
+		objects.put(p,"o"+objectCount++)
+		for(c: p.eAllContents.toIterable) {
+			objects.put(c,"o"+objectCount++)
+		}
+		return objects
+	}
+	
+	def String fetchObjectName(HashMap<EObject, String> objects, String className){
+		
 	}
 
 }
