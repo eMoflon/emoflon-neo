@@ -66,4 +66,8 @@ public class ElementRange {
 				.flatMap(ids -> ids.stream())//
 				.collect(Collectors.toSet());
 	}
+
+	public Collection<String> getTypes() {
+		return typeToIDs.keySet();
+	}
 }

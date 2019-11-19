@@ -24,6 +24,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType;
+import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
@@ -703,6 +704,10 @@ public class RuleFlattener extends AbstractEntityFlattener {
 			var be2 = (BinaryExpression) v2;
 			return be1.getOp().equals(be2.getOp()) && compareProperties(be1.getLeft(), be2.getLeft())
 					&& compareProperties(be1.getRight(), be2.getRight());
+		} else if (v1 instanceof Parameter && v2 instanceof Parameter) {
+			var p1 = (Parameter) v1;
+			var p2 = (Parameter) v2;
+			return p1.getName().equals(p2.getName());
 		}
 
 		return false;
