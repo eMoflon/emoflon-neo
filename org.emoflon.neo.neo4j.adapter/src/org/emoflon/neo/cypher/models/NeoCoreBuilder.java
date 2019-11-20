@@ -754,22 +754,30 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
 		
 		var modelNodes = executeQuery(CypherBuilder.getModelNodes(sourceModel, targetModel));
+		var srcModelEdges = executeQuery(CypherBuilder.getConformsToEdges(sourceModel));
+		var trgModelEdges = executeQuery(CypherBuilder.getConformsToEdges(targetModel));
 
 		var allIDs = new HashSet<Long>(allSrcNodes.keys().size()//
 				+ allTrgNodes.keys().size()//
 				+ allSrcEdges.keys().size()//
 				+ allTrgEdges.keys().size()//
 				+ allCorrs.keys().size()//
-				+ modelNodes.keys().size());
+				+ modelNodes.keys().size()//
+				+ srcModelEdges.keys().size()//
+				+ trgModelEdges.keys().size());
 		
 		allSrcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 		allTrgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		
 		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
 		
+		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		
+		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
+		srcModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		trgModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+
 		return allIDs;
 	}
 }

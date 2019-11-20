@@ -20,7 +20,10 @@ model ConsistentSrc {
 
 rule createCorrsForConsistentSrcTrg {
 	c:Company {
-		-corr->it
+		++ -corr->it {
+			._type_ := "CompanyToIT"
+		}
+		
 	}
 	
 	it:IT

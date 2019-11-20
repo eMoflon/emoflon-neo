@@ -152,4 +152,13 @@ abstract class CypherBuilder {
 			RETURN id(src), id(trg)
 		'''
 	}
+	
+	def static String getConformsToEdges(String model) {
+		'''
+			MATCH 
+				(m:NeoCore__Model {ename: "«model»"}),
+				(m)-[cts:«NeoCoreBootstrapper.CONFORMS_TO_PROP»]->(mm)
+			RETURN DISTINCT id(cts)
+		'''
+	}
 }
