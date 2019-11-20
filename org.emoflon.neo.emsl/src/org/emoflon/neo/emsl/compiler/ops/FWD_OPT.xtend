@@ -13,11 +13,15 @@ class FWD_OPT extends ILPOperation {
 		if(isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 	
-	override requiresSrcModelCreation() {
+	override requiresSrcModelRule() {
 		false
 	}
 	
-	override requiresTrgModelCreation() {
+	override requiresTrgModelRule() {
+		true
+	}
+	
+	override requiresModelCreation() {
 		true
 	}
 	

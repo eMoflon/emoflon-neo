@@ -13,12 +13,16 @@ class BWD_OPT extends ILPOperation {
 		if(!isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 	
-	override requiresSrcModelCreation() {
+	override requiresSrcModelRule() {
 		true
 	}
 	
-	override requiresTrgModelCreation() {
+	override requiresTrgModelRule() {
 		false
+	}
+	
+	override requiresModelCreation() {
+		true
 	}
 	
 	override requiresCorrModelCreation() {

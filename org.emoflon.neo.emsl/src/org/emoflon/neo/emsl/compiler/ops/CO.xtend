@@ -12,11 +12,15 @@ class CO extends ILPOperation {
 		return ""
 	}
 	
-	override requiresSrcModelCreation() {
-		false
+	override requiresSrcModelRule() {
+		true
 	}
 	
-	override requiresTrgModelCreation() {
+	override requiresTrgModelRule() {
+		true
+	}
+	
+	override requiresModelCreation() {
 		false
 	}
 	

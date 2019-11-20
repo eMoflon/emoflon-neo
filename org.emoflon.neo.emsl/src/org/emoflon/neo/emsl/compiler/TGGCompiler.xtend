@@ -60,16 +60,16 @@ class TGGCompiler {
 			«importStatements»
 			
 			grammar «tgg.name»_«op.nameExtension» {
-				«IF op.requiresSrcModelCreation»«CREATE_SRC_MODEL_RULE»«ENDIF»
-				«IF op.requiresTrgModelCreation»«CREATE_TRG_MODEL_RULE»«ENDIF»
+				«IF op.requiresSrcModelRule»«CREATE_SRC_MODEL_RULE»«ENDIF»
+				«IF op.requiresTrgModelRule»«CREATE_TRG_MODEL_RULE»«ENDIF»
 				«FOR rule : flattenedRules»
 					«rule.name»
 				«ENDFOR»
 			}
 			
-			«IF op.requiresSrcModelCreation»«generateSrcModelCreationRule(tgg.srcMetamodels.map[it.name])»«ENDIF»
+			«IF op.requiresSrcModelRule»«generateSrcModelCreationRule(tgg.srcMetamodels.map[it.name], op.requiresModelCreation)»«ENDIF»
 			
-			«IF op.requiresTrgModelCreation»«generateTrgModelCreationRule(tgg.trgMetamodels.map[it.name])»«ENDIF»
+			«IF op.requiresTrgModelRule»«generateTrgModelCreationRule(tgg.trgMetamodels.map[it.name], op.requiresModelCreation)»«ENDIF»
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
 				«compileRule(op, rule)»
@@ -258,13 +258,13 @@ class TGGCompiler {
 			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 
-	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames) {
+	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames, boolean createModel) {
 		'''
 			rule «CREATE_SRC_MODEL_RULE» {
-				++ srcM : Model {
+				«IF createModel»++«ENDIF» srcM : Model {
 					.ename := <__srcModelName>
 					«FOR srcMetaModel : srcMetaModelNames»
-						++ -conformsTo-> mm«srcMetaModel»
+						«IF createModel»++«ENDIF» -conformsTo-> mm«srcMetaModel»
 					«ENDFOR»
 				}
 			
@@ -283,13 +283,13 @@ class TGGCompiler {
 		'''
 	}
 	
-	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames) {
+	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames, boolean createModel) {
 		'''
 			rule «CREATE_TRG_MODEL_RULE» {
-				++ trgM : Model {
+				«IF createModel»++«ENDIF» trgM : Model {
 					.ename := <__trgModelName>
 					«FOR trgMetaModel : trgMetaModelNames»
-						++ -conformsTo-> mm«trgMetaModel»
+						«IF createModel»++«ENDIF» -conformsTo-> mm«trgMetaModel»
 					«ENDFOR»
 				}
 			

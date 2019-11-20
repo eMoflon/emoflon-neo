@@ -48,9 +48,11 @@ interface Operation {
 		Collections.emptyMap
 	}
 	
-	def boolean requiresSrcModelCreation()
+	def boolean requiresSrcModelRule()
 	
-	def boolean requiresTrgModelCreation()
+	def boolean requiresTrgModelRule()
+	
+	def boolean requiresModelCreation()
 	
 	def boolean requiresCorrModelCreation()
 }
