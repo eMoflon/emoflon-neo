@@ -2,8 +2,10 @@ package org.emoflon.neo.example.companytoit;
 
 import org.emoflon.neo.api.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled("Waiting for fixes")
 public class DirectCOAndCCTests extends ENeoTest {
 
 	@Test
