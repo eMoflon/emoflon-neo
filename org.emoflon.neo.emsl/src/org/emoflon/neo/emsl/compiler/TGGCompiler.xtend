@@ -259,12 +259,14 @@ class TGGCompiler {
 	}
 
 	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames, boolean createModel) {
+		val createOp = if(createModel) "++ " else ""
+		val assignOp = if(createModel) ":=" else ":"
 		'''
 			rule «CREATE_SRC_MODEL_RULE» {
-				«IF createModel»++«ENDIF» srcM : Model {
-					.ename := <__srcModelName>
+				«createOp»srcM : Model {
+					.ename «assignOp» <__srcModelName>
 					«FOR srcMetaModel : srcMetaModelNames»
-						«IF createModel»++«ENDIF» -conformsTo-> mm«srcMetaModel»
+						«createOp»-conformsTo-> mm«srcMetaModel»
 					«ENDFOR»
 				}
 			
@@ -284,12 +286,14 @@ class TGGCompiler {
 	}
 	
 	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames, boolean createModel) {
+		val createOp = if(createModel) "++ " else ""
+		val assignOp = if(createModel) ":=" else ":"
 		'''
 			rule «CREATE_TRG_MODEL_RULE» {
-				«IF createModel»++«ENDIF» trgM : Model {
-					.ename := <__trgModelName>
+				«createOp»trgM : Model {
+					.ename «assignOp» <__trgModelName>
 					«FOR trgMetaModel : trgMetaModelNames»
-						«IF createModel»++«ENDIF» -conformsTo-> mm«trgMetaModel»
+						«createOp»-conformsTo-> mm«trgMetaModel»
 					«ENDFOR»
 				}
 			
