@@ -42,11 +42,11 @@ rule NetworkToNetwork {
 		{
 			._type_ := "NetworkToNetwork"
 		}
+		.description : il::description
 	}
 
 	il:InstagramLanguage.Network {
 		-elementOf->trgM
-		.description : fl::description
 	}
 } 
 
@@ -66,7 +66,6 @@ rule UserToUser {
 		{
 			._type_ := "FbUserToInUser"
 		}
-		.name : iu::name
 	}
 	
 	fn:FacebookLanguage.Network {
@@ -80,6 +79,7 @@ rule UserToUser {
 
 	iu:InstagramLanguage.User {
 		-elementOf->trgM
+		.name : fu::name
 	}
 	
 	in:InstagramLanguage.Network {

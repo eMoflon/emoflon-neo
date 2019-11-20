@@ -1,5 +1,8 @@
 package run;
 
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -7,23 +10,20 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD_OPT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
 import org.emoflon.neo.api.metamodels.API_IT;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
-import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.FWD_OPTReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+import org.emoflon.neo.engine.modules.updatepolicies.OPTOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
@@ -39,33 +39,41 @@ public class CompanyToIT_FWD_OPT_Run {
 
 	public boolean runForwardTransformation() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
-			var sourceModel = "Source";
-			var targetModel = "Target";
-			Model triple = new API_CompanyToITTriplesForTesting(builder).getModel_ConsistentTriple();
-			builder.exportEMSLEntityToNeo4j(triple);
-			builder.deleteAllCorrs();
-
-			Collection<Long> elementIds = builder.getAllElementIDsInTriple("", targetModel);
-			builder.deleteNodes(elementIds);
-			builder.deleteEdges(elementIds);
+//			var sourceModel = "Source";
+//			var targetModel = "Target";
+//			Model triple = new API_CompanyToITTriplesForTesting(builder).getModel_ConsistentTriple();
+//			builder.exportEMSLEntityToNeo4j(triple);
+//			builder.deleteAllCorrs();
+//
+//			Collection<Long> elementIds = builder.getAllElementIDsInTriple("", targetModel);
+//			builder.deleteNodes(elementIds);
+//			builder.deleteEdges(elementIds);
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var fwdAPI = new API_CompanyToIT_FWD_OPT(builder);
+			var genRules = genAPI.getAllRulesForCompanyToIT__GEN();
 			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
-
-			var forwardTransformation = new CorrCreationOperationalStrategy(solver, builder,
-					genAPI.getAllRulesForCompanyToIT__GEN(), fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(),
-					getNegativeConstraints(builder), sourceModel, targetModel);
+			
+			var forwardTransformation = new OPTOperationalStrategy(//
+					solver, //
+					genRules, //
+					fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(), //
+					getNegativeConstraints(builder), //
+					builder, //
+					SRC_MODEL_NAME, //
+					TRG_MODEL_NAME//
+			);
+			
 			var generator = new NeoGenerator(//
 					fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(), //
-					new NoOpStartup(),// FIXME[Nils] Implement start up for OPT
+					new NoOpStartup(), 
 					new NoMoreMatchesTerminationCondition(), //
 					new FWD_OPTRuleScheduler(tripleRules), //
 					forwardTransformation, //
 					new FWD_OPTReprocessor(tripleRules), //
-					new NoOpCleanup(), // FIXME [Nils] Implement clean up for OPT
+					forwardTransformation, 
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(sourceModel, targetModel), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start forward transformation...");

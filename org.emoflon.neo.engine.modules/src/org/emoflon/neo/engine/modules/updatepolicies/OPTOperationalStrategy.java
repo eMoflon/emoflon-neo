@@ -18,16 +18,16 @@ import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
-public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
+public class OPTOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 	private Optional<MatchContainer<NeoMatch, NeoCoMatch>> matchContainer = Optional.empty();
 
-	public CorrCreationOperationalStrategy(//
+	public OPTOperationalStrategy(//
 			SupportedILPSolver solver, //
-			NeoCoreBuilder builder, //
 			Collection<NeoRule> genRules, //
 			Collection<NeoRule> opRules, //
 			Collection<IConstraint> negativeConstraints, //
+			NeoCoreBuilder builder, //
 			String sourceModel, //
 			String targetModel//
 	) {
@@ -53,21 +53,28 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 		logger.debug("Registered all matches.");
 
 		result = determineInconsistentElements();
-		removeInconsistentCorrs(result);
+		removeInconsistentElements(result);
 
 		return result.isEmpty();
 	}
 
-	private void removeInconsistentCorrs(Collection<Long> inconsistentElts) {
+	private void removeInconsistentElements(Collection<Long> inconsistentElts) {
 		matchContainer.ifPresent(mc -> {
-			var inconsistentCorrs = mc.getRelRange().getIDs().stream()//
+			var inconsistentEdges = mc.getRelRange().getIDs().stream()//
 					.map(x -> -1 * (Long) x)//
 					.filter(x -> inconsistentElts.contains(x))//
 					.collect(Collectors.toSet());
+			
+			var inconsistentNodes = mc.getNodeRange().getIDs().stream()//
+					.map(x -> (Long) x)//
+					.filter(x -> inconsistentElts.contains(x))//
+					.collect(Collectors.toSet());
 
-			builder.deleteEdges(inconsistentCorrs);
-
-			inconsistentElts.removeAll(inconsistentCorrs);
+			builder.deleteEdges(inconsistentEdges);
+			inconsistentElts.removeAll(inconsistentEdges);
+			
+			builder.deleteNodes(inconsistentNodes);
+			inconsistentElts.removeAll(inconsistentNodes);
 		});
 	}
 
@@ -89,6 +96,6 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 
 	@Override
 	public String description() {
-		return "ILP solving, deletion of inconsistent corrs";
+		return "ILP solving, deletion of inconsistent elements";
 	}
 }

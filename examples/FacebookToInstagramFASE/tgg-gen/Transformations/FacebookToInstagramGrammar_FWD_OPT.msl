@@ -42,11 +42,11 @@ rule NetworkToNetwork {
 		{
 			._type_ := "NetworkToNetwork"
 		}
-		.description : il::description
 	}
 
 	++il:InstagramLanguage.Network {
 		++-elementOf->trgM
+		.description : fl::description
 	}
 } 
 

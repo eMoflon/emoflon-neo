@@ -70,8 +70,8 @@ rule BoardEndEntryRule {
 		-elementOf->trgM
 		-fields->nf
 		{
-			.row : 0
 			.col : 0
+			.row : 0
 		}
 	}
 } 

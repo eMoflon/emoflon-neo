@@ -47,11 +47,11 @@ rule NetworkToNetworkIslandRule {
 		{
 			._type_ := "NetworkToNetwork"
 		}
-		.description : il::description
 	}
 
 	il:InstagramLanguage.Network {
 		-elementOf->trgM
+		.description : fl::description
 	}
 } 
 
@@ -71,11 +71,11 @@ rule UserToUserIslandRule {
 		{
 			._type_ := "FbUserToInUser"
 		}
-		.name : ilu::name
 	}
 
 	ilu:InstagramLanguage.User {
 		-elementOf->trgM
+		.name : flu::name
 	}
 } 
 

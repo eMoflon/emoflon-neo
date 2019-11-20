@@ -47,11 +47,11 @@ rule CompanyToITRule {
 		{
 			._type_ := "CompanyToIT"
 		}
-		.name : it::name
 	}
 
 	++it:IT {
 		++-elementOf->trgM
+		.name : company::name
 	}
 } 
 
