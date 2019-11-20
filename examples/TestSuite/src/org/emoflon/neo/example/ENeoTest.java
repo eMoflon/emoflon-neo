@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.apache.log4j.Level;
@@ -17,6 +18,7 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPatternAccess;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
@@ -133,8 +135,8 @@ public abstract class ENeoTest {
 
 	private void testForInconsistency(ILPBasedOperationalStrategy result, int consistent, int inconsistent) throws Exception {
 		assertFalse(result.isConsistent());
-		assertEquals(inconsistent, result.determineInconsistentElements().size());
 		assertEquals(consistent, result.determineConsistentElements().size());
+		assertEquals(inconsistent, result.determineInconsistentElements().size());
 	}
 	
 	protected void testInconsistentTripleCO(String srcModel, String trgModel, int consistent, int inconsistent) throws Exception {
@@ -147,5 +149,19 @@ public abstract class ENeoTest {
 		var testCCApp = new CompanyToIT_CC_Run();
 		var result = testCCApp.runCorrCreation(srcModel, trgModel);
 		testForInconsistency(result, consistent, inconsistent);
+	}
+	
+	protected void exportTriple(Model src, Model trg) throws FlattenerException {
+		exportTriple(src, trg, Optional.empty());
+	}
+	
+	protected void exportTriple(Model src, Model trg, NeoRule createCorrs) throws FlattenerException {
+		exportTriple(src, trg, Optional.of(createCorrs));
+	}
+	
+	private void exportTriple(Model src, Model trg, Optional<NeoRule> createCorrs) throws FlattenerException {
+		builder.exportEMSLEntityToNeo4j(src);
+		builder.exportEMSLEntityToNeo4j(trg);
+		createCorrs.ifPresent(c -> c.apply());
 	}
 }

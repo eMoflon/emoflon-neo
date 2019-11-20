@@ -749,7 +749,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));
 
 		var allSrcEdges = executeQuery(CypherBuilder.getAllRelsInModel(sourceModel));
+		var allSrcElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(sourceModel));
+		
 		var allTrgEdges = executeQuery(CypherBuilder.getAllRelsInModel(targetModel));
+		var allTrgElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(targetModel));
 
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
 		
@@ -757,20 +760,16 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var srcModelEdges = executeQuery(CypherBuilder.getConformsToEdges(sourceModel));
 		var trgModelEdges = executeQuery(CypherBuilder.getConformsToEdges(targetModel));
 
-		var allIDs = new HashSet<Long>(allSrcNodes.keys().size()//
-				+ allTrgNodes.keys().size()//
-				+ allSrcEdges.keys().size()//
-				+ allTrgEdges.keys().size()//
-				+ allCorrs.keys().size()//
-				+ modelNodes.keys().size()//
-				+ srcModelEdges.keys().size()//
-				+ trgModelEdges.keys().size());
+		var allIDs = new HashSet<Long>();
 		
 		allSrcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 		allTrgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 		
 		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allSrcElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		
 		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allTrgElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		
 		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		

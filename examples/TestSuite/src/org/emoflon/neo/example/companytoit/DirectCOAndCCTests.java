@@ -8,13 +8,27 @@ import org.junit.jupiter.api.Test;
 @Disabled("Waiting for fixes")
 public class DirectCOAndCCTests extends ENeoTest {
 
+	private API_CompanyToITTriplesForTesting api = new API_CompanyToITTriplesForTesting(builder);
+	
 	@Test
-	public void testConsistentTriple_CO() throws Exception {
-		var api = new API_CompanyToITTriplesForTesting(builder);
-		builder.exportEMSLEntityToNeo4j(api.getModel_ConsistentSrc());
-		builder.exportEMSLEntityToNeo4j(api.getModel_ConsistentTrg());
-		api.getRule_CreateCorrsForConsistentSrcTrg().rule().apply();
-		testConsistentTripleCO("ConsistentSrc", "ConsistentTrg", 12);
+	public void testConsistentTriple1_CO() throws Exception {
+		exportTriple(api.getModel_ConsistentSrc1(), //
+				api.getModel_ConsistentTrg1(), //
+				api.getRule_CreateCorrs1().rule());
+		testConsistentTripleCO("ConsistentSrc1", "ConsistentTrg1", 12);
 	}
 	
+	@Test
+	public void testConsistentTriple1_CC() throws Exception {
+		exportTriple(api.getModel_ConsistentSrc1(), //
+				api.getModel_ConsistentTrg1());
+		testConsistentTripleCC("ConsistentSrc1", "ConsistentTrg1", 12);
+	}
+	
+	@Test
+	public void testInconsistentTriple1_CO() throws Exception {
+		exportTriple(api.getModel_ConsistentSrc1(), //
+				api.getModel_ConsistentTrg1());
+		testInconsistentTripleCO("ConsistentSrc1", "ConsistentTrg1", 4, 7);
+	}
 }

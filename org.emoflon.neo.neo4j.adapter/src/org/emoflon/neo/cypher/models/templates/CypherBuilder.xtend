@@ -103,6 +103,15 @@ abstract class CypherBuilder {
 				(a)-[«relation»]->(b)
 		'''
 	}
+	
+	def static String getAllElOfEdgesInModel(String modelName){
+		'''
+			MATCH 
+				(m:NeoCore__Model {ename: "«modelName»"}), 
+				(a)-[r:elementOf]->(m)
+			RETURN id(r)
+		'''
+	}
 
 	def static String removeTranslationAttributeForNodes(String modelName) {
 		'''

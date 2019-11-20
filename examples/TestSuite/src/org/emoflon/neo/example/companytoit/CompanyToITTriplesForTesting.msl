@@ -1,13 +1,13 @@
 import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
 import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
 
-model ConsistentTrg {
+model ConsistentTrg1 {
 	it:IT {
 		.name : "Origami"
 	}
 }
 
-model ConsistentSrc {
+model ConsistentSrc1 {
 	c:Company {
 		.name : "Origami"
 		-ceo->ceo
@@ -18,7 +18,7 @@ model ConsistentSrc {
 	}
 }
 
-rule createCorrsForConsistentSrcTrg {
+rule createCorrs1 {
 	c:Company {
 		++ -corr->it {
 			._type_ := "CompanyToIT"
