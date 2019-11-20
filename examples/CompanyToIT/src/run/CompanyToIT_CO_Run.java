@@ -33,10 +33,10 @@ public class CompanyToIT_CO_Run {
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_CO_Run();
-		app.runCheckOnly();
+		app.runCheckOnly(SRC_MODEL_NAME, TRG_MODEL_NAME);
 	}
 
-	public CheckOnlyOperationalStrategy runCheckOnly() throws Exception {
+	public CheckOnlyOperationalStrategy runCheckOnly(String srcModel, String trgModel) throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var coAPI = new API_CompanyToIT_CO(builder);
@@ -46,8 +46,8 @@ public class CompanyToIT_CO_Run {
 					coAPI.getAllRulesForCompanyToIT__CO(), //
 					getNegativeConstraints(builder), //
 					builder, //
-					SRC_MODEL_NAME, //
-					TRG_MODEL_NAME//
+					srcModel, //
+					trgModel//
 			);
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForCompanyToIT__CO(), //
@@ -58,7 +58,7 @@ public class CompanyToIT_CO_Run {
 					new NoOpReprocessor(), //
 					checkOnly, //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					new ModelNameValueGenerator(srcModel, trgModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");

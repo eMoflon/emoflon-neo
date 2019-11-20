@@ -1,118 +1,27 @@
-import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
 import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
 
-abstract model ContainedInModels {
-	CompanyToIT_Source : Model
-	CompanyToIT_Target : Model
-}
-
-model MissingCEO -> ContainedInModels {
-	c : Company {
-		.name : "foo"
-		-corr->it {
-			._type_ : "CompanyToIT"
-		}	
-		
-		-elementOf->$CompanyToIT_Source
-	}
-
+model ConsistentTrg {
 	it:IT {
-		.name : "foo"
-		
-		-elementOf->$CompanyToIT_Target
+		.name : "Origami"
 	}
 }
 
-model WrongNames -> ContainedInModels {
-	c : Company {
-		.name : "bar"
-		-corr->it {
-			._type_ : "CompanyToIT"
-		}
+model ConsistentSrc {
+	c:Company {
+		.name : "Origami"
 		-ceo->ceo
-		
-		-elementOf->$CompanyToIT_Source
 	}
 	
 	ceo:CEO {
 		.name : "Tony"
-		
-		-elementOf->$CompanyToIT_Source
-	}
-
-	it:IT {
-		.name : "foo"
-		
-		-elementOf->$CompanyToIT_Target
 	}
 }
 
-model ConsistentTriple -> MissingCEO {
-	ceo:CEO {
-		.name : "Tony"
-		
-		-elementOf->$CompanyToIT_Source
-	}
-	
+rule createCorrsForConsistentSrcTrg {
 	c:Company {
-		-ceo->ceo
-	}
-}
-
-model ExtraCEO -> ConsistentTriple {
-	ceo2:CEO {
-		.name : "Montana"
-		-elementOf->$CompanyToIT_Source
+		-corr->it
 	}
 	
-	c : Company {
-		-ceo->ceo2
-	}
-}
-
-model ConsistentTripleWithEmployees -> ConsistentTriple {
-	c:Company {
-		-admin->admin
-		-employee->employee
-	}
-	
-	ceo:CEO {
-		-employee->employee
-	}
-	
-	admin:Admin {
-		-ceo->ceo
-		-elementOf->$CompanyToIT_Source
-		
-		-corr->router {
-			._type_ : "AdminToRouter"
-		}
-	}
-	
-	router:Router {
-		-network->network
-		-elementOf->$CompanyToIT_Target
-	}
-	
-	network:Network {
-		-pc->computer
-		-elementOf->$CompanyToIT_Target
-	}
-	
-	it:IT {
-		-router->router
-		-network->network
-	}
-	
-	employee:Employee {
-		-corr->computer {
-			._type_ : "EmployeeToPC"
-		}
-		
-		-elementOf->$CompanyToIT_Source
-	}
-	
-	computer:PC {
-		-elementOf->$CompanyToIT_Target
-	}
+	it:IT
 }

@@ -119,18 +119,15 @@ public abstract class ENeoTest {
 		assertEquals(numberOfConsistentElements, result.determineConsistentElements().size());
 	}
 	
-	protected void testConsistentTripleCO(Model triple, int numberOfConsistentElements) throws Exception {
+	protected void testConsistentTripleCO(String srcModel, String trgModel, int numberOfConsistentElements) throws Exception {
 		var testCOApp = new CompanyToIT_CO_Run();
-		builder.exportEMSLEntityToNeo4j(triple);
-		var result = testCOApp.runCheckOnly();
+		var result = testCOApp.runCheckOnly(srcModel, trgModel);
 		testForConsistency(result, numberOfConsistentElements);
 	}
 
-	protected void testConsistentTripleCC(Model triple, int numberOfConsistentElements) throws Exception {
+	protected void testConsistentTripleCC(String srcModel, String trgModel, int numberOfConsistentElements) throws Exception {
 		var testCCApp = new CompanyToIT_CC_Run();
-		builder.exportEMSLEntityToNeo4j(triple);
-		builder.deleteAllCorrs();
-		var result = testCCApp.runCorrCreation(); 
+		var result = testCCApp.runCorrCreation(srcModel, trgModel); 
 		testForConsistency(result, numberOfConsistentElements);
 	}
 
@@ -140,18 +137,15 @@ public abstract class ENeoTest {
 		assertEquals(consistent, result.determineConsistentElements().size());
 	}
 	
-	protected void testInconsistentTripleCO(Model triple, int consistent, int inconsistent) throws Exception {
+	protected void testInconsistentTripleCO(String srcModel, String trgModel, int consistent, int inconsistent) throws Exception {
 		var testCOApp = new CompanyToIT_CO_Run();
-		builder.exportEMSLEntityToNeo4j(triple);
-		var result = testCOApp.runCheckOnly();
+		var result = testCOApp.runCheckOnly(srcModel, trgModel);
 		testForInconsistency(result, consistent, inconsistent);
 	}
 	
-	protected void testInconsistentTripleCC(Model triple, int consistent, int inconsistent) throws Exception {
+	protected void testInconsistentTripleCC(String srcModel, String trgModel, int consistent, int inconsistent) throws Exception {
 		var testCCApp = new CompanyToIT_CC_Run();
-		builder.exportEMSLEntityToNeo4j(triple);
-		builder.deleteAllCorrs();
-		var result = testCCApp.runCorrCreation();
+		var result = testCCApp.runCorrCreation(srcModel, trgModel);
 		testForInconsistency(result, consistent, inconsistent);
 	}
 }

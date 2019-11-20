@@ -27,6 +27,9 @@ import run.CompanyToIT_CC_Run;
 import run.CompanyToIT_CO_Run;
 import run.CompanyToIT_GEN_Run;
 
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
@@ -38,16 +41,16 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 		testGenApp.runGenerator();
 
 		// Step 2. Check that produced triple is consistent with CO
-		assertTrue(testCOApp.runCheckOnly().isConsistent());
+		assertTrue(testCOApp.runCheckOnly(SRC_MODEL_NAME, TRG_MODEL_NAME).isConsistent());
 
 		// Step 3. Remove corrs to produce input for CC
 		builder.deleteAllCorrs();
 
 		// Step 4: Create corrs
-		assertTrue(testCCApp.runCorrCreation().isConsistent());
+		assertTrue(testCCApp.runCorrCreation(SRC_MODEL_NAME, TRG_MODEL_NAME).isConsistent());
 
 		// Step 5: Check that consistency has been restored
-		assertTrue(testCOApp.runCheckOnly().isConsistent());
+		assertTrue(testCOApp.runCheckOnly(SRC_MODEL_NAME, TRG_MODEL_NAME).isConsistent());
 	}
 
 	@Test
