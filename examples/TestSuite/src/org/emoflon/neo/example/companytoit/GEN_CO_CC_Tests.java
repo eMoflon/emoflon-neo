@@ -38,16 +38,16 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 		testGenApp.runGenerator();
 
 		// Step 2. Check that produced triple is consistent with CO
-		assertTrue(testCOApp.runCheckOnly());
+		assertTrue(testCOApp.runCheckOnly().isConsistent());
 
 		// Step 3. Remove corrs to produce input for CC
 		builder.deleteAllCorrs();
 
 		// Step 4: Create corrs
-		assertTrue(testCCApp.runCorrCreation());
+		assertTrue(testCCApp.runCorrCreation().isConsistent());
 
 		// Step 5: Check that consistency has been restored
-		assertTrue(testCOApp.runCheckOnly());
+		assertTrue(testCOApp.runCheckOnly().isConsistent());
 	}
 
 	@Test

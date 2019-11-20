@@ -36,7 +36,7 @@ public class CompanyToIT_CO_Run {
 		app.runCheckOnly();
 	}
 
-	public boolean runCheckOnly() throws Exception {
+	public CheckOnlyOperationalStrategy runCheckOnly() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var coAPI = new API_CompanyToIT_CO(builder);
@@ -64,7 +64,7 @@ public class CompanyToIT_CO_Run {
 			logger.info("Start check only...");
 			generator.generate();
 
-			return checkOnly.isConsistent();
+			return checkOnly;
 		}
 	}
 

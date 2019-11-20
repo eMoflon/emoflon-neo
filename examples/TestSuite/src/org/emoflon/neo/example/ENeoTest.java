@@ -1,9 +1,11 @@
 package org.emoflon.neo.example;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,10 +19,14 @@ import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPatternAccess;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.util.FlattenerException;
+import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.neo4j.driver.v1.StatementResult;
+
+import run.CompanyToIT_CC_Run;
+import run.CompanyToIT_CO_Run;
 
 public abstract class ENeoTest {
 	private static Scanner reader;
@@ -29,7 +35,7 @@ public abstract class ENeoTest {
 	
 	@BeforeAll
 	public static void startDBConnection() throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		
 		logger.info("Database Connection established.");
 		builder = API_Common.createBuilder();
@@ -105,5 +111,47 @@ public abstract class ENeoTest {
 	
 	protected void expectInvalidMatch(NeoMatch m) {
 		expectValidMatches(List.of(m), 0);
+	}
+	
+	private void testForConsistency(ILPBasedOperationalStrategy result, int numberOfConsistentElements) throws Exception {
+		assertTrue(result.isConsistent());
+		assertEquals(0, result.determineInconsistentElements().size());
+		assertEquals(numberOfConsistentElements, result.determineConsistentElements().size());
+	}
+	
+	protected void testConsistentTripleCO(Model triple, int numberOfConsistentElements) throws Exception {
+		var testCOApp = new CompanyToIT_CO_Run();
+		builder.exportEMSLEntityToNeo4j(triple);
+		var result = testCOApp.runCheckOnly();
+		testForConsistency(result, numberOfConsistentElements);
+	}
+
+	protected void testConsistentTripleCC(Model triple, int numberOfConsistentElements) throws Exception {
+		var testCCApp = new CompanyToIT_CC_Run();
+		builder.exportEMSLEntityToNeo4j(triple);
+		builder.deleteAllCorrs();
+		var result = testCCApp.runCorrCreation(); 
+		testForConsistency(result, numberOfConsistentElements);
+	}
+
+	private void testForInconsistency(ILPBasedOperationalStrategy result, int consistent, int inconsistent) throws Exception {
+		assertFalse(result.isConsistent());
+		assertEquals(inconsistent, result.determineInconsistentElements().size());
+		assertEquals(consistent, result.determineConsistentElements().size());
+	}
+	
+	protected void testInconsistentTripleCO(Model triple, int consistent, int inconsistent) throws Exception {
+		var testCOApp = new CompanyToIT_CO_Run();
+		builder.exportEMSLEntityToNeo4j(triple);
+		var result = testCOApp.runCheckOnly();
+		testForInconsistency(result, consistent, inconsistent);
+	}
+	
+	protected void testInconsistentTripleCC(Model triple, int consistent, int inconsistent) throws Exception {
+		var testCCApp = new CompanyToIT_CC_Run();
+		builder.exportEMSLEntityToNeo4j(triple);
+		builder.deleteAllCorrs();
+		var result = testCCApp.runCorrCreation();
+		testForInconsistency(result, consistent, inconsistent);
 	}
 }

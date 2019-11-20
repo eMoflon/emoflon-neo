@@ -37,7 +37,7 @@ public class CompanyToIT_CC_Run {
 		app.runCorrCreation();
 	}
 
-	public boolean runCorrCreation() throws Exception {
+	public CorrCreationOperationalStrategy runCorrCreation() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
@@ -67,7 +67,7 @@ public class CompanyToIT_CC_Run {
 			logger.info("Start corr creation...");
 			generator.generate();
 
-			return corrCreation.isConsistent();
+			return corrCreation;
 		}
 	}
 

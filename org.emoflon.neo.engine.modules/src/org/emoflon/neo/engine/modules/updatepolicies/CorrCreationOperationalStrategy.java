@@ -52,10 +52,10 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 		computeWeights();
 		logger.debug("Registered all matches.");
 
-		result = determineInconsistentElements();
-		removeInconsistentCorrs(result);
+		inconsistentElements = determineInconsistentElements();
+		removeInconsistentCorrs(inconsistentElements);
 
-		return result.isEmpty();
+		return inconsistentElements.isEmpty();
 	}
 
 	private void removeInconsistentCorrs(Collection<Long> inconsistentElts) {

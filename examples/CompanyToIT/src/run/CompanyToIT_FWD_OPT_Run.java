@@ -7,7 +7,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD_OPT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
@@ -41,9 +40,9 @@ public class CompanyToIT_FWD_OPT_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var sourceModel = "Source";
 			var targetModel = "Target";
-			Model triple = new API_CompanyToITTriplesForTesting(builder).getModel_ConsistentTriple();
-			builder.exportEMSLEntityToNeo4j(triple);
-			builder.deleteAllCorrs();
+//			Model triple = new API_CompanyToITTriplesForTesting(builder).getModel_ConsistentTriple();
+//			builder.exportEMSLEntityToNeo4j(triple);
+//			builder.deleteAllCorrs();
 
 			Collection<Long> elementIds = builder.getAllElementIDsInTriple("", targetModel);
 			builder.deleteNodes(elementIds);
