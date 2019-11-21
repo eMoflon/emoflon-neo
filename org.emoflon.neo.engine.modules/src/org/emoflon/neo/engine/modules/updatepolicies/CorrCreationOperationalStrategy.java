@@ -47,15 +47,17 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 
 	@Override
 	public boolean isConsistent() throws Exception {
-		logger.debug("Registering all matches...");
-		matchContainer.ifPresent(mc -> registerMatches(mc.streamAllCoMatches()));
-		computeWeights();
-		logger.debug("Registered all matches.");
+		if (inconsistentElements == null) {
+			logger.debug("Registering all matches...");
+			matchContainer.ifPresent(mc -> registerMatches(mc.streamAllCoMatches()));
+			computeWeights();
+			logger.debug("Registered all matches.");
 
-		result = determineInconsistentElements();
-		removeInconsistentCorrs(result);
+			inconsistentElements = determineInconsistentElements();
+			removeInconsistentCorrs(inconsistentElements);
+		}
 
-		return result.isEmpty();
+		return inconsistentElements.isEmpty();
 	}
 
 	private void removeInconsistentCorrs(Collection<Long> inconsistentElts) {

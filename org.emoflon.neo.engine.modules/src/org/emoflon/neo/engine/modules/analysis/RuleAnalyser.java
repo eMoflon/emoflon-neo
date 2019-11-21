@@ -67,7 +67,7 @@ public class RuleAnalyser {
 	}
 
 	public static boolean noRelevantContext(Optional<TripleRule> tripleRule, boolean SRC, boolean CORR, boolean TRG) {
-		return tripleRule.map(tr -> noRelevantContext(tr, SRC, CORR, TRG)).orElse(true);
+		return tripleRule.map(tr -> noRelevantContext(tr, SRC, CORR, TRG)).orElse(false);
 	}
 
 	private static boolean noRelevantRelContext(TripleRule rule, boolean SRC, boolean TRG) {
