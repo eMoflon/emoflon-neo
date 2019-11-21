@@ -35,7 +35,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import org.emoflon.neo.emsl.eMSL.BinaryExpression
-import java.lang.reflect.Parameter
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 /**
  * Provides labels for EObjects.
