@@ -57,7 +57,7 @@ abstract class CypherBuilder {
 	def static String deleteEdgesQuery(String ids) {
 		'''
 			UNWIND $«ids» as eltID
-			MATCH ()-[r]->() where id(r) = eltID delete r
+			MATCH ()-[r]->() where id(r) = abs(eltID) delete r
 		'''
 	}
 
@@ -103,6 +103,15 @@ abstract class CypherBuilder {
 				(a)-[«relation»]->(b)
 		'''
 	}
+	
+	def static String getAllElOfEdgesInModel(String modelName){
+		'''
+			MATCH 
+				(m:NeoCore__Model {ename: "«modelName»"}), 
+				(a)-[r:elementOf]->(m)
+			RETURN id(r)
+		'''
+	}
 
 	def static String removeTranslationAttributeForNodes(String modelName) {
 		'''
@@ -137,10 +146,28 @@ abstract class CypherBuilder {
 			MATCH 
 				(src:NeoCore__Model {ename: "«src»"}),
 				(trg:NeoCore__Model {ename: "«trg»"}),
-				(a)-[:elementOf]->(src), 
-				(b)-[:elementOf]->(trg),
+				(a)-[:«NeoCoreBootstrapper.META_EL_OF»]->(src), 
+				(b)-[:«NeoCoreBootstrapper.META_EL_OF»]->(trg),
 				(a)-[r:«NeoCoreBootstrapper.CORR»]->(b)
 			RETURN DISTINCT id(r)
+		'''
+	}
+	
+	def static String getModelNodes(String src, String trg){
+		'''
+			MATCH 
+				(src:NeoCore__Model {ename: "«src»"}),
+				(trg:NeoCore__Model {ename: "«trg»"})
+			RETURN id(src), id(trg)
+		'''
+	}
+	
+	def static String getConformsToEdges(String model) {
+		'''
+			MATCH 
+				(m:NeoCore__Model {ename: "«model»"}),
+				(m)-[cts:«NeoCoreBootstrapper.CONFORMS_TO_PROP»]->(mm)
+			RETURN DISTINCT id(cts)
 		'''
 	}
 }

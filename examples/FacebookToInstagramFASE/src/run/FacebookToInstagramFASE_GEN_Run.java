@@ -6,16 +6,18 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_Languages;
+import org.emoflon.neo.api.API_Instagram;
 import org.emoflon.neo.api.API_Transformations;
 import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.TwoPhaseRuleSchedulerForGEN;
+import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
@@ -72,7 +74,7 @@ public class FacebookToInstagramFASE_GEN_Run {
 				}
 			case API_Transformations.FacebookToInstagramGrammar__RequestFriendship:
 				switch (type) {
-				case API_Languages.InstagramLanguage__User:
+				case API_Instagram.InstagramLanguage__User:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;
@@ -91,10 +93,12 @@ public class FacebookToInstagramFASE_GEN_Run {
 
 		return new NeoGenerator(//
 				allRules, //
+				new NoOpStartup(), //
 				new CompositeTerminationConditionForGEN(1, TimeUnit.HOURS, maxRuleApps), //
 				new TwoPhaseRuleSchedulerForGEN(sampler), //
 				new TwoPhaseUpdatePolicyForGEN(maxRuleApps), //
 				new ParanoidNeoReprocessor(), //
+				new NoOpCleanup(), //
 				new HeartBeatAndReportMonitor(), //
 				new ModelNameValueGenerator("Facebook", "Instagram"), //
 				List.of(new LoremIpsumStringValueGenerator()));

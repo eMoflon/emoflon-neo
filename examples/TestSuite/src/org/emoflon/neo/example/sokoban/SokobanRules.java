@@ -147,7 +147,7 @@ public class SokobanRules extends ENeoTest {
 		var tempMatches = rule.isStillApplicable(matches);
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -166,7 +166,7 @@ public class SokobanRules extends ENeoTest {
 		tempMatches = rule.isStillApplicable(matches);
 		validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}

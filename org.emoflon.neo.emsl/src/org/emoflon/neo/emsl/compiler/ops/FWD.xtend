@@ -56,11 +56,19 @@ class FWD implements Operation {
 		return nacs.reject[it instanceof SourceNAC]
 	}
 	
-	override requiresSrcModelCreation() {
+	override requiresSrcModelRule() {
 		false
 	}
 	
-	override requiresTrgModelCreation() {
+	override requiresTrgModelRule() {
+		true
+	}
+	
+	override requiresModelCreation() {
+		true
+	}
+	
+	override requiresCorrModelCreation() {
 		true
 	}
 

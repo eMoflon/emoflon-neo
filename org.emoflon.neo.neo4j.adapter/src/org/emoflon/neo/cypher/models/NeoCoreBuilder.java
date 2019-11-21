@@ -131,7 +131,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		} catch (Exception e) {
 			transaction.failure();
 			transaction.close();
-			logger.error(e.getMessage());
+			logger.error(e);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -719,6 +720,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeQueryForSideEffect(CypherBuilder.removeTranslationAttributeForEdges(modelName));
 	}
 
+	/**
+	 * Ids can contain negative or positive ids -- absolute values are used in Neo4j
+	 * for deletion.
+	 * 
+	 * @param ids
+	 */
 	public void deleteEdges(Collection<Long> ids) {
 		Map<String, Object> params = Map.of("ids", ids);
 		executeQueryForSideEffect(CypherBuilder.deleteEdgesQuery("ids"), params);
@@ -742,16 +749,33 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));
 
 		var allSrcEdges = executeQuery(CypherBuilder.getAllRelsInModel(sourceModel));
+		var allSrcElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(sourceModel));
+		
 		var allTrgEdges = executeQuery(CypherBuilder.getAllRelsInModel(targetModel));
+		var allTrgElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(targetModel));
 
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
+		
+		var modelNodes = executeQuery(CypherBuilder.getModelNodes(sourceModel, targetModel));
+		var srcModelEdges = executeQuery(CypherBuilder.getConformsToEdges(sourceModel));
+		var trgModelEdges = executeQuery(CypherBuilder.getConformsToEdges(targetModel));
 
-		var allIDs = new ArrayList<Long>();
-		allSrcNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
-		allTrgNodes.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
+		var allIDs = new HashSet<Long>();
+		
+		allSrcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		allTrgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		
 		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allSrcElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		
 		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allCorrs.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allTrgElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		
+		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		
+		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
+		srcModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		trgModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
 		return allIDs;
 	}

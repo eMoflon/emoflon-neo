@@ -91,7 +91,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -109,7 +109,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -127,7 +127,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -146,7 +146,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -164,7 +164,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -183,7 +183,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -236,7 +236,7 @@ public class SokobanPatterns extends ENeoTest {
 		var tempMatches = p.pattern().isStillValid(matches);
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -251,7 +251,7 @@ public class SokobanPatterns extends ENeoTest {
 		var tempMatches2 = p.pattern().isStillValid(matches2);
 		var validMatches2 = new ArrayList<NeoMatch>(matches2);
 		for(var match : matches2) {
-			if(tempMatches2.containsKey(match.getHashCode()) && !tempMatches2.get(match.getHashCode())) {
+			if(tempMatches2.containsKey(match.getMatchID()) && !tempMatches2.get(match.getMatchID())) {
 				validMatches2.remove(match);
 			}
 		}
@@ -817,7 +817,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -835,7 +835,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}
@@ -853,7 +853,7 @@ public class SokobanPatterns extends ENeoTest {
 		
 		var validMatches = new ArrayList<NeoMatch>(matches);
 		for(var match : matches) {
-			if(tempMatches.containsKey(match.getHashCode()) && !tempMatches.get(match.getHashCode())) {
+			if(tempMatches.containsKey(match.getMatchID()) && !tempMatches.get(match.getMatchID())) {
 				validMatches.remove(match);
 			}
 		}

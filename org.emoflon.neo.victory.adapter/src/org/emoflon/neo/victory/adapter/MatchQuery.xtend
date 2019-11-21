@@ -20,21 +20,21 @@ static def String getMatchEdges(long edgeId){
 }
 def static String matchPath(IMatch match, int neighbourhoodSize) {
 	'''
-		MATCH «FOR n : match.nodeIDs SEPARATOR ', '»
+		MATCH «FOR n : match.convertToMap.values SEPARATOR ', '»
 			p«n»=(n«n»)- [*0..«neighbourhoodSize»]-(m«n»)
-			«ENDFOR»
+		«ENDFOR»
 	'''
 	}
 	
 def static String checkIds(IMatch match, int neighbourhoodSize) {
 	'''
-		WHERE «FOR n : match.nodeIDs SEPARATOR ' AND '»
+		WHERE «FOR n : match.convertToMap.values SEPARATOR ' AND '»
 		 id(n«n») = «n»«ENDFOR» 
 	'''
 	}
 def static String returnPath(IMatch match, int neighbourhoodSize) {
 	'''
-		RETURN «FOR n : match.nodeIDs SEPARATOR ',\n '»
+		RETURN «FOR n : match.convertToMap.values SEPARATOR ',\n '»
 					p«n»
 		«ENDFOR»
 	'''

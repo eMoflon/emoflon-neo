@@ -20,8 +20,6 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-import com.google.common.collect.Streams;
-
 public class NeoBasicPattern {
 	private String name;
 	
@@ -84,20 +82,6 @@ public class NeoBasicPattern {
 		return name;
 	}
 
-	/**
-	 * Return the names of all elements in the pattern. Note that paths do not have
-	 * names and are thus omitted.
-	 * 
-	 * @return
-	 */
-	public List<String> getElements() {
-		return Streams//
-				.concat(nodes.stream(), relations.stream())//
-				.map(NeoElement::getName)//
-				.filter(Predicate.not(String::isBlank))//
-				.collect(Collectors.toList());
-	}
-
 	public List<NeoNode> getNodes() {
 		return nodes;
 	}
@@ -134,5 +118,24 @@ public class NeoBasicPattern {
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	public Collection<String> getContextNodeLabels() {
+		return nodes.stream()//
+				.map(NeoElement::getName)//
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Return the names of all relations in the pattern. Note that paths do not have
+	 * names and are thus omitted.
+	 * 
+	 * @return
+	 */
+	public Collection<String> getContextRelLabels() {
+		return relations.stream()//
+				.map(NeoElement::getName)//
+				.filter(Predicate.not(String::isBlank))//
+				.collect(Collectors.toList());
 	}
 }

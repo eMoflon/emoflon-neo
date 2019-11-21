@@ -12,34 +12,34 @@ import java.util.stream.Stream;
 
 public class ElementRange {
 
-	private Map<String, List<Long>> typeToIDs;
+	private Map<String, List<Object>> typeToIDs;
 
 	public ElementRange() {
 		typeToIDs = new HashMap<>();
 	}
 
-	public ElementRange(Map<String, List<Long>> typeToIDs) {
+	public ElementRange(Map<String, List<Object>> typeToIDs) {
 		this.typeToIDs = new HashMap<>(typeToIDs);
 	}
 
-	public void addIDs(Stream<String> types, Long id) {
+	public void addIDs(Stream<String> types, Object id) {
 		types.forEach(type -> {
 			addID(type, id);
 		});
 	}
 
-	public void addID(String type, Long id) {
+	public void addID(String type, Object id) {
 		typeToIDs.putIfAbsent(type, new ArrayList<>());
 		typeToIDs.get(type).add(id);
 	}
 
-	public Collection<Long> sampleIDs(String type, int sampleSize) {
+	public Collection<Object> sampleIDs(String type, int sampleSize) {
 		var idsForType = typeToIDs.getOrDefault(type, Collections.emptyList());
 
 		if (idsForType.size() < sampleSize)
 			return idsForType;
 
-		var sampleIDs = new HashSet<Long>();
+		var sampleIDs = new HashSet<Object>();
 		while (sampleIDs.size() < sampleSize) {
 			var randomIndex = (int) (Math.random() * idsForType.size());
 			sampleIDs.add(idsForType.get(randomIndex));
@@ -48,7 +48,7 @@ public class ElementRange {
 		return sampleIDs;
 	}
 
-	public ElementRange remove(Collection<Long> ids) {
+	public ElementRange remove(Collection<Object> ids) {
 		var range = new ElementRange();
 		typeToIDs.entrySet().stream()//
 				.forEach(entry -> {
@@ -61,9 +61,13 @@ public class ElementRange {
 		return range;
 	}
 
-	public Collection<Long> getIDs() {
+	public Collection<Object> getIDs() {
 		return typeToIDs.values().stream()//
 				.flatMap(ids -> ids.stream())//
 				.collect(Collectors.toSet());
+	}
+
+	public Collection<String> getTypes() {
+		return typeToIDs.keySet();
 	}
 }

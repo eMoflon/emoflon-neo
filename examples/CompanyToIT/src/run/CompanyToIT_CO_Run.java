@@ -16,7 +16,6 @@ import org.emoflon.neo.api.metamodels.API_IT;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
-import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -34,41 +33,38 @@ public class CompanyToIT_CO_Run {
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_CO_Run();
-		app.runCheckOnly();
+		app.runCheckOnly(SRC_MODEL_NAME, TRG_MODEL_NAME);
 	}
 
-	public boolean runCheckOnly() throws Exception {
+	public CheckOnlyOperationalStrategy runCheckOnly(String srcModel, String trgModel) throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var coAPI = new API_CompanyToIT_CO(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(genAPI.getAllRulesForCompanyToIT__GEN(),
-					coAPI.getAllRulesForCompanyToIT__CO(), getNegativeConstraints(builder), builder, SRC_MODEL_NAME,
-					TRG_MODEL_NAME);
+			var checkOnly = new CheckOnlyOperationalStrategy(//
+					solver, //
+					genAPI.getAllRulesForCompanyToIT__GEN(), //
+					coAPI.getAllRulesForCompanyToIT__CO(), //
+					getNegativeConstraints(builder), //
+					builder, //
+					srcModel, //
+					trgModel//
+			);
 			var generator = new NeoGenerator(//
 					coAPI.getAllRulesForCompanyToIT__CO(), //
-					new NoOpStartup(), // FIXME[Tony]: Replace this with the proper startup module for CO
+					new NoOpStartup(), //
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
 					new NoOpReprocessor(), //
-					new NoOpCleanup(), // FIXME[Tony]: Replace this with the proper cleanup module for CO
+					checkOnly, //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					new ModelNameValueGenerator(srcModel, trgModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start check only...");
 			generator.generate();
 
-			if (checkOnly.isConsistent(solver)) {
-				logger.info("Your triple is consistent!");
-				return true;
-			} else {
-				logger.info("Your triple is inconsistent!");
-				var inconsistentElements = checkOnly.determineInconsistentElements(solver);
-				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
-				logger.info(inconsistentElements);
-				return false;
-			}
+			return checkOnly;
 		}
 	}
 

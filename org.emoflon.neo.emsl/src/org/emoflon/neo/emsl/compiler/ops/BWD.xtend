@@ -56,12 +56,20 @@ class BWD implements Operation {
 		return nacs.reject[it instanceof TargetNAC]
 	}
 
-	override requiresSrcModelCreation() {
+	override requiresSrcModelRule() {
 		true
 	}
 	
-	override requiresTrgModelCreation() {
+	override requiresTrgModelRule() {
 		false
+	}
+	
+	override requiresModelCreation() {
+		true
+	}
+	
+	override requiresCorrModelCreation() {
+		true
 	}
 
 	/*

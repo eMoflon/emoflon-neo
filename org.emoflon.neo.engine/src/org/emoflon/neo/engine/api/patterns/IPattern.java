@@ -64,5 +64,6 @@ public interface IPattern<M extends IMatch> {
 	 */
 	Map<String, Boolean> isStillValid(Collection<M> matches);
 
-	Collection<String> getElements();
+	Collection<String> getContextNodeLabels();
+	Collection<String> getContextRelLabels();
 }

@@ -13,7 +13,8 @@ public class NeoCoMatch extends NeoMatch implements ICoMatch {
 		this.matchHash = record.get(NeoMatch.getIdParameter()).toString();
 	}
 
-	public String getMatchHashCode() {
+	@Override
+	public String getMatchID() {
 		return matchHash;
 	}
 }

@@ -163,9 +163,9 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 				var record = result.next();
 				matches.add(new NeoMatch(this, record));
 			}
-			
+
 			logger.debug("Found: " + matches.size() + " matches!");
-			
+
 			return matches;
 		}
 	}
@@ -182,11 +182,10 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	public Map<String, Boolean> isStillValid(Collection<NeoMatch> matches) {
 		var cypherQuery = getIsStillValidQuery();
 
-		var parameters = new ArrayList<Map<String, Object>>();
-		matches.forEach(m -> parameters.add(m.getParameters()));
+		var params = matches.stream().map(m -> m.convertToMap()).collect(Collectors.toList());
+		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), params));
 
-		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), parameters));
-		logger.debug(parameters);
+		logger.debug(matches);
 		logger.debug("\n" + cypherQuery);
 
 		if (result == null) {
@@ -197,7 +196,7 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 					.collect(Collectors.toList());
 
 			var returnMap = matches.stream()//
-					.collect(Collectors.toMap(m -> m.getHashCode(), m -> hashCode.contains(m.getHashCode())));
+					.collect(Collectors.toMap(m -> m.getMatchID(), m -> hashCode.contains(m.getMatchID())));
 
 			logger.debug(returnMap.toString());
 			return returnMap;
@@ -207,11 +206,9 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	public Collection<Record> getData(Collection<? extends NeoMatch> matches) {
 		var cypherQuery = getDataQuery();
 
-		var parameters = new ArrayList<Map<String, Object>>();
-		matches.forEach(m -> parameters.add(m.getParameters()));
-
-		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), parameters));
-		logger.debug(parameters);
+		var params = matches.stream().map(m -> m.convertToMap()).collect(Collectors.toList());
+		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), params));
+		logger.debug(matches);
 		logger.debug("\n" + cypherQuery);
 
 		if (result == null) {

@@ -17,88 +17,27 @@ import org.neo4j.driver.v1.Record;
  *
  */
 public class NeoMatch implements IMatch {
-	private NeoPattern pattern;
-	protected long[] nodeIDs;
-	protected long[] edgeIDs;
-	protected Map<String, Object> parameters;
-
+	protected NeoPattern pattern;
+	private Record record; 
+	private Map<String, Object> parameters = new HashMap<>();
+	
 	/**
 	 * @param pattern the corresponding pattern to the match
 	 * @param record  one result record of the query execution
 	 */
 	public NeoMatch(NeoPattern pattern, Record record) {
 		this.pattern = pattern;
-
-		nodeIDs = new long[pattern.getNodes().size()];
-		edgeIDs = new long[pattern.getRelations().size()];
-		extractIdsPattern(record);
+		this.record = record;
 	}
 
 	public NeoMatch(NeoMatch other) {
 		pattern = other.pattern;
-		nodeIDs = other.nodeIDs;
-		edgeIDs = other.edgeIDs;
-
-		parameters = new HashMap<>(other.parameters);
+		record = other.record;
 	}
 
-	/**
-	 * Extracts the node and relations id out of the result set in regards to the
-	 * nodes variable name and add it to the result list
-	 * 
-	 * @param record of the query execution
-	 */
-	private void extractIdsPattern(Record record) {
-		var recMap = record.asMap();
-
-		for (var n : pattern.getNodes()) {
-			if (recMap.containsKey(n.getName()))
-				nodeIDs[pattern.getNodes().indexOf(n)] = (Long) recMap.get(n.getName());
-		}
-
-		for (var r : pattern.getRelations()) {
-			if (recMap.containsKey(r.getName()))
-				edgeIDs[pattern.getRelations().indexOf(r)] = (Long) recMap.get(r.getName());
-		}
-	}
-
-	public Map<String, Object> getParameters() {
-		var params = new HashMap<String, Object>();
-		if(parameters != null)
-			params.putAll(parameters);
-			
-		for (var n : pattern.getNodes())
-			params.put(n.getName(), nodeIDs[pattern.getNodes().indexOf(n)]);
-		for (var e : pattern.getRelations())
-			params.put(e.getName(), edgeIDs[pattern.getRelations().indexOf(e)]);
-		params.put("match_id", getHashCode());
-		
-		return Collections.unmodifiableMap(params);
-	}
-
-	public String getHashCode() {
-		return String.valueOf(hashCode());
-	}
-
-	public void addParameter(String key, Object value) {
-		if(parameters == null)
-			parameters = new HashMap<>();
-		
-		parameters.put(key, value);
-	}
-
+	@Override
 	public IPattern<NeoMatch> getPattern() {
 		return pattern;
-	}
-
-	@Override
-	public long[] getNodeIDs() {
-		return nodeIDs;
-	}
-
-	@Override
-	public long[] getRelIDs() {
-		return edgeIDs;
 	}
 
 	public static String getIdParameter() {
@@ -122,50 +61,35 @@ public class NeoMatch implements IMatch {
 	}
 
 	@Override
-	public boolean containsNode(String nodeName) {
-		return pattern.getNodes().stream().anyMatch(n -> n.getName().equals(nodeName));
+	public boolean containsElement(String elt) {
+		return record.containsKey(elt);
 	}
 
 	@Override
-	public boolean containsRel(String relName) {
-		return pattern.getRelations().stream().anyMatch(r -> r.getName().equals(relName));
+	public long getElement(String elt) {
+		return record.get(elt).asLong();
 	}
 
 	@Override
-	public long getNodeIDFor(String nodeName) {
-		return pattern.getNodes().stream()//
-				.filter(n -> n.getName().equals(nodeName))//
-				.map(n -> nodeIDs[pattern.getNodes().indexOf(n)])//
-				.findAny()//
-				.orElseThrow();
+	public void addParameter(String key, Object value) {
+		parameters.put(key, value);
 	}
 
 	@Override
-	public long getRelIDFor(String relName) {
-		return pattern.getRelations().stream()//
-				.filter(r -> r.getName().equals(relName))//
-				.map(r -> edgeIDs[pattern.getRelations().indexOf(r)])//
-				.findAny()//
-				.orElseThrow();
+	public void addAllParameters(Map<String, Object> parameters) {
+		this.parameters.putAll(parameters);
 	}
 
 	@Override
-	public String getNameOfNode(long nodeID) {
-		for (int i = 0; i < nodeIDs.length; i++) {
-			if(nodeIDs[i] == nodeID)
-				return pattern.getNodes().get(i).getName();
-		}
-		
-		throw new IllegalArgumentException("Not in match: " + nodeID);
+	public Map<String, Object> convertToMap() {
+		var map = new HashMap<String, Object>(record.keys().size());
+		map.putAll(parameters);
+		map.putAll(record.asMap());
+		map.put(getIdParameter(), hashCode());
+		return map;
 	}
 
-	@Override
-	public String getNameOfRel(long relID) {
-		for (int i = 0; i < edgeIDs.length; i++) {
-			if(edgeIDs[i] == relID)
-				return pattern.getRelations().get(i).getName();
-		}
-		
-		throw new IllegalArgumentException("Not in match: " + relID);
-	}
+	public String getMatchID() {
+		return String.valueOf(hashCode());
+	}	
 }

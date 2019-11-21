@@ -50,7 +50,14 @@ public class SokobanImportExport_GEN_Run {
 	protected NeoGenerator createGenerator(API_SokobanImportExport_GEN genAPI) {
 		Collection<NeoRule> allRules = genAPI.getAllRulesForSokobanImportExport__GEN();
 
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__BoardNormalEntryRule, 1);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsEnd, 2);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsNormal, 2);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsNormal, 2);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsEnd, 2);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsEnd, 8);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsNormal, 8);	
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
 			return INodeSampler.EMPTY;

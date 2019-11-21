@@ -12,21 +12,31 @@ import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.modules.ICleanupModule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
-public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
+public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 
-	public CheckOnlyOperationalStrategy(Collection<NeoRule> genRules, Collection<NeoRule> opRules,
-			Collection<IConstraint> negativeConstraints, NeoCoreBuilder builder, String sourceModel,
-			String targetModel) {
-		super(genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
+	public CheckOnlyOperationalStrategy(//
+			SupportedILPSolver solver, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			NeoCoreBuilder builder, //
+			String sourceModel, //
+			String targetModel//
+	) {
+		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
 	}
 
 	@Override
-	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
-			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
+			MatchContainer<NeoMatch, NeoCoMatch> matches, //
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
+	) {
 		logger.debug("Registering all matches...");
 
 		// Precedence information
@@ -36,5 +46,26 @@ public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
 		logger.debug("Registered all matches.");
 
 		return Collections.emptyMap();
+	}
+
+	@Override
+	public void cleanup() {
+		try {
+			if (isConsistent()) {
+				logger.info("Your triple is consistent!");
+			} else {
+				logger.info("Your triple is inconsistent!");
+				var inconsistentElements = determineInconsistentElements();
+				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
+				logger.debug(inconsistentElements);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public String description() {
+		return "ILP solving";
 	}
 }

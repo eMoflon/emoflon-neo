@@ -36,9 +36,6 @@ metamodel NeoCore {
 		-metaType(1..1)-> EObject
 		-corr(0..*)->EObject {
 			._type_:EString
-		}
-		-eContainer(0..1)->EObject {
-			.isComposition:EBoolean
 		}	
 	}
 	

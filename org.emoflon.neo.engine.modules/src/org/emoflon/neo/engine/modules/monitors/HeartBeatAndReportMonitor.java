@@ -16,16 +16,16 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 	private double heartBeats = 0;
 	private double elements = 0;
 	private double ruleApps = 0;
-	private Timer timerForHeartBeat = new Timer();
+	private Timer timerForHeartBeat = new Timer("Heart beat");
 
-	private Timer totalTimeSpent = new Timer();
-	private Timer timerForStartup = new Timer();
-	private Timer timerForRuleScheduling = new Timer();
-	private Timer timerForMatchSelection = new Timer();
-	private Timer timerForPatternMatching = new Timer();
-	private Timer timerForRuleApplication = new Timer();
-	private Timer timerForMatchReprocessing = new Timer();
-	private Timer timerForCleanup = new Timer();
+	private Timer totalTimeSpent = new Timer("Total time");
+	private Timer timerForStartup;
+	private Timer timerForRuleScheduling = new Timer("Rule scheduling");
+	private Timer timerForMatchSelection = new Timer("Match selection");
+	private Timer timerForPatternMatching = new Timer("Pattern matching");
+	private Timer timerForRuleApplication = new Timer("Rule application");
+	private Timer timerForMatchReprocessing = new Timer("Match reprocessing");
+	private Timer timerForCleanup;
 
 	public HeartBeatAndReportMonitor() {
 		totalTimeSpent.start();
@@ -34,7 +34,12 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 	private class Timer {
 		private double start = 0;
 		private double timeSpentInSeconds = 0;
-
+		private String description;
+		
+		public Timer(String description) {
+			this.description = description;
+		}
+		
 		public void start() {
 			start = System.currentTimeMillis();
 		}
@@ -51,90 +56,93 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 		public double getTimeSpentInSeconds() {
 			return timeSpentInSeconds;
 		}
+
+		public String getDesc() {
+			return description;
+		}
 	}
 
+	private void startTimer(Timer timer) {
+		logger.debug("Started " + timer.getDesc());
+		timer.start();
+	}
+	
+	private void stopTimer(Timer timer) {
+		logger.debug("Finished " + timer.getDesc());
+		timer.stop();
+	}
+	
 	@Override
 	public void startStartup(String startupDescription) {
-		logger.debug("Running Startup: " + startupDescription);
-		timerForStartup.start();
+		timerForStartup = new Timer(startupDescription);
+		startTimer(timerForStartup);
 	}
+
 
 	@Override
 	public void finishStartup() {
-		logger.debug("Finished startup.");
-		timerForStartup.stop();
+		stopTimer(timerForStartup);
 	}
 
 	@Override
 	public void startRuleScheduling() {
-		logger.debug("Started scheduling rules...");
-		timerForRuleScheduling.start();
+		startTimer(timerForRuleScheduling);
 	}
 
 	@Override
 	public void finishRuleScheduling() {
-		logger.debug("Finished scheduling rules.");
-		timerForRuleScheduling.stop();
+		stopTimer(timerForRuleScheduling);
 	}
 
 	@Override
 	public void startMatchSelection() {
-		logger.debug("Started match selection...");
-		timerForMatchSelection.start();
+		startTimer(timerForMatchSelection);
 	}
 
 	@Override
 	public void finishMatchSelection() {
-		logger.debug("Finished match selection.");
-		timerForMatchSelection.stop();
+		stopTimer(timerForMatchSelection);
 	}
 
 	@Override
 	public void startPatternMatching() {
-		logger.debug("Started pattern matching...");
-		timerForPatternMatching.start();
+		startTimer(timerForPatternMatching);
 	}
 
 	@Override
 	public void finishPatternMatching() {
-		logger.debug("Finished pattern matching.");
-		timerForPatternMatching.stop();
+		stopTimer(timerForPatternMatching);
 	}
 
 	@Override
 	public void startRuleApplication() {
-		logger.debug("Started rule application...");
-		timerForRuleApplication.start();
+		startTimer(timerForRuleApplication);
 	}
 
 	@Override
 	public void finishRuleApplication() {
-		logger.debug("Finished rule application.");
-		timerForRuleApplication.stop();
+		stopTimer(timerForRuleApplication);
 	}
 
 	@Override
 	public void startReprocessingMatches() {
-		logger.debug("Started reprocessing matches...");
-		timerForMatchReprocessing.start();
+		startTimer(timerForMatchReprocessing);
 	}
 
 	@Override
 	public void finishReprocessingMatches() {
-		logger.debug("Finished reprocessing matches.");
-		timerForMatchReprocessing.stop();
+		stopTimer(timerForMatchReprocessing);
 	}
 
 	@Override
 	public void startCleanup(String cleanupDescription) {
-		logger.debug("Running Cleanup: " + cleanupDescription);
-		timerForCleanup.start();
+		timerForCleanup = new Timer(cleanupDescription);
+		startTimer(timerForCleanup);
 	}
 
 	@Override
 	public void finishCleanup() {
-		logger.debug("Finished cleanup.");
-		timerForCleanup.stop();
+		stopTimer(timerForCleanup);
 	}
 
 	@Override
@@ -151,11 +159,13 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 			logger.info("Heartbeats/second: " + //
 					df.format(heartBeats / timerForHeartBeat.getTimeElapsedInSeconds()));
 			logger.info("Generated elements/second: " + //
-					df.format((matchContainer.getNumberOfGeneratedElements() - elements) / timerForHeartBeat.getTimeElapsedInSeconds()));
+					df.format((matchContainer.getNumberOfGeneratedElements() - elements)
+							/ timerForHeartBeat.getTimeElapsedInSeconds()));
 			logger.info("Applied rules/second: " + //
-					df.format((matchContainer.getNumberOfRuleApplications() - ruleApps) / timerForHeartBeat.getTimeElapsedInSeconds()));
+					df.format((matchContainer.getNumberOfRuleApplications() - ruleApps)
+							/ timerForHeartBeat.getTimeElapsedInSeconds()));
 			logger.info("*********");
-			
+
 			heartBeats = 0;
 			elements = matchContainer.getNumberOfGeneratedElements();
 			ruleApps = matchContainer.getNumberOfRuleApplications();
@@ -169,19 +179,21 @@ public class HeartBeatAndReportMonitor implements IMonitor<NeoMatch, NeoCoMatch>
 		synchronized (logger) {
 			logger.info("");
 			logger.info("********** Generation Report ************");
-			logger.info("Total time spent: " + totalTimeSpent.getTimeElapsedInSeconds() + "s");
-			logger.info("Startup took: " + timerForStartup.getTimeSpentInSeconds() + "s");
-			logger.info("Rule scheduling took: " + timerForRuleScheduling.getTimeSpentInSeconds() + "s");
-			logger.info("Match selection took: " + timerForMatchSelection.getTimeSpentInSeconds() + "s");
-			logger.info("Pattern matching took: " + timerForPatternMatching.getTimeSpentInSeconds() + "s");
-			logger.info("Rule application took: " + timerForRuleApplication.getTimeSpentInSeconds() + "s");
-			logger.info("Match reprocessing took: " + timerForMatchReprocessing.getTimeSpentInSeconds() + "s");
-			logger.info("Cleanup took: " + timerForCleanup.getTimeSpentInSeconds() + "s");
-			logger.info("Rules applied: ");
-			matchContainer.getRuleApplications().entrySet().stream()//
-					.forEach(entry -> logger.info(" =>  " + entry.getValue() + " @ " + entry.getKey()));
-			logger.info("Elements generated:  " + matchContainer.getNumberOfGeneratedElements());
+			logger.info(totalTimeSpent.getDesc() + ": " + totalTimeSpent.getTimeElapsedInSeconds() + "s");
+			logger.info(timerForStartup.getDesc() + ": " + timerForStartup.getTimeSpentInSeconds() + "s");
+			logger.info(timerForRuleScheduling.getDesc() + ": " + timerForRuleScheduling.getTimeSpentInSeconds() + "s");
+			logger.info(timerForMatchSelection.getDesc() + ": " + timerForMatchSelection.getTimeSpentInSeconds() + "s");
+			logger.info(timerForPatternMatching.getDesc() + ": " + timerForPatternMatching.getTimeSpentInSeconds() + "s");
+			logger.info(timerForRuleApplication.getDesc() + ": " + timerForRuleApplication.getTimeSpentInSeconds() + "s");
+			logger.info(timerForMatchReprocessing.getDesc() + ": " + timerForMatchReprocessing.getTimeSpentInSeconds() + "s");
+			logger.info(timerForCleanup.getDesc() + ": " + timerForCleanup.getTimeSpentInSeconds() + "s");
 			logger.info("Total rules applied: " + matchContainer.getNumberOfRuleApplications());
+			if (matchContainer.getNumberOfRuleApplications() > 0) {
+				logger.info("Rules applied: ");
+				matchContainer.getRuleApplications().entrySet().stream()//
+						.forEach(entry -> logger.info(" =>  " + entry.getValue() + " @ " + entry.getKey()));
+			}
+			logger.info("Elements generated:  " + matchContainer.getNumberOfGeneratedElements());
 			logger.info("********** Generation Report ************");
 			logger.info("");
 		}

@@ -65,16 +65,16 @@ class TGGCompiler {
 			«importStatements»
 			
 			grammar «tgg.name»«op.nameExtension» {
-				«IF op.requiresSrcModelCreation»«CREATE_SRC_MODEL_RULE»«ENDIF»
-				«IF op.requiresTrgModelCreation»«CREATE_TRG_MODEL_RULE»«ENDIF»
+				«IF op.requiresSrcModelRule»«CREATE_SRC_MODEL_RULE»«ENDIF»
+				«IF op.requiresTrgModelRule»«CREATE_TRG_MODEL_RULE»«ENDIF»
 				«FOR rule : flattenedRules»
 					«rule.name»
 				«ENDFOR»
 			}
 			
-			«IF op.requiresSrcModelCreation»«generateSrcModelCreationRule(tgg.srcMetamodels.map[it.name])»«ENDIF»
+			«IF op.requiresSrcModelRule»«generateSrcModelCreationRule(tgg.srcMetamodels.map[it.name], op.requiresModelCreation)»«ENDIF»
 			
-			«IF op.requiresTrgModelCreation»«generateTrgModelCreationRule(tgg.trgMetamodels.map[it.name])»«ENDIF»
+			«IF op.requiresTrgModelRule»«generateTrgModelCreationRule(tgg.trgMetamodels.map[it.name], op.requiresModelCreation)»«ENDIF»
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
 				«compileRule(op, rule)»
@@ -263,13 +263,15 @@ class TGGCompiler {
 			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 
-	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames) {
+	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames, boolean createModel) {
+		val createOp = if(createModel) "++ " else ""
+		val assignOp = if(createModel) ":=" else ":"
 		'''
 			rule «CREATE_SRC_MODEL_RULE» {
-				++ srcM : Model {
-					.ename := <__srcModelName>
+				«createOp»srcM : Model {
+					.ename «assignOp» <__srcModelName>
 					«FOR srcMetaModel : srcMetaModelNames»
-						++ -conformsTo-> mm«srcMetaModel»
+						«createOp»-conformsTo-> mm«srcMetaModel»
 					«ENDFOR»
 				}
 			
@@ -288,13 +290,15 @@ class TGGCompiler {
 		'''
 	}
 	
-	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames) {
+	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames, boolean createModel) {
+		val createOp = if(createModel) "++ " else ""
+		val assignOp = if(createModel) ":=" else ":"
 		'''
 			rule «CREATE_TRG_MODEL_RULE» {
-				++ trgM : Model {
-					.ename := <__trgModelName>
+				«createOp»trgM : Model {
+					.ename «assignOp» <__trgModelName>
 					«FOR trgMetaModel : trgMetaModelNames»
-						++ -conformsTo-> mm«trgMetaModel»
+						«createOp»-conformsTo-> mm«trgMetaModel»
 					«ENDFOR»
 				}
 			

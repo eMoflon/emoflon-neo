@@ -14,10 +14,12 @@ import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
 import java.util.Collections
+import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
+import org.emoflon.neo.emsl.compiler.ops.FWD_OPT
 
 interface Operation {
 	def static Operation[] getAllOps() {
-		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC()] as Operation[])
+		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC(), new BWD_OPT(), new FWD_OPT()] as Operation[])
 	}
 
 	/*
@@ -37,7 +39,7 @@ interface Operation {
 	def void handleParameters(Map<Parameter, ParameterData> paramsToData, Map<String, Collection<Parameter>> paramGroups)
 
 	def String compileCorrespondence(Correspondence corr) {
-		val isGreen = (corr.action !== null && ActionOperator::CREATE.equals(corr.action.getOp()))
+		val isGreen = (corr.action !== null && ActionOperator::CREATE.equals(corr.action.getOp()) && requiresCorrModelCreation())
 		'''
 			«IF isGreen»++«ENDIF»-corr->«corr.target.name»
 			{
@@ -52,9 +54,13 @@ interface Operation {
 		Collections.emptyMap
 	}
 	
-	def boolean requiresSrcModelCreation()
+	def boolean requiresSrcModelRule()
 	
-	def boolean requiresTrgModelCreation()
+	def boolean requiresTrgModelRule()
+	
+	def boolean requiresModelCreation()
+	
+	def boolean requiresCorrModelCreation()
 
 	/*
 	 * --------------------------------

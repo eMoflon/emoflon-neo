@@ -49,7 +49,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		mask.setB_fields_0_fRow(1);
 		var result = access.apply(mask, access.mask());
 		assertTrue(result.isPresent());
-		var fieldId = result.get().getNodeIDFor(access.f);
+		var fieldId = result.get().getElement(access.f);
 
 		var testAccess = entities.getPattern_Occupied();
 		var testMask = testAccess.mask();

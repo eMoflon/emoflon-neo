@@ -20,28 +20,28 @@ pattern HasAnOwner {
 	}
 }
 
-pattern IsOwned {
-	o:EObject
-	
-	owner:EObject {
-		-eContainer->o {
-			.isComposition : true
-		}
-	}
-}
+//pattern IsOwned {
+//	o:EObject
+//	
+//	owner:EObject {
+//		-eContainer->o {
+//			.isComposition : true
+//		}
+//	}
+//}
 
-constraint MustHaveOwner = if HasAnOwner then IsOwned 
+//constraint MustHaveOwner = if HasAnOwner then IsOwned 
 
 // [forbid cyclic containment]
 // Generic constraint
 
-pattern CyclicContainment {
-	ob:EObject {
-		-eContainer(1..*)->ob
-	}
-}
+//pattern CyclicContainment {
+//	ob:EObject {
+//		-eContainer(1..*)->ob
+//	}
+//}
 
-constraint NoCyclicContainment = forbid CyclicContainment
+//constraint NoCyclicContainment = forbid CyclicContainment
 
 // [containerIsSet]
 // Generate such a constraint for every aggregation or composition
@@ -53,17 +53,17 @@ pattern ConnectedViaFruits {
 	containee:Fruit
 }
 
-pattern FruitsIsComposition {
-	container:FruitTree
-	
-	containee:Fruit {
-		-eContainer->container {
-			.isComposition : true
-		}
-	}
-}
+//pattern FruitsIsComposition {
+//	container:FruitTree
+//	
+//	containee:Fruit {
+//		-eContainer->container {
+//			.isComposition : true
+//		}
+//	}
+//}
 
-constraint FruitsIsContainment = if ConnectedViaFruits then FruitsIsComposition
+//constraint FruitsIsContainment = if ConnectedViaFruits then FruitsIsComposition
 
 // [checkLowerBounds]
 // Generate such a constraint for every reference with lower bounds 1 ≤ l ≤ 5
