@@ -26,6 +26,9 @@ import java.util.Map
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.SourceNAC
+import org.emoflon.neo.emsl.eMSL.EMSLFactory
+import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
 
 class TGGCompiler {
 	final String BASE_FOLDER = "../" + EMSLGenerator.TGG_GEN_FOLDER + "/";
@@ -76,6 +79,7 @@ class TGGCompiler {
 			«ENDFOR»
 		'''
 	}
+	
 
 	private def mapTypeNames(Iterable<Metamodel> metamodels) {
 		nodeTypeNames = HashBiMap.create()
@@ -310,5 +314,36 @@ class TGGCompiler {
 				}
 			}
 		'''
+	}
+
+	/*
+	 * model creation rule generation
+	 */
+	private def addModelCreationRules(List<TripleRule> rules) {
+		val srcModelName = EMSLFactory.eINSTANCE.createModelPropertyStatement
+		srcModelName.type = null // TODO MM-property for ename
+		srcModelName.op = ConditionOperator.ASSIGN
+		srcModelName.value = generateParameter("__srcModelName")
+		
+		val srcModelBlock = EMSLFactory.eINSTANCE.createModelNodeBlock
+		srcModelBlock.action = generateCreateAction
+		srcModelBlock.name = "srcM"
+		srcModelBlock.type = null // TODO MM-nodeblock for Model
+		
+		val srcModelCreationRule = EMSLFactory.eINSTANCE.createTripleRule
+		srcModelCreationRule.name = CREATE_SRC_MODEL_RULE
+		srcModelCreationRule.type = tgg
+	}
+	
+	private def generateParameter(String name) {
+		val param = EMSLFactory.eINSTANCE.createParameter
+		param.name = name
+		return param
+	}
+
+	private def generateCreateAction() {
+		val action = EMSLFactory.eINSTANCE.createAction
+		action.op = ActionOperator.CREATE
+		return action
 	}
 }
