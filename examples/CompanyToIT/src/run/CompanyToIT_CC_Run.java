@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
+import org.emoflon.neo.api.API_CompanyToIT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_CC;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
@@ -19,7 +20,7 @@ import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.NewCorrRuleScheduler;
+import org.emoflon.neo.engine.modules.ruleschedulers.CCRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
@@ -33,37 +34,40 @@ public class CompanyToIT_CC_Run {
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_CC_Run();
-		app.runCorrCreation();
+		app.runCorrCreation(SRC_MODEL_NAME, TRG_MODEL_NAME);
 	}
 
-	public boolean runCorrCreation() throws Exception {
+	public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
 			var genRules = genAPI.getAllRulesForCompanyToIT__GEN();
+			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
+
 			var corrCreation = new CorrCreationOperationalStrategy(//
 					solver, //
 					builder, //
 					genRules, //
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
 					getNegativeConstraints(builder), //
-					SRC_MODEL_NAME, //
-					TRG_MODEL_NAME//
+					srcModel, //
+					trgModel//
 			);
+
 			var generator = new NeoGenerator(//
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
 					new NoOpStartup(), new NoMoreMatchesTerminationCondition(), //
-					new NewCorrRuleScheduler(), //
+					new CCRuleScheduler(tripleRules), //
 					corrCreation, //
-					new CCReprocessor(genRules), //
+					new CCReprocessor(tripleRules), //
 					corrCreation, new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					new ModelNameValueGenerator(srcModel, trgModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start corr creation...");
 			generator.generate();
 
-			return corrCreation.isConsistent();
+			return corrCreation;
 		}
 	}
 
