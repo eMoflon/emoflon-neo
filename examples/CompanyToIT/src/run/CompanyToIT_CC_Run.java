@@ -23,7 +23,7 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.CCRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+import org.emoflon.neo.engine.modules.updatepolicies.OPTOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
@@ -37,14 +37,14 @@ public class CompanyToIT_CC_Run {
 		app.runCorrCreation(SRC_MODEL_NAME, TRG_MODEL_NAME);
 	}
 
-	public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
+	public OPTOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
 			var genRules = genAPI.getAllRulesForCompanyToIT__GEN();
 			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
 
-			var corrCreation = new CorrCreationOperationalStrategy(//
+			var corrCreation = new OPTOperationalStrategy(//
 					solver, //
 					builder, //
 					genRules, //

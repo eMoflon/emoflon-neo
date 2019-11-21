@@ -22,7 +22,7 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+import org.emoflon.neo.engine.modules.updatepolicies.OPTOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
@@ -52,7 +52,7 @@ public class CompanyToIT_FWD_OPT_Run {
 			var fwdAPI = new API_CompanyToIT_FWD_OPT(builder);
 			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
 
-			var forwardTransformation = new CorrCreationOperationalStrategy(solver, builder,
+			var forwardTransformation = new OPTOperationalStrategy(solver, builder,
 					genAPI.getAllRulesForCompanyToIT__GEN(), fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(),
 					getNegativeConstraints(builder), sourceModel, targetModel);
 			var generator = new NeoGenerator(//

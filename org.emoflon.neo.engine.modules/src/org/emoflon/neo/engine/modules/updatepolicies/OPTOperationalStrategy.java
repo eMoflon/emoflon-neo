@@ -18,11 +18,11 @@ import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
-public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
+public class OPTOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 	private Optional<MatchContainer<NeoMatch, NeoCoMatch>> matchContainer = Optional.empty();
 
-	public CorrCreationOperationalStrategy(//
+	public OPTOperationalStrategy(//
 			SupportedILPSolver solver, //
 			NeoCoreBuilder builder, //
 			Collection<NeoRule> genRules, //
