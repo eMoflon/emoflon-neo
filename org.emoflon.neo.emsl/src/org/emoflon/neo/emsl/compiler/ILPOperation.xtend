@@ -23,12 +23,14 @@ abstract class ILPOperation implements Operation {
 	
 	override handleParameters(Map<Parameter, ParameterData> paramsToData, Map<String, Collection<Parameter>> paramGroups) {
 		for(group : paramGroups.values) {
-			val representative = paramsToData.get(group.head)
+			val representative = paramsToData.get(selectParamGroupRepresentative(group, paramsToData))
 			for(param : group)
 				paramsToData.get(param).map(representative.containingBlock, representative.containingPropertyName)
 	 		representative.map(null, null)
 		 }
 	}
+	
+	def Parameter selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData)
 	
 	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return Collections.emptyList

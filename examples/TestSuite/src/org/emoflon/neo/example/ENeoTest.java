@@ -1,12 +1,15 @@
 package org.emoflon.neo.example;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.apache.log4j.Level;
@@ -15,12 +18,17 @@ import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPatternAccess;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.util.FlattenerException;
+import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.neo4j.driver.v1.StatementResult;
+
+import run.CompanyToIT_CC_Run;
+import run.CompanyToIT_CO_Run;
 
 public abstract class ENeoTest {
 	private static Scanner reader;
@@ -29,7 +37,7 @@ public abstract class ENeoTest {
 	
 	@BeforeAll
 	public static void startDBConnection() throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		
 		logger.info("Database Connection established.");
 		builder = API_Common.createBuilder();
@@ -105,5 +113,55 @@ public abstract class ENeoTest {
 	
 	protected void expectInvalidMatch(NeoMatch m) {
 		expectValidMatches(List.of(m), 0);
+	}
+	
+	private void testForConsistency(ILPBasedOperationalStrategy result, int numberOfConsistentElements) throws Exception {
+		assertTrue(result.isConsistent());
+		assertEquals(0, result.determineInconsistentElements().size());
+		assertEquals(numberOfConsistentElements, result.determineConsistentElements().size());
+	}
+	
+	protected void testConsistentTripleCO(String srcModel, String trgModel, int numberOfConsistentElements) throws Exception {
+		var testCOApp = new CompanyToIT_CO_Run();
+		var result = testCOApp.runCheckOnly(srcModel, trgModel);
+		testForConsistency(result, numberOfConsistentElements);
+	}
+
+	protected void testConsistentTripleCC(String srcModel, String trgModel, int numberOfConsistentElements) throws Exception {
+		var testCCApp = new CompanyToIT_CC_Run();
+		var result = testCCApp.runCorrCreation(srcModel, trgModel); 
+		testForConsistency(result, numberOfConsistentElements);
+	}
+
+	private void testForInconsistency(ILPBasedOperationalStrategy result, int consistent, int inconsistent) throws Exception {
+		assertFalse(result.isConsistent());
+		assertEquals(consistent, result.determineConsistentElements().size());
+		assertEquals(inconsistent, result.determineInconsistentElements().size());
+	}
+	
+	protected void testInconsistentTripleCO(String srcModel, String trgModel, int consistent, int inconsistent) throws Exception {
+		var testCOApp = new CompanyToIT_CO_Run();
+		var result = testCOApp.runCheckOnly(srcModel, trgModel);
+		testForInconsistency(result, consistent, inconsistent);
+	}
+	
+	protected void testInconsistentTripleCC(String srcModel, String trgModel, int consistent, int inconsistent) throws Exception {
+		var testCCApp = new CompanyToIT_CC_Run();
+		var result = testCCApp.runCorrCreation(srcModel, trgModel);
+		testForInconsistency(result, consistent, inconsistent);
+	}
+	
+	protected void exportTriple(Model src, Model trg) throws FlattenerException {
+		exportTriple(src, trg, Optional.empty());
+	}
+	
+	protected void exportTriple(Model src, Model trg, NeoRule createCorrs) throws FlattenerException {
+		exportTriple(src, trg, Optional.of(createCorrs));
+	}
+	
+	private void exportTriple(Model src, Model trg, Optional<NeoRule> createCorrs) throws FlattenerException {
+		builder.exportEMSLEntityToNeo4j(src);
+		builder.exportEMSLEntityToNeo4j(trg);
+		createCorrs.ifPresent(c -> c.apply());
 	}
 }

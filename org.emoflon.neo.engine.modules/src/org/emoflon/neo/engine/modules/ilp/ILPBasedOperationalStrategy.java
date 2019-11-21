@@ -29,7 +29,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 	protected NeoCoreBuilder builder;
 
-	protected Collection<Long> result;
+	protected Collection<Long> consistentElements;
+	protected Collection<Long> inconsistentElements;
 
 	protected Map<NeoMatch, String> matchToId;
 	protected Map<Long, Set<IMatch>> elementToCreatingMatches;
@@ -294,32 +295,37 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	public Collection<Long> determineConsistentElements() throws Exception {
-		computeILPProblem();
-		var ilpSolver = ILPFactory.createILPSolver(ilpProblem, solver);
+		if (consistentElements == null) {
+			computeILPProblem();
+			var ilpSolver = ILPFactory.createILPSolver(ilpProblem, solver);
 
-		logger.debug(ilpProblem);
+			logger.debug(ilpProblem);
 
-		var solution = ilpSolver.solveILP();
+			var solution = ilpSolver.solveILP();
 
-		logger.debug(solution);
+			logger.debug(solution);
 
-		if (solution.isOptimal() || auxVariableCounter == 0)
-			return matchToId.entrySet().stream()//
-					.filter(entry -> solution.getVariable(entry.getValue()) > 0)
-					.flatMap(entry -> getCreatedAndMarkedElts(entry.getKey()).stream()).collect(Collectors.toList());
-		else
-			throw new IllegalStateException("There should always be an optimal (= consistent) solution!");
+			if (solution.isOptimal() || auxVariableCounter == 0)
+				consistentElements = matchToId.entrySet().stream()//
+						.filter(entry -> solution.getVariable(entry.getValue()) > 0)
+						.flatMap(entry -> getCreatedAndMarkedElts(entry.getKey()).stream())
+						.collect(Collectors.toList());
+			else
+				throw new IllegalStateException("There should always be an optimal (= consistent) solution!");
+		}
+
+		return consistentElements;
 	}
 
 	public Collection<Long> determineInconsistentElements() throws Exception {
-		if (result == null) {
+		if (inconsistentElements == null) {
 			var consistentElements = determineConsistentElements();
 			var allElements = builder.getAllElementIDsInTriple(sourceModel, targetModel);
 			allElements.removeAll(consistentElements);
-			result = allElements;
+			inconsistentElements = allElements;
 		}
 
-		return result;
+		return inconsistentElements;
 	}
 
 	/**
@@ -366,6 +372,6 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 	public boolean isConsistent() throws Exception {
 		determineInconsistentElements();
-		return result.isEmpty();
+		return inconsistentElements.isEmpty();
 	}
 }

@@ -142,3 +142,7 @@ examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGram
 examples/FacebookToInstagramFASE/tgg-gen/Transformations/FacebookToInstagramGrammar_FWD_OPT.msl
 examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_BWD_OPT.msl
 examples/SokobanLanguage/tgg-gen/rules/SokobanTGGs/SokobanImportExport_FWD_OPT.msl
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_FWD_OPT.java
+examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_BWD_OPT.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_FWD_OPT.java
+examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_BWD_OPT.java

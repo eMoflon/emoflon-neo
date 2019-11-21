@@ -23,7 +23,7 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.CCRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.OPTOperationalStrategy;
+import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
@@ -34,24 +34,24 @@ public class CompanyToIT_CC_Run {
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_CC_Run();
-		app.runCorrCreation();
+		app.runCorrCreation(SRC_MODEL_NAME, TRG_MODEL_NAME);
 	}
 
-	public boolean runCorrCreation() throws Exception {
+	public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var ccAPI = new API_CompanyToIT_CC(builder);
 			var genRules = genAPI.getAllRulesForCompanyToIT__GEN();
 			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
 
-			var corrCreation = new OPTOperationalStrategy(//
+			var corrCreation = new CorrCreationOperationalStrategy(//
 					solver, //
+					builder, //
 					genRules, //
 					ccAPI.getAllRulesForCompanyToIT__CC(), //
 					getNegativeConstraints(builder), //
-					builder, //
-					SRC_MODEL_NAME, //
-					TRG_MODEL_NAME//
+					srcModel, //
+					trgModel//
 			);
 
 			var generator = new NeoGenerator(//
@@ -61,13 +61,13 @@ public class CompanyToIT_CC_Run {
 					corrCreation, //
 					new CCReprocessor(tripleRules), //
 					corrCreation, new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					new ModelNameValueGenerator(srcModel, trgModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			logger.info("Start corr creation...");
 			generator.generate();
 
-			return corrCreation.isConsistent();
+			return corrCreation;
 		}
 	}
 
