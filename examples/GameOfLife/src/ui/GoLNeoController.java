@@ -14,6 +14,7 @@ public class GoLNeoController implements IController {
 	private int height;
 	private API_GameOfLifeBuilder creator;
 	private API_GameOfLifeRules rules;
+	private static final Logger logger = Logger.getLogger(GoLNeoController.class);
 
 	public GoLNeoController(int width, int height, int[][] configuration) throws FlattenerException {
 		this.width = width;
@@ -32,27 +33,44 @@ public class GoLNeoController implements IController {
 
 		builder.exportEMSLEntityToNeo4j(rules.getMetamodel_GameOfLife());
 
+		logger.info("Done initialising...  Now building the board.");
+		
 		creator.getRule_CreateTopLeftCorner().rule().apply();
 		for (int col = 1; col < width; col++)
 			creator.getRule_CreateCellsInFirstRow().rule().apply();
-
+		
 		for (int row = 1; row < height; row++)
 			creator.getRule_CreateCellsInFirstCol().rule().apply();
 
-		var rule = creator.getRule_CreateAllOtherCells().rule();
-		while (rule.apply().isPresent())
-			;
+		logger.info("Created first row and column.");
+		
+		{
+			var rule = creator.getRule_CreateAllOtherCells().rule();
+			var matches = rule.determineMatches();
+			while (matches.size() > 0) {
+				rule.applyAll(matches);
+				matches = rule.determineMatches();
+			}
+		}
+		
+		logger.info("Created all other cells.");
 
-		var diag = creator.getRule_CreateDiagonals().rule();
-		while (diag.apply().isPresent())
-			;
+		{
+			var rule = creator.getRule_CreateDiagonals().rule();
+			var matches = rule.determineMatches();
+			rule.applyAll(matches);
+		}
+		
+		logger.info("Created all missing diagonal edges.");
 
 		for (int i = 0; i < configuration.length; i++) {
 			var mask = creator.getRule_MakeCellAlive().mask();
 			mask.setCellRow(configuration[i][0]);
 			mask.setCellCol(configuration[i][1]);
-			creator.getRule_MakeCellAlive().rule(mask).apply();
+			creator.getRule_MakeCellAlive().apply(mask, creator.getRule_MakeCellAlive().mask());
 		}
+		
+		logger.info("Set configuration in board.");
 
 		updateFields();
 	}
@@ -62,10 +80,11 @@ public class GoLNeoController implements IController {
 			for (int row = 0; row < height; row++)
 				fields[row][col].setIsAlive(false);
 
-		var liveCells = creator.getPattern_ALiveCell().matcher().determineMatches();
-		liveCells.forEach(m -> {
-			var data = creator.getPattern_ALiveCell().data(m);
-			fields[data.cell.row][data.cell.col].setIsAlive(true);
+		var liveCells = creator.getPattern_ALiveCell().pattern().determineMatches();
+		var data = creator.getPattern_ALiveCell().data(liveCells);
+		
+		data.forEach(d -> {
+			fields[d.cell.row][d.cell.col].setIsAlive(true);
 		});
 	}
 
@@ -85,24 +104,31 @@ public class GoLNeoController implements IController {
 	}
 
 	private void startSimulation(View view) throws InterruptedException {
-		Thread.sleep(1000);
-
+		long tic = System.currentTimeMillis();
+		
 		var dieOverPop = rules.getRule_DieDueToOverpopulation().rule().determineMatches();
 		var dieUnderPop = rules.getRule_DieDueToUnderpopulation().rule().determineMatches();
 		var reproduce = rules.getRule_Reproduce().rule().determineMatches();
 
-		dieOverPop.parallelStream().forEach(m -> rules.getRule_DieDueToOverpopulation().rule().apply(m));
-		dieUnderPop.parallelStream().forEach(m -> rules.getRule_DieDueToUnderpopulation().rule().apply(m));
-		reproduce.parallelStream().forEach(m -> rules.getRule_Reproduce().rule().apply(m));
+		rules.getRule_DieDueToOverpopulation().rule().applyAll(dieOverPop);
+		rules.getRule_DieDueToUnderpopulation().rule().applyAll(dieUnderPop);
+		rules.getRule_Reproduce().rule().applyAll(reproduce);
 
 		updateFields();
+		
+		long toc = System.currentTimeMillis();
+		
+		var sleep = 3000 - (toc - tic);
+		if(sleep > 0)
+			Thread.sleep(sleep);
+		
 		view.update();
 
 		startSimulation(view);
 	}
 
 	public static void main(String[] args) throws FlattenerException, Exception {
-		Logger.getRootLogger().setLevel(Level.FATAL);
+		Logger.getRootLogger().setLevel(Level.INFO);
 		var controller = new GoLNeoController(11, 21, pentadecathlon());
 		var view = new View(controller);
 		controller.startSimulation(view);

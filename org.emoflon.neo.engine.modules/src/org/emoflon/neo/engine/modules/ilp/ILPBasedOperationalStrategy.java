@@ -6,29 +6,33 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.constraints.NeoNegativeConstraint;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
-import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
-import org.emoflon.neo.engine.generator.MatchContainer;
-import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
 
-	protected Map<IMatch, String> matchToId;
+	protected NeoCoreBuilder builder;
+
+	protected Collection<Long> consistentElements;
+	protected Collection<Long> inconsistentElements;
+
+	protected Map<NeoMatch, String> matchToId;
 	protected Map<Long, Set<IMatch>> elementToCreatingMatches;
 	protected Map<Long, Set<IMatch>> elementToDependentMatches;
 	protected Map<IMatch, Set<Long>> matchToCreatedElements;
@@ -41,20 +45,45 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private int auxVariableCounter;
 	protected Map<IMatch, Integer> matchToWeight;
 	private BinaryILPProblem ilpProblem;
-	private boolean optimise = true;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
-	protected Collection<INegativeConstraint> negativeConstraints;
+	protected Map<String, IRule<NeoMatch, NeoCoMatch>> opRules;
+	protected Collection<NeoNegativeConstraint> negativeConstraints;
 
-	public ILPBasedOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules,
-			Collection<IConstraint> negativeConstraints) {
+	protected String sourceModel;
+	protected String targetModel;
+
+	protected SupportedILPSolver solver;
+
+	public ILPBasedOperationalStrategy(//
+			SupportedILPSolver solver, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			NeoCoreBuilder builder, //
+			String sourceModel, //
+			String targetModel//
+	) {
+		this.sourceModel = sourceModel;
+		this.targetModel = targetModel;
+		this.builder = builder;
+
+		matchToId = new HashMap<>();
+		matchToCreatedElements = new HashMap<>();
+		elementToCreatingMatches = new HashMap<>();
+		elementToDependentMatches = new HashMap<>();
+
+		this.solver = solver;
+
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
+		this.opRules = new HashMap<>();
+		opRules.forEach(tr -> this.opRules.put(tr.getName(), tr));
 
 		this.negativeConstraints = new ArrayList<>();
 		negativeConstraints.forEach(nc -> {
-			if (nc instanceof INegativeConstraint) {
-				this.negativeConstraints.add((INegativeConstraint) nc);
+			if (nc instanceof NeoNegativeConstraint) {
+				this.negativeConstraints.add((NeoNegativeConstraint) nc);
 			} else {
 				throw new IllegalArgumentException(
 						"Only negative domain constraints are supported at the moment: " + nc);
@@ -62,9 +91,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	protected void computeILPProblem(boolean optimise) {
-		this.optimise = optimise;
-
+	protected void computeILPProblem() {
 		// ILP definition
 		constraintCounter = 0;
 		variableCounter = 0;
@@ -86,16 +113,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		logger.debug("Created ILP problem.");
 	}
 
-	protected void registerMatches(Stream<? extends IMatch> matches) {
-		matchToId = new HashMap<>();
-		matchToCreatedElements = new HashMap<>();
-		elementToCreatingMatches = new HashMap<>();
-		elementToDependentMatches = new HashMap<>();
-
+	protected void registerMatches(Stream<? extends NeoMatch> matches) {
 		matches.forEach(m -> {
 			matchToId.put(m, varName(variableCounter++));
 
-			var createdElts = getCreatedElts(m);
+			var createdElts = getCreatedAndMarkedElts(m);
 			var contextElts = getContextElts(m);
 			matchToCreatedElements.put(m, createdElts);
 			createdElts.forEach(x -> addMatch(x, m, elementToCreatingMatches));
@@ -103,23 +125,10 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	@Override
-	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor pProgressMonitor) {
-		logger.debug("Registering all matches...");
-
-		// Precedence information
-		registerMatches(matches.stream());
-		computeWeights();
-
-		logger.debug("Registered all matches.");
-
-		return Collections.emptySet();
-	}
-
 	protected void computeWeights() {
 		matchToWeight = new HashMap<>();
 		for (var m : matchToId.keySet())
-			matchToWeight.put(m, getCreatedElts(m).size());
+			matchToWeight.put(m, getMarkedElts(m).size());
 	}
 
 	private void addMatch(Long x, IMatch m, Map<Long, Set<IMatch>> matches) {
@@ -129,17 +138,37 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		matches.get(x).add(m);
 	}
 
-	protected abstract Set<Long> getContextElts(IMatch m);
+	protected Set<Long> getContextElts(NeoMatch m) {
+		var genRule = genRules.get(m.getPattern().getName());
+		var ids = extractNodeIDs(genRule.getContextNodeLabels(), m);
+		ids.addAll(extractRelIDs(genRule.getContextRelLabels(), m));
+		return ids;
+	}
 
-	protected abstract Set<Long> getCreatedElts(IMatch m);
+	protected Set<Long> getCreatedAndMarkedElts(NeoMatch m) {
+		var genRule = genRules.get(m.getPattern().getName());
+		var ids = extractNodeIDs(genRule.getCreatedNodeLabels(), m);
+		ids.addAll(extractRelIDs(genRule.getCreatedRelLabels(), m));
+		return ids;
+	}
+
+	protected Set<Long> getCreatedElts(NeoMatch m) {
+		var ids = extractNodeIDs(opRules.get(m.getPattern().getName()).getCreatedNodeLabels(), m);
+		ids.addAll(extractRelIDs(opRules.get(m.getPattern().getName()).getCreatedRelLabels(), m));
+		return ids;
+	}
+
+	protected Set<Long> getMarkedElts(NeoMatch m) {
+		var marked = getCreatedAndMarkedElts(m);
+		var created = getCreatedElts(m);
+		marked.removeAll(created);
+		return marked;
+	}
 
 	protected void defineILPImplications() {
 		for (var entry : elementToCreatingMatches.entrySet()) {
 			var creatingMatches = entry.getValue();
 			var dependentMatches = elementToDependentMatches.getOrDefault(entry.getKey(), Collections.emptySet());
-
-			if (!optimise && creatingMatches.size() == 1)
-				ilpProblem.fixVariable(varNameFor(creatingMatches.iterator().next()), true);
 
 			if (!creatingMatches.isEmpty() && !dependentMatches.isEmpty()) {
 				// If no creator is chosen, no dependent can be chosen
@@ -209,6 +238,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	private String varNameFor(IMatch m) {
+		if (!matchToId.containsKey(m)) {
+			throw new IllegalArgumentException(
+					"You're requesting a variable name for an id that hasn't been registered yet: " + m.getPattern());
+		}
+
 		return matchToId.get(m);
 	}
 
@@ -221,10 +255,14 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	}
 
 	protected void handleConstraintViolations() {
+		long tic = System.currentTimeMillis();
+		logger.info("Checking for constraint violations...");
 		var violations = negativeConstraints.stream().flatMap(nc -> nc.getViolations().stream());
+		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
 
 		violations.forEach(v -> {
-			var elements = extractIDs(v.getPattern().getPatternElts(), v);
+			var elements = extractNodeIDs(v.getPattern().getContextNodeLabels(), v);
+			elements.addAll(extractRelIDs(v.getPattern().getContextRelLabels(), v));
 
 			var auxVariables = new ArrayList<String>();
 			var elementsThatCanNeverBeMarked = new ArrayList<Long>();
@@ -256,44 +294,38 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	public Optional<Set<Long>> determineConsistentElements(SupportedILPSolver suppSolver) throws Exception {
-		return determineConsistentElements(suppSolver, true);
-	}
+	public Collection<Long> determineConsistentElements() throws Exception {
+		if (consistentElements == null) {
+			computeILPProblem();
+			var ilpSolver = ILPFactory.createILPSolver(ilpProblem, solver);
 
-	protected Optional<Set<Long>> determineConsistentElements(SupportedILPSolver suppSolver, boolean optimise)
-			throws Exception {
-		computeILPProblem(optimise);
-		var solver = ILPFactory.createILPSolver(ilpProblem, suppSolver);
+			logger.debug(ilpProblem);
 
-		logger.debug(ilpProblem);
+			var solution = ilpSolver.solveILP();
 
-		var solution = solver.solveILP();
+			logger.debug(solution);
 
-		logger.debug(solution);
-
-		if (solution.isOptimal() || auxVariableCounter == 0)
-			return Optional.of(matchToId.entrySet().stream()//
-					.filter(entry -> solution.getVariable(entry.getValue()) > 0)
-					.flatMap(entry -> getCreatedElts(entry.getKey()).stream()).collect(Collectors.toSet()));
-		else
-			return Optional.empty();
-	}
-
-	protected Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver, boolean optimise)
-			throws Exception {
-		var consistentElements = determineConsistentElements(suppSolver, optimise);
-
-		if (consistentElements.isPresent()) {
-			var allElements = new HashSet<>(elementToCreatingMatches.keySet());
-			allElements.removeAll(consistentElements.get());
-			return Optional.of(allElements);
-		} else {
-			return Optional.empty();
+			if (solution.isOptimal() || auxVariableCounter == 0)
+				consistentElements = matchToId.entrySet().stream()//
+						.filter(entry -> solution.getVariable(entry.getValue()) > 0)
+						.flatMap(entry -> getCreatedAndMarkedElts(entry.getKey()).stream())
+						.collect(Collectors.toList());
+			else
+				throw new IllegalStateException("There should always be an optimal (= consistent) solution!");
 		}
+
+		return consistentElements;
 	}
 
-	public Optional<Set<Long>> determineInconsistentElements(SupportedILPSolver suppSolver) throws Exception {
-		return determineInconsistentElements(suppSolver, true);
+	public Collection<Long> determineInconsistentElements() throws Exception {
+		if (inconsistentElements == null) {
+			var consistentElements = determineConsistentElements();
+			var allElements = builder.getAllElementIDsInTriple(sourceModel, targetModel);
+			allElements.removeAll(consistentElements);
+			inconsistentElements = allElements;
+		}
+
+		return inconsistentElements;
 	}
 
 	/**
@@ -304,11 +336,42 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	 * @param m
 	 * @return
 	 */
-	protected Set<Long> extractIDs(Stream<String> elements, IMatch m) {
-		return elements//
-				.filter(name -> m.getNodeIDs().containsKey(name) || m.getEdgeIDs().containsKey(name))//
-				.map(name -> m.getNodeIDs().containsKey(name) ? //
-						m.getNodeIDs().get(name) : -1 * m.getEdgeIDs().get(name))//
+	protected Set<Long> extractNodeIDs(Collection<String> nodes, NeoMatch m) {
+		return nodes.stream()//
+				.filter(name -> m.containsElement(name))//
+				.map(name -> m.getElement(name))//
 				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Get ids from a match. Note that edge and node ids are orthogonal. To avoid
+	 * duplicate ids, edge ids are prepended with a - to retain uniqueness.
+	 * 
+	 * @param elements
+	 * @param m
+	 * @return
+	 */
+	protected Set<Long> extractRelIDs(Collection<String> rels, NeoMatch m) {
+		return rels.stream()//
+				.filter(name -> m.containsElement(name))//
+				.map(name -> -1 * m.getElement(name))//
+				.collect(Collectors.toSet());
+	}
+
+	public int getNrOfILPConstraints() {
+		return ilpProblem.getConstraints().size();
+	}
+
+	public int getNroOfGraphConstraints() {
+		return negativeConstraints.size();
+	}
+
+	public String getInfo() {
+		return ilpProblem.getProblemInformation();
+	}
+
+	public boolean isConsistent() throws Exception {
+		determineInconsistentElements();
+		return inconsistentElements.isEmpty();
 	}
 }

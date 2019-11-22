@@ -35,10 +35,13 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  FruitGardenLanguage;bundle-version="1.0.0",
  RiverCrossing;bundle-version="1.0.0",
  Chess,
- org.eclipse.core.resources;bundle-version="3.13.400"
+ org.eclipse.core.resources;bundle-version="3.13.400",
+ CompanyToIT;bundle-version="1.0.0",
+ org.emoflon.neo.engine.modules;bundle-version="1.0.0"
 Automatic-Module-Name: TestSuite
 Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.api.expected,
+ org.emoflon.neo.api.org.emoflon.neo.example.companytoit,
  org.emoflon.neo.example,
  org.emoflon.neo.example.chess,
  org.emoflon.neo.example.fruitgarden,

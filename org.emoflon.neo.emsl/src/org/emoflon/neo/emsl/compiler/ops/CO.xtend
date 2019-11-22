@@ -1,28 +1,38 @@
 package org.emoflon.neo.emsl.compiler.ops
 
-import org.emoflon.neo.emsl.compiler.Operation
+import org.emoflon.neo.emsl.compiler.ILPOperation
 import org.emoflon.neo.emsl.eMSL.Action
-import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.Parameter
+import java.util.Collection
+import org.emoflon.neo.emsl.compiler.ParameterData
+import java.util.Map
 
-class CO implements Operation {
+class CO extends ILPOperation {
 	override String getNameExtension() {
 		return "_CO"
 	}
-
-	override String getAction(Action pAction, boolean pIsSrc) {
+	
+	override getAction(Action action, boolean isSrc) {
 		return ""
 	}
-
-	override String getTranslation(Action pAction, boolean pIsSrc) {
-		return ""
+	
+	override requiresSrcModelRule() {
+		true
+	}
+	
+	override requiresTrgModelRule() {
+		true
+	}
+	
+	override requiresModelCreation() {
+		false
+	}
+	
+	override requiresCorrModelCreation() {
+		false
 	}
 
-	override String compileCorrespondence(Correspondence corr) {
-		'''
-			-corr->«corr.target.name»
-			{
-				._type_ : "«corr.type.name»"
-			}
-		'''
+	override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
+		paramGroup.head
 	}
 }

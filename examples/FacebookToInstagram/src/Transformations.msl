@@ -1,10 +1,11 @@
-import "platform:/resource/FacebookToInstagram/src/Languages.msl"
+import "platform:/resource/FacebookToInstagram/src/Facebook.msl"
+import "platform:/resource/FacebookToInstagram/src/Instagram.msl"
 
 tripleGrammar FacebookToInstagramGrammar {
 	source {
 		FacebookLanguage
 	}
-	
+  	
 	target {
 		InstagramLanguage
 	}
@@ -24,17 +25,14 @@ tripleGrammar FacebookToInstagramGrammar {
 		UserNetworkBridgeRule
 		
 		// Handle friendship/followership
-		HandleIntraNetworkFollowers
-		IgnoreIntraNetworkFollowers
+		RequestFriendship
+		AcceptFriendship
 		IgnoreInterNetworkFollowers
 		
 		// Ignore all extra relationships
-		UserRelationIgnoreRule
-
-		// Followers
-		FriendsParentsIgnoreRule
-		FriendsSpouseIgnoreRule
-		FriendsSiblingsIgnoreRule		
+		ParentsIgnoreRule
+		SpouseIgnoreRule
+		SiblingsIgnoreRule		
 	}
 }
 
@@ -49,27 +47,9 @@ abstract tripleRule Followers : FacebookToInstagramGrammar {
 	}
 	
 	target {
-		iu : User {
-			-followerships-> fou
-		}
+		iu : User 
 		
-		fou : Followership {
-			-from-> fru
-		}
-		
-		fru : From
-		
-		in : User {
-			-followerships-> fon
-		}
-		
-		fon : Followership {
-			-to-> ton
-		}
-		
-		ton : To {
-			++ -follows-> fru
-		}
+		in : User 
 	}
 	
 	correspondence {
@@ -79,11 +59,11 @@ abstract tripleRule Followers : FacebookToInstagramGrammar {
 	}
 }
 
-tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers {
+tripleRule AcceptFriendship : FacebookToInstagramGrammar -> Followers {
 	source {
 		n : Network {
 			-users-> $fu
-			++ -fiendships-> fri
+			++ -friendships-> fri
 		}
 		
 		++ fri : Friendship {
@@ -93,21 +73,21 @@ tripleRule HandleIntraNetworkFollowers : FacebookToInstagramGrammar -> Followers
 	}
 	
 	target {
-		fou : Followership {
-			-to-> tou
+		in : User {
+			++ -follows->iu
 		}
 		
-		tou : To
-		
-		fon : Followership {
-			-from-> frn
+		iu : User {
+			-follows->in
 		}
-		
-		frn : From
 	}
-} forbid src(noDoubleFriendshipFacebook) && trg(noDoubleFollowershipInstagram)
+} forbid src(NoDoubleFriendshipFacebook) && trg(NoDoubleFollowershipInstagram)
 
-pattern noDoubleFriendshipFacebook {
+pattern NoDoubleFriendshipFacebook {
+	n:FacebookLanguage.Network {
+		-friendships->other
+	}
+	
 	fn : FacebookLanguage.User
 	
 	fu : FacebookLanguage.User
@@ -118,15 +98,17 @@ pattern noDoubleFriendshipFacebook {
 	}
 }
 
-pattern noDoubleFollowershipInstagram {
-	tou : To {
-		-follows-> frn
+pattern NoDoubleFollowershipInstagram {
+	in : InstagramLanguage.User {
+		-follows-> iu
 	}
 	
-	frn : From
+	iu : InstagramLanguage.User
 }
 
-tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {
+pattern NoRedundantFollowershipInstagram -> NoDoubleFollowershipInstagram[in -> iu, iu -> in]
+
+abstract tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {
 	source {
 		fu : User
 		
@@ -134,27 +116,65 @@ tripleRule UserRelationIgnoreRule : FacebookToInstagramGrammar {
 	}
 }
 
-tripleRule FriendsParentsIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
+tripleRule ParentsIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
 	source {
 		fu : User {
 			++ -parents-> $fn
 		}
 	}
-}
+} forbid src(NoDoubleParent) && src(NoCyclicParenthood)
 
-tripleRule FriendsSpouseIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
-	source {
-		fu : User {
-			++ -spouse-> $fn
-		}
+pattern NoDoubleParent {
+	fn:FacebookLanguage.User
+	
+	fu : FacebookLanguage.User {
+		-parents-> fn
 	}
 }
 
-tripleRule FriendsSiblingsIgnoreRule : FacebookToInstagramGrammar -> UserRelationIgnoreRule {
+pattern NoCyclicParenthood -> NoDoubleParent[fn -> fu, fu -> fn]
+
+tripleRule SpouseIgnoreRule : FacebookToInstagramGrammar {
 	source {
 		fu : User {
-			++ -siblings-> $fn
+			++ -spouse-> fn
 		}
+		
+		fn : User {
+			++ -spouse-> fu
+		}
+	}
+} forbid src(NoDoubleSpouse)
+
+pattern NoDoubleSpouse {
+	fn:FacebookLanguage.User {
+		-spouse-> fu
+	}
+	
+	fu : FacebookLanguage.User {
+		-spouse-> fn
+	}
+}
+
+tripleRule SiblingsIgnoreRule : FacebookToInstagramGrammar {
+	source {
+		fn : User {
+			++ -siblings-> fu
+		}
+		
+		fu : User {
+			++ -siblings-> fn
+		}
+	}
+} forbid src(NoDoubleSibling)
+
+pattern NoDoubleSibling {
+	fn:FacebookLanguage.User {
+		-siblings->fu
+	}
+	
+	fu : FacebookLanguage.User {
+		-siblings-> fn
 	}
 }
 
@@ -164,49 +184,39 @@ tripleRule IgnoreInterNetworkFollowers : FacebookToInstagramGrammar -> Followers
 			-users-> $fu
 		}
 	}
-}
-
-tripleRule IgnoreIntraNetworkFollowers : FacebookToInstagramGrammar {
-	target {
-		iu : User {
-			-followerships-> fou
-		}
-		
-		fou : Followership {
-			-to-> tou
-			-from-> fru
-		}
-		
-		tou : To {
-			++ -follows-> frn
-		}
-		
-		fru : From
-		
+	
+	target {	
 		in : User {
-			-followerships-> fon
+			++ -follows-> iu
 		}
 		
-		fon : Followership {
-			-to-> ton
-			-from-> frn
-		}
-		
-		frn : From
-		
-		ton : To {
-			-follows-> fru
+		iu : User {
+			-follows-> in
 		}
 	}
-}
+} forbid trg(NoDoubleFollowershipInstagram)
+
+tripleRule RequestFriendship : FacebookToInstagramGrammar {
+	target {
+		iu : User
+		
+		in : User {
+			++ -follows-> iu
+		}
+	}
+} forbid trg(NoDoubleFollowershipInstagram) && trg(NoRedundantFollowershipInstagram)
 
 tripleRule NetworkToNetworkIslandRule : FacebookToInstagramGrammar {
 	source {
-		++ fl : Network
+		++ fl : Network {
+			.description := <networkDesc>
+		}
 	}
 	
 	target {
-		++ il : Network
+		++ il : Network {
+			.description := <networkDesc>
+		}
 	}
 	
 	correspondence {
@@ -235,26 +245,39 @@ tripleRule UserNetworkBridgeRule : FacebookToInstagramGrammar {
 		f <-:NetworkToNetwork-> i
 		fu <-:FbUserToInUser-> iu
 	}
+}  forbid src(AlreadyInFBNetwork) && src(AlreadyInAFBNetwork) && trg(AlreadyInInstNetwork) && trg(AlreadyInAnInstNetwork)
+
+pattern AlreadyInAFBNetwork -> AlreadyInFBNetwork[f -> other]
+
+pattern AlreadyInFBNetwork {
+	f:FacebookLanguage.Network {
+		-users->fu
+	}
+	
+	fu:FacebookLanguage.User
+}
+
+pattern AlreadyInAnInstNetwork -> AlreadyInInstNetwork[i -> other]
+
+pattern AlreadyInInstNetwork {
+	i:InstagramLanguage.Network {
+		-users->iu
+	}
+	
+	iu:InstagramLanguage.User
 }
 
 tripleRule UserToUserIslandRule : FacebookToInstagramGrammar {
 	source {
-		++ flu : User
+		++ flu : User {
+			.name := <userName>
+		}
 	}
 	
 	target {
 		++ ilu : User {
-			++ -followerships-> fo
+			.name := <userName>
 		}
-		
-		++ fo : Followership {
-			++ -to-> to
-			++ -from-> fr
-		}
-		
-		++ to : To
-		
-		++ fr : From
 	}
 	
 	correspondence {

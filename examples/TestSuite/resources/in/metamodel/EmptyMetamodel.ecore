@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="ASCII"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    name="EmptyMetamodel" nsURI="platform:/resource/TestSuite/resources/in/metamodel/EmptyMetamodel.ecore"
-    nsPrefix="EmptyMetamodel"/>

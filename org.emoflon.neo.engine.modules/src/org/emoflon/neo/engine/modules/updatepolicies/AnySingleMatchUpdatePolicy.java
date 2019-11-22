@@ -1,14 +1,16 @@
 package org.emoflon.neo.engine.modules.updatepolicies;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
+import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
 /**
  * Selects a single match. The selection is non-deterministic but not explicitly
@@ -16,12 +18,15 @@ import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
  */
 public class AnySingleMatchUpdatePolicy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
 	@Override
-	public Collection<NeoMatch> selectMatches(MatchContainer<NeoMatch, NeoCoMatch> pMatches,
-			IMonitor pProgressMonitor) {
-		Collection<NeoMatch> matches = new HashSet<>();
-		Optional<NeoMatch> selectedMatch = pMatches.stream().findAny();
-		if (selectedMatch.isPresent())
-			matches.add(selectedMatch.get());
-		return matches;
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
+			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> progressMonitor) {
+		Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selection = new HashMap<>();
+		matches.stream()//
+				.filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())//
+				.findAny()//
+				.ifPresent(entry -> entry.getValue().stream()//
+						.findAny()//
+						.ifPresent(m -> selection.put(entry.getKey(), List.of(m))));
+		return selection;
 	}
 }

@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_RiverCrossing;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ public class RiverCrossingRules extends ENeoTest {
 		assertEquals(1, matchesMoveGoat.size());
 		var matchMoveGoat = matchesMoveGoat.iterator().next();
 		moveGoat.apply(matchMoveGoat);
-		assertFalse(matchMoveGoat.isStillValid());
+		expectInvalidMatch(matchMoveGoat);
 		
 		// (W C)  <-----> (F G)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
@@ -45,7 +45,7 @@ public class RiverCrossingRules extends ENeoTest {
 		assertEquals(1, matchesMoveEmpty.size());
 		var matchMoveEmpty = matchesMoveEmpty.iterator().next();
 		moveEmpty.apply(matchMoveEmpty);
-		assertFalse(matchMoveEmpty.isStillValid());
+		expectInvalidMatch(matchMoveEmpty);
 		
 		// (F W C)  <-----> (G)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
@@ -57,7 +57,7 @@ public class RiverCrossingRules extends ENeoTest {
 		assertEquals(1, matchesMoveWolf.size());
 		var matchMoveWolf = matchesMoveWolf.iterator().next();
 		moveWolf.apply(matchMoveWolf);
-		assertFalse(matchMoveWolf.isStillValid());
+		expectInvalidMatch(matchMoveWolf);
 		
 		// (C)  <-----> (F W G)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
@@ -68,7 +68,7 @@ public class RiverCrossingRules extends ENeoTest {
 		assertEquals(1, matchesMoveGoat.size());
 		matchMoveGoat = matchesMoveGoat.iterator().next();
 		moveGoat.apply(matchMoveGoat);
-		assertFalse(matchMoveGoat.isStillValid());
+		expectInvalidMatch(matchMoveGoat);
 		
 		// (F C G)  <-----> (W)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
@@ -80,7 +80,7 @@ public class RiverCrossingRules extends ENeoTest {
 		assertEquals(1, matchesMoveCabbage.size());
 		var matchMoveCabbage = matchesMoveCabbage.iterator().next();
 		moveCabbage.apply(matchMoveCabbage);
-		assertFalse(matchMoveCabbage.isStillValid());
+		expectInvalidMatch(matchMoveCabbage);
 		
 		// (G)  <-----> (F W C)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
@@ -91,7 +91,7 @@ public class RiverCrossingRules extends ENeoTest {
 		assertEquals(1, matchesMoveEmpty.size());
 		matchMoveEmpty = matchesMoveEmpty.iterator().next();
 		moveEmpty.apply(matchMoveEmpty);
-		assertFalse(matchMoveEmpty.isStillValid());
+		expectInvalidMatch(matchMoveEmpty);
 		
 		// (F G)  <-----> (W C)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
@@ -102,13 +102,12 @@ public class RiverCrossingRules extends ENeoTest {
 		assertEquals(1, matchesMoveGoat.size());
 		matchMoveGoat = matchesMoveGoat.iterator().next();
 		moveGoat.apply(matchMoveGoat);
-		assertFalse(matchMoveGoat.isStillValid());
+		expectInvalidMatch(matchMoveGoat);
 		
 		// ()  <-----> (F W C G)
 		assertTrue(entities.getConstraint_ForbidOneEatsAnother().isSatisfied());
 		assertTrue(entities.getConstraint_GameEnded().isSatisfied());
 		
-		// game finished
-		
+		// game finished		
 	}
 }

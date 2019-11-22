@@ -78,7 +78,7 @@ final class GurobiWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws GRBException {
-		ILPSolver.logger.info(this.ilpProblem.getProblemInformation());
+		ILPSolver.logger.debug(this.ilpProblem.getProblemInformation());
 
 		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
 		currentTimeout = GurobiWrapper.MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
@@ -154,7 +154,7 @@ final class GurobiWrapper extends ILPSolver {
 		this.env.dispose();
 		this.model.dispose();
 		ILPSolution solution = this.ilpProblem.createILPSolution(solutionVariables, optimal, optimum);
-		ILPSolver.logger.info(solution.getSolutionInformation());
+		ILPSolver.logger.debug(solution.getSolutionInformation());
 		return solution;
 	}
 
@@ -165,6 +165,12 @@ final class GurobiWrapper extends ILPSolver {
 		GRBLinExpr gurobiExpression = new GRBLinExpr();
 		for (int variableId : linearExpression.getVariables()) {
 			double coefficient = linearExpression.getCoefficient(variableId);
+			
+			if(!this.gurobiVariables.containsKey(variableId)) {
+				String fixed = ilpProblem.getVariableIdsOfUnfixedVariables().contains(variableId)? "free" : "fixed (" + ilpProblem.getFixedVariable(ilpProblem.getVariable(variableId)) + ")";
+				throw new IllegalArgumentException("The " + fixed + " variable id " + ilpProblem.getVariable(variableId) + " in [" + linearExpression + "] is invalid!");
+			}
+			
 			gurobiExpression.addTerm(coefficient, this.gurobiVariables.get(variableId));
 		}
 		return gurobiExpression;

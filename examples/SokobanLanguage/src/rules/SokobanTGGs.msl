@@ -16,18 +16,17 @@ tripleGrammar SokobanImportExport {
 	}
 	
 	rules {
-		// BoardToBoardRule
 		BoardEndEntryRule
 		BoardNormalEntryRule
-		// EndRule
-		// NormalRule
-		// AllOtherFields
-		AllOtherFieldsEnd
-		AllOtherFieldsNormal
-		// FirstRowAllCols
-		FirstColAllRows
+		
 		FirstColAllRowsEnd
 		FirstColAllRowsNormal
+
+		FirstRowAllColsEnd
+		FirstRowAllColsNormal
+
+		AllOtherFieldsEnd
+		AllOtherFieldsNormal		
 	}
 }
 
@@ -122,18 +121,59 @@ abstract tripleRule AllOtherFields:SokobanImportExport {
 	}
 	
 	correspondence {
-		++ ble <-:EntryToField-> bl
+		ble <-:EntryToField-> bl
 		
 		++ ne <-:EntryToField-> nf
 	}
 }
 
 tripleRule AllOtherFieldsEnd:SokobanImportExport -> AllOtherFields, EndRule
+forbid trg(NoDoubleBottomToo) && trg(NoDoubleRightToo)
+
+pattern NoDoubleBottomToo -> NoDoubleBottom[f->ur]
+pattern NoDoubleRightToo -> NoDoubleRight[f->bl]
 
 tripleRule AllOtherFieldsNormal:SokobanImportExport -> AllOtherFields, NormalRule
+forbid trg(NoDoubleBottomToo) && trg(NoDoubleRightToo)
 
+abstract tripleRule FirstRowAllCols:SokobanImportExport -> FirstFields {
+	source {
+		e:Entry {
+			++ -next->$ne
+		}
+	}
+	
+	target {
+		b:Board {
+			-fields->f {				
+				.row : 0
+			}
+			++ -fields->$nf {
+				.row := 0
+			}
+		}
+		
+		f: Field {
+			++ -right->$nf
+		}
+	}
+}
 
-abstract tripleRule FirstRowAllCols:SokobanImportExport {
+tripleRule FirstRowAllColsEnd:SokobanImportExport -> FirstRowAllCols, EndRule
+forbid trg(NoDoubleRight)
+
+pattern NoDoubleRight {
+	f:Field {
+		-right->other
+	}
+	
+	other:Field
+}
+
+tripleRule FirstRowAllColsNormal:SokobanImportExport -> FirstRowAllCols, NormalRule
+forbid trg(NoDoubleRight)
+
+abstract tripleRule FirstFields:SokobanImportExport {
 	source {
 		e: Entry
 		
@@ -142,17 +182,11 @@ abstract tripleRule FirstRowAllCols:SokobanImportExport {
 	
 	target {
 		b: Board {
-			-fields->f {				
-				.row : 0
-			}
-			++ -fields->nf {
-				.row := 0
-			}
+			-fields->f
+			++ -fields->nf
 		}
 		
-		f: Field {
-			++ -bottom->nf
-		}
+		f: Field
 		
 		++ nf: Field
 	}
@@ -164,7 +198,7 @@ abstract tripleRule FirstRowAllCols:SokobanImportExport {
 	}
 }
 
-tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {
+abstract tripleRule FirstColAllRows:SokobanImportExport -> FirstFields {
 	source {
 		r: Row {
 			-firstEntry-> $e 
@@ -176,6 +210,15 @@ tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {
 		}
 	}
 	target {
+		b:Board {
+			-fields->f {				
+				.col : 0
+			}
+			++ -fields->nf {
+				.col := 0
+			}
+		}
+		
 		f: Field {
 			++ -bottom-> nf
 		}
@@ -185,8 +228,16 @@ tripleRule FirstColAllRows:SokobanImportExport -> FirstRowAllCols {
 }
 
 tripleRule FirstColAllRowsEnd:SokobanImportExport -> FirstColAllRows, EndRule
+forbid trg(NoDoubleBottom)
 
 tripleRule FirstColAllRowsNormal:SokobanImportExport -> FirstColAllRows, NormalRule
+forbid trg(NoDoubleBottom)
 
-
+pattern NoDoubleBottom {
+	f:Field {
+		-bottom->other
+	}
+	
+	other:Field
+}
 

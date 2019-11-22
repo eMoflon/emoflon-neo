@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.xtext,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.eclipse.ui;bundle-version="3.111.0",
  org.eclipse.core.runtime;bundle-version="3.15.100",
- org.eclipse.core.resources;bundle-version="3.13.200",
+ org.eclipse.core.resources;bundle-version="3.13.200";visibility:=reexport,
  org.eclipse.jdt.core;bundle-version="3.16.0",
  org.apache.commons.io;bundle-version="2.2.0",
  org.apache.log4j;bundle-version="1.2.15",
@@ -39,3 +39,4 @@ Export-Package: org.emoflon.neo.emsl,
  org.emoflon.neo.emsl.util,
  org.emoflon.neo.emsl.validation
 Import-Package: org.apache.log4j
+Bundle-RequiredExecutionEnvironment: JavaSE-12

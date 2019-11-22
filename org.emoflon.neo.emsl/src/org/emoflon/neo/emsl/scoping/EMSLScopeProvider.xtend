@@ -675,7 +675,8 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 					EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
 				])
 			} catch (Exception e) {
-				println("Unable to load: " + EMSLUtil.ORG_EMOFLON_NEO_CORE_URI)
+				// TODO[Anjorin] Find out what the problem is here
+				//logger.debug("Unable to load: " + EMSLUtil.ORG_EMOFLON_NEO_CORE_URI)
 			}
 		}
 

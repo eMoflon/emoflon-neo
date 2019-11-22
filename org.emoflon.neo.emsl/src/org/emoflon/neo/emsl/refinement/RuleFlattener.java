@@ -24,6 +24,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType;
+import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
@@ -433,10 +434,12 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		String newLabel = null;
 		for (var refinement : refinementList) {
 			if (basis.eContainer().eContainer() instanceof SuperType
-					&& refinement.getReferencedType().getName().equals(((SuperType) basis.eContainer().eContainer()).getName())
-					|| (basis.eContainer().eContainer() != null 
+					&& refinement.getReferencedType().getName()
+							.equals(((SuperType) basis.eContainer().eContainer()).getName())
+					|| (basis.eContainer().eContainer() != null
 							&& basis.eContainer().eContainer().eContainer() instanceof SuperType
-							&& refinement.getReferencedType().getName().equals(((SuperType) basis.eContainer().eContainer().eContainer()).getName()))) {
+							&& refinement.getReferencedType().getName()
+									.equals(((SuperType) basis.eContainer().eContainer().eContainer()).getName()))) {
 				for (var relabeling : refinement.getRelabeling()) {
 					if (basis.eContainer().eContainer() instanceof ModelNodeBlock
 							&& ((ModelNodeBlock) basis.eContainer().eContainer()).getName()
@@ -691,15 +694,20 @@ public class RuleFlattener extends AbstractEntityFlattener {
 		} else if (v1 instanceof EnumValue && v2 instanceof EnumValue
 				&& ((EnumValue) v1).getLiteral() == ((EnumValue) v2).getLiteral()) {
 			return true;
-		} else if(v1 instanceof AttributeExpression && v2 instanceof AttributeExpression) {
-			var ae1 = (AttributeExpression)v1;
-			var ae2 = (AttributeExpression)v2;
-			return ae1.getNode().getName().equals(ae2.getNode().getName()) && ae1.getTarget().getAttribute().equals(ae2.getTarget().getAttribute());
+		} else if (v1 instanceof AttributeExpression && v2 instanceof AttributeExpression) {
+			var ae1 = (AttributeExpression) v1;
+			var ae2 = (AttributeExpression) v2;
+			return ae1.getNode().getName().equals(ae2.getNode().getName())
+					&& ae1.getTarget().getAttribute().equals(ae2.getTarget().getAttribute());
 		} else if (v1 instanceof BinaryExpression && v2 instanceof BinaryExpression) {
 			var be1 = (BinaryExpression) v1;
 			var be2 = (BinaryExpression) v2;
 			return be1.getOp().equals(be2.getOp()) && compareProperties(be1.getLeft(), be2.getLeft())
 					&& compareProperties(be1.getRight(), be2.getRight());
+		} else if (v1 instanceof Parameter && v2 instanceof Parameter) {
+			var p1 = (Parameter) v1;
+			var p2 = (Parameter) v2;
+			return p1.getName().equals(p2.getName());
 		}
 
 		return false;

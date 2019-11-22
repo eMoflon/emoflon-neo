@@ -3,10 +3,13 @@ package org.emoflon.neo.engine.api.patterns;
 import java.util.Map;
 
 public interface IMatch {
-	IPattern<?> getPattern();
-
-	boolean isStillValid();	
+	IPattern<? extends IMatch> getPattern();
 	
-	Map<String, Long> getNodeIDs();
-	Map<String, Long> getEdgeIDs();
+	boolean containsElement(String elt);
+	long getElement(String elt);
+	
+	void addParameter(String param, Object value);
+	void addAllParameters(Map<String, Object> parameters);
+	
+	Map<String, Object> convertToMap();
 }

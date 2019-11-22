@@ -88,10 +88,15 @@ class ConstraintTraversalHelper {
 	
 	def getPrimaryString(ConstraintBody constraintBody) {
 		if (constraintBody instanceof ConstraintReference)
-			getConstraintReferenceString(constraintBody)
-		else if (constraintBody.children.size > 0 && constraintBody.children.get(0) instanceof ConstraintReference)
-			getConstraintReferenceString((constraintBody.children.get(0) as ConstraintReference))
-		else
+				getConstraintReferenceString(constraintBody)
+		else if (constraintBody.children.size > 0) {
+			for (c : constraintBody.children) {
+				if (c instanceof ConstraintReference)
+					getConstraintReferenceString((c as ConstraintReference))
+				else
+					getOrBodyString(constraintBody)
+			}
+		} else
 			getOrBodyString(constraintBody)
 	}
 	

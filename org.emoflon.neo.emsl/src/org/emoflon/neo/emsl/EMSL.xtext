@@ -34,7 +34,11 @@ ModelPropertyStatement:
 	('~' inferredType=ID | '.' type=[MetamodelPropertyStatement|ID]) op=ConditionOperator value=ValueExpression;
 
 ValueExpression:
-	Value | BinaryExpression
+	Value | BinaryExpression | Parameter
+;
+
+Parameter:
+	'<' name=ID '>'
 ;
 
 Value:

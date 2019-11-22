@@ -1,5 +1,6 @@
-metamodel org.emoflon.neo.neocore {
+metamodel NeoCore {
 	EClass : EClassifier, EAttributedElement {
+		.enamespace : EString
 		-eReferences(0..*)-> EReference 		
 		-eSuperType(0..*)->EClass
 	}
@@ -35,9 +36,6 @@ metamodel org.emoflon.neo.neocore {
 		-metaType(1..1)-> EObject
 		-corr(0..*)->EObject {
 			._type_:EString
-		}
-		-eContainer(0..1)->EObject {
-			.isComposition:EBoolean
 		}	
 	}
 	

@@ -18,15 +18,18 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
+import org.emoflon.neo.cypher.factories.NeoConstraintFactory;
+import org.emoflon.neo.cypher.factories.NeoPatternFactory;
+import org.emoflon.neo.cypher.factories.NeoRuleFactory;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.ui.util.ENeoConsole;
-import org.emoflon.neo.neo4j.adapter.constraints.NeoConstraintFactory;
-import org.emoflon.neo.neo4j.adapter.models.NeoCoreBuilder;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoPatternFactory;
-import org.emoflon.neo.neo4j.adapter.rules.NeoRuleFactory;
+import org.emoflon.neo.emsl.util.FlattenerException;
+import org.emoflon.neo.engine.api.patterns.IMask;
+import org.emoflon.neo.engine.generator.Schedule;
 
 @SuppressWarnings("restriction")
 public class CreateCypherQuery extends AbstractHandler {
@@ -61,22 +64,29 @@ public class CreateCypherQuery extends AbstractHandler {
 				}
 			});
 			logger.debug("Extracted: " + emslEntity);
-			emslEntity.ifPresent(this::createCypherQueryFromSelection);
+			emslEntity.ifPresent(t -> {
+				try {
+					createCypherQueryFromSelection(t);
+				} catch (FlattenerException e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
+			});
 		}
 	}
 
-	private void createCypherQueryFromSelection(EObject selection) {
+	private void createCypherQueryFromSelection(EObject selection) throws FlattenerException {
 		if (selection instanceof AtomicPattern) {
 			var pattern = (Pattern) (((AtomicPattern) selection).eContainer());
 			var neoPattern = NeoPatternFactory.createNeoPattern(pattern);
-			copyStringToClipboard(neoPattern.getQuery());
+			copyStringToClipboard(neoPattern.getQuery(Schedule.unlimited(), IMask.empty()));
 
 		} else if (selection instanceof Constraint) {
 			var constraint = NeoConstraintFactory.createNeoConstraint((Constraint) selection);
 			copyStringToClipboard(constraint.getQuery());
 		} else if (selection instanceof Rule) {
 			var rule = NeoRuleFactory.createNeoRule((Rule) selection);
-			copyStringToClipboard(rule.getQuery());
+			copyStringToClipboard(rule.getQuery(IMask.empty()));
 		} else
 			throw new IllegalArgumentException("This type of selection cannot be exported: " + selection);
 	}

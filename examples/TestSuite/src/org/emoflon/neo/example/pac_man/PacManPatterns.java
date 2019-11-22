@@ -25,7 +25,7 @@ public class PacManPatterns extends ENeoTest {
 	
 	@Test
 	public void test_GhostOnField() {
-		assertThat(entities.getPattern_GhostOnField().matcher().countMatches(), is(2));
+		assertThat(entities.getPattern_GhostOnField().pattern().countMatches(), is(2));
 	}
 	
 	@Test
@@ -40,6 +40,6 @@ public class PacManPatterns extends ENeoTest {
 	
 	@Test
 	public void test_Paths() {
-		assertEquals(1, entities.getPattern_RelatedFields().matcher().countMatches());
+		assertEquals(1, entities.getPattern_RelatedFields().pattern().countMatches());
 	}
 }

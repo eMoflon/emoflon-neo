@@ -1,36 +1,71 @@
 package org.emoflon.neo.engine.modules.updatepolicies;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
+import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
-import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.modules.ICleanupModule;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.neo4j.adapter.patterns.NeoMatch;
-import org.emoflon.neo.neo4j.adapter.rules.NeoCoMatch;
 
-public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy {
+public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
+	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 
-	public CheckOnlyOperationalStrategy(Collection<IRule<NeoMatch, NeoCoMatch>> genRules, Collection<IConstraint> negativeConstraints) {
-		super(genRules, negativeConstraints);
+	public CheckOnlyOperationalStrategy(//
+			SupportedILPSolver solver, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			NeoCoreBuilder builder, //
+			String sourceModel, //
+			String targetModel//
+	) {
+		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
 	}
 
 	@Override
-	protected Set<Long> getContextElts(IMatch m) {
-		var genRule = genRules.get(m.getPattern().getName());
-		return extractIDs(genRule.getContextElts(), m);
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
+			MatchContainer<NeoMatch, NeoCoMatch> matches, //
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
+	) {
+		logger.debug("Registering all matches...");
+
+		// Precedence information
+		registerMatches(matches.streamAllMatches());
+		computeWeights();
+
+		logger.debug("Registered all matches.");
+
+		return Collections.emptyMap();
 	}
 
 	@Override
-	protected Set<Long> getCreatedElts(IMatch m) {
-		var genRule = genRules.get(m.getPattern().getName());
-		return extractIDs(genRule.getCreatedElts(), m);
+	public void cleanup() {
+		try {
+			if (isConsistent()) {
+				logger.info("Your triple is consistent!");
+			} else {
+				logger.info("Your triple is inconsistent!");
+				var inconsistentElements = determineInconsistentElements();
+				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
+				logger.debug(inconsistentElements);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
-	public boolean isConsistent(SupportedILPSolver suppSolver) throws Exception {
-		var result = determineInconsistentElements(suppSolver, false);
-		return result.filter(elts -> elts.isEmpty()).isPresent();
+
+	@Override
+	public String description() {
+		return "ILP solving";
 	}
 }
