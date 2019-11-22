@@ -67,3 +67,80 @@ rule createCorrs2 -> createCorrs1[c -> c1, it -> it1] {
 	}
 }
 
+// 3.
+
+model ConsistentSrc3 -> ConsistentSrc1 {
+	c : Company {
+		-ceo-> ceo
+		-admin-> admin
+	}
+	
+	ceo : CEO
+	
+	admin : Admin {
+		.name : "Elrond"
+		-ceo-> ceo
+	}
+}
+
+model ConsistentTrg3 -> ConsistentTrg1 {
+	router : Router {
+		.name : "Rivendell"
+		-network-> network
+	}
+	
+	it : IT {
+		-network-> network
+		-router-> router
+	}
+	
+	network : Network {
+		.name : "Rivendell"
+	}
+}
+
+rule createCorrs3 -> createCorrs1 {
+	admin:Admin {
+		++ -corr->router {
+			._type_ := "AdminToRouter"
+		}
+	}
+	
+	router:Router
+}
+
+// 4.
+
+model ConsistentSrc4 -> ConsistentSrc3 {
+	c : Company {
+		-employee-> employee
+	}
+	
+	ceo : CEO {
+		-employee-> employee
+	}
+	
+	employee : Employee {
+		.name : "Aragorn"
+	}
+}
+
+model ConsistentTrg4 -> ConsistentTrg3 {
+	network : Network {
+		-pc-> computer
+	}
+		
+	computer : PC {
+		.name : "Aragorn"
+	}
+}
+
+rule createCorrs4 -> createCorrs3 {
+	employee:Employee {
+		++ -corr->computer {
+			._type_ := "EmployeeToPC"
+		}
+	}
+	
+	computer : PC
+}
