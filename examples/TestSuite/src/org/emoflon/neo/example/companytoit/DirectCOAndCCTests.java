@@ -31,4 +31,26 @@ public class DirectCOAndCCTests extends ENeoTest {
 				api.getModel_ConsistentTrg1());
 		testInconsistentTripleCO("ConsistentSrc1", "ConsistentTrg1", 4, 7);
 	}
+	
+	@Test
+	public void testConsistentTriple2_CO() throws Exception {
+		exportTriple(api.getModel_ConsistentSrc2(), //
+				api.getModel_ConsistentTrg2(), //
+				api.getRule_CreateCorrs2().rule());
+		testConsistentTripleCO("ConsistentSrc2", "ConsistentTrg2", 20);
+	}
+	
+	@Test
+	public void testConsistentTriple2_CC() throws Exception {
+		exportTriple(api.getModel_ConsistentSrc2(), //
+				api.getModel_ConsistentTrg2());
+		testConsistentTripleCC("ConsistentSrc2", "ConsistentTrg2", 20);
+	}
+	
+	@Test
+	public void testInconsistentTriple2_CO() throws Exception {
+		exportTriple(api.getModel_ConsistentSrc2(), //
+				api.getModel_ConsistentTrg2());
+		testInconsistentTripleCO("ConsistentSrc2", "ConsistentTrg2", 4, 14);
+	}
 }
