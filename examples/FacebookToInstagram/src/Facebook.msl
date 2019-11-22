@@ -1,0 +1,98 @@
+metamodel FacebookLanguage {
+	Network {
+		.description : EString
+		<+>-friendships(0..*)-> Friendship
+		<+>-users(0..*)-> User
+	}
+	
+	Friendship {
+		.startFrom : EDate
+		-friends(0..*)-> User
+	}
+	
+	User {
+		.name : EString
+		-spouse(0..1)-> User
+		-siblings(0..*)-> User
+		-parents(0..*)-> User
+	}
+}
+
+constraint NoDoubleFaceBookUsers = forbid DoubleFaceBookUsers
+pattern DoubleFaceBookUsers {
+	n:Network {
+		-users->u
+		-users->u
+	}
+	
+	u:User
+}
+
+constraint NoDoubleFriendship = forbid DoubleFriendship
+pattern DoubleFriendship {
+	n:Network {
+		-friendships->f1
+		-friendships->f2
+		-users->u1
+		-users->u2
+	}
+	
+	f1:Friendship {
+		-friends->u1
+		-friends->u2
+	}
+	
+	f2:Friendship {
+		-friends->u1
+		-friends->u2
+	}
+	
+	u1:User
+	u2:User
+}
+
+constraint NoInterFriendship = forbid InterFriendship
+pattern InterFriendship {
+	n1:Network {
+		-users->u1
+	}
+	
+	n2:Network {
+		-users->u2
+	}
+	
+	f1:Friendship {
+		-friends->u1
+		-friends->u2
+	}
+	
+	u1:User
+	u2:User
+}
+
+constraint NoDoubleParents = forbid DoubleParents
+pattern DoubleParents {
+	u1:User {
+		-parents->u2
+		-parents->u2
+	}
+	u2:User
+}
+
+constraint NoDoubleSibling = forbid DoubleSibling
+pattern DoubleSibling {
+	u1:User {
+		-siblings->u2
+		-siblings->u2
+	}
+	u2:User
+}
+
+constraint NoDoubleSpouses = forbid DoubleSpouses
+pattern DoubleSpouses {
+	u1:User {
+		-spouse->u2
+		-spouse->u2
+	}
+	u2:User
+}

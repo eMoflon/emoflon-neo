@@ -1,0 +1,146 @@
+import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+
+// 1.
+
+model ConsistentSrc1 {
+	c:Company {
+		.name : "Origami"
+		-ceo->ceo
+	}
+	
+	ceo:CEO {
+		.name : "Tony"
+	}
+}
+
+model ConsistentTrg1 {
+	it:IT {
+		.name : "Origami"
+	}
+}
+
+rule createCorrs1 {
+	c:Company {
+		.name : "Origami"
+		++ -corr->it {
+			._type_ := "CompanyToIT"
+		}
+		
+	}
+	
+	it:IT {
+		.name : "Origami"
+	}
+}
+
+// 2.
+
+model ConsistentTrg2 -> ConsistentTrg1[it -> it1] {
+	it2:IT {
+		.name : "Bonsai"
+	}
+}
+
+model ConsistentSrc2 -> ConsistentSrc1[c -> c1, ceo -> ceo1] {
+	c:Company {
+		.name : "Bonsai"
+		-ceo->ceo2
+	}
+	
+	ceo2:CEO {
+		.name : "Tony"
+	}
+}
+
+rule createCorrs2 -> createCorrs1[c -> c1, it -> it1] {
+	c2:Company {
+		.name : "Bonsai"
+		++ -corr->it2 {
+			._type_ := "CompanyToIT"
+		}
+		
+	}
+	
+	it2:IT {
+		.name : "Bonsai"
+	}
+}
+
+// 3.
+
+model ConsistentSrc3 -> ConsistentSrc1 {
+	c : Company {
+		-ceo-> ceo
+		-admin-> admin
+	}
+	
+	ceo : CEO
+	
+	admin : Admin {
+		.name : "Elrond"
+		-ceo-> ceo
+	}
+}
+
+model ConsistentTrg3 -> ConsistentTrg1 {
+	router : Router {
+		.name : "Rivendell"
+		-network-> network
+	}
+	
+	it : IT {
+		-network-> network
+		-router-> router
+	}
+	
+	network : Network {
+		.name : "Rivendell"
+	}
+}
+
+rule createCorrs3 -> createCorrs1 {
+	admin:Admin {
+		++ -corr->router {
+			._type_ := "AdminToRouter"
+		}
+	}
+	
+	router:Router
+}
+
+// 4.
+
+model ConsistentSrc4 -> ConsistentSrc3 {
+	c : Company {
+		-employee-> employee
+	}
+	
+	ceo : CEO {
+		-employee-> employee
+	}
+	
+	employee : Employee {
+		.name : "Aragorn"
+	}
+}
+
+model ConsistentTrg4 -> ConsistentTrg3 {
+	network : Network {
+		-pc-> computer
+	}
+		
+	computer : PC {
+		.name : "Aragorn"
+	}
+}
+
+rule createCorrs4 -> createCorrs3 {
+	employee:Employee {
+		++ -corr->computer {
+			._type_ := "EmployeeToPC"
+		}
+	}
+	
+	computer : PC
+}
