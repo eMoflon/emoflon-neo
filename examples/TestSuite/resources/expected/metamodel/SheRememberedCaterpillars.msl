@@ -1,0 +1,49 @@
+metamodel SheRememberedCaterpillars {
+	Game {
+		<>-characters(0..*)->Character
+		<>-objects(0..*)->PlatformObject
+	}
+	
+	NamedElement {
+		.name : EString
+	}
+	
+	Character : Colored, NamedElement {
+		-standsOn(1..1)->Platform
+	}
+	
+	PlatformObject : NamedElement {
+	}
+	
+	Platform : PlatformObject {
+		-charactersStandingOn(0..*)->Character
+		-neighbors(0..6)->Platform
+	}
+	
+	SimplePlatform : Platform {
+		-connectedBy(0..1)->PlatformConnector
+	}
+	
+	ExitPlatform : Platform {
+	}
+	
+	PlatformConnector : PlatformObject, Colored {
+		-connects(2..2)->SimplePlatform
+	}
+	
+	Bridge : PlatformConnector {
+	}
+	
+	Wall : PlatformConnector {
+	}
+	
+	Colored {
+		.color : COLOR
+	}
+	
+	enum COLOR {
+		BLUE
+		RED
+		PURPLE
+	}
+}

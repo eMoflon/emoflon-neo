@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SheRememberedCaterpillars:Game
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:SheRememberedCaterpillars="platform:/resource/TestSuite/resources/in/metamodel/SheRememberedCaterpillars.ecore">
+  <characters
+      name="Mario"
+      standsOn="//@objects.0"/>
+  <objects xsi:type="SheRememberedCaterpillars:SimplePlatform"
+      name="platform easy"
+      charactersStandingOn="//@characters.0"
+      connectedBy="//@objects.2"/>
+  <objects xsi:type="SheRememberedCaterpillars:Bridge"/>
+  <objects xsi:type="SheRememberedCaterpillars:Wall"
+      connects="//@objects.0"/>
+</SheRememberedCaterpillars:Game>
