@@ -78,26 +78,49 @@ class FWD implements Operation {
 	 * --------------------------------
 	 */
 	
-		// TODO
 	override additionalImports(String tggName) {
 		'''
+			import static run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			
+			import org.emoflon.neo.engine.modules.cleanup.RemoveTranslateAttributes;
+			import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
+			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
+			import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+			import org.emoflon.neo.engine.modules.startup.PrepareTranslateAttributes;
+			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+			import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
+			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+			import java.util.List;
 		'''
 	}
 	
 	override additionalFields(String tggName) {
-		// TODO
 		'''
 		'''
 	}
 	
 	override createGeneratorMethodBody(String tggName) {
-		// TODO
+		// TODO replace modules with better ones
+		
+		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
+			return new NeoGenerator(//
+					new API_«fullOpName»(builder).getAllRulesFor«fullOpName»(), //
+					new PrepareTranslateAttributes(builder, SRC_MODEL_NAME), //
+					new NoMoreMatchesTerminationCondition(), //
+					new AllRulesAllMatchesScheduler(), //
+					new AnySingleMatchUpdatePolicy(), //
+					new ParanoidNeoReprocessor(), //
+					new RemoveTranslateAttributes(builder, SRC_MODEL_NAME), //
+					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					List.of(new LoremIpsumStringValueGenerator()));
 		'''
 	}
 	
 	override additionalMethods() {
-		// TODO
 		'''
 		'''
 	}
