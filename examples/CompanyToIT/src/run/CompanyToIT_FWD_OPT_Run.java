@@ -12,7 +12,6 @@ import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
 import org.emoflon.neo.api.metamodels.API_IT;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -53,11 +52,11 @@ public class CompanyToIT_FWD_OPT_Run {
 			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
 
 			var forwardTransformation = new CorrCreationOperationalStrategy(solver, builder,
-					genAPI.getAllRulesForCompanyToIT__GEN(), fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(),
+					genAPI.getAllRulesForCompanyToIT_GEN(), fwdAPI.getAllRulesForCompanyToIT_FWD_OPT(),
 					getNegativeConstraints(builder), sourceModel, targetModel);
 			var generator = new NeoGenerator(//
-					fwdAPI.getAllRulesForCompanyToIT__FWD_OPT(), //
-					new NoOpStartup(),// FIXME[Nils] Implement start up for OPT
+					fwdAPI.getAllRulesForCompanyToIT_FWD_OPT(), //
+					new NoOpStartup(), // FIXME[Nils] Implement start up for OPT
 					new NoMoreMatchesTerminationCondition(), //
 					new FWD_OPTRuleScheduler(tripleRules), //
 					forwardTransformation, //

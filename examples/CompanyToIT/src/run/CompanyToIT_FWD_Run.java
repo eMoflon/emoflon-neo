@@ -36,7 +36,7 @@ public class CompanyToIT_FWD_Run {
 			new API_CompanyToIT(builder).exportMetamodelsForCompanyToIT();
 
 			var generator = new NeoGenerator(//
-					new API_CompanyToIT_FWD(builder).getAllRulesForCompanyToIT__FWD(), //
+					new API_CompanyToIT_FWD(builder).getAllRulesForCompanyToIT_FWD(), //
 					new PrepareTranslateAttributes(builder, SRC_MODEL_NAME), //
 					new NoMoreMatchesTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
