@@ -1,0 +1,74 @@
+metamodel OCLGrammar {
+	OCLString {
+	}
+	
+	Expression : OCLString {
+		<>-callee(0..1)->Collection
+		<>-call(0..1)->MethodCall
+	}
+	
+	MethodCall {
+		.type : MethodType
+		
+		<>-parameter(0..1)->Parameter
+	}
+	
+	Parameter {
+	}
+	
+	Collection : OCLString, Parameter {
+		.type : CollectionType
+		
+		<>-elements(0..*)->Literal
+	}
+	
+	Literal : Parameter {
+	}
+	
+	StringLiteral : Literal {
+		.literal : EString
+	}
+	
+	NumberRange : Literal {
+		.lowerBound : EInt
+		.upperBound : EInt
+	}
+	
+	NumberLiteral : Literal {
+		.value : EInt
+	}
+	
+	DoubleLiteral : NumberLiteral {
+		.fractional : EInt
+	}
+	
+	NullLiteral : Literal {
+	}
+	
+	InvalidLiteral : Literal {
+	}
+	
+	enum MethodType {
+		APPEND
+		APPEND_ALL
+	}
+	
+	enum CollectionType {
+		SEQUENCE
+		SET
+		ORDERED_SET
+		BAG
+	}
+}
+
+model Call {
+	o1 : Expression {
+		-callee -> o2
+	}
+	
+	o2 : Collection {
+		.type : SEQUENCE
+
+	}
+	
+}
