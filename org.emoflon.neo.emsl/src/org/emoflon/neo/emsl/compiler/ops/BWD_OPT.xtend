@@ -62,4 +62,7 @@ class BWD_OPT extends ILPOperation {
 		""
 	}
 	
+	override exportMetamodels() {
+		false
+	}
 }

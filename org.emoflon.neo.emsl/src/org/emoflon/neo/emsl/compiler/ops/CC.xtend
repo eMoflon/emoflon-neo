@@ -72,4 +72,8 @@ class CC extends ILPOperation {
 		'''
 		'''
 	}
+	
+	override exportMetamodels() {
+		false
+	}
 }

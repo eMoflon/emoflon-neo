@@ -124,4 +124,8 @@ class BWD implements Operation {
 		'''
 		'''
 	}
+	
+	override exportMetamodels() {
+		true
+	}
 }

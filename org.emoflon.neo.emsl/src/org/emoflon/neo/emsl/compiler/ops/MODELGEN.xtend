@@ -117,4 +117,8 @@ class MODELGEN implements Operation {
 		'''
 		'''
 	}
+	
+	override exportMetamodels() {
+		true
+	}
 }

@@ -35,20 +35,21 @@ class TGGAppGenerator {
 			
 				public void run() throws Exception {
 					try (var builder = API_Common.createBuilder()) {
-						new API_«tgg.name»(builder).exportMetamodelsFor«tgg.name»();
+						«IF op.exportMetamodels»
+							new API_«tgg.name»(builder).exportMetamodelsFor«tgg.name»();
+						«ENDIF»
 				
 						var generator = createGenerator(builder);
 				
-						logger.info("Start model generation...");
+						logger.info("Running generator...");
 						generator.generate();
-						logger.info("Generation done.");
+						logger.info("Generator terminated.");
 					}
 				}
 				
 				public NeoGenerator createGenerator(NeoCoreBuilder builder) {
 					«op.createGeneratorMethodBody(tgg.name)»
 				}
-			
 				«op.additionalMethods»
 			}
 		'''

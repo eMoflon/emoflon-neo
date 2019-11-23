@@ -75,4 +75,6 @@ interface Operation {
 	def String createGeneratorMethodBody(String tggName)
 	
 	def String additionalMethods()
+
+	def boolean exportMetamodels()
 }

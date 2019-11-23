@@ -124,4 +124,8 @@ class FWD implements Operation {
 		'''
 		'''
 	}
+	
+	override exportMetamodels() {
+		true
+	}
 }

@@ -72,4 +72,8 @@ class CO extends ILPOperation {
 		'''
 		'''
 	}
+	
+	override exportMetamodels() {
+		false
+	}
 }
