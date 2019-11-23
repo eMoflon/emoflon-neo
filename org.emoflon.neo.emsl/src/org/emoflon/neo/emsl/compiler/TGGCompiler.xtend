@@ -2,13 +2,17 @@ package org.emoflon.neo.emsl.compiler
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
+import java.util.ArrayList
 import java.util.Collection
 import java.util.Collections
 import java.util.HashMap
 import java.util.HashSet
 import java.util.List
+import java.util.Map
 import java.util.Set
 import org.eclipse.xtext.generator.IFileSystemAccess2
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
@@ -17,18 +21,15 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatementType
+import org.emoflon.neo.emsl.eMSL.Parameter
+import org.emoflon.neo.emsl.eMSL.SourceNAC
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
-import org.emoflon.neo.emsl.eMSL.Parameter
-import java.util.Map
-import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
-import org.emoflon.neo.emsl.eMSL.AtomicPattern
-import org.emoflon.neo.emsl.eMSL.SourceNAC
 
 class TGGCompiler {
-	final String BASE_FOLDER = "../" + EMSLGenerator.TGG_GEN_FOLDER + "/";
+	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
 	final String pathToGeneratedFiles
 	TripleGrammar tgg
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
@@ -46,17 +47,21 @@ class TGGCompiler {
 		mapTypeNames(allMetamodels)
 	}
 
-	def void compileAll(IFileSystemAccess2 fsa) {
+	def compileAll(IFileSystemAccess2 fsa) {
+		var generatedFiles = new ArrayList<String>
 		for (Operation operation : Operation.allOps) {
 			val ruleFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/«tgg.name»«operation.nameExtension».msl'''
-			fsa.deleteFile(ruleFileLocation);
 			fsa.generateFile(ruleFileLocation, compile(operation))
+			generatedFiles.add(ruleFileLocation)
 			
 			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
 			val appFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
 			fsa.deleteFile(appFileLocation);
 			fsa.generateFile(appFileLocation, generateApp(operation, appName))
+			generatedFiles.add(appFileLocation)
 		}
+		
+		return generatedFiles
 	}
 
 	private def String compile(Operation op) {
