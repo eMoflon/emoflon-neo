@@ -1,4 +1,4 @@
-package org.emoflon.neo.neocore;
+package org.emoflon.neo.neocore.util;
 
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes;
 import org.emoflon.neo.emsl.eMSL.DataType;
@@ -9,7 +9,6 @@ import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.util.EMSLUtil;
-import org.emoflon.neo.neocore.util.NeoCoreConstants;
 
 public class PreProcessorUtil {
 	private static PreProcessorUtil instance;
