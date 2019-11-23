@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.emf;
+package org.emoflon.neo.example.emf.importer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
