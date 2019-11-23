@@ -146,3 +146,5 @@ examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API
 examples/FacebookToInstagramFASE/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_BWD_OPT.java
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_FWD_OPT.java
 examples/FacebookToInstagram/src-gen/org/emoflon/neo/api/Transformations/API_FacebookToInstagramGrammar_BWD_OPT.java
+examples/TestSuite/xtend-gen/org/emoflon/neo/example/sokoban/ExpectedBoards.java
+examples/TestSuite/xtend-gen/org/emoflon/neo/example/sokoban/.ExpectedBoards.java._trace
