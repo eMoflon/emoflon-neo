@@ -1,6 +1,5 @@
 package org.emoflon.neo.neocore;
 
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes;
 import org.emoflon.neo.emsl.eMSL.DataType;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
@@ -10,6 +9,7 @@ import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.RelationKind;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 
 public class PreProcessorUtil {
 	private static PreProcessorUtil instance;
@@ -76,7 +76,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eClass() {
 		if (eClass == null) {
 			eClass = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eClass.setName(NeoCoreBootstrapper.ECLASS);
+			eClass.setName(NeoCoreConstants.ECLASS);
 			eClass.getSuperTypes().add(eClassifier());
 			eClass.getSuperTypes().add(eAttributedElement());
 			eClass.getProperties().add(enamespace());
@@ -90,7 +90,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eReference() {
 		if (eReference == null) {
 			eReference = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eReference.setName(NeoCoreBootstrapper.EREFERENCE);
+			eReference.setName(NeoCoreConstants.EREFERENCE);
 			eReference.getSuperTypes().add(eStructuralFeature());
 			eReference.getSuperTypes().add(eAttributedElement());
 			eReference.getProperties().add(isContainment());
@@ -104,7 +104,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eAttributedElement() {
 		if (eAttributedElement == null) {
 			eAttributedElement = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eAttributedElement.setName(NeoCoreBootstrapper.EATTRIBUTED_ELEMENT);
+			eAttributedElement.setName(NeoCoreConstants.EATTRIBUTED_ELEMENT);
 			eAttributedElement.getSuperTypes().add(eObject());
 			eAttributedElement.getRelations().add(eAttributes());
 		}
@@ -115,7 +115,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eAttribute() {
 		if (eAttribute == null) {
 			eAttribute = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eAttribute.setName(NeoCoreBootstrapper.EATTRIBUTE);
+			eAttribute.setName(NeoCoreConstants.EATTRIBUTE);
 			eAttribute.getSuperTypes().add(eStructuralFeature());
 			eAttribute.getRelations().add(eAttributeType());
 		}
@@ -126,7 +126,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eDataType() {
 		if (eDataType == null) {
 			eDataType = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eDataType.setName(NeoCoreBootstrapper.EDATA_TYPE);
+			eDataType.setName(NeoCoreConstants.EDATA_TYPE);
 			eDataType.getSuperTypes().add(eClassifier());
 		}
 
@@ -136,7 +136,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eStructuralFeature() {
 		if (eStructuralFeature == null) {
 			eStructuralFeature = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eStructuralFeature.setName(NeoCoreBootstrapper.ESTRUCTURAL_FEATURE);
+			eStructuralFeature.setName(NeoCoreConstants.ESTRUCTURAL_FEATURE);
 			eStructuralFeature.getSuperTypes().add(eTypedElement());
 		}
 
@@ -146,7 +146,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eTypedElement() {
 		if (eTypedElement == null) {
 			eTypedElement = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eTypedElement.setName(NeoCoreBootstrapper.ETYPED_ELEMENT);
+			eTypedElement.setName(NeoCoreConstants.ETYPED_ELEMENT);
 			eTypedElement.getSuperTypes().add(eObject());
 		}
 
@@ -156,7 +156,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eClassifier() {
 		if (eClassifier == null) {
 			eClassifier = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eClassifier.setName(NeoCoreBootstrapper.ECLASSIFIER);
+			eClassifier.setName(NeoCoreConstants.ECLASSIFIER);
 			eClassifier.getSuperTypes().add(eObject());
 		}
 
@@ -166,7 +166,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock eObject() {
 		if (eObject == null) {
 			eObject = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			eObject.setName(NeoCoreBootstrapper.EOBJECT);
+			eObject.setName(NeoCoreConstants.EOBJECT);
 			eObject.getProperties().add(ename());
 			eObject.getProperties().add(_tr_());
 			eObject.getRelations().add(elementOf());
@@ -180,7 +180,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock model() {
 		if (model == null) {
 			model = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			model.setName(NeoCoreBootstrapper.MODEL);
+			model.setName(NeoCoreConstants.MODEL);
 			model.getSuperTypes().add(eObject());
 			model.getRelations().add(conformsTo());
 		}
@@ -191,7 +191,7 @@ public class PreProcessorUtil {
 	public MetamodelNodeBlock metaModel() {
 		if (metaModel == null) {
 			metaModel = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-			metaModel.setName(NeoCoreBootstrapper.METAMODEL);
+			metaModel.setName(NeoCoreConstants.METAMODEL);
 			metaModel.getSuperTypes().add(model());
 		}
 
@@ -201,7 +201,7 @@ public class PreProcessorUtil {
 	public MetamodelPropertyStatement enamespace() {
 		if (enamespace == null) {
 			enamespace = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			enamespace.setName(NeoCoreBootstrapper.NAMESPACE_PROP);
+			enamespace.setName(NeoCoreConstants.NAMESPACE_PROP);
 			enamespace.setType(eString());
 		}
 
@@ -211,7 +211,7 @@ public class PreProcessorUtil {
 	public MetamodelPropertyStatement isContainment() {
 		if (isContainment == null) {
 			isContainment = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			isContainment.setName(NeoCoreBootstrapper.ISCONTAINMENT_PROP);
+			isContainment.setName(NeoCoreConstants.ISCONTAINMENT_PROP);
 			isContainment.setType(eBoolean());
 		}
 
@@ -221,7 +221,7 @@ public class PreProcessorUtil {
 	public MetamodelPropertyStatement isComposition() {
 		if (isComposition == null) {
 			isComposition = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			isComposition.setName(NeoCoreBootstrapper.ISCOMPOSITION_PROP);
+			isComposition.setName(NeoCoreConstants.ISCOMPOSITION_PROP);
 			isComposition.setType(eBoolean());
 		}
 
@@ -231,7 +231,7 @@ public class PreProcessorUtil {
 	public MetamodelPropertyStatement ename() {
 		if (ename == null) {
 			ename = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			ename.setName(NeoCoreBootstrapper.NAME_PROP);
+			ename.setName(NeoCoreConstants.NAME_PROP);
 			ename.setType(eString());
 		}
 
@@ -241,7 +241,7 @@ public class PreProcessorUtil {
 	public MetamodelPropertyStatement _tr_() {
 		if (_tr_ == null) {
 			_tr_ = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			_tr_.setName(NeoCoreBootstrapper._TR_PROP);
+			_tr_.setName(NeoCoreConstants._TR_PROP);
 			_tr_.setType(eBoolean());
 		}
 
@@ -251,7 +251,7 @@ public class PreProcessorUtil {
 	public MetamodelPropertyStatement _type_() {
 		if (_type_ == null) {
 			_type_ = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			_type_.setName(NeoCoreBootstrapper._TYPE_PROP);
+			_type_.setName(NeoCoreConstants._TYPE_PROP);
 			_type_.setType(eString());
 		}
 
@@ -262,7 +262,7 @@ public class PreProcessorUtil {
 		if (eReferences == null) {
 			eReferences = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			eReferences.setKind(RelationKind.REFERENCE);
-			eReferences.setName(NeoCoreBootstrapper.EREFERENCES);
+			eReferences.setName(NeoCoreConstants.EREFERENCES);
 			eReferences.setLower("0");
 			eReferences.setUpper("*");
 			eReferences.setTarget(eReference());
@@ -275,7 +275,7 @@ public class PreProcessorUtil {
 		if (eSuperType == null) {
 			eSuperType = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			eSuperType.setKind(RelationKind.REFERENCE);
-			eSuperType.setName(NeoCoreBootstrapper.ESUPER_TYPE);
+			eSuperType.setName(NeoCoreConstants.ESUPER_TYPE);
 			eSuperType.setLower("0");
 			eSuperType.setUpper("*");
 			eSuperType.setTarget(eClass());
@@ -288,7 +288,7 @@ public class PreProcessorUtil {
 		if (eReferenceType == null) {
 			eReferenceType = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			eReferenceType.setKind(RelationKind.REFERENCE);
-			eReferenceType.setName(NeoCoreBootstrapper.EREFERENCE_TYPE);
+			eReferenceType.setName(NeoCoreConstants.EREFERENCE_TYPE);
 			eReferenceType.setLower("1");
 			eReferenceType.setUpper("1");
 			eReferenceType.setTarget(eClass());
@@ -301,7 +301,7 @@ public class PreProcessorUtil {
 		if (eAttributes == null) {
 			eAttributes = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			eAttributes.setKind(RelationKind.REFERENCE);
-			eAttributes.setName(NeoCoreBootstrapper.EATTRIBUTES);
+			eAttributes.setName(NeoCoreConstants.EATTRIBUTES);
 			eAttributes.setLower("0");
 			eAttributes.setUpper("*");
 			eAttributes.setTarget(eAttribute());
@@ -314,7 +314,7 @@ public class PreProcessorUtil {
 		if (eAttributeType == null) {
 			eAttributeType = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			eAttributeType.setKind(RelationKind.REFERENCE);
-			eAttributeType.setName(NeoCoreBootstrapper.EATTRIBUTE_TYPE);
+			eAttributeType.setName(NeoCoreConstants.EATTRIBUTE_TYPE);
 			eAttributeType.setLower("1");
 			eAttributeType.setUpper("1");
 			eAttributeType.setTarget(eDataType());
@@ -327,7 +327,7 @@ public class PreProcessorUtil {
 		if (elementOf == null) {
 			elementOf = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			elementOf.setKind(RelationKind.REFERENCE);
-			elementOf.setName(NeoCoreBootstrapper.META_EL_OF);
+			elementOf.setName(NeoCoreConstants.META_EL_OF);
 			elementOf.setLower("1");
 			elementOf.setUpper("1");
 			elementOf.setTarget(model());
@@ -340,7 +340,7 @@ public class PreProcessorUtil {
 		if (metaType == null) {
 			metaType = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			metaType.setKind(RelationKind.REFERENCE);
-			metaType.setName(NeoCoreBootstrapper.META_TYPE);
+			metaType.setName(NeoCoreConstants.META_TYPE);
 			metaType.setLower("1");
 			metaType.setUpper("1");
 			metaType.setTarget(eObject());
@@ -353,7 +353,7 @@ public class PreProcessorUtil {
 		if (corr == null) {
 			corr = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			corr.setKind(RelationKind.REFERENCE);
-			corr.setName(NeoCoreBootstrapper.CORR);
+			corr.setName(NeoCoreConstants.CORR);
 			corr.setLower("0");
 			corr.setUpper("*");
 			corr.setTarget(eObject());
@@ -367,7 +367,7 @@ public class PreProcessorUtil {
 		if (conformsTo == null) {
 			conformsTo = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
 			conformsTo.setKind(RelationKind.REFERENCE);
-			conformsTo.setName(NeoCoreBootstrapper.CONFORMS_TO_PROP);
+			conformsTo.setName(NeoCoreConstants.CONFORMS_TO_PROP);
 			conformsTo.setLower("1");
 			conformsTo.setUpper("1");
 			conformsTo.setTarget(metaModel());

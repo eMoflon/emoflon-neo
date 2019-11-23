@@ -6,7 +6,7 @@ import java.util.Map
 import org.neo4j.driver.v1.Session
 import org.neo4j.driver.v1.StatementResult
 import org.apache.log4j.Logger
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper
+import org.emoflon.neo.neocore.util.NeoCoreConstants
 
 abstract class CypherBuilder {
 	static Logger logger = Logger.getLogger(CypherBuilder)
@@ -146,9 +146,9 @@ abstract class CypherBuilder {
 			MATCH 
 				(src:NeoCore__Model {ename: "«src»"}),
 				(trg:NeoCore__Model {ename: "«trg»"}),
-				(a)-[:«NeoCoreBootstrapper.META_EL_OF»]->(src), 
-				(b)-[:«NeoCoreBootstrapper.META_EL_OF»]->(trg),
-				(a)-[r:«NeoCoreBootstrapper.CORR»]->(b)
+				(a)-[:«NeoCoreConstants.META_EL_OF»]->(src), 
+				(b)-[:«NeoCoreConstants.META_EL_OF»]->(trg),
+				(a)-[r:«NeoCoreConstants.CORR»]->(b)
 			RETURN DISTINCT id(r)
 		'''
 	}
@@ -166,7 +166,7 @@ abstract class CypherBuilder {
 		'''
 			MATCH 
 				(m:NeoCore__Model {ename: "«model»"}),
-				(m)-[cts:«NeoCoreBootstrapper.CONFORMS_TO_PROP»]->(mm)
+				(m)-[cts:«NeoCoreConstants.CONFORMS_TO_PROP»]->(mm)
 			RETURN DISTINCT id(cts)
 		'''
 	}

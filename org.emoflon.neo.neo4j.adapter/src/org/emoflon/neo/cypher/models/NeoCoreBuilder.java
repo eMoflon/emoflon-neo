@@ -1,17 +1,5 @@
 package org.emoflon.neo.cypher.models;
 
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.ABSTRACT_PROP;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.CONFORMS_TO_PROP;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EATTRIBUTES;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EATTRIBUTE_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.ELITERALS;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EOBJECT;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EREFERENCES;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EREFERENCE_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.ESUPER_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.META_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.NAMESPACE_PROP;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.NAME_PROP;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.eDataTypeLabels;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.eDataTypeProps;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.eattrLabels;
@@ -32,6 +20,18 @@ import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.modelLabels;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.modelProps;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.neoCoreLabels;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.neoCoreProps;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ABSTRACT_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.CONFORMS_TO_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTES;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTE_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ELITERALS;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EOBJECT;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCES;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCE_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ESUPER_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,6 +73,7 @@ import org.emoflon.neo.emsl.eMSL.ValueExpression;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -324,11 +325,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		bootstrapper.bootstrapNeoCore(this);
 
 		executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
-				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.MODEL) + ") ASSERT mm.ename IS UNIQUE");
+				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.MODEL) + ") ASSERT mm.ename IS UNIQUE");
 		executeQueryForSideEffect(//
 				"CREATE INDEX ON :" + //
-						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.ECLASS) + //
-						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
+						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.ECLASS) + //
+						"(" + NeoCoreConstants.NAME_PROP + ")");
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) {
@@ -485,10 +486,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			NodeCommand edatatype, NodeCommand eattribute, HashMap<Object, NodeCommand> blockToCommand,
 			NodeCommand mmNode, MetamodelNodeBlock nb) {
 		for (var rs : nb.getRelations()) {
-			var isCompProp = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
+			var isCompProp = new NeoProp(NeoCoreConstants.ISCOMPOSITION_PROP,
 					rs.getKind().equals(RelationKind.COMPOSITION));
 
-			var isContainmentProp = new NeoProp(NeoCoreBootstrapper.ISCONTAINMENT_PROP,
+			var isContainmentProp = new NeoProp(NeoCoreConstants.ISCONTAINMENT_PROP,
 					rs.getKind().equals(RelationKind.COMPOSITION) || rs.getKind().equals(RelationKind.AGGREGATION));
 
 			var ref = cb.createNodeWithContAndType(//
@@ -523,7 +524,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private void addIsTranslatedAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
 		var attr = cb.matchNodeWithContainer(//
-				List.of(new NeoProp(NAME_PROP, NeoCoreBootstrapper._TR_PROP)), //
+				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._TR_PROP)), //
 				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
 		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
@@ -547,9 +548,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	@SuppressWarnings("unused")
 	private void createContainerEdge(CypherCreator cb, ModelRelationStatement rs, NodeCommand container,
 			NodeCommand containee) {
-		var prop = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
+		var prop = new NeoProp(NeoCoreConstants.ISCOMPOSITION_PROP,
 				EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.COMPOSITION));
-		cb.createEdgeWithProps(List.of(prop), NeoCoreBootstrapper.ECONTAINER, container, containee);
+		cb.createEdgeWithProps(List.of(prop), NeoCoreConstants.ECONTAINER, container, containee);
 	}
 
 	@SuppressWarnings("unused")
@@ -736,7 +737,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public void deleteAllCorrs() {
-		deleteEdgesOfType(NeoCoreBootstrapper.CORR);
+		deleteEdgesOfType(NeoCoreConstants.CORR);
 	}
 
 	public void deleteNodes(Collection<Long> ids) {

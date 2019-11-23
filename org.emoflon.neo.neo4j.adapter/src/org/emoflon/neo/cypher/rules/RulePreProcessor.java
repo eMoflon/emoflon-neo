@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes;
 import org.emoflon.neo.emsl.eMSL.ConditionOperator;
@@ -17,6 +16,7 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 
 public class RulePreProcessor {
 	Map<String, ModelNodeBlock> nodeBlocks;
@@ -32,12 +32,12 @@ public class RulePreProcessor {
 		neocore.setName(EMSLUtil.ORG_EMOFLON_NEO_CORE);
 
 		eClass = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-		eClass.setName(NeoCoreBootstrapper.ECLASS);
+		eClass.setName(NeoCoreConstants.ECLASS);
 		neocore.getNodeBlocks().add(eClass);
 
 		{
 			eName = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			eName.setName(NeoCoreBootstrapper.NAME_PROP);
+			eName.setName(NeoCoreConstants.NAME_PROP);
 			var estring = EMSLFactory.eINSTANCE.createBuiltInType();
 			estring.setReference(BuiltInDataTypes.ESTRING);
 			eName.setType(estring);
@@ -46,14 +46,14 @@ public class RulePreProcessor {
 
 		{
 			eNamespace = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			eNamespace.setName(NeoCoreBootstrapper.NAMESPACE_PROP);
+			eNamespace.setName(NeoCoreConstants.NAMESPACE_PROP);
 			var estring = EMSLFactory.eINSTANCE.createBuiltInType();
 			eName.setType(estring);
 			eClass.getProperties().add(eNamespace);
 		}
 
 		mtRel = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
-		mtRel.setName(NeoCoreBootstrapper.META_TYPE);
+		mtRel.setName(NeoCoreConstants.META_TYPE);
 	}
 
 	public void preprocess(Rule r) {

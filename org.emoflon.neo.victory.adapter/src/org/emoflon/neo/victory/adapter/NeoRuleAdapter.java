@@ -3,10 +3,10 @@ package org.emoflon.neo.victory.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.emoflon.victory.ui.api.Graph;
 import org.emoflon.victory.ui.api.Node;
 import org.emoflon.victory.ui.api.Rule;
@@ -37,7 +37,7 @@ public class NeoRuleAdapter implements Rule {
 				var srcNode = blocksToNode.get(n);
 				var trgNode = blocksToNode.get(r.getTarget());
 				var type = EdgeType.NORMAL;
-				if (r.getTypes().get(0).getType().getName().equals(NeoCoreBootstrapper.CORR)) {
+				if (r.getTypes().get(0).getType().getName().equals(NeoCoreConstants.CORR)) {
 					type = EdgeType.CORR;
 				}
 				graphBuilder.addEdge(new NeoEdgeAdapter(srcNode, trgNode, type, r));
