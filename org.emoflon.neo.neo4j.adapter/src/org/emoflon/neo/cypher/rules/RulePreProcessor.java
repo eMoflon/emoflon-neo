@@ -15,7 +15,7 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.neocore.util.PreProcessorUtil;
 
 public class RulePreProcessor {
-	Map<String, ModelNodeBlock> nodeBlocks = new HashMap<>();
+	private Map<String, ModelNodeBlock> nodeBlocks = new HashMap<>();
 
 	public void preprocess(Rule r) {
 		r.getNodeBlocks().forEach(nb -> this.nodeBlocks.putIfAbsent(nb.getName(), nb));

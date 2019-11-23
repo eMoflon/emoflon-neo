@@ -1,0 +1,23 @@
+metamodel ClassInheritanceHierarchy {
+	Attribute : NamedElement {
+		.type : EString
+		
+		-clazz(1..1)->Clazz
+	}
+	
+	ClassPackage : NamedElement {
+		<>-classes(0..*)->Clazz
+	}
+	
+	Clazz : NamedElement {
+		-superClass(1..1)->Clazz
+		-subClass(0..*)->Clazz
+		-package(1..1)->ClassPackage
+		<>-attributes(0..*)->Attribute
+	}
+	
+	NamedElement {
+		.name : EString
+	}
+	
+}
