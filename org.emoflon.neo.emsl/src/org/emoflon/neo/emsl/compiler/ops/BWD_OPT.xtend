@@ -46,7 +46,7 @@ class BWD_OPT extends ILPOperation {
 		paramGroup.findFirst[param | paramsToData.get(param).domain.equals(ParameterDomain.TRG)]
 	}
 	
-	override additionalImports() {
+	override additionalImports(String tggName) {
 		""
 	}
 	

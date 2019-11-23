@@ -78,8 +78,8 @@ class BWD implements Operation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports() {
 		// TODO
+	override additionalImports(String tggName) {
 		'''
 		'''
 	}

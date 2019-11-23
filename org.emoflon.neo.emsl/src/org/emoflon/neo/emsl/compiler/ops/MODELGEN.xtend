@@ -64,7 +64,7 @@ class MODELGEN implements Operation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports() {
+	override additionalImports(String tggName) {
 		'''
 			import org.emoflon.neo.engine.generator.INodeSampler;
 			import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;

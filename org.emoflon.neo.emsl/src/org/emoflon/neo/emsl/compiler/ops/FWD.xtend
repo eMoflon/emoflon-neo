@@ -78,8 +78,8 @@ class FWD implements Operation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports() {
 		// TODO
+	override additionalImports(String tggName) {
 		'''
 		'''
 	}

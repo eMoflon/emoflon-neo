@@ -49,7 +49,7 @@ class CC extends ILPOperation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports() {
+	override additionalImports(String tggName) {
 		// TODO
 		'''
 		'''
