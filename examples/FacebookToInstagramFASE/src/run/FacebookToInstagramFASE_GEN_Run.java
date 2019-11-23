@@ -55,7 +55,7 @@ public class FacebookToInstagramFASE_GEN_Run {
 
 	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramGrammar_GEN genAPI,
 			NeoCoreBuilder builder) {
-		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar__GEN();
+		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar_GEN();
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1)
 				.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 5)

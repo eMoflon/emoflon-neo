@@ -48,7 +48,7 @@ public class SokobanImportExport_GEN_Run {
 	}
 
 	protected NeoGenerator createGenerator(API_SokobanImportExport_GEN genAPI) {
-		Collection<NeoRule> allRules = genAPI.getAllRulesForSokobanImportExport__GEN();
+		Collection<NeoRule> allRules = genAPI.getAllRulesForSokobanImportExport_GEN();
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__BoardNormalEntryRule, 1);
