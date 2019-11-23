@@ -42,15 +42,15 @@ public class CompanyToIT_CO_Run {
 			var coAPI = new API_CompanyToIT_CO(builder);
 			var checkOnly = new CheckOnlyOperationalStrategy(//
 					solver, //
-					genAPI.getAllRulesForCompanyToIT__GEN(), //
-					coAPI.getAllRulesForCompanyToIT__CO(), //
+					genAPI.getAllRulesForCompanyToIT_GEN(), //
+					coAPI.getAllRulesForCompanyToIT_CO(), //
 					getNegativeConstraints(builder), //
 					builder, //
 					srcModel, //
 					trgModel//
 			);
 			var generator = new NeoGenerator(//
-					coAPI.getAllRulesForCompanyToIT__CO(), //
+					coAPI.getAllRulesForCompanyToIT_CO(), //
 					new NoOpStartup(), //
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //

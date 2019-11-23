@@ -63,7 +63,7 @@ class TGGCompiler {
 		'''
 			«importStatements»
 			
-			grammar «tgg.name»_«op.nameExtension» {
+			grammar «tgg.name»«op.nameExtension» {
 				«IF op.requiresSrcModelRule»«CREATE_SRC_MODEL_RULE»«ENDIF»
 				«IF op.requiresTrgModelRule»«CREATE_TRG_MODEL_RULE»«ENDIF»
 				«FOR rule : flattenedRules»

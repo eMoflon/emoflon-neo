@@ -49,7 +49,7 @@ public class CompanyToIT_GEN_Run {
 	}
 
 	protected NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT__GEN();
+		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT_GEN();
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
