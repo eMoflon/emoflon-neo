@@ -13,7 +13,7 @@ import org.emoflon.neo.emsl.util.EMSLUtil;
 public class PreProcessorUtil {
 	private static PreProcessorUtil instance;
 
-	public PreProcessorUtil instance() {
+	public static PreProcessorUtil instance() {
 		if (instance == null)
 			instance = new PreProcessorUtil();
 		return instance;
