@@ -31,44 +31,57 @@ public class CompanyToIT_CC_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CC_Run.class);
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
+	private String srcModel = SRC_MODEL_NAME;
+	private String trgModel = TRG_MODEL_NAME;
+	private CorrCreationOperationalStrategy corrCreation;
+
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_CC_Run();
-		app.runCorrCreation(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		app.run();
 	}
 
-	public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
+	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
-			var genAPI = new API_CompanyToIT_GEN(builder);
-			var ccAPI = new API_CompanyToIT_CC(builder);
-			var genRules = genAPI.getAllRulesForCompanyToIT_GEN();
-			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
 
-			var corrCreation = new CorrCreationOperationalStrategy(//
-					solver, //
-					builder, //
-					genRules, //
-					ccAPI.getAllRulesForCompanyToIT_CC(), //
-					getNegativeConstraints(builder), //
-					srcModel, //
-					trgModel//
-			);
-
-			var generator = new NeoGenerator(//
-					ccAPI.getAllRulesForCompanyToIT_CC(), //
-					new NoOpStartup(), new NoMoreMatchesTerminationCondition(), //
-					new CCRuleScheduler(tripleRules), //
-					corrCreation, //
-					new CCReprocessor(tripleRules), //
-					corrCreation, new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(srcModel, trgModel), //
-					List.of(new LoremIpsumStringValueGenerator()));
+			var generator = createGenerator(builder);
 
 			logger.info("Start corr creation...");
 			generator.generate();
-
-			return corrCreation;
 		}
+	}
+
+	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var genAPI = new API_CompanyToIT_GEN(builder);
+		var ccAPI = new API_CompanyToIT_CC(builder);
+		var genRules = genAPI.getAllRulesForCompanyToIT_GEN();
+		var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
+		corrCreation = new CorrCreationOperationalStrategy(//
+				solver, //
+				builder, //
+				genRules, //
+				ccAPI.getAllRulesForCompanyToIT_CC(), //
+				getNegativeConstraints(builder), //
+				srcModel, //
+				trgModel//
+		);
+
+		return new NeoGenerator(//
+				ccAPI.getAllRulesForCompanyToIT_CC(), //
+				new NoOpStartup(), new NoMoreMatchesTerminationCondition(), //
+				new CCRuleScheduler(tripleRules), //
+				corrCreation, //
+				new CCReprocessor(tripleRules), //
+				corrCreation, new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator(srcModel, trgModel), //
+				List.of(new LoremIpsumStringValueGenerator()));
+	}
+
+	public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
+		this.srcModel = srcModel;
+		this.trgModel = trgModel;
+		run();
+		return corrCreation;
 	}
 
 	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
