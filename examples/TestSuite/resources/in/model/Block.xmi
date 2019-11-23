@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BasicTypesMetamodel:Block
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:BasicTypesMetamodel="platform:/resource/TestSuite/resources/in/metamodel/BasicTypesMetamodel.ecore"
+    name="testString"
+    isVisible="true"
+    type="65"
+    longNum="123545665"/>
