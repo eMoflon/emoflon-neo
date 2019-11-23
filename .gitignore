@@ -39,6 +39,7 @@ examples/PacMan/src-gen/
 examples/NetworkTopology/src-gen/
 examples/Organigram/src-gen/
 examples/TestSuite/src-gen/
+examples/TestSuite/xtend-gen/
 examples/SokobanGUI/src-gen/
 examples/SokobanGUI/SokobanGUI.launch
 examples/FruitGardenLanguage/src-gen/
