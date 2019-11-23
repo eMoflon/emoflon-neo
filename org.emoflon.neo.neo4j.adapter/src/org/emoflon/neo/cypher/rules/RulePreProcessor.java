@@ -19,7 +19,7 @@ import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 
 public class RulePreProcessor {
-	Map<String, ModelNodeBlock> nodeBlocks;
+	private Map<String, ModelNodeBlock> nodeBlocks;
 	private MetamodelNodeBlock eClass;
 	private MetamodelPropertyStatement eName;
 	private MetamodelPropertyStatement eNamespace;

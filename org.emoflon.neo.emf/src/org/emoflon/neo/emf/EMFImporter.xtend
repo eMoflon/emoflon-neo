@@ -1,21 +1,16 @@
 package org.emoflon.neo.emf
 
 import java.io.File
-
-import org.apache.commons.io.FileUtils
-
-import org.eclipse.emf.ecore.EPackage
-
-import org.eclipse.emf.ecore.resource.ResourceSet
-
-import org.eclipse.emf.ecore.EClass
 import java.nio.charset.Charset
+import java.util.HashMap
+import org.apache.commons.io.FileUtils
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EEnum
 import org.eclipse.emf.ecore.EObject
-import java.util.HashMap
-import org.eclipse.emf.common.util.URI
-import org.eclipse.emf.common.util.EList
-import java.util.List
+import org.eclipse.emf.ecore.EPackage
+import org.eclipse.emf.ecore.resource.ResourceSet
 
 /**
  * Transforms EMF to EMSL
