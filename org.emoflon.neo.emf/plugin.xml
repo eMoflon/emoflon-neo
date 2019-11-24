@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?after=org.eclipse.jdt.ui.refactoring.menu">
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?endof=group.reorganize">
          <command
                commandId="org.emoflon.neo.emf.commands.convertToEMSL"
                id="org.emoflon.neo.emf.menus.convertToEMSL"
