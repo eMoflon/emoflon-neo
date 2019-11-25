@@ -112,7 +112,7 @@ class EMSLGenerator extends AbstractGenerator {
 			it.localTimeStamp
 		].max) {
 			project.build(IncrementalProjectBuilder.CLEAN_BUILD, null)
-			project.build(IncrementalProjectBuilder.FULL_BUILD, null)
+			//project.build(IncrementalProjectBuilder.FULL_BUILD, null)
 		}
 	}
 	
