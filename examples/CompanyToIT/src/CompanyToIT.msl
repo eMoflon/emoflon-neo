@@ -28,9 +28,6 @@ tripleGrammar CompanyToIT {
 tripleRule CompanyToITRule : CompanyToIT {
 	source {
 		++ ceo : CEO 
-		{
-			.name := <ceoName>
-		}
 		++ company : Company {
 			.name := <companyName>
 			++ -ceo-> ceo
