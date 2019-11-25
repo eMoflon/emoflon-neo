@@ -1,5 +1,7 @@
 package org.emoflon.neo.cypher;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -11,10 +13,13 @@ public class Activator implements BundleActivator {
 		return context;
 	}
 
+	@Override
 	public void start(BundleContext bundleContext) throws Exception {
+		Logger.getRootLogger().setLevel(Level.INFO);
 		Activator.context = bundleContext;
 	}
 
+	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
 	}
