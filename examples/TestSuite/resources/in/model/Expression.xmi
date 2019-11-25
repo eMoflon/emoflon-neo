@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OCLGrammar:Expression xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:OCLGrammar="platform:/resource/TestSuite/resources/in/metamodel/OCLGrammar.ecore">
+  <callee>
+    <elements/>
+  </callee>
+  <call>
+    <parameter xsi:type="OCLGrammar:Collection">
+      <elements xsi:type="OCLGrammar:StringLiteral" literal="test"/>
+    </parameter>
+  </call>
+</OCLGrammar:Expression>

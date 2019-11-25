@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Emf
-Bundle-SymbolicName: org.emoflon.neo.emf
+Bundle-Name: EMF-EMSL Compatibility
+Bundle-SymbolicName: org.emoflon.neo.emf;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
  org.emoflon.neo.emf
@@ -11,6 +11,9 @@ Require-Bundle: org.apache.commons.io;bundle-version="2.2.0";visibility:=reexpor
  org.emoflon.neo.emsl;bundle-version="1.0.0",
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro
+ org.eclipse.xtend.lib.macro,
+ org.eclipse.ui,
+ org.eclipse.core.runtime;bundle-version="3.16.0",
+ org.apache.log4j;bundle-version="1.2.15"
 Automatic-Module-Name: org.emoflon.neo.emf
 Bundle-RequiredExecutionEnvironment: JavaSE-12

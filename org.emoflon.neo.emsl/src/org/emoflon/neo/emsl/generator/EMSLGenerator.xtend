@@ -4,10 +4,11 @@
 package org.emoflon.neo.emsl.generator
 
 import java.net.URI
+import java.util.ArrayList
 import java.util.List
 import java.util.function.Predicate
 import java.util.stream.Collectors
-import org.eclipse.core.resources.IncrementalProjectBuilder
+import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
@@ -17,6 +18,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.emoflon.neo.emsl.compiler.RefreshFilesJob
 import org.emoflon.neo.emsl.compiler.TGGCompiler
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
@@ -36,8 +38,6 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.eclipse.core.resources.IResource
-import org.eclipse.core.resources.IFolder
 
 /**
  * Generates code from your model files on save.
@@ -48,7 +48,9 @@ class EMSLGenerator extends AbstractGenerator {
 	public static final String TGG_GEN_FOLDER = "tgg-gen"
 	public static final String SRC_GEN_Folder = "src-gen"
 	public static final String API_ROOT = "org/emoflon/neo/api/"
-	public EMSL_Spec emslSpec;
+	EMSL_Spec emslSpec
+	List<String> derivedGTFiles = new ArrayList
+	boolean cleanedUp
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		if(resource.contents.isEmpty) return
@@ -59,12 +61,14 @@ class EMSLGenerator extends AbstractGenerator {
 
 		emslSpec = resource.contents.get(0) as EMSL_Spec
 		emslSpec.entities.filter[it instanceof TripleGrammar].map[it as TripleGrammar].forEach [
-			new TGGCompiler(it, apiPath + "/" + apiName).compileAll(fsa)
+			derivedGTFiles.addAll(new TGGCompiler(it, apiPath + "/" + apiName).compileAll(fsa))
 		]
 
 		fsa.generateFile(API_ROOT + "API_Common.java", generateCommon())
 		fsa.generateFile(API_ROOT + apiPath + "/" + apiFile + ".java",
 			generateAPIFor(apiFile, apiPath, emslSpec, resource))
+			
+		cleanedUp = true
 	}
 
 	def getAPIName(Resource resource) {
@@ -93,31 +97,30 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	override void afterGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		val segments = resource.URI.trimFileExtension.segmentsList
-		val projectName = segments.get(1)
-		val project = ResourcesPlugin.workspace.root.getProject(projectName)
-		val srcFolder = project.getFolder(SRC_GEN_Folder)
-		val tggFolder = project.getFolder(TGG_GEN_FOLDER)
+		if (cleanedUp) {
+			val segments = resource.URI.trimFileExtension.segmentsList
+			val projectName = segments.get(1)
+			val project = ResourcesPlugin.workspace.root.getProject(projectName)
+			val srcFolder = project.getFolder(SRC_GEN_Folder)
+			val tggFolder = project.getFolder(TGG_GEN_FOLDER)
 
-		ClasspathUtil.setUpAsJavaProject(project)
-		ClasspathUtil.setUpAsPluginProject(project)
-		ClasspathUtil.setUpAsXtextProject(project)
-		ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
-		ClasspathUtil.makeSourceFolderIfNecessary(srcFolder)
-		ClasspathUtil.makeSourceFolderIfNecessary(tggFolder)
-		
-		if (tggFolder.exists && tggFolder.allMembers.map [
-			it.localTimeStamp
-		].max > srcFolder.allMembers.map [
-			it.localTimeStamp
-		].max) {
-			project.build(IncrementalProjectBuilder.CLEAN_BUILD, null)
-			//project.build(IncrementalProjectBuilder.FULL_BUILD, null)
+			ClasspathUtil.setUpAsJavaProject(project)
+			ClasspathUtil.setUpAsPluginProject(project)
+			ClasspathUtil.setUpAsXtextProject(project)
+			ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
+			ClasspathUtil.makeSourceFolderIfNecessary(srcFolder)
+			ClasspathUtil.makeSourceFolderIfNecessary(tggFolder)
+
+			createRefreshJob(derivedGTFiles.map[project.getFile(it)])
 		}
+
+		cleanedUp = false
+		derivedGTFiles.clear
 	}
 	
-	def Iterable<IResource> allMembers(IFolder folder){
-		return folder.members + folder.members.filter[it instanceof IFolder].flatMap[(it as IFolder).allMembers]
+	private def void createRefreshJob(List<IFile> generatedFiles){
+		if(!generatedFiles.isEmpty)
+			new RefreshFilesJob(generatedFiles).schedule()
 	}
 
 	def generateCommon() {
