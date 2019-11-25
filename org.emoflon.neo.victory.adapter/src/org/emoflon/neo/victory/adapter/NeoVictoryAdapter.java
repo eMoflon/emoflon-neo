@@ -34,8 +34,7 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 
 		var nameToRule = new HashMap<String, TripleRule>();
 		tripleRules.forEach(tr -> nameToRule.put(tr.getName(), tr));
-		//FIXME: There should be as many operational rules as triple rules
-		operationalRules.forEach(r -> rules.add(new NeoRuleAdapter(r, nameToRule.getOrDefault(r.getName(), null))));
+		operationalRules.forEach(r -> rules.add(new NeoRuleAdapter(r, nameToRule.get(r.getName()))));
 
 		victory = new Victory();
 	}

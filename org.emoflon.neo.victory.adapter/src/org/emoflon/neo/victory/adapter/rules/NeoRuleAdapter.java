@@ -31,8 +31,8 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 	private GraphBuilder graphBuilder;
 
 	public NeoRuleAdapter(Rule opRule, TripleRule tripleRule) {
-		Validate.notNull(opRule, "The wrapped operational rule cannot be null.");
-		Validate.notNull(tripleRule, "The wrapped triple rule cannot be null.");
+		Validate.notNull(opRule);
+		Validate.notNull(tripleRule);
 
 		blocksToNode = new HashMap<>();
 		graphBuilder = new GraphBuilder();

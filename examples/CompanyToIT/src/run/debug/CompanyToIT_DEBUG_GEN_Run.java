@@ -47,7 +47,7 @@ public class CompanyToIT_DEBUG_GEN_Run {
 					new ParanoidNeoReprocessor(), //
 					new NoOpCleanup(), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator("TheSource", "TheTarget"), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			adapter.run(generator);

@@ -20,24 +20,28 @@ class MatchQuery {
 
 	def static String matchPath(IMatch match, int neighbourhoodSize) {
 		'''
-			MATCH «FOR n : match.elements SEPARATOR ', '»
-						p«n»=(n«n»)- [*0..«neighbourhoodSize»]-(m«n»)
-			«ENDFOR»
+			MATCH 
+				«FOR n : match.elements SEPARATOR ', '»
+					p«n»=(n«n»)- [*0..«neighbourhoodSize»]-(m«n»)
+				«ENDFOR»
 		'''
 	}
 
 	def static String checkIds(IMatch match, int neighbourhoodSize) {
 		'''
-			WHERE «FOR n : match.elements SEPARATOR ' AND '»
-				id(n«n») = «n»«ENDFOR» 
+			WHERE 
+				«FOR n : match.elements SEPARATOR ' AND '»
+					id(n«n») = «n»
+				«ENDFOR» 
 		'''
 	}
 
 	def static String returnPath(IMatch match, int neighbourhoodSize) {
 		'''
-			RETURN «FOR n : match.elements SEPARATOR ',\n '»
-								p«n»
-			«ENDFOR»
+			RETURN 
+				«FOR n : match.elements SEPARATOR ',\n '»
+					p«n»
+				«ENDFOR»
 		'''
 	}
 
