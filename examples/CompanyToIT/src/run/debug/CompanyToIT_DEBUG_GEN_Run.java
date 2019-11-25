@@ -32,8 +32,11 @@ public class CompanyToIT_DEBUG_GEN_Run {
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var allRules = genAPI.getAllRulesForCompanyToIT_GEN();
-			var adapter = new NeoVictoryAdapter(builder, genAPI.getAllEMSLRulesForCompanyToIT_GEN(), //
-					api.getTripleRulesOfCompanyToIT());
+			var adapter = new NeoVictoryAdapter(//
+					builder, //
+					genAPI.getAllEMSLRulesForCompanyToIT_GEN(), //
+					api.getTripleRulesOfCompanyToIT()//
+			);
 
 			var generator = new NeoGenerator(//
 					allRules, //
