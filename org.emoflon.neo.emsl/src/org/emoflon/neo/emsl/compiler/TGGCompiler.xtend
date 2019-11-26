@@ -155,14 +155,14 @@ class TGGCompiler {
 					srcM : Model {
 						.ename : <__srcModelName>
 					}
+					
 				«ENDIF»
-				
 				«IF mapToModel && !rule.trgNodeBlocks.isEmpty»
 					trgM : Model {
 						.ename : <__trgModelName>
 					}
+					
 				«ENDIF»
-				
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
 					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData, mapToModel)»
 				«ENDFOR»
@@ -176,7 +176,7 @@ class TGGCompiler {
 				«val nacName = getNacName(rule, nacPatterns.values.head)»
 				constraint «rule.name»NAC = forbid «nacName»
 
-				«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData)»
+				«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData, mapToModel)»
 			«ELSEIF(nacPatterns.size > 1)»
 					constraint «rule.name»NAC = «FOR pattern : nacPatterns.values SEPARATOR ' && '»«getNacName(rule, pattern)»NAC«ENDFOR»
 					
@@ -184,7 +184,7 @@ class TGGCompiler {
 						«val nacName = getNacName(rule, nacPattern.value)»
 						constraint «nacName»NAC = forbid «nacName»
 					
-						«TGGCompilerUtils.printAtomicPattern(nacName, nacPattern.value, nacPattern.key instanceof SourceNAC, nodeTypeNames, paramsToData)»
+						«TGGCompilerUtils.printAtomicPattern(nacName, nacPattern.value, nacPattern.key instanceof SourceNAC, nodeTypeNames, paramsToData, mapToModel)»
 					«ENDFOR»
 			«ENDIF»
 		'''
