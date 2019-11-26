@@ -164,7 +164,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var m = (Model) EMSLFlattener.flatten(model);
 
 		var models = collectReferencedModels(m);
-		models.add(m);
+		models.add(model);
 
 		var metamodels = models.stream()//
 				.flatMap(_m -> collectDependentMetamodels(_m).stream())//
@@ -331,15 +331,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
 	}
 
-	private void exportModelsToNeo4j(List<Model> newModels) {
-		var flattenedModels = newModels.stream().map(m -> {
-			try {
-				return (Model) EMSLFlattener.flatten(m);
-			} catch (FlattenerException e) {
-				e.printStackTrace();
-				return m;
-			}
-		}).collect(Collectors.toList());
+	private void exportModelsToNeo4j(List<Model> newModels) throws FlattenerException {
+		var flattenedModels = EMSLFlattener.flattenAllModels(newModels);
 
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
