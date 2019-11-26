@@ -26,18 +26,6 @@ class FWD_OPT extends ILPOperation {
 			propOp.literal
 	}
 	
-	override requiresSrcModelRule() {
-		false
-	}
-	
-	override requiresTrgModelRule() {
-		true
-	}
-	
-	override requiresModelCreation() {
-		true
-	}
-	
 	override requiresCorrModelCreation() {
 		true
 	}

@@ -15,19 +15,7 @@ class CC extends ILPOperation {
 	override getAction(Action action, boolean isSrc) {
 		return ""
 	}
-	
-	override requiresSrcModelRule() {
-		true
-	}
-	
-	override requiresTrgModelRule() {
-		true
-	}
-	
-	override requiresModelCreation() {
-		false
-	}
-	
+
 	override requiresCorrModelCreation() {
 		true
 	}
