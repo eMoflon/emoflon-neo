@@ -447,11 +447,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	private def handleValueOfRelationStatementInModel(ModelRelationStatement statement, EReference reference) {		
 		val root = getSpec(statement)
+		val thisModel = statement.eContainer.eContainer as Model
 		val allModels = allModelsInAllImportedSpecs(root)
 		val allNodeBlocks = allModels.keySet.flatMap[m | m.nodeBlocks]
 		val allNodeBlocksOfRightType = filterForCompatibleSuperTypes(allNodeBlocks, statement)
 		val finalOptions = allNodeBlocksOfRightType.toInvertedMap[nb | allModels.get(nb.eContainer)]
-		return determineScope(finalOptions)
+		return determineScope(finalOptions, Scopes.scopeFor(thisModel.nodeBlocks))
 	}
 
 	private def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(Iterable<ModelNodeBlock> allNodeBlocks,
@@ -738,8 +739,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/*--------------------------*/
 	/*---------- Misc ----------*/
 	/*--------------------------*/
-	private def <T extends EObject> determineScope(Map<T, String> aliases) {
-		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
+	private def <T extends EObject> determineScope(Map<T, String> aliases){
+		determineScope(aliases, IScope.NULLSCOPE)
+	}
+	
+	private def <T extends EObject> determineScope(Map<T, String> aliases, IScope parentScope) {
+		new SimpleScope(parentScope, Scopes.scopedElementsFor(
 			aliases.keySet,
 			[ eob |
 				// find duplicates in names of NodeBlocks

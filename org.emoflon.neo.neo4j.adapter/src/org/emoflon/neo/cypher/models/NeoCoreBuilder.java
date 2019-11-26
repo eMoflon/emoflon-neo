@@ -164,7 +164,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var m = (Model) EMSLFlattener.flatten(model);
 
 		var models = collectReferencedModels(m);
-		models.add(model);
+		// Make sure the model to be exported is part of the set
+		models.add(m);
 
 		var metamodels = models.stream()//
 				.flatMap(_m -> collectDependentMetamodels(_m).stream())//
@@ -195,6 +196,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 				logger.info("Skipping model " + mod.getName() + " as it is already present or is abstract.");
 		}
 
+		// For the actual export, replace with original model so it can be flattened
+		// together with all its referenced models
+		models.remove(m);
+		models.add(model);
+		
 		if (!newModels.isEmpty())
 			exportModelsToNeo4j(newModels);
 

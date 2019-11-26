@@ -289,7 +289,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 				for (nb : dispatcher.getNodeBlocks(entity)) {
 					if (nb.name.equals((e.relation.eContainer as ModelNodeBlock).name)) {
 						error(
-							NON_RESOLVABLE_PROXY + ": "+ e.relation,
+							NON_RESOLVABLE_PROXY,
 							nb,
 							EMSLPackage.Literals.MODEL_NODE_BLOCK__NAME
 						)
