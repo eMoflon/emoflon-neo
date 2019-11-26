@@ -1036,7 +1036,7 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void checkOperatorOfProperties(ModelPropertyStatement p) {
-		if (p.type.type instanceof BuiltInType
+		if (p.type !== null && p.type.type instanceof BuiltInType
 				&& !((p.type.type as BuiltInType).reference === BuiltInDataTypes.EINT 
 					|| (p.type.type as BuiltInType).reference === BuiltInDataTypes.EDOUBLE 
 					|| (p.type.type as BuiltInType).reference === BuiltInDataTypes.EFLOAT 
