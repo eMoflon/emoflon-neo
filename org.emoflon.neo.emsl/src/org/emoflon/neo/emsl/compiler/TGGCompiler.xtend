@@ -38,6 +38,7 @@ class TGGCompiler {
 	final String pathToGeneratedFiles
 	TripleGrammar tgg
 	List<TripleRule> flattenedRules
+	List<TripleRule> generatedRules
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
 	
@@ -53,8 +54,9 @@ class TGGCompiler {
 		mapTypeNames(allMetamodels)
 		
 		flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
-		flattenedRules.add(generateSrcModelCreationRule)
-		flattenedRules.add(generateTrgModelCreationRule)
+		generatedRules = new ArrayList()
+		generatedRules.add(generateSrcModelCreationRule)
+		generatedRules.add(generateTrgModelCreationRule)
 	}
 
 	def compileAll(IFileSystemAccess2 fsa) {
@@ -73,15 +75,20 @@ class TGGCompiler {
 			«importStatements»
 			
 			grammar «tgg.name»«op.nameExtension» {
-				«IF op.requiresSrcModelRule»«CREATE_SRC_MODEL_RULE»«ENDIF»
-				«IF op.requiresTrgModelRule»«CREATE_TRG_MODEL_RULE»«ENDIF»
 				«FOR rule : flattenedRules»
+					«rule.name»
+				«ENDFOR»
+				«FOR rule : generatedRules»
 					«rule.name»
 				«ENDFOR»
 			}
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
-				«compileRule(op, rule)»
+				«compileRule(op, rule, true)»
+			«ENDFOR»
+
+			«FOR rule : generatedRules SEPARATOR "\n"»
+				«compileRule(op, rule, false)»
 			«ENDFOR»
 		'''
 	}
@@ -122,7 +129,7 @@ class TGGCompiler {
 		'''
 	}
 
-	private def compileRule(Operation op, TripleRule rule) {
+	private def compileRule(Operation op, TripleRule rule, boolean mapToModel) {
 
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
@@ -144,24 +151,24 @@ class TGGCompiler {
 		
 		'''
 			rule «rule.name» {
-				«IF !rule.srcNodeBlocks.isEmpty»
+				«IF mapToModel && !rule.srcNodeBlocks.isEmpty»
 					srcM : Model {
 						.ename : <__srcModelName>
 					}
 				«ENDIF»
 				
-				«IF !rule.trgNodeBlocks.isEmpty»
+				«IF mapToModel && !rule.trgNodeBlocks.isEmpty»
 					trgM : Model {
 						.ename : <__trgModelName>
 					}
 				«ENDIF»
 				
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData)»
+					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData, mapToModel)»
 				«ENDFOR»
 			
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData)»
+					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData, mapToModel)»
 				«ENDFOR»
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
@@ -204,11 +211,11 @@ class TGGCompiler {
 				}
 	}
 
-	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
+	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData, boolean mapToModel) {
 		val action = op.getAction(nodeBlock.action, isSrc)
 		'''
 			«action»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
-				«action»-elementOf->«IF isSrc»srcM«ELSE»trgM«ENDIF»
+				«IF mapToModel»«action»-elementOf->«IF isSrc»srcM«ELSE»trgM«ENDIF»«ENDIF»
 				«FOR relation : nodeBlock.relations»
 					«compileRelationStatement(op, relation, isSrc, paramsToData)»
 				«ENDFOR»
