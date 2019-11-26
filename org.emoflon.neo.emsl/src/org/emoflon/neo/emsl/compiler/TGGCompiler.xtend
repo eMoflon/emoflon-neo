@@ -49,8 +49,11 @@ class TGGCompiler {
 		this.tgg = tgg
 		this.pathToGeneratedFiles = pathToGeneratedFiles
 
-		val allMetamodels = tgg.srcMetamodels + tgg.trgMetamodels
+		val allMetamodels = new ArrayList
+		allMetamodels.addAll(tgg.srcMetamodels)
+		allMetamodels.addAll(tgg.trgMetamodels)
 		buildImportStatement(allMetamodels)
+		allMetamodels.add(PreProcessorUtil.instance.neoCore)
 		mapTypeNames(allMetamodels)
 		
 		flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
@@ -344,6 +347,7 @@ class TGGCompiler {
 		patternModelBlock.properties.add(patternModelName)
 		
 		val modelPattern = EMSLFactory.eINSTANCE.createAtomicPattern
+		modelPattern.name = '''«modelBlockName»Exists'''
 		modelPattern.nodeBlocks.add(patternModelBlock)
 		
 		return modelPattern
