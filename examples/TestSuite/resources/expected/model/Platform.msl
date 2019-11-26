@@ -59,10 +59,13 @@ model Platform {
 	}
 	
 	o2 : Character {
+		.color : BLUE
+				.name : "Luigi"
 		-standsOn -> o3
 	}
 	
 	o3 : SimplePlatform {
+				.name : "P1"
 		-charactersStandingOn -> o2
 		-neighbors -> o4
 		-neighbors -> o5
@@ -71,18 +74,22 @@ model Platform {
 	}
 	
 	o4 : SimplePlatform {
+				.name : "P2"
 		-neighbors -> o5
 	}
 	
 	o5 : SimplePlatform {
+				.name : "P3"
 		-neighbors -> o6
 	}
 	
 	o6 : SimplePlatform {
+				.name : "P4"
 		-neighbors -> o7
 	}
 	
 	o7 : SimplePlatform {
+				.name : "P5"
 	}
 	
 }

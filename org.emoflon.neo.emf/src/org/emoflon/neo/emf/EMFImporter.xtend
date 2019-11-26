@@ -1,21 +1,16 @@
 package org.emoflon.neo.emf
 
 import java.io.File
-
-import org.apache.commons.io.FileUtils
-
-import org.eclipse.emf.ecore.EPackage
-
-import org.eclipse.emf.ecore.resource.ResourceSet
-
-import org.eclipse.emf.ecore.EClass
 import java.nio.charset.Charset
+import java.util.HashMap
+import org.apache.commons.io.FileUtils
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EEnum
 import org.eclipse.emf.ecore.EObject
-import java.util.HashMap
-import org.eclipse.emf.common.util.URI
-import org.eclipse.emf.common.util.EList
-import java.util.List
+import org.eclipse.emf.ecore.EPackage
+import org.eclipse.emf.ecore.resource.ResourceSet
 
 /**
  * Transforms EMF to EMSL
@@ -77,11 +72,11 @@ class EMFImporter {
 					model «extractModelName(r.URI)» {
 						«{objCreate = storeObjectsCreated(p as EObject);""}»
 						«objCreate.get(p)» : «p.eClass.name» {
-							«FOR attr : p.eClass.EAttributes»
+							«FOR attr : p.eClass.EAllAttributes»
 								«IF attr.EType instanceof EEnum»«var attEnum = attr.EType as EEnum»
-									.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(p.eGet(attr).toString).name»
-								«ELSE»
-									.«attr.name» : «IF attr.EType.name=="EString" || attr.EType.name=="EChar"»"«p.eGet(attr)»"«ELSE»«p.eGet(attr)»«ENDIF»
+								.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(p.eGet(attr).toString).name»
+								«ELSEIF p.eGet(attr)!== null»
+								.«attr.name» : «IF attr.EType.name=="EString" || attr.EType.name=="EChar"»"«p.eGet(attr)»"«ELSE»«p.eGet(attr)»«ENDIF»
 								«ENDIF»
 							«ENDFOR»
 							«IF !p.eClass.EAttributes.isEmpty && !p.eClass.EReferences.isEmpty»
@@ -100,10 +95,10 @@ class EMFImporter {
 						
 						«FOR c: p.eAllContents.toIterable»
 							«objCreate.get(c)» : «c.eClass.name» {
-								«FOR attr : c.eClass.EAttributes»
+								«FOR attr : c.eClass.EAllAttributes»
 									«IF attr.EType instanceof EEnum»«var attEnum = attr.EType as EEnum»
 									.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(c.eGet(attr).toString).name»
-									«ELSE»
+									«ELSEIF c.eGet(attr)!== null»
 									.«attr.name» : «IF attr.EType.name=="EString" || attr.EType.name=="EChar"»"«c.eGet(attr)»"«ELSE»«c.eGet(attr)»«ENDIF»
 									«ENDIF»
 								«ENDFOR»
