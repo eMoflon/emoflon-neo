@@ -173,12 +173,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	
 	private def handleNameOfSuperRefinementTypeOfSuperType(EObject context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
-		determineScope(allTypesInAllImportedMetamodels(root, context.class))
+		determineScope(allTypesInAllImportedSpecs(root, context.class))
 	}
 	
 	private def handleNameOfSuperRefinementTypeOfModelInRefinementCommand(EObject context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
-		determineScope(allTypesInAllImportedMetamodels(root, context.eContainer.class))
+		determineScope(allTypesInAllImportedSpecs(root, context.eContainer.class))
 	}
 
 	/*----------------------------------------*/
@@ -210,7 +210,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val root = EcoreUtil2.getRootContainer(type)
 
 		// Check if EObject is imported: if yes, then it is a supertype for everything
-		val eObject = allNodeBlocksInAllImportedMetamodels(root).keySet.findFirst[it.name == "EObject"]
+		val eObject = allMetamodelNodeBlocksInAllImportedSpecs(root).keySet.findFirst[it.name == "EObject"]
 		if (eObject !== null)
 			st.add(eObject)
 		return st
@@ -346,7 +346,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	def handleTypeOfRelationStatementInModelRelationStatement(ModelRelationStatement context,
 		ModelNodeBlock container) {
 		if (context.name !== null) {
-			determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), MetamodelRelationStatement))
+			determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(context), MetamodelRelationStatement))
 		} else {
 			val relations = new HashSet()
 			thisAndAllSuperTypes(container.type).forEach[t | relations.addAll(t.relations)]
@@ -359,7 +359,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	def handleTypeOfRelationStatementInModelRelationStatementType(ModelRelationStatement relation, ModelNodeBlock container) {
 		if (relation.name !== null) {
-			determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(relation), MetamodelRelationStatement))
+			determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(relation), MetamodelRelationStatement))
 		} else {
 			val relations = new HashSet()
 			thisAndAllSuperTypes(container.type).forEach[t | relations.addAll(t.relations)]
@@ -371,7 +371,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns the scope for the name of a RelationStatement.
 	 */
 	def handleTypeOfRelationStatementInModelRelationStatementType(ModelNodeBlock container) {
-		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(container), MetamodelRelationStatement))
+		determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(container), MetamodelRelationStatement))
 	}
 
 	/**
@@ -445,13 +445,17 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/**
 	 * Returns a scope for the value of a RelationStatement in a Model.
 	 */
-	private def handleValueOfRelationStatementInModel(ModelRelationStatement statement, EReference reference) {
-		return Scopes.scopeFor(filterForCompatibleSuperTypes(
-				new HashSet((statement.eContainer.eContainer as Model).nodeBlocks), statement
-		))
+	private def handleValueOfRelationStatementInModel(ModelRelationStatement statement, EReference reference) {		
+		val root = getSpec(statement)
+		val thisModel = statement.eContainer.eContainer as Model
+		val allModels = allModelsInAllImportedSpecs(root)
+		val allNodeBlocks = allModels.keySet.flatMap[m | m.nodeBlocks]
+		val allNodeBlocksOfRightType = filterForCompatibleSuperTypes(allNodeBlocks, statement)
+		val finalOptions = allNodeBlocksOfRightType.toInvertedMap[nb | allModels.get(nb.eContainer)]
+		return determineScope(finalOptions, Scopes.scopeFor(thisModel.nodeBlocks))
 	}
 
-	private def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(HashSet<ModelNodeBlock> allNodeBlocks,
+	private def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(Iterable<ModelNodeBlock> allNodeBlocks,
 		ModelRelationStatement statement) {
 		var filteredNodeBlocks = new HashSet()
 		for (nb : allNodeBlocks) {
@@ -461,6 +465,13 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			}
 		}
 		return filteredNodeBlocks
+	}
+	
+	private def EObject getSpec(EObject o){
+		if(o.eContainer !== null)
+			return getSpec(o.eContainer)
+		
+		return o
 	}
 
 	/**
@@ -566,7 +577,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 	
 	private def handleConstraintReferenceInApplicationCondition(EObject context, EReference reference) {
-		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), Constraint))
+		determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(context), Constraint))
 	}
 	
 	private def patternInApplicationCondition(EObject context, EReference reference) {
@@ -577,7 +588,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 		
 	private def handlePatternInApplicationCondition(EObject context, EReference reference) {
-		determineScope(allTypesInAllImportedMetamodels(EcoreUtil.getRootContainer(context), AtomicPattern))
+		determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(context), AtomicPattern))
 	}
 	
 	
@@ -598,7 +609,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	private def handleNodeBlockTypesInModel(ModelNodeBlock context, EReference reference) {
 		// For all entities other than metamodels, candidates are all node blocks of all imported metamodels
 		val root = EcoreUtil2.getRootContainer(context)
-		determineScope(allNodeBlocksInAllImportedMetamodels(root))
+		determineScope(allMetamodelNodeBlocksInAllImportedSpecs(root))
 	}
 
 	/**
@@ -607,7 +618,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	private def handleNodeBlockTypesInPattern(ModelNodeBlock context, EReference reference) {
 		val root = EcoreUtil2.getRootContainer(context)
 		// For a Pattern, first check all metamodels for classes
-		determineScope(allNodeBlocksInAllImportedMetamodels(root))
+		determineScope(allMetamodelNodeBlocksInAllImportedSpecs(root))
 	}
 
 	/**
@@ -617,7 +628,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		val root = EcoreUtil2.getRootContainer(context)
 		val possibilities = new HashMap<EObject, String>()
 
-		possibilities.putAll(allNodeBlocksInAllImportedMetamodels(root))
+		possibilities.putAll(allMetamodelNodeBlocksInAllImportedSpecs(root))
 
 		determineScope(possibilities)
 	}
@@ -627,27 +638,31 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 */
 	private def handleNodeBlockTypesInTripleRule(EObject context, EReference reference) {
 		if ((context.eContainer as TripleRule).srcNodeBlocks.contains(context)) {
-			return determineScope(allNodeBlocksInAllImportedMetamodels(EcoreUtil2.getRootContainer(context)).filter[p1, p2|
+			return determineScope(allMetamodelNodeBlocksInAllImportedSpecs(EcoreUtil2.getRootContainer(context)).filter[p1, p2|
 				(context.eContainer as TripleRule).type.srcMetamodels.contains(p1.eContainer)
 			])
 		} else if ((context.eContainer as TripleRule).trgNodeBlocks.contains(context)) {
-			return determineScope(allNodeBlocksInAllImportedMetamodels(EcoreUtil2.getRootContainer(context)).filter[p1, p2|
+			return determineScope(allMetamodelNodeBlocksInAllImportedSpecs(EcoreUtil2.getRootContainer(context)).filter[p1, p2|
 				(context.eContainer as TripleRule).type.trgMetamodels.contains(p1.eContainer)
 			])
 		}
 	}
 
 	/**
-	 * Returns all MetamodelNodeBlocks from all imported Metamodels.
+	 * Returns all MetamodelNodeBlocks from all imported specifications.
 	 */
-	private def allNodeBlocksInAllImportedMetamodels(EObject root) {
-		allTypesInAllImportedMetamodels(root, MetamodelNodeBlock)
+	private def allMetamodelNodeBlocksInAllImportedSpecs(EObject root) {
+		allTypesInAllImportedSpecs(root, MetamodelNodeBlock)
+	}
+	
+	private def allModelsInAllImportedSpecs(EObject root){
+		allTypesInAllImportedSpecs(root, Model)
 	}
 
 	/**
-	 * Returns all objects of the given Type from all imported Metamodels.
+	 * Returns all objects of the given type from all imported specifications.
 	 */
-	private def <T extends EObject> allTypesInAllImportedMetamodels(EObject root, Class<T> type) {
+	private def <T extends EObject> allTypesInAllImportedSpecs(EObject root, Class<T> type) {
 		val aliases = new HashMap<T, String>()
 		if (root === null)
 			return aliases
@@ -724,8 +739,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	/*--------------------------*/
 	/*---------- Misc ----------*/
 	/*--------------------------*/
-	private def <T extends EObject> determineScope(Map<T, String> aliases) {
-		new SimpleScope(IScope.NULLSCOPE, Scopes.scopedElementsFor(
+	private def <T extends EObject> determineScope(Map<T, String> aliases){
+		determineScope(aliases, IScope.NULLSCOPE)
+	}
+	
+	private def <T extends EObject> determineScope(Map<T, String> aliases, IScope parentScope) {
+		new SimpleScope(parentScope, Scopes.scopedElementsFor(
 			aliases.keySet,
 			[ eob |
 				// find duplicates in names of NodeBlocks

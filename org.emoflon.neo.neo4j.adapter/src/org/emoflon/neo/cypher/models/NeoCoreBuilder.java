@@ -164,6 +164,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var m = (Model) EMSLFlattener.flatten(model);
 
 		var models = collectReferencedModels(m);
+		// Make sure the model to be exported is part of the set
 		models.add(m);
 
 		var metamodels = models.stream()//
@@ -182,7 +183,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		if (!newMetamodels.isEmpty())
 			exportMetamodelsToNeo4j(newMetamodels);
 		logger.info("Exported metamodels: " + newMetamodels);
-
+		
+		// For the actual export, replace with original model so it can be flattened
+		// together with all its referenced models
+		models.remove(m);
+		models.add(model);
+		
 		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export models: " + modelNames);
 		var newModels = removeExistingModels(models);
@@ -194,7 +200,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			if (!newModels.contains(mod))
 				logger.info("Skipping model " + mod.getName() + " as it is already present or is abstract.");
 		}
-
+		
 		if (!newModels.isEmpty())
 			exportModelsToNeo4j(newModels);
 
@@ -331,15 +337,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
 	}
 
-	private void exportModelsToNeo4j(List<Model> newModels) {
-		var flattenedModels = newModels.stream().map(m -> {
-			try {
-				return (Model) EMSLFlattener.flatten(m);
-			} catch (FlattenerException e) {
-				e.printStackTrace();
-				return m;
-			}
-		}).collect(Collectors.toList());
+	private void exportModelsToNeo4j(List<Model> newModels) throws FlattenerException {
+		var flattenedModels = EMSLFlattener.flattenAllModels(newModels);
 
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore

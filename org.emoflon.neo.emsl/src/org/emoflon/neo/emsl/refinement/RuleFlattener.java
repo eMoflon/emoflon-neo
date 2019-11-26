@@ -316,8 +316,8 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					if (other.getTypes().size() > 1 || relation == other)
 						continue;
 					if (relation.getTypes().get(0).getType() == other.getTypes().get(0).getType()
-							&& relation.getTarget() == other.getTarget() && relation.getLower().equals(other.getLower())
-							&& relation.getUpper().equals(other.getUpper())) {
+							&& relation.getTarget() == other.getTarget() && relation.getLower() == other.getLower()
+							&& relation.getUpper() == other.getUpper()) {
 						if (!duplicates.contains(other)) {
 							duplicates.add(other);
 						}
