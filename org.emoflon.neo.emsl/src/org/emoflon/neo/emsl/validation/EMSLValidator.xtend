@@ -824,9 +824,9 @@ class EMSLValidator extends AbstractEMSLValidator {
 					instance.types.get(0).type == r
 				].size
 				if (!r.lower.equals("*") && !(numberOfInstances >= Integer.parseInt(r.lower)))
-					warning('''You need at least «Integer.parseInt(r.lower)» edges of type "«r.name»" in your nodeBlock.''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
+					warning('''You need at least «Integer.parseInt(r.lower)» link(s) of type "«r.name»".''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
 				if (!r.upper.equals("*") && !(numberOfInstances <= Integer.parseInt(r.upper)))
-					warning('''You can create at most «Integer.parseInt(r.upper)» edges of type "«r.name»" in your nodeBlock.''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
+					warning('''You can have at most «Integer.parseInt(r.upper)» link(s) of type "«r.name»".''', nb, EMSLPackage.Literals.MODEL_NODE_BLOCK__RELATIONS)
 			]
 		}
 	}
