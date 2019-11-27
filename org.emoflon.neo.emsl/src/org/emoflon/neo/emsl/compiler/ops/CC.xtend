@@ -46,7 +46,7 @@ class CC extends ILPOperation {
 			import java.util.Collections;
 			import java.util.List;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
-			import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
+			import org.emoflon.neo.api.«tggName».API_«tggName»_GEN;
 			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 			import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
