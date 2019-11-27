@@ -7,7 +7,6 @@ import java.util.Map;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.engine.api.patterns.IMatch;
-import org.emoflon.neo.victory.adapter.MatchQuery;
 import org.emoflon.neo.victory.adapter.rules.NeoRuleAdapter;
 import org.emoflon.victory.ui.api.Graph;
 import org.emoflon.victory.ui.api.Match;
