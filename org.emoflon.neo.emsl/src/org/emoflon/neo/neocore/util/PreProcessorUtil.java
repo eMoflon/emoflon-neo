@@ -52,6 +52,10 @@ public class PreProcessorUtil {
 	private MetamodelRelationStatement corr;
 	private MetamodelRelationStatement conformsTo;
 
+	private PreProcessorUtil() {
+		neoCore();
+	}
+
 	public Metamodel neoCore() {
 		if (neoCore == null) {
 			neoCore = EMSLFactory.eINSTANCE.createMetamodel();
