@@ -27,11 +27,18 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.eMSL.EMSLFactory
+import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.neocore.util.PreProcessorUtil
 
 class TGGCompiler {
 	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
 	final String pathToGeneratedFiles
 	TripleGrammar tgg
+	List<TripleRule> flattenedRules
+	List<TripleRule> generatedRules
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
 	
@@ -42,9 +49,17 @@ class TGGCompiler {
 		this.tgg = tgg
 		this.pathToGeneratedFiles = pathToGeneratedFiles
 
-		val allMetamodels = tgg.srcMetamodels + tgg.trgMetamodels
+		val allMetamodels = new ArrayList
+		allMetamodels.addAll(tgg.srcMetamodels)
+		allMetamodels.addAll(tgg.trgMetamodels)
 		buildImportStatement(allMetamodels)
+		allMetamodels.add(PreProcessorUtil.instance.neoCore)
 		mapTypeNames(allMetamodels)
+		
+		flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
+		generatedRules = new ArrayList()
+		generatedRules.add(generateSrcModelCreationRule)
+		generatedRules.add(generateTrgModelCreationRule)
 	}
 
 	def compileAll(IFileSystemAccess2 fsa) {
@@ -59,24 +74,24 @@ class TGGCompiler {
 	}
 
 	private def String compile(Operation op) {
-		val flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
 		'''
 			«importStatements»
 			
 			grammar «tgg.name»«op.nameExtension» {
-				«IF op.requiresSrcModelRule»«CREATE_SRC_MODEL_RULE»«ENDIF»
-				«IF op.requiresTrgModelRule»«CREATE_TRG_MODEL_RULE»«ENDIF»
 				«FOR rule : flattenedRules»
+					«rule.name»
+				«ENDFOR»
+				«FOR rule : generatedRules»
 					«rule.name»
 				«ENDFOR»
 			}
 			
-			«IF op.requiresSrcModelRule»«generateSrcModelCreationRule(tgg.srcMetamodels.map[it.name], op.requiresModelCreation)»«ENDIF»
-			
-			«IF op.requiresTrgModelRule»«generateTrgModelCreationRule(tgg.trgMetamodels.map[it.name], op.requiresModelCreation)»«ENDIF»
-			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
-				«compileRule(op, rule)»
+				«compileRule(op, rule, true)»
+			«ENDFOR»
+
+			«FOR rule : generatedRules SEPARATOR "\n"»
+				«compileRule(op, rule, false)»
 			«ENDFOR»
 		'''
 	}
@@ -117,7 +132,7 @@ class TGGCompiler {
 		'''
 	}
 
-	private def compileRule(Operation op, TripleRule rule) {
+	private def compileRule(Operation op, TripleRule rule, boolean mapToModel) {
 
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
@@ -139,24 +154,24 @@ class TGGCompiler {
 		
 		'''
 			rule «rule.name» {
-				«IF !rule.srcNodeBlocks.isEmpty»
+				«IF mapToModel && !rule.srcNodeBlocks.isEmpty»
 					srcM : Model {
 						.ename : <__srcModelName>
 					}
+					
 				«ENDIF»
-				
-				«IF !rule.trgNodeBlocks.isEmpty»
+				«IF mapToModel && !rule.trgNodeBlocks.isEmpty»
 					trgM : Model {
 						.ename : <__trgModelName>
 					}
+					
 				«ENDIF»
-				
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData)»
+					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData, mapToModel)»
 				«ENDFOR»
 			
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData)»
+					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData, mapToModel)»
 				«ENDFOR»
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
@@ -164,7 +179,7 @@ class TGGCompiler {
 				«val nacName = getNacName(rule, nacPatterns.values.head)»
 				constraint «rule.name»NAC = forbid «nacName»
 
-				«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData)»
+				«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData, mapToModel)»
 			«ELSEIF(nacPatterns.size > 1)»
 					constraint «rule.name»NAC = «FOR pattern : nacPatterns.values SEPARATOR ' && '»«getNacName(rule, pattern)»NAC«ENDFOR»
 					
@@ -172,7 +187,7 @@ class TGGCompiler {
 						«val nacName = getNacName(rule, nacPattern.value)»
 						constraint «nacName»NAC = forbid «nacName»
 					
-						«TGGCompilerUtils.printAtomicPattern(nacName, nacPattern.value, nacPattern.key instanceof SourceNAC, nodeTypeNames, paramsToData)»
+						«TGGCompilerUtils.printAtomicPattern(nacName, nacPattern.value, nacPattern.key instanceof SourceNAC, nodeTypeNames, paramsToData, mapToModel)»
 					«ENDFOR»
 			«ENDIF»
 		'''
@@ -199,11 +214,11 @@ class TGGCompiler {
 				}
 	}
 
-	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
+	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs, boolean isSrc, Map<Parameter, ParameterData> paramsToData, boolean mapToModel) {
 		val action = op.getAction(nodeBlock.action, isSrc)
 		'''
 			«action»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
-				«action»-elementOf->«IF isSrc»srcM«ELSE»trgM«ENDIF»
+				«IF mapToModel»«action»-elementOf->«IF isSrc»srcM«ELSE»trgM«ENDIF»«ENDIF»
 				«FOR relation : nodeBlock.relations»
 					«compileRelationStatement(op, relation, isSrc, paramsToData)»
 				«ENDFOR»
@@ -262,57 +277,126 @@ class TGGCompiler {
 			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 
-	private def generateSrcModelCreationRule(Iterable<String> srcMetaModelNames, boolean createModel) {
-		val createOp = if(createModel) "++ " else ""
-		val assignOp = if(createModel) ":=" else ":"
-		'''
-			rule «CREATE_SRC_MODEL_RULE» {
-				«createOp»srcM : Model {
-					.ename «assignOp» <__srcModelName>
-					«FOR srcMetaModel : srcMetaModelNames»
-						«createOp»-conformsTo-> mm«srcMetaModel»
-					«ENDFOR»
-				}
+	/*
+	 * model creation rule generation
+	 */
+	private def generateSrcModelCreationRule() {
+		val modelBlockName = "srcModel"
+		val modelNameParam = "__srcModelName"
+		val metamodelBlocks = generateMetamodelBlocks(tgg.srcMetamodels.map[it.name])
+		
+		val sourceNAC = EMSLFactory.eINSTANCE.createSourceNAC
+		sourceNAC.pattern = generateModelPattern(modelBlockName, modelNameParam)
+		
+		val modelCreationRule = EMSLFactory.eINSTANCE.createTripleRule
+		modelCreationRule.name = CREATE_SRC_MODEL_RULE
+		modelCreationRule.type = tgg
+		modelCreationRule.nacs.add(sourceNAC)
+		modelCreationRule.srcNodeBlocks.add(generateModelBlock(modelBlockName, modelNameParam, metamodelBlocks))
+		for(ModelNodeBlock block : metamodelBlocks)
+			modelCreationRule.srcNodeBlocks.add(block)
 			
-				«FOR srcMetaModel : srcMetaModelNames»
-					mm«srcMetaModel» : MetaModel {
-						.ename : "«srcMetaModel»"
-					}
-				«ENDFOR»
-			} when forbid srcModelExists
-			
-			pattern srcModelExists {
-				srcM : Model {
-					.ename : <__srcModelName>
-				}
-			}
-		'''
+		return modelCreationRule
 	}
 	
-	private def generateTrgModelCreationRule(Iterable<String> trgMetaModelNames, boolean createModel) {
-		val createOp = if(createModel) "++ " else ""
-		val assignOp = if(createModel) ":=" else ":"
-		'''
-			rule «CREATE_TRG_MODEL_RULE» {
-				«createOp»trgM : Model {
-					.ename «assignOp» <__trgModelName>
-					«FOR trgMetaModel : trgMetaModelNames»
-						«createOp»-conformsTo-> mm«trgMetaModel»
-					«ENDFOR»
-				}
+	private def generateTrgModelCreationRule() {
+		val modelBlockName = "trgModel"
+		val modelNameParam = "__trgModelName"
+		val metamodelBlocks = generateMetamodelBlocks(tgg.trgMetamodels.map[it.name])
+		
+		val targetNAC = EMSLFactory.eINSTANCE.createTargetNAC
+		targetNAC.pattern = generateModelPattern(modelBlockName, modelNameParam)
+		
+		val modelCreationRule = EMSLFactory.eINSTANCE.createTripleRule
+		modelCreationRule.name = CREATE_TRG_MODEL_RULE
+		modelCreationRule.type = tgg
+		modelCreationRule.nacs.add(targetNAC)
+		modelCreationRule.trgNodeBlocks.add(generateModelBlock(modelBlockName, modelNameParam, metamodelBlocks))
+		for(ModelNodeBlock block : metamodelBlocks)
+			modelCreationRule.trgNodeBlocks.add(block)
 			
-				«FOR trgMetaModel : trgMetaModelNames»
-					mm«trgMetaModel» : MetaModel {
-						.ename : "«trgMetaModel»"
-					}
-				«ENDFOR»
-			} when forbid trgModelExists
+		return modelCreationRule
+	}
+	
+	private def generateModelBlock(String modelBlockName, String modelNameParam, List<ModelNodeBlock> metamodelBlocks) {
+		val modelName = EMSLFactory.eINSTANCE.createModelPropertyStatement
+		modelName.type = PreProcessorUtil.instance.ename
+		modelName.op = ConditionOperator.ASSIGN
+		modelName.value = generateParameter(modelNameParam)
+		
+		val modelBlock = EMSLFactory.eINSTANCE.createModelNodeBlock
+		modelBlock.action = generateCreateAction
+		modelBlock.name = modelBlockName
+		modelBlock.type = PreProcessorUtil.instance.model
+		modelBlock.properties.add(modelName)
+		for(ModelNodeBlock block : metamodelBlocks)
+			modelBlock.relations.add(generateConformsToEdge(block))
 			
-			pattern trgModelExists {
-				trgM : Model {
-					.ename : <__trgModelName>
-				}
-			}
-		'''
+		return modelBlock
+	}
+	
+	private def generateModelPattern(String modelBlockName, String modelNameParam) {
+		val patternModelName = EMSLFactory.eINSTANCE.createModelPropertyStatement
+		patternModelName.type = PreProcessorUtil.instance.ename
+		patternModelName.op = ConditionOperator.EQ
+		patternModelName.value = generateParameter(modelNameParam)
+		
+		val patternModelBlock = EMSLFactory.eINSTANCE.createModelNodeBlock
+		patternModelBlock.name = modelBlockName
+		patternModelBlock.type = PreProcessorUtil.instance.model
+		patternModelBlock.properties.add(patternModelName)
+		
+		val modelPattern = EMSLFactory.eINSTANCE.createAtomicPattern
+		modelPattern.name = '''«modelBlockName»Exists'''
+		modelPattern.nodeBlocks.add(patternModelBlock)
+		
+		return modelPattern
+	}
+	
+	private def generateMetamodelBlocks(List<String> metamodelNames) {
+		val metamodelBlocks = new ArrayList
+		
+		for(String name : metamodelNames) {
+			val nameString = EMSLFactory.eINSTANCE.createPrimitiveString
+			nameString.literal = name
+			
+			val nameProperty = EMSLFactory.eINSTANCE.createModelPropertyStatement
+			nameProperty.type = PreProcessorUtil.instance.ename
+			nameProperty.op = ConditionOperator.EQ
+			nameProperty.value = nameString
+			
+			val nodeBlock = EMSLFactory.eINSTANCE.createModelNodeBlock
+			nodeBlock.name = '''mm«name»'''
+			nodeBlock.type = PreProcessorUtil.instance.metaModel
+			nodeBlock.properties.add(nameProperty)
+			
+			metamodelBlocks.add(nodeBlock)
+		}
+		
+		return metamodelBlocks
+	}
+	
+	private def generateConformsToEdge(ModelNodeBlock metamodelNodeBlock) {
+		val conformsToEdgeType = EMSLFactory.eINSTANCE.createModelRelationStatementType
+		conformsToEdgeType.type = PreProcessorUtil.instance.conformsTo
+
+		val conformsToEdge = EMSLFactory.eINSTANCE.createModelRelationStatement
+		conformsToEdge.action = generateCreateAction
+		conformsToEdge.target = metamodelNodeBlock
+		conformsToEdge.types.add(conformsToEdgeType)
+		
+		return conformsToEdge
+	}
+	
+	private def generateParameter(String name) {
+		val param = EMSLFactory.eINSTANCE.createParameter
+		param.name = name
+		return param
+	}
+
+	private def generateCreateAction() {
+		val action = EMSLFactory.eINSTANCE.createAction
+		action.op = ActionOperator.CREATE
+		return action
 	}
 }

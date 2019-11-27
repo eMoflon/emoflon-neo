@@ -55,7 +55,7 @@ class TGGCompilerUtils {
 		throw new IllegalArgumentException('''Not yet able to handle: «value»''')
 	}
 
-	def static String printAtomicPattern(String newPatternName, AtomicPattern pattern, boolean isSrc, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData) {
+	def static String printAtomicPattern(String newPatternName, AtomicPattern pattern, boolean isSrc, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData, boolean mapToModel) {
 		val requiredNodeBlocks = new HashSet
 		val modelDomain = if(isSrc) "src" else "trg"
 		val externalDomain = if(isSrc) "trg" else "src"
@@ -63,17 +63,19 @@ class TGGCompilerUtils {
 		val nodeBlocks = 
 		'''
 			«FOR nodeBlock : pattern.nodeBlocks»
-				«simplePrintNodeBlock(nodeBlock, modelDomain, nodeTypeNames, paramsToData, requiredNodeBlocks)»
+				«simplePrintNodeBlock(nodeBlock, modelDomain, nodeTypeNames, paramsToData, requiredNodeBlocks, mapToModel)»
 			«ENDFOR»
 		'''
 		val requiredExternalBlocks = requiredNodeBlocks.filter[block | !pattern.nodeBlocks.exists[it.name.equals(block.name)]]
 		
 		'''
 			pattern «newPatternName» {
-				«modelDomain»M : Model {
-					.ename : <__«modelDomain»ModelName>
-				}
-				
+				«IF mapToModel»
+					«modelDomain»M : Model {
+						.ename : <__«modelDomain»ModelName>
+					}
+					
+				«ENDIF»
 				«nodeBlocks»
 				
 				«IF !requiredExternalBlocks.isEmpty»
@@ -91,10 +93,10 @@ class TGGCompilerUtils {
 		'''
 	}
 	
-	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, String domain, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks) {
+	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, String domain, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks, boolean mapToModel) {
 		'''
 			«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)» {
-				-elementOf->«domain»M
+				«IF mapToModel»-elementOf->«domain»M«ENDIF»
 				«FOR relation : nodeBlock.relations»
 					«simplePrintRelationStatement(relation, paramsToData, requiredNodeBlocks)»
 				«ENDFOR»

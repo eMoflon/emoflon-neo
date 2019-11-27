@@ -26,18 +26,6 @@ class BWD_OPT extends ILPOperation {
 			propOp.literal
 	}
 	
-	override requiresSrcModelRule() {
-		true
-	}
-	
-	override requiresTrgModelRule() {
-		false
-	}
-	
-	override requiresModelCreation() {
-		true
-	}
-	
 	override requiresCorrModelCreation() {
 		true
 	}

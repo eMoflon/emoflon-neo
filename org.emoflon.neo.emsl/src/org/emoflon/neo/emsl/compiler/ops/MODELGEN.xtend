@@ -35,18 +35,6 @@ class MODELGEN implements Operation {
 		return nacs
 	}
 
-	override requiresSrcModelRule() {
-		true
-	}
-	
-	override requiresTrgModelRule() {
-		true
-	}
-	
-	override requiresModelCreation() {
-		true
-	}
-	
 	override requiresCorrModelCreation() {
 		true
 	}

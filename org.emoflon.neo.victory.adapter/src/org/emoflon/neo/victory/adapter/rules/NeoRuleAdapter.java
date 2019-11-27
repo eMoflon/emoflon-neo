@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.emoflon.neo.victory.adapter.common.NeoVictoryUtil;
 import org.emoflon.victory.ui.api.Graph;
 import org.emoflon.victory.ui.api.Node;
@@ -64,7 +64,7 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 				var srcNode = blocksToNode.get(n);
 				var trgNode = blocksToNode.get(r.getTarget());
 				var type = EdgeType.NORMAL;
-				if (EMSLUtil.getAllTypes(r).contains(NeoCoreBootstrapper.CORR)) {
+				if (EMSLUtil.getAllTypes(r).contains(NeoCoreConstants.CORR)) {
 					type = EdgeType.CORR;
 				}
 
