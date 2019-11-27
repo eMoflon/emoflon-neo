@@ -6,7 +6,7 @@ import java.util.List
 import java.util.Map
 import org.neo4j.driver.v1.Driver
 import org.neo4j.driver.v1.Session
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.*
+import org.emoflon.neo.neocore.util.NeoCoreConstants
 
 class CypherCreator extends CypherBuilder {
 	// Use to split into chunks
@@ -39,13 +39,13 @@ class CypherCreator extends CypherBuilder {
 
 	def createNodeWithCont(List< NeoProp> props, List<String> labels,  NodeCommand container) {
 		val nc = createNode(props, labels)
-		createEdge(META_EL_OF, nc, container)
+		createEdge(NeoCoreConstants.META_EL_OF, nc, container)
 		return nc
 	}
 
 	def createNodeWithContAndType(List< NeoProp> props, List<String> labels,  NodeCommand type,  NodeCommand container) {
 		val nc = createNodeWithCont(props, labels, container)
-		createEdge(META_TYPE, nc, type)
+		createEdge(NeoCoreConstants.META_TYPE, nc, type)
 		return nc
 	}
 
@@ -59,8 +59,8 @@ class CypherCreator extends CypherBuilder {
 		else {
 			val nc = new  NodeCommand(props, labels.subList(0, 1))
 			nodesToMatch.put(key, nc)
-			if (!props.exists[it.key == NAMESPACE_PROP])
-				matchEdge(List.of, META_EL_OF, nc, container)
+			if (!props.exists[it.key == NeoCoreConstants.NAMESPACE_PROP])
+				matchEdge(List.of, NeoCoreConstants.META_EL_OF, nc, container)
 			return nc
 		}
 	}

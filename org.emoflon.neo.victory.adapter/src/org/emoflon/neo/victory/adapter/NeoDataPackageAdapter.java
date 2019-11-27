@@ -9,6 +9,8 @@ import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.victory.adapter.matches.NeoMatchAdapter;
+import org.emoflon.neo.victory.adapter.rules.NeoRuleAdapter;
 import org.emoflon.victory.ui.api.DataPackage;
 import org.emoflon.victory.ui.api.Match;
 import org.emoflon.victory.ui.api.RuleApplication;

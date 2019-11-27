@@ -2,10 +2,10 @@ package org.emoflon.neo.victory.adapter;
 
 import java.util.stream.Collectors;
 
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.emoflon.victory.ui.api.Edge;
 import org.emoflon.victory.ui.api.Node;
 import org.emoflon.victory.ui.api.enums.Action;
@@ -32,7 +32,7 @@ public class NeoEdgeAdapter implements Edge {
 
 		if (type.equals(EdgeType.CORR)) {
 			var name = relation.getProperties().stream()//
-					.filter(p -> p.getType().getName().equals(NeoCoreBootstrapper._TYPE_PROP))//
+					.filter(p -> p.getType().getName().equals(NeoCoreConstants._TYPE_PROP))//
 					.map(p -> ((PrimitiveString) p.getValue()).getLiteral())//
 					.findAny();
 

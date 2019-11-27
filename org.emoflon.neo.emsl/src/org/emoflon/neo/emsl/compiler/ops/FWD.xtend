@@ -40,7 +40,7 @@ class FWD implements Operation {
 		 	if(representative !== null) {
 		 		for(param : group)
 		 			paramsToData.get(param).map(representative.containingBlock, representative.containingPropertyName)
-		 		representative.map(null, null)
+		 		representative.unmap()
 		 	}
 		 }
 	}
@@ -54,18 +54,6 @@ class FWD implements Operation {
 	
 	override preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return nacs.reject[it instanceof SourceNAC]
-	}
-	
-	override requiresSrcModelRule() {
-		false
-	}
-	
-	override requiresTrgModelRule() {
-		true
-	}
-	
-	override requiresModelCreation() {
-		true
 	}
 	
 	override requiresCorrModelCreation() {

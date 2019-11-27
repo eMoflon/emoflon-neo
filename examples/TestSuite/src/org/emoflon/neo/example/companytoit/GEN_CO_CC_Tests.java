@@ -23,14 +23,12 @@ import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePoli
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import run.CompanyToIT_CC_Run;
 import run.CompanyToIT_CO_Run;
 import run.CompanyToIT_GEN_Run;
 
-@Disabled("Waiting for fixes")
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {

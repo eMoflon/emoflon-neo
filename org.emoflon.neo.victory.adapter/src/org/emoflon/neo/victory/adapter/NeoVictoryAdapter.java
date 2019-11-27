@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
@@ -16,6 +16,8 @@ import org.emoflon.neo.engine.generator.Generator;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
+import org.emoflon.neo.victory.adapter.matches.NeoMatchAdapter;
+import org.emoflon.neo.victory.adapter.rules.NeoRuleAdapter;
 import org.emoflon.victory.ui.api.DataProvider;
 import org.emoflon.victory.ui.api.Rule;
 import org.emoflon.victory.ui.api.Victory;
@@ -28,10 +30,12 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 	public NeoVictoryAdapter(NeoCoreBuilder builder, Collection<org.emoflon.neo.emsl.eMSL.Rule> operationalRules,
 			Collection<TripleRule> tripleRules) {
 		this.builder = builder;
-		var tripleRuleItr = tripleRules.iterator();
-		this.rules = operationalRules.stream()//
-				.map(r -> new NeoRuleAdapter(r, tripleRuleItr.next()))//
-				.collect(Collectors.toList());
+		this.rules = new ArrayList<NeoRuleAdapter>();
+
+		var nameToRule = new HashMap<String, TripleRule>();
+		tripleRules.forEach(tr -> nameToRule.put(tr.getName(), tr));
+		operationalRules.forEach(r -> rules.add(new NeoRuleAdapter(r, nameToRule.get(r.getName()))));
+
 		victory = new Victory();
 	}
 
