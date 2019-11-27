@@ -152,7 +152,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 				.filter(vg -> vg.generatesValueFor(parameterName, dataType))//
 				.findFirst();
 
-		return valueGen.map(vg -> vg.generateValueFor(parameterName))//
+		return valueGen.map(vg -> vg.generateValueFor(parameterName, dataType))//
 				.orElseThrow(() -> new IllegalArgumentException(
 						"Unable to generate value for: " + parameterName + ":" + dataType.eClass().getName()));
 	}

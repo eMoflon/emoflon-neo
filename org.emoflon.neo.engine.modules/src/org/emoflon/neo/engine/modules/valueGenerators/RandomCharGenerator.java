@@ -35,7 +35,7 @@ public class RandomCharGenerator implements IParameterValueGenerator<DataType, C
 	}
 
 	@Override
-	public Character generateValueFor(String parameterName) {
+	public Character generateValueFor(String parameterName, DataType dataType) {
 		return alphabet.charAt(rand.nextInt(alphabet.length()));
 	}
 }

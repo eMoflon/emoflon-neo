@@ -31,7 +31,7 @@ public class RandomFloatGenerator implements IParameterValueGenerator<DataType, 
 	}
 
 	@Override
-	public Float generateValueFor(String parameterName) {
+	public Float generateValueFor(String parameterName, DataType dataType) {
 		return rand.nextFloat();
 	}
 }

@@ -31,7 +31,7 @@ public class RandomDoubleGenerator implements IParameterValueGenerator<DataType,
 	}
 
 	@Override
-	public Double generateValueFor(String parameterName) {
+	public Double generateValueFor(String parameterName, DataType dataType) {
 		return rand.nextDouble();
 	}
 }

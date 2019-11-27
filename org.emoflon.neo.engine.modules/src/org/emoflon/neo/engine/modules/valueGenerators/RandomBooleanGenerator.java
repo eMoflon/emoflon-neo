@@ -31,7 +31,7 @@ public class RandomBooleanGenerator implements IParameterValueGenerator<DataType
 	}
 
 	@Override
-	public Boolean generateValueFor(String parameterName) {
+	public Boolean generateValueFor(String parameterName, DataType dataType) {
 		return rand.nextBoolean();
 	}
 }

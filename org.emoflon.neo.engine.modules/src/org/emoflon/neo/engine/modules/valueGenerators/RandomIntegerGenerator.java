@@ -31,7 +31,7 @@ public class RandomIntegerGenerator implements IParameterValueGenerator<DataType
 	}
 
 	@Override
-	public Integer generateValueFor(String parameterName) {
+	public Integer generateValueFor(String parameterName, DataType dataType) {
 		return rand.nextInt();
 	}
 }

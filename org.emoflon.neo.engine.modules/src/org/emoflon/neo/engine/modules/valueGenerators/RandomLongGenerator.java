@@ -31,7 +31,7 @@ public class RandomLongGenerator implements IParameterValueGenerator<DataType, L
 	}
 
 	@Override
-	public Long generateValueFor(String parameterName) {
+	public Long generateValueFor(String parameterName, DataType dataType) {
 		return rand.nextLong();
 	}
 }
