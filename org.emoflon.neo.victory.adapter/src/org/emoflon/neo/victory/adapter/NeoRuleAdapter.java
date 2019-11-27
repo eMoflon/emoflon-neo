@@ -7,6 +7,7 @@ import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.neocore.util.NeoCoreConstants;
+import org.emoflon.neo.victory.adapter.rules.NeoRuleNodeAdapter;
 import org.emoflon.victory.ui.api.Graph;
 import org.emoflon.victory.ui.api.Node;
 import org.emoflon.victory.ui.api.Rule;
@@ -62,7 +63,7 @@ public class NeoRuleAdapter implements Rule {
 				}
 			}
 
-			var node = new NeoNodeAdapter(n, domain, action);
+			var node = new NeoRuleNodeAdapter(n, domain, action);
 			blocksToNode.put(n, node);
 			graphBuilder.addNode(node);
 		}

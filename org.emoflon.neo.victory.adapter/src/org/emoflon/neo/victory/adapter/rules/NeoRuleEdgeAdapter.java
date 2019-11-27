@@ -2,9 +2,9 @@ package org.emoflon.neo.victory.adapter.rules;
 
 import java.util.stream.Collectors;
 
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.emoflon.neo.victory.adapter.common.NeoEdgeAdapter;
 import org.emoflon.neo.victory.adapter.common.NeoVictoryUtil;
 import org.emoflon.victory.ui.api.Node;
@@ -28,7 +28,7 @@ public class NeoRuleEdgeAdapter extends NeoEdgeAdapter {
 	private static String computeLabel(EdgeType type, ModelRelationStatement relation) {
 		if (type.equals(EdgeType.CORR)) {
 			return relation.getProperties().stream()//
-					.filter(p -> p.getType().getName().equals(NeoCoreBootstrapper._TYPE_PROP))//
+					.filter(p -> p.getType().getName().equals(NeoCoreConstants._TYPE_PROP))//
 					.map(p -> ((PrimitiveString) p.getValue()).getLiteral())//
 					.findAny()//
 					.orElseThrow(() -> new IllegalArgumentException("Edge is not a corr as it has no type property."));
