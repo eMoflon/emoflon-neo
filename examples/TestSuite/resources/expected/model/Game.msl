@@ -57,18 +57,23 @@ model Game {
 	}
 	
 	o2 : Character {
+		.color : BLUE
+				.name : "Mario"
 		-standsOn -> o3
 	}
 	
 	o3 : SimplePlatform {
+				.name : "platform easy"
 		-charactersStandingOn -> o2
 		-connectedBy -> o5
 	}
 	
 	o4 : Bridge {
+		.color : BLUE
 	}
 	
 	o5 : Wall {
+		.color : BLUE
 		-connects -> o3
 	}
 	
