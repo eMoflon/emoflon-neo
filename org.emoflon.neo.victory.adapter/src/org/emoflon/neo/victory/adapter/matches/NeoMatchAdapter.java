@@ -1,4 +1,4 @@
-package org.emoflon.neo.victory.adapter;
+package org.emoflon.neo.victory.adapter.matches;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.Map;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.engine.api.patterns.IMatch;
+import org.emoflon.neo.victory.adapter.MatchQuery;
+import org.emoflon.neo.victory.adapter.rules.NeoRuleAdapter;
 import org.emoflon.victory.ui.api.Graph;
 import org.emoflon.victory.ui.api.Match;
 import org.emoflon.victory.ui.api.Rule;
@@ -63,10 +65,10 @@ public class NeoMatchAdapter implements Match {
 	private void buildGraph(int neighbourhoodSize) {
 
 		GraphBuilder graphBuilder = new GraphBuilder();
-		Map<Long, NeoNodeAdapter> nodeToNeoNode = new HashMap<>();
+		Map<Long, NeoModelNodeAdapter> nodeToNeoNode = new HashMap<>();
 		Map<Long, NeoModelEdgeAdapter> relations = new HashMap<>();
 
-		if (!(match.convertToMap().values().size() == 0)) {
+		if (!(match.getKeysForElements().size() == 0)) {
 
 			var result = builder.executeQuery(MatchQuery.create(match, getRule(), neighbourhoodSize));
 
@@ -77,7 +79,7 @@ public class NeoMatchAdapter implements Match {
 				for (var o : map.values()) {
 					var path = (Path) o;
 
-					path.nodes().forEach(n -> nodeToNeoNode.putIfAbsent(n.id(), new NeoNodeAdapter(n)));
+					path.nodes().forEach(n -> nodeToNeoNode.putIfAbsent(n.id(), new NeoModelNodeAdapter(n)));
 
 					if (neighbourhoodSize > 0) {
 						path.relationships().forEach(r -> {
@@ -99,7 +101,7 @@ public class NeoMatchAdapter implements Match {
 
 			// populate edges when neighbourhoodSize=0
 			if (neighbourhoodSize == 0) {
-				for (var id : match.convertToMap().keySet()) {
+				for (var id : match.getKeysForElements()) {
 					var matchEdges = builder.executeQuery(MatchQuery.getMatchEdges(match.getElement(id)));
 					matchEdges.list().forEach(n -> {
 						for (var val : n.asMap().values()) {
@@ -130,11 +132,12 @@ public class NeoMatchAdapter implements Match {
 	}
 
 	// Adding MATCH edges between rule and match nodes
-	private void addMatchTypeEdge(GraphBuilder graphBuilder, Map<Long, NeoNodeAdapter> nodeToNeoNode) {
-		for (var id : match.convertToMap().keySet()) {
-			var ruleNode = getRule().getGraph().getNodes().stream().filter(n -> n.getName().equals(id)).findFirst()
-					.get();
-			graphBuilder.addEdge(new NeoModelEdgeAdapter(ruleNode, nodeToNeoNode.get(match.getElement(id)), EdgeType.MATCH, ""));
+	private void addMatchTypeEdge(GraphBuilder graphBuilder, Map<Long, NeoModelNodeAdapter> nodeToNeoNode) {
+		for (var id : match.getKeysForElements()) {
+			var nodes = getRule().getGraph().getNodes();
+			var ruleNode = nodes.stream().filter(n -> n.getName().equals(id)).findFirst();
+			ruleNode.ifPresent(rn -> graphBuilder
+					.addEdge(new NeoModelEdgeAdapter(rn, nodeToNeoNode.get(match.getElement(id)), EdgeType.MATCH, "")));
 		}
 		;
 	}

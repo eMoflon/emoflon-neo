@@ -19,7 +19,7 @@ class CC extends ILPOperation {
 	override requiresCorrModelCreation() {
 		true
 	}
-
+	
 	override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
 		paramGroup.head
 	}
