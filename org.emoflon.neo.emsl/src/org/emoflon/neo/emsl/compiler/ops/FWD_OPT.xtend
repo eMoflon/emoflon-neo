@@ -30,23 +30,29 @@ class FWD_OPT extends ILPOperation {
 		true
 	}
 	
-		override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
+	override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
 		paramGroup.findFirst[param | paramsToData.get(param).domain.equals(ParameterDomain.SRC)]
 	}
 	
 	override additionalImports(String tggName) {
+		// TODO
 		""
 	}
 	
 	override additionalFields(String tggName) {
+		// TODO
 		""
 	}
 	
 	override createGeneratorMethodBody(String tggName) {
-		""
+		// TODO
+		'''
+			throw new UnsupportedOperationException("Stub not implemented");
+		'''
 	}
 	
 	override additionalMethods() {
+		// TODO
 		""
 	}
 	

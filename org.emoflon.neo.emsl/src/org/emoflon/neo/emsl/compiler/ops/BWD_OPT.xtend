@@ -35,18 +35,24 @@ class BWD_OPT extends ILPOperation {
 	}
 	
 	override additionalImports(String tggName) {
+		// TODO
 		""
 	}
 	
 	override additionalFields(String tggName) {
+		// TODO
 		""
 	}
 	
 	override createGeneratorMethodBody(String tggName) {
-		""
+		// TODO
+		'''
+			throw new UnsupportedOperationException("Stub not implemented");
+		'''
 	}
 	
 	override additionalMethods() {
+		// TODO
 		""
 	}
 	
