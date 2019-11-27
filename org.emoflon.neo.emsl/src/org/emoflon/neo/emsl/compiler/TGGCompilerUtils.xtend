@@ -125,10 +125,10 @@ class TGGCompilerUtils {
 			val paramData = paramsToData.get(propertyStatement.value as Parameter)
 			requiredNodeBlocks.add(paramData.containingBlock)
 			val paramValue = paramData.printValue
-			if(paramValue === null)
+			if(!paramValue.present)
 				""
 			else
-				'''.«propertyStatement.type.name» «propertyStatement.op» «paramValue»'''
+				'''.«propertyStatement.type.name» «propertyStatement.op» «paramValue.get»'''
 		}
 		else
 			'''.«propertyStatement.type.name» «propertyStatement.op» «handleValue(propertyStatement.value)»'''

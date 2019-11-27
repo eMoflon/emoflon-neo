@@ -8,7 +8,7 @@ import org.emoflon.neo.engine.generator.modules.IParameterValueGenerator;
 public class LoremIpsumStringValueGenerator implements IParameterValueGenerator<DataType, String> {
 
 	@Override
-	public String generateValueFor(String parameterName) {
+	public String generateValueFor(String parameterName, DataType dataType) {
 		return LoremIpsum.getInstance().randomWord();
 	}
 

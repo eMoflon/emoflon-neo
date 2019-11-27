@@ -8,6 +8,13 @@ import org.emoflon.neo.emsl.compiler.ParameterData
 import java.util.Map
 
 class CC extends ILPOperation {
+
+	/*
+	 * --------------------------------
+	 * GT rule generation methods
+	 * --------------------------------
+	 */
+
 	override String getNameExtension() {
 		return "_CC"
 	}
@@ -22,5 +29,94 @@ class CC extends ILPOperation {
 	
 	override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
 		paramGroup.head
+	}
+
+	/*
+	 * --------------------------------
+	 * app generation methods
+	 * --------------------------------
+	 */
+	
+	override additionalImports(String tggName) {
+		'''
+			import static run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+					
+			import java.util.Collection;
+			import java.util.Collections;
+			import java.util.List;
+			import org.emoflon.neo.engine.api.constraints.IConstraint;
+			import org.emoflon.neo.api.«tggName».API_«tggName»_GEN;
+			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+			import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
+			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
+			import org.emoflon.neo.engine.modules.ruleschedulers.CCRuleScheduler;
+			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
+			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+			import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+		'''
+	}
+	
+	override additionalFields(String tggName) {
+		'''
+			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+			private String srcModel = SRC_MODEL_NAME;
+			private String trgModel = TRG_MODEL_NAME;
+			private CorrCreationOperationalStrategy corrCreation;
+		'''
+	}
+	
+	override createGeneratorMethodBody(String tggName) {
+		val fullOpName = '''«tggName»«nameExtension»'''
+		'''
+			var genAPI = new API_«tggName»_GEN(builder);
+			var ccAPI = new API_«fullOpName»(builder);
+			var genRules = genAPI.getAllRulesFor«tggName»_GEN();
+			var tripleRules = new API_«tggName»(builder).getTripleRulesOf«tggName»();
+			corrCreation = new CorrCreationOperationalStrategy(//
+					solver, //
+					builder, //
+					genRules, //
+					ccAPI.getAllRulesFor«fullOpName»(), //
+					getNegativeConstraints(builder), //
+					srcModel, //
+					trgModel//
+			);
+
+			return new NeoGenerator(//
+					ccAPI.getAllRulesFor«fullOpName»(), //
+					new NoOpStartup(), //
+					new NoMoreMatchesTerminationCondition(), //
+					new CCRuleScheduler(tripleRules), //
+					corrCreation, //
+					new CCReprocessor(tripleRules), //
+					corrCreation, //
+					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator(srcModel, trgModel), //
+					List.of(new LoremIpsumStringValueGenerator()));
+		'''
+	}
+	
+	override additionalMethods() {
+		// TODO should the constraints be found automatically?
+		'''
+
+			public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
+				this.srcModel = srcModel;
+				this.trgModel = trgModel;
+				run();
+				return corrCreation;
+			}
+
+			protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
+				return Collections.emptyList();
+			}
+		'''
+	}
+	
+	override exportMetamodels() {
+		false
 	}
 }

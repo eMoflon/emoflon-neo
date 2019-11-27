@@ -33,4 +33,30 @@ class BWD_OPT extends ILPOperation {
 	override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
 		paramGroup.findFirst[param | paramsToData.get(param).domain.equals(ParameterDomain.TRG)]
 	}
+	
+	override additionalImports(String tggName) {
+		// TODO
+		""
+	}
+	
+	override additionalFields(String tggName) {
+		// TODO
+		""
+	}
+	
+	override createGeneratorMethodBody(String tggName) {
+		// TODO
+		'''
+			throw new UnsupportedOperationException("Stub not implemented");
+		'''
+	}
+	
+	override additionalMethods() {
+		// TODO
+		""
+	}
+	
+	override exportMetamodels() {
+		false
+	}
 }

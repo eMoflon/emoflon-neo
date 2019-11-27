@@ -63,11 +63,18 @@ class TGGCompiler {
 	}
 
 	def compileAll(IFileSystemAccess2 fsa) {
+		val appGenerator = new TGGAppGenerator(tgg)
 		var generatedFiles = new ArrayList<String>
 		for (Operation operation : Operation.allOps) {
-			val fileLocation = BASE_FOLDER + pathToGeneratedFiles + "/" + tgg.name + operation.nameExtension + ".msl"
-			fsa.generateFile("../" + fileLocation, compile(operation))
-			generatedFiles.add(fileLocation)
+			val ruleFileLocation = '''../«BASE_FOLDER»«pathToGeneratedFiles»/«tgg.name»«operation.nameExtension».msl'''
+			fsa.generateFile(ruleFileLocation, compile(operation))
+			generatedFiles.add(ruleFileLocation)
+			
+			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
+			val appFileLocation = '''../«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
+			fsa.deleteFile(appFileLocation);
+			fsa.generateFile(appFileLocation, appGenerator.generateApp(operation, appName))
+			generatedFiles.add(appFileLocation)
 		}
 		
 		return generatedFiles
@@ -268,10 +275,10 @@ class TGGCompiler {
 	private def compilePropertyStatement(Operation op, ModelPropertyStatement propertyStatement, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
 		if(propertyStatement.value instanceof Parameter) {
 			val paramValue = paramsToData.get(propertyStatement.value as Parameter).printValue
-			if(paramValue === null)
+			if(!paramValue.present)
 				""
 			else
-				'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramValue»'''
+				'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramValue.get»'''
 		}
 		else
 			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
