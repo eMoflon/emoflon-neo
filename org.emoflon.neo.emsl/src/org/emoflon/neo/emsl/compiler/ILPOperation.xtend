@@ -29,7 +29,7 @@ abstract class ILPOperation implements Operation {
 			if (representative !== null) {
 				for (param : group)
 					paramsToData.get(param).map(representative.containingBlock, representative.containingPropertyName)
-				representative.map(null, null)
+				representative.unmap()
 			}
 		}
 	}

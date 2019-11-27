@@ -268,10 +268,10 @@ class TGGCompiler {
 	private def compilePropertyStatement(Operation op, ModelPropertyStatement propertyStatement, boolean isSrc, Map<Parameter, ParameterData> paramsToData) {
 		if(propertyStatement.value instanceof Parameter) {
 			val paramValue = paramsToData.get(propertyStatement.value as Parameter).printValue
-			if(paramValue === null)
+			if(!paramValue.present)
 				""
 			else
-				'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramValue»'''
+				'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramValue.get»'''
 		}
 		else
 			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
