@@ -53,7 +53,7 @@ public class ExportEntityToNeo4J extends AbstractHandler {
 			exportSelectedEMSLEntity(event, builder);
 			builder.close();
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error(e);
 			logger.info("Sorry, something went wrong.");
 			e.printStackTrace();
 		}

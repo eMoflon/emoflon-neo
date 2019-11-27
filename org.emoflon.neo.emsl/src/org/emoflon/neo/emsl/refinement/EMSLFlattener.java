@@ -1,30 +1,41 @@
 package org.emoflon.neo.emsl.refinement;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
+import org.apache.commons.lang3.Validate;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
+import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.eMSL.Pattern;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
 public class EMSLFlattener {
-	private SuperType entity;
+	private List<SuperType> entities;
 	private AbstractEntityFlattener flattener;
 
 	private EMSLFlattener(SuperType originalEntity) {
 		EcoreUtil.resolveAll(originalEntity);
-		entity = EcoreUtil.copy(originalEntity);
+		entities = List.of(EcoreUtil.copy(originalEntity));
 
-		if (entity instanceof TripleRule)
+		if (originalEntity instanceof TripleRule)
 			flattener = new TripleRuleFlattener();
-		else if (entity instanceof SuperType)
+		else if (originalEntity instanceof SuperType)
 			flattener = new RuleFlattener();
 		else
 			throw new IllegalArgumentException(
-					"I don't know how to flatten entities of type " + entity.eClass().getName());
+					"I don't know how to flatten entities of type " + originalEntity.eClass().getName());
+	}
+
+	private EMSLFlattener(Collection<Model> models) {
+		models.forEach(m -> EcoreUtil.resolveAll(m));
+		entities = new ArrayList<>(EcoreUtil.copyAll(models));
+		flattener = new RuleFlattener();
 	}
 
 	/**
@@ -38,8 +49,22 @@ public class EMSLFlattener {
 		return new EMSLFlattener(originalEntity).flattenEntity();
 	}
 
+	public static Collection<Model> flattenAllModels(Collection<Model> models) throws FlattenerException {
+		return new EMSLFlattener(models).flattenAllModels();
+	}
+
+	private Collection<Model> flattenAllModels() throws FlattenerException {
+		var flattenedModels = new ArrayList<Model>();
+		for (var model : entities) {
+			flattenedModels.add((Model) flattener.flatten(model, new HashSet<String>()));
+		}
+
+		return flattenedModels;
+	}
+
 	private SuperType flattenEntity() throws FlattenerException {
-		return flattener.flatten(entity, new HashSet<String>());
+		Validate.inclusiveBetween(1, 1, entities.size());
+		return flattener.flatten(entities.get(0), new HashSet<String>());
 	}
 
 	public static Pattern flattenPattern(Pattern p) throws FlattenerException {

@@ -18,6 +18,8 @@ import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGener
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.victory.adapter.NeoVictoryAdapter;
 
+import run.CompanyToIT_GEN_Run;
+
 public class CompanyToIT_DEBUG_GEN_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_DEBUG_GEN_Run.class);
 
@@ -32,8 +34,11 @@ public class CompanyToIT_DEBUG_GEN_Run {
 
 			var genAPI = new API_CompanyToIT_GEN(builder);
 			var allRules = genAPI.getAllRulesForCompanyToIT_GEN();
-			var adapter = new NeoVictoryAdapter(builder, genAPI.getAllEMSLRulesForCompanyToIT_GEN(), //
-					api.getTripleRulesOfCompanyToIT());
+			var adapter = new NeoVictoryAdapter(//
+					builder, //
+					genAPI.getAllEMSLRulesForCompanyToIT_GEN(), //
+					api.getTripleRulesOfCompanyToIT()//
+			);
 
 			var generator = new NeoGenerator(//
 					allRules, //
@@ -44,7 +49,7 @@ public class CompanyToIT_DEBUG_GEN_Run {
 					new ParanoidNeoReprocessor(), //
 					new NoOpCleanup(), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator("TheSource", "TheTarget"), //
+					new ModelNameValueGenerator(CompanyToIT_GEN_Run.SRC_MODEL_NAME, CompanyToIT_GEN_Run.TRG_MODEL_NAME), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			adapter.run(generator);

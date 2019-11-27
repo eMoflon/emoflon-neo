@@ -1,5 +1,6 @@
 package org.emoflon.neo.engine.api.patterns;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IMatch {
@@ -12,4 +13,6 @@ public interface IMatch {
 	void addAllParameters(Map<String, Object> parameters);
 	
 	Map<String, Object> convertToMap();
+	List<String> getKeysForElements();
+	List<Long> getElements();
 }

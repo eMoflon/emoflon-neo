@@ -4,16 +4,18 @@
       label="eMoflon::Neo"
       version="1.0.0.qualifier">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="https://github.com/eMoflon/emoflon-neo-updatesite">
+      An implementation of eMoflon -- a tool for model management via
+graph transformation -- using Neo4j as an underlying graph pattern
+matcher and modelling framework.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright url="https://github.com/eMoflon/emoflon-neo">
+      https://github.com/eMoflon/emoflon-neo
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="https://github.com/eMoflon/emoflon-neo/blob/master/LICENSE">
+      https://github.com/eMoflon/emoflon-neo/blob/master/LICENSE
    </license>
 
    <requires>

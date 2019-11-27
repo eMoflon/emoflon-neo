@@ -3,7 +3,9 @@ package org.emoflon.neo.cypher.patterns;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;
@@ -87,6 +89,16 @@ public class NeoMatch implements IMatch {
 		map.putAll(record.asMap());
 		map.put(getIdParameter(), hashCode());
 		return map;
+	}
+	
+	@Override
+	public List<String> getKeysForElements(){
+		return record.keys();
+	}
+	
+	@Override
+	public List<Long> getElements(){
+		return record.values().stream().map(v -> v.asLong()).collect(Collectors.toList());
 	}
 
 	public String getMatchID() {
