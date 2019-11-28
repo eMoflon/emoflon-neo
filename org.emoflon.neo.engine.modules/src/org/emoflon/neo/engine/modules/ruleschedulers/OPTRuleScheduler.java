@@ -1,7 +1,5 @@
 package org.emoflon.neo.engine.modules.ruleschedulers;
 
-import static org.emoflon.neo.engine.modules.analysis.RuleAnalyser.hasRelevantContext;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -9,9 +7,6 @@ import java.util.stream.Collectors;
 
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
-import org.emoflon.neo.emsl.eMSL.TripleRule;
-import org.emoflon.neo.emsl.refinement.EMSLFlattener;
-import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.generator.IRelSampler;
@@ -19,6 +14,7 @@ import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 import com.google.common.base.Functions;
 
@@ -33,25 +29,16 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 
 	private Collection<Object> allRelIDsUpToLastStep = new ArrayList<>();
 	private Collection<Object> allNodeIDsUpToLastStep = new ArrayList<>();
-	private Collection<TripleRule> tripleRules;
 	private boolean SRC;
 	private boolean CORR;
 	private boolean TRG;
-	
-	public OPTRuleScheduler(Collection<TripleRule> tripleRules, boolean SRC, boolean CORR, boolean TRG) {		
+	private TripleRuleAnalyser analyser;
+
+	public OPTRuleScheduler(TripleRuleAnalyser analyser, boolean SRC, boolean CORR, boolean TRG) {
 		this.SRC = SRC;
 		this.CORR = CORR;
 		this.TRG = TRG;
-
-		this.tripleRules = new ArrayList<>();
-		for (var tripleRule : tripleRules) {
-			try {
-				var flatTr = (TripleRule) EMSLFlattener.flatten(tripleRule);
-				this.tripleRules.add(flatTr);
-			} catch (FlattenerException e) {
-				e.printStackTrace();
-			}
-		}
+		this.analyser = analyser;
 	}
 
 	@Override
@@ -74,8 +61,8 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 		};
 
 		var scheduledRules = matchContainer.streamAllRules()//
-				.filter(r -> !hasRelevantContext(r.getName(), tripleRules, SRC, CORR, TRG) || latestRelIDs.getIDs().size() > 0
-						|| latestNodeIDs.getIDs().size() > 0)//
+				.filter(r -> !analyser.hasRelevantContext(r.getName(), SRC, CORR, TRG)
+						|| latestRelIDs.getIDs().size() > 0 || latestNodeIDs.getIDs().size() > 0)//
 				.collect(Collectors.toMap(Functions.identity(), //
 						r -> new Schedule(-1, latestNodeIDs, latestRelIDs, r, nodeSampler, relSampler)));
 

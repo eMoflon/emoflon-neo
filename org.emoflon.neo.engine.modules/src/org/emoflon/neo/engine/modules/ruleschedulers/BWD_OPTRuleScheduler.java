@@ -1,12 +1,10 @@
 package org.emoflon.neo.engine.modules.ruleschedulers;
 
-import java.util.Collection;
-
-import org.emoflon.neo.emsl.eMSL.TripleRule;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 public class BWD_OPTRuleScheduler extends OPTRuleScheduler {
 
-	public BWD_OPTRuleScheduler(Collection<TripleRule> tripleRules) {
-		super(tripleRules, true, true, false);
+	public BWD_OPTRuleScheduler(TripleRuleAnalyser analyser) {
+		super(analyser, true, true, false);
 	}
 }

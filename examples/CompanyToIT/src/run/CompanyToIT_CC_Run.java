@@ -26,6 +26,7 @@ import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminat
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+import org.emoflon.neo.engine.modules.analysis.*;
 
 public class CompanyToIT_CC_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CC_Run.class);
@@ -56,6 +57,8 @@ public class CompanyToIT_CC_Run {
 		var ccAPI = new API_CompanyToIT_CC(builder);
 		var genRules = genAPI.getAllRulesForCompanyToIT_GEN();
 		var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
+		var analyser = new TripleRuleAnalyser(tripleRules);
+		
 		corrCreation = new CorrCreationOperationalStrategy(//
 				solver, //
 				builder, //
@@ -70,9 +73,9 @@ public class CompanyToIT_CC_Run {
 				ccAPI.getAllRulesForCompanyToIT_CC(), //
 				new NoOpStartup(), //
 				new NoMoreMatchesTerminationCondition(), //
-				new CCRuleScheduler(tripleRules), //
+				new CCRuleScheduler(analyser), //
 				corrCreation, //
-				new CCReprocessor(tripleRules), //
+				new CCReprocessor(analyser), //
 				corrCreation,//
 				new HeartBeatAndReportMonitor(), //
 				new ModelNameValueGenerator(srcModel, trgModel), //
