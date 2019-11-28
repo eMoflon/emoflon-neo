@@ -6,8 +6,8 @@ import java.util.Map;
 import org.apache.commons.lang3.Validate;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
-import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.emoflon.neo.victory.adapter.common.NeoVictoryUtil;
 import org.emoflon.victory.ui.api.Graph;
@@ -26,30 +26,30 @@ import org.emoflon.victory.ui.api.impl.GraphBuilder;
 public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 	private String name;
 	private Graph graph;
+	private TripleRuleAnalyser analyser;
 
 	private Map<ModelNodeBlock, Node> blocksToNode;
 	private GraphBuilder graphBuilder;
 
-	public NeoRuleAdapter(Rule opRule, TripleRule tripleRule) {
+	public NeoRuleAdapter(Rule opRule, TripleRuleAnalyser analyser) {
 		Validate.notNull(opRule);
-		Validate.notNull(tripleRule);
-
+		Validate.notNull(analyser);
+		
+		name = opRule.getName();
+		this.analyser = analyser;
+		
 		blocksToNode = new HashMap<>();
 		graphBuilder = new GraphBuilder();
 
-		createNodes(opRule, tripleRule);
-		createEdges(opRule, tripleRule);
+		createNodes(opRule);
+		createEdges(opRule);
 
 		graph = graphBuilder.build();
 	}
 
-	private void createNodes(Rule opRule, TripleRule tripleRule) {
+	private void createNodes(Rule opRule) {
 		for (var n : opRule.getNodeBlocks()) {
-			boolean isSrc = tripleRule.getSrcNodeBlocks().stream()//
-					.map(nb -> nb.getName())//
-					.anyMatch(nb -> nb.equals(n.getName()));
-
-			var domain = isSrc ? Domain.SRC : Domain.TRG;
+			var domain = analyser.isNodeInSrcDomain(opRule.getName(), n.getName()) ? Domain.SRC : Domain.TRG;
 			var action = NeoVictoryUtil.computeAction(n.getAction(), n.getProperties());
 			var node = new NeoRuleNodeAdapter(n, domain, action);
 
@@ -58,7 +58,7 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 		}
 	}
 
-	private void createEdges(Rule opRule, TripleRule tripleRule) {
+	private void createEdges(Rule opRule) {
 		for (var n : opRule.getNodeBlocks()) {
 			for (var r : n.getRelations()) {
 				var srcNode = blocksToNode.get(n);
@@ -71,6 +71,11 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 				graphBuilder.addEdge(new NeoRuleEdgeAdapter(srcNode, trgNode, type, r));
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	/* Getters */

@@ -16,6 +16,7 @@ import org.emoflon.victory.ui.api.impl.GraphBuilder;
 import org.neo4j.driver.v1.types.Path;
 import org.neo4j.driver.v1.types.Relationship;
 
+//TODO To be refactored
 public class NeoMatchAdapter implements Match {
 	private NeoMatch match;
 	private Collection<NeoRuleAdapter> rules;

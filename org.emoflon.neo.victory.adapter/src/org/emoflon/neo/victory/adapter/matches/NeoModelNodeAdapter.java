@@ -9,6 +9,7 @@ import org.emoflon.victory.ui.api.enums.Action;
 import org.emoflon.victory.ui.api.enums.Domain;
 import org.neo4j.driver.v1.types.Node;
 
+//TODO To be completed
 public class NeoModelNodeAdapter extends NeoNodeAdapter {
 	public NeoModelNodeAdapter(Node n) {
 		//FIXME:  Determine domain
