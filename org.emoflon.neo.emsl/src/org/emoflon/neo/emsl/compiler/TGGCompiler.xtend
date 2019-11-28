@@ -66,15 +66,17 @@ class TGGCompiler {
 		val appGenerator = new TGGAppGenerator(tgg)
 		var generatedFiles = new ArrayList<String>
 		for (Operation operation : Operation.allOps) {
-			val ruleFileLocation = '''../«BASE_FOLDER»«pathToGeneratedFiles»/«tgg.name»«operation.nameExtension».msl'''
-			fsa.generateFile(ruleFileLocation, compile(operation))
+			val ruleFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/«tgg.name»«operation.nameExtension».msl'''
+			// Important:  the actual file location must be without a "../"!
+			fsa.generateFile("../" + ruleFileLocation, compile(operation))
 			generatedFiles.add(ruleFileLocation)
 			
-			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
-			val appFileLocation = '''../«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
-			fsa.deleteFile(appFileLocation);
-			fsa.generateFile(appFileLocation, appGenerator.generateApp(operation, appName))
-			generatedFiles.add(appFileLocation)
+			// FIXME[Mario]
+//			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
+//			val appFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
+//			fsa.deleteFile("../" + appFileLocation);
+//			fsa.generateFile("../" + appFileLocation, appGenerator.generateApp(operation, appName))
+//			generatedFiles.add(appFileLocation)
 		}
 		
 		return generatedFiles
