@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.emoflon.neo.cypher.rules.NeoRule;
+import org.emoflon.neo.emsl.compiler.TGGCompiler;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.engine.api.rules.IRule;
@@ -60,48 +61,64 @@ public class RuleAnalyser {
 	 * @param relevantMetamodels
 	 * @return
 	 */
-	public static boolean noRelevantContext(TripleRule rule, boolean SRC, boolean CORR, boolean TRG) {
-		return noRelevantNodeContext(rule, SRC, TRG)//
-				&& noRelevantRelContext(rule, SRC, TRG)//
-				&& noCorrContext(rule, CORR);
+	public static boolean hasRelevantContext(String ruleName, Collection<TripleRule> tripleRules, boolean SRC,
+			boolean CORR, boolean TRG) {
+		var tripleRule = toTripleRule(ruleName, tripleRules);
+		if (tripleRule.isPresent()) {
+			return hasRelevantContext(tripleRule.get(), SRC, CORR, TRG);
+		} else {
+			// Triple rule does not exist, so it must have been added by the compiler
+			switch (ruleName) {
+			case TGGCompiler.CREATE_SRC_MODEL_RULE:
+				return SRC;
+			case TGGCompiler.CREATE_TRG_MODEL_RULE:
+				return TRG;
+			default:
+				throw new IllegalArgumentException("Unexpected value: " + ruleName);
+			}
+		}
 	}
 
-	public static boolean noRelevantContext(Optional<TripleRule> tripleRule, boolean SRC, boolean CORR, boolean TRG) {
-		return tripleRule.map(tr -> noRelevantContext(tr, SRC, CORR, TRG)).orElse(false);
+	private static boolean hasRelevantContext(TripleRule rule, boolean SRC, boolean CORR, boolean TRG) {
+		return hasRelevantNodeContext(rule, SRC, TRG)//
+				|| hasRelevantRelContext(rule, SRC, TRG)//
+				|| hasCorrContext(rule, CORR);
 	}
 
-	private static boolean noRelevantRelContext(TripleRule rule, boolean SRC, boolean TRG) {
-		var noRelevantRelContext = true;
+	private static boolean hasRelevantRelContext(TripleRule rule, boolean SRC, boolean TRG) {
+		var hasRelevantRelContext = false;
 		if (SRC)
-			noRelevantRelContext = noRelevantRelContext && rule.getSrcNodeBlocks().stream()//
+			hasRelevantRelContext = rule.getSrcNodeBlocks().stream()//
 					.flatMap(n -> n.getRelations().stream())//
-					.noneMatch(r -> r.getAction() == null);
-		if (TRG)
-			noRelevantRelContext = noRelevantRelContext && rule.getTrgNodeBlocks().stream()//
-					.flatMap(n -> n.getRelations().stream())//
-					.noneMatch(r -> r.getAction() == null);
+					.anyMatch(r -> r.getAction() == null);
 
-		return noRelevantRelContext;
+		if (TRG)
+			hasRelevantRelContext = hasRelevantRelContext || rule.getTrgNodeBlocks().stream()//
+					.flatMap(n -> n.getRelations().stream())//
+					.anyMatch(r -> r.getAction() == null);
+
+		return hasRelevantRelContext;
 	}
 
-	private static boolean noRelevantNodeContext(TripleRule rule, boolean SRC, boolean TRG) {
-		var noRelevantNodeContext = true;
+	private static boolean hasRelevantNodeContext(TripleRule rule, boolean SRC, boolean TRG) {
+		var hasRelevantNodeContext = false;
 		if (SRC)
-			noRelevantNodeContext = noRelevantNodeContext
-					&& rule.getSrcNodeBlocks().stream().noneMatch(n -> n.getAction() == null);
-		if (TRG)
-			noRelevantNodeContext = noRelevantNodeContext
-					&& rule.getTrgNodeBlocks().stream().noneMatch(n -> n.getAction() == null);
+			hasRelevantNodeContext = rule.getSrcNodeBlocks().stream()//
+					.anyMatch(n -> n.getAction() == null);
 
-		return noRelevantNodeContext;
+		if (TRG)
+			hasRelevantNodeContext = hasRelevantNodeContext || rule.getTrgNodeBlocks().stream()//
+					.anyMatch(n -> n.getAction() == null);
+
+		return hasRelevantNodeContext;
 	}
 
-	private static boolean noCorrContext(TripleRule rule, boolean CORR) {
+	private static boolean hasCorrContext(TripleRule rule, boolean CORR) {
 		return CORR && rule.getCorrespondences().stream()//
-				.noneMatch(r -> r.getAction() == null);
+				.anyMatch(r -> r.getAction() == null);
 	}
 
-	public static Optional<TripleRule> toTripleRule(String ruleName, Collection<TripleRule> tripleRules) {
+	private static Optional<TripleRule> toTripleRule(String ruleName, Collection<TripleRule> tripleRules) {
 		return tripleRules.stream()//
 				.filter(tr -> tr.getName().equals(ruleName))//
 				.findAny();
