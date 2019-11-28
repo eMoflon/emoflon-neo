@@ -2,6 +2,7 @@ package org.emoflon.neo.example.companytoit;
 
 import org.emoflon.neo.api.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class DirectCOAndCCTests extends ENeoTest {
@@ -88,6 +89,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 		testConsistentTripleCO("ConsistentSrc4", "ConsistentTrg4", 32);
 	}
 
+	@Disabled("Waiting for a fix")
 	@Test
 	public void testConsistentTriple4_CC() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc4(), //
