@@ -68,11 +68,13 @@ public class CompanyToIT_CC_Run {
 
 		return new NeoGenerator(//
 				ccAPI.getAllRulesForCompanyToIT_CC(), //
-				new NoOpStartup(), new NoMoreMatchesTerminationCondition(), //
+				new NoOpStartup(), //
+				new NoMoreMatchesTerminationCondition(), //
 				new CCRuleScheduler(tripleRules), //
 				corrCreation, //
 				new CCReprocessor(tripleRules), //
-				corrCreation, new HeartBeatAndReportMonitor(), //
+				corrCreation,//
+				new HeartBeatAndReportMonitor(), //
 				new ModelNameValueGenerator(srcModel, trgModel), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
