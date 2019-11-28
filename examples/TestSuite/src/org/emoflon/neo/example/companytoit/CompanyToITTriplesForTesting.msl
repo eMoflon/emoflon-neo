@@ -85,7 +85,7 @@ model ConsistentSrc3 -> ConsistentSrc1 {
 
 model ConsistentTrg3 -> ConsistentTrg1 {
 	router : Router {
-		.name : "Rivendell"
+		.name : "Elrond"
 		-network-> network
 	}
 	
@@ -95,7 +95,7 @@ model ConsistentTrg3 -> ConsistentTrg1 {
 	}
 	
 	network : Network {
-		.name : "Rivendell"
+		.name : "Elrond"
 	}
 }
 
@@ -131,7 +131,7 @@ model ConsistentTrg4 -> ConsistentTrg3 {
 	}
 		
 	computer : PC {
-		.name : "Aragorn"
+		.name : "Gimli"
 	}
 }
 
