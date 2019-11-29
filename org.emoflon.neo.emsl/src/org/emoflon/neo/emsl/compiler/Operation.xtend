@@ -62,7 +62,7 @@ interface Operation {
 	 * --------------------------------
 	 */
 	
-	def String additionalImports(String tggName, String packageName)
+	def String additionalImports(String tggName, String packagePath)
 	
 	def String additionalFields(String tggName)
 	

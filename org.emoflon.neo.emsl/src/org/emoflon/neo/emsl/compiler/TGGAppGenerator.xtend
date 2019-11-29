@@ -11,18 +11,19 @@ class TGGAppGenerator {
 	
 	def generateApp(Operation op, String packagePath, String packageName) {
 		val appName = '''«tgg.name»«op.nameExtension»_Run'''
+		val pathPrefix = if(packagePath.nullOrEmpty) "" else '''«packagePath».'''
 		'''
-			package «IF !packagePath.nullOrEmpty»«packagePath».«ENDIF»«packageName».run;
+			package «pathPrefix»«packageName».run;
 			
 			import org.apache.log4j.Level;
 			import org.apache.log4j.Logger;
 			import org.emoflon.neo.api.API_Common;
-			import org.emoflon.neo.api.API_«packageName»;
-			import org.emoflon.neo.api.«packageName».API_«tgg.name»«op.nameExtension»;
+			import org.emoflon.neo.api.«pathPrefix»API_«packageName»;
+			import org.emoflon.neo.api.«pathPrefix»«packageName».API_«tgg.name»«op.nameExtension»;
 			import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 			import org.emoflon.neo.engine.modules.NeoGenerator;
 			
-			«op.additionalImports(tgg.name, packageName)»
+			«op.additionalImports(tgg.name, '''«pathPrefix»«packageName»''')»
 			
 			public class «appName» {
 				«op.additionalFields(tgg.name)»

@@ -37,16 +37,16 @@ class CO extends ILPOperation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports(String tggName, String packageName) {
+	override additionalImports(String tggName, String packagePath) {
 		'''
-			import static «packageName».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
-			import static «packageName».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
 								
 			import java.util.Collection;
 			import java.util.Collections;
 			import java.util.List;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
-			import org.emoflon.neo.api.«packageName».API_«tggName»_GEN;
+			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
 			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 			import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
