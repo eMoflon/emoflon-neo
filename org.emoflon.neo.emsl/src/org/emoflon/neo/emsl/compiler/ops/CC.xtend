@@ -100,7 +100,6 @@ class CC extends ILPOperation {
 	}
 	
 	override additionalMethods() {
-		// TODO should the constraints be found automatically?
 		'''
 
 			public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {

@@ -98,7 +98,6 @@ class CO extends ILPOperation {
 	}
 	
 	override additionalMethods() {
-		// TODO should the constraints be found automatically?
 		'''
 			
 			public CheckOnlyOperationalStrategy runCheckOnly(String srcModel, String trgModel) throws Exception {
