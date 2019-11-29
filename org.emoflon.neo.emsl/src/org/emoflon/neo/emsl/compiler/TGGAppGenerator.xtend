@@ -9,9 +9,10 @@ class TGGAppGenerator {
 		this.tgg = tgg
 	}
 	
-	def generateApp(Operation op, String appName) {
+	def generateApp(Operation op, String fullPackage) {
+		val appName = '''«tgg.name»«op.nameExtension»_Run'''
 		'''
-			package «tgg.name».run;
+			package «fullPackage»;
 			
 			import org.apache.log4j.Level;
 			import org.apache.log4j.Logger;
