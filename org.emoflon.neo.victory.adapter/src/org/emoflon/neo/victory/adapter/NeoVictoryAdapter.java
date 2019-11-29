@@ -27,10 +27,14 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 	private NeoCoreBuilder builder;
 	private Victory victory;
 	private TripleRuleAnalyser analyser;
+	private String srcModel;
+	private String trgModel;
 
 	public NeoVictoryAdapter(NeoCoreBuilder builder, Collection<org.emoflon.neo.emsl.eMSL.Rule> operationalRules,
-			Collection<TripleRule> tripleRules) {
+			Collection<TripleRule> tripleRules, String srcModel, String trgModel) {
 		this.builder = builder;
+		this.srcModel = srcModel;
+		this.trgModel = trgModel;
 		this.rules = new ArrayList<NeoRuleAdapter>();
 		this.analyser = new TripleRuleAnalyser(tripleRules);
 		
@@ -48,7 +52,7 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
 			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> pProgressMonitor) {
 		var selection = new ArrayList<NeoMatch>();
-		var selected = (NeoMatchAdapter) victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules));
+		var selected = (NeoMatchAdapter) victory.selectMatch(new NeoDataPackageAdapter(builder, matches, rules, srcModel, trgModel));
 		selection.add((NeoMatch) selected.getWrappedMatch());
 
 		var ruleName = selected.getWrappedMatch().getPattern().getName();

@@ -3,7 +3,7 @@ package org.emoflon.neo.victory.adapter;
 import org.emoflon.victory.ui.api.RuleApplication;
 import org.emoflon.victory.ui.api.RuleApplicationMerger;
 
-//TODO To be completed
+//TODO[Victory] To be completed
 public class NeoProtocolStepAdapter implements RuleApplication {
 
 	@Override

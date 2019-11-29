@@ -162,6 +162,15 @@ abstract class CypherBuilder {
 		'''
 	}
 	
+	def static String getModelNodes(String model){
+		'''
+			MATCH 
+				(m:NeoCore__Model {ename: "«model»"})
+			RETURN id(m)
+		'''
+	}
+	
+	
 	def static String getConformsToEdges(String model) {
 		'''
 			MATCH 

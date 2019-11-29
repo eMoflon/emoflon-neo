@@ -1,6 +1,5 @@
 package org.emoflon.neo.victory.adapter.matches;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,13 +8,9 @@ import org.emoflon.victory.ui.api.enums.Action;
 import org.emoflon.victory.ui.api.enums.Domain;
 import org.neo4j.driver.v1.types.Node;
 
-//TODO To be completed
 public class NeoModelNodeAdapter extends NeoNodeAdapter {
-	public NeoModelNodeAdapter(Node n) {
-		//FIXME:  Determine domain
-		super(Domain.SRC, Action.CONTEXT, computeAttributes(n), computeType(n), computeName(n));
-
-		attributes = Arrays.asList(n.labels().toString());
+	public NeoModelNodeAdapter(Node n, Domain domain) {
+		super(domain, Action.CONTEXT, computeAttributes(n), computeType(n), computeName(n));
 	}
 
 	private static List<String> computeAttributes(Node n) {
@@ -25,11 +20,13 @@ public class NeoModelNodeAdapter extends NeoNodeAdapter {
 	}
 
 	private static String computeName(Node n) {
-		return n.asMap().get("ename").toString() + "_" + n.id();
+		return "o_" + n.id();
 	}
 
+	//TODO[Victory]: Not sure if this is always the most specific type!
+	// If not then one would have to follow the metaType edge
 	private static String computeType(Node n) {
-		return n.labels().toString();
+		return n.labels().iterator().next();
 	}
 
 }

@@ -184,12 +184,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		if (!newMetamodels.isEmpty())
 			exportMetamodelsToNeo4j(newMetamodels);
 		logger.info("Exported metamodels: " + newMetamodels);
-		
+
 		// For the actual export, replace with original model so it can be flattened
 		// together with all its referenced models
 		models.remove(m);
 		models.add(model);
-		
+
 		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export models: " + modelNames);
 		var newModels = removeExistingModels(models);
@@ -201,7 +201,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			if (!newModels.contains(mod))
 				logger.info("Skipping model " + mod.getName() + " as it is already present or is abstract.");
 		}
-		
+
 		if (!newModels.isEmpty())
 			exportModelsToNeo4j(newModels);
 
@@ -744,35 +744,55 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeQueryForSideEffect(CypherBuilder.deleteNodesQuery("ids"), params);
 	}
 
+	public Collection<Long> getAllElementsInModel(String model) {
+		var allNodes = executeQuery(CypherBuilder.getAllNodesInModel(model));
+
+		var allEdges = executeQuery(CypherBuilder.getAllRelsInModel(model));
+		var allElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(model));
+
+		var modelEdges = executeQuery(CypherBuilder.getConformsToEdges(model));
+		var modelNodes = executeQuery(CypherBuilder.getModelNodes(model));
+
+		var allIDs = new HashSet<Long>();
+
+		allNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		modelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
+
+		return allIDs;
+	}
+
 	public Collection<Long> getAllElementIDsInTriple(String sourceModel, String targetModel) {
 		var allSrcNodes = executeQuery(CypherBuilder.getAllNodesInModel(sourceModel));
 		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));
 
 		var allSrcEdges = executeQuery(CypherBuilder.getAllRelsInModel(sourceModel));
 		var allSrcElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(sourceModel));
-		
+
 		var allTrgEdges = executeQuery(CypherBuilder.getAllRelsInModel(targetModel));
 		var allTrgElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(targetModel));
 
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
-		
+
 		var modelNodes = executeQuery(CypherBuilder.getModelNodes(sourceModel, targetModel));
 		var srcModelEdges = executeQuery(CypherBuilder.getConformsToEdges(sourceModel));
 		var trgModelEdges = executeQuery(CypherBuilder.getConformsToEdges(targetModel));
 
 		var allIDs = new HashSet<Long>();
-		
+
 		allSrcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 		allTrgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-		
+
 		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		allSrcElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		
+
 		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		allTrgElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		
+
 		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		
+
 		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
 		srcModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		trgModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));

@@ -1,46 +1,51 @@
 package org.emoflon.neo.victory.adapter.matches
 
-import org.emoflon.neo.engine.api.patterns.IMatch
-import org.emoflon.victory.ui.api.Rule
+import java.util.Collection
 
 class MatchQuery {
-	static def String create(IMatch match, Rule rule, int neighbourhoodSize) {
+	static def String determineNeighbourhood(Collection<Long> nodes, int neighbourhoodSize) {
 		'''
-			«matchPath(match,neighbourhoodSize)»
-			«checkIds(match,neighbourhoodSize)»
-			«returnPath(match,neighbourhoodSize)»
-		'''
-	}
-
-	static def String getMatchEdges(long edgeId) {
-		'''
-			MATCH ()-[r]->() WHERE id(r)= «edgeId» RETURN r
+			«matchPath(nodes, neighbourhoodSize)»
+			«checkIds(nodes, "n")»
+			«returnStatement(nodes, "p")»
 		'''
 	}
 
-	def static String matchPath(IMatch match, int neighbourhoodSize) {
+	static def String getMatchEdges(Collection<Long> edges) {
 		'''
 			MATCH 
-				«FOR n : match.elements SEPARATOR ', '»
-					p«n»=(n«n»)- [*0..«neighbourhoodSize»]-(m«n»)
+				«FOR e : edges SEPARATOR ', '»
+					()-[r«e»]->()
+				«ENDFOR»
+				
+			«checkIds(edges, "r")»
+			«returnStatement(edges, "r")»
+		'''
+	}
+
+	def static String matchPath(Collection<Long> nodes, int neighbourhoodSize) {
+		'''
+			MATCH 
+				«FOR n : nodes SEPARATOR ', '»
+					p«n»=(n«n»)-[*0..«neighbourhoodSize»]-()
 				«ENDFOR»
 		'''
 	}
 
-	def static String checkIds(IMatch match, int neighbourhoodSize) {
+	def static String checkIds(Collection<Long> ids, String prefix) {
 		'''
 			WHERE 
-				«FOR n : match.elements SEPARATOR ' AND '»
-					id(n«n») = «n»
+				«FOR id : ids SEPARATOR ' AND '»
+					id(«prefix»«id») = «id»
 				«ENDFOR» 
 		'''
 	}
 
-	def static String returnPath(IMatch match, int neighbourhoodSize) {
+	def static String returnStatement(Collection<Long> ids, String prefix) {
 		'''
 			RETURN 
-				«FOR n : match.elements SEPARATOR ',\n '»
-					p«n»
+				«FOR id : ids SEPARATOR ',\n '»
+					«prefix»«id»
 				«ENDFOR»
 		'''
 	}
