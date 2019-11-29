@@ -1,9 +1,11 @@
 package org.emoflon.neo.victory.adapter.matches;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
@@ -49,8 +51,11 @@ public class NeoMatchAdapter implements Match {
 		Map<Long, NeoModelNodeAdapter> nodeToNeoNode = new HashMap<>();
 		Map<Long, NeoModelEdgeAdapter> relations = new HashMap<>();
 
-		var srcElements = builder.getAllElementsInModel(srcModel);
-
+		var srcElements = builder.getAllElementsOfModel(srcModel);
+		var trgElements = builder.getAllElementsOfModel(trgModel);
+		var allModelElements = new ArrayList<Long>(srcElements);
+		allModelElements.addAll(trgElements);
+		
 		var nodes = match.getKeysForElements().stream()//
 				.filter(k -> match.getPattern().getContextNodeLabels().contains(k))//
 				.map(k -> match.getElement(k))//
@@ -68,7 +73,6 @@ public class NeoMatchAdapter implements Match {
 				for (var o : map.values()) {
 					var path = (Path) o;
 					path.nodes().forEach(n -> {
-						// TODO: if not in src, check trg, if not in trg set to OTHER
 						var domain = srcElements.contains(n.id()) ? Domain.SRC : Domain.TRG;
 						nodeToNeoNode.putIfAbsent(n.id(), new NeoModelNodeAdapter(n, domain));
 					});
@@ -86,11 +90,24 @@ public class NeoMatchAdapter implements Match {
 			}
 		}
 
-		nodeToNeoNode.values().forEach(graphBuilder::addNode);
-		relations.values().forEach(graphBuilder::addEdge);
+		filterNodes(nodeToNeoNode, allModelElements).forEach(graphBuilder::addNode);
+		filterRels(relations, allModelElements).forEach(graphBuilder::addEdge);
 		addMatchTypeEdges(graphBuilder, nodeToNeoNode);
 
 		graphs.put(neighbourhoodSize, graphBuilder.build());
+	}
+
+	private Stream<NeoModelEdgeAdapter> filterRels(Map<Long, NeoModelEdgeAdapter> edges, Collection<Long> allElements) {
+		return edges.keySet().stream()//
+				.filter(k -> allElements.contains(-1*k) || edges.get(k).getType().equals(EdgeType.CORR))//
+				.map(edges::get);
+	}
+
+	private Stream<NeoModelNodeAdapter> filterNodes(Map<Long, NeoModelNodeAdapter> nodes,
+			Collection<Long> allElements) {
+		return nodes.keySet().stream()//
+				.filter(k -> allElements.contains(k))//
+				.map(nodes::get);
 	}
 
 	private void extractRelationshipsFromPath(//

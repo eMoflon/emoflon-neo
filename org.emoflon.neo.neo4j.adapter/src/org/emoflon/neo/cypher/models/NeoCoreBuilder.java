@@ -744,26 +744,33 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeQueryForSideEffect(CypherBuilder.deleteNodesQuery("ids"), params);
 	}
 
-	public Collection<Long> getAllElementsInModel(String model) {
+	/**
+	 * Determine all elements contained in the provided model excluding the model
+	 * node itself and all other "meta" edges such as elementOf and conformsTo
+	 * edges. Edge IDs are differentiated from node IDs by making them negative.
+	 * 
+	 * @param model
+	 * @return
+	 */
+	public Collection<Long> getAllElementsOfModel(String model) {
 		var allNodes = executeQuery(CypherBuilder.getAllNodesInModel(model));
-
 		var allEdges = executeQuery(CypherBuilder.getAllRelsInModel(model));
-		var allElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(model));
-
-		var modelEdges = executeQuery(CypherBuilder.getConformsToEdges(model));
-		var modelNodes = executeQuery(CypherBuilder.getModelNodes(model));
-
 		var allIDs = new HashSet<Long>();
-
 		allNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		modelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
-
 		return allIDs;
 	}
 
+	/**
+	 * Determine all elements contained in the triple consisting of the provided
+	 * source and target models, and all corrs between elements in both models. All
+	 * meta edges are returned. Edge IDs are differentiated from node IDs by making
+	 * them negative.
+	 * 
+	 * @param sourceModel
+	 * @param targetModel
+	 * @return
+	 */
 	public Collection<Long> getAllElementIDsInTriple(String sourceModel, String targetModel) {
 		var allSrcNodes = executeQuery(CypherBuilder.getAllNodesInModel(sourceModel));
 		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));

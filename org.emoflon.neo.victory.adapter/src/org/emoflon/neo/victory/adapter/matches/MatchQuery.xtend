@@ -43,7 +43,7 @@ class MatchQuery {
 
 	def static String returnStatement(Collection<Long> ids, String prefix) {
 		'''
-			RETURN 
+			RETURN DISTINCT
 				«FOR id : ids SEPARATOR ',\n '»
 					«prefix»«id»
 				«ENDFOR»

@@ -1,5 +1,6 @@
 package org.emoflon.neo.victory.adapter.matches;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +24,12 @@ public class NeoModelNodeAdapter extends NeoNodeAdapter {
 		return "o_" + n.id();
 	}
 
-	//TODO[Victory]: Not sure if this is always the most specific type!
-	// If not then one would have to follow the metaType edge
 	private static String computeType(Node n) {
-		return n.labels().iterator().next();
+		var labels = new ArrayList<String>();
+		n.labels().iterator().forEachRemaining(labels::add);
+		return labels.stream()//
+				.filter(l -> !l.startsWith("NeoCore__"))
+				.collect(Collectors.joining("_"));
 	}
 
 }

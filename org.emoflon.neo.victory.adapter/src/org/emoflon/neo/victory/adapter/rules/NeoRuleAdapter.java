@@ -34,10 +34,10 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 	public NeoRuleAdapter(Rule opRule, TripleRuleAnalyser analyser) {
 		Validate.notNull(opRule);
 		Validate.notNull(analyser);
-		
+
 		name = opRule.getName();
 		this.analyser = analyser;
-		
+
 		blocksToNode = new HashMap<>();
 		graphBuilder = new GraphBuilder();
 
@@ -47,6 +47,16 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 		graph = graphBuilder.build();
 	}
 
+	private boolean acceptNode(NeoRuleNodeAdapter node) {
+		return !node.getType().equals(NeoCoreConstants.MODEL) &&
+				!node.getType().equals(NeoCoreConstants.METAMODEL);
+	}
+
+	private boolean acceptEdge(NeoRuleEdgeAdapter edge) {
+		return !edge.getLabel().equals(NeoCoreConstants.META_EL_OF) &&
+				!edge.getLabel().equals(NeoCoreConstants.CONFORMS_TO_PROP);
+	}
+
 	private void createNodes(Rule opRule) {
 		for (var n : opRule.getNodeBlocks()) {
 			var domain = analyser.isNodeInSrcDomain(opRule.getName(), n.getName()) ? Domain.SRC : Domain.TRG;
@@ -54,7 +64,8 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 			var node = new NeoRuleNodeAdapter(n, domain, action);
 
 			blocksToNode.put(n, node);
-			graphBuilder.addNode(node);
+			if (acceptNode(node))
+				graphBuilder.addNode(node);
 		}
 	}
 
@@ -68,11 +79,13 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 					type = EdgeType.CORR;
 				}
 
-				graphBuilder.addEdge(new NeoRuleEdgeAdapter(srcNode, trgNode, type, r));
+				var edge = new NeoRuleEdgeAdapter(srcNode, trgNode, type, r);
+				if (acceptEdge(edge))
+					graphBuilder.addEdge(edge);
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
