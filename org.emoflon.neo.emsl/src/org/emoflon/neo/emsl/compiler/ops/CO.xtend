@@ -39,8 +39,8 @@ class CO extends ILPOperation {
 	
 	override additionalImports(String tggName, String packageName) {
 		'''
-			import static run.«tggName»_GEN_Run.SRC_MODEL_NAME;
-			import static run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			import static «packageName».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packageName».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
 								
 			import java.util.Collection;
 			import java.util.Collections;
@@ -68,15 +68,15 @@ class CO extends ILPOperation {
 		'''
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			var genAPI = new API_«tggName»_GEN(builder);
 			var coAPI = new API_«fullOpName»(builder);
 			checkOnly = new CheckOnlyOperationalStrategy(//
 					solver, //
-					genAPI.getAllRulesForCompanyToIT_GEN(), //
-					coAPI.getAllRulesForCompanyToIT_CO(), //
+					genAPI.getAllRulesFor«tggName»_GEN(), //
+					coAPI.getAllRulesFor«tggName»_CO(), //
 					getNegativeConstraints(builder), //
 					builder, //
 					srcModel, //

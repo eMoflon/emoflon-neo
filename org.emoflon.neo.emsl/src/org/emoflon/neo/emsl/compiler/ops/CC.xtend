@@ -39,8 +39,8 @@ class CC extends ILPOperation {
 	
 	override additionalImports(String tggName, String packageName) {
 		'''
-			import static run.«tggName»_GEN_Run.SRC_MODEL_NAME;
-			import static run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			import static «packageName».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packageName».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
 					
 			import java.util.Collection;
 			import java.util.Collections;
@@ -69,13 +69,13 @@ class CC extends ILPOperation {
 		'''
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			var genAPI = new API_«tggName»_GEN(builder);
 			var ccAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName»_GEN();
-			var analyser = new TripleRuleAnalyser(new API_«tggName»(builder).getTripleRulesOf«tggName»());
+			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName»());
 			corrCreation = new CorrCreationOperationalStrategy(//
 					solver, //
 					builder, //

@@ -9,16 +9,16 @@ class TGGAppGenerator {
 		this.tgg = tgg
 	}
 	
-	def generateApp(Operation op, String fullPackage) {
+	def generateApp(Operation op, String packagePath, String packageName) {
 		val appName = '''«tgg.name»«op.nameExtension»_Run'''
 		'''
-			package «fullPackage»;
+			package «IF !packagePath.nullOrEmpty»«packagePath».«ENDIF»«packageName».run;
 			
 			import org.apache.log4j.Level;
 			import org.apache.log4j.Logger;
 			import org.emoflon.neo.api.API_Common;
-			import org.emoflon.neo.api.API_«tgg.name»;
-			import org.emoflon.neo.api.«tgg.name».API_«tgg.name»«op.nameExtension»;
+			import org.emoflon.neo.api.API_«packageName»;
+			import org.emoflon.neo.api.«packageName».API_«tgg.name»«op.nameExtension»;
 			import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 			import org.emoflon.neo.engine.modules.NeoGenerator;
 			
@@ -37,7 +37,7 @@ class TGGAppGenerator {
 				public void run() throws Exception {
 					try (var builder = API_Common.createBuilder()) {
 						«IF op.exportMetamodels»
-							new API_«tgg.name»(builder).exportMetamodelsFor«tgg.name»();
+							new API_«packageName»(builder).exportMetamodelsFor«tgg.name»();
 						«ENDIF»
 				
 						var generator = createGenerator(builder);
@@ -49,7 +49,7 @@ class TGGAppGenerator {
 				}
 				
 				public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-					«op.createGeneratorMethodBody(tgg.name)»
+					«op.createGeneratorMethodBody(tgg.name, packageName)»
 				}
 				«op.additionalMethods»
 			}

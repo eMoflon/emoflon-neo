@@ -77,7 +77,7 @@ class MODELGEN implements Operation {
 		'''
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			var allRules = new API_«fullOpName»(builder).getAllRulesFor«fullOpName»();

@@ -66,7 +66,7 @@ interface Operation {
 	
 	def String additionalFields(String tggName)
 	
-	def String createGeneratorMethodBody(String tggName)
+	def String createGeneratorMethodBody(String tggName, String packageName)
 	
 	def String additionalMethods()
 
