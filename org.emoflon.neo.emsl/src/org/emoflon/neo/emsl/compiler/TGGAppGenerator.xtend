@@ -22,7 +22,7 @@ class TGGAppGenerator {
 			import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 			import org.emoflon.neo.engine.modules.NeoGenerator;
 			
-			«op.additionalImports(tgg.name)»
+			«op.additionalImports(tgg.name, packageName)»
 			
 			public class «appName» {
 				«op.additionalFields(tgg.name)»
