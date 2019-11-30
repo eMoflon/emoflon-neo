@@ -760,6 +760,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		return allIDs;
 	}
+	
+	public Collection<Long> getAllCorrs(String sourceModel, String targetModel){
+		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
+		var allIDs = new HashSet<Long>();
+		allCorrs.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		return allIDs;
+	}
 
 	/**
 	 * Determine all elements contained in the triple consisting of the provided

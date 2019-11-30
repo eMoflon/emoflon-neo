@@ -1,53 +1,48 @@
 package org.emoflon.neo.victory.adapter.matches
 
-import java.util.Collection
-
 class MatchQuery {
-	static def String determineNeighbourhood(Collection<Long> nodes, int neighbourhoodSize) {
-		'''
-			«matchPath(nodes, neighbourhoodSize)»
-			«checkIds(nodes, "n")»
-			«returnStatement(nodes, "p")»
-		'''
-	}
 
-	static def String getMatchEdges(Collection<Long> edges) {
+	static def String getMatchNodes(String nodeIds) {
 		'''
 			MATCH 
-				«FOR e : edges SEPARATOR ', '»
-					()-[r«e»]->()
-				«ENDFOR»
-				
-			«checkIds(edges, "r")»
-			«returnStatement(edges, "r")»
+				(n)
+			WHERE
+				id(n) in $«nodeIds»
+			RETURN
+				n
 		'''
 	}
-
-	def static String matchPath(Collection<Long> nodes, int neighbourhoodSize) {
+	
+	static def String getNeighbouringNodes(String nodeIds, int neighbourhood){
 		'''
 			MATCH 
-				«FOR n : nodes SEPARATOR ', '»
-					p«n»=(n«n»)-[*0..«neighbourhoodSize»]-()
-				«ENDFOR»
+				(n)-[*1..«neighbourhood»]-(m)
+			WHERE
+				id(n) in $«nodeIds» AND NOT id(m) in $«nodeIds» 
+			RETURN
+				id(m)
 		'''
 	}
 
-	def static String checkIds(Collection<Long> ids, String prefix) {
+	static def String getMatchEdges(String edgeIds) {
 		'''
-			WHERE 
-				«FOR id : ids SEPARATOR ' AND '»
-					id(«prefix»«id») = «id»
-				«ENDFOR» 
-		'''
-	}
-
-	def static String returnStatement(Collection<Long> ids, String prefix) {
-		'''
-			RETURN DISTINCT
-				«FOR id : ids SEPARATOR ',\n '»
-					«prefix»«id»
-				«ENDFOR»
+			MATCH 
+				()-[r]->()
+			WHERE
+				id(r) in $«edgeIds»
+			RETURN
+				r
 		'''
 	}
-
+	
+	static def String getAllEdges(String nodeIds){
+		'''
+			MATCH
+				(from)-[r]->(to)
+			WHERE
+				id(from) in $«nodeIds» AND id(to) in $«nodeIds»
+			RETURN
+				id(r)
+		'''
+	}
 }

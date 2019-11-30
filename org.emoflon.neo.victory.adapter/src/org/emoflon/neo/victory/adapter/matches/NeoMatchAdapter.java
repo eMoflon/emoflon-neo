@@ -3,7 +3,9 @@ package org.emoflon.neo.victory.adapter.matches;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,7 +20,7 @@ import org.emoflon.victory.ui.api.Rule;
 import org.emoflon.victory.ui.api.enums.Domain;
 import org.emoflon.victory.ui.api.enums.EdgeType;
 import org.emoflon.victory.ui.api.impl.GraphBuilder;
-import org.neo4j.driver.v1.types.Path;
+import org.neo4j.driver.v1.types.Node;
 import org.neo4j.driver.v1.types.Relationship;
 
 public class NeoMatchAdapter implements Match {
@@ -53,41 +55,31 @@ public class NeoMatchAdapter implements Match {
 
 		var srcElements = builder.getAllElementsOfModel(srcModel);
 		var trgElements = builder.getAllElementsOfModel(trgModel);
+		var allCorrs = builder.getAllCorrs(srcModel, trgModel);
 		var allModelElements = new ArrayList<Long>(srcElements);
 		allModelElements.addAll(trgElements);
-		
+		allModelElements.addAll(allCorrs);
+
 		var nodes = match.getKeysForElements().stream()//
 				.filter(k -> match.getPattern().getContextNodeLabels().contains(k))//
 				.map(k -> match.getElement(k))//
-				.collect(Collectors.toList());
+				.filter(x -> allModelElements.contains(x))//
+				.collect(Collectors.toSet());
 		var edges = match.getKeysForElements().stream()//
 				.filter(k -> match.getPattern().getContextRelLabels().contains(k))//
 				.map(k -> match.getElement(k))//
-				.collect(Collectors.toList());
+				.filter(x -> allModelElements.contains(-1 * x))//
+				.collect(Collectors.toSet());
 
-		if (nodes.size() > 0) {
-			var result = builder.executeQuery(MatchQuery.determineNeighbourhood(nodes, neighbourhoodSize));
-			var records = result.list();
-			for (var rec : records) {
-				var map = rec.asMap();
-				for (var o : map.values()) {
-					var path = (Path) o;
-					path.nodes().forEach(n -> {
-						var domain = srcElements.contains(n.id()) ? Domain.SRC : Domain.TRG;
-						nodeToNeoNode.putIfAbsent(n.id(), new NeoModelNodeAdapter(n, domain));
-					});
-					if (neighbourhoodSize > 0)
-						extractRelationshipsFromPath(nodeToNeoNode, relations, path);
-				}
-			}
-
-			if (neighbourhoodSize == 0 && edges.size() > 0) {
-				var matchEdges = builder.executeQuery(MatchQuery.getMatchEdges(edges));
-				matchEdges.list().forEach(n -> {
-					for (var val : n.asMap().values())
-						adaptRelation(nodeToNeoNode, relations, (Relationship) val);
-				});
-			}
+		switch (neighbourhoodSize) {
+		case 0:
+			handleNeighbourhoodSize_0(nodes, edges, nodeToNeoNode, relations, srcElements);
+			break;
+		case 1:
+			handleNeighbourhoodSize_1(nodes, nodeToNeoNode, relations, srcElements);
+			break;
+		default:
+			handleNeighbourhoodSize_2(nodes, nodeToNeoNode, relations, srcElements, allModelElements);
 		}
 
 		filterNodes(nodeToNeoNode, allModelElements).forEach(graphBuilder::addNode);
@@ -97,9 +89,61 @@ public class NeoMatchAdapter implements Match {
 		graphs.put(neighbourhoodSize, graphBuilder.build());
 	}
 
+	private void handleNeighbourhoodSize_2(Set<Long> nodes, Map<Long, NeoModelNodeAdapter> nodeToNeoNode,
+			Map<Long, NeoModelEdgeAdapter> relations, Collection<Long> srcElements, ArrayList<Long> allModelElements) {
+		var nodesWithNeighbourhood = new HashSet<>(nodes);
+		Map<String, Object> params = Map.of("nodes", nodes);
+		var extraNodes = builder.executeQuery(MatchQuery.getNeighbouringNodes("nodes", 1), params);
+		for (var rec : extraNodes.list()) {
+			for (var node : rec.asMap().values()) {
+				var id = (Long) node;
+				nodesWithNeighbourhood.add(id);
+			}
+		}
+
+		handleNeighbourhoodSize_1(nodesWithNeighbourhood, nodeToNeoNode, relations, srcElements);
+	}
+
+	private void handleNeighbourhoodSize_1(Set<Long> nodes, Map<Long, NeoModelNodeAdapter> nodeToNeoNode,
+			Map<Long, NeoModelEdgeAdapter> relations, Collection<Long> srcElements) {
+		Map<String, Object> parameters = Map.of("nodes", nodes);
+		var result = builder.executeQuery(MatchQuery.getAllEdges("nodes"), parameters);
+		var allEdgesInMatch = result.list().stream()//
+				.flatMap(rec -> rec.asMap().values().stream())//
+				.map(v -> (Long) v)//
+				.collect(Collectors.toSet());
+		handleNeighbourhoodSize_0(nodes, allEdgesInMatch, nodeToNeoNode, relations, srcElements);
+	}
+
+	private void handleNeighbourhoodSize_0(Set<Long> nodes, Set<Long> edges,
+			Map<Long, NeoModelNodeAdapter> nodeToNeoNode, Map<Long, NeoModelEdgeAdapter> relations,
+			Collection<Long> srcElements) {
+		if (nodes.size() > 0) {
+			Map<String, Object> parameters = Map.of("nodes", nodes);
+			var matchNodes = builder.executeQuery(MatchQuery.getMatchNodes("nodes"), parameters);
+			for (var rec : matchNodes.list()) {
+				for (var node : rec.asMap().values()) {
+					var n = (Node) node;
+					var domain = srcElements.contains(n.id()) ? Domain.SRC : Domain.TRG;
+					nodeToNeoNode.putIfAbsent(n.id(), new NeoModelNodeAdapter(n, domain));
+				}
+			}
+
+			if (edges.size() > 0) {
+				parameters = Map.of("edges", edges);
+				var matchEdges = builder.executeQuery(MatchQuery.getMatchEdges("edges"), parameters);
+				matchEdges.list().forEach(n -> {
+					for (var val : n.asMap().values())
+						adaptRelation(nodeToNeoNode, relations, (Relationship) val);
+				});
+			}
+		}
+
+	}
+
 	private Stream<NeoModelEdgeAdapter> filterRels(Map<Long, NeoModelEdgeAdapter> edges, Collection<Long> allElements) {
 		return edges.keySet().stream()//
-				.filter(k -> allElements.contains(-1*k) || edges.get(k).getType().equals(EdgeType.CORR))//
+				.filter(k -> allElements.contains(-1 * k))//
 				.map(edges::get);
 	}
 
@@ -108,13 +152,6 @@ public class NeoMatchAdapter implements Match {
 		return nodes.keySet().stream()//
 				.filter(k -> allElements.contains(k))//
 				.map(nodes::get);
-	}
-
-	private void extractRelationshipsFromPath(//
-			Map<Long, NeoModelNodeAdapter> nodeToNeoNode, //
-			Map<Long, NeoModelEdgeAdapter> relations, //
-			Path path) {
-		path.relationships().forEach(r -> adaptRelation(nodeToNeoNode, relations, r));
 	}
 
 	private void adaptRelation(//
