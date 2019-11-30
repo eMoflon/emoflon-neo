@@ -37,16 +37,16 @@ class CO extends ILPOperation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports(String tggName) {
+	override additionalImports(String tggName, String packagePath) {
 		'''
-			import static run.«tggName»_GEN_Run.SRC_MODEL_NAME;
-			import static run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
 								
 			import java.util.Collection;
 			import java.util.Collections;
 			import java.util.List;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
-			import org.emoflon.neo.api.«tggName».API_«tggName»_GEN;
+			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
 			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 			import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -68,15 +68,15 @@ class CO extends ILPOperation {
 		'''
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			var genAPI = new API_«tggName»_GEN(builder);
 			var coAPI = new API_«fullOpName»(builder);
 			checkOnly = new CheckOnlyOperationalStrategy(//
 					solver, //
-					genAPI.getAllRulesForCompanyToIT_GEN(), //
-					coAPI.getAllRulesForCompanyToIT_CO(), //
+					genAPI.getAllRulesFor«tggName»_GEN(), //
+					coAPI.getAllRulesFor«tggName»_CO(), //
 					getNegativeConstraints(builder), //
 					builder, //
 					srcModel, //
@@ -98,7 +98,6 @@ class CO extends ILPOperation {
 	}
 	
 	override additionalMethods() {
-		// TODO should the constraints be found automatically?
 		'''
 			
 			public CheckOnlyOperationalStrategy runCheckOnly(String srcModel, String trgModel) throws Exception {

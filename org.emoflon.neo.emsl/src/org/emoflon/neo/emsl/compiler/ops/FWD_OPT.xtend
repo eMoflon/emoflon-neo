@@ -34,7 +34,7 @@ class FWD_OPT extends ILPOperation {
 		paramGroup.findFirst[param | paramsToData.get(param).domain.equals(ParameterDomain.SRC)]
 	}
 	
-	override additionalImports(String tggName) {
+	override additionalImports(String tggName, String packagePath) {
 		// TODO
 		""
 	}
@@ -44,7 +44,7 @@ class FWD_OPT extends ILPOperation {
 		""
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		// TODO
 		'''
 			throw new UnsupportedOperationException("Stub not implemented");

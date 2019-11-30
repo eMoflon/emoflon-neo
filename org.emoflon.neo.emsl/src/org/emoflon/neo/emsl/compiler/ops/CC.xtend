@@ -37,16 +37,16 @@ class CC extends ILPOperation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports(String tggName) {
+	override additionalImports(String tggName, String packagePath) {
 		'''
-			import static run.«tggName»_GEN_Run.SRC_MODEL_NAME;
-			import static run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
 					
 			import java.util.Collection;
 			import java.util.Collections;
 			import java.util.List;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
-			import org.emoflon.neo.api.«tggName».API_«tggName»_GEN;
+			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
 			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 			import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -56,6 +56,7 @@ class CC extends ILPOperation {
 			import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+			import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 		'''
 	}
 	
@@ -68,13 +69,13 @@ class CC extends ILPOperation {
 		'''
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			var genAPI = new API_«tggName»_GEN(builder);
 			var ccAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName»_GEN();
-			var tripleRules = new API_«tggName»(builder).getTripleRulesOf«tggName»();
+			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName»());
 			corrCreation = new CorrCreationOperationalStrategy(//
 					solver, //
 					builder, //
@@ -89,9 +90,9 @@ class CC extends ILPOperation {
 					ccAPI.getAllRulesFor«fullOpName»(), //
 					new NoOpStartup(), //
 					new NoMoreMatchesTerminationCondition(), //
-					new CCRuleScheduler(tripleRules), //
+					new CCRuleScheduler(analyser), //
 					corrCreation, //
-					new CCReprocessor(tripleRules), //
+					new CCReprocessor(analyser), //
 					corrCreation, //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(srcModel, trgModel), //
@@ -100,7 +101,6 @@ class CC extends ILPOperation {
 	}
 	
 	override additionalMethods() {
-		// TODO should the constraints be found automatically?
 		'''
 
 			public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {

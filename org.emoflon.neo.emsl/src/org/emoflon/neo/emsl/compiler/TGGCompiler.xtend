@@ -35,7 +35,8 @@ import org.emoflon.neo.neocore.util.PreProcessorUtil
 
 class TGGCompiler {
 	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
-	final String pathToGeneratedFiles
+	final String apiPath
+	final String apiName
 	TripleGrammar tgg
 	List<TripleRule> flattenedRules
 	List<TripleRule> generatedRules
@@ -45,9 +46,10 @@ class TGGCompiler {
 	public final static String CREATE_SRC_MODEL_RULE = "createSrcModel"
 	public final static String CREATE_TRG_MODEL_RULE = "createTrgModel"
 
-	new(TripleGrammar tgg, String pathToGeneratedFiles) {
+	new(TripleGrammar tgg, String apiPath, String apiName) {
 		this.tgg = tgg
-		this.pathToGeneratedFiles = pathToGeneratedFiles
+		this.apiPath = apiPath
+		this.apiName = apiName
 
 		val allMetamodels = new ArrayList
 		allMetamodels.addAll(tgg.srcMetamodels)
@@ -65,18 +67,20 @@ class TGGCompiler {
 	def compileAll(IFileSystemAccess2 fsa) {
 		val appGenerator = new TGGAppGenerator(tgg)
 		var generatedFiles = new ArrayList<String>
+		val pathToGeneratedFiles = '''«apiPath»/«apiName»'''
 		for (Operation operation : Operation.allOps) {
 			val ruleFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/«tgg.name»«operation.nameExtension».msl'''
 			// Important:  the actual file location must be without a "../"!
 			fsa.generateFile("../" + ruleFileLocation, compile(operation))
 			generatedFiles.add(ruleFileLocation)
 			
-			// FIXME[Mario]
-//			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
-//			val appFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
-//			fsa.deleteFile("../" + appFileLocation);
-//			fsa.generateFile("../" + appFileLocation, appGenerator.generateApp(operation, appName))
-//			generatedFiles.add(appFileLocation)
+			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
+			val appFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
+			fsa.deleteFile("../" + appFileLocation);
+			var packagePath = apiPath.replace('/', '.')
+			if(packagePath.startsWith('.')) packagePath = packagePath.substring(1)
+			fsa.generateFile("../" + appFileLocation, appGenerator.generateApp(operation, packagePath, apiName))
+			generatedFiles.add(appFileLocation)
 		}
 		
 		return generatedFiles
