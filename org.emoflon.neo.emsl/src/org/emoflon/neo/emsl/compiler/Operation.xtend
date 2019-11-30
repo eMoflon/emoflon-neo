@@ -62,11 +62,11 @@ interface Operation {
 	 * --------------------------------
 	 */
 	
-	def String additionalImports(String tggName)
+	def String additionalImports(String tggName, String packagePath)
 	
 	def String additionalFields(String tggName)
 	
-	def String createGeneratorMethodBody(String tggName)
+	def String createGeneratorMethodBody(String tggName, String packageName)
 	
 	def String additionalMethods()
 

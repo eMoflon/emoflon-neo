@@ -66,10 +66,10 @@ class FWD implements Operation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports(String tggName) {
+	override additionalImports(String tggName, String packagePath) {
 		'''
-			import static run.«tggName»_GEN_Run.SRC_MODEL_NAME;
-			import static run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
 			
 			import org.emoflon.neo.engine.modules.cleanup.RemoveTranslateAttributes;
 			import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
@@ -89,7 +89,7 @@ class FWD implements Operation {
 		'''
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		// TODO replace modules with better ones
 		
 		val fullOpName = '''«tggName»«nameExtension»'''

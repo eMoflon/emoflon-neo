@@ -52,7 +52,7 @@ class MODELGEN implements Operation {
 	 * --------------------------------
 	 */
 	
-	override additionalImports(String tggName) {
+	override additionalImports(String tggName, String packagePath) {
 		'''
 			import org.emoflon.neo.engine.generator.INodeSampler;
 			import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -77,7 +77,7 @@ class MODELGEN implements Operation {
 		'''
 	}
 	
-	override createGeneratorMethodBody(String tggName) {
+	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			var allRules = new API_«fullOpName»(builder).getAllRulesFor«fullOpName»();
