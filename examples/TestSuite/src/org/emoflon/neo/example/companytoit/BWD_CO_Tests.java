@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import CompanyToIT.run.CompanyToIT_BWD_Run;
 import CompanyToIT.run.CompanyToIT_CO_Run;
 
-public class BWD_CO_CC_Tests extends ENeoTest {
+public class BWD_CO_Tests extends ENeoTest {
 
 	private API_CompanyToITTriplesForTesting api = new API_CompanyToITTriplesForTesting(builder);
 
