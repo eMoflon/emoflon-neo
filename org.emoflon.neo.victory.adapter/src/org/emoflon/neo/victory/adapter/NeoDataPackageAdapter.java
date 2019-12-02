@@ -19,17 +19,23 @@ public class NeoDataPackageAdapter implements DataPackage {
 	private MatchContainer<NeoMatch, NeoCoMatch> matches;
 	private Collection<NeoRuleAdapter> rules;
 	private NeoCoreBuilder builder;
+	private String srcModel;
+	private String trgModel;
 
 	public NeoDataPackageAdapter(NeoCoreBuilder builder, MatchContainer<NeoMatch, NeoCoMatch> matches,
-			Collection<NeoRuleAdapter> rules) {
+			Collection<NeoRuleAdapter> rules, String srcModel, String trgModel) {
 		this.matches = matches;
 		this.rules = rules;
 		this.builder = builder;
+		this.srcModel = srcModel;
+		this.trgModel = trgModel;
 	}
 
 	@Override
 	public Collection<Match> getMatches() {
-		return matches.streamAllMatches().map(m -> new NeoMatchAdapter(builder, m, rules)).collect(Collectors.toList());
+		return matches.streamAllMatches()//
+				.map(m -> new NeoMatchAdapter(builder, m, rules, srcModel, trgModel))//
+				.collect(Collectors.toList());
 	}
 
 	@Override

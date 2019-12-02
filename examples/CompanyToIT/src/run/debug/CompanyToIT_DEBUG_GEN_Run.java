@@ -27,6 +27,8 @@ public class CompanyToIT_DEBUG_GEN_Run {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
 
 		var builder = API_Common.createBuilder();
+		var srcModel = CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+		var trgModel = CompanyToIT_GEN_Run.TRG_MODEL_NAME;
 
 		try {
 			var api = new API_CompanyToIT(builder);
@@ -37,7 +39,8 @@ public class CompanyToIT_DEBUG_GEN_Run {
 			var adapter = new NeoVictoryAdapter(//
 					builder, //
 					genAPI.getAllEMSLRulesForCompanyToIT_GEN(), //
-					api.getTripleRulesOfCompanyToIT()//
+					api.getTripleRulesOfCompanyToIT(), //
+					srcModel, trgModel//
 			);
 
 			var generator = new NeoGenerator(//
@@ -49,7 +52,7 @@ public class CompanyToIT_DEBUG_GEN_Run {
 					new ParanoidNeoReprocessor(), //
 					new NoOpCleanup(), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(CompanyToIT_GEN_Run.SRC_MODEL_NAME, CompanyToIT_GEN_Run.TRG_MODEL_NAME), //
+					new ModelNameValueGenerator(srcModel, trgModel), //
 					List.of(new LoremIpsumStringValueGenerator()));
 
 			adapter.run(generator);
