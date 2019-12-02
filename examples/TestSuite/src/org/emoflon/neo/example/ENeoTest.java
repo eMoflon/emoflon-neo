@@ -27,22 +27,22 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.neo4j.driver.v1.StatementResult;
 
-import run.CompanyToIT_CC_Run;
-import run.CompanyToIT_CO_Run;
+import CompanyToIT.run.CompanyToIT_CC_Run;
+import CompanyToIT.run.CompanyToIT_CO_Run;
 
 public abstract class ENeoTest {
 	private static Scanner reader;
 	protected static final Logger logger = Logger.getLogger(ENeoTest.class);
-	protected static NeoCoreBuilder builder; 
-	
+	protected static NeoCoreBuilder builder;
+
 	@BeforeAll
 	public static void startDBConnection() throws Exception {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		
+
 		logger.info("Database Connection established.");
 		builder = API_Common.createBuilder();
 		StatementResult result = builder.executeQuery("MATCH (n) RETURN count(n)");
-	
+
 		if (result.hasNext()) {
 			if (result.next().get(0).asInt() > 0) {
 				logger.info(
@@ -55,7 +55,8 @@ public abstract class ENeoTest {
 					closeDBConnection();
 					fail();
 				} else {
-					builder.clearDataBase();;
+					builder.clearDataBase();
+					;
 					logger.info("Database cleared.");
 				}
 			} else {
@@ -75,90 +76,95 @@ public abstract class ENeoTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@AfterAll
 	public static void closeDBConnection() throws Exception {
 		builder.close();
 		logger.info("Database Connection closed.");
 	}
-	
+
 	@AfterEach
 	public void clearDB() {
 		builder.clearDataBase();
 		logger.info("Database cleared.");
 	}
-	
-	
-	protected void expectMatches(NeoPatternAccess<?,?> p, Number no) {
+
+	protected void expectMatches(NeoPatternAccess<?, ?> p, Number no) {
 		assertThat(p.pattern().countMatches(), is(no));
 	}
-	
-	protected void expectSingleMatch(NeoPatternAccess<?,?> p) {
+
+	protected void expectSingleMatch(NeoPatternAccess<?, ?> p) {
 		expectMatches(p, 1);
 	}
-	
-	protected void expectNoMatch(NeoPatternAccess<?,?> p) {
+
+	protected void expectNoMatch(NeoPatternAccess<?, ?> p) {
 		expectMatches(p, 0);
 	}
-	
+
 	protected void expectValidMatches(Collection<NeoMatch> matches, long number) {
 		var pattern = matches.iterator().next().getPattern();
 		var isStillValid = pattern.isStillValid(matches);
 		assertEquals(number, isStillValid.values().stream().filter(res -> res == true).count());
 	}
-	
+
 	protected void expectValidMatch(NeoMatch m) {
 		expectValidMatches(List.of(m), 1);
 	}
-	
+
 	protected void expectInvalidMatch(NeoMatch m) {
 		expectValidMatches(List.of(m), 0);
 	}
-	
-	private void testForConsistency(ILPBasedOperationalStrategy result, int numberOfConsistentElements) throws Exception {
+
+	private void testForConsistency(ILPBasedOperationalStrategy result, int numberOfConsistentElements)
+			throws Exception {
 		assertTrue(result.isConsistent());
 		assertEquals(0, result.determineInconsistentElements().size());
 		assertEquals(numberOfConsistentElements, result.determineConsistentElements().size());
 	}
-	
-	protected void testConsistentTripleCO(String srcModel, String trgModel, int numberOfConsistentElements) throws Exception {
-		var testCOApp = new CompanyToIT_CO_Run();
-		var result = testCOApp.runCheckOnly(srcModel, trgModel);
+
+	protected void testConsistentTripleCO(String srcModel, String trgModel, int numberOfConsistentElements)
+			throws Exception {
+		var testCOApp = new CompanyToIT_CO_Run(srcModel, trgModel);
+		var result = testCOApp.runCheckOnly();
 		testForConsistency(result, numberOfConsistentElements);
 	}
 
-	protected void testConsistentTripleCC(String srcModel, String trgModel, int numberOfConsistentElements) throws Exception {
-		var testCCApp = new CompanyToIT_CC_Run();
-		var result = testCCApp.runCorrCreation(srcModel, trgModel); 
+	protected void testConsistentTripleCC(String srcModel, String trgModel, int numberOfConsistentElements)
+			throws Exception {
+		var testCCApp = new CompanyToIT_CC_Run(srcModel, trgModel);
+		var result = testCCApp.runCorrCreation();
 		testForConsistency(result, numberOfConsistentElements);
 	}
 
-	private void testForInconsistency(ILPBasedOperationalStrategy result, int consistent, int inconsistent) throws Exception {
+	private void testForInconsistency(ILPBasedOperationalStrategy result, int consistent, int inconsistent)
+			throws Exception {
 		assertFalse(result.isConsistent());
 		assertEquals(consistent, result.determineConsistentElements().size());
 		assertEquals(inconsistent, result.determineInconsistentElements().size());
 	}
-	
-	protected void testInconsistentTripleCO(String srcModel, String trgModel, int consistent, int inconsistent) throws Exception {
-		var testCOApp = new CompanyToIT_CO_Run();
-		var result = testCOApp.runCheckOnly(srcModel, trgModel);
+
+	protected void testInconsistentTripleCO(String srcModel, String trgModel, int consistent, int inconsistent)
+			throws Exception {
+		var testCOApp = new CompanyToIT_CO_Run(srcModel, trgModel);
+		var result = testCOApp.runCheckOnly();
 		testForInconsistency(result, consistent, inconsistent);
 	}
-	
-	protected void testInconsistentTripleCC(String srcModel, String trgModel, int consistent, int inconsistent) throws Exception {
-		var testCCApp = new CompanyToIT_CC_Run();
-		var result = testCCApp.runCorrCreation(srcModel, trgModel);
+
+	protected void testInconsistentTripleCC(String srcModel, String trgModel, int consistent, int inconsistent)
+			throws Exception {
+		var testCCApp = new CompanyToIT_CC_Run(srcModel, trgModel);
+		var result = testCCApp.runCorrCreation();
 		testForInconsistency(result, consistent, inconsistent);
 	}
-	
+
 	protected void exportTriple(Model src, Model trg) throws FlattenerException {
 		exportTriple(src, trg, Optional.empty());
 	}
-	
+
 	protected void exportTriple(Model src, Model trg, NeoRule createCorrs) throws FlattenerException {
 		exportTriple(src, trg, Optional.of(createCorrs));
 	}
-	
+
 	private void exportTriple(Model src, Model trg, Optional<NeoRule> createCorrs) throws FlattenerException {
 		builder.exportEMSLEntityToNeo4j(src);
 		builder.exportEMSLEntityToNeo4j(trg);

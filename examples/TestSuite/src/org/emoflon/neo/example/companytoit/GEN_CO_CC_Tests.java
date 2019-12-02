@@ -25,31 +25,31 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import run.CompanyToIT_CC_Run;
-import run.CompanyToIT_CO_Run;
-import run.CompanyToIT_GEN_Run;
+import CompanyToIT.run.CompanyToIT_CC_Run;
+import CompanyToIT.run.CompanyToIT_CO_Run;
+import CompanyToIT.run.CompanyToIT_GEN_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		var testCOApp = new CompanyToIT_CO_Run();
-		var testCCApp = new CompanyToIT_CC_Run();
+		var testCOApp = new CompanyToIT_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCCApp = new CompanyToIT_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
 
 		// Step 1. Run GEN to produce a triple
-		testGenApp.runGenerator();
+		testGenApp.run();
 
 		// Step 2. Check that produced triple is consistent with CO
-		assertTrue(testCOApp.runCheckOnly(SRC_MODEL_NAME, TRG_MODEL_NAME).isConsistent());
+		assertTrue(testCOApp.runCheckOnly().isConsistent());
 
 		// Step 3. Remove corrs to produce input for CC
 		builder.deleteAllCorrs();
 
 		// Step 4: Create corrs
-		assertTrue(testCCApp.runCorrCreation(SRC_MODEL_NAME, TRG_MODEL_NAME).isConsistent());
+		assertTrue(testCCApp.runCorrCreation().isConsistent());
 
 		// Step 5: Check that consistency has been restored
-		assertTrue(testCOApp.runCheckOnly(SRC_MODEL_NAME, TRG_MODEL_NAME).isConsistent());
+		assertTrue(testCOApp.runCheckOnly().isConsistent());
 	}
 
 	@Test
@@ -98,11 +98,12 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
 
 	public CompanyToIT_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
+		super(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		this.configurator = configureScheduler;
 	}
 
 	@Override
-	protected NeoGenerator createGenerator(NeoCoreBuilder builder) {
+	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
 		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT_GEN();
 		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
