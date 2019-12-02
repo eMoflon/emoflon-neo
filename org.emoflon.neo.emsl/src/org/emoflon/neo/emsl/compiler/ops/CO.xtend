@@ -62,8 +62,6 @@ class CO extends ILPOperation {
 	override additionalFields(String tggName) {
 		'''
 			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
-			private String srcModel = SRC_MODEL_NAME;
-			private String trgModel = TRG_MODEL_NAME;
 			private CheckOnlyOperationalStrategy checkOnly;
 		'''
 	}
@@ -79,8 +77,8 @@ class CO extends ILPOperation {
 					coAPI.getAllRulesFor«tggName»_CO(), //
 					getNegativeConstraints(builder), //
 					builder, //
-					srcModel, //
-					trgModel//
+					srcModelName, //
+					trgModelName//
 			);
 
 			return new NeoGenerator(//
@@ -92,7 +90,7 @@ class CO extends ILPOperation {
 					new NoOpReprocessor(), //
 					checkOnly, //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(srcModel, trgModel), //
+					new ModelNameValueGenerator(srcModelName, trgModelName), //
 					List.of(new LoremIpsumStringValueGenerator()));
 		'''
 	}
@@ -100,9 +98,7 @@ class CO extends ILPOperation {
 	override additionalMethods() {
 		'''
 			
-			public CheckOnlyOperationalStrategy runCheckOnly(String srcModel, String trgModel) throws Exception {
-				this.srcModel = srcModel;
-				this.trgModel = trgModel;
+			public CheckOnlyOperationalStrategy runCheckOnly() throws Exception {
 				run();
 				return checkOnly;
 			}

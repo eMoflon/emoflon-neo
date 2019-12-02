@@ -36,7 +36,10 @@ class BWD_OPT extends ILPOperation {
 	
 	override additionalImports(String tggName, String packagePath) {
 		// TODO
-		""
+		'''
+			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+		'''
 	}
 	
 	override additionalFields(String tggName) {

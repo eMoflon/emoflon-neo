@@ -28,11 +28,18 @@ class TGGAppGenerator {
 			public class «appName» {
 				«op.additionalFields(tgg.name)»
 				private static final Logger logger = Logger.getLogger(«appName».class);
+				private String srcModelName;
+				private String trgModelName;
 				
 				public static void main(String[] args) throws Exception {
 					Logger.getRootLogger().setLevel(Level.INFO);
-					var app = new «appName»();
+					var app = new «appName»(SRC_MODEL_NAME, TRG_MODEL_NAME);
 					app.run();
+				}
+				
+				public «appName»(String srcModelName, String trgModelName) {
+					this.srcModelName = srcModelName;
+					this.trgModelName = trgModelName;
 				}
 			
 				public void run() throws Exception {

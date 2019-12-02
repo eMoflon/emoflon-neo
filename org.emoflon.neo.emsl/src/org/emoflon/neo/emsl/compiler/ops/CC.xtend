@@ -63,8 +63,6 @@ class CC extends ILPOperation {
 	override additionalFields(String tggName) {
 		'''
 			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
-			private String srcModel = SRC_MODEL_NAME;
-			private String trgModel = TRG_MODEL_NAME;
 			private CorrCreationOperationalStrategy corrCreation;
 		'''
 	}
@@ -82,8 +80,8 @@ class CC extends ILPOperation {
 					genRules, //
 					ccAPI.getAllRulesFor«fullOpName»(), //
 					getNegativeConstraints(builder), //
-					srcModel, //
-					trgModel//
+					srcModelName, //
+					trgModelName//
 			);
 
 			return new NeoGenerator(//
@@ -95,7 +93,7 @@ class CC extends ILPOperation {
 					new CCReprocessor(analyser), //
 					corrCreation, //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(srcModel, trgModel), //
+					new ModelNameValueGenerator(srcModelName, trgModelName), //
 					List.of(new LoremIpsumStringValueGenerator()));
 		'''
 	}
@@ -103,9 +101,7 @@ class CC extends ILPOperation {
 	override additionalMethods() {
 		'''
 
-			public CorrCreationOperationalStrategy runCorrCreation(String srcModel, String trgModel) throws Exception {
-				this.srcModel = srcModel;
-				this.trgModel = trgModel;
+			public CorrCreationOperationalStrategy runCorrCreation() throws Exception {
 				run();
 				return corrCreation;
 			}

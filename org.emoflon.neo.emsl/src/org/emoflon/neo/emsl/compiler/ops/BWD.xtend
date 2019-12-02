@@ -96,14 +96,14 @@ class BWD implements Operation {
 		'''
 			return new NeoGenerator(//
 					new API_«fullOpName»(builder).getAllRulesFor«fullOpName»(), //
-					new PrepareTranslateAttributes(builder, TRG_MODEL_NAME), //
+					new PrepareTranslateAttributes(builder, trgModelName), //
 					new NoMoreMatchesTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					new AnySingleMatchUpdatePolicy(), //
 					new ParanoidNeoReprocessor(), //
-					new RemoveTranslateAttributes(builder, TRG_MODEL_NAME), //
+					new RemoveTranslateAttributes(builder, trgModelName), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					new ModelNameValueGenerator(srcModelName, trgModelName), //
 					List.of(new LoremIpsumStringValueGenerator()));
 		'''
 	}

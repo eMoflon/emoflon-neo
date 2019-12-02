@@ -96,7 +96,7 @@ class MODELGEN implements Operation {
 					new ParanoidNeoReprocessor(), //
 					new NoOpCleanup(), //
 					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					new ModelNameValueGenerator(srcModelName, trgModelName), //
 					List.of(new LoremIpsumStringValueGenerator()));
 		'''
 	}
