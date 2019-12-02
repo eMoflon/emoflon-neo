@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FacebookToInstagramEMSL
-Bundle-SymbolicName: FacebookToInstagram
+Bundle-SymbolicName: FacebookToInstagramFASE
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: FacebookToInstagramEMSL
 Bundle-RequiredExecutionEnvironment: JavaSE-10
