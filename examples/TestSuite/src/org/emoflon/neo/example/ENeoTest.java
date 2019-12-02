@@ -27,9 +27,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.neo4j.driver.v1.StatementResult;
 
-import CompanyToIT.run.CompanyToIT_CC_Run;
-import CompanyToIT.run.CompanyToIT_CO_Run;
-
 public abstract class ENeoTest {
 	private static Scanner reader;
 	protected static final Logger logger = Logger.getLogger(ENeoTest.class);
@@ -115,46 +112,18 @@ public abstract class ENeoTest {
 		expectValidMatches(List.of(m), 0);
 	}
 
-	private void testForConsistency(ILPBasedOperationalStrategy result, int numberOfConsistentElements)
+	protected void testForConsistency(ILPBasedOperationalStrategy result, int numberOfConsistentElements)
 			throws Exception {
 		assertTrue(result.isConsistent());
 		assertEquals(0, result.determineInconsistentElements().size());
 		assertEquals(numberOfConsistentElements, result.determineConsistentElements().size());
 	}
 
-	protected void testConsistentTripleCO(String srcModel, String trgModel, int numberOfConsistentElements)
-			throws Exception {
-		var testCOApp = new CompanyToIT_CO_Run(srcModel, trgModel);
-		var result = testCOApp.runCheckOnly();
-		testForConsistency(result, numberOfConsistentElements);
-	}
-
-	protected void testConsistentTripleCC(String srcModel, String trgModel, int numberOfConsistentElements)
-			throws Exception {
-		var testCCApp = new CompanyToIT_CC_Run(srcModel, trgModel);
-		var result = testCCApp.runCorrCreation();
-		testForConsistency(result, numberOfConsistentElements);
-	}
-
-	private void testForInconsistency(ILPBasedOperationalStrategy result, int consistent, int inconsistent)
+	protected void testForInconsistency(ILPBasedOperationalStrategy result, int consistent, int inconsistent)
 			throws Exception {
 		assertFalse(result.isConsistent());
 		assertEquals(consistent, result.determineConsistentElements().size());
 		assertEquals(inconsistent, result.determineInconsistentElements().size());
-	}
-
-	protected void testInconsistentTripleCO(String srcModel, String trgModel, int consistent, int inconsistent)
-			throws Exception {
-		var testCOApp = new CompanyToIT_CO_Run(srcModel, trgModel);
-		var result = testCOApp.runCheckOnly();
-		testForInconsistency(result, consistent, inconsistent);
-	}
-
-	protected void testInconsistentTripleCC(String srcModel, String trgModel, int consistent, int inconsistent)
-			throws Exception {
-		var testCCApp = new CompanyToIT_CC_Run(srcModel, trgModel);
-		var result = testCCApp.runCorrCreation();
-		testForInconsistency(result, consistent, inconsistent);
 	}
 
 	protected void exportTriple(Model src, Model trg) throws FlattenerException {
