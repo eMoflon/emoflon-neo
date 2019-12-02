@@ -69,6 +69,10 @@ class EntityAttributeDispatcher {
 		entity.name
 	}
 	
+	def dispatch getName(SuperType entity){
+		entity.name
+	}
+	
 	def getSuperTypeName(SuperType entity) {
 		if (entity instanceof Pattern) {
 			return entity.body.name
