@@ -37,7 +37,8 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  Chess,
  org.eclipse.core.resources;bundle-version="3.13.400",
  CompanyToIT;bundle-version="1.0.0",
- org.emoflon.neo.engine.modules;bundle-version="1.0.0"
+ org.emoflon.neo.engine.modules;bundle-version="1.0.0",
+ FacebookToInstagram
 Automatic-Module-Name: TestSuite
 Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.api.org.emoflon.neo.example.companytoit,
@@ -53,3 +54,4 @@ Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.example.sokoban
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: Transformations.run
