@@ -7,13 +7,14 @@ Automatic-Module-Name: FacebookToInstagramEMSL
 Bundle-RequiredExecutionEnvironment: JavaSE-10
 Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.emoflon.neo.engine.modules;bundle-version="1.0.0",
- org.eclipse.xtext;bundle-version="2.19.0",
+ org.eclipse.xtext,
  org.apache.commons.logging;bundle-version="1.2.0",
  FacebookToInstagram,
  FacebookToInstagram,
  FacebookToInstagram
 Export-Package: .,
  Transformations,
+ Transformations.run,
  org.emoflon.neo.api,
  org.emoflon.neo.api.Transformations
 Bundle-ActivationPolicy: lazy
