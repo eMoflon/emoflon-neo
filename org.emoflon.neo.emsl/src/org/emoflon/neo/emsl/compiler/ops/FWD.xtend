@@ -13,6 +13,13 @@ import org.emoflon.neo.emsl.compiler.ParameterData
 import org.emoflon.neo.emsl.eMSL.SourceNAC
 
 class FWD implements Operation {
+
+	/*
+	 * --------------------------------
+	 * GT rule generation methods
+	 * --------------------------------
+	 */
+
 	override String getNameExtension() {
 		return "_FWD"
 	}
@@ -33,7 +40,7 @@ class FWD implements Operation {
 		 	if(representative !== null) {
 		 		for(param : group)
 		 			paramsToData.get(param).map(representative.containingBlock, representative.containingPropertyName)
-		 		representative.map(null, null)
+		 		representative.unmap()
 		 	}
 		 }
 	}
@@ -49,19 +56,64 @@ class FWD implements Operation {
 		return nacs.reject[it instanceof SourceNAC]
 	}
 	
-	override requiresSrcModelRule() {
-		false
-	}
-	
-	override requiresTrgModelRule() {
-		true
-	}
-	
-	override requiresModelCreation() {
-		true
-	}
-	
 	override requiresCorrModelCreation() {
+		true
+	}
+
+	/*
+	 * --------------------------------
+	 * app generation methods
+	 * --------------------------------
+	 */
+	
+	override additionalImports(String tggName, String packagePath) {
+		'''
+			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
+			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			
+			import org.emoflon.neo.engine.modules.cleanup.RemoveTranslateAttributes;
+			import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
+			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
+			import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+			import org.emoflon.neo.engine.modules.startup.PrepareTranslateAttributes;
+			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+			import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
+			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+			import java.util.List;
+		'''
+	}
+	
+	override additionalFields(String tggName) {
+		'''
+		'''
+	}
+	
+	override createGeneratorMethodBody(String tggName, String packageName) {
+		// TODO replace modules with better ones
+		
+		val fullOpName = '''«tggName»«nameExtension»'''
+		'''
+			return new NeoGenerator(//
+					new API_«fullOpName»(builder).getAllRulesFor«fullOpName»(), //
+					new PrepareTranslateAttributes(builder, SRC_MODEL_NAME), //
+					new NoMoreMatchesTerminationCondition(), //
+					new AllRulesAllMatchesScheduler(), //
+					new AnySingleMatchUpdatePolicy(), //
+					new ParanoidNeoReprocessor(), //
+					new RemoveTranslateAttributes(builder, SRC_MODEL_NAME), //
+					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
+					List.of(new LoremIpsumStringValueGenerator()));
+		'''
+	}
+	
+	override additionalMethods() {
+		'''
+		'''
+	}
+	
+	override exportMetamodels() {
 		true
 	}
 }

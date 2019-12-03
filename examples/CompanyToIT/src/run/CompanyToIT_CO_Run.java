@@ -30,42 +30,57 @@ public class CompanyToIT_CO_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
+	private String srcModel = SRC_MODEL_NAME;
+	private String trgModel = TRG_MODEL_NAME;
+	private CheckOnlyOperationalStrategy checkOnly;
+
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_CO_Run();
-		app.runCheckOnly(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		app.run();
 	}
 
-	public CheckOnlyOperationalStrategy runCheckOnly(String srcModel, String trgModel) throws Exception {
+	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
-			var genAPI = new API_CompanyToIT_GEN(builder);
-			var coAPI = new API_CompanyToIT_CO(builder);
-			var checkOnly = new CheckOnlyOperationalStrategy(//
-					solver, //
-					genAPI.getAllRulesForCompanyToIT__GEN(), //
-					coAPI.getAllRulesForCompanyToIT__CO(), //
-					getNegativeConstraints(builder), //
-					builder, //
-					srcModel, //
-					trgModel//
-			);
-			var generator = new NeoGenerator(//
-					coAPI.getAllRulesForCompanyToIT__CO(), //
-					new NoOpStartup(), //
-					new OneShotTerminationCondition(), //
-					new AllRulesAllMatchesScheduler(), //
-					checkOnly, //
-					new NoOpReprocessor(), //
-					checkOnly, //
-					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(srcModel, trgModel), //
-					List.of(new LoremIpsumStringValueGenerator()));
+
+			var generator = createGenerator(builder);
 
 			logger.info("Start check only...");
 			generator.generate();
-
-			return checkOnly;
 		}
+	}
+
+	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var genAPI = new API_CompanyToIT_GEN(builder);
+		var coAPI = new API_CompanyToIT_CO(builder);
+		checkOnly = new CheckOnlyOperationalStrategy(//
+				solver, //
+				genAPI.getAllRulesForCompanyToIT_GEN(), //
+				coAPI.getAllRulesForCompanyToIT_CO(), //
+				getNegativeConstraints(builder), //
+				builder, //
+				srcModel, //
+				trgModel//
+		);
+
+		return new NeoGenerator(//
+				coAPI.getAllRulesForCompanyToIT_CO(), //
+				new NoOpStartup(), //
+				new OneShotTerminationCondition(), //
+				new AllRulesAllMatchesScheduler(), //
+				checkOnly, //
+				new NoOpReprocessor(), //
+				checkOnly, //
+				new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator(srcModel, trgModel), //
+				List.of(new LoremIpsumStringValueGenerator()));
+	}
+
+	public CheckOnlyOperationalStrategy runCheckOnly(String srcModel, String trgModel) throws Exception {
+		this.srcModel = srcModel;
+		this.trgModel = trgModel;
+		run();
+		return checkOnly;
 	}
 
 	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {

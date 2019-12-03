@@ -36,7 +36,7 @@ public class CompanyToIT_BWD_Run {
 			new API_CompanyToIT(builder).exportMetamodelsForCompanyToIT();
 
 			var generator = new NeoGenerator(//
-					new API_CompanyToIT_BWD(builder).getAllRulesForCompanyToIT__BWD(), //
+					new API_CompanyToIT_BWD(builder).getAllRulesForCompanyToIT_BWD(), //
 					new PrepareTranslateAttributes(builder, TRG_MODEL_NAME), //
 					new NoMoreMatchesTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //

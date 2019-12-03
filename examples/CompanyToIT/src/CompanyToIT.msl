@@ -27,7 +27,9 @@ tripleGrammar CompanyToIT {
 
 tripleRule CompanyToITRule : CompanyToIT {
 	source {
-		++ ceo : CEO
+		++ ceo : CEO {
+			.name := <ceoName>
+		}
 		++ company : Company {
 			.name := <companyName>
 			++ -ceo-> ceo
@@ -59,19 +61,23 @@ tripleRule AdminToRouterRule : CompanyToIT {
 		}
 		ceo : CEO
 		++ admin : Admin {
+			.name := <adminName>
 			++ -ceo-> ceo
 		}
 	} 
 
 	target {
 		++ router : Router {
+			.name := <adminName>
 			++ -network-> network
 		}
 		it : IT {
 			++ -network-> network
 			++ -router-> router
 		}
-		++ network : Network
+		++ network : Network {
+			.name := <adminName>
+		}
 	}
 
 	correspondence {
@@ -92,7 +98,7 @@ pattern AlreadyHasAnAdmin {
 	ceo:CEO
 }
 
-tripleRule EmployeeToPCRule : CompanyToIT {
+abstract tripleRule EmployeeToDevice : CompanyToIT {
 	source {
 		admin : Admin {
 			-ceo-> ceo
@@ -105,63 +111,66 @@ tripleRule EmployeeToPCRule : CompanyToIT {
 		ceo : CEO {
 			++ -employee-> employee
 		}
-		++ employee : Employee
+		++ employee : Employee {
+			.name := <employeeName>
+		}
 	}
 
 	target {
-		network : Network {
-			++ -pc-> computer
-		}
+		network : Network 
+		
 		it : IT {
 			-router-> router
 			-network-> network
 		}
-		++ computer : PC
+		
 		router : Router {
 			-network-> network
 		}
 	}
 
 	correspondence {
-		++ employee <-:EmployeeToPC-> computer
 		admin <-:AdminToRouter-> router
 		company <-:CompanyToIT-> it
 	}
 }
 
-tripleRule EmployeeToLaptopRule : CompanyToIT {
+tripleRule EmployeeToPCRule : CompanyToIT -> EmployeeToDevice {
 	source {
-		admin : Admin {
-			-ceo-> ceo
-		}
-		company : Company {
-			-admin-> admin
-			++ -employee-> employee
-			-ceo-> ceo
-		}
-		ceo : CEO {
-			++ -employee-> employee
-		}
 		++ employee : Employee
 	}
-
+	
 	target {
+		++ computer : PC {
+			.name := <pcName>
+		}
+		
 		network : Network {
-			++ -laptop-> computer
-		}
-		it : IT {
-			-router-> router
-			-network-> network
-		}
-		++ computer : Laptop
-		router : Router {
-			-network-> network
+			++ -pc-> $computer
 		}
 	}
+	
+	correspondence {
+		++ employee <-:EmployeeToPC-> computer
+	}
+}
 
+tripleRule EmployeeToLaptopRule : CompanyToIT -> EmployeeToDevice {
+	source {
+		++ employee : Employee
+	}
+	
+	target {
+		++ computer : Laptop {
+			.name := <laptopName>
+		}
+		
+		network : Network {
+			++ -laptop-> $computer
+		}
+	}
+	
 	correspondence {
 		++ employee <-:EmployeeToLaptop-> computer
-		admin <-:AdminToRouter-> router
-		company <-:CompanyToIT-> it
 	}
 }

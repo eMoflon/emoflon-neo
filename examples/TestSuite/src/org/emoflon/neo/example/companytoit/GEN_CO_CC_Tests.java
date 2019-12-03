@@ -1,6 +1,8 @@
 package org.emoflon.neo.example.companytoit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,17 +23,12 @@ import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePoli
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import run.CompanyToIT_CC_Run;
 import run.CompanyToIT_CO_Run;
 import run.CompanyToIT_GEN_Run;
 
-import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
-import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
-
-@Disabled("Waiting for fixes")
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
@@ -106,7 +103,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 
 	@Override
 	protected NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT__GEN();
+		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT_GEN();
 		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
 

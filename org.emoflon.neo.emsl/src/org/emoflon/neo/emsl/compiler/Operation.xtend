@@ -22,6 +22,12 @@ interface Operation {
 		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC(), new BWD_OPT(), new FWD_OPT()] as Operation[])
 	}
 
+	/*
+	 * --------------------------------
+	 * GT rule generation methods
+	 * --------------------------------
+	 */
+	 
 	def String getNameExtension()
 
 	def String getAction(Action action, boolean isSrc)
@@ -47,12 +53,22 @@ interface Operation {
 	def Map<String, String> generateModelCreationRules(Iterable<String> srcMetaModelNames, Iterable<String> trgMetaModelNames) {
 		Collections.emptyMap
 	}
-	
-	def boolean requiresSrcModelRule()
-	
-	def boolean requiresTrgModelRule()
-	
-	def boolean requiresModelCreation()
-	
+
 	def boolean requiresCorrModelCreation()
+
+	/*
+	 * --------------------------------
+	 * app generation methods
+	 * --------------------------------
+	 */
+	
+	def String additionalImports(String tggName, String packagePath)
+	
+	def String additionalFields(String tggName)
+	
+	def String createGeneratorMethodBody(String tggName, String packageName)
+	
+	def String additionalMethods()
+
+	def boolean exportMetamodels()
 }

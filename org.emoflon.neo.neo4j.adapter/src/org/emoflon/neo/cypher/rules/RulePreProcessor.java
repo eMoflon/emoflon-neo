@@ -4,62 +4,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.emoflon.neo.cypher.models.NeoCoreBootstrapper;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
-import org.emoflon.neo.emsl.eMSL.BuiltInDataTypes;
 import org.emoflon.neo.emsl.eMSL.ConditionOperator;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
-import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
-import org.emoflon.neo.emsl.eMSL.MetamodelPropertyStatement;
-import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.EMSLUtil;
+import org.emoflon.neo.neocore.util.PreProcessorUtil;
 
 public class RulePreProcessor {
-	Map<String, ModelNodeBlock> nodeBlocks;
-	private MetamodelNodeBlock eClass;
-	private MetamodelPropertyStatement eName;
-	private MetamodelPropertyStatement eNamespace;
-	private MetamodelRelationStatement mtRel;
-
-	public RulePreProcessor() {
-		this.nodeBlocks = new HashMap<>();
-		
-		var neocore = EMSLFactory.eINSTANCE.createMetamodel();
-		neocore.setName(EMSLUtil.ORG_EMOFLON_NEO_CORE);
-
-		eClass = EMSLFactory.eINSTANCE.createMetamodelNodeBlock();
-		eClass.setName(NeoCoreBootstrapper.ECLASS);
-		neocore.getNodeBlocks().add(eClass);
-
-		{
-			eName = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			eName.setName(NeoCoreBootstrapper.NAME_PROP);
-			var estring = EMSLFactory.eINSTANCE.createBuiltInType();
-			estring.setReference(BuiltInDataTypes.ESTRING);
-			eName.setType(estring);
-			eClass.getProperties().add(eName);
-		}
-
-		{
-			eNamespace = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			eNamespace.setName(NeoCoreBootstrapper.NAMESPACE_PROP);
-			var estring = EMSLFactory.eINSTANCE.createBuiltInType();
-			eName.setType(estring);
-			eClass.getProperties().add(eNamespace);
-		}
-
-		mtRel = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
-		mtRel.setName(NeoCoreBootstrapper.META_TYPE);
-	}
+	private Map<String, ModelNodeBlock> nodeBlocks = new HashMap<>();
 
 	public void preprocess(Rule r) {
 		r.getNodeBlocks().forEach(nb -> this.nodeBlocks.putIfAbsent(nb.getName(), nb));
 		addMetaTypeEdges();
-		
+
 		r.getNodeBlocks().clear();
 		r.getNodeBlocks().addAll(nodeBlocks.values());
 	}
@@ -79,7 +40,7 @@ public class RulePreProcessor {
 		mt.setTarget(typeNode);
 
 		var mtRelType = EMSLFactory.eINSTANCE.createModelRelationStatementType();
-		mtRelType.setType(mtRel);
+		mtRelType.setType(PreProcessorUtil.instance().metaType());
 
 		mt.getTypes().add(mtRelType);
 		nodeBlock.getRelations().add(mt);
@@ -101,12 +62,12 @@ public class RulePreProcessor {
 
 		if (!nodeBlocks.containsKey(typeName)) {
 			var typeNode = EMSLFactory.eINSTANCE.createModelNodeBlock();
-			typeNode.setType(eClass);
+			typeNode.setType(PreProcessorUtil.instance().eClass());
 			typeNode.setName(typeName);
 
 			{
 				var nameProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
-				nameProp.setType(eName);
+				nameProp.setType(PreProcessorUtil.instance().ename());
 				var value = EMSLFactory.eINSTANCE.createPrimitiveString();
 				value.setLiteral(nodeBlock.getType().getName());
 				nameProp.setValue(value);
@@ -116,7 +77,7 @@ public class RulePreProcessor {
 
 			{
 				var namespaceProp = EMSLFactory.eINSTANCE.createModelPropertyStatement();
-				namespaceProp.setType(eNamespace);
+				namespaceProp.setType(PreProcessorUtil.instance().enamespace());
 				var value = EMSLFactory.eINSTANCE.createPrimitiveString();
 				value.setLiteral(mmName);
 				namespaceProp.setValue(value);

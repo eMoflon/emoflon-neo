@@ -1,0 +1,59 @@
+package org.emoflon.neo.emsl.compiler
+
+import org.emoflon.neo.emsl.eMSL.TripleGrammar
+
+class TGGAppGenerator {
+	TripleGrammar tgg
+	
+	new(TripleGrammar tgg) {
+		this.tgg = tgg
+	}
+	
+	def generateApp(Operation op, String packagePath, String packageName) {
+		val appName = '''«tgg.name»«op.nameExtension»_Run'''
+		val pathPrefix = if(packagePath.nullOrEmpty) "" else '''«packagePath».'''
+		'''
+			package «pathPrefix»«packageName».run;
+			
+			import org.apache.log4j.Level;
+			import org.apache.log4j.Logger;
+			import org.emoflon.neo.api.API_Common;
+			import org.emoflon.neo.api.«pathPrefix»API_«packageName»;
+			import org.emoflon.neo.api.«pathPrefix»«packageName».API_«tgg.name»«op.nameExtension»;
+			import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+			import org.emoflon.neo.engine.modules.NeoGenerator;
+			
+			«op.additionalImports(tgg.name, '''«pathPrefix»«packageName»''')»
+			
+			public class «appName» {
+				«op.additionalFields(tgg.name)»
+				private static final Logger logger = Logger.getLogger(«appName».class);
+				
+				public static void main(String[] args) throws Exception {
+					Logger.getRootLogger().setLevel(Level.INFO);
+					var app = new «appName»();
+					app.run();
+				}
+			
+				public void run() throws Exception {
+					try (var builder = API_Common.createBuilder()) {
+						«IF op.exportMetamodels»
+							new API_«packageName»(builder).exportMetamodelsFor«tgg.name»();
+						«ENDIF»
+				
+						var generator = createGenerator(builder);
+				
+						logger.info("Running generator...");
+						generator.generate();
+						logger.info("Generator terminated.");
+					}
+				}
+				
+				public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+					«op.createGeneratorMethodBody(tgg.name, packageName)»
+				}
+				«op.additionalMethods»
+			}
+		'''
+	}
+}

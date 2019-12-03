@@ -1,0 +1,95 @@
+metamodel SheRememberedCaterpillars {
+	Game {
+		<>-characters(0..*)->Character
+		<>-objects(0..*)->PlatformObject
+	}
+	
+	NamedElement {
+		.name : EString
+	}
+	
+	Character : Colored, NamedElement {
+		-standsOn(1..1)->Platform
+	}
+	
+	PlatformObject : NamedElement {
+	}
+	
+	Platform : PlatformObject {
+		-charactersStandingOn(0..*)->Character
+		-neighbors(0..6)->Platform
+	}
+	
+	SimplePlatform : Platform {
+		-connectedBy(0..1)->PlatformConnector
+	}
+	
+	ExitPlatform : Platform {
+	}
+	
+	PlatformConnector : PlatformObject, Colored {
+		-connects(2..2)->SimplePlatform
+	}
+	
+	Bridge : PlatformConnector {
+	}
+	
+	Wall : PlatformConnector {
+	}
+	
+	Colored {
+		.color : COLOR
+	}
+	
+	enum COLOR {
+		BLUE
+		RED
+		PURPLE
+	}
+}
+
+model Platform {
+	o1 : Game {
+		-characters -> o2
+		-objects -> o3
+		-objects -> o4
+		-objects -> o5
+		-objects -> o6
+		-objects -> o7
+	}
+	
+	o2 : Character {
+		.color : BLUE
+				.name : "Luigi"
+		-standsOn -> o3
+	}
+	
+	o3 : SimplePlatform {
+				.name : "P1"
+		-charactersStandingOn -> o2
+		-neighbors -> o4
+		-neighbors -> o5
+		-neighbors -> o6
+		-neighbors -> o7
+	}
+	
+	o4 : SimplePlatform {
+				.name : "P2"
+		-neighbors -> o5
+	}
+	
+	o5 : SimplePlatform {
+				.name : "P3"
+		-neighbors -> o6
+	}
+	
+	o6 : SimplePlatform {
+				.name : "P4"
+		-neighbors -> o7
+	}
+	
+	o7 : SimplePlatform {
+				.name : "P5"
+	}
+	
+}

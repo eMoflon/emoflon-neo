@@ -1,5 +1,45 @@
 package org.emoflon.neo.cypher.models;
 
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ABSTRACT_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.CONFORMS_TO_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.CORR;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTED_ELEMENT;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTES;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTE_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EBOOLEAN;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ECHAR;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ECLASS;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ECLASSIFIER;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ECONTAINER;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EDATA_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EDATE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EDOUBLE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EENUM;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EENUM_LITERAL;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EFLOAT;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EINT;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ELITERALS;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ELONG;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EOBJECT;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCES;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCE_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ESTRING;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ESTRUCTURAL_FEATURE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ESUPER_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ETYPED_ELEMENT;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ISCOMPOSITION_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ISCONTAINMENT_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.METAMODEL;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_EL_OF;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.MODEL;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants._TR_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants._TYPE_PROP;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,56 +47,6 @@ import org.emoflon.neo.cypher.models.templates.NeoProp;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 
 public class NeoCoreBootstrapper {
-	public static final String META_TYPE = "metaType";
-	public static final String META_EL_OF = "elementOf";
-	public static final String CORR = "corr";
-	public static final String ECONTAINER = "eContainer";
-
-	// EClasses
-	public static final String ECLASSIFIER = "EClassifier";
-	public static final String ECLASS = "EClass";
-	public static final String EATTRIBUTE = "EAttribute";
-	public static final String EREFERENCE = "EReference";
-	public static final String EDATA_TYPE = "EDataType";
-	public static final String ESTRUCTURAL_FEATURE = "EStructuralFeature";
-	public static final String ETYPED_ELEMENT = "ETypedElement";
-	public static final String EATTRIBUTED_ELEMENT = "EAttributedElement";
-	public static final String METAMODEL = "MetaModel";
-	public static final String MODEL = "Model";
-	public static final String EOBJECT = "EObject";
-
-	// EReferences
-	public static final String EREFERENCE_TYPE = "eReferenceType";
-	public static final String EREFERENCES = "eReferences";
-	public static final String ESUPER_TYPE = "eSuperType";
-	public static final String EATTRIBUTE_TYPE = "eAttributeType";
-	public static final String EATTRIBUTES = "eAttributes";
-	public static final String ELITERALS = "eLiterals";
-
-	// EDataType
-	public static final String EENUM = "EEnum";
-	public static final String EENUM_LITERAL = "EEnumLiteral";
-	public static final String ESTRING = "EString";
-	public static final String EINT = "EInt";
-	public static final String EBOOLEAN = "EBoolean";
-	public static final String ECHAR = "EChar";
-	public static final String ELONG = "ELong";
-	public static final String EFLOAT = "EFloat";
-	public static final String EDOUBLE = "EDouble";
-	public static final String EDATE = "EDate";
-
-	// Attributes
-	public static final String NAME_PROP = "ename";
-	public static final String ABSTRACT_PROP = "abstract";
-	public static final String _TYPE_PROP = "_type_";
-	public static final String _TR_PROP = "_tr_";
-	public static final String ISCOMPOSITION_PROP = "isComposition";
-	public static final String ISCONTAINMENT_PROP = "isContainment";
-	public static final String NAMESPACE_PROP = "enamespace";
-
-	// Meta attributes and relations
-	public static final String CONFORMS_TO_PROP = "conformsTo";
-
 	// Lists of properties and labels for meta types
 	public static final List<String> LABELS_FOR_AN_ECLASS = //
 			addNeoCoreNamespace(ECLASS, ECLASSIFIER, EATTRIBUTED_ELEMENT, EOBJECT);

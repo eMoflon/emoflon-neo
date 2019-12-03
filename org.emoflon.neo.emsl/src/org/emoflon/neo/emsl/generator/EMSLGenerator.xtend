@@ -61,7 +61,7 @@ class EMSLGenerator extends AbstractGenerator {
 
 		emslSpec = resource.contents.get(0) as EMSL_Spec
 		emslSpec.entities.filter[it instanceof TripleGrammar].map[it as TripleGrammar].forEach [
-			derivedGTFiles.addAll(new TGGCompiler(it, apiPath + "/" + apiName).compileAll(fsa))
+			derivedGTFiles.addAll(new TGGCompiler(it, apiPath, apiName).compileAll(fsa))
 		]
 
 		fsa.generateFile(API_ROOT + "API_Common.java", generateCommon())

@@ -1,0 +1,24 @@
+metamodel BlockLanguage {
+	Block {
+		.name : EString
+		
+		<>-ports(0..*)->Port
+	}
+	
+	Port {
+		.id : EInt
+		
+		<>-wire(0..*)->Wire
+	}
+	
+	Specification {
+		.name : EString
+		
+		<>-blocks(0..*)->Block
+	}
+	
+	Wire {
+		-port(1..1)->Port
+	}
+	
+}

@@ -28,7 +28,7 @@ public class ModelNameValueGenerator implements IParameterValueGenerator<DataTyp
 	}
 
 	@Override
-	public String generateValueFor(String parameterName) {
+	public String generateValueFor(String parameterName, DataType dataType) {
 		if ("__srcModelName".equals(parameterName))
 			return srcModelName;
 		else if ("__trgModelName".equals(parameterName))

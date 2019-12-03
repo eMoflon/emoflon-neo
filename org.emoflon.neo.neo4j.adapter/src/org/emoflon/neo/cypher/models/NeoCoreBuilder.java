@@ -1,17 +1,5 @@
 package org.emoflon.neo.cypher.models;
 
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.ABSTRACT_PROP;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.CONFORMS_TO_PROP;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EATTRIBUTES;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EATTRIBUTE_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.ELITERALS;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EOBJECT;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EREFERENCES;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.EREFERENCE_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.ESUPER_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.META_TYPE;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.NAMESPACE_PROP;
-import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.NAME_PROP;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.eDataTypeLabels;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.eDataTypeProps;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.eattrLabels;
@@ -32,6 +20,18 @@ import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.modelLabels;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.modelProps;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.neoCoreLabels;
 import static org.emoflon.neo.cypher.models.NeoCoreBootstrapper.neoCoreProps;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ABSTRACT_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.CONFORMS_TO_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTES;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EATTRIBUTE_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ELITERALS;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EOBJECT;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCES;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCE_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.ESUPER_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,6 +73,7 @@ import org.emoflon.neo.emsl.eMSL.ValueExpression;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
+import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -164,6 +165,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var m = (Model) EMSLFlattener.flatten(model);
 
 		var models = collectReferencedModels(m);
+		// Make sure the model to be exported is part of the set
 		models.add(m);
 
 		var metamodels = models.stream()//
@@ -182,6 +184,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		if (!newMetamodels.isEmpty())
 			exportMetamodelsToNeo4j(newMetamodels);
 		logger.info("Exported metamodels: " + newMetamodels);
+
+		// For the actual export, replace with original model so it can be flattened
+		// together with all its referenced models
+		models.remove(m);
+		models.add(model);
 
 		var modelNames = models.stream().map(Model::getName).collect(Collectors.joining(","));
 		logger.info("Trying to export models: " + modelNames);
@@ -324,22 +331,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		bootstrapper.bootstrapNeoCore(this);
 
 		executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
-				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.MODEL) + ") ASSERT mm.ename IS UNIQUE");
+				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.MODEL) + ") ASSERT mm.ename IS UNIQUE");
 		executeQueryForSideEffect(//
 				"CREATE INDEX ON :" + //
-						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreBootstrapper.ECLASS) + //
-						"(" + NeoCoreBootstrapper.NAME_PROP + ")");
+						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.ECLASS) + //
+						"(" + NeoCoreConstants.NAME_PROP + ")");
 	}
 
-	private void exportModelsToNeo4j(List<Model> newModels) {
-		var flattenedModels = newModels.stream().map(m -> {
-			try {
-				return (Model) EMSLFlattener.flatten(m);
-			} catch (FlattenerException e) {
-				e.printStackTrace();
-				return m;
-			}
-		}).collect(Collectors.toList());
+	private void exportModelsToNeo4j(List<Model> newModels) throws FlattenerException {
+		var flattenedModels = EMSLFlattener.flattenAllModels(newModels);
 
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
@@ -485,10 +485,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			NodeCommand edatatype, NodeCommand eattribute, HashMap<Object, NodeCommand> blockToCommand,
 			NodeCommand mmNode, MetamodelNodeBlock nb) {
 		for (var rs : nb.getRelations()) {
-			var isCompProp = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
+			var isCompProp = new NeoProp(NeoCoreConstants.ISCOMPOSITION_PROP,
 					rs.getKind().equals(RelationKind.COMPOSITION));
 
-			var isContainmentProp = new NeoProp(NeoCoreBootstrapper.ISCONTAINMENT_PROP,
+			var isContainmentProp = new NeoProp(NeoCoreConstants.ISCONTAINMENT_PROP,
 					rs.getKind().equals(RelationKind.COMPOSITION) || rs.getKind().equals(RelationKind.AGGREGATION));
 
 			var ref = cb.createNodeWithContAndType(//
@@ -523,7 +523,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private void addIsTranslatedAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
 		var attr = cb.matchNodeWithContainer(//
-				List.of(new NeoProp(NAME_PROP, NeoCoreBootstrapper._TR_PROP)), //
+				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._TR_PROP)), //
 				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
 		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
@@ -547,9 +547,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	@SuppressWarnings("unused")
 	private void createContainerEdge(CypherCreator cb, ModelRelationStatement rs, NodeCommand container,
 			NodeCommand containee) {
-		var prop = new NeoProp(NeoCoreBootstrapper.ISCOMPOSITION_PROP,
+		var prop = new NeoProp(NeoCoreConstants.ISCOMPOSITION_PROP,
 				EMSLUtil.getOnlyType(rs).getKind().equals(RelationKind.COMPOSITION));
-		cb.createEdgeWithProps(List.of(prop), NeoCoreBootstrapper.ECONTAINER, container, containee);
+		cb.createEdgeWithProps(List.of(prop), NeoCoreConstants.ECONTAINER, container, containee);
 	}
 
 	@SuppressWarnings("unused")
@@ -736,7 +736,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public void deleteAllCorrs() {
-		deleteEdgesOfType(NeoCoreBootstrapper.CORR);
+		deleteEdgesOfType(NeoCoreConstants.CORR);
 	}
 
 	public void deleteNodes(Collection<Long> ids) {
@@ -744,35 +744,69 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeQueryForSideEffect(CypherBuilder.deleteNodesQuery("ids"), params);
 	}
 
+	/**
+	 * Determine all elements contained in the provided model excluding the model
+	 * node itself and all other "meta" edges such as elementOf and conformsTo
+	 * edges. Edge IDs are differentiated from node IDs by making them negative.
+	 * 
+	 * @param model
+	 * @return
+	 */
+	public Collection<Long> getAllElementsOfModel(String model) {
+		var allNodes = executeQuery(CypherBuilder.getAllNodesInModel(model));
+		var allEdges = executeQuery(CypherBuilder.getAllRelsInModel(model));
+		var allIDs = new HashSet<Long>();
+		allNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		return allIDs;
+	}
+	
+	public Collection<Long> getAllCorrs(String sourceModel, String targetModel){
+		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
+		var allIDs = new HashSet<Long>();
+		allCorrs.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		return allIDs;
+	}
+
+	/**
+	 * Determine all elements contained in the triple consisting of the provided
+	 * source and target models, and all corrs between elements in both models. All
+	 * meta edges are returned. Edge IDs are differentiated from node IDs by making
+	 * them negative.
+	 * 
+	 * @param sourceModel
+	 * @param targetModel
+	 * @return
+	 */
 	public Collection<Long> getAllElementIDsInTriple(String sourceModel, String targetModel) {
 		var allSrcNodes = executeQuery(CypherBuilder.getAllNodesInModel(sourceModel));
 		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));
 
 		var allSrcEdges = executeQuery(CypherBuilder.getAllRelsInModel(sourceModel));
 		var allSrcElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(sourceModel));
-		
+
 		var allTrgEdges = executeQuery(CypherBuilder.getAllRelsInModel(targetModel));
 		var allTrgElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(targetModel));
 
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
-		
+
 		var modelNodes = executeQuery(CypherBuilder.getModelNodes(sourceModel, targetModel));
 		var srcModelEdges = executeQuery(CypherBuilder.getConformsToEdges(sourceModel));
 		var trgModelEdges = executeQuery(CypherBuilder.getConformsToEdges(targetModel));
 
 		var allIDs = new HashSet<Long>();
-		
+
 		allSrcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 		allTrgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-		
+
 		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		allSrcElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		
+
 		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		allTrgElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		
+
 		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		
+
 		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
 		srcModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		trgModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));

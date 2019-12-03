@@ -1,13 +1,11 @@
 package org.emoflon.neo.engine.modules.matchreprocessors;
 
-import java.util.Collection;
-
-import org.emoflon.neo.emsl.eMSL.TripleRule;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 public class CCReprocessor extends OPTReprocessor {
 
-	public CCReprocessor(Collection<TripleRule> tripleRules) {
-		super(tripleRules, false, true, false);
+	public CCReprocessor(TripleRuleAnalyser analyser) {
+		super(analyser, false, true, false);
 	}
 
 }
