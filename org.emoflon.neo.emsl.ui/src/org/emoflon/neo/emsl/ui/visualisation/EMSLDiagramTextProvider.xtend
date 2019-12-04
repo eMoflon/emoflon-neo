@@ -604,7 +604,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			«FOR link : nb.relations»
 				class «labelForRuleComponent(link.target, true, false)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»
 				«IF link.action !== null»
-					«labelForRuleComponent(nb, false, true)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(nb, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+					«labelForRuleComponent(nb, false, true)» -«IF link.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSE»[#red]«ENDIF»-> «labelForRuleComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 				«ELSE»«labelForRuleComponent(nb, false, true)» --> «labelForRuleComponent(link.target, false, true)» : "«IF link.name !== null»«link.name»«ELSE»«link.types.get(0)?.type?.name?.toString»«ENDIF»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 				«ENDIF»
 			«ENDFOR»

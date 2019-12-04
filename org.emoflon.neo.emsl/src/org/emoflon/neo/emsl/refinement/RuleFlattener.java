@@ -364,49 +364,50 @@ public class RuleFlattener extends AbstractEntityFlattener {
 				ModelPropertyStatement basis = null;
 				if (properties.size() > 0) {
 					basis = props.get(0);
-				}
-				for (var p : props) {
-					if (!sameDataType(p, basis)) {
-						// incompatible types/operands found
-						if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
-							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
-						} else {
-							throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+				
+					for (var p : props) {
+						if (!sameDataType(p, basis)) {
+							// incompatible types/operands found
+							if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							} else {
+								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							}
+						} else if (basis.getOp() != p.getOp()) {
+							if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
+								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							} else {
+								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+										basis, p, (SuperType) p.eContainer().eContainer().eContainer());
+							}
 						}
-					} else if (basis.getOp() != p.getOp()) {
-						if (p.eContainer().eContainer().eContainer() instanceof AtomicPattern) {
-							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
-						} else {
-							throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-									basis, p, (SuperType) p.eContainer().eContainer().eContainer());
-						}
+						compareValueOfModelPropertyStatement(entity, basis, p);
 					}
-					compareValueOfModelPropertyStatement(entity, basis, p);
+	
+					var newProp = EcoreUtil.copy(basis);
+	
+					if (basis.getValue() instanceof AttributeExpression) {
+						newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(),
+								basis, refinementList, mergedNodes));
+					}
+					if (newProp.getValue() instanceof BinaryExpression
+							&& ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
+						((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences(
+								(AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis,
+								refinementList, mergedNodes)));
+					}
+					if (newProp.getValue() instanceof BinaryExpression
+							&& ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
+						((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences(
+								(AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis,
+								refinementList, mergedNodes)));
+					}
+	
+					mergedProperties.add(newProp);
 				}
-
-				var newProp = EcoreUtil.copy(basis);
-
-				if (basis.getValue() instanceof AttributeExpression) {
-					newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(),
-							basis, refinementList, mergedNodes));
-				}
-				if (newProp.getValue() instanceof BinaryExpression
-						&& ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
-					((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences(
-							(AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis,
-							refinementList, mergedNodes)));
-				}
-				if (newProp.getValue() instanceof BinaryExpression
-						&& ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
-					((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences(
-							(AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis,
-							refinementList, mergedNodes)));
-				}
-
-				mergedProperties.add(newProp);
 			}
 		}
 
@@ -557,49 +558,49 @@ public class RuleFlattener extends AbstractEntityFlattener {
 					ModelPropertyStatement basis = null;
 					if (properties.size() > 0) {
 						basis = properties.get(0);
-					}
-					for (var p : properties) {
-						if (!sameDataType(p, basis)) {
-							if (p.eContainer().eContainer() instanceof AtomicPattern) {
-								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-										basis, p, (SuperType) p.eContainer().eContainer());
-							} else {
-								throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
-										basis, p, (SuperType) p.eContainer().eContainer()); // incompatible types found
+						for (var p : properties) {
+							if (!sameDataType(p, basis)) {
+								if (p.eContainer().eContainer() instanceof AtomicPattern) {
+									throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+											basis, p, (SuperType) p.eContainer().eContainer());
+								} else {
+									throw new FlattenerException(entity, FlattenerErrorType.NO_COMMON_SUBTYPE_OF_PROPERTIES,
+											basis, p, (SuperType) p.eContainer().eContainer()); // incompatible types found
+								}
+							} else if (basis.getOp() != p.getOp()) {
+								if (p.eContainer().eContainer() instanceof AtomicPattern) {
+									throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+											basis, p, (SuperType) p.eContainer().eContainer());
+								} else {
+									throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
+											basis, p, (SuperType) p.eContainer().eContainer()); // incompatible operators
+																								// found
+								}
 							}
-						} else if (basis.getOp() != p.getOp()) {
-							if (p.eContainer().eContainer() instanceof AtomicPattern) {
-								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-										basis, p, (SuperType) p.eContainer().eContainer());
-							} else {
-								throw new FlattenerException(entity, FlattenerErrorType.PROPS_WITH_DIFFERENT_OPERATORS,
-										basis, p, (SuperType) p.eContainer().eContainer()); // incompatible operators
-																							// found
-							}
+							compareValueOfModelPropertyStatement(entity, basis, p);
 						}
-						compareValueOfModelPropertyStatement(entity, basis, p);
+	
+						var newProp = EcoreUtil.copy(basis);
+	
+						if (basis.getValue() instanceof AttributeExpression) {
+							newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(),
+									basis, refinementList, mergedNodes));
+						}
+						if (newProp.getValue() instanceof BinaryExpression
+								&& ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
+							((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences(
+									(AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis,
+									refinementList, mergedNodes)));
+						}
+						if (newProp.getValue() instanceof BinaryExpression
+								&& ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
+							((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences(
+									(AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis,
+									refinementList, mergedNodes)));
+						}
+	
+						newProperties.add(newProp);
 					}
-
-					var newProp = EcoreUtil.copy(basis);
-
-					if (basis.getValue() instanceof AttributeExpression) {
-						newProp.setValue(readjustAttributeExpressionReferences((AttributeExpression) newProp.getValue(),
-								basis, refinementList, mergedNodes));
-					}
-					if (newProp.getValue() instanceof BinaryExpression
-							&& ((BinaryExpression) newProp.getValue()).getLeft() instanceof AttributeExpression) {
-						((BinaryExpression) newProp.getValue()).setLeft((readjustAttributeExpressionReferences(
-								(AttributeExpression) ((BinaryExpression) newProp.getValue()).getLeft(), basis,
-								refinementList, mergedNodes)));
-					}
-					if (newProp.getValue() instanceof BinaryExpression
-							&& ((BinaryExpression) newProp.getValue()).getRight() instanceof AttributeExpression) {
-						((BinaryExpression) newProp.getValue()).setRight((readjustAttributeExpressionReferences(
-								(AttributeExpression) ((BinaryExpression) newProp.getValue()).getRight(), basis,
-								refinementList, mergedNodes)));
-					}
-
-					newProperties.add(newProp);
 				}
 			}
 
@@ -920,7 +921,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						return -1;
 					}
 				} catch (NumberFormatException e) {
-					if (o1.equals("*"))
+					if (o1 != null && o1.equals("*"))
 						return -1;
 					else if (o2.equals("*"))
 						return 1;
@@ -942,7 +943,7 @@ public class RuleFlattener extends AbstractEntityFlattener {
 						return 1;
 					}
 				} catch (NumberFormatException e) {
-					if (o1.equals("*"))
+					if (o1 != null && o1.equals("*"))
 						return 1;
 					else if (o2.equals("*"))
 						return -1;

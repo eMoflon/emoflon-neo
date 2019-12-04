@@ -267,15 +267,16 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	private def handleLinkAttributeExpressionTargetsTarget(EObject context, EReference reference) {
-		val nodes = new HashMap()
+		val nodes = newHashSet
+		var superEntity = getContainingEntity(context)
 		if (context instanceof LinkAttributeExpTarget) {
-			(context.eContainer as AttributeExpression).node.relations.forEach [ r |
-				if (r.types.map[t|t.type].contains(context.link) && r.target.type == context.link.target) {
-					nodes.put(r.target, null)
+			for (n : (new EntityAttributeDispatcher()).getNodeBlocks(superEntity as SuperType)) {
+				if (n.type === context.link.target) {
+					nodes.add(n)
 				}
-			]
+			}
 		}
-		determineScope(nodes)
+		Scopes.scopeFor(nodes)
 	}
 
 	private def linkAttributeExpressionTargetsAttribute(EObject context, EReference reference) {
@@ -285,8 +286,8 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	private def handleLinkAttributeExpressionTargetsAttribute(EObject context, EReference reference) {
 		val propertyTypes = new HashSet()
 		if (context instanceof LinkAttributeExpTarget) {
-			(context.eContainer as AttributeExpression).node.relations.forEach [ r |
-				r.properties.forEach[p|propertyTypes.add(p.type)]
+			(context.eContainer as AttributeExpression).node.type.relations.forEach [ r |
+				r.properties.forEach[p|propertyTypes.add(p)]
 			]
 		}
 		Scopes.scopeFor(propertyTypes)
@@ -297,19 +298,19 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	private def handleLinkAttributeExpressionTargetsLink(EObject exp, EReference reference) {
-		val relationTypes = new HashMap()
+		val relationTypes = newHashSet
 
 		val containingEntity = getContainingEntity(exp)
 
 		new EntityAttributeDispatcher().getNodeBlocks(containingEntity).forEach [ n |
 			n.relations.forEach [ r |
 				r.types.forEach [ t |
-					relationTypes.put(t.type, null)
+					relationTypes.add(t.type)
 				]
 			]
 		]
 
-		determineScope(relationTypes)
+		Scopes.scopeFor(relationTypes)
 	}
 
 	private def SuperType getContainingEntity(EObject exp) {
