@@ -37,7 +37,8 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  Chess,
  org.eclipse.core.resources;bundle-version="3.13.400",
  CompanyToIT;bundle-version="1.0.0",
- org.emoflon.neo.engine.modules;bundle-version="1.0.0"
+ org.emoflon.neo.engine.modules;bundle-version="1.0.0",
+ org.apache.commons.lang3
 Automatic-Module-Name: TestSuite
 Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.api.org.emoflon.neo.example.companytoit,
