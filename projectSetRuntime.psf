@@ -8,6 +8,7 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FamiliesToPersons"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FruitGardenLanguage"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/GameOfLife"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/JavaKeywords"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/NetworkTopology"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Organigram"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/PacMan"/>
@@ -31,6 +32,7 @@
 <item elementID="=RiverCrossing" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=PacMan" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=Chess" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=JavaKeywords" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137201994_7" label="tests" name="tests">
 <item elementID="=TestSuite" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
