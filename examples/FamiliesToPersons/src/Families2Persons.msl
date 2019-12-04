@@ -1,0 +1,18 @@
+import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons/src/Schema.msl"
+
+tripleRule Families2Persons : FamiliesToPersons {
+	source { 
+		++ families : FamilyRegister
+	}
+
+	target {
+		++ persons : PersonRegister
+	}
+
+	correspondence {
+		++families <- :FamiliesToPersons ->persons
+	}	
+}
+
+

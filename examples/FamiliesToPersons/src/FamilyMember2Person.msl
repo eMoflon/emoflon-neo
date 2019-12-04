@@ -1,0 +1,31 @@
+import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons/src/Schema.msl"
+
+// Currently impossible: concat(", ", f.name, fm.name, p.name)
+abstract tripleRule FamilyMember2Person : FamiliesToPersons {	
+	source { 
+		families : FamilyRegister {
+			++ -families->f
+		}
+		++ f : Family {
+			.name := <familyName>
+		}
+		++ fm : FamilyMember {
+			.name := <firstName>
+		}
+	}
+
+	target {
+		persons : PersonRegister {
+			++ -persons->p
+		}
+		++ p : Person {
+			.name := <firstName>
+		}
+	}
+
+	correspondence {
+		families <- :FamiliesToPersons -> persons
+		++ fm <- :FamilyMemberToPerson -> p
+	}	
+}

@@ -1,0 +1,37 @@
+import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons/src/Families2Persons.msl"
+import "platform:/resource/FamiliesToPersons/src/MotherToFemale.msl"
+import "platform:/resource/FamiliesToPersons/src/MotherOfExistingFamilyToFemale.msl"
+import "platform:/resource/FamiliesToPersons/src/DaughterOfExistingFamilyToFemale.msl"
+import "platform:/resource/FamiliesToPersons/src/DaughterToFemale.msl"
+import "platform:/resource/FamiliesToPersons/src/FatherOfExistingFamilyToMale.msl"
+import "platform:/resource/FamiliesToPersons/src/FatherToMale.msl"
+import "platform:/resource/FamiliesToPersons/src/SonOfExistingFamilyToMale.msl"
+import "platform:/resource/FamiliesToPersons/src/SonToMale.msl"
+
+tripleGrammar FamiliesToPersons {
+	source {
+		Families
+	}
+
+	target { 
+		Persons
+	} 
+
+	correspondence {
+		FamilyRegister <-FamiliesToPersons->PersonRegister
+		FamilyMember<-FamilyMemberToPerson->Person
+	}
+	
+	rules {
+		Families2Persons
+		MotherToFemale
+		MotherOfExistingFamilyToFemale
+		FatherToMale
+		FatherOfExistingFamilyToMale
+		DaughterToFemale
+		DaughterOfExistingFamilyToFemale
+		SonToMale
+		SonOfExistingFamilyToMale
+	}
+}
