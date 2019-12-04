@@ -24,6 +24,7 @@ import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -107,8 +108,12 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 	override completeImportStatement_Value(
 			EObject model, Assignment assignment, 
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-		var plRes = '''"platform:/resource/'''
-		var pPlug = '''"platform:/plugin/'''
+		val plRes = '''"platform:/resource/'''
+		val pPlug = '''"platform:/plugin/'''
+		
+		val imports = newHashSet
+		if(model instanceof EMSL_Spec)
+			imports.addAll(model.imports.map['''"«it.value»"'''])
 		
 		// No prefix so ask for beginning of URI first
 		if(context.prefix == ""){
@@ -119,7 +124,7 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		
 		// Already a prefix so offer to complete it
 		val files = new HashSet<IResource>()
-		var root = ResourcesPlugin.workspace.root
+		val root = ResourcesPlugin.workspace.root
 		root.accept(new IResourceVisitor() {
 			override visit(IResource resource) throws CoreException {
 				if (resource.type === IResource.FILE) {
@@ -140,11 +145,18 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 			!f.contains('''/tgg-gen/''')
 		]
 		
+		val completions = newHashSet
 		// Add neocore
-		acceptor.accept(createCompletionProposal('''"«EMSLUtil.ORG_EMOFLON_NEO_CORE_URI»"''', context))
-		
+		completions.add('''"«EMSLUtil.ORG_EMOFLON_NEO_CORE_URI»"''')
+		// Add files
 		for (f : filteredFiles)
-			acceptor.accept(createCompletionProposal(plRes + f + '''"''', context))
+			completions.add(plRes + f + '''"''')
+		// Remove existing imports
+		completions.removeIf([completion | imports.contains(completion)])
+		
+		// Create proposals
+		for(prop : completions)
+			acceptor.accept(createCompletionProposal(prop, context))	
 	}
 	
 	override completeCorrespondence_Source(
