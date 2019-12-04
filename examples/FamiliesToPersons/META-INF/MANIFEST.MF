@@ -11,3 +11,4 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter,
  org.eclipse.xtext;bundle-version="2.19.0",
  org.apache.commons.logging;bundle-version="1.2.0",
  org.apache.commons.lang3
+Automatic-Module-Name: FamiliesToPersons
