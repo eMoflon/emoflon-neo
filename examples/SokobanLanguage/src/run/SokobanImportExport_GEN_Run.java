@@ -40,10 +40,10 @@ public class SokobanImportExport_GEN_Run extends rules.SokobanTGGs.run.SokobanIm
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__BoardNormalEntryRule, 1);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsEnd, 5);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsNormal, 5);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsNormal, 5);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsEnd, 5);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsEnd, 2);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsNormal, 2);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsNormal, 2);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsEnd, 2);
 		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsEnd, -1);
 		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsNormal, -1);
 
