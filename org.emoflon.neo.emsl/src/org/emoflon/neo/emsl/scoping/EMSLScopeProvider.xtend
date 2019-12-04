@@ -147,6 +147,15 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		if (correspondenceDefinitionSrc(context, reference))
 			return handleCorrespondenceDefinition(context, reference)
 
+		if (srcMetamodelInTGG(context, reference))
+			return handleSrcMetamodelInTGG(context, reference)
+
+		if (trgMetamodelInTGG(context, reference))
+			return handleTrgMetamodelInTGG(context, reference)
+
+		if (tripleRuleInTGG(context, reference))
+			return handleTripleRuleInTGG(context, reference)
+
 		return super.getScope(context, reference)
 	}
 
@@ -820,5 +829,36 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 				}
 			]
 		))
+	}
+
+	/*------------------------------------*/
+	/*---------- Triple Grammar ----------*/
+	/*------------------------------------*/
+	private def srcMetamodelInTGG(EObject context, EReference reference) {
+		context instanceof TripleGrammar && reference == EMSLPackage.Literals.TRIPLE_GRAMMAR__SRC_METAMODELS
+	}
+
+	private def trgMetamodelInTGG(EObject context, EReference reference) {
+		context instanceof TripleGrammar && reference == EMSLPackage.Literals.TRIPLE_GRAMMAR__TRG_METAMODELS
+	}
+
+	private def tripleRuleInTGG(EObject context, EReference reference) {
+		context instanceof TripleGrammar && reference == EMSLPackage.Literals.TRIPLE_GRAMMAR__RULES
+	}
+
+	private def handleSrcMetamodelInTGG(EObject context, EReference reference) {
+		handleMetamodelInTGG(context, reference)
+	}
+
+	private def handleTrgMetamodelInTGG(EObject context, EReference reference) {
+		handleMetamodelInTGG(context, reference)
+	}
+
+	private def handleMetamodelInTGG(EObject context, EReference reference) {
+		determineScope(allTypesInAllImportedSpecs(getSpec(context), Metamodel))
+	}
+
+	private def handleTripleRuleInTGG(EObject context, EReference reference) {
+		determineScope(allTypesInAllImportedSpecs(getSpec(context), TripleRule))
 	}
 }
