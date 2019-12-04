@@ -1,0 +1,60 @@
+metamodel assert {
+	continue
+	for
+	new
+	switch
+	class
+	const {
+		-throws(0..*)->switch
+	}
+}
+
+model interface {
+	class : for 
+}
+
+pattern native {
+	try : switch
+	
+	interface : const {
+		-throws->try
+	}
+}
+
+rule transient {
+	++ try : switch
+	
+	interface : const {
+		++ -throws->try
+	}
+}
+
+tripleGrammar package {
+	source {
+		assert
+	}
+	
+	target {
+		assert
+	}
+	
+	correspondence {
+		
+	}
+	
+	rules {
+		static
+	}
+}
+
+tripleRule static : package {
+	source {
+		++ this : new
+		
+		++ try : switch
+	
+		++ interface : const {
+			++ -throws->try
+		}
+	}
+}
