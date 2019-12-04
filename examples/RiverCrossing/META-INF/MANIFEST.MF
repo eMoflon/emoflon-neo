@@ -4,7 +4,10 @@ Bundle-Name: RiverCrossing
 Bundle-SymbolicName: RiverCrossing
 Bundle-Version: 1.0.0.qualifier
 Export-Package: org.emoflon.neo.api
-Require-Bundle: org.emoflon.neo.neo4j.adapter
+Require-Bundle: org.emoflon.neo.neo4j.adapter,
+ org.eclipse.xtext,
+ org.apache.commons.logging,
+ org.apache.log4j
 Automatic-Module-Name: RiverCrossing
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
