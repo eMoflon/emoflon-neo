@@ -79,7 +79,7 @@ public class SokobanNeoController implements IController {
 		var access = api1.getPattern_FigureTypes();
 		var matches = access.pattern().determineMatches();
 		var data = access.data(matches);
-		return data.map(d -> d.eclass.ename).collect(Collectors.toList());
+		return data.map(d -> d._eclass._ename).collect(Collectors.toList());
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class SokobanNeoController implements IController {
 		return access.pattern().determineOneMatch().flatMap(m -> {
 			var data = access.data(List.of(m)).findAny().get();
 			return fields.stream()//
-					.filter(f -> f.getRow() == data.b_fields_1_f.row && f.getCol() == data.b_fields_1_f.col)//
+					.filter(f -> f.getRow() == data._b_fields_1_f._row && f.getCol() == data._b_fields_1_f._col)//
 					.findFirst();
 		});
 	}
@@ -339,8 +339,8 @@ public class SokobanNeoController implements IController {
 		var accessBoard = api1.getPattern_Board();
 		accessBoard.pattern().determineOneMatch().ifPresent(m -> {
 			var mData = accessBoard.data(List.of(m)).findAny().get();
-			this.width = mData.board.width;
-			this.height = mData.board.height;
+			this.width = mData._board._width;
+			this.height = mData._board._height;
 
 			fields = new ArrayList<Field>();
 
@@ -348,19 +348,19 @@ public class SokobanNeoController implements IController {
 			var emptyFields = accessEmptyFields.pattern().determineMatches();
 			var emptyField = accessEmptyFields.data(emptyFields);
 			emptyField.forEach(f -> fields.add(new Field(//
-					f.board_fields_0_field.row, //
-					f.board_fields_0_field.col, //
-					f.field.endPos, //
+					f._board_fields_0_field._row, //
+					f._board_fields_0_field._col, //
+					f._field._endPos, //
 					Optional.empty())));
 
 			var accessOccupiedFields = api1.getPattern_OccupiedFields();
 			var occupiedFields = accessOccupiedFields.pattern().determineMatches();
 			var occupiedField = accessOccupiedFields.data(occupiedFields);
 			occupiedField.forEach(d -> fields.add(new Field(//
-					d.board_fields_0_field.row, //
-					d.board_fields_0_field.col, //
-					d.field.endPos, //
-					Optional.of(d.type.ename))));
+					d._board_fields_0_field._row, //
+					d._board_fields_0_field._col, //
+					d._field._endPos, //
+					Optional.of(d._type._ename))));
 		});
 	}
 
@@ -389,9 +389,9 @@ public class SokobanNeoController implements IController {
 		var emptyFields = accessEmptyFields.pattern().determineMatches();
 		var emptyFieldData = accessEmptyFields.data(emptyFields);
 		emptyFieldData.forEach(fData -> {
-			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col
-					&& fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
-						fld.setIsEndPos(fData.field.endPos);
+			fields.stream().filter(fld -> fld.getCol() == fData._board_fields_0_field._col
+					&& fld.getRow() == fData._board_fields_0_field._row).forEach(fld -> {
+						fld.setIsEndPos(fData._field._endPos);
 						fld.setFigureName(Optional.empty());
 					});
 		});
@@ -400,10 +400,10 @@ public class SokobanNeoController implements IController {
 		var occupiedFields = accessOccupiedFields.pattern().determineMatches();
 		var occupiedFieldData = accessOccupiedFields.data(occupiedFields);
 		occupiedFieldData.forEach(fData -> {
-			fields.stream().filter(fld -> fld.getCol() == fData.board_fields_0_field.col
-					&& fld.getRow() == fData.board_fields_0_field.row).forEach(fld -> {
-						fld.setIsEndPos(fData.field.endPos);
-						fld.setFigureName(Optional.of(fData.type.ename));
+			fields.stream().filter(fld -> fld.getCol() == fData._board_fields_0_field._col
+					&& fld.getRow() == fData._board_fields_0_field._row).forEach(fld -> {
+						fld.setIsEndPos(fData._field._endPos);
+						fld.setFigureName(Optional.of(fData._type._ename));
 					});
 		});
 	}

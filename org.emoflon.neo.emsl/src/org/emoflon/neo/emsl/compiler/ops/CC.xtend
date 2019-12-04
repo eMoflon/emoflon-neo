@@ -74,20 +74,20 @@ class CC extends ILPOperation {
 		'''
 			var genAPI = new API_«tggName»_GEN(builder);
 			var ccAPI = new API_«fullOpName»(builder);
-			var genRules = genAPI.getAllRulesFor«tggName»_GEN();
-			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName»());
+			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
+			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
 			corrCreation = new CorrCreationOperationalStrategy(//
 					solver, //
 					builder, //
 					genRules, //
-					ccAPI.getAllRulesFor«fullOpName»(), //
+					ccAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
 					getNegativeConstraints(builder), //
 					srcModel, //
 					trgModel//
 			);
 
 			return new NeoGenerator(//
-					ccAPI.getAllRulesFor«fullOpName»(), //
+					ccAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
 					new NoOpStartup(), //
 					new NoMoreMatchesTerminationCondition(), //
 					new CCRuleScheduler(analyser), //

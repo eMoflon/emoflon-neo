@@ -75,8 +75,8 @@ class CO extends ILPOperation {
 			var coAPI = new API_«fullOpName»(builder);
 			checkOnly = new CheckOnlyOperationalStrategy(//
 					solver, //
-					genAPI.getAllRulesFor«tggName»_GEN(), //
-					coAPI.getAllRulesFor«tggName»_CO(), //
+					genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN(), //
+					coAPI.getAllRulesFor«tggName.toFirstUpper»_CO(), //
 					getNegativeConstraints(builder), //
 					builder, //
 					srcModel, //
@@ -84,7 +84,7 @@ class CO extends ILPOperation {
 			);
 
 			return new NeoGenerator(//
-					coAPI.getAllRulesFor«fullOpName»(), //
+					coAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
 					new NoOpStartup(), //
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //

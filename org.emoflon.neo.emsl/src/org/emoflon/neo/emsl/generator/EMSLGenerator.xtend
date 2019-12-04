@@ -108,6 +108,7 @@ class EMSLGenerator extends AbstractGenerator {
 			ClasspathUtil.setUpAsPluginProject(project)
 			ClasspathUtil.setUpAsXtextProject(project)
 			ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
+			ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.engine.modules"))
 			ClasspathUtil.addDependencies(project, List.of("org.eclipse.xtext"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.logging"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.log4j"))
@@ -238,9 +239,9 @@ class EMSLGenerator extends AbstractGenerator {
 					return new «accessClassName»();
 				}
 				
-				public class «accessClassName» extends NeoPatternAccess<«dataClassName»,«maskClassName»> {
+				public class «accessClassName» extends NeoPatternAccess<«dataClassName», «maskClassName»> {
 					«FOR node : patternBody.nodeBlocks»
-						public final String «node.name» = "«node.name»";
+						public final String _«node.name» = "«node.name»";
 					«ENDFOR»
 					
 					@Override
@@ -301,13 +302,13 @@ class EMSLGenerator extends AbstractGenerator {
 		'''
 			public class «relName.toFirstUpper»Rel {
 				«FOR prop : rel.types.flatMap[it.type.properties]»
-					public «EMSLUtil.getJavaType(prop.type)» «prop.name»;
+					public «EMSLUtil.getJavaType(prop.type)» _«prop.name»;
 				«ENDFOR»
 			
-				public «relName.toFirstUpper»Rel(Value «relName») {
+				public «relName.toFirstUpper»Rel(Value _«relName») {
 					«FOR prop : rel.types.flatMap[it.type.properties]»
-						if(!«relName».get("«prop.name»").isNull())
-							this.«prop.name» = «relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
+						if(!_«relName».get("«prop.name»").isNull())
+							this._«prop.name» = _«relName».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
 					«ENDFOR»
 				}
 			}
@@ -321,13 +322,13 @@ class EMSLGenerator extends AbstractGenerator {
 	protected def CharSequence helperNodeClass(ModelNodeBlock node) '''
 		public class «node.name.toFirstUpper»Node {
 			«FOR prop : allProperties(node.type)»
-				public «EMSLUtil.getJavaType(prop.type)» «prop.name»;
+				public «EMSLUtil.getJavaType(prop.type)» _«prop.name»;
 			«ENDFOR»
 			
-			public «node.name.toFirstUpper»Node(Value «node.name») {
+			public «node.name.toFirstUpper»Node(Value _«node.name») {
 				«FOR prop : allProperties(node.type)»
-					if(!«node.name».get("«prop.name»").isNull())
-						this.«prop.name» = «node.name».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
+					if(!_«node.name».get("«prop.name»").isNull())
+						this._«prop.name» = _«node.name».get("«prop.name»").as«EMSLUtil.getJavaType(prop.type).toFirstUpper»();
 				«ENDFOR»
 			}
 		}
@@ -341,16 +342,16 @@ class EMSLGenerator extends AbstractGenerator {
 		Predicate<ModelNodeBlock> nodeFilter, Predicate<ModelRelationStatement> edgeFilter) '''
 		public «fileName»(Record data) {
 			«FOR node : nodeBlocks.filter(nodeFilter)»
-				var «node.name» = data.get("«node.name»");
-				this.«node.name» = new «node.name.toFirstUpper»Node(«node.name»);
+				var _«node.name» = data.get("«node.name»");
+				this._«node.name» = new «node.name.toFirstUpper»Node(_«node.name»);
 				«FOR rel : node.relations.filter(edgeFilter).filter[!EMSLUtil.isVariableLink(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
 						rel.allTypes,//
 						rel.target.name,// 
 						node.relations.indexOf(rel))»
-					var «relName» = data.get("«relName»");
-					this.«relName» = new «relName.toFirstUpper»Rel(«relName»);
+					var _«relName» = data.get("«relName»");
+					this._«relName» = new «relName.toFirstUpper»Rel(_«relName»);
 				«ENDFOR»			
 			«ENDFOR»
 		}
@@ -365,14 +366,14 @@ class EMSLGenerator extends AbstractGenerator {
 		Predicate<ModelRelationStatement> edgeFilter) {
 		'''
 			«FOR node : nodeBlocks.filter(nodeFilter)»
-				public final «node.name.toFirstUpper»Node «node.name»;
+				public final «node.name.toFirstUpper»Node _«node.name»;
 				«FOR rel : node.relations.filter(edgeFilter).filter[!EMSLUtil.isVariableLink(it)]»
 					«val relName = EMSLUtil.relationNameConvention(//
 						node.name,// 
 						rel.allTypes,//
 						rel.target.name,// 
 						node.relations.indexOf(rel))»
-					public final «relName.toFirstUpper»Rel «relName»;
+					public final «relName.toFirstUpper»Rel _«relName»;
 				«ENDFOR»
 			«ENDFOR»
 		'''
@@ -499,7 +500,7 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public class «accessClassName» extends NeoRuleCoAccess<«dataClassName», «codataClassName», «maskClassName»> {
 					«FOR node : rule.nodeBlocks»
-						public final String «node.name» = "«node.name»";
+						public final String _«node.name» = "«node.name»";
 					«ENDFOR»
 					
 					@Override

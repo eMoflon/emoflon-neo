@@ -80,7 +80,7 @@ class MODELGEN implements Operation {
 	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
-			var allRules = new API_«fullOpName»(builder).getAllRulesFor«fullOpName»();
+			var allRules = new API_«fullOpName»(builder).getAllRulesFor«fullOpName.toFirstUpper»();
 			var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
 			
 			INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
