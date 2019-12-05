@@ -1,0 +1,17 @@
+import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons/src/Schema.msl"
+import "platform:/resource/FamiliesToPersons/src/FamilyMember2Person.msl"
+
+tripleRule FatherToMale : FamiliesToPersons -> FamilyMember2Person {
+	source { 
+		++ f : Family {
+			++-father->fm
+		}
+	
+		++ fm : FamilyMember
+	}
+
+	target {
+		++ p : Male
+	}
+}

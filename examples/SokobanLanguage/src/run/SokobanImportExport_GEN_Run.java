@@ -1,16 +1,13 @@
 package run;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.rules.API_SokobanTGGs;
 import org.emoflon.neo.api.rules.SokobanTGGs.API_SokobanImportExport_GEN;
-import org.emoflon.neo.cypher.rules.NeoRule;
-import org.emoflon.neo.emsl.util.FlattenerException;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -24,40 +21,31 @@ import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
-public class SokobanImportExport_GEN_Run {
-	private static final Logger logger = Logger.getLogger(SokobanImportExport_GEN_Run.class);
+/**
+ * Generator is configured to generate a single board with a square formation.
+ * 
+ * @author anthonyanjorin
+ */
+public class SokobanImportExport_GEN_Run extends rules.SokobanTGGs.run.SokobanImportExport_GEN_Run {
 
-	public static void main(String[] pArgs) throws Exception {
+	public static void main(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new SokobanImportExport_GEN_Run();
-		app.runGenerator();
+		app.run();
 	}
 
-	public void runGenerator() throws FlattenerException, Exception {
-		try (var builder = API_Common.createBuilder()) {
-			var api = new API_SokobanTGGs(builder);
-			api.exportMetamodelsForSokobanImportExport();
-
-			var genAPI = new API_SokobanImportExport_GEN(builder);
-			var generator = createGenerator(genAPI);
-
-			logger.info("Start model generation...");
-			generator.generate();
-			logger.info("Generation done.");
-		}
-	}
-
-	protected NeoGenerator createGenerator(API_SokobanImportExport_GEN genAPI) {
-		Collection<NeoRule> allRules = genAPI.getAllRulesForSokobanImportExport_GEN();
+	@Override
+	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var allRules = new API_SokobanImportExport_GEN(builder).getAllRulesForSokobanImportExport_GEN();
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__BoardNormalEntryRule, 1);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsEnd, 2);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsNormal, 2);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsNormal, 2);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsEnd, 2);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsEnd, 8);
-		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsNormal, 8);	
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsEnd, 4);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstRowAllColsNormal, 4);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsNormal, 4);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__FirstColAllRowsEnd, 4);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsEnd, -1);
+		maxRuleApps.setMax(API_SokobanTGGs.SokobanImportExport__AllOtherFieldsNormal, -1);
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
 			return INodeSampler.EMPTY;
@@ -72,7 +60,7 @@ public class SokobanImportExport_GEN_Run {
 				new ParanoidNeoReprocessor(), //
 				new NoOpCleanup(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("TheSource", "TheTarget"), //
+				new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 }

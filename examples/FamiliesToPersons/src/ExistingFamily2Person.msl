@@ -1,0 +1,13 @@
+import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons/src/Schema.msl"
+import "platform:/resource/FamiliesToPersons/src/FamilyMember2Person.msl"
+
+abstract tripleRule ExistingFamily2Person : FamiliesToPersons -> FamilyMember2Person {
+	source { 
+		families : FamilyRegister {
+			-families->f
+		}
+		f : Family
+	}	
+}
+

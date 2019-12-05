@@ -25,6 +25,6 @@ public class PacManRules extends ENeoTest {
 		var result = access.rule().apply();
 		assertTrue(result.isPresent());
 		var data = access.codata(List.of(result.get()));
-		assertEquals(1, data.findAny().get().pacMan.marbles);
+		assertEquals(1, data.findAny().get()._pacMan._marbles);
 	}
 }

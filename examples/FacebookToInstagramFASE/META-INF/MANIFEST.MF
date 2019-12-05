@@ -11,12 +11,13 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.commons.logging;bundle-version="1.2.0",
  FacebookToInstagram,
  FacebookToInstagram,
- FacebookToInstagram
+ FacebookToInstagram,
+ org.apache.log4j,
+ org.apache.commons.lang3
 Export-Package: .,
  Transformations,
  org.emoflon.neo.api,
  org.emoflon.neo.api.Transformations
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.log4j,
- org.emoflon.neo.api,
- org.emoflon.neo.api.Transformations
+Import-Package: org.apache.log4j,org.emoflon.neo.api,org.emoflon.neo.a
+ pi.Transformations

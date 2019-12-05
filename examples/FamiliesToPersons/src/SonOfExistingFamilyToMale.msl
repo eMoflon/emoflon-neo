@@ -1,0 +1,6 @@
+import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons/src/Schema.msl"
+import "platform:/resource/FamiliesToPersons/src/ExistingFamily2Person.msl"
+import "platform:/resource/FamiliesToPersons/src/SonToMale.msl"
+
+tripleRule SonOfExistingFamilyToMale : FamiliesToPersons -> ExistingFamily2Person, SonToMale

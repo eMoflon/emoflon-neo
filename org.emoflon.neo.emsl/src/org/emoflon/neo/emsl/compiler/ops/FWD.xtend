@@ -95,7 +95,7 @@ class FWD implements Operation {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			return new NeoGenerator(//
-					new API_«fullOpName»(builder).getAllRulesFor«fullOpName»(), //
+					new API_«fullOpName»(builder).getAllRulesFor«fullOpName.toFirstUpper»(), //
 					new PrepareTranslateAttributes(builder, SRC_MODEL_NAME), //
 					new NoMoreMatchesTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
