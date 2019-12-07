@@ -18,7 +18,6 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SokobanPatterns extends ENeoTest {
@@ -485,21 +484,16 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_All3x3Fields() {
 		assertThat(entities.getPattern_All3x3Fields().pattern().countMatches(), is(4));
 	}
 
-	// Test sometimes fails (return 0 matches) due to a bug in Neo4j.
-	// See: https://github.com/neo4j/neo4j/issues/12247
 	@Test
-	@Disabled
 	public void test_One3x3FieldsLimit() {
 		assertThat(entities.getPattern_All3x3Fields().pattern().determineMatches(Schedule.once()).size(), is(1));
 	}
 
 	@Test
-	@Disabled
 	public void test_All3x3Fields_StillValid() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.pattern().determineMatches();
@@ -522,7 +516,6 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_All3x3Fields_StillValid_AfterDeletingEdges() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.pattern().determineMatches();
@@ -535,7 +528,6 @@ public class SokobanPatterns extends ENeoTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_All3x3Fields_StillValid_AfterChangingTypesOfNodes() {
 		var p = entities.getPattern_All3x3Fields();
 		var matches = p.pattern().determineMatches();
