@@ -5,8 +5,10 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/CompanyToIT"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FacebookToInstagram"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FacebookToInstagramFASE"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FamiliesToPersons"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FruitGardenLanguage"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/GameOfLife"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/JavaKeywords"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/NetworkTopology"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Organigram"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/PacMan"/>
@@ -30,48 +32,16 @@
 <item elementID="=RiverCrossing" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=PacMan" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=Chess" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-</workingSets>
-<workingSets editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1571768148753_0" label="Java Main Sources" name="Java Main Sources">
-<item elementID="=Chess/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Chess/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=CompanyToIT/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=CompanyToIT/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=CompanyToIT/tgg-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FacebookToInstagram/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FacebookToInstagram/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FacebookToInstagram/tgg-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FruitGardenLanguage/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FruitGardenLanguage/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=GameOfLife/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=GameOfLife/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=NetworkTopology/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=NetworkTopology/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Organigram/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Organigram/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=PacMan/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=PacMan/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Quiltography/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Quiltography/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=RiverCrossing/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=RiverCrossing/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SheRememberedCaterpillars/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SheRememberedCaterpillars/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SokobanGUI/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SokobanGUI/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SokobanLanguage/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SokobanLanguage/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SokobanLanguage/tgg-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=TestSuite/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=TestSuite/xtend-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=TestSuite/src-gen" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=JavaKeywords" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137201994_7" label="tests" name="tests">
 <item elementID="=TestSuite" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137041496_5" label="tggs" name="tggs">
 <item elementID="=CompanyToIT" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FacebookToInstagram" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=SokobanLanguage" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=FacebookToInstagram" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=FacebookToInstagramFASE" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=FamiliesToPersons" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 </psf>

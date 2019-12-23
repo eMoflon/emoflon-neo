@@ -60,9 +60,9 @@ public class API_Facebook {
 		return new DoubleFaceBookUsersAccess();
 	}
 	
-	public class DoubleFaceBookUsersAccess extends NeoPatternAccess<DoubleFaceBookUsersData,DoubleFaceBookUsersMask> {
-		public final String n = "n";
-		public final String u = "u";
+	public class DoubleFaceBookUsersAccess extends NeoPatternAccess<DoubleFaceBookUsersData, DoubleFaceBookUsersMask> {
+		public final String _n = "n";
+		public final String _u = "u";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -83,48 +83,48 @@ public class API_Facebook {
 	}
 	
 	public class DoubleFaceBookUsersData extends NeoData {
-		public final NNode n;
-		public final N_users_0_uRel n_users_0_u;
-		public final N_users_1_uRel n_users_1_u;
-		public final UNode u;
+		public final NNode _n;
+		public final N_users_0_uRel _n_users_0_u;
+		public final N_users_1_uRel _n_users_1_u;
+		public final UNode _u;
 		
 		public DoubleFaceBookUsersData(Record data) {
-			var n = data.get("n");
-			this.n = new NNode(n);
-			var n_users_0_u = data.get("n_users_0_u");
-			this.n_users_0_u = new N_users_0_uRel(n_users_0_u);
-			var n_users_1_u = data.get("n_users_1_u");
-			this.n_users_1_u = new N_users_1_uRel(n_users_1_u);
-			var u = data.get("u");
-			this.u = new UNode(u);
+			var _n = data.get("n");
+			this._n = new NNode(_n);
+			var _n_users_0_u = data.get("n_users_0_u");
+			this._n_users_0_u = new N_users_0_uRel(_n_users_0_u);
+			var _n_users_1_u = data.get("n_users_1_u");
+			this._n_users_1_u = new N_users_1_uRel(_n_users_1_u);
+			var _u = data.get("u");
+			this._u = new UNode(_u);
 		}
 		
 		
 		public class NNode {
-			public String description;
+			public String _description;
 			
-			public NNode(Value n) {
-				if(!n.get("description").isNull())
-					this.description = n.get("description").asString();
+			public NNode(Value _n) {
+				if(!_n.get("description").isNull())
+					this._description = _n.get("description").asString();
 			}
 		}
 		
 		public class N_users_0_uRel {
 		
-			public N_users_0_uRel(Value n_users_0_u) {
+			public N_users_0_uRel(Value _n_users_0_u) {
 			}
 		}
 		public class N_users_1_uRel {
 		
-			public N_users_1_uRel(Value n_users_1_u) {
+			public N_users_1_uRel(Value _n_users_1_u) {
 			}
 		}
 		public class UNode {
-			public String name;
+			public String _name;
 			
-			public UNode(Value u) {
-				if(!u.get("name").isNull())
-					this.name = u.get("name").asString();
+			public UNode(Value _u) {
+				if(!_u.get("name").isNull())
+					this._name = _u.get("name").asString();
 			}
 		}
 		
@@ -161,12 +161,12 @@ public class API_Facebook {
 		return new DoubleFriendshipAccess();
 	}
 	
-	public class DoubleFriendshipAccess extends NeoPatternAccess<DoubleFriendshipData,DoubleFriendshipMask> {
-		public final String n = "n";
-		public final String f1 = "f1";
-		public final String f2 = "f2";
-		public final String u1 = "u1";
-		public final String u2 = "u2";
+	public class DoubleFriendshipAccess extends NeoPatternAccess<DoubleFriendshipData, DoubleFriendshipMask> {
+		public final String _n = "n";
+		public final String _f1 = "f1";
+		public final String _f2 = "f2";
+		public final String _u1 = "u1";
+		public final String _u2 = "u2";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -187,132 +187,132 @@ public class API_Facebook {
 	}
 	
 	public class DoubleFriendshipData extends NeoData {
-		public final NNode n;
-		public final N_friendships_0_f1Rel n_friendships_0_f1;
-		public final N_friendships_1_f2Rel n_friendships_1_f2;
-		public final N_users_2_u1Rel n_users_2_u1;
-		public final N_users_3_u2Rel n_users_3_u2;
-		public final F1Node f1;
-		public final F1_friends_0_u1Rel f1_friends_0_u1;
-		public final F1_friends_1_u2Rel f1_friends_1_u2;
-		public final F2Node f2;
-		public final F2_friends_0_u1Rel f2_friends_0_u1;
-		public final F2_friends_1_u2Rel f2_friends_1_u2;
-		public final U1Node u1;
-		public final U2Node u2;
+		public final NNode _n;
+		public final N_friendships_0_f1Rel _n_friendships_0_f1;
+		public final N_friendships_1_f2Rel _n_friendships_1_f2;
+		public final N_users_2_u1Rel _n_users_2_u1;
+		public final N_users_3_u2Rel _n_users_3_u2;
+		public final F1Node _f1;
+		public final F1_friends_0_u1Rel _f1_friends_0_u1;
+		public final F1_friends_1_u2Rel _f1_friends_1_u2;
+		public final F2Node _f2;
+		public final F2_friends_0_u1Rel _f2_friends_0_u1;
+		public final F2_friends_1_u2Rel _f2_friends_1_u2;
+		public final U1Node _u1;
+		public final U2Node _u2;
 		
 		public DoubleFriendshipData(Record data) {
-			var n = data.get("n");
-			this.n = new NNode(n);
-			var n_friendships_0_f1 = data.get("n_friendships_0_f1");
-			this.n_friendships_0_f1 = new N_friendships_0_f1Rel(n_friendships_0_f1);
-			var n_friendships_1_f2 = data.get("n_friendships_1_f2");
-			this.n_friendships_1_f2 = new N_friendships_1_f2Rel(n_friendships_1_f2);
-			var n_users_2_u1 = data.get("n_users_2_u1");
-			this.n_users_2_u1 = new N_users_2_u1Rel(n_users_2_u1);
-			var n_users_3_u2 = data.get("n_users_3_u2");
-			this.n_users_3_u2 = new N_users_3_u2Rel(n_users_3_u2);
-			var f1 = data.get("f1");
-			this.f1 = new F1Node(f1);
-			var f1_friends_0_u1 = data.get("f1_friends_0_u1");
-			this.f1_friends_0_u1 = new F1_friends_0_u1Rel(f1_friends_0_u1);
-			var f1_friends_1_u2 = data.get("f1_friends_1_u2");
-			this.f1_friends_1_u2 = new F1_friends_1_u2Rel(f1_friends_1_u2);
-			var f2 = data.get("f2");
-			this.f2 = new F2Node(f2);
-			var f2_friends_0_u1 = data.get("f2_friends_0_u1");
-			this.f2_friends_0_u1 = new F2_friends_0_u1Rel(f2_friends_0_u1);
-			var f2_friends_1_u2 = data.get("f2_friends_1_u2");
-			this.f2_friends_1_u2 = new F2_friends_1_u2Rel(f2_friends_1_u2);
-			var u1 = data.get("u1");
-			this.u1 = new U1Node(u1);
-			var u2 = data.get("u2");
-			this.u2 = new U2Node(u2);
+			var _n = data.get("n");
+			this._n = new NNode(_n);
+			var _n_friendships_0_f1 = data.get("n_friendships_0_f1");
+			this._n_friendships_0_f1 = new N_friendships_0_f1Rel(_n_friendships_0_f1);
+			var _n_friendships_1_f2 = data.get("n_friendships_1_f2");
+			this._n_friendships_1_f2 = new N_friendships_1_f2Rel(_n_friendships_1_f2);
+			var _n_users_2_u1 = data.get("n_users_2_u1");
+			this._n_users_2_u1 = new N_users_2_u1Rel(_n_users_2_u1);
+			var _n_users_3_u2 = data.get("n_users_3_u2");
+			this._n_users_3_u2 = new N_users_3_u2Rel(_n_users_3_u2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f1_friends_0_u1 = data.get("f1_friends_0_u1");
+			this._f1_friends_0_u1 = new F1_friends_0_u1Rel(_f1_friends_0_u1);
+			var _f1_friends_1_u2 = data.get("f1_friends_1_u2");
+			this._f1_friends_1_u2 = new F1_friends_1_u2Rel(_f1_friends_1_u2);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+			var _f2_friends_0_u1 = data.get("f2_friends_0_u1");
+			this._f2_friends_0_u1 = new F2_friends_0_u1Rel(_f2_friends_0_u1);
+			var _f2_friends_1_u2 = data.get("f2_friends_1_u2");
+			this._f2_friends_1_u2 = new F2_friends_1_u2Rel(_f2_friends_1_u2);
+			var _u1 = data.get("u1");
+			this._u1 = new U1Node(_u1);
+			var _u2 = data.get("u2");
+			this._u2 = new U2Node(_u2);
 		}
 		
 		
 		public class NNode {
-			public String description;
+			public String _description;
 			
-			public NNode(Value n) {
-				if(!n.get("description").isNull())
-					this.description = n.get("description").asString();
+			public NNode(Value _n) {
+				if(!_n.get("description").isNull())
+					this._description = _n.get("description").asString();
 			}
 		}
 		
 		public class N_friendships_0_f1Rel {
 		
-			public N_friendships_0_f1Rel(Value n_friendships_0_f1) {
+			public N_friendships_0_f1Rel(Value _n_friendships_0_f1) {
 			}
 		}
 		public class N_friendships_1_f2Rel {
 		
-			public N_friendships_1_f2Rel(Value n_friendships_1_f2) {
+			public N_friendships_1_f2Rel(Value _n_friendships_1_f2) {
 			}
 		}
 		public class N_users_2_u1Rel {
 		
-			public N_users_2_u1Rel(Value n_users_2_u1) {
+			public N_users_2_u1Rel(Value _n_users_2_u1) {
 			}
 		}
 		public class N_users_3_u2Rel {
 		
-			public N_users_3_u2Rel(Value n_users_3_u2) {
+			public N_users_3_u2Rel(Value _n_users_3_u2) {
 			}
 		}
 		public class F1Node {
-			public LocalDate startFrom;
+			public LocalDate _startFrom;
 			
-			public F1Node(Value f1) {
-				if(!f1.get("startFrom").isNull())
-					this.startFrom = f1.get("startFrom").asLocalDate();
+			public F1Node(Value _f1) {
+				if(!_f1.get("startFrom").isNull())
+					this._startFrom = _f1.get("startFrom").asLocalDate();
 			}
 		}
 		
 		public class F1_friends_0_u1Rel {
 		
-			public F1_friends_0_u1Rel(Value f1_friends_0_u1) {
+			public F1_friends_0_u1Rel(Value _f1_friends_0_u1) {
 			}
 		}
 		public class F1_friends_1_u2Rel {
 		
-			public F1_friends_1_u2Rel(Value f1_friends_1_u2) {
+			public F1_friends_1_u2Rel(Value _f1_friends_1_u2) {
 			}
 		}
 		public class F2Node {
-			public LocalDate startFrom;
+			public LocalDate _startFrom;
 			
-			public F2Node(Value f2) {
-				if(!f2.get("startFrom").isNull())
-					this.startFrom = f2.get("startFrom").asLocalDate();
+			public F2Node(Value _f2) {
+				if(!_f2.get("startFrom").isNull())
+					this._startFrom = _f2.get("startFrom").asLocalDate();
 			}
 		}
 		
 		public class F2_friends_0_u1Rel {
 		
-			public F2_friends_0_u1Rel(Value f2_friends_0_u1) {
+			public F2_friends_0_u1Rel(Value _f2_friends_0_u1) {
 			}
 		}
 		public class F2_friends_1_u2Rel {
 		
-			public F2_friends_1_u2Rel(Value f2_friends_1_u2) {
+			public F2_friends_1_u2Rel(Value _f2_friends_1_u2) {
 			}
 		}
 		public class U1Node {
-			public String name;
+			public String _name;
 			
-			public U1Node(Value u1) {
-				if(!u1.get("name").isNull())
-					this.name = u1.get("name").asString();
+			public U1Node(Value _u1) {
+				if(!_u1.get("name").isNull())
+					this._name = _u1.get("name").asString();
 			}
 		}
 		
 		public class U2Node {
-			public String name;
+			public String _name;
 			
-			public U2Node(Value u2) {
-				if(!u2.get("name").isNull())
-					this.name = u2.get("name").asString();
+			public U2Node(Value _u2) {
+				if(!_u2.get("name").isNull())
+					this._name = _u2.get("name").asString();
 			}
 		}
 		
@@ -373,12 +373,12 @@ public class API_Facebook {
 		return new InterFriendshipAccess();
 	}
 	
-	public class InterFriendshipAccess extends NeoPatternAccess<InterFriendshipData,InterFriendshipMask> {
-		public final String n1 = "n1";
-		public final String n2 = "n2";
-		public final String f1 = "f1";
-		public final String u1 = "u1";
-		public final String u2 = "u2";
+	public class InterFriendshipAccess extends NeoPatternAccess<InterFriendshipData, InterFriendshipMask> {
+		public final String _n1 = "n1";
+		public final String _n2 = "n2";
+		public final String _f1 = "f1";
+		public final String _u1 = "u1";
+		public final String _u2 = "u2";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -399,100 +399,100 @@ public class API_Facebook {
 	}
 	
 	public class InterFriendshipData extends NeoData {
-		public final N1Node n1;
-		public final N1_users_0_u1Rel n1_users_0_u1;
-		public final N2Node n2;
-		public final N2_users_0_u2Rel n2_users_0_u2;
-		public final F1Node f1;
-		public final F1_friends_0_u1Rel f1_friends_0_u1;
-		public final F1_friends_1_u2Rel f1_friends_1_u2;
-		public final U1Node u1;
-		public final U2Node u2;
+		public final N1Node _n1;
+		public final N1_users_0_u1Rel _n1_users_0_u1;
+		public final N2Node _n2;
+		public final N2_users_0_u2Rel _n2_users_0_u2;
+		public final F1Node _f1;
+		public final F1_friends_0_u1Rel _f1_friends_0_u1;
+		public final F1_friends_1_u2Rel _f1_friends_1_u2;
+		public final U1Node _u1;
+		public final U2Node _u2;
 		
 		public InterFriendshipData(Record data) {
-			var n1 = data.get("n1");
-			this.n1 = new N1Node(n1);
-			var n1_users_0_u1 = data.get("n1_users_0_u1");
-			this.n1_users_0_u1 = new N1_users_0_u1Rel(n1_users_0_u1);
-			var n2 = data.get("n2");
-			this.n2 = new N2Node(n2);
-			var n2_users_0_u2 = data.get("n2_users_0_u2");
-			this.n2_users_0_u2 = new N2_users_0_u2Rel(n2_users_0_u2);
-			var f1 = data.get("f1");
-			this.f1 = new F1Node(f1);
-			var f1_friends_0_u1 = data.get("f1_friends_0_u1");
-			this.f1_friends_0_u1 = new F1_friends_0_u1Rel(f1_friends_0_u1);
-			var f1_friends_1_u2 = data.get("f1_friends_1_u2");
-			this.f1_friends_1_u2 = new F1_friends_1_u2Rel(f1_friends_1_u2);
-			var u1 = data.get("u1");
-			this.u1 = new U1Node(u1);
-			var u2 = data.get("u2");
-			this.u2 = new U2Node(u2);
+			var _n1 = data.get("n1");
+			this._n1 = new N1Node(_n1);
+			var _n1_users_0_u1 = data.get("n1_users_0_u1");
+			this._n1_users_0_u1 = new N1_users_0_u1Rel(_n1_users_0_u1);
+			var _n2 = data.get("n2");
+			this._n2 = new N2Node(_n2);
+			var _n2_users_0_u2 = data.get("n2_users_0_u2");
+			this._n2_users_0_u2 = new N2_users_0_u2Rel(_n2_users_0_u2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f1_friends_0_u1 = data.get("f1_friends_0_u1");
+			this._f1_friends_0_u1 = new F1_friends_0_u1Rel(_f1_friends_0_u1);
+			var _f1_friends_1_u2 = data.get("f1_friends_1_u2");
+			this._f1_friends_1_u2 = new F1_friends_1_u2Rel(_f1_friends_1_u2);
+			var _u1 = data.get("u1");
+			this._u1 = new U1Node(_u1);
+			var _u2 = data.get("u2");
+			this._u2 = new U2Node(_u2);
 		}
 		
 		
 		public class N1Node {
-			public String description;
+			public String _description;
 			
-			public N1Node(Value n1) {
-				if(!n1.get("description").isNull())
-					this.description = n1.get("description").asString();
+			public N1Node(Value _n1) {
+				if(!_n1.get("description").isNull())
+					this._description = _n1.get("description").asString();
 			}
 		}
 		
 		public class N1_users_0_u1Rel {
 		
-			public N1_users_0_u1Rel(Value n1_users_0_u1) {
+			public N1_users_0_u1Rel(Value _n1_users_0_u1) {
 			}
 		}
 		public class N2Node {
-			public String description;
+			public String _description;
 			
-			public N2Node(Value n2) {
-				if(!n2.get("description").isNull())
-					this.description = n2.get("description").asString();
+			public N2Node(Value _n2) {
+				if(!_n2.get("description").isNull())
+					this._description = _n2.get("description").asString();
 			}
 		}
 		
 		public class N2_users_0_u2Rel {
 		
-			public N2_users_0_u2Rel(Value n2_users_0_u2) {
+			public N2_users_0_u2Rel(Value _n2_users_0_u2) {
 			}
 		}
 		public class F1Node {
-			public LocalDate startFrom;
+			public LocalDate _startFrom;
 			
-			public F1Node(Value f1) {
-				if(!f1.get("startFrom").isNull())
-					this.startFrom = f1.get("startFrom").asLocalDate();
+			public F1Node(Value _f1) {
+				if(!_f1.get("startFrom").isNull())
+					this._startFrom = _f1.get("startFrom").asLocalDate();
 			}
 		}
 		
 		public class F1_friends_0_u1Rel {
 		
-			public F1_friends_0_u1Rel(Value f1_friends_0_u1) {
+			public F1_friends_0_u1Rel(Value _f1_friends_0_u1) {
 			}
 		}
 		public class F1_friends_1_u2Rel {
 		
-			public F1_friends_1_u2Rel(Value f1_friends_1_u2) {
+			public F1_friends_1_u2Rel(Value _f1_friends_1_u2) {
 			}
 		}
 		public class U1Node {
-			public String name;
+			public String _name;
 			
-			public U1Node(Value u1) {
-				if(!u1.get("name").isNull())
-					this.name = u1.get("name").asString();
+			public U1Node(Value _u1) {
+				if(!_u1.get("name").isNull())
+					this._name = _u1.get("name").asString();
 			}
 		}
 		
 		public class U2Node {
-			public String name;
+			public String _name;
 			
-			public U2Node(Value u2) {
-				if(!u2.get("name").isNull())
-					this.name = u2.get("name").asString();
+			public U2Node(Value _u2) {
+				if(!_u2.get("name").isNull())
+					this._name = _u2.get("name").asString();
 			}
 		}
 		
@@ -553,9 +553,9 @@ public class API_Facebook {
 		return new DoubleParentsAccess();
 	}
 	
-	public class DoubleParentsAccess extends NeoPatternAccess<DoubleParentsData,DoubleParentsMask> {
-		public final String u1 = "u1";
-		public final String u2 = "u2";
+	public class DoubleParentsAccess extends NeoPatternAccess<DoubleParentsData, DoubleParentsMask> {
+		public final String _u1 = "u1";
+		public final String _u2 = "u2";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -576,48 +576,48 @@ public class API_Facebook {
 	}
 	
 	public class DoubleParentsData extends NeoData {
-		public final U1Node u1;
-		public final U1_parents_0_u2Rel u1_parents_0_u2;
-		public final U1_parents_1_u2Rel u1_parents_1_u2;
-		public final U2Node u2;
+		public final U1Node _u1;
+		public final U1_parents_0_u2Rel _u1_parents_0_u2;
+		public final U1_parents_1_u2Rel _u1_parents_1_u2;
+		public final U2Node _u2;
 		
 		public DoubleParentsData(Record data) {
-			var u1 = data.get("u1");
-			this.u1 = new U1Node(u1);
-			var u1_parents_0_u2 = data.get("u1_parents_0_u2");
-			this.u1_parents_0_u2 = new U1_parents_0_u2Rel(u1_parents_0_u2);
-			var u1_parents_1_u2 = data.get("u1_parents_1_u2");
-			this.u1_parents_1_u2 = new U1_parents_1_u2Rel(u1_parents_1_u2);
-			var u2 = data.get("u2");
-			this.u2 = new U2Node(u2);
+			var _u1 = data.get("u1");
+			this._u1 = new U1Node(_u1);
+			var _u1_parents_0_u2 = data.get("u1_parents_0_u2");
+			this._u1_parents_0_u2 = new U1_parents_0_u2Rel(_u1_parents_0_u2);
+			var _u1_parents_1_u2 = data.get("u1_parents_1_u2");
+			this._u1_parents_1_u2 = new U1_parents_1_u2Rel(_u1_parents_1_u2);
+			var _u2 = data.get("u2");
+			this._u2 = new U2Node(_u2);
 		}
 		
 		
 		public class U1Node {
-			public String name;
+			public String _name;
 			
-			public U1Node(Value u1) {
-				if(!u1.get("name").isNull())
-					this.name = u1.get("name").asString();
+			public U1Node(Value _u1) {
+				if(!_u1.get("name").isNull())
+					this._name = _u1.get("name").asString();
 			}
 		}
 		
 		public class U1_parents_0_u2Rel {
 		
-			public U1_parents_0_u2Rel(Value u1_parents_0_u2) {
+			public U1_parents_0_u2Rel(Value _u1_parents_0_u2) {
 			}
 		}
 		public class U1_parents_1_u2Rel {
 		
-			public U1_parents_1_u2Rel(Value u1_parents_1_u2) {
+			public U1_parents_1_u2Rel(Value _u1_parents_1_u2) {
 			}
 		}
 		public class U2Node {
-			public String name;
+			public String _name;
 			
-			public U2Node(Value u2) {
-				if(!u2.get("name").isNull())
-					this.name = u2.get("name").asString();
+			public U2Node(Value _u2) {
+				if(!_u2.get("name").isNull())
+					this._name = _u2.get("name").asString();
 			}
 		}
 		
@@ -654,9 +654,9 @@ public class API_Facebook {
 		return new DoubleSiblingAccess();
 	}
 	
-	public class DoubleSiblingAccess extends NeoPatternAccess<DoubleSiblingData,DoubleSiblingMask> {
-		public final String u1 = "u1";
-		public final String u2 = "u2";
+	public class DoubleSiblingAccess extends NeoPatternAccess<DoubleSiblingData, DoubleSiblingMask> {
+		public final String _u1 = "u1";
+		public final String _u2 = "u2";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -677,48 +677,48 @@ public class API_Facebook {
 	}
 	
 	public class DoubleSiblingData extends NeoData {
-		public final U1Node u1;
-		public final U1_siblings_0_u2Rel u1_siblings_0_u2;
-		public final U1_siblings_1_u2Rel u1_siblings_1_u2;
-		public final U2Node u2;
+		public final U1Node _u1;
+		public final U1_siblings_0_u2Rel _u1_siblings_0_u2;
+		public final U1_siblings_1_u2Rel _u1_siblings_1_u2;
+		public final U2Node _u2;
 		
 		public DoubleSiblingData(Record data) {
-			var u1 = data.get("u1");
-			this.u1 = new U1Node(u1);
-			var u1_siblings_0_u2 = data.get("u1_siblings_0_u2");
-			this.u1_siblings_0_u2 = new U1_siblings_0_u2Rel(u1_siblings_0_u2);
-			var u1_siblings_1_u2 = data.get("u1_siblings_1_u2");
-			this.u1_siblings_1_u2 = new U1_siblings_1_u2Rel(u1_siblings_1_u2);
-			var u2 = data.get("u2");
-			this.u2 = new U2Node(u2);
+			var _u1 = data.get("u1");
+			this._u1 = new U1Node(_u1);
+			var _u1_siblings_0_u2 = data.get("u1_siblings_0_u2");
+			this._u1_siblings_0_u2 = new U1_siblings_0_u2Rel(_u1_siblings_0_u2);
+			var _u1_siblings_1_u2 = data.get("u1_siblings_1_u2");
+			this._u1_siblings_1_u2 = new U1_siblings_1_u2Rel(_u1_siblings_1_u2);
+			var _u2 = data.get("u2");
+			this._u2 = new U2Node(_u2);
 		}
 		
 		
 		public class U1Node {
-			public String name;
+			public String _name;
 			
-			public U1Node(Value u1) {
-				if(!u1.get("name").isNull())
-					this.name = u1.get("name").asString();
+			public U1Node(Value _u1) {
+				if(!_u1.get("name").isNull())
+					this._name = _u1.get("name").asString();
 			}
 		}
 		
 		public class U1_siblings_0_u2Rel {
 		
-			public U1_siblings_0_u2Rel(Value u1_siblings_0_u2) {
+			public U1_siblings_0_u2Rel(Value _u1_siblings_0_u2) {
 			}
 		}
 		public class U1_siblings_1_u2Rel {
 		
-			public U1_siblings_1_u2Rel(Value u1_siblings_1_u2) {
+			public U1_siblings_1_u2Rel(Value _u1_siblings_1_u2) {
 			}
 		}
 		public class U2Node {
-			public String name;
+			public String _name;
 			
-			public U2Node(Value u2) {
-				if(!u2.get("name").isNull())
-					this.name = u2.get("name").asString();
+			public U2Node(Value _u2) {
+				if(!_u2.get("name").isNull())
+					this._name = _u2.get("name").asString();
 			}
 		}
 		
@@ -755,9 +755,9 @@ public class API_Facebook {
 		return new DoubleSpousesAccess();
 	}
 	
-	public class DoubleSpousesAccess extends NeoPatternAccess<DoubleSpousesData,DoubleSpousesMask> {
-		public final String u1 = "u1";
-		public final String u2 = "u2";
+	public class DoubleSpousesAccess extends NeoPatternAccess<DoubleSpousesData, DoubleSpousesMask> {
+		public final String _u1 = "u1";
+		public final String _u2 = "u2";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -778,48 +778,48 @@ public class API_Facebook {
 	}
 	
 	public class DoubleSpousesData extends NeoData {
-		public final U1Node u1;
-		public final U1_spouse_0_u2Rel u1_spouse_0_u2;
-		public final U1_spouse_1_u2Rel u1_spouse_1_u2;
-		public final U2Node u2;
+		public final U1Node _u1;
+		public final U1_spouse_0_u2Rel _u1_spouse_0_u2;
+		public final U1_spouse_1_u2Rel _u1_spouse_1_u2;
+		public final U2Node _u2;
 		
 		public DoubleSpousesData(Record data) {
-			var u1 = data.get("u1");
-			this.u1 = new U1Node(u1);
-			var u1_spouse_0_u2 = data.get("u1_spouse_0_u2");
-			this.u1_spouse_0_u2 = new U1_spouse_0_u2Rel(u1_spouse_0_u2);
-			var u1_spouse_1_u2 = data.get("u1_spouse_1_u2");
-			this.u1_spouse_1_u2 = new U1_spouse_1_u2Rel(u1_spouse_1_u2);
-			var u2 = data.get("u2");
-			this.u2 = new U2Node(u2);
+			var _u1 = data.get("u1");
+			this._u1 = new U1Node(_u1);
+			var _u1_spouse_0_u2 = data.get("u1_spouse_0_u2");
+			this._u1_spouse_0_u2 = new U1_spouse_0_u2Rel(_u1_spouse_0_u2);
+			var _u1_spouse_1_u2 = data.get("u1_spouse_1_u2");
+			this._u1_spouse_1_u2 = new U1_spouse_1_u2Rel(_u1_spouse_1_u2);
+			var _u2 = data.get("u2");
+			this._u2 = new U2Node(_u2);
 		}
 		
 		
 		public class U1Node {
-			public String name;
+			public String _name;
 			
-			public U1Node(Value u1) {
-				if(!u1.get("name").isNull())
-					this.name = u1.get("name").asString();
+			public U1Node(Value _u1) {
+				if(!_u1.get("name").isNull())
+					this._name = _u1.get("name").asString();
 			}
 		}
 		
 		public class U1_spouse_0_u2Rel {
 		
-			public U1_spouse_0_u2Rel(Value u1_spouse_0_u2) {
+			public U1_spouse_0_u2Rel(Value _u1_spouse_0_u2) {
 			}
 		}
 		public class U1_spouse_1_u2Rel {
 		
-			public U1_spouse_1_u2Rel(Value u1_spouse_1_u2) {
+			public U1_spouse_1_u2Rel(Value _u1_spouse_1_u2) {
 			}
 		}
 		public class U2Node {
-			public String name;
+			public String _name;
 			
-			public U2Node(Value u2) {
-				if(!u2.get("name").isNull())
-					this.name = u2.get("name").asString();
+			public U2Node(Value _u2) {
+				if(!_u2.get("name").isNull())
+					this._name = _u2.get("name").asString();
 			}
 		}
 		

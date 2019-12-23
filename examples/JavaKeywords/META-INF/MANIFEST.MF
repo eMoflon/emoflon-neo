@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-Name: JavaKeywords
+Bundle-ManifestVersion: 2
+Bundle-Version: 0.0.1
+Bundle-SymbolicName: JavaKeywords;singleton:=true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.emoflon.neo.neo4j.adapter,
+ org.eclipse.xtext,
+ org.apache.commons.logging,
+ org.apache.log4j,
+ org.apache.commons.lang3,
+ org.emoflon.neo.engine.modules
+Automatic-Module-Name: JavaKeywords

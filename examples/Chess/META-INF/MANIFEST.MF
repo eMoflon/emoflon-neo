@@ -5,7 +5,12 @@ Bundle-SymbolicName: Chess
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: Chess
 Bundle-RequiredExecutionEnvironment: JavaSE-10
-Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0"
+Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
+ org.eclipse.xtext,
+ org.apache.commons.logging,
+ org.apache.log4j,
+ org.apache.commons.lang3,
+ org.emoflon.neo.engine.modules
 Export-Package: .,
  org.emoflon.neo.api
 Bundle-ActivationPolicy: lazy

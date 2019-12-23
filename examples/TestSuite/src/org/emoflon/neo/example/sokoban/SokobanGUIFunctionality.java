@@ -33,7 +33,7 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		var access = entities.getPattern_FigureTypes();
 		var matches = access.pattern().determineMatches();
 		var data = access.data(matches);
-		var types = data.map(m -> m.eclass.ename).collect(Collectors.toList());
+		var types = data.map(m -> m._eclass._ename).collect(Collectors.toList());
 		assertEquals(3, types.size());
 
 		assertTrue(types.contains(IController.BLOCK));
@@ -49,15 +49,15 @@ public class SokobanGUIFunctionality extends ENeoTest {
 		mask.setB_fields_0_fRow(1);
 		var result = access.apply(mask, access.mask());
 		assertTrue(result.isPresent());
-		var fieldId = result.get().getElement(access.f);
+		var fieldId = result.get().getElement(access._f);
 
 		var testAccess = entities.getPattern_Occupied();
 		var testMask = testAccess.mask();
 		testMask.setField(fieldId);
 		assertEquals(1, testAccess.countMatches(testMask));
 
-		assertEquals(1, access.data(List.of(result.get())).findAny().get().b_fields_0_f.row);
-		assertEquals(1, access.data(List.of(result.get())).findAny().get().b_fields_0_f.col);
+		assertEquals(1, access.data(List.of(result.get())).findAny().get()._b_fields_0_f._row);
+		assertEquals(1, access.data(List.of(result.get())).findAny().get()._b_fields_0_f._col);
 	}
 
 	@Test
@@ -117,11 +117,11 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 			assertTrue(match.isPresent());
 			var m = match.get();
-			assertFalse(access.data(List.of(m)).findAny().get().f.endPos);
+			assertFalse(access.data(List.of(m)).findAny().get()._f._endPos);
 
 			access.rule().apply(m);
 
-			assertTrue(access.data(List.of(m)).findAny().get().f.endPos);
+			assertTrue(access.data(List.of(m)).findAny().get()._f._endPos);
 		}
 		{
 			var access = entities.getRule_SetNotEndField();
@@ -132,11 +132,11 @@ public class SokobanGUIFunctionality extends ENeoTest {
 
 			assertTrue(match.isPresent());
 			var m = match.get();
-			assertTrue(access.data(List.of(m)).findAny().get().f.endPos);
+			assertTrue(access.data(List.of(m)).findAny().get()._f._endPos);
 
 			access.rule().apply(m);
 
-			assertFalse(access.data(List.of(m)).findAny().get().f.endPos);
+			assertFalse(access.data(List.of(m)).findAny().get()._f._endPos);
 		}
 	}
 }

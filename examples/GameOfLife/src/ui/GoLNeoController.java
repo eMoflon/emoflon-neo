@@ -84,7 +84,7 @@ public class GoLNeoController implements IController {
 		var data = creator.getPattern_ALiveCell().data(liveCells);
 		
 		data.forEach(d -> {
-			fields[d.cell.row][d.cell.col].setIsAlive(true);
+			fields[d._cell._row][d._cell._col].setIsAlive(true);
 		});
 	}
 

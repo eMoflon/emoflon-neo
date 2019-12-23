@@ -59,9 +59,9 @@ public class API_Instagram {
 		return new DoubleInstagramUsersAccess();
 	}
 	
-	public class DoubleInstagramUsersAccess extends NeoPatternAccess<DoubleInstagramUsersData,DoubleInstagramUsersMask> {
-		public final String n = "n";
-		public final String u = "u";
+	public class DoubleInstagramUsersAccess extends NeoPatternAccess<DoubleInstagramUsersData, DoubleInstagramUsersMask> {
+		public final String _n = "n";
+		public final String _u = "u";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -82,48 +82,48 @@ public class API_Instagram {
 	}
 	
 	public class DoubleInstagramUsersData extends NeoData {
-		public final NNode n;
-		public final N_users_0_uRel n_users_0_u;
-		public final N_users_1_uRel n_users_1_u;
-		public final UNode u;
+		public final NNode _n;
+		public final N_users_0_uRel _n_users_0_u;
+		public final N_users_1_uRel _n_users_1_u;
+		public final UNode _u;
 		
 		public DoubleInstagramUsersData(Record data) {
-			var n = data.get("n");
-			this.n = new NNode(n);
-			var n_users_0_u = data.get("n_users_0_u");
-			this.n_users_0_u = new N_users_0_uRel(n_users_0_u);
-			var n_users_1_u = data.get("n_users_1_u");
-			this.n_users_1_u = new N_users_1_uRel(n_users_1_u);
-			var u = data.get("u");
-			this.u = new UNode(u);
+			var _n = data.get("n");
+			this._n = new NNode(_n);
+			var _n_users_0_u = data.get("n_users_0_u");
+			this._n_users_0_u = new N_users_0_uRel(_n_users_0_u);
+			var _n_users_1_u = data.get("n_users_1_u");
+			this._n_users_1_u = new N_users_1_uRel(_n_users_1_u);
+			var _u = data.get("u");
+			this._u = new UNode(_u);
 		}
 		
 		
 		public class NNode {
-			public String description;
+			public String _description;
 			
-			public NNode(Value n) {
-				if(!n.get("description").isNull())
-					this.description = n.get("description").asString();
+			public NNode(Value _n) {
+				if(!_n.get("description").isNull())
+					this._description = _n.get("description").asString();
 			}
 		}
 		
 		public class N_users_0_uRel {
 		
-			public N_users_0_uRel(Value n_users_0_u) {
+			public N_users_0_uRel(Value _n_users_0_u) {
 			}
 		}
 		public class N_users_1_uRel {
 		
-			public N_users_1_uRel(Value n_users_1_u) {
+			public N_users_1_uRel(Value _n_users_1_u) {
 			}
 		}
 		public class UNode {
-			public String name;
+			public String _name;
 			
-			public UNode(Value u) {
-				if(!u.get("name").isNull())
-					this.name = u.get("name").asString();
+			public UNode(Value _u) {
+				if(!_u.get("name").isNull())
+					this._name = _u.get("name").asString();
 			}
 		}
 		
@@ -160,9 +160,9 @@ public class API_Instagram {
 		return new DoubleFollowershipAccess();
 	}
 	
-	public class DoubleFollowershipAccess extends NeoPatternAccess<DoubleFollowershipData,DoubleFollowershipMask> {
-		public final String u1 = "u1";
-		public final String u2 = "u2";
+	public class DoubleFollowershipAccess extends NeoPatternAccess<DoubleFollowershipData, DoubleFollowershipMask> {
+		public final String _u1 = "u1";
+		public final String _u2 = "u2";
 		
 		@Override
 		public NeoPattern pattern(){
@@ -183,48 +183,48 @@ public class API_Instagram {
 	}
 	
 	public class DoubleFollowershipData extends NeoData {
-		public final U1Node u1;
-		public final U1_follows_0_u2Rel u1_follows_0_u2;
-		public final U1_follows_1_u2Rel u1_follows_1_u2;
-		public final U2Node u2;
+		public final U1Node _u1;
+		public final U1_follows_0_u2Rel _u1_follows_0_u2;
+		public final U1_follows_1_u2Rel _u1_follows_1_u2;
+		public final U2Node _u2;
 		
 		public DoubleFollowershipData(Record data) {
-			var u1 = data.get("u1");
-			this.u1 = new U1Node(u1);
-			var u1_follows_0_u2 = data.get("u1_follows_0_u2");
-			this.u1_follows_0_u2 = new U1_follows_0_u2Rel(u1_follows_0_u2);
-			var u1_follows_1_u2 = data.get("u1_follows_1_u2");
-			this.u1_follows_1_u2 = new U1_follows_1_u2Rel(u1_follows_1_u2);
-			var u2 = data.get("u2");
-			this.u2 = new U2Node(u2);
+			var _u1 = data.get("u1");
+			this._u1 = new U1Node(_u1);
+			var _u1_follows_0_u2 = data.get("u1_follows_0_u2");
+			this._u1_follows_0_u2 = new U1_follows_0_u2Rel(_u1_follows_0_u2);
+			var _u1_follows_1_u2 = data.get("u1_follows_1_u2");
+			this._u1_follows_1_u2 = new U1_follows_1_u2Rel(_u1_follows_1_u2);
+			var _u2 = data.get("u2");
+			this._u2 = new U2Node(_u2);
 		}
 		
 		
 		public class U1Node {
-			public String name;
+			public String _name;
 			
-			public U1Node(Value u1) {
-				if(!u1.get("name").isNull())
-					this.name = u1.get("name").asString();
+			public U1Node(Value _u1) {
+				if(!_u1.get("name").isNull())
+					this._name = _u1.get("name").asString();
 			}
 		}
 		
 		public class U1_follows_0_u2Rel {
 		
-			public U1_follows_0_u2Rel(Value u1_follows_0_u2) {
+			public U1_follows_0_u2Rel(Value _u1_follows_0_u2) {
 			}
 		}
 		public class U1_follows_1_u2Rel {
 		
-			public U1_follows_1_u2Rel(Value u1_follows_1_u2) {
+			public U1_follows_1_u2Rel(Value _u1_follows_1_u2) {
 			}
 		}
 		public class U2Node {
-			public String name;
+			public String _name;
 			
-			public U2Node(Value u2) {
-				if(!u2.get("name").isNull())
-					this.name = u2.get("name").asString();
+			public U2Node(Value _u2) {
+				if(!_u2.get("name").isNull())
+					this._name = _u2.get("name").asString();
 			}
 		}
 		
