@@ -28,6 +28,10 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
  */
 public class SokobanImportExport_GEN_Run extends rules.SokobanTGGs.run.SokobanImportExport_GEN_Run {
 
+	public SokobanImportExport_GEN_Run() {
+		super(SRC_MODEL_NAME, TRG_MODEL_NAME);
+	}
+
 	public static void main(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new SokobanImportExport_GEN_Run();
