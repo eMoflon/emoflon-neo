@@ -4,10 +4,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_BWD;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
-import org.emoflon.neo.api.metamodels.API_Company;
+import org.emoflon.neo.api.API_Facebook;
+import org.emoflon.neo.api.API_Instagram;
+import org.emoflon.neo.api.API_Transformations;
+import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_BWD;
+import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_FWD;
+import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
@@ -27,9 +29,9 @@ import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
-import CompanyToIT.run.CompanyToIT_BWD_Run;
-import CompanyToIT.run.CompanyToIT_FWD_Run;
-import CompanyToIT.run.CompanyToIT_GEN_Run;
+import Transformations.run.FacebookToInstagramGrammar_BWD_Run;
+import Transformations.run.FacebookToInstagramGrammar_FWD_Run;
+import Transformations.run.FacebookToInstagramGrammar_GEN_Run;
 
 public class Benchmark {
 	private static final Logger logger = Logger.getLogger(Benchmark.class);
@@ -63,17 +65,25 @@ public class Benchmark {
 	}
 
 	public static long[] benchmark(long modelSize) throws Throwable {
-		final String generatedSrcModelName = "CompanyToIT_benchmark_src";
-		final String generatedTrgModelName = "CompanyToIT_benchmark_trg";
-		final String derivedSrcModelName = "CompanyToIT_benchmark_src_derived";
-		final String derivedTrgModelName = "CompanyToIT_benchmark_trg_derived";
+		final String generatedSrcModelName = "FacebookToInstagram_benchmark_src";
+		final String generatedTrgModelName = "FacebookToInstagram_benchmark_trg";
+		final String derivedSrcModelName = "FacebookToInstagram_benchmark_src_derived";
+		final String derivedTrgModelName = "FacebookToInstagram_benchmark_trg_derived";
 
 		final long[] benchmarkTimers = new long[3];
 
-		var gen = new CompanyToIT_GEN_Run(generatedSrcModelName, generatedTrgModelName) {
+		var gen = new FacebookToInstagramGrammar_GEN_Run(generatedSrcModelName, generatedTrgModelName) {
 			public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-				var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT_GEN();
-				var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1);
+				var allRules = new API_FacebookToInstagramGrammar_GEN(builder)
+						.getAllRulesForFacebookToInstagramGrammar_GEN();
+
+				var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 500)//
+						.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetworkIslandRule, 10)
+						.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUserIslandRule, 1000)
+						.setMax(API_Transformations.FacebookToInstagramGrammar__UserNetworkBridgeRule, 1000)
+						.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 10000)
+						.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 5000)
+						.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreInterNetworkFollowers, 500);
 
 				var startUp = new IStartupModule() {
 					@Override
@@ -102,11 +112,31 @@ public class Benchmark {
 				};
 
 				INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
-					switch (type) {
-					case API_Company.Company__Company:
+					switch (ruleName) {
+					case API_Transformations.FacebookToInstagramGrammar__RequestFriendship:
 						return 1;
+					case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship:
+						switch (nodeName) {
+						case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship__iu:
+							return 1;
+						default:
+							return -1;
+						}
+					case API_Transformations.FacebookToInstagramGrammar__IgnoreInterNetworkFollowers:
+						switch (type) {
+						case API_Instagram.InstagramLanguage__User:
+							return 1;
+						default:
+							return -1;
+						}
 					default:
-						return INodeSampler.EMPTY;
+						switch (type) {
+						case API_Facebook.FacebookLanguage__User:
+						case API_Facebook.FacebookLanguage__Network:
+							return 1;
+						default:
+							return -1;
+						}
 					}
 				};
 
@@ -124,7 +154,7 @@ public class Benchmark {
 			}
 		};
 
-		var fwd = new CompanyToIT_FWD_Run(generatedSrcModelName, derivedTrgModelName) {
+		var fwd = new FacebookToInstagramGrammar_FWD_Run(generatedSrcModelName, derivedTrgModelName) {
 			public NeoGenerator createGenerator(NeoCoreBuilder builder) {
 				var startUp = new PrepareTranslateAttributes(builder, generatedSrcModelName) {
 					public void startup() {
@@ -143,7 +173,7 @@ public class Benchmark {
 				};
 
 				return new NeoGenerator(//
-						new API_CompanyToIT_FWD(builder).getAllRulesForCompanyToIT_FWD(), //
+						new API_FacebookToInstagramGrammar_FWD(builder).getAllRulesForFacebookToInstagramGrammar_FWD(), //
 						startUp, //
 						new NoMoreMatchesTerminationCondition(), //
 						new FixedNoOfMatchesRuleScheduler(1), //
@@ -156,7 +186,7 @@ public class Benchmark {
 			}
 		};
 
-		var bwd = new CompanyToIT_BWD_Run(derivedSrcModelName, generatedTrgModelName) {
+		var bwd = new FacebookToInstagramGrammar_BWD_Run(derivedSrcModelName, generatedTrgModelName) {
 			public NeoGenerator createGenerator(NeoCoreBuilder builder) {
 				var startUp = new PrepareTranslateAttributes(builder, generatedTrgModelName) {
 					public void startup() {
@@ -177,7 +207,7 @@ public class Benchmark {
 				};
 
 				return new NeoGenerator(//
-						new API_CompanyToIT_BWD(builder).getAllRulesForCompanyToIT_BWD(), //
+						new API_FacebookToInstagramGrammar_BWD(builder).getAllRulesForFacebookToInstagramGrammar_BWD(), //
 						startUp, //
 						new NoMoreMatchesTerminationCondition(), //
 						new FixedNoOfMatchesRuleScheduler(1), //
