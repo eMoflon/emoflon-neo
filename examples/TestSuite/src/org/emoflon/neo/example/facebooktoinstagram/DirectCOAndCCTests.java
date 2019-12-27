@@ -86,6 +86,6 @@ public class DirectCOAndCCTests extends ENeoTest {
 		exportTriple(api.getModel_ConsistentSrc3(), //
 				api.getModel_ConsistentTrg3());
 		testForInconsistency(new FacebookToInstagramGrammar_CO_Run("ConsistentSrc3", "ConsistentTrg3").runCheckOnly(),
-				4, 23);
+				6, 21);
 	}
 }
