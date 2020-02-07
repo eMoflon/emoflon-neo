@@ -35,28 +35,78 @@ class FWD_OPT extends ILPOperation {
 	}
 	
 	override additionalImports(String tggName, String packagePath) {
-		// TODO
 		'''
 			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
 			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
+			
+			import java.util.Collection;
+			import java.util.Collections;
+			import java.util.List;
+			import org.emoflon.neo.engine.api.constraints.IConstraint;
+			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
+			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+			import org.emoflon.neo.engine.modules.matchreprocessors.FWD_OPTReprocessor;
+			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
+			import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
+			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
+			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+			import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+			import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 		'''
 	}
 	
 	override additionalFields(String tggName) {
-		// TODO
-		""
+		'''
+			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+			private CorrCreationOperationalStrategy forwardTransformation;
+		'''
 	}
 	
 	override createGeneratorMethodBody(String tggName, String packageName) {
-		// TODO
+		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
-			throw new UnsupportedOperationException("Stub not implemented");
+			var genAPI = new API_«tggName»_GEN(builder);
+			var fwd_optAPI = new API_«fullOpName»(builder);
+			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
+			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
+			forwardTransformation = new CorrCreationOperationalStrategy(//
+					solver, //
+					builder, //
+					genRules, //
+					fwd_optAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
+					getNegativeConstraints(builder), //
+					srcModelName, //
+					trgModelName//
+			);
+
+			return new NeoGenerator(//
+					fwd_optAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
+					new NoOpStartup(), //
+					new NoMoreMatchesTerminationCondition(), //
+					new FWD_OPTRuleScheduler(analyser), //
+					forwardTransformation, //
+					new FWD_OPTReprocessor(analyser), //
+					forwardTransformation, //
+					new HeartBeatAndReportMonitor(), //
+					new ModelNameValueGenerator(srcModelName, trgModelName), //
+					List.of(new LoremIpsumStringValueGenerator()));
 		'''
 	}
 	
 	override additionalMethods() {
-		// TODO
-		""
+		'''
+
+			public CorrCreationOperationalStrategy runForwardTransformation() throws Exception {
+				run();
+				return forwardTransformation;
+			}
+
+			protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
+				return Collections.emptyList();
+			}
+		'''
 	}
 	
 	override exportMetamodels() {
