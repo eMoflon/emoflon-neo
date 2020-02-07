@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: FacebookToInstagramEMSL
-Bundle-SymbolicName: FacebookToInstagram
+Bundle-Name: FacebookToInstagramEMSL-FASE
+Bundle-SymbolicName: FacebookToInstagram-FASE
 Bundle-Version: 1.0.0.qualifier
-Automatic-Module-Name: FacebookToInstagramEMSL
+Automatic-Module-Name: FacebookToInstagramEMSL-FASE
 Bundle-RequiredExecutionEnvironment: JavaSE-10
 Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.emoflon.neo.engine.modules;bundle-version="1.0.0",

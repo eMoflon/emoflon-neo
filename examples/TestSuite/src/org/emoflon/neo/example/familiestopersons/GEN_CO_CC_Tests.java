@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.companytoit;
+package org.emoflon.neo.example.familiestopersons;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
@@ -8,8 +8,16 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
+import org.emoflon.neo.api.API_DaughterOfExistingFamilyToFemale;
+import org.emoflon.neo.api.API_DaughterToFemale;
+import org.emoflon.neo.api.API_Families2Persons;
+import org.emoflon.neo.api.API_FatherOfExistingFamilyToMale;
+import org.emoflon.neo.api.API_FatherToMale;
+import org.emoflon.neo.api.API_MotherOfExistingFamilyToFemale;
+import org.emoflon.neo.api.API_MotherToFemale;
+import org.emoflon.neo.api.API_SonOfExistingFamilyToMale;
+import org.emoflon.neo.api.API_SonToMale;
+import org.emoflon.neo.api.Schema.API_FamiliesToPersons_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -25,16 +33,16 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import CompanyToIT.run.CompanyToIT_CC_Run;
-import CompanyToIT.run.CompanyToIT_CO_Run;
-import CompanyToIT.run.CompanyToIT_GEN_Run;
+import Schema.run.FamiliesToPersons_CC_Run;
+import Schema.run.FamiliesToPersons_CO_Run;
+import Schema.run.FamiliesToPersons_GEN_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		var testCOApp = new CompanyToIT_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testCCApp = new CompanyToIT_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testGenApp = new CompanyToIT_GEN_TEST(configurator);
+		var testCOApp = new FamiliesToPersons_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCCApp = new FamiliesToPersons_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testGenApp = new FamiliesToPersons_GEN_TEST(configurator);
 
 		// Step 1. Run GEN to produce a triple
 		testGenApp.run();
@@ -61,50 +69,56 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	@Test
 	public void testOnlyAxiom() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 1);
+			scheduler.setMax(API_Families2Persons.FamiliesToPersons__Families2Persons, 1);
 		});
 	}
 
 	@Test
 	public void testOneOfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 1)
-					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 1)
-					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToLaptopRule, 1)
-					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToPCRule, 1);
+			scheduler
+					.setMax(API_DaughterOfExistingFamilyToFemale.FamiliesToPersons__DaughterOfExistingFamilyToFemale, 1)
+					.setMax(API_DaughterToFemale.FamiliesToPersons__DaughterToFemale, 1)
+					.setMax(API_Families2Persons.FamiliesToPersons__Families2Persons, 1)
+					.setMax(API_FatherOfExistingFamilyToMale.FamiliesToPersons__FatherOfExistingFamilyToMale, 1)
+					.setMax(API_FatherToMale.FamiliesToPersons__FatherToMale, 1)
+					.setMax(API_MotherOfExistingFamilyToFemale.FamiliesToPersons__MotherOfExistingFamilyToFemale, 1)
+					.setMax(API_MotherToFemale.FamiliesToPersons__MotherToFemale, 1)
+					.setMax(API_SonOfExistingFamilyToMale.FamiliesToPersons__SonOfExistingFamilyToMale, 1)
+					.setMax(API_SonToMale.FamiliesToPersons__SonToMale, 1);
 		});
 	}
 
 	@Test
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 10)
-					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 10)
-					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToLaptopRule, 10)
-					.setMax(API_CompanyToIT.CompanyToIT__EmployeeToPCRule, 10);
+			scheduler
+					.setMax(API_DaughterOfExistingFamilyToFemale.FamiliesToPersons__DaughterOfExistingFamilyToFemale,
+							10)
+					.setMax(API_DaughterToFemale.FamiliesToPersons__DaughterToFemale, 10)
+					.setMax(API_Families2Persons.FamiliesToPersons__Families2Persons, 10)
+					.setMax(API_FatherOfExistingFamilyToMale.FamiliesToPersons__FatherOfExistingFamilyToMale, 10)
+					.setMax(API_FatherToMale.FamiliesToPersons__FatherToMale, 10)
+					.setMax(API_MotherOfExistingFamilyToFemale.FamiliesToPersons__MotherOfExistingFamilyToFemale, 10)
+					.setMax(API_MotherToFemale.FamiliesToPersons__MotherToFemale, 10)
+					.setMax(API_SonOfExistingFamilyToMale.FamiliesToPersons__SonOfExistingFamilyToMale, 10)
+					.setMax(API_SonToMale.FamiliesToPersons__SonToMale, 10);
 		});
 	}
 
-	@Test
-	public void tryLotsOfAdmins() throws Exception {
-		runTest((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 100)
-					.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 100);
-		});
-	}
 }
 
-class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
+class FamiliesToPersons_GEN_TEST extends FamiliesToPersons_GEN_Run {
 	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
 
-	public CompanyToIT_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
+	public FamiliesToPersons_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
 		super(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		this.configurator = configureScheduler;
 	}
 
 	@Override
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var allRules = new API_CompanyToIT_GEN(builder).getAllRulesForCompanyToIT_GEN();
+		var allRules = new API_FamiliesToPersons_GEN(builder).getAllRulesForFamiliesToPersons_GEN();
 		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
 
@@ -117,7 +131,7 @@ class CompanyToIT_GEN_TEST extends CompanyToIT_GEN_Run {
 				new ParanoidNeoReprocessor(), //
 				new NoOpCleanup(), //
 				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("Source", "Target"), //
+				new ModelNameValueGenerator(SRC_MODEL_NAME, TRG_MODEL_NAME), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 
