@@ -1,5 +1,8 @@
 package run;
 
+import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_CompanyToIT;
+import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_CC;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD_OPT;
 import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
 import org.emoflon.neo.api.metamodels.API_Company;
@@ -14,73 +18,78 @@ import org.emoflon.neo.api.metamodels.API_IT;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
-import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
-import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;
 import org.emoflon.neo.engine.modules.matchreprocessors.FWD_OPTReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
+import org.emoflon.neo.engine.modules.ruleschedulers.CCRuleScheduler;
 import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+import org.emoflon.neo.engine.modules.analysis.*;
 
 public class CompanyToIT_FWD_OPT_Run {
 	private static final Logger logger = Logger.getLogger(CompanyToIT_FWD_OPT_Run.class);
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
+	private String srcModel = SRC_MODEL_NAME;
+	private String trgModel = TRG_MODEL_NAME;
+	private CorrCreationOperationalStrategy forwardTransformation;
+
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new CompanyToIT_FWD_OPT_Run();
-		app.runForwardTransformation();
+		app.run();
 	}
 
-	public boolean runForwardTransformation() throws Exception {
+	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
-			var sourceModel = "Source";
-			var targetModel = "Target";
-//			Model triple = new API_CompanyToITTriplesForTesting(builder).getModel_ConsistentTriple();
-//			builder.exportEMSLEntityToNeo4j(triple);
-//			builder.deleteAllCorrs();
 
-			Collection<Long> elementIds = builder.getAllElementIDsInTriple("", targetModel);
-			builder.deleteNodes(elementIds);
-			builder.deleteEdges(elementIds);
-
-			var genAPI = new API_CompanyToIT_GEN(builder);
-			var fwdAPI = new API_CompanyToIT_FWD_OPT(builder);
-			var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
-			var analyser = new TripleRuleAnalyser(tripleRules);
-			
-			var forwardTransformation = new CorrCreationOperationalStrategy(solver, builder,
-					genAPI.getAllRulesForCompanyToIT_GEN(), fwdAPI.getAllRulesForCompanyToIT_FWD_OPT(),
-					getNegativeConstraints(builder), sourceModel, targetModel);
-			var generator = new NeoGenerator(//
-					fwdAPI.getAllRulesForCompanyToIT_FWD_OPT(), //
-					new NoOpStartup(), // FIXME[Nils] Implement start up for OPT
-					new NoMoreMatchesTerminationCondition(), //
-					new FWD_OPTRuleScheduler(analyser), //
-					forwardTransformation, //
-					new FWD_OPTReprocessor(analyser), //
-					new NoOpCleanup(), // FIXME [Nils] Implement clean up for OPT
-					new HeartBeatAndReportMonitor(), //
-					new ModelNameValueGenerator(sourceModel, targetModel), //
-					List.of(new LoremIpsumStringValueGenerator()));
+			var generator = createGenerator(builder);
 
 			logger.info("Start forward transformation...");
 			generator.generate();
-
-			if (forwardTransformation.isConsistent()) {
-				logger.info("Your triple is consistent!");
-				return true;
-			} else {
-				logger.info("Your triple is inconsistent!");
-				var inconsistentElements = forwardTransformation.determineInconsistentElements();
-				logger.info(inconsistentElements + " elements of your triple are inconsistent!");
-				return false;
-			}
 		}
+	}
+
+	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var genAPI = new API_CompanyToIT_GEN(builder);
+		var fwd_optAPI = new API_CompanyToIT_FWD_OPT(builder);
+		var genRules = genAPI.getAllRulesForCompanyToIT_GEN();
+		var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
+		var analyser = new TripleRuleAnalyser(tripleRules);
+		
+		forwardTransformation = new CorrCreationOperationalStrategy(//
+				solver, //
+				builder, //
+				genRules, //
+				fwd_optAPI.getAllRulesForCompanyToIT_FWD_OPT(), //
+				getNegativeConstraints(builder), //
+				srcModel, //
+				trgModel//
+		);
+
+		return new NeoGenerator(//
+				fwd_optAPI.getAllRulesForCompanyToIT_FWD_OPT(), //
+				new NoOpStartup(), //
+				new NoMoreMatchesTerminationCondition(), //
+				new FWD_OPTRuleScheduler(analyser), //
+				forwardTransformation, //
+				new FWD_OPTReprocessor(analyser), //
+				forwardTransformation,//
+				new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator(srcModel, trgModel), //
+				List.of(new LoremIpsumStringValueGenerator()));
+	}
+
+	public CorrCreationOperationalStrategy runForwardTransformation(String srcModel, String trgModel) throws Exception {
+		this.srcModel = srcModel;
+		this.trgModel = trgModel;
+		run();
+		return forwardTransformation;
 	}
 
 	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {

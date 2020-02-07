@@ -68,6 +68,7 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 					.collect(Collectors.toSet());
 
 			builder.deleteEdges(inconsistentCorrs);
+			builder.deleteNodes(inconsistentCorrs);
 
 			inconsistentElts.removeAll(inconsistentCorrs);
 		});
