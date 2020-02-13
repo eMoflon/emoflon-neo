@@ -43,6 +43,8 @@ public class TripleRuleAnalyser {
 				return SRC;
 			case TGGCompiler.CREATE_TRG_MODEL_RULE:
 				return TRG;
+//			case TGGCompiler.CREATE_MODELS_RULE:
+//				return SRC || CORR || TRG;
 			default:
 				throw new IllegalArgumentException("Unexpected value: " + ruleName);
 			}
@@ -101,6 +103,7 @@ public class TripleRuleAnalyser {
 					.anyMatch(nb -> nb.getName().equals(nodeName));
 		} else {
 			return ruleName.equals(TGGCompiler.CREATE_SRC_MODEL_RULE);
+//			return ruleName.equals(TGGCompiler.CREATE_MODELS_RULE);
 		}
 	}
 }

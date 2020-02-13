@@ -48,7 +48,7 @@ class CO extends ILPOperation {
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
 			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-			import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
+			import org.emoflon.neo.engine.modules.matchreprocessors.COReprocessor;
 			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 			import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
@@ -87,7 +87,7 @@ class CO extends ILPOperation {
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
-					new NoOpReprocessor(), //
+					new COReprocessor, //
 					checkOnly, //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(srcModelName, trgModelName), //

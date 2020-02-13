@@ -228,7 +228,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		});
 	}
 
-	private Collection<Metamodel> collectDependentMetamodels(Model m) {
+	public Collection<Metamodel> collectDependentMetamodels(Model m) {
 		return m.getNodeBlocks().stream()//
 				.map(nb -> (Metamodel) (nb.getType().eContainer()))//
 				.flatMap(mm -> collectReferencedMetamodels(mm).stream())//

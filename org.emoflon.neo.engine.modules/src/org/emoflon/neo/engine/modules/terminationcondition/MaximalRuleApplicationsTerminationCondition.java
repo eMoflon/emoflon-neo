@@ -34,6 +34,7 @@ public class MaximalRuleApplicationsTerminationCondition implements ITermination
 	private boolean isNotUserDefinedRule(NeoRule r) {
 		return r.getName().equals(TGGCompiler.CREATE_SRC_MODEL_RULE)
 				|| r.getName().equals(TGGCompiler.CREATE_TRG_MODEL_RULE);
+//		return r.getName().equals(TGGCompiler.CREATE_MODELS_RULE);
 	}
 
 	@Override

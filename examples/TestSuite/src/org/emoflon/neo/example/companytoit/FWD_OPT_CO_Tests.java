@@ -1,27 +1,27 @@
-package org.emoflon.neo.example.facebooktoinstagram;
+package org.emoflon.neo.example.companytoit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
+import org.emoflon.neo.api.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramGrammar_CO_Run;
-import Transformations.run.FacebookToInstagramGrammar_FWD_OPT_Run;
+import CompanyToIT.run.CompanyToIT_CO_Run;
+import CompanyToIT.run.CompanyToIT_FWD_OPT_Run;
 
 public class FWD_OPT_CO_Tests extends ENeoTest {
 
-	private API_FacebookToInstagramTriplesForTesting api = new API_FacebookToInstagramTriplesForTesting(builder);
+	private API_CompanyToITTriplesForTesting api = new API_CompanyToITTriplesForTesting(builder);
 
 	private void runTest(Model srcModel, Model trgModel, String srcName, String trgName) throws Exception {
 		builder.exportEMSLEntityToNeo4j(srcModel);
 		var metamodels = builder.collectDependentMetamodels(trgModel);
 		for (Metamodel m : metamodels) 
 			builder.exportEMSLEntityToNeo4j(m);
-		new FacebookToInstagramGrammar_FWD_OPT_Run(srcName, trgName).run();
-		assertTrue(new FacebookToInstagramGrammar_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		new CompanyToIT_FWD_OPT_Run(srcName, trgName).run();
+		assertTrue(new CompanyToIT_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
 	}
 
 	@Test
@@ -37,5 +37,10 @@ public class FWD_OPT_CO_Tests extends ENeoTest {
 	@Test
 	public void testTriple3() throws Exception {
 		runTest(api.getModel_ConsistentSrc3(), api.getModel_ConsistentTrg3(), "ConsistentSrc3", "Target3");
+	}
+
+	@Test
+	public void testTriple4() throws Exception {
+		runTest(api.getModel_ConsistentSrc4(), api.getModel_ConsistentTrg4(), "ConsistentSrc4", "Target4");
 	}
 }
