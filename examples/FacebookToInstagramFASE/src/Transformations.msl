@@ -1,7 +1,7 @@
 import "platform:/resource/FacebookToInstagramFASE/src/Facebook.msl"
 import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
 
-tripleGrammar FacebookToInstagramGrammar {
+tripleGrammar FacebookToInstagramFASE {
 	source {
 		FacebookLanguage
 	}
@@ -29,7 +29,7 @@ tripleGrammar FacebookToInstagramGrammar {
 	}
 }
 
-tripleRule NetworkToNetwork : FacebookToInstagramGrammar {
+tripleRule NetworkToNetwork : FacebookToInstagramFASE {
 	source {
 		++ fl : Network {
 			.description := <networkDesc>
@@ -47,7 +47,7 @@ tripleRule NetworkToNetwork : FacebookToInstagramGrammar {
 	}
 }
 
-tripleRule UserToUser : FacebookToInstagramGrammar {
+tripleRule UserToUser : FacebookToInstagramFASE {
 	source {
 		++ fu : User {
 			.name := <n>
@@ -74,7 +74,7 @@ tripleRule UserToUser : FacebookToInstagramGrammar {
 	}
 }
 
-tripleRule RequestFriendship : FacebookToInstagramGrammar {
+tripleRule RequestFriendship : FacebookToInstagramFASE {
 	source {
 		fu1 : User
 		fu2 : User
@@ -114,7 +114,7 @@ pattern NoDoubleFollows {
 
 pattern NoOppositeFollows -> NoDoubleFollows[iu1 -> iu2, iu2 -> iu1]
 
-tripleRule AcceptFriendship : FacebookToInstagramGrammar {
+tripleRule AcceptFriendship : FacebookToInstagramFASE {
 	source {
 		fu1 : User
 		fu2 : User

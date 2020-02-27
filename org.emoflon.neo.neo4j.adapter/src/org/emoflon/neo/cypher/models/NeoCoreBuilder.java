@@ -813,4 +813,39 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		return allIDs;
 	}
+	
+	
+	public Collection<Long> getElementsInDelta(String sourceModel, String targetModel, String delta) {
+		var srcNodes = executeQuery(CypherBuilder.getAllNodesInDelta(sourceModel, delta));
+		var trgNodes = executeQuery(CypherBuilder.getAllNodesInDelta(targetModel, delta));
+		
+		var srcEdges = executeQuery(CypherBuilder.getAllEdgesInDelta(sourceModel, delta));
+		var trgEdges = executeQuery(CypherBuilder.getAllEdgesInDelta(targetModel, delta));
+		
+		var allIDs = new HashSet<Long>();
+
+		srcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		trgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+
+		srcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		trgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		
+		return allIDs;
+	}
+	
+	public Collection<Long> getCreateDelta(String sourceModel, String targetModel) {
+		return getElementsInDelta(sourceModel, targetModel, NeoCoreConstants.CREATE);
+	}
+	
+	public Collection<Long> getDeleteDelta(String sourceModel, String targetModel) {
+		return getElementsInDelta(sourceModel, targetModel, NeoCoreConstants.DELETE);
+	}
+	
+	public Collection<Long> getAddedDelta(String sourceModel, String targetModel) {
+		return getElementsInDelta(sourceModel, targetModel, NeoCoreConstants.ADDED);
+	}
+	
+	public void setDeltaAttributes(Collection<Long> ids) {
+		
+	}
 }

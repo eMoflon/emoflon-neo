@@ -7,7 +7,7 @@ import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.compiler.ParameterData
 import java.util.Map
 
-class CO extends ILPOperation {
+class MI extends ILPOperation {
 
 	/*
 	 * --------------------------------
@@ -16,7 +16,7 @@ class CO extends ILPOperation {
 	 */
 
 	override String getNameExtension() {
-		return "_CO"
+		return "_MI"
 	}
 	
 	override getAction(Action action, boolean isSrc) {
@@ -24,7 +24,7 @@ class CO extends ILPOperation {
 	}
 
 	override requiresCorrModelCreation() {
-		false
+		true
 	}
 	
 	override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
@@ -41,19 +41,19 @@ class CO extends ILPOperation {
 		'''
 			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
 			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
-								
+					
 			import java.util.Collection;
 			import java.util.Collections;
 			import java.util.List;
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
 			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-			import org.emoflon.neo.engine.modules.matchreprocessors.COReprocessor;
+			import org.emoflon.neo.engine.modules.matchreprocessors.MIReprocessor;
 			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-			import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
+			import org.emoflon.neo.engine.modules.ruleschedulers.MIRuleScheduler;
 			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
-			import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCondition;
-			import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
+			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+			import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
 			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 			import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
@@ -63,7 +63,7 @@ class CO extends ILPOperation {
 	override additionalFields(String tggName) {
 		'''
 			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
-			private CheckOnlyOperationalStrategy checkOnly;
+			private CorrCreationOperationalStrategy modelIntegration;
 		'''
 	}
 	
@@ -71,26 +71,27 @@ class CO extends ILPOperation {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
 			var genAPI = new API_«tggName»_GEN(builder);
-			var coAPI = new API_«fullOpName»(builder);
+			var miAPI = new API_«fullOpName»(builder);
+			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
 			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
-			checkOnly = new CheckOnlyOperationalStrategy(//
+			modelIntegration = new CorrCreationOperationalStrategy(//
 					solver, //
-					genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN(), //
-					coAPI.getAllRulesFor«tggName.toFirstUpper»_CO(), //
-					getNegativeConstraints(builder), //
 					builder, //
+					genRules, //
+					miAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
+					getNegativeConstraints(builder), //
 					srcModelName, //
 					trgModelName//
 			);
 
 			return new NeoGenerator(//
-					coAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
+					miAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
 					new NoOpStartup(), //
-					new OneShotTerminationCondition(), //
-					new AllRulesAllMatchesScheduler(), //
-					checkOnly, //
-					new COReprocessor(analyser), //
-					checkOnly, //
+					new NoMoreMatchesTerminationCondition(), //
+					new MIRuleScheduler(analyser), //
+					modelIntegration, //
+					new MIReprocessor(analyser), //
+					modelIntegration, //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(srcModelName, trgModelName), //
 					List.of(new LoremIpsumStringValueGenerator()));
@@ -99,12 +100,12 @@ class CO extends ILPOperation {
 	
 	override additionalMethods() {
 		'''
-			
-			public CheckOnlyOperationalStrategy runCheckOnly() throws Exception {
+
+			public CorrCreationOperationalStrategy runModelIntegration() throws Exception {
 				run();
-				return checkOnly;
+				return modelIntegration;
 			}
-			
+
 			protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
 				return Collections.emptyList();
 			}

@@ -1,19 +1,18 @@
 package run;
 
-import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
-import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+import static run.JavaToDoc_GEN_Run.SRC_MODEL_NAME;
+import static run.JavaToDoc_GEN_Run.TRG_MODEL_NAME;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD_OPT;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
-import org.emoflon.neo.api.metamodels.API_Company;
-import org.emoflon.neo.api.metamodels.API_IT;
+import org.emoflon.neo.api.API_JavaToDoc;
+import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_FWD_OPT;
+import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -28,8 +27,8 @@ import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGener
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.engine.modules.analysis.*;
 
-public class CompanyToIT_FWD_OPT_Run {
-	private static final Logger logger = Logger.getLogger(CompanyToIT_FWD_OPT_Run.class);
+public class JavaToDoc_FWD_OPT_Run {
+	private static final Logger logger = Logger.getLogger(JavaToDoc_FWD_OPT_Run.class);
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	private String srcModel = SRC_MODEL_NAME;
@@ -38,7 +37,7 @@ public class CompanyToIT_FWD_OPT_Run {
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		var app = new CompanyToIT_FWD_OPT_Run();
+		var app = new JavaToDoc_FWD_OPT_Run();
 		app.run();
 	}
 
@@ -53,24 +52,24 @@ public class CompanyToIT_FWD_OPT_Run {
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var genAPI = new API_CompanyToIT_GEN(builder);
-		var fwd_optAPI = new API_CompanyToIT_FWD_OPT(builder);
-		var genRules = genAPI.getAllRulesForCompanyToIT_GEN();
-		var tripleRules = new API_CompanyToIT(builder).getTripleRulesOfCompanyToIT();
+		var genAPI = new API_JavaToDoc_GEN(builder);
+		var fwd_optAPI = new API_JavaToDoc_FWD_OPT(builder);
+		var genRules = genAPI.getAllRulesForJavaToDoc_GEN();
+		var tripleRules = new API_JavaToDoc(builder).getTripleRulesOfJavaToDoc();
 		var analyser = new TripleRuleAnalyser(tripleRules);
 		
 		forwardTransformation = new CorrCreationOperationalStrategy(//
 				solver, //
 				builder, //
 				genRules, //
-				fwd_optAPI.getAllRulesForCompanyToIT_FWD_OPT(), //
+				fwd_optAPI.getAllRulesForJavaToDoc_FWD_OPT(), //
 				getNegativeConstraints(builder), //
 				srcModel, //
 				trgModel//
 		);
 
 		return new NeoGenerator(//
-				fwd_optAPI.getAllRulesForCompanyToIT_FWD_OPT(), //
+				fwd_optAPI.getAllRulesForJavaToDoc_FWD_OPT(), //
 				new NoOpStartup(), //
 				new NoMoreMatchesTerminationCondition(), //
 				new FWD_OPTRuleScheduler(analyser), //
@@ -88,14 +87,8 @@ public class CompanyToIT_FWD_OPT_Run {
 		run();
 		return forwardTransformation;
 	}
-
+	
 	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		var companyAPI = new API_Company(builder);
-		var itAPI = new API_IT(builder);
-		return List.of(//
-				companyAPI.getConstraint_CEOOfMultipleCompanies(), //
-				companyAPI.getConstraint_MultipleAdmins(), //
-				itAPI.getConstraint_NoDifferentITThanRouter()//
-		);
+		return Collections.emptyList();
 	}
 }

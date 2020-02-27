@@ -50,4 +50,9 @@ public class NeoCoreConstants {
 
 	// Meta attributes and relations
 	public static final String CONFORMS_TO_PROP = "conformsTo";
+	
+	// Delta identifier for model integration
+	public static final String CREATE = "crt";
+	public static final String DELETE = "del";
+	public static final String ADDED = "add";
 }

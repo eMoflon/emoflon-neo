@@ -126,7 +126,23 @@ abstract class CypherBuilder {
 			remove r._tr_
 		'''
 	}
-
+	
+	def static String getAllNodesInDelta(String modelName, String delta) {
+		'''
+			«matchAllNodesInModel(modelName, "m")»
+			WHERE m._«delta»_ = true
+			RETURN DISTINCT id(m)
+		'''	
+	}
+	
+	def static String getAllEdgesInDelta(String modelName, String delta) {
+		'''
+			«matchAllEdgesInModel(modelName, "m")»
+			WHERE m._«delta»_ = true
+			RETURN DISTINCT id(m)
+		'''	
+	}
+	
 	def static String getAllNodesInModel(String modelName) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»

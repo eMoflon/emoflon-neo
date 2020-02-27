@@ -42,7 +42,7 @@ public class FacebookToInstagramFASE_GEN_Run {
 	public void runGenerator() throws FlattenerException, Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var api = new API_Transformations(builder);
-			api.exportMetamodelsForFacebookToInstagramGrammar();
+			api.exportMetamodelsForFacebookToInstagramFASE();
 
 			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
 			var generator = createGenerator(api, genAPI, builder);
@@ -58,30 +58,30 @@ public class FacebookToInstagramFASE_GEN_Run {
 		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar_GEN();
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 5)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 5000)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 50000)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 30000);
+				.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 5)
+				.setMax(API_Transformations.FacebookToInstagramFASE__UserToUser, 5000)
+				.setMax(API_Transformations.FacebookToInstagramFASE__RequestFriendship, 50000)
+				.setMax(API_Transformations.FacebookToInstagramFASE__AcceptFriendship, 30000);
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
 			switch (ruleName) {
-			case API_Transformations.FacebookToInstagramGrammar__UserToUser:
+			case API_Transformations.FacebookToInstagramFASE__UserToUser:
 				switch (nodeName) {
-				case API_Transformations.FacebookToInstagramGrammar__UserToUser__fn:
+				case API_Transformations.FacebookToInstagramFASE__UserToUser__fn:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;
 				}
-			case API_Transformations.FacebookToInstagramGrammar__RequestFriendship:
+			case API_Transformations.FacebookToInstagramFASE__RequestFriendship:
 				switch (type) {
 				case API_Instagram.InstagramLanguage__User:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;
 				}
-			case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship:
+			case API_Transformations.FacebookToInstagramFASE__AcceptFriendship:
 				switch (nodeName) {
-				case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship__iu1:
+				case API_Transformations.FacebookToInstagramFASE__AcceptFriendship__iu1:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;
