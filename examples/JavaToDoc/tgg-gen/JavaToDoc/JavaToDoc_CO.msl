@@ -33,6 +33,7 @@ rule ClazzToDocRule {
 		{
 			._type_ : "ClazzToDoc"
 		}
+		.name : doc::name
 	}
 
 	f:Folder {
@@ -42,7 +43,6 @@ rule ClazzToDocRule {
 	
 	doc:Doc {
 		-elementOf->trgM
-		.name : c::name
 	}
 } 
 
@@ -62,11 +62,11 @@ rule RootToRootRule {
 		{
 			._type_ : "PackageToFolder"
 		}
-		.name : f::name
 	}
 
 	f:Folder {
 		-elementOf->trgM
+		.name : p::name
 	}
 } 
 
