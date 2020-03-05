@@ -101,7 +101,7 @@ rule SubToSubRule {
 		{
 			._type_ := "PackageToFolder"
 		}
-		.name := doc::name
+		.name := subF::name
 	}
 
 	f:Folder {
@@ -112,11 +112,11 @@ rule SubToSubRule {
 	subF:Folder {
 		-elementOf->trgM
 		-docs->doc
-		.name : doc::name
 	}
 	
 	doc:Doc {
 		-elementOf->trgM
+		.name : subF::name
 	}
 } 
 

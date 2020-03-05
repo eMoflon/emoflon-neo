@@ -252,7 +252,7 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EATTRIBUTE_TYPE, _type_, eString);
 			cb.createEdge(EATTRIBUTES, eobject, _tr_);
 			cb.createEdge(EATTRIBUTE_TYPE, _tr_, eBoolean);
-			cb.createEdge(EATTRIBUTES, corr, _dlt_);
+			cb.createEdge(EATTRIBUTES, eobject, _dlt_);
 			cb.createEdge(EATTRIBUTE_TYPE, _dlt_, eString);
 			cb.createEdge(EATTRIBUTES, econtainer, isComposition);
 			cb.createEdge(EATTRIBUTES, eref, isComposition);

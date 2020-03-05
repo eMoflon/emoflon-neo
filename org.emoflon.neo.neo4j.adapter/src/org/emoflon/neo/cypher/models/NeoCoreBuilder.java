@@ -184,7 +184,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		}
 
 		if (!newMetamodels.isEmpty())
-			exportMetamodelsToNeo4j(newMetamodels);
+ 			exportMetamodelsToNeo4j(newMetamodels);
 		logger.info("Exported metamodels: " + newMetamodels);
 
 		// For the actual export, replace with original model so it can be flattened
@@ -520,13 +520,20 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			});
 
 			addIsTranslatedAttributeForReference(cb, ref, neocore);
+			addDeltaAttributeForReference(cb,ref,neocore);
 		}
+	}
+
+	private void addDeltaAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
+		var attr = cb.matchNodeWithContainer(//
+				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._DLT_PROP)), //
+				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
+		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
 
 	private void addIsTranslatedAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
 		var attr = cb.matchNodeWithContainer(//
-				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._TR_PROP), 
-						new NeoProp(NAME_PROP, NeoCoreConstants._DLT_PROP)), //
+				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._TR_PROP)), //
 				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
 		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
