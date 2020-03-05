@@ -43,7 +43,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private int constraintCounter;
 	private int variableCounter;
 	private int auxVariableCounter;
-	protected Map<IMatch, Integer> matchToWeight;
+	protected Map<IMatch, Double> matchToWeight;
 	private BinaryILPProblem ilpProblem;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
@@ -128,7 +128,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected void computeWeights() {
 		matchToWeight = new HashMap<>();
 		for (var m : matchToId.keySet())
-			matchToWeight.put(m, getMarkedElts(m).size());
+			matchToWeight.put(m, (double)getMarkedElts(m).size());
 	}
 
 	private void addMatch(Long x, IMatch m, Map<Long, Set<IMatch>> matches) {

@@ -130,7 +130,7 @@ abstract class CypherBuilder {
 	def static String getAllNodesInDelta(String modelName, String delta) {
 		'''
 			«matchAllNodesInModel(modelName, "m")»
-			WHERE m._«delta»_ = true
+			WHERE m._dlt_ = «delta»
 			RETURN DISTINCT id(m)
 		'''	
 	}
@@ -138,7 +138,7 @@ abstract class CypherBuilder {
 	def static String getAllEdgesInDelta(String modelName, String delta) {
 		'''
 			«matchAllEdgesInModel(modelName, "m")»
-			WHERE m._«delta»_ = true
+			WHERE m._dlt_ = «delta»
 			RETURN DISTINCT id(m)
 		'''	
 	}

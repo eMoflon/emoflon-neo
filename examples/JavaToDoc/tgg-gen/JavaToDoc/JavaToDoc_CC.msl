@@ -9,7 +9,9 @@ grammar JavaToDoc_CC {
 	createTrgModel
 }
 
+
 rule ClazzToDocRule {
+
 	srcM : Model {
 		.ename : <__srcModelName>
 	}
@@ -33,7 +35,6 @@ rule ClazzToDocRule {
 		{
 			._type_ := "ClazzToDoc"
 		}
-		.name : doc::name
 	}
 
 	f:Folder {
@@ -43,11 +44,14 @@ rule ClazzToDocRule {
 	
 	doc:Doc {
 		-elementOf->trgM
+		.name : c::name
 	}
 } 
 
 
+
 rule RootToRootRule {
+
 	srcM : Model {
 		.ename : <__srcModelName>
 	}
@@ -62,16 +66,18 @@ rule RootToRootRule {
 		{
 			._type_ := "PackageToFolder"
 		}
+		.name : f::name
 	}
 
 	f:Folder {
 		-elementOf->trgM
-		.name : p::name
 	}
 } 
 
 
+
 rule SubToSubRule {
+
 	srcM : Model {
 		.ename : <__srcModelName>
 	}
@@ -95,7 +101,7 @@ rule SubToSubRule {
 		{
 			._type_ := "PackageToFolder"
 		}
-		.name : subF::name
+		.name : doc::name
 	}
 
 	f:Folder {
@@ -106,16 +112,18 @@ rule SubToSubRule {
 	subF:Folder {
 		-elementOf->trgM
 		-docs->doc
+		.name : doc::name
 	}
 	
 	doc:Doc {
 		-elementOf->trgM
-		.name : subF::name
 	}
 } 
 
 
+
 rule createSrcModel {
+
 	srcModel:Model {
 		-conformsTo->mmSimpleJava
 	}
@@ -127,7 +135,9 @@ rule createSrcModel {
 } 
 
 
+
 rule createTrgModel {
+
 
 	trgModel:Model {
 		-conformsTo->mmSimpleDoc

@@ -1,11 +1,11 @@
 package org.emoflon.neo.emsl.compiler.ops
 
-import org.emoflon.neo.emsl.compiler.ILPOperation
-import org.emoflon.neo.emsl.eMSL.Action
 import java.util.Collection
-import org.emoflon.neo.emsl.eMSL.Parameter
-import org.emoflon.neo.emsl.compiler.ParameterData
 import java.util.Map
+import org.emoflon.neo.emsl.compiler.ILPOperation
+import org.emoflon.neo.emsl.compiler.ParameterData
+import org.emoflon.neo.emsl.eMSL.Action
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 class MI extends ILPOperation {
 
@@ -63,7 +63,7 @@ class MI extends ILPOperation {
 	override additionalFields(String tggName) {
 		'''
 			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
-			private CorrCreationOperationalStrategy modelIntegration;
+			private ModelIntegrationOperationalStrategy modelIntegration;
 		'''
 	}
 	
@@ -74,7 +74,7 @@ class MI extends ILPOperation {
 			var miAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
 			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
-			modelIntegration = new CorrCreationOperationalStrategy(//
+			modelIntegration = new ModelIntegrationOperationalStrategy(//
 					solver, //
 					builder, //
 					genRules, //
@@ -101,7 +101,7 @@ class MI extends ILPOperation {
 	override additionalMethods() {
 		'''
 
-			public CorrCreationOperationalStrategy runModelIntegration() throws Exception {
+			public ModelIntegrationOperationalStrategy runModelIntegration() throws Exception {
 				run();
 				return modelIntegration;
 			}
@@ -114,5 +114,13 @@ class MI extends ILPOperation {
 	
 	override exportMetamodels() {
 		false
+	}
+	
+	override isComposed() {
+		true
+	}
+	
+	override getSubOps() {
+		return (#[new CO(), new CC(), new BWD_OPT(), new FWD_OPT()])
 	}
 }

@@ -54,7 +54,7 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 			logger.debug("Registered all matches.");
 
 			inconsistentElements = determineInconsistentElements();
-			removeInconsistentCorrs(inconsistentElements);
+			//removeInconsistentCorrs(inconsistentElements); //Why should this be necessary?
 		}
 
 		return inconsistentElements.isEmpty();

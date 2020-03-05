@@ -16,10 +16,11 @@ import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
 import java.util.Collections
 import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
 import org.emoflon.neo.emsl.compiler.ops.FWD_OPT
+import org.emoflon.neo.emsl.compiler.ops.MI
 
 interface Operation {
 	def static Operation[] getAllOps() {
-		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC(), new BWD_OPT(), new FWD_OPT()] as Operation[])
+		return (#[new MODELGEN(), new FWD(), new BWD(), new CO(), new CC(), new BWD_OPT(), new FWD_OPT(), new MI()] as Operation[])
 	}
 
 	/*
@@ -71,4 +72,12 @@ interface Operation {
 	def String additionalMethods()
 
 	def boolean exportMetamodels()
+	
+	def boolean isComposed() {
+		false
+	}
+	
+	def Collection<Operation> getSubOps() {
+		Collections.emptyList
+	}
 }

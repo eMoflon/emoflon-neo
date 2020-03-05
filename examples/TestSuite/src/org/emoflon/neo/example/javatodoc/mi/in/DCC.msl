@@ -1,0 +1,270 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+model moflonJava {
+	
+	// Java
+	org:Package {
+		.name : "org"
+		-subPackages->es
+	}	
+	
+	es:Package {
+		.name : "es"
+		-clazzes->EcoreUtil
+		-subPackages->emoflon
+		-subPackages->cmoflon
+	}
+	
+	EcoreUtil:Clazz {
+		.name : "EcoreUtil"
+	}
+	
+	emoflon:Package {
+		.name : "emoflon"
+		-clazzes->TGG
+		-subPackages->ibex
+	}
+	
+	TGG:Clazz {
+		.name : "TGG"
+	}
+	
+	ibex:Package {
+		.name : "ibex"
+		-clazzes->IPM
+	}
+	
+	IPM:Clazz {
+		.name : "IPM"
+	}
+	
+	cmoflon:Package {
+		.name : "cmoflon"
+		-clazzes->GT
+	}
+	
+	GT:Clazz {
+		.name : "GT"
+	}
+}
+
+model moflonDoc {
+	// Doc
+	org:Folder {
+		.name : "org"
+		-subFolders->es
+	}	
+	
+	es:Folder {
+		.name : "es"
+		-docs->EcoreUtil
+		-subFolders->emoflon
+		-subFolders->cmoflon
+	}
+	
+	EcoreUtil:Doc {
+		.name : "EcoreUtil"
+	}
+	
+	emoflon:Folder {
+		.name : "emoflon"
+		-docs->TGG
+		-subFolders->ibex
+	}
+	
+	TGG:Doc {
+		.name : "TGG"
+	}
+	
+	ibex:Folder {
+		.name : "ibex"
+		-docs->IPM
+	}
+	
+	IPM:Doc {
+		.name : "IPM"
+	}
+	
+	cmoflon:Folder {
+		.name : "cmoflon"
+		-docs->GT
+	}
+	
+	GT:Doc {
+		.name : "GT"
+	}
+}
+
+rule createCorrs {
+		// Java
+	orgJ:Package {
+		.name : "org"
+		-subPackages->esJ
+		++-corr->orgD
+	}	
+	
+	esJ:Package {
+		.name : "es"
+		-clazzes->EcoreUtilJ
+		-subPackages->emoflonJ
+		-subPackages->cmoflonJ
+		++-corr->esD
+	}
+	
+	EcoreUtilJ:Clazz {
+		.name : "EcoreUtilJ"
+		++-corr->EcoreUtilD
+	}
+	
+	emoflonJ:Package {
+		.name : "emoflon"
+		._dlt_ : "del"
+		-clazzes->TGGJ
+		-subPackages->ibexJ
+		++-corr->emoflonD
+	}
+	
+	TGGJ:Clazz {
+		.name : "TGG"
+		++-corr->TGGD
+	}
+	
+	ibexJ:Package {
+		.name : "ibex"
+		-clazzes->IPMJ
+		++-corr->ibexD
+	}
+	
+	IPMJ:Clazz {
+		.name : "IPM"
+		++-corr->IPMD
+	}
+	
+	cmoflonJ:Package {
+		.name : "cmoflon"
+		-clazzes->GTJ
+		++-corr->cmoflonD
+	}
+	
+	GTJ:Clazz {
+		.name : "GT"
+		++-corr->GTD
+	}
+	
+		// Doc
+	orgD:Folder {
+		.name : "org"
+		-subFolders->esD
+	}	
+	
+	esD:Folder {
+		.name : "es"
+		-docs->EcoreUtilD
+		-subFolders->emoflonD
+		-subFolders->cmoflonD
+	}
+	
+	EcoreUtilD:Doc {
+		.name : "EcoreUtil"
+	}
+	
+	emoflonD:Folder {
+		.name : "emoflon"
+		-docs->TGGD
+		-subFolders->ibexD
+	}
+	
+	TGGD:Doc {
+		.name : "TGG"
+	}
+	
+	ibexD:Folder {
+		.name : "ibex"
+		-docs->IPMD
+	}
+	
+	IPMD:Doc {
+		.name : "IPM"
+	}
+	
+	cmoflonD:Folder {
+		.name : "cmoflon"
+		-docs->GTD
+	}
+	
+	GTD:Doc {
+		.name : "GT"
+	}
+}
+
+model moflonJavaChain -> moflonJava {
+	
+	emoflon:Package {
+		._dlt_ : "del"
+	}
+}
+
+model moflonDocChain -> moflonDoc {
+	// Doc
+	
+	ibex:Folder {
+		-docs->criticalClazz
+	}
+	
+	criticalClazz:Doc {
+		.name : "criticalClazz"
+		._dlt_ : "crt"
+	}
+}
+
+model moflonJavaMultiDel -> moflonJava {
+	
+	es:Package {
+		._dlt_ : "del"
+	}
+	
+	TGG:Clazz {
+		._dlt_ : "del"
+	}
+	
+	ibex:Package {
+		._dlt_ : "del"
+	}
+	
+	cmoflon:Package {
+		._dlt_ : "del"
+	}
+}
+
+model moflonDocMultiDel -> moflonDoc {
+		
+	ibex:Folder {
+		-docs->criticalClazz
+	}
+	
+	criticalClazz:Doc {
+		._dlt_ : "crt"
+	}
+}
+
+model moflonJavaSimple -> moflonJava {
+	
+	cmoflon:Package {
+		._dlt_ : "del"
+	}
+}
+
+model moflonDocSimple -> moflonDoc {
+		
+	cmoflon:Folder {
+		.name : "cmoflon"
+		-docs->criticalClazz
+	}
+	
+	criticalClazz:Doc {
+		.name : "criticalClazz"
+		._dlt_ : "crt"
+	}
+}
+

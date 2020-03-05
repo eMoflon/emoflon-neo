@@ -40,6 +40,7 @@ public class PreProcessorUtil {
 	private MetamodelPropertyStatement isComposition;
 	private MetamodelPropertyStatement ename;
 	private MetamodelPropertyStatement _tr_;
+	private MetamodelPropertyStatement _dlt_;
 	private MetamodelPropertyStatement _type_;
 
 	private MetamodelRelationStatement eReferences;
@@ -172,6 +173,7 @@ public class PreProcessorUtil {
 			eObject.setName(NeoCoreConstants.EOBJECT);
 			eObject.getProperties().add(ename());
 			eObject.getProperties().add(_tr_());
+			eObject.getProperties().add(_dlt_());
 			eObject.getRelations().add(elementOf());
 			eObject.getRelations().add(metaType());
 			eObject.getRelations().add(corr());
@@ -249,6 +251,16 @@ public class PreProcessorUtil {
 		}
 
 		return _tr_;
+	}
+	
+	public MetamodelPropertyStatement _dlt_() {
+		if (_dlt_ == null) {
+			_dlt_ = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
+			_dlt_.setName(NeoCoreConstants._DLT_PROP);
+			_dlt_.setType(eString());
+		}
+
+		return _dlt_;
 	}
 
 	public MetamodelPropertyStatement _type_() {

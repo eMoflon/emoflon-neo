@@ -85,6 +85,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
 	public static final Object TRANSLATION_MARKER = "_tr_";
+	
+	public static final Object DELTA_ATTRIBUTE = "_dlt_";
 
 	private static final Object TYPE_AS_ATTRIBUTE = "_type_";
 
@@ -523,7 +525,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private void addIsTranslatedAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
 		var attr = cb.matchNodeWithContainer(//
-				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._TR_PROP)), //
+				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._TR_PROP), 
+						new NeoProp(NAME_PROP, NeoCoreConstants._DLT_PROP)), //
 				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
 		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
@@ -657,6 +660,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		if (propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
+		
+		if (propName.equals(DELTA_ATTRIBUTE)) {
+			return PrimitiveString.class.cast(value).getLiteral();
+		}
 
 		if (propName.equals(TYPE_AS_ATTRIBUTE) && relName.equals(CORR)) {
 			return PrimitiveString.class.cast(value).getLiteral();
@@ -676,6 +683,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private Object inferTypeForNodeAttribute(ValueExpression value, String propName, MetamodelNodeBlock nodeType) {
 		if (propName.equals(TRANSLATION_MARKER)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
+		}
+		
+		if (propName.equals(DELTA_ATTRIBUTE)) {
+			return PrimitiveString.class.cast(value).getLiteral();
 		}
 
 		var typedValue = EMSLUtil.allPropertiesOf(nodeType).stream()//

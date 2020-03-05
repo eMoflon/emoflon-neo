@@ -32,6 +32,11 @@ import org.emoflon.neo.emsl.eMSL.EMSLFactory
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.neocore.util.PreProcessorUtil
+import org.emoflon.neo.emsl.compiler.ops.MI
+import org.emoflon.neo.emsl.compiler.ops.CO
+import org.emoflon.neo.emsl.compiler.ops.CC
+import org.emoflon.neo.emsl.compiler.ops.FWD_OPT
+import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
 
 class TGGCompiler {
 	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
@@ -63,7 +68,6 @@ class TGGCompiler {
 		generatedRules = new ArrayList()
 		generatedRules.add(generateSrcModelCreationRule)
 		generatedRules.add(generateTrgModelCreationRule)
-//		generatedRules.add(generateModelsCreationRule)
 	}
 
 	def compileAll(IFileSystemAccess2 fsa) {
@@ -102,11 +106,17 @@ class TGGCompiler {
 			}
 			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
-				«compileRule(op, rule, true)»
+				«IF (op.composed)»
+				    «FOR subOp : op.subOps»
+				    	«compileRule(subOp, rule, true, true)»
+				    «ENDFOR»
+				«ELSE»	
+					«compileRule(op, rule, true, false)»
+				«ENDIF»
 			«ENDFOR»
 			
 			«FOR rule : generatedRules SEPARATOR "\n"»
-				«compileRule(op, rule, false)»
+				«compileRule(op, rule, false, false)»
 			«ENDFOR»
 		'''
 	}
@@ -147,7 +157,7 @@ class TGGCompiler {
 		'''
 	}
 
-	private def compileRule(Operation op, TripleRule rule, boolean mapToModel) {
+	private def compileRule(Operation op, TripleRule rule, boolean mapToModel, boolean addNameExtension) {
 
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
@@ -167,7 +177,13 @@ class TGGCompiler {
 		}
 
 		'''
-			rule «rule.name» {
+			
+			«IF addNameExtension»
+			  rule «rule.name + op.nameExtension» {
+			«ELSE»
+			  rule «rule.name» {
+			«ENDIF»
+			
 				«IF mapToModel && !rule.srcNodeBlocks.isEmpty»
 					srcM : Model {
 						.ename : <__srcModelName>
@@ -331,43 +347,6 @@ class TGGCompiler {
 			
 		return modelCreationRule
 	}
-//	private def generateModelsCreationRule() {
-//
-//		val sourceModelBlockName = "srcModel"
-//		val sourceModelNameParam = "__srcModelName"
-//		val sourceMetamodelBlocks = generateMetamodelBlocks(tgg.srcMetamodels.map[it.name])
-//
-//		val sourceNAC = EMSLFactory.eINSTANCE.createSourceNAC
-//		sourceNAC.pattern = generateModelPattern(sourceModelBlockName, sourceModelNameParam)
-//
-//		val targetModelBlockName = "trgModel"
-//		val targetModelNameParam = "__trgModelName"
-//		val targetMetamodelBlocks = tgg.srcMetamodels.equals(
-//				tgg.trgMetamodels) ? sourceMetamodelBlocks : generateMetamodelBlocks(tgg.trgMetamodels.map[it.name])
-//
-//		val targetNAC = EMSLFactory.eINSTANCE.createTargetNAC
-//		targetNAC.pattern = generateModelPattern(targetModelBlockName, targetModelNameParam)
-//
-//		val modelCreationRule = EMSLFactory.eINSTANCE.createTripleRule
-//		modelCreationRule.name = CREATE_MODELS_RULE
-//		modelCreationRule.type = tgg
-//		modelCreationRule.nacs.add(sourceNAC)
-//		modelCreationRule.nacs.add(targetNAC)
-//
-//		val sourceModelBlock = generateModelBlock(sourceModelBlockName, sourceModelNameParam, sourceMetamodelBlocks)
-//		modelCreationRule.srcNodeBlocks.add(sourceModelBlock)
-//		for (ModelNodeBlock block : sourceMetamodelBlocks)
-//			modelCreationRule.srcNodeBlocks.add(block)
-//
-//		val targetModelBlock = generateModelBlock(targetModelBlockName, targetModelNameParam, targetMetamodelBlocks)
-//		modelCreationRule.trgNodeBlocks.add(targetModelBlock)
-//		for (ModelNodeBlock block : targetMetamodelBlocks)
-//			modelCreationRule.trgNodeBlocks.add(block)
-//
-//		modelCreationRule.correspondences.add(generateCorrEdge(sourceModelBlock, targetModelBlock))
-//
-//		return modelCreationRule
-//	}
 
 	private def generateModelBlock(String modelBlockName, String modelNameParam, List<ModelNodeBlock> metamodelBlocks) {
 		val modelName = EMSLFactory.eINSTANCE.createModelPropertyStatement
@@ -438,18 +417,6 @@ class TGGCompiler {
 
 		return conformsToEdge
 	}
-
-//	private def generateCorrEdge(ModelNodeBlock source, ModelNodeBlock target) {
-//		val corrEdgeType = EMSLFactory.eINSTANCE.createCorrespondenceType
-//		
-//		val corrEdge = EMSLFactory.eINSTANCE.createCorrespondence
-//		corrEdge.action = generateCreateAction
-//		corrEdge.target = target
-//		corrEdge.source = source
-//		corrEdge.type = corrEdgeType
-//
-//		return corrEdge
-//	}
 
 	private def generateParameter(String name) {
 		val param = EMSLFactory.eINSTANCE.createParameter

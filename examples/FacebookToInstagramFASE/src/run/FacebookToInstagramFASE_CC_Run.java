@@ -11,8 +11,8 @@ import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_CC;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 
-import static Transformations.run.FacebookToInstagramGrammar_GEN_Run.SRC_MODEL_NAME;
-import static Transformations.run.FacebookToInstagramGrammar_GEN_Run.TRG_MODEL_NAME;
+import static Transformations.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static Transformations.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 		
 import java.util.Collection;
 import java.util.Collections;

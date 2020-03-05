@@ -37,6 +37,7 @@ import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.MODEL;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants._DLT_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._TR_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._TYPE_PROP;
 
@@ -105,6 +106,9 @@ public class NeoCoreBootstrapper {
 
 	private static final List<NeoProp> _tr_Props = List.of(new NeoProp(NAME_PROP, _TR_PROP));
 	private static final List<String> _tr_Labels = LABELS_FOR_AN_EATTRIBUTE;
+	
+	private static final List<NeoProp> _dlt_Props = List.of(new NeoProp(NAME_PROP, _DLT_PROP));
+	private static final List<String> _dlt_Labels = LABELS_FOR_AN_EATTRIBUTE;
 
 	private static final List<NeoProp> isCompositionProps = List.of(new NeoProp(NAME_PROP, ISCOMPOSITION_PROP));
 	private static final List<String> isCompositionLabels = LABELS_FOR_AN_EATTRIBUTE;
@@ -200,6 +204,7 @@ public class NeoCoreBootstrapper {
 			var name = cb.createNodeWithContAndType(nameProps, nameLabels, eattr, neocore);
 			var _type_ = cb.createNodeWithContAndType(_type_Props, _type_Labels, eattr, neocore);
 			var _tr_ = cb.createNodeWithContAndType(_tr_Props, _tr_Labels, eattr, neocore);
+			var _dlt_ = cb.createNodeWithContAndType(_dlt_Props, _dlt_Labels, eattr, neocore);
 			var isComposition = cb.createNodeWithContAndType(isCompositionProps, isCompositionLabels, eattr, neocore);
 			var isContainment = cb.createNodeWithContAndType(isContainmentProps, isContainmentLabels, eattr, neocore);
 			var eDataType = cb.createNodeWithContAndType(eDataTypeProps, eDataTypeLabels, eclass, neocore);
@@ -247,6 +252,8 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EATTRIBUTE_TYPE, _type_, eString);
 			cb.createEdge(EATTRIBUTES, eobject, _tr_);
 			cb.createEdge(EATTRIBUTE_TYPE, _tr_, eBoolean);
+			cb.createEdge(EATTRIBUTES, corr, _dlt_);
+			cb.createEdge(EATTRIBUTE_TYPE, _dlt_, eString);
 			cb.createEdge(EATTRIBUTES, econtainer, isComposition);
 			cb.createEdge(EATTRIBUTES, eref, isComposition);
 			cb.createEdge(EATTRIBUTE_TYPE, isComposition, eBoolean);

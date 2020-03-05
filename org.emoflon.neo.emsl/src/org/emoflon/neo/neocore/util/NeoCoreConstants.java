@@ -44,6 +44,7 @@ public class NeoCoreConstants {
 	public static final String ABSTRACT_PROP = "abstract";
 	public static final String _TYPE_PROP = "_type_";
 	public static final String _TR_PROP = "_tr_";
+	public static final String _DLT_PROP = "_dlt_";
 	public static final String ISCOMPOSITION_PROP = "isComposition";
 	public static final String ISCONTAINMENT_PROP = "isContainment";
 	public static final String NAMESPACE_PROP = "enamespace";

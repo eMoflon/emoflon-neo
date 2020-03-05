@@ -23,9 +23,13 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
 	private Optional<MatchContainer<NeoMatch, NeoCoMatch>> matchContainer = Optional.empty();
 	
-	private static final double alpha = 3; // delete-delta
+	private Collection<Long> createDeltaElements;
+	private Collection<Long> deleteDeltaElements;
+	private Collection<Long> addedElements;
+	
+	private static final double alpha = -3; // delete-delta
 	private static final double beta = 3;  // create-delta
-	private static final double gamma = 1; // added elements
+	private static final double gamma = -1; // added elements
 	
 	public ModelIntegrationOperationalStrategy(//
 			SupportedILPSolver solver, //
@@ -59,24 +63,9 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			logger.debug("Registered all matches.");
 
 			inconsistentElements = determineInconsistentElements();
-			removeInconsistentCorrs(inconsistentElements);
 		}
 
 		return inconsistentElements.isEmpty();
-	}
-
-	private void removeInconsistentCorrs(Collection<Long> inconsistentElts) {
-		matchContainer.ifPresent(mc -> {
-			var inconsistentCorrs = mc.getRelRange().getIDs().stream()//
-					.map(x -> -1 * (Long) x)//
-					.filter(x -> inconsistentElts.contains(x))//
-					.collect(Collectors.toSet());
-
-			builder.deleteEdges(inconsistentCorrs);
-			builder.deleteNodes(inconsistentCorrs);
-
-			inconsistentElts.removeAll(inconsistentCorrs);
-		});
 	}
 
 	@Override
@@ -86,18 +75,42 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 
 	@Override
 	public String description() {
-		return "ILP solving, deletion of inconsistent corrs";
+		return "ILP solving, integrating source and target model";
 	}
 	
 	@Override
 	protected void computeWeights() {
 		matchToWeight = new HashMap<>();
+		createDeltaElements = determineCreateDeltaElements();
+		deleteDeltaElements = determineDeleteDeltaElements();
+		addedElements = determineAddedElements();
 		
-		for (var m : matchToId.keySet()) {
-			for (long e : getMarkedElts(m)) {
-				this.matchContainer.ifPresent(c -> c.getNodeRange());
+		for (var m : matchToId.keySet()) {		
+			double weight = 0;
+			
+			for (Long e : getMarkedElts(m)) {
+				if (createDeltaElements.contains(e))
+					weight += beta;
+				else if (deleteDeltaElements.contains(e))
+					weight += alpha;
+				else if (addedElements.contains(e))
+					weight += gamma;
+				else
+					weight += 1;
 			}
-			matchToWeight.put(m, getMarkedElts(m).size());
+			matchToWeight.put(m, weight);
 		}
+	}
+	
+	public Collection<Long> determineCreateDeltaElements() {
+			return builder.getCreateDelta(sourceModel, targetModel);
+	}
+	
+	public Collection<Long> determineDeleteDeltaElements() {
+			return builder.getDeleteDelta(sourceModel, targetModel);
+	}
+	
+	public Collection<Long> determineAddedElements() {
+			return builder.getAddedDelta(sourceModel, targetModel);
 	}
 }

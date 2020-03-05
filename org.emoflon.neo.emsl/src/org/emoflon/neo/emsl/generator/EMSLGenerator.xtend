@@ -416,13 +416,17 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(GraphGrammar gg, int index) {
 		if(gg.abstract) return ""
 		try {
-			val ruleMethods = gg.rules.stream.map["getRule_" + namingConvention(it.name) + "().rule()"].collect(
-				Collectors.toSet)
+			
+//			val ruleMethods = gg.rules.stream.map["getRule_" + namingConvention(it.name) + "().rule()"].collect(
+//				Collectors.toSet)
 			'''
 				public Collection<NeoRule> getAllRulesFor«namingConvention(gg.name)»() {
 					Collection<NeoRule> rules = new HashSet<>();
-					«FOR access : ruleMethods»
-						rules.add(«access»);
+					
+					«FOR rule : gg.rules»
+						«FOR access : emslSpec.entities.filter[it instanceof Rule && (it as Rule).name.startsWith(rule.name)]»
+							rules.add(getRule_«namingConvention((access as Rule).name)»().rule());
+						«ENDFOR»
 					«ENDFOR»
 					return rules;
 				}

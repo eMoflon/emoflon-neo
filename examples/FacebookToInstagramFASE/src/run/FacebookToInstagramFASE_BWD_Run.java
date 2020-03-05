@@ -11,8 +11,8 @@ import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_BWD;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 
-import static Transformations.run.FacebookToInstagramGrammar_GEN_Run.SRC_MODEL_NAME;
-import static Transformations.run.FacebookToInstagramGrammar_GEN_Run.TRG_MODEL_NAME;
+import static Transformations.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static Transformations.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 
 import org.emoflon.neo.engine.modules.cleanup.RemoveTranslateAttributes;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;

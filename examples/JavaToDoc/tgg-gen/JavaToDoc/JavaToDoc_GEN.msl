@@ -9,7 +9,9 @@ grammar JavaToDoc_GEN {
 	createTrgModel
 }
 
+
 rule ClazzToDocRule {
+
 	srcM : Model {
 		.ename : <__srcModelName>
 	}
@@ -62,7 +64,9 @@ rule ClazzToDocRule {
 		
 	}
 
+
 rule RootToRootRule {
+
 	srcM : Model {
 		.ename : <__srcModelName>
 	}
@@ -101,7 +105,9 @@ rule RootToRootRule {
 		
 	}
 
+
 rule SubToSubRule {
+
 	srcM : Model {
 		.ename : <__srcModelName>
 	}
@@ -160,7 +166,9 @@ rule SubToSubRule {
 		
 	}
 
+
 rule createSrcModel {
+
 	++srcModel:Model {
 		++-conformsTo->mmSimpleJava
 		.ename := <__srcModelName>
@@ -182,7 +190,9 @@ rule createSrcModel {
 		
 	}
 
+
 rule createTrgModel {
+
 
 	++trgModel:Model {
 		++-conformsTo->mmSimpleDoc

@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.Transformations.*;
+import org.emoflon.neo.api.API_Transformations;
+import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -33,7 +34,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
 		var testCOApp = new FacebookToInstagramFASE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		var testCCApp = new FacebookToInstagramFASE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testGenApp = new FacebookToInstagram_GEN_TEST(configurator);
+		var testGenApp = new FacebookToInstagramFASE_GEN_TEST(configurator);
 
 		// Step 1. Run GEN to produce a triple
 		testGenApp.run();
@@ -60,7 +61,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	@Test
 	public void testOnlyAxioms() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetworkIslandRule, 1)
+			scheduler.setMax(Transformations.run. 1)
 					.setMax(API_Transformations.FacebookToInstagramFASE__UserToUserIslandRule, 1);
 		});
 	}
@@ -105,17 +106,17 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	}
 }
 
-class FacebookToInstagram_GEN_TEST extends FacebookToInstagramGrammar_GEN_Run {
+class FacebookToInstagramFASE_GEN_TEST extends FacebookToInstagramFASE_GEN_Run {
 	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
 
-	public FacebookToInstagram_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
+	public FacebookToInstagramFASE_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
 		super(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		this.configurator = configureScheduler;
 	}
 
 	@Override
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var allRules = new API_FacebookToInstagramGrammar_GEN(builder).getAllRulesForFacebookToInstagramGrammar_GEN();
+		var allRules = new API_FacebookToInstagramFASE_GEN(builder).getAllRulesForFacebookToInstagramFASE_GEN();
 		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
 

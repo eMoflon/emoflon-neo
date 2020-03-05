@@ -32,6 +32,7 @@ metamodel NeoCore {
 	EObject {
 		.ename : EString
 		._tr_ : EBoolean
+		._dlt_ : EString
 		-elementOf(1..1)-> Model
 		-metaType(1..1)-> EObject
 		-corr(0..*)->EObject {
