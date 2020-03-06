@@ -5,6 +5,7 @@ grammar JavaToDoc_CO {
 	ClazzToDocRule
 	RootToRootRule
 	SubToSubRule
+	
 	createSrcModel
 	createTrgModel
 }
@@ -66,11 +67,11 @@ rule RootToRootRule {
 		{
 			._type_ : "PackageToFolder"
 		}
+		.name : f::name
 	}
 
 	f:Folder {
 		-elementOf->trgM
-		.name : p::name
 	}
 } 
 
@@ -101,7 +102,7 @@ rule SubToSubRule {
 		{
 			._type_ : "PackageToFolder"
 		}
-		.name : subF::name
+		.name : doc::name
 	}
 
 	f:Folder {
@@ -112,11 +113,11 @@ rule SubToSubRule {
 	subF:Folder {
 		-elementOf->trgM
 		-docs->doc
+		.name : doc::name
 	}
 	
 	doc:Doc {
 		-elementOf->trgM
-		.name : subF::name
 	}
 } 
 

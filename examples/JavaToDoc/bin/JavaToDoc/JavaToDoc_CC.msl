@@ -67,11 +67,11 @@ rule RootToRootRule {
 		{
 			._type_ := "PackageToFolder"
 		}
-		.name : f::name
 	}
 
 	f:Folder {
 		-elementOf->trgM
+		.name : p::name
 	}
 } 
 
@@ -102,7 +102,6 @@ rule SubToSubRule {
 		{
 			._type_ := "PackageToFolder"
 		}
-		.name : subF::name
 	}
 
 	f:Folder {
@@ -113,11 +112,12 @@ rule SubToSubRule {
 	subF:Folder {
 		-elementOf->trgM
 		-docs->doc
+		.name : subP::name
 	}
 	
 	doc:Doc {
 		-elementOf->trgM
-		.name : subF::name
+		.name : subP::name
 	}
 } 
 

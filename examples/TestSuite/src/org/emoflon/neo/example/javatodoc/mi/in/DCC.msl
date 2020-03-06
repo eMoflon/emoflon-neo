@@ -101,7 +101,9 @@ rule createCorrs {
 	orgJ:Package {
 		.name : "org"
 		-subPackages->esJ
-		++-corr->orgD
+		++-corr->orgD {
+			._type_ := "PackageToFolder"
+		}
 	}	
 	
 	esJ:Package {
@@ -109,12 +111,16 @@ rule createCorrs {
 		-clazzes->EcoreUtilJ
 		-subPackages->emoflonJ
 		-subPackages->cmoflonJ
-		++-corr->esD
+		++-corr->esD {
+			._type_ := "PackageToFolder"
+		}
 	}
 	
 	EcoreUtilJ:Clazz {
-		.name : "EcoreUtilJ"
-		++-corr->EcoreUtilD
+		.name : "EcoreUtil"
+		++-corr->EcoreUtilD {
+			._type_ := "ClazzToTable"
+		}
 	}
 	
 	emoflonJ:Package {
@@ -122,34 +128,47 @@ rule createCorrs {
 		._dlt_ : "del"
 		-clazzes->TGGJ
 		-subPackages->ibexJ
-		++-corr->emoflonD
+		++-corr->emoflonD {
+			._type_ := "PackageToFolder"
+		}
 	}
 	
 	TGGJ:Clazz {
 		.name : "TGG"
-		++-corr->TGGD
+		++-corr->TGGD {
+			._type_ := "ClazzToTable"
+		}
+		
 	}
 	
 	ibexJ:Package {
 		.name : "ibex"
 		-clazzes->IPMJ
-		++-corr->ibexD
+		++-corr->ibexD {
+			._type_ := "PackageToFolder"
+		}
 	}
 	
 	IPMJ:Clazz {
 		.name : "IPM"
-		++-corr->IPMD
+		++-corr->IPMD {
+			._type_ := "ClazzToTable"
+		}
 	}
 	
 	cmoflonJ:Package {
 		.name : "cmoflon"
 		-clazzes->GTJ
-		++-corr->cmoflonD
+		++-corr->cmoflonD {
+			._type_ := "PackageToFolder"
+		}
 	}
 	
 	GTJ:Clazz {
 		.name : "GT"
-		++-corr->GTD
+		++-corr->GTD {
+			._type_ := "ClazzToTable"
+		}
 	}
 	
 		// Doc

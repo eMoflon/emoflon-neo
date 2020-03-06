@@ -841,10 +841,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var trgEdges = executeQuery(CypherBuilder.getAllEdgesInDelta(targetModel, delta));
 		
 		var allIDs = new HashSet<Long>();
-
+		
 		srcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 		trgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-
+		
 		srcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		trgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		
