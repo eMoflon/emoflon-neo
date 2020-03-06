@@ -92,7 +92,7 @@ public class TripleRuleAnalyser {
 
 	private Optional<TripleRule> toTripleRule(String ruleName) {
 		return tripleRules.stream()//
-				.filter(tr -> tr.getName().equals(ruleName))//
+				.filter(tr -> ruleName.startsWith(tr.getName()))//
 				.findAny();
 	}
 

@@ -53,7 +53,7 @@ public class JavaToDoc_MI_Run {
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
 		var genAPI = new API_JavaToDoc_GEN(builder);
-		var ccAPI = new API_JavaToDoc_MI(builder);
+		var miAPI = new API_JavaToDoc_MI(builder);
 		var genRules = genAPI.getAllRulesForJavaToDoc_GEN();
 		var tripleRules = new API_JavaToDoc(builder).getTripleRulesOfJavaToDoc();
 		var analyser = new TripleRuleAnalyser(tripleRules);
@@ -62,14 +62,14 @@ public class JavaToDoc_MI_Run {
 				solver, //
 				builder, //
 				genRules, //
-				ccAPI.getAllRulesForJavaToDoc_MI(), //
+				miAPI.getAllRulesForJavaToDoc_MI(), //
 				getNegativeConstraints(builder), //
 				srcModel, //
 				trgModel//
 		);
 
 		return new NeoGenerator(//
-				ccAPI.getAllRulesForJavaToDoc_MI(), //
+				miAPI.getAllRulesForJavaToDoc_MI(), //
 				new NoOpStartup(), //
 				new NoMoreMatchesTerminationCondition(), //
 				new MIRuleScheduler(analyser), //

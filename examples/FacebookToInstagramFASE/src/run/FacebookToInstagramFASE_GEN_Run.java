@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_Instagram;
 import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
@@ -44,7 +44,7 @@ public class FacebookToInstagramFASE_GEN_Run {
 			var api = new API_Transformations(builder);
 			api.exportMetamodelsForFacebookToInstagramFASE();
 
-			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
+			var genAPI = new API_FacebookToInstagramFASE_GEN(builder);
 			var generator = createGenerator(api, genAPI, builder);
 
 			logger.info("Start model generation...");
@@ -53,9 +53,9 @@ public class FacebookToInstagramFASE_GEN_Run {
 		}
 	}
 
-	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramGrammar_GEN genAPI,
+	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramFASE_GEN genAPI,
 			NeoCoreBuilder builder) {
-		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar_GEN();
+		var allRules = genAPI.getAllRulesForFacebookToInstagramFASE_GEN();
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1)
 				.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 5)

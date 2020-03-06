@@ -5,6 +5,7 @@ grammar JavaToDoc_CC {
 	ClazzToDocRule
 	RootToRootRule
 	SubToSubRule
+	
 	createSrcModel
 	createTrgModel
 }

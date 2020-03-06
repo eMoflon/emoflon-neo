@@ -433,7 +433,7 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public Collection<Rule> getAllEMSLRulesFor«namingConvention(gg.name)»(){
 					var rules = new HashSet<Rule>();
-					«FOR r : gg.rules»
+					«FOR r : emslSpec.entities.filter[it instanceof Rule]»
 						rules.add((Rule) spec.getEntities().get(«emslSpec.entities.indexOf(r)»));
 					«ENDFOR»
 					return rules;

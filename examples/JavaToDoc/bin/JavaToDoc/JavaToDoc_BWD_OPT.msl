@@ -5,6 +5,7 @@ grammar JavaToDoc_BWD_OPT {
 	ClazzToDocRule
 	RootToRootRule
 	SubToSubRule
+	
 	createSrcModel
 	createTrgModel
 }
@@ -101,7 +102,7 @@ rule SubToSubRule {
 		{
 			._type_ := "PackageToFolder"
 		}
-		.name := subF::name
+		.name := doc::name
 	}
 
 	f:Folder {
@@ -112,11 +113,11 @@ rule SubToSubRule {
 	subF:Folder {
 		-elementOf->trgM
 		-docs->doc
+		.name : doc::name
 	}
 	
 	doc:Doc {
 		-elementOf->trgM
-		.name : subF::name
 	}
 } 
 

@@ -98,8 +98,15 @@ class TGGCompiler {
 			
 			grammar «tgg.name»«op.nameExtension» {
 				«FOR rule : flattenedRules»
-					«rule.name»
-				«ENDFOR»
+					«IF (op.composed)»
+					    «FOR subOp : op.subOps»
+					    	«rule.name + subOp.nameExtension»
+					    «ENDFOR»
+					«ELSE»	
+						«rule.name»
+					«ENDIF»
+				«ENDFOR»			
+				
 				«FOR rule : generatedRules»
 					«rule.name»
 				«ENDFOR»

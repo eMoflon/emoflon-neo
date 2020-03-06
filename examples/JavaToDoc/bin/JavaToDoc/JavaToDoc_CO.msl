@@ -5,6 +5,7 @@ grammar JavaToDoc_CO {
 	ClazzToDocRule
 	RootToRootRule
 	SubToSubRule
+	
 	createSrcModel
 	createTrgModel
 }
@@ -35,7 +36,6 @@ rule ClazzToDocRule {
 		{
 			._type_ : "ClazzToDoc"
 		}
-		.name : doc::name
 	}
 
 	f:Folder {
@@ -45,6 +45,7 @@ rule ClazzToDocRule {
 	
 	doc:Doc {
 		-elementOf->trgM
+		.name : c::name
 	}
 } 
 
