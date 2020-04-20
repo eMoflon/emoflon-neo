@@ -502,9 +502,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns a scope for the value of a RelationStatement in a Model.
 	 */
 	private def handleValueOfRelationStatementInMetamodel(MetamodelRelationStatement statement, EReference reference) {
-		val metaModel = statement.eContainer.eContainer as Metamodel
-		val allNodeBlocks = new HashSet(metaModel.nodeBlocks)
-		return Scopes.scopeFor(allNodeBlocks)
+		determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(statement), MetamodelNodeBlock))
 	}
 
 	/*-------------------------------------*/
