@@ -556,7 +556,22 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			ModelNodeBlock nb) {
 		for (var rs : nb.getRelations()) {
 			var refOwner = blockToCommand.get(nb);
-			var typeOfRef = blockToCommand.get(rs.getTarget());
+			
+			var target = rs.getTarget();
+			if (!blockToCommand.containsKey(target)) {
+				var nodeBlockOfContainerOfTarget = (Model) target.eContainer();
+				var matchedContainerOfTarget = cb.matchNode(//
+						List.of(new NeoProp(NAME_PROP, nodeBlockOfContainerOfTarget.getName())), //
+						NeoCoreBootstrapper.LABELS_FOR_A_MODEL);
+
+				var typeOfRef = cb.matchNodeWithContainer(//
+						List.of(new NeoProp(NAME_PROP, rs.getTarget().getName())), //
+						computeLabelsFromType(rs.getTarget().getType()), //
+						matchedContainerOfTarget);
+				blockToCommand.put(target, typeOfRef);
+			}
+
+			var typeOfRef = blockToCommand.get(target);
 
 			// Handle attributes of relation in model
 			List<NeoProp> props = new ArrayList<>();
