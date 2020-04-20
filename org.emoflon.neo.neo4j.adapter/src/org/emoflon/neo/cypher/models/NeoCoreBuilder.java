@@ -398,7 +398,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			NodeCommand eenumLiteral, HashMap<Object, NodeCommand> blockToCommand) {
 		metamodel.getEnums().forEach(eenumNode -> {
 			var eenumCommand = cb.createNodeWithContAndType(//
-					List.of(new NeoProp(NAME_PROP, eenumNode.getName())), //
+					List.of(new NeoProp(NAME_PROP, eenumNode.getName()),//
+							new NeoProp(NAMESPACE_PROP, metamodel.getName())), //
 					NeoCoreBootstrapper.LABELS_FOR_AN_ENUM, eenum, mmNode);
 
 			blockToCommand.put(eenumNode, eenumCommand);
@@ -453,7 +454,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 						List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr)), //
 						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore);
 			} else if (dataType instanceof UserDefinedType) {
-				typeofattr = blockToCommand.get(((UserDefinedType) dataType).getReference());
+				var reference = ((UserDefinedType) dataType).getReference();
+				if(!blockToCommand.containsKey(reference)) {
+					blockToCommand.put(reference, cb.matchNode(//
+							List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr), //
+									new NeoProp(NAMESPACE_PROP, ((Metamodel) reference.eContainer()).getName())),//
+							NeoCoreBootstrapper.LABELS_FOR_AN_ENUM));//
+				}
+				
+				typeofattr = blockToCommand.get(reference);
 			}
 
 			cb.createEdge(EATTRIBUTES, attrOwner, attr);
@@ -496,8 +505,23 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 					NeoCoreBootstrapper.LABELS_FOR_AN_EREFERENCE, eref, mmNode);
 
 			var refOwner = blockToCommand.get(nb);
-			var typeOfRef = blockToCommand.get(rs.getTarget());
-
+			
+			var target = rs.getTarget();
+			var targetMM = (Metamodel) target.eContainer();
+			if (!blockToCommand.containsKey(target)) {
+				var existingNode = cb.matchNode(//
+						List.of(new NeoProp(NAME_PROP, target.getName()), //
+								new NeoProp(NAMESPACE_PROP, targetMM.getName())), //
+						NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS);
+				blockToCommand.put(target, existingNode);
+			}
+		
+			var	typeOfRef = blockToCommand.get(target);
+			if(typeOfRef == null) {
+				throw new IllegalStateException("Unable to resolve type of relation: '" + rs.getName() + "' in the context of class '" 
+						+ nb.getName() + "' in metamodel: " + nb.eContainer());
+			}
+			
 			cb.createEdge(EREFERENCES, refOwner, ref);
 			cb.createEdge(EREFERENCE_TYPE, ref, typeOfRef);
 
