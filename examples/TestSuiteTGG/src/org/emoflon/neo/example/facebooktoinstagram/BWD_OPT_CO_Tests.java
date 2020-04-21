@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import Transformations.run.FacebookToInstagramGrammar_BWD_OPT_Run;
 import Transformations.run.FacebookToInstagramGrammar_CO_Run;
 
+@Disabled("Waiting for fix from Nils")
 public class BWD_OPT_CO_Tests extends ENeoTest {
 
 	private API_FacebookToInstagramTriplesForTesting api = new API_FacebookToInstagramTriplesForTesting(builder);
