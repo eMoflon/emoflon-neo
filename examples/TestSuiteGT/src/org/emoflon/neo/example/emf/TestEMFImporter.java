@@ -19,6 +19,12 @@ class TestEMFImporter {
 
 	private static final String IN_FOLDER = "platform:/resource/TestSuite/resources/";
 
+	private void compareStrings(String expected, String actual) {
+		assertEquals(//
+				expected.replaceAll("\\r\\n", "\n"),//
+				actual.replaceAll("\\r\\n", "\n"));
+	}
+	
 	@BeforeAll
 	static void initEMF() {
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());
@@ -33,7 +39,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/metamodel/SimpleFamilies.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLSpecification(rs));
+		compareStrings(expected, importer.generateEMSLSpecification(rs));
 	}
 
 	/*
@@ -48,7 +54,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/metamodel/OCLGrammar.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLSpecification(rs));
+		compareStrings(expected, importer.generateEMSLSpecification(rs));
 	}
 
 	/*
@@ -63,7 +69,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/metamodel/EmptyMetamodel.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLSpecification(rs));
+		compareStrings(expected, importer.generateEMSLSpecification(rs));
 	}
 
 	/*
@@ -78,7 +84,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/metamodel/BlockLanguage.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLSpecification(rs));
+		compareStrings(expected, importer.generateEMSLSpecification(rs));
 	}
 
 	/*
@@ -93,7 +99,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/metamodel/BasicTypesMetamodel.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLSpecification(rs));
+		compareStrings(expected, importer.generateEMSLSpecification(rs));
 	}
 
 	/*
@@ -108,7 +114,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(
 				new File("./resources/expected/metamodel/ClassInheritanceHierarchy.msl"), Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLSpecification(rs));
+		compareStrings(expected, importer.generateEMSLSpecification(rs));
 	}
 
 	/*
@@ -123,7 +129,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(
 				new File("./resources/expected/metamodel/SheRememberedCaterpillars.msl"), Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLSpecification(rs));
+		compareStrings(expected, importer.generateEMSLSpecification(rs));
 	}
 
 	/*
@@ -139,7 +145,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/EmptyClass.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModel(rs));
 	}
 	
 	/*
@@ -155,7 +161,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/OCLExpression.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModel(rs));
 	}
 	
 	/*
@@ -171,7 +177,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Block.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModel(rs));
 	}
 	
 	/*
@@ -187,7 +193,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Game.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModel(rs));
 	}
 	
 	/*
@@ -203,7 +209,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Expression.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModel(rs));
 	}
 	
 	/*
@@ -219,7 +225,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Platform.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModel(rs));
 	}
 	
 	/*
@@ -235,7 +241,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Call.msl"),
 				Charset.defaultCharset());
-		assertEquals(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModel(rs));
 	}
 }
 
