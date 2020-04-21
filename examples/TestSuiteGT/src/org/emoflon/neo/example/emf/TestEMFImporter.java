@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Test;
 
 class TestEMFImporter {
 
+	private static final String IN_FOLDER = "platform:/resource/TestSuite/resources/";
+
 	@BeforeAll
 	static void initEMF() {
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());
@@ -132,7 +134,7 @@ class TestEMFImporter {
 		var importer = new EMFImporter();
 
 		var rs = new ResourceSetImpl();
-		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI(IN_FOLDER), URI.createURI("./resources/"));
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "EmptyClass.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/EmptyClass.msl"),
@@ -148,7 +150,7 @@ class TestEMFImporter {
 		var importer = new EMFImporter();
 
 		var rs = new ResourceSetImpl();
-		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI(IN_FOLDER), URI.createURI("./resources/"));
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "OCLExpression.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/OCLExpression.msl"),
@@ -164,7 +166,7 @@ class TestEMFImporter {
 		var importer = new EMFImporter();
 
 		var rs = new ResourceSetImpl();
-		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI(IN_FOLDER), URI.createURI("./resources/"));
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "Block.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Block.msl"),
@@ -180,7 +182,7 @@ class TestEMFImporter {
 		var importer = new EMFImporter();
 
 		var rs = new ResourceSetImpl();
-		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI(IN_FOLDER), URI.createURI("./resources/"));
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "Game.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Game.msl"),
@@ -196,7 +198,7 @@ class TestEMFImporter {
 		var importer = new EMFImporter();
 
 		var rs = new ResourceSetImpl();
-		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI(IN_FOLDER), URI.createURI("./resources/"));
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "Expression.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Expression.msl"),
@@ -212,7 +214,7 @@ class TestEMFImporter {
 		var importer = new EMFImporter();
 
 		var rs = new ResourceSetImpl();
-		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI(IN_FOLDER), URI.createURI("./resources/"));
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "Platform.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Platform.msl"),
@@ -228,7 +230,7 @@ class TestEMFImporter {
 		var importer = new EMFImporter();
 
 		var rs = new ResourceSetImpl();
-		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/resource/TestSuite/resources/"), URI.createURI("./resources/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI(IN_FOLDER), URI.createURI("./resources/"));
 		rs.getResource(URI.createFileURI("./resources/in/model/" + "Call.xmi"), true);
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Call.msl"),

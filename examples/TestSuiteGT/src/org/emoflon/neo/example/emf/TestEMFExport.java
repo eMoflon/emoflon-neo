@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 class TestEMFExport {
 
+	private static final String OUT_FOLDER = "platform:/resource/TestSuiteGT/resources/out/";
+	
 	@BeforeAll
 	static void initEMF() {
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());		
@@ -21,7 +23,7 @@ class TestEMFExport {
 	void testExportSimpleFamilies() throws IOException {
 		var metamodel = new API_SokobanLanguage(API_Common.createBuilder(), API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
 		
-		var exporter = new EMFExporter(metamodel.getMetamodel_SokobanLanguage().eResource().getResourceSet(), "platform:/resource/TestSuite/resources/out/", ".ecore");
+		var exporter = new EMFExporter(metamodel.getMetamodel_SokobanLanguage().eResource().getResourceSet(), OUT_FOLDER, ".ecore");
 		var rs = exporter.generateEMFModelsFromEMSL();
 		for (var r : rs.getResources()) {
 			r.save(null);

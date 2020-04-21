@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TestSuite
-Bundle-SymbolicName: TestSuite
+Bundle-SymbolicName: TestSuiteGT
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  org.eclipse.emf.common;bundle-version="2.15.0",
@@ -43,7 +43,6 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  FamiliesToPersons;bundle-version="0.0.1"
 Automatic-Module-Name: TestSuite
 Export-Package: org.emoflon.neo.api,
- org.emoflon.neo.api.org.emoflon.neo.example.companytoit,
  org.emoflon.neo.example,
  org.emoflon.neo.example.chess,
  org.emoflon.neo.example.fruitgarden,
