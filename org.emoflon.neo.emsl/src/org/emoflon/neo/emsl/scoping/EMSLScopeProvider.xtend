@@ -55,106 +55,111 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	OnChangeEvictingCache cacheThisAndAllSuperTypes = new OnChangeEvictingCache
 
 	override getScope(EObject context, EReference reference) {
-		if (superTypeOfMetamodelNodeBlock(context, reference)) {
-			return handleNodeBlockSuperTypesInMetamodel(context as MetamodelNodeBlock, reference)
+		try {
+			if (superTypeOfMetamodelNodeBlock(context, reference)) {
+				return handleNodeBlockSuperTypesInMetamodel(context as MetamodelNodeBlock, reference)
+			}
+
+			if (typeOfNodeBlock(context, reference)) {
+				if (isInModel(context as ModelNodeBlock))
+					return handleNodeBlockTypesInModel(context as ModelNodeBlock, reference)
+				else if (isInPattern(context as ModelNodeBlock))
+					return handleNodeBlockTypesInPattern(context as ModelNodeBlock, reference)
+				else if (isInRule(context as ModelNodeBlock))
+					return handleNodeBlockTypesInRule(context as ModelNodeBlock, reference)
+				else if (isInTripleRule(context as ModelNodeBlock))
+					return handleNodeBlockTypesInTripleRule(context as ModelNodeBlock, reference)
+			}
+
+			if (valueOfRelationStatementInModel(context, reference))
+				return handleValueOfRelationStatementInModel(context as ModelRelationStatement, reference)
+
+			if (valueOfRelationStatementInMetamodel(context, reference))
+				return handleValueOfRelationStatementInMetamodel(context as MetamodelRelationStatement, reference)
+
+			if (valueOfRelationStatementInRule(context, reference))
+				return handleValueOfRelationStatementInRule(context as ModelRelationStatement, reference)
+
+			if (valueOfRelationStatementInPattern(context, reference))
+				return handleValueOfRelationStatementInPattern(context as ModelRelationStatement, reference)
+
+			if (valueOfRelationStatementInTripleRule(context, reference)) {
+				return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
+			}
+
+			if (typeOfRelationStatementInModelRelationStatement(context, reference)) {
+				return handleTypeOfRelationStatementInModelRelationStatement(context as ModelRelationStatement,
+					context.eContainer as ModelNodeBlock)
+			}
+
+			if (typeOfRelationStatementInModelRelationStatementType(context, reference)) {
+				return handleTypeOfRelationStatementInModelRelationStatementType(
+					context.eContainer as ModelRelationStatement, context.eContainer.eContainer as ModelNodeBlock)
+			}
+
+			if (typeOfRelationStatementInModelNodeBlock(context, reference))
+				return handleTypeOfRelationStatementInModelRelationStatementType(context as ModelNodeBlock)
+
+			if (nameOfPropertyStatement(context, reference)) {
+				return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement,
+					context.eContainer as ModelNodeBlock)
+			}
+
+			if (typeOfPropertyStatementInRelationStatement(context, reference))
+				return handleTypeOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
+
+			if (valueOfEnumInPropertyStatementInModel(context, reference))
+				return handleValueOfEnumInPropertyStatementInModel((context as EnumValue), reference)
+
+			if (valueOfNodeAttributeExpression(context, reference)) {
+				return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
+			}
+
+			if (nameOfSuperRefinementTypeOfSuperType(context, reference))
+				return handleNameOfSuperRefinementTypeOfSuperType(context, reference)
+
+			if (nameOfSuperRefinementTypeOfInRefinementCommand(context, reference))
+				return handleNameOfSuperRefinementTypeOfModelInRefinementCommand(context, reference)
+
+			if (sourceOfCorrespondence(context, reference))
+				return handleSourceOfCorrespondence(context, reference)
+
+			if (targetOfCorrespondence(context, reference))
+				return handleTargetOfCorrespondence(context as Correspondence, reference)
+
+			if (typeOfCorrespondence(context, reference))
+				return handleTypeOfCorrespondence(context as Correspondence, reference)
+
+			if (linkAttributeExpressionTargetsLink(context, reference))
+				return handleLinkAttributeExpressionTargetsLink(context, reference)
+
+			if (linkAttributeExpressionTargetsAttribute(context, reference))
+				return handleLinkAttributeExpressionTargetsAttribute(context, reference)
+
+			if (linkAttributeExpressionTargetsTarget(context, reference))
+				return handleLinkAttributeExpressionTargetsTarget(context, reference)
+
+			if (patternInApplicationCondition(context, reference))
+				return handlePatternInApplicationCondition(context, reference)
+
+			if (constraintReferenceInApplicationCondition(context, reference))
+				return handleConstraintReferenceInApplicationCondition(context, reference)
+
+			if (correspondenceDefinitionSrc(context, reference))
+				return handleCorrespondenceDefinition(context, reference)
+
+			if (srcMetamodelInTGG(context, reference))
+				return handleSrcMetamodelInTGG(context, reference)
+
+			if (trgMetamodelInTGG(context, reference))
+				return handleTrgMetamodelInTGG(context, reference)
+
+			if (tripleRuleInTGG(context, reference))
+				return handleTripleRuleInTGG(context, reference)
+
+		} catch (Exception e) {
+			// Problem determining specific scope
 		}
-
-		if (typeOfNodeBlock(context, reference)) {
-			if (isInModel(context as ModelNodeBlock))
-				return handleNodeBlockTypesInModel(context as ModelNodeBlock, reference)
-			else if (isInPattern(context as ModelNodeBlock))
-				return handleNodeBlockTypesInPattern(context as ModelNodeBlock, reference)
-			else if (isInRule(context as ModelNodeBlock))
-				return handleNodeBlockTypesInRule(context as ModelNodeBlock, reference)
-			else if (isInTripleRule(context as ModelNodeBlock))
-				return handleNodeBlockTypesInTripleRule(context as ModelNodeBlock, reference)
-		}
-
-		if (valueOfRelationStatementInModel(context, reference))
-			return handleValueOfRelationStatementInModel(context as ModelRelationStatement, reference)
-
-		if (valueOfRelationStatementInMetamodel(context, reference))
-			return handleValueOfRelationStatementInMetamodel(context as MetamodelRelationStatement, reference)
-
-		if (valueOfRelationStatementInRule(context, reference))
-			return handleValueOfRelationStatementInRule(context as ModelRelationStatement, reference)
-
-		if (valueOfRelationStatementInPattern(context, reference))
-			return handleValueOfRelationStatementInPattern(context as ModelRelationStatement, reference)
-
-		if (valueOfRelationStatementInTripleRule(context, reference)) {
-			return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
-		}
-
-		if (typeOfRelationStatementInModelRelationStatement(context, reference)) {
-			return handleTypeOfRelationStatementInModelRelationStatement(context as ModelRelationStatement,
-				context.eContainer as ModelNodeBlock)
-		}
-
-		if (typeOfRelationStatementInModelRelationStatementType(context, reference)) {
-			return handleTypeOfRelationStatementInModelRelationStatementType(
-				context.eContainer as ModelRelationStatement, context.eContainer.eContainer as ModelNodeBlock)
-		}
-
-		if (typeOfRelationStatementInModelNodeBlock(context, reference))
-			return handleTypeOfRelationStatementInModelRelationStatementType(context as ModelNodeBlock)
-
-		if (nameOfPropertyStatement(context, reference)) {
-			return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement,
-				context.eContainer as ModelNodeBlock)
-		}
-
-		if (typeOfPropertyStatementInRelationStatement(context, reference))
-			return handleTypeOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
-
-		if (valueOfEnumInPropertyStatementInModel(context, reference))
-			return handleValueOfEnumInPropertyStatementInModel((context as EnumValue), reference)
-
-		if (valueOfNodeAttributeExpression(context, reference)) {
-			return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
-		}
-
-		if (nameOfSuperRefinementTypeOfSuperType(context, reference))
-			return handleNameOfSuperRefinementTypeOfSuperType(context, reference)
-
-		if (nameOfSuperRefinementTypeOfInRefinementCommand(context, reference))
-			return handleNameOfSuperRefinementTypeOfModelInRefinementCommand(context, reference)
-
-		if (sourceOfCorrespondence(context, reference))
-			return handleSourceOfCorrespondence(context, reference)
-
-		if (targetOfCorrespondence(context, reference))
-			return handleTargetOfCorrespondence(context as Correspondence, reference)
-
-		if (typeOfCorrespondence(context, reference))
-			return handleTypeOfCorrespondence(context as Correspondence, reference)
-
-		if (linkAttributeExpressionTargetsLink(context, reference))
-			return handleLinkAttributeExpressionTargetsLink(context, reference)
-
-		if (linkAttributeExpressionTargetsAttribute(context, reference))
-			return handleLinkAttributeExpressionTargetsAttribute(context, reference)
-
-		if (linkAttributeExpressionTargetsTarget(context, reference))
-			return handleLinkAttributeExpressionTargetsTarget(context, reference)
-
-		if (patternInApplicationCondition(context, reference))
-			return handlePatternInApplicationCondition(context, reference)
-
-		if (constraintReferenceInApplicationCondition(context, reference))
-			return handleConstraintReferenceInApplicationCondition(context, reference)
-
-		if (correspondenceDefinitionSrc(context, reference))
-			return handleCorrespondenceDefinition(context, reference)
-
-		if (srcMetamodelInTGG(context, reference))
-			return handleSrcMetamodelInTGG(context, reference)
-
-		if (trgMetamodelInTGG(context, reference))
-			return handleTrgMetamodelInTGG(context, reference)
-
-		if (tripleRuleInTGG(context, reference))
-			return handleTripleRuleInTGG(context, reference)
 
 		return super.getScope(context, reference)
 	}
