@@ -13,4 +13,4 @@ Export-Package: .,
 Automatic-Module-Name: org.emoflon.neo.engine
 Require-Bundle: org.apache.log4j,
  org.emoflon.neo.emsl
-Bundle-RequiredExecutionEnvironment: JavaSE-12
+Bundle-RequiredExecutionEnvironment: JavaSE-13

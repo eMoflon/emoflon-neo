@@ -13,4 +13,4 @@ Require-Bundle: org.emoflon.neo.emsl,
 Export-Package: org.emoflon.neo.emsl.ide,
  org.emoflon.neo.emsl.ide.contentassist.antlr,
  org.emoflon.neo.emsl.ide.contentassist.antlr.internal
-Bundle-RequiredExecutionEnvironment: JavaSE-12
+Bundle-RequiredExecutionEnvironment: JavaSE-13

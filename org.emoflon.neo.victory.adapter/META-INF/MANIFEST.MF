@@ -12,4 +12,4 @@ Require-Bundle: org.emoflon.victory.ui;bundle-version="1.0.0",
  org.apache.commons.lang3;bundle-version="3.1.0",
  org.emoflon.neo.engine.modules
 Automatic-Module-Name: org.emoflon.neo.victory.adapter
-Bundle-RequiredExecutionEnvironment: JavaSE-12
+Bundle-RequiredExecutionEnvironment: JavaSE-13

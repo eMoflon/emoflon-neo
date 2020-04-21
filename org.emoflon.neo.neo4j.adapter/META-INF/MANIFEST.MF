@@ -101,4 +101,4 @@ Export-Package: org.emoflon.neo.cypher.common,
  org.neo4j.driver.v1.util
 Bundle-ClassPath: lib/neo4j-java-driver-1.7.2.jar,
  .
-Bundle-RequiredExecutionEnvironment: JavaSE-12
+Bundle-RequiredExecutionEnvironment: JavaSE-13
