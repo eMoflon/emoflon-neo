@@ -5,12 +5,12 @@ package org.emoflon.neo.emsl.ui.outline
 
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
-import org.emoflon.neo.emsl.eMSL.EMSL_Spec
-import org.emoflon.neo.emsl.eMSL.Entity
-import org.emoflon.neo.emsl.eMSL.Pattern
 import org.eclipse.xtext.ui.editor.outline.impl.EObjectNode
 import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.EMSL_Spec
+import org.emoflon.neo.emsl.eMSL.Entity
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.Pattern
 
 /**
  * Customization of the default outline structure.
