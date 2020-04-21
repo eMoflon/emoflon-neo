@@ -31,7 +31,6 @@ public class FWD_CO_Tests extends ENeoTest {
 		runTest(api.getModel_ConsistentSrc2(), "ConsistentSrc2", "Target2");
 	}
 
-	@Disabled("DB Timeout?")
 	@Test
 	public void testTriple3() throws Exception {
 		runTest(api.getModel_ConsistentSrc3(), "ConsistentSrc3", "Target3");
