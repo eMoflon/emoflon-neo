@@ -21,7 +21,7 @@ class TestEMFExport {
 
 	@Test
 	void testExportSimpleFamilies() throws IOException {
-		var metamodel = new API_SokobanLanguage(API_Common.createBuilder(), API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+		var metamodel = new API_SokobanLanguage(API_Common.createBuilder());
 		
 		var exporter = new EMFExporter(metamodel.getMetamodel_SokobanLanguage().eResource().getResourceSet(), OUT_FOLDER, ".ecore");
 		var rs = exporter.generateEMFModelsFromEMSL();

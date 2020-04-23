@@ -6,14 +6,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_SheRememberedCaterpillars;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SheRememberedCaterpillarsPatterns extends ENeoTest {
-	private API_SheRememberedCaterpillars entities = new API_SheRememberedCaterpillars(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_SheRememberedCaterpillars entities = new API_SheRememberedCaterpillars(builder);
 	
 	@BeforeEach
 	public void initDB() {

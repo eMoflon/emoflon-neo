@@ -2,7 +2,6 @@ package org.emoflon.neo.example.quiltography;
 
 import static org.junit.Assert.assertEquals;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_QuiltographyPages;
 import org.emoflon.neo.api.API_QuiltographyQueries;
 import org.emoflon.neo.example.ENeoTest;
@@ -10,10 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TestQueries extends ENeoTest {
-	private API_QuiltographyQueries queries = new API_QuiltographyQueries(builder, API_Common.PLATFORM_RESOURCE_URI,
-			API_Common.PLATFORM_PLUGIN_URI);
-	private API_QuiltographyPages data = new API_QuiltographyPages(builder, API_Common.PLATFORM_RESOURCE_URI,
-			API_Common.PLATFORM_PLUGIN_URI);
+	private API_QuiltographyQueries queries = new API_QuiltographyQueries(builder);
+	private API_QuiltographyPages data = new API_QuiltographyPages(builder);
 
 	@BeforeEach
 	public void initDB() {

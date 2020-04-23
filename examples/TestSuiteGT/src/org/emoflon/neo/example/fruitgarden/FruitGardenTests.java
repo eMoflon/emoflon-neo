@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.org.eneo.fruitgarden.API_FruitGardenLanguage;
 import org.emoflon.neo.api.org.eneo.fruitgarden.API_PatternsAndRules;
 import org.emoflon.neo.example.ENeoTest;
@@ -12,8 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class FruitGardenTests extends ENeoTest {
-	private API_FruitGardenLanguage language = new API_FruitGardenLanguage(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
-	private API_PatternsAndRules entities = new API_PatternsAndRules(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_FruitGardenLanguage language = new API_FruitGardenLanguage(builder);
+	private API_PatternsAndRules entities = new API_PatternsAndRules(builder);
 	
 	@BeforeEach
 	public void initDB() {

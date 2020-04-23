@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_RiverCrossing;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
@@ -14,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class RiverCrossingRules extends ENeoTest {
-	private API_RiverCrossing entities = new API_RiverCrossing(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_RiverCrossing entities = new API_RiverCrossing(builder);
 	
 	@BeforeEach
 	public void initDB() {

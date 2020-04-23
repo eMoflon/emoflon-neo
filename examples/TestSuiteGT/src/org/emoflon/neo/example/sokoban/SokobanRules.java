@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
 import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
@@ -21,11 +20,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SokobanRules extends ENeoTest {
-	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder);
 
 	@BeforeEach
 	public void initDB() {
-		initDB(new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI).getModel_SokobanSimpleTestField());
+		initDB(new API_SokobanSimpleTestField(builder).getModel_SokobanSimpleTestField());
 	}
 	
 

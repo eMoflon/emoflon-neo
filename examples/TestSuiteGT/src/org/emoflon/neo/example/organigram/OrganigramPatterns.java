@@ -3,14 +3,13 @@ package org.emoflon.neo.example.organigram;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_Organigram;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class OrganigramPatterns extends ENeoTest {
-	private API_Organigram entities = new API_Organigram(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+	private API_Organigram entities = new API_Organigram(builder);
 	
 	@BeforeEach
 	public void initDB() {

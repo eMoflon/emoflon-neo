@@ -65,11 +65,12 @@ class EMSLUtil {
 	public static final String PARAM_NAME_FOR_MATCH = "match";
 
 	def static EMSL_Spec loadSpecification(String modelURI, String platformResourceURIRoot,
-		String platformPluginURIRoot) {
+		String platformPluginURIRoot, String neocoreURI) {
 		EMSLPackageImpl.init()
 		new StandaloneSetup().setPlatformUri(platformResourceURIRoot)
 		var Injector injector = new EMSLStandaloneSetup().createInjectorAndDoEMFRegistration()
 		var XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet)
+		resourceSet.URIConverter.URIMap.put(URI.createURI(ORG_EMOFLON_NEO_CORE_URI), URI.createURI(neocoreURI))
 		resourceSet.URIConverter.URIMap.put(URI.createURI("platform:/plugin/"), URI.createURI(platformPluginURIRoot))
 		resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE)
 		var Resource resource = resourceSet.getResource(URI.createURI(modelURI), true)
