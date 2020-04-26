@@ -451,7 +451,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			package «IF entity.body.abstract»//«ENDIF»«entityCopy.body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy.body)»
-				«visualiseNodeBlockInPattern2(entityCopy, nb, false)»
+				«visualiseNodeBlockInPattern(entityCopy, nb, false)»
 			«ENDFOR»
 			}
 			«IF entityCopy.condition !== null »
@@ -502,7 +502,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Pattern.
 	 */
-	def String visualiseNodeBlockInPattern2(Pattern entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
+	def String visualiseNodeBlockInPattern(Pattern entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
 		for (n : new EntityAttributeDispatcher().getPatternNodeBlocks(entity)) {
 			if (nodeBlock.name.equals(n.name))
@@ -576,7 +576,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			package «IF entity.abstract»//«ENDIF»«(entityCopy as Rule).name»«IF entity.abstract»//«ENDIF»«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
-				«visualiseNodeBlockInRule2(entityCopy as Rule, nb, false)»
+				«visualiseNodeBlockInRule(entityCopy as Rule, nb, false)»
 			«ENDFOR»
 			}
 			«IF (entityCopy as Rule).condition !== null»
@@ -630,7 +630,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Rule.
 	 */
-	def String visualiseNodeBlockInRule2(Rule entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
+	def String visualiseNodeBlockInRule(Rule entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
 		for (n : (new EntityAttributeDispatcher().getNodeBlocks((EMSLFlattener.flatten(entity))))) {
 			if (nodeBlock.name.equals(n.name))
@@ -658,11 +658,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
-			«IF (nb.eContainer as Rule).condition !== null »
-				legend bottom
-					«getConditionString((nb.eContainer as Rule))»
-				endlegend
-			«ENDIF»
 		'''
 	}
 
