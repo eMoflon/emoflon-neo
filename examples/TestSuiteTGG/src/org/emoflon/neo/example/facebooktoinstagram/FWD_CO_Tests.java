@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import Transformations.run.FacebookToInstagramGrammar_CO_Run;

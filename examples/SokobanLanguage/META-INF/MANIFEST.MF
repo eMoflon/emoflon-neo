@@ -39,4 +39,4 @@ Export-Package: metamodels,
  rules,
  rules.SokobanTGGs
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13

@@ -54,4 +54,4 @@ Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.example.she_remembered_caterpillars,
  org.emoflon.neo.example.sokoban
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-10
+Bundle-RequiredExecutionEnvironment: JavaSE-13

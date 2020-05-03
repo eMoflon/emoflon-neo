@@ -38,6 +38,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 /**
  * Generates code from your model files on save.
@@ -190,6 +191,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.util.*;
 			import org.neo4j.driver.v1.Value;
 			import org.neo4j.driver.v1.Record;
+			import org.eclipse.emf.common.util.URI;
 			import org.emoflon.neo.api.API_Common;
 			import java.util.Collection;
 			import java.util.HashSet;
@@ -468,8 +470,12 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public Collection<TripleRule> getTripleRulesOf«rootName»(){
 					var rules = new HashSet<TripleRule>();
+					var rs = spec.eResource().getResourceSet();
 					«FOR tr : tgg.rules»
-						rules.add((TripleRule) spec.getEntities().get(«emslSpec.entities.indexOf(tr)»));
+					{
+						var uri = "«EcoreUtil.getURI(tr)»";
+						rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
+					}
 					«ENDFOR»
 					return rules;
 				}

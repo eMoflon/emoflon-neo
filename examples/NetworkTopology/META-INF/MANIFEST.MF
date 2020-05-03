@@ -12,4 +12,4 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
 Export-Package: org.emoflon.neo.api
 Automatic-Module-Name: NetworkTopology
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13
