@@ -13,6 +13,7 @@ import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.SuperType
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.AttributeConstraintType
 
 class EntityAttributeDispatcher {
 	
@@ -71,6 +72,10 @@ class EntityAttributeDispatcher {
 	
 	def dispatch getName(SuperType entity){
 		entity.name
+	}
+	
+	def dispatch getName(AttributeConstraintType attrConstrType){
+		attrConstrType.name
 	}
 	
 	def getSuperTypeName(SuperType entity) {

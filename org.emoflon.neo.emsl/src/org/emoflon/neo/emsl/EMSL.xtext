@@ -14,7 +14,7 @@ ImportStatement:
 
 /* EMSL entities cover metamodelling and graph transformation */
 Entity:
-	Metamodel | Pattern | Constraint | GraphGrammar | TripleGrammar | Model | Rule | TripleRule;
+	Metamodel | Pattern | Constraint | GraphGrammar | TripleGrammar | Model | Rule | TripleRule | AttributeConstraintType;
 
 /*-------------------------------------------------*/
 /*------------------- Models ----------------------*/
@@ -221,7 +221,8 @@ Rule:
 	(abstract?='abstract')? 'rule' name=QualifiedName
 	('->' (superRefinementTypes+=RefinementCommand (',' superRefinementTypes+=RefinementCommand)*))?
 	('{'
-	nodeBlocks+=ModelNodeBlock*
+		nodeBlocks+=ModelNodeBlock*
+		('attributeConstraints' '{' attributeConstraints+=AttributeConstraint* '}')?
 	'}')? ('when' condition=Condition)?;
 
 GraphGrammar:
@@ -239,6 +240,7 @@ TripleRule:
 	('source' '{' srcNodeBlocks+=ModelNodeBlock* '}')?
 	('target' '{' trgNodeBlocks+=ModelNodeBlock* '}')?
 	('correspondence' '{' correspondences+=Correspondence* '}')?
+	('attributeConstraints' '{' attributeConstraints+=AttributeConstraint* '}')?
 	'}')? ('forbid' nacs+=TripleRuleNAC ('&&' nacs+=TripleRuleNAC)*)?;
 
 Correspondence:
@@ -267,6 +269,31 @@ TripleGrammar:
 	('rules' '{' rules+=[TripleRule|QualifiedName]* '}')?
 	'}'
 ;
+
+AttributeConstraintType:
+	'attributeConstraint' name=ID '(' 
+		(args+=ConstraintArgType (',' args+=ConstraintArgType)*)?	
+	')' '{'
+		(adornments+=ADORNMENT (',' adornments+=ADORNMENT)*)?
+	'}'
+;
+
+ADORNMENT:
+	('B' | 'F')+
+;
+
+ConstraintArgType:
+	name=ID ':' type=DataType
+;
+
+AttributeConstraint:
+	type=[AttributeConstraintType | QualifiedName] '(' (values+=ConstraintArgValue (',' values+=ConstraintArgValue)*)? ')'
+;
+
+ConstraintArgValue:
+	type=[ConstraintArgType | QualifiedName] '=' value=ValueExpression
+;
+
 
 /*-------------------------------------------------*/
 /*------------------- Common ----------------------*/

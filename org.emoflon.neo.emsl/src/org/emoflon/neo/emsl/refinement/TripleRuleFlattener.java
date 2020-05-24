@@ -98,6 +98,10 @@ public class TripleRuleFlattener extends RuleFlattener {
 			entity.getCorrespondences().clear();
 			entity.getCorrespondences().addAll(mergeCorrespondences(entity, corrs, mergedSrcNodes, mergedTrgNodes));
 
+			// -------------- Attribute Constraints ---------------- //
+			//FIXME: Flatten attribute constraints (simple union)
+			
+			
 			checkForResolvedProxies(entity);
 		}
 

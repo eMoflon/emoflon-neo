@@ -32,6 +32,8 @@ import org.emoflon.neo.emsl.eMSL.EMSLFactory
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.neocore.util.PreProcessorUtil
+import org.eclipse.emf.common.util.EList
+import org.emoflon.neo.emsl.eMSL.AttributeConstraint
 
 class TGGCompiler {
 	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
@@ -54,7 +56,7 @@ class TGGCompiler {
 		val allMetamodels = new ArrayList
 		allMetamodels.addAll(tgg.srcMetamodels)
 		allMetamodels.addAll(tgg.trgMetamodels)
-		buildImportStatement(allMetamodels)
+		buildImportStatement(allMetamodels, tgg.rules)
 		allMetamodels.add(PreProcessorUtil.instance.neoCore)
 		mapTypeNames(allMetamodels)
 		
@@ -136,8 +138,13 @@ class TGGCompiler {
 		}
 	}
 
-	private def buildImportStatement(Iterable<Metamodel> metamodels) {
-		val resourcesToImport = metamodels.map[it.eResource.URI].toSet
+	private def buildImportStatement(Iterable<Metamodel> metamodels, Iterable<TripleRule> rules) {
+		val resourcesToImport = (metamodels.map [
+			it.eResource.URI
+		] + rules.flatMap [
+			it.attributeConstraints.map[it.type.eResource.URI]
+		]).toSet
+		
 		importStatements = '''
 			«FOR uri : resourcesToImport»
 				import "«uri»"
@@ -146,7 +153,6 @@ class TGGCompiler {
 	}
 
 	private def compileRule(Operation op, TripleRule rule, boolean mapToModel) {
-
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
 		val nacPatterns = op.preprocessNACs(rule.nacs).toInvertedMap[EMSLFlattener.flatten(it.pattern) as AtomicPattern]
@@ -163,7 +169,6 @@ class TGGCompiler {
 				srcToCorr.put(corr.source, new HashSet())
 			srcToCorr.get(corr.source).add(corr)
 		}
-		
 		
 		'''
 			rule «rule.name» {
@@ -186,6 +191,8 @@ class TGGCompiler {
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
 					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData, mapToModel)»
 				«ENDFOR»
+				
+				«compileAttributeConstraints(op, rule.attributeConstraints)»
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
 			«IF(nacPatterns.size === 1)»
@@ -203,6 +210,21 @@ class TGGCompiler {
 						«TGGCompilerUtils.printAtomicPattern(nacName, nacPattern.value, nacPattern.key instanceof SourceNAC, nodeTypeNames, paramsToData, mapToModel)»
 					«ENDFOR»
 			«ENDIF»
+		'''
+	}
+	
+	private def compileAttributeConstraints(Operation op, EList<AttributeConstraint> attributeConstraints) {
+		// FIXME:  Sort CSP for operation, replace bound parameters with attribute expression
+		'''
+			attributeConstraints {
+				«FOR attrConstr : attributeConstraints»
+					«attrConstr.type.name»(
+						«FOR assignment : attrConstr.values SEPARATOR","»
+							«assignment.type.name»=«TGGCompilerUtils.handleValue(assignment.value)»
+						«ENDFOR»
+					)
+				«ENDFOR»
+			}
 		'''
 	}
 	

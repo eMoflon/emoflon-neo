@@ -76,6 +76,10 @@ public class NeoMatch implements IMatch {
 	public void addParameter(String key, Object value) {
 		parameters.put(key, value);
 	}
+	
+	public boolean hasValueForParameter(String key) {
+		return parameters.containsKey(key);
+	}
 
 	@Override
 	public void addAllParameters(Map<String, Object> parameters) {
