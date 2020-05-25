@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -99,13 +100,31 @@ public class TripleRuleFlattener extends RuleFlattener {
 			entity.getCorrespondences().addAll(mergeCorrespondences(entity, corrs, mergedSrcNodes, mergedTrgNodes));
 
 			// -------------- Attribute Constraints ---------------- //
-			//FIXME: Flatten attribute constraints (simple union)
 			
+			// 4. step: collect all attribute constraints transitively
+			var attributeConstraints = getAllSuperRules(entity).stream()//
+				.flatMap(tr -> tr.getAttributeConstraints().stream())//
+				.map(attrConstr -> EcoreUtil.copy(attrConstr))//
+				.collect(Collectors.toSet());
 			
+			entity.getAttributeConstraints().addAll(attributeConstraints);
+			
+			// 5. Resolve proxies
 			checkForResolvedProxies(entity);
 		}
 
 		return entity;
+	}
+
+	private Set<TripleRule> getAllSuperRules(TripleRule entity) {
+		var tripleRules = new HashSet<TripleRule>();
+		for (var refComm : entity.getSuperRefinementTypes()) {
+			var tr = (TripleRule) refComm.getReferencedType();
+			tripleRules.add(tr);
+			tripleRules.addAll(getAllSuperRules(tr));
+		}
+		
+		return tripleRules;
 	}
 
 	protected Map<String, List<ModelNodeBlock>> collectNodes(SuperType entity, List<RefinementCommand> refinementList,
@@ -113,7 +132,6 @@ public class TripleRuleFlattener extends RuleFlattener {
 		var nodeBlocks = new HashMap<String, List<ModelNodeBlock>>();
 
 		for (var r : refinementList) {
-
 			if (!(r.getReferencedType() instanceof TripleRule)) {
 				throw new FlattenerException(entity, FlattenerErrorType.NON_COMPLIANT_SUPER_ENTITY,
 						r.getReferencedType());

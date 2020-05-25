@@ -56,7 +56,6 @@ class TGGCompiler {
 		val allMetamodels = new ArrayList
 		allMetamodels.addAll(tgg.srcMetamodels)
 		allMetamodels.addAll(tgg.trgMetamodels)
-		buildImportStatement(allMetamodels, tgg.rules)
 		allMetamodels.add(PreProcessorUtil.instance.neoCore)
 		mapTypeNames(allMetamodels)
 		
@@ -64,6 +63,8 @@ class TGGCompiler {
 		generatedRules = new ArrayList()
 		generatedRules.add(generateSrcModelCreationRule)
 		generatedRules.add(generateTrgModelCreationRule)
+		
+		buildImportStatement(allMetamodels, flattenedRules)
 	}
 
 	def compileAll(IFileSystemAccess2 fsa) {
@@ -139,7 +140,9 @@ class TGGCompiler {
 	}
 
 	private def buildImportStatement(Iterable<Metamodel> metamodels, Iterable<TripleRule> rules) {
-		val resourcesToImport = (metamodels.map [
+		val resourcesToImport = (metamodels.filter[
+			it.eResource !== null
+		].map [
 			it.eResource.URI
 		] + rules.flatMap [
 			it.attributeConstraints.map[it.type.eResource.URI]
