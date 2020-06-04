@@ -15,13 +15,13 @@ class FWD_OPT extends ILPOperation {
 		return "_FWD_OPT"
 	}
 	
-	override String getAction(Action action, boolean isSrc) {
-		if(isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
+	override String getAction(Action action, Domain domain) {
+		if(domain.equals(Domain.SRC) || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 	
-	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
-		if(isSrc)
-			super.getConditionOperator(propOp, isSrc)
+	override getConditionOperator(ConditionOperator propOp, Domain domain) {
+		if(domain.equals(Domain.SRC))
+			super.getConditionOperator(propOp, domain)
 		else
 			propOp.literal
 	}

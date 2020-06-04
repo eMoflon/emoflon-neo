@@ -24,12 +24,12 @@ class FWD implements Operation {
 		return "_FWD"
 	}
 
-	override String getAction(Action action, boolean isSrc) {
-		if(isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
+	override String getAction(Action action, Domain domain) {
+		if(domain.equals(Domain.SRC) || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
-	override String getTranslation(Action action, boolean isSrc) {
-		if(isSrc) if(action === null ||
+	override String getTranslation(Action action, Domain domain) {
+		if(domain.equals(Domain.SRC)) if(action === null ||
 			!ActionOperator::CREATE.equals(
 				action.getOp())) return "~_tr_ : true" else return "~_tr_ : false\n~_tr_ := true" else return ""
 	}
@@ -45,8 +45,8 @@ class FWD implements Operation {
 		 }
 	}
 	
-	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
-		if(isSrc && propOp === ConditionOperator.ASSIGN)
+	override getConditionOperator(ConditionOperator propOp, Domain domain) {
+		if(domain.equals(Domain.SRC) && propOp === ConditionOperator.ASSIGN)
 			ConditionOperator.EQ.literal
 		else
 			propOp.literal

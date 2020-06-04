@@ -31,7 +31,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			new BWD_OPT().getNameExtension(), new CC().getNameExtension(), new CO().getNameExtension());
 	private Collection<Long> createDeltaElements;
 	private Collection<Long> deleteDeltaElements;
-	private Collection<Long> addedElements;
+	private Collection<Long> existingElements;
 	
 	private static final double alpha = -3; // delete-delta
 	private static final double beta = 3;  // create-delta
@@ -88,6 +88,8 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		builder.removeContextDeltaAttributesFromModel(sourceModel, targetModel);
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 		matchToWeight = new HashMap<>();
 		createDeltaElements = determineCreateDeltaElements();
 		deleteDeltaElements = determineDeleteDeltaElements();
-		addedElements = determineAddedElements();
+		existingElements = determineExistingElements();
 		
 		for (var m : matchToId.keySet()) {		
 			double weight = 0;
@@ -110,10 +112,10 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 					weight += beta;
 				else if (deleteDeltaElements.contains(e))
 					weight += alpha;
-				else if (addedElements.contains(e))
-					weight += gamma;
-				else
+				else if (existingElements.contains(e))
 					weight += 1;
+				else
+					weight += gamma;
 			}
 			matchToWeight.put(m, weight);
 		}
@@ -150,7 +152,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			return builder.getDeleteDelta(sourceModel, targetModel);
 	}
 	
-	public Collection<Long> determineAddedElements() {
-			return builder.getAddedDelta(sourceModel, targetModel);
+	public Collection<Long> determineExistingElements() {
+			return builder.getExistingElements(sourceModel, targetModel);
 	}
 }

@@ -130,7 +130,7 @@ abstract class CypherBuilder {
 	def static String getAllNodesInDelta(String modelName, String delta) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
-			WHERE n._dlt_ = "«delta»"
+			WHERE n._«delta»_ = true
 			RETURN DISTINCT id(n)
 		'''	
 	}
@@ -138,7 +138,7 @@ abstract class CypherBuilder {
 	def static String getAllEdgesInDelta(String modelName, String delta) {
 		'''
 			«matchAllEdgesInModel(modelName, "r")»
-			WHERE r._dlt_ = "«delta»"
+			WHERE r._«delta»_ = true
 			RETURN DISTINCT id(r)
 		'''	
 	}
@@ -156,15 +156,21 @@ abstract class CypherBuilder {
 			RETURN DISTINCT id(r)
 		'''
 	}
-
-	def static String getAllCorrs(String src, String trg) {
-		'''
+	
+	def static String matchAllCorrs(String src, String trg, String relation) {
+		'''	
 			MATCH 
 				(src:NeoCore__Model {ename: "«src»"}),
 				(trg:NeoCore__Model {ename: "«trg»"}),
 				(a)-[:«NeoCoreConstants.META_EL_OF»]->(src), 
 				(b)-[:«NeoCoreConstants.META_EL_OF»]->(trg),
-				(a)-[r:«NeoCoreConstants.CORR»]->(b)
+				(a)-[«relation»:«NeoCoreConstants.CORR»]->(b)	
+		'''
+	}
+	
+	def static String getAllCorrs(String src, String trg) {
+		'''
+			«matchAllCorrs(src, trg, "r")»
 			RETURN DISTINCT id(r)
 		'''
 	}
@@ -193,6 +199,54 @@ abstract class CypherBuilder {
 				(m:NeoCore__Model {ename: "«model»"}),
 				(m)-[cts:«NeoCoreConstants.CONFORMS_TO_PROP»]->(mm)
 			RETURN DISTINCT id(cts)
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForNodes(String modelName, String delta) {
+		'''			
+			«matchAllNodesInModel(modelName, "n")»
+			SET n._«delta»_ = true
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForEdges(String modelName, String delta) {
+		'''			
+			«matchAllEdgesInModel(modelName, "r")»
+			SET r._«delta»_ = true
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForCorrs(String src, String trg, String delta) {
+		'''			
+			«matchAllCorrs(src, trg, "r")»
+			SET r._«delta»_ = true
+		'''
+	}
+	
+	def static String removeDeltaAttributeForNodes(String modelName, String delta) {
+		'''
+			«matchAllNodesInModel(modelName, "n")»
+			WHERE n._«delta»_ = true
+			remove n._«delta»_
+			
+		'''
+	}
+
+	def static String removeDeltaAttributeForEdges(String modelName, String delta) {
+		'''
+			«matchAllEdgesInModel(modelName, "r")»
+			WHERE r._«delta»_ = true
+			remove r._«delta»_
+			
+		'''
+	}
+	
+	def static String removeDeltaAttributeForCorrs(String src, String trg, String delta) {
+		'''
+			«matchAllCorrs(src, trg, "r")»
+			WHERE r._«delta»_ = true
+			remove r._«delta»_
+			
 		'''
 	}
 }

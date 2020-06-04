@@ -19,7 +19,7 @@ class CO extends ILPOperation {
 		return "_CO"
 	}
 	
-	override getAction(Action action, boolean isSrc) {
+	override getAction(Action action, Domain domain) {
 		return ""
 	}
 

@@ -10,11 +10,11 @@ import java.util.Collections
 
 abstract class ILPOperation implements Operation {
 
-	override getTranslation(Action action, boolean isSrc) {
+	override getTranslation(Action action, Domain domain) {
 		return ""
 	}
 
-	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
+	override getConditionOperator(ConditionOperator propOp, Domain domain) {
 		if (propOp === ConditionOperator.ASSIGN)
 			ConditionOperator.EQ.literal
 		else

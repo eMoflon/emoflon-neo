@@ -8,144 +8,139 @@ grammar JavaToDoc_CC {
 	
 	createSrcModel
 	createTrgModel
-}
-
-
-rule ClazzToDocRule {
-
-	srcM : Model {
-		.ename : <__srcModelName>
 	}
 	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
+	  rule ClazzToDocRule {
 	
-	p:Package {
-		-elementOf->srcM
-		-clazzes->c
-		-corr->f
-		{
-			._type_ : "PackageToFolder"
+		srcM : Model {
+			.ename : <__srcModelName>
 		}
-	}
-	
-	c:Clazz {
-		-elementOf->srcM
-		++-corr->doc
-		{
-			._type_ := "ClazzToDoc"
+		
+		trgM : Model {
+			.ename : <__trgModelName>
 		}
-		.name : doc::name
-	}
-
-	f:Folder {
-		-elementOf->trgM
-		-docs->doc
-	}
-	
-	doc:Doc {
-		-elementOf->trgM
-	}
-} 
-
-
-
-rule RootToRootRule {
-
-	srcM : Model {
-		.ename : <__srcModelName>
-	}
-	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
-	
-	p:Package {
-		-elementOf->srcM
-		++-corr->f
-		{
-			._type_ := "PackageToFolder"
+		
+		p:Package {
+			-elementOf->srcM
+			-clazzes->c
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
 		}
-	}
-
-	f:Folder {
-		-elementOf->trgM
-		.name : p::name
-	}
-} 
-
-
-
-rule SubToSubRule {
-
-	srcM : Model {
-		.ename : <__srcModelName>
-	}
-	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
-	
-	p:Package {
-		-elementOf->srcM
-		-subPackages->subP
-		-corr->f
-		{
-			._type_ : "PackageToFolder"
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-corr->doc
+			{
+				._type_ := "ClazzToDoc"
+			}
 		}
-	}
 	
-	subP:Package {
-		-elementOf->srcM
-		++-corr->subF
-		{
-			._type_ := "PackageToFolder"
+		f:Folder {
+			-elementOf->trgM
+			-docs->doc
 		}
-	}
-
-	f:Folder {
-		-elementOf->trgM
-		-subFolders->subF
-	}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : c::name
+		}
+	} 
 	
-	subF:Folder {
-		-elementOf->trgM
-		-docs->doc
-		.name : subP::name
-	}
 	
-	doc:Doc {
-		-elementOf->trgM
-		.name : subP::name
-	}
-} 
-
-
-
-rule createSrcModel {
-
-	srcModel:Model {
-		-conformsTo->mmSimpleJava
-	}
+	  rule RootToRootRule {
 	
-	mmSimpleJava:MetaModel {
-		.ename : "SimpleJava"
-	}
-
-} 
-
-
-
-rule createTrgModel {
-
-
-	trgModel:Model {
-		-conformsTo->mmSimpleDoc
-	}
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-corr->f
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : f::name
+		}
 	
-	mmSimpleDoc:MetaModel {
-		.ename : "SimpleDoc"
-	}
-} 
-
+		f:Folder {
+			-elementOf->trgM
+		}
+	} 
+	
+	
+	  rule SubToSubRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			.name : subP::name
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subP::name
+		}
+	} 
+	
+	
+	  rule createSrcModel {
+	
+		srcModel:Model {
+			-conformsTo->mmSimpleJava
+		}
+		
+		mmSimpleJava:MetaModel {
+			.ename : "SimpleJava"
+		}
+	
+	} 
+	
+	
+	  rule createTrgModel {
+	
+	
+		trgModel:Model {
+			-conformsTo->mmSimpleDoc
+		}
+		
+		mmSimpleDoc:MetaModel {
+			.ename : "SimpleDoc"
+		}
+	} 
+	

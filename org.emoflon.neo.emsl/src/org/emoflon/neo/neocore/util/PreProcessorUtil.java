@@ -40,7 +40,9 @@ public class PreProcessorUtil {
 	private MetamodelPropertyStatement isComposition;
 	private MetamodelPropertyStatement ename;
 	private MetamodelPropertyStatement _tr_;
-	private MetamodelPropertyStatement _dlt_;
+	private MetamodelPropertyStatement _de_;
+	private MetamodelPropertyStatement _cr_;
+	private MetamodelPropertyStatement _ex_;
 	private MetamodelPropertyStatement _type_;
 
 	private MetamodelRelationStatement eReferences;
@@ -173,7 +175,9 @@ public class PreProcessorUtil {
 			eObject.setName(NeoCoreConstants.EOBJECT);
 			eObject.getProperties().add(ename());
 			eObject.getProperties().add(_tr_());
-			eObject.getProperties().add(_dlt_());
+			eObject.getProperties().add(_de_());
+			eObject.getProperties().add(_cr_());
+			eObject.getProperties().add(_ex_());
 			eObject.getRelations().add(elementOf());
 			eObject.getRelations().add(metaType());
 			eObject.getRelations().add(corr());
@@ -253,14 +257,34 @@ public class PreProcessorUtil {
 		return _tr_;
 	}
 	
-	public MetamodelPropertyStatement _dlt_() {
-		if (_dlt_ == null) {
-			_dlt_ = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
-			_dlt_.setName(NeoCoreConstants._DLT_PROP);
-			_dlt_.setType(eString());
+	public MetamodelPropertyStatement _de_() {
+		if (_de_ == null) {
+			_de_ = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
+			_de_.setName(NeoCoreConstants._DE_PROP);
+			_de_.setType(eBoolean());
 		}
 
-		return _dlt_;
+		return _de_;
+	}
+	
+	public MetamodelPropertyStatement _cr_() {
+		if (_cr_ == null) {
+			_cr_ = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
+			_cr_.setName(NeoCoreConstants._CR_PROP);
+			_cr_.setType(eBoolean());
+		}
+
+		return _cr_;
+	}
+	
+	public MetamodelPropertyStatement _ex_() {
+		if (_ex_ == null) {
+			_ex_ = EMSLFactory.eINSTANCE.createMetamodelPropertyStatement();
+			_ex_.setName(NeoCoreConstants._EX_PROP);
+			_ex_.setType(eBoolean());
+		}
+
+		return _ex_;
 	}
 
 	public MetamodelPropertyStatement _type_() {

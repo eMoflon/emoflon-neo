@@ -125,7 +125,6 @@ rule createCorrs {
 	
 	emoflonJ:Package {
 		.name : "emoflon"
-		._dlt_ : "del"
 		-clazzes->TGGJ
 		-subPackages->ibexJ
 		++-corr->emoflonD {
@@ -220,7 +219,7 @@ rule createCorrs {
 model moflonJavaChain -> moflonJava {
 	
 	emoflon:Package {
-		._dlt_ : "del"
+		._de_ : true
 	}
 }
 
@@ -233,26 +232,26 @@ model moflonDocChain -> moflonDoc {
 	
 	criticalClazz:Doc {
 		.name : "criticalClazz"
-		._dlt_ : "crt"
+		._cr_ : true
 	}
 }
 
 model moflonJavaMultiDel -> moflonJava {
 	
 	es:Package {
-		._dlt_ : "del"
+		._de_ : true
 	}
 	
 	TGG:Clazz {
-		._dlt_ : "del"
+		._de_ : true
 	}
 	
 	ibex:Package {
-		._dlt_ : "del"
+		._de_ : true
 	}
 	
 	cmoflon:Package {
-		._dlt_ : "del"
+		._de_ : true
 	}
 }
 
@@ -263,14 +262,14 @@ model moflonDocMultiDel -> moflonDoc {
 	}
 	
 	criticalClazz:Doc {
-		._dlt_ : "crt"
+		._cr_ : true
 	}
 }
 
 model moflonJavaSimple -> moflonJava {
 	
 	cmoflon:Package {
-		._dlt_ : "del"
+		._de_ : true
 	}
 }
 
@@ -283,7 +282,7 @@ model moflonDocSimple -> moflonDoc {
 	
 	criticalClazz:Doc {
 		.name : "criticalClazz"
-		._dlt_ : "crt"
+		._cr_ : true
 	}
 }
 

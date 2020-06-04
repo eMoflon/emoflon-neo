@@ -11,9 +11,13 @@ import java.util.List
 import java.util.Map
 import java.util.Set
 import org.eclipse.xtext.generator.IFileSystemAccess2
+import org.emoflon.neo.emsl.compiler.Operation.Domain
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.EMSLFactory
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
@@ -27,16 +31,7 @@ import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
-import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
-import org.emoflon.neo.emsl.eMSL.EMSLFactory
-import org.emoflon.neo.emsl.eMSL.ActionOperator
-import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.neocore.util.PreProcessorUtil
-import org.emoflon.neo.emsl.compiler.ops.MI
-import org.emoflon.neo.emsl.compiler.ops.CO
-import org.emoflon.neo.emsl.compiler.ops.CC
-import org.emoflon.neo.emsl.compiler.ops.FWD_OPT
-import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
 
 class TGGCompiler {
 	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
@@ -47,11 +42,13 @@ class TGGCompiler {
 	List<TripleRule> generatedRules
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
+	HashMap<String, ArrayList<String>> ruleNameToGreenElements
+	HashMap<String, ArrayList<Integer>> ruleNameToValidIDs
 
 	public final static String CREATE_SRC_MODEL_RULE = "createSrcModel"
 	public final static String CREATE_TRG_MODEL_RULE = "createTrgModel"
-//	public final static String CREATE_MODELS_RULE = "createModels"
 
+//	public final static String CREATE_MODELS_RULE = "createModels"
 	new(TripleGrammar tgg, String apiPath, String apiName) {
 		this.tgg = tgg
 		this.apiPath = apiPath
@@ -63,6 +60,8 @@ class TGGCompiler {
 		buildImportStatement(allMetamodels)
 		allMetamodels.add(PreProcessorUtil.instance.neoCore)
 		mapTypeNames(allMetamodels)
+		ruleNameToGreenElements = new HashMap();
+		ruleNameToValidIDs = new HashMap();
 
 		flattenedRules = tgg.rules.map[EMSLFlattener.flatten(it) as TripleRule]
 		generatedRules = new ArrayList()
@@ -93,15 +92,24 @@ class TGGCompiler {
 	}
 
 	private def String compile(Operation op) {
+
 		'''
 			«importStatements»
 			
 			grammar «tgg.name»«op.nameExtension» {
+				«ruleNameToGreenElements.clear»
 				«FOR rule : flattenedRules»
-					«IF (op.composed)»
-					    «FOR subOp : op.subOps»
-					    	«rule.name + subOp.nameExtension»
-					    «ENDFOR»
+					«IF (op.multi)»
+						«val greenElements = TGGCompilerValidations.getGreenElements(rule)»
+						«val validIDs = new ArrayList<Integer>()»
+						«ruleNameToGreenElements.put(rule.name, greenElements)»
+						«FOR i : 0 ..< Math.pow(2,greenElements.size).intValue - 1 /*No off-by-one error, we don't want the GEN rule!*/»
+							«IF TGGCompilerValidations.isValidRule(op, rule, i, ruleNameToGreenElements.get(rule.name))»
+								«i > 0 ? rule.name + "_" + i : rule.name»
+								«{validIDs.add(i) ""}»
+							«ENDIF»
+						«ENDFOR»
+						«ruleNameToValidIDs.put(rule.name, validIDs)»
 					«ELSE»	
 						«rule.name»
 					«ENDIF»
@@ -110,21 +118,21 @@ class TGGCompiler {
 				«FOR rule : generatedRules»
 					«rule.name»
 				«ENDFOR»
-			}
-			
-			«FOR rule : flattenedRules SEPARATOR "\n"»
-				«IF (op.composed)»
-				    «FOR subOp : op.subOps»
-				    	«compileRule(subOp, rule, true, true)»
-				    «ENDFOR»
-				«ELSE»	
-					«compileRule(op, rule, true, false)»
-				«ENDIF»
-			«ENDFOR»
-			
-			«FOR rule : generatedRules SEPARATOR "\n"»
-				«compileRule(op, rule, false, false)»
-			«ENDFOR»
+				}
+				
+				«FOR rule : flattenedRules SEPARATOR "\n"»
+					«IF (op.multi)»
+						«FOR i : ruleNameToValidIDs.get(rule.name)»
+							«compileRule(op, rule, true, i)»
+						«ENDFOR»
+					«ELSE»	
+						«compileRule(op, rule, true, 0)»
+					«ENDIF»
+				«ENDFOR»
+				
+				«FOR rule : generatedRules SEPARATOR "\n"»
+					«compileRule(op, rule, false, 0)»
+				«ENDFOR»
 		'''
 	}
 
@@ -164,7 +172,7 @@ class TGGCompiler {
 		'''
 	}
 
-	private def compileRule(Operation op, TripleRule rule, boolean mapToModel, boolean addNameExtension) {
+	private def compileRule(Operation op, TripleRule rule, boolean mapToModel, int ruleID) {
 
 		val paramsToData = new HashMap<Parameter, ParameterData>
 		val paramGroups = new HashMap<String, Collection<Parameter>>
@@ -173,9 +181,12 @@ class TGGCompiler {
 		collectParameters(rule.srcNodeBlocks, ParameterDomain.SRC, paramsToData, paramGroups)
 		collectParameters(rule.trgNodeBlocks, ParameterDomain.TRG, paramsToData, paramGroups)
 		collectParameters(nacPatterns.values.flatMap[it.nodeBlocks], ParameterDomain.NAC, paramsToData, paramGroups)
-
-		op.handleParameters(paramsToData, paramGroups)
-
+	
+		if (op.multi)
+			op.handleParameters(paramsToData, paramGroups, ruleID, ruleNameToGreenElements.get(rule.name))
+		else
+			op.handleParameters(paramsToData, paramGroups)
+		
 		val srcToCorr = new HashMap<ModelNodeBlock, Set<Correspondence>>()
 		for (Correspondence corr : rule.correspondences) {
 			if (!srcToCorr.containsKey(corr.source))
@@ -184,12 +195,7 @@ class TGGCompiler {
 		}
 
 		'''
-			
-			«IF addNameExtension»
-			  rule «rule.name + op.nameExtension» {
-			«ELSE»
-			  rule «rule.name» {
-			«ENDIF»
+			  rule «op.multi && ruleID > 0 ? rule.name + "_" + ruleID : rule.name» {
 			
 				«IF mapToModel && !rule.srcNodeBlocks.isEmpty»
 					srcM : Model {
@@ -204,19 +210,19 @@ class TGGCompiler {
 					
 				«ENDIF»
 				«FOR srcBlock : rule.srcNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), true, paramsToData, mapToModel)»
+					«compileModelNodeBlock(op, srcBlock, srcToCorr.getOrDefault(srcBlock, Collections.emptySet), Domain.SRC, paramsToData, mapToModel, rule, ruleID)»
 				«ENDFOR»
 			
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
-					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData, mapToModel)»
+					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, Domain.TRG, paramsToData, mapToModel, rule, ruleID)»
 				«ENDFOR»
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
 			«IF (nacPatterns.size === 1)»
 				«val nacName = getNacName(rule, nacPatterns.values.head)»
 				constraint «rule.name»NAC = forbid «nacName»
-			
-				«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData, mapToModel)»
+				
+					«TGGCompilerUtils.printAtomicPattern(nacName, nacPatterns.values.head, nacPatterns.keySet.head instanceof SourceNAC, nodeTypeNames, paramsToData, mapToModel)»
 			«ELSEIF (nacPatterns.size > 1)»
 				constraint «rule.name»NAC = «FOR pattern : nacPatterns.values SEPARATOR ' && '»«getNacName(rule, pattern)»NAC«ENDFOR»
 				
@@ -250,39 +256,47 @@ class TGGCompiler {
 	}
 
 	private def compileModelNodeBlock(Operation op, ModelNodeBlock nodeBlock, Collection<Correspondence> corrs,
-		boolean isSrc, Map<Parameter, ParameterData> paramsToData, boolean mapToModel) {
-		val action = op.getAction(nodeBlock.action, isSrc)
+		Domain domain, Map<Parameter, ParameterData> paramsToData, boolean mapToModel, TripleRule rule, int ruleID) {
+		val action = op.multi ? op.getAction(nodeBlock.action, ruleID, ruleNameToGreenElements.get(rule.name),
+				nodeBlock.name) : op.getAction(nodeBlock.action, domain)
 		'''
 			«action»«nodeBlock.name»:«nodeTypeNames.get(nodeBlock.type)» {
-				«IF mapToModel»«action»-elementOf->«IF isSrc»srcM«ELSE»trgM«ENDIF»«ENDIF»
+				«IF mapToModel»«action»-elementOf->«IF domain.equals(Domain.SRC)»srcM«ELSE»trgM«ENDIF»«ENDIF»
 				«FOR relation : nodeBlock.relations»
-				«compileRelationStatement(op, relation, isSrc, paramsToData)»
+				«compileRelationStatement(op, relation, domain, paramsToData, rule, ruleID)»
 				«ENDFOR»
 				«FOR corr : corrs»
-				«compileCorrespondence(op, corr)»
+				«compileCorrespondence(op, corr, rule, ruleID)»
 				«ENDFOR»
 				«FOR property : nodeBlock.properties»
-				«compilePropertyStatement(op, property, isSrc, paramsToData)»
+				«compilePropertyStatement(op, property, domain, paramsToData, rule, ruleID, nodeBlock.name)»
 				«ENDFOR»
-				«op.getTranslation(nodeBlock.action, isSrc)»
+				«op.getTranslation(nodeBlock.action, domain)»
+				«op.getDeltaCondition(nodeBlock.action)»
 			}
 		'''
 	}
 
-	private def compileRelationStatement(Operation op, ModelRelationStatement relationStatement, boolean isSrc,
-		Map<Parameter, ParameterData> paramsToData) {
-		val translate = op.getTranslation(relationStatement.action, isSrc)
+	private def compileRelationStatement(Operation op, ModelRelationStatement relationStatement, Domain domain,
+		Map<Parameter, ParameterData> paramsToData, TripleRule rule, int ruleID) {
+		val translate = op.getTranslation(relationStatement.action, domain)
 		val hasProperties = relationStatement.properties !== null && !relationStatement.properties.empty
+		val delta = op.getDeltaCondition(relationStatement.action)
+		val action = op.multi ? op.getAction(relationStatement.action, ruleID, ruleNameToGreenElements.get(rule.name),
+				(relationStatement.eContainer as ModelNodeBlock).name + "->" + relationStatement.target.name) : op.
+				getAction(relationStatement.action, domain)
 		'''
-			«op.getAction(relationStatement.action, isSrc)»-«compileRelationTypes(relationStatement.types)»->«relationStatement.target.name»
-			«IF !translate.empty || hasProperties»
+			«action»-«compileRelationTypes(relationStatement.types)»->«relationStatement.target.name»
+			«IF !translate.empty || hasProperties || !delta.empty»
 				{
 					«IF hasProperties»
 						«FOR property : relationStatement.properties»
-							«compilePropertyStatement(op, property, isSrc, paramsToData)»
+							«compilePropertyStatement(op, property, domain, paramsToData, rule, ruleID, 
+								(relationStatement.eContainer as ModelNodeBlock).name + "->" + relationStatement.target.name)»
 						«ENDFOR»
 					«ENDIF»
 					«translate»
+					«delta»
 				}
 			«ENDIF»
 		'''
@@ -298,20 +312,30 @@ class TGGCompiler {
 		return typeString
 	}
 
-	private def compileCorrespondence(Operation op, Correspondence correspondence) {
-		op.compileCorrespondence(correspondence)
+	private def compileCorrespondence(Operation op, Correspondence corr, TripleRule rule, int ruleID) {
+		val action = op.multi ? op.getAction(corr.action, ruleID, ruleNameToGreenElements.get(rule.name),
+				corr.source.name + "->" + corr.target.name) : op.getAction(corr.action, Domain.CORR)
+		'''
+			«action»-corr->«corr.target.name»
+			{
+				._type_ «IF ActionOperator.CREATE.toString.equals(action)»:=«ELSE»:«ENDIF» "«corr.type.name»"
+			}
+		'''
 	}
 
-	private def compilePropertyStatement(Operation op, ModelPropertyStatement propertyStatement, boolean isSrc,
-		Map<Parameter, ParameterData> paramsToData) {
+	private def compilePropertyStatement(Operation op, ModelPropertyStatement propertyStatement, Domain domain,
+		Map<Parameter, ParameterData> paramsToData, TripleRule rule, int ruleID, String blockName) {
 		if (propertyStatement.value instanceof Parameter) {
 			val paramValue = paramsToData.get(propertyStatement.value as Parameter).printValue
 			if (!paramValue.present)
 				""
 			else
-				'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «paramValue.get»'''
+				if (op.multi)
+					'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, ruleID, ruleNameToGreenElements.get(rule.name), blockName)» «paramValue.get»'''
+				else
+					'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, domain)» «paramValue.get»'''
 		} else
-			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, isSrc)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
+			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, domain)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 
 	/*
@@ -321,37 +345,37 @@ class TGGCompiler {
 		val modelBlockName = "srcModel"
 		val modelNameParam = "__srcModelName"
 		val metamodelBlocks = generateMetamodelBlocks(tgg.srcMetamodels.map[it.name])
-		
+
 		val sourceNAC = EMSLFactory.eINSTANCE.createSourceNAC
 		sourceNAC.pattern = generateModelPattern(modelBlockName, modelNameParam)
-		
+
 		val modelCreationRule = EMSLFactory.eINSTANCE.createTripleRule
 		modelCreationRule.name = CREATE_SRC_MODEL_RULE
 		modelCreationRule.type = tgg
 		modelCreationRule.nacs.add(sourceNAC)
 		modelCreationRule.srcNodeBlocks.add(generateModelBlock(modelBlockName, modelNameParam, metamodelBlocks))
-		for(ModelNodeBlock block : metamodelBlocks)
+		for (ModelNodeBlock block : metamodelBlocks)
 			modelCreationRule.srcNodeBlocks.add(block)
-			
+
 		return modelCreationRule
 	}
-	
+
 	private def generateTrgModelCreationRule() {
 		val modelBlockName = "trgModel"
 		val modelNameParam = "__trgModelName"
 		val metamodelBlocks = generateMetamodelBlocks(tgg.trgMetamodels.map[it.name])
-		
+
 		val targetNAC = EMSLFactory.eINSTANCE.createTargetNAC
 		targetNAC.pattern = generateModelPattern(modelBlockName, modelNameParam)
-		
+
 		val modelCreationRule = EMSLFactory.eINSTANCE.createTripleRule
 		modelCreationRule.name = CREATE_TRG_MODEL_RULE
 		modelCreationRule.type = tgg
 		modelCreationRule.nacs.add(targetNAC)
 		modelCreationRule.trgNodeBlocks.add(generateModelBlock(modelBlockName, modelNameParam, metamodelBlocks))
-		for(ModelNodeBlock block : metamodelBlocks)
+		for (ModelNodeBlock block : metamodelBlocks)
 			modelCreationRule.trgNodeBlocks.add(block)
-			
+
 		return modelCreationRule
 	}
 

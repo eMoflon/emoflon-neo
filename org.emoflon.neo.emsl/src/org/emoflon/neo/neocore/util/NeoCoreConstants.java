@@ -44,16 +44,13 @@ public class NeoCoreConstants {
 	public static final String ABSTRACT_PROP = "abstract";
 	public static final String _TYPE_PROP = "_type_";
 	public static final String _TR_PROP = "_tr_";
-	public static final String _DLT_PROP = "_dlt_";
+	public static final String _DE_PROP = "_de_";
+	public static final String _CR_PROP = "_cr_";
+	public static final String _EX_PROP = "_ex_";
 	public static final String ISCOMPOSITION_PROP = "isComposition";
 	public static final String ISCONTAINMENT_PROP = "isContainment";
 	public static final String NAMESPACE_PROP = "enamespace";
 
 	// Meta attributes and relations
 	public static final String CONFORMS_TO_PROP = "conformsTo";
-	
-	// Delta identifier for model integration
-	public static final String CREATE = "crt";
-	public static final String DELETE = "del";
-	public static final String ADDED = "add";
 }

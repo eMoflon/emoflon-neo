@@ -22,11 +22,11 @@ class MODELGEN implements Operation {
 		return "_GEN"
 	}
 
-	override String getAction(Action action, boolean isSrc) {
+	override String getAction(Action action, Domain domain) {
 		if(action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
-	override String getTranslation(Action action, boolean isSrc) {
+	override String getTranslation(Action action, Domain domain) {
 		return ""
 	}
 	
@@ -34,7 +34,7 @@ class MODELGEN implements Operation {
 		// Nothing to do here, all parameters are already mapped to their correct String representation
 	}
 	
-	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
+	override getConditionOperator(ConditionOperator propOp, Domain domain) {
 		propOp.literal
 	}
 
