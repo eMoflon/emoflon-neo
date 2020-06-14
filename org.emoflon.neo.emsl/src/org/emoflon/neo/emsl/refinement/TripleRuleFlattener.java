@@ -1,6 +1,7 @@
 package org.emoflon.neo.emsl.refinement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,13 +14,19 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.EcoreUtil2;
+import org.emoflon.neo.emsl.eMSL.AttributeExpression;
+import org.emoflon.neo.emsl.eMSL.ConditionOperator;
+import org.emoflon.neo.emsl.eMSL.ConstraintArgValue;
 import org.emoflon.neo.emsl.eMSL.Correspondence;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
+import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
+import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.emsl.eMSL.RefinementCommand;
 import org.emoflon.neo.emsl.eMSL.SuperType;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
+import org.emoflon.neo.emsl.eMSL.ValueExpression;
 import org.emoflon.neo.emsl.util.FlattenerErrorType;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
@@ -109,13 +116,102 @@ public class TripleRuleFlattener extends RuleFlattener {
 			
 			entity.getAttributeConstraints().addAll(attributeConstraints);
 			
+			// Handle parameters in black nodes (remove and change all references to this parameter to attribute expressions?)
+			// This includes attribute constraints *and* any nodes that reference this parameter!
+			var blackParameters = getParametersInBlackNodes(entity);
+			for(var blackParam : blackParameters.keySet()) {
+				var referencesToParam = getReferencesToParameter(blackParam, entity);
+				for(var ref : referencesToParam)
+					changeToAttributeExpression(ref, blackParameters);
+				
+				for(var ref : referencesToParam)
+					removeRepresentative(ref, blackParameters);
+			}
+			
 			// 5. Resolve proxies
 			checkForResolvedProxies(entity);
 		}
 
 		return entity;
 	}
-
+	
+	private void removeRepresentative(Parameter parameter, Map<String, ModelPropertyStatement> representatives) {
+		var rep = representatives.get(parameter.getName());
+		if(parameter.eContainer() instanceof ModelPropertyStatement) {
+			var prop = (ModelPropertyStatement) parameter.eContainer();
+			var block = (ModelNodeBlock) prop.eContainer();
+			// For representatives, simply remove property involving parameter
+			if(prop.equals(rep)) {
+				block.getProperties().remove(prop);
+				return;
+			}
+			// Otherwise convert to attribute expression
+			else {
+				prop.setValue(createAttrExprForProperty(rep));
+				return;
+			}
+		}
+	}
+	
+	private void changeToAttributeExpression(Parameter parameter, Map<String, ModelPropertyStatement> representatives) {
+		var rep = representatives.get(parameter.getName());
+		if(parameter.eContainer() instanceof ConstraintArgValue) {
+			var constrArgValue = (ConstraintArgValue) parameter.eContainer();
+			constrArgValue.setValue(createAttrExprForProperty(rep));
+		}
+	}
+	
+	private AttributeExpression createAttrExprForProperty(ModelPropertyStatement rep) {
+		var attrExpr = EMSLFactory.eINSTANCE.createAttributeExpression();
+		attrExpr.setNode((ModelNodeBlock) rep.eContainer());
+		var attrExprTrg = EMSLFactory.eINSTANCE.createNodeAttributeExpTarget();
+		attrExprTrg.setAttribute(rep.getType());
+		attrExpr.setTarget(attrExprTrg);
+		return attrExpr;
+	}
+	
+	private Collection<Parameter> getReferencesToParameter(String param, TripleRule entity) {
+		var allNodes = new ArrayList<ModelNodeBlock>();
+		allNodes.addAll(entity.getSrcNodeBlocks());
+		allNodes.addAll(entity.getTrgNodeBlocks());
+		
+		var attrConstrs = entity.getAttributeConstraints();
+		
+		var allParameters = new ArrayList<ValueExpression>();
+		allParameters.addAll(allNodes.stream()//
+			.flatMap(n -> n.getProperties().stream())//
+			.filter(prop -> prop.getValue() instanceof Parameter)//
+			.filter(prop -> ((Parameter) prop.getValue()).getName().equals(param))//
+			.map(prop -> prop.getValue())//
+			.collect(Collectors.toList()));
+			
+		allParameters.addAll(attrConstrs.stream()//
+				.flatMap(attrConstr -> attrConstr.getValues().stream())//
+				.map(v -> v.getValue())//
+				.filter(val -> val instanceof Parameter)
+				.filter(val -> ((Parameter)val).getName().equals(param))
+				.collect(Collectors.toList())//
+				);
+		
+		return allParameters.stream()//
+				.map(p -> Parameter.class.cast(p))//
+				.collect(Collectors.toList());
+	}
+	
+	private Map<String, ModelPropertyStatement> getParametersInBlackNodes(TripleRule entity) {
+		var allNodes = new ArrayList<ModelNodeBlock>();
+		allNodes.addAll(entity.getSrcNodeBlocks());
+		allNodes.addAll(entity.getTrgNodeBlocks());
+		
+		return allNodes.stream()//
+			.filter(n -> n.getAction() == null)//
+			.flatMap(n -> n.getProperties().stream())//
+			.filter(prop -> prop.getOp() == ConditionOperator.ASSIGN)//
+			.filter(prop -> prop.getValue() instanceof Parameter)//
+			.collect(Collectors.toMap(prop -> ((Parameter)prop.getValue()).getName(), prop -> prop))//
+			;		
+	}
+	
 	private Set<TripleRule> getAllSuperRules(TripleRule entity) {
 		var tripleRules = new HashSet<TripleRule>();
 		for (var refComm : entity.getSuperRefinementTypes()) {

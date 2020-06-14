@@ -12,8 +12,12 @@ import java.util.Map
 import java.util.Set
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeConstraint
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.EMSLFactory
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.MetamodelRelationStatement
@@ -25,15 +29,10 @@ import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.SourceNAC
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
-import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
-import org.emoflon.neo.emsl.eMSL.EMSLFactory
-import org.emoflon.neo.emsl.eMSL.ActionOperator
-import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.neocore.util.PreProcessorUtil
-import org.eclipse.emf.common.util.EList
-import org.emoflon.neo.emsl.eMSL.AttributeConstraint
 
 class TGGCompiler {
 	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
@@ -195,7 +194,7 @@ class TGGCompiler {
 					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, false, paramsToData, mapToModel)»
 				«ENDFOR»
 				
-				«compileAttributeConstraints(op, rule.attributeConstraints)»
+				«compileAttributeConstraints(op, rule.attributeConstraints, paramsToData)»
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
 			«IF(nacPatterns.size === 1)»
@@ -216,19 +215,37 @@ class TGGCompiler {
 		'''
 	}
 	
-	private def compileAttributeConstraints(Operation op, EList<AttributeConstraint> attributeConstraints) {
-		// FIXME:  Sort CSP for operation, replace bound parameters with attribute expression
+	private def compileAttributeConstraints(Operation op, List<AttributeConstraint> attributeConstraints, Map<Parameter, ParameterData> paramsToData) {
+		// FIXME:  Sort CSP for operation
+		
 		'''
 			attributeConstraints {
 				«FOR attrConstr : attributeConstraints»
 					«attrConstr.type.name»(
 						«FOR assignment : attrConstr.values SEPARATOR","»
-							«assignment.type.name»=«TGGCompilerUtils.handleValue(assignment.value)»
+							«assignment.type.name»=«handleValue(assignment.value, paramsToData)»
 						«ENDFOR»
 					)
 				«ENDFOR»
 			}
 		'''
+	}
+	
+	private def String handleValue(ValueExpression value, Map<Parameter, ParameterData> paramsToData) {
+		if (value instanceof Parameter) {
+			val parametersInRule = paramsToData.filter [ k, v |
+				k.name.equals(value.name)
+			].values
+
+			if (parametersInRule.size > 0) {
+				val parameterDataInRule = parametersInRule.get(0)
+				val operationalisedValue = parameterDataInRule.boundValue
+				if(operationalisedValue.isPresent)
+					return operationalisedValue.get
+			}
+		}
+
+		return TGGCompilerUtils.handleValue(value)
 	}
 	
 	private def String getNacName(TripleRule rule, AtomicPattern pattern) {

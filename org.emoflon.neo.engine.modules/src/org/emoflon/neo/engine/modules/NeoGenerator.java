@@ -129,8 +129,13 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			});
 
 			ruleMasks.put(neoRule, mask);
+			var matches = neoRule.determineMatches(schedule, mask);
+			
+			// Solve attribute CSPs, filter matches, and mask free parameters now bound by CSP
+			attrCSP.initialise(neoRule.getEMSLRule().getAttributeConstraints());
+			var filteredMatches = attrCSP.solveFilterAndMask(matches, mask);
 
-			matchContainer.addAll(neoRule.determineMatches(schedule, mask), rule);
+			matchContainer.addAll(filteredMatches, rule);
 		});
 	}
 
@@ -141,21 +146,17 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			throw new IllegalStateException("Unexpected type of rule: " + rule.getClass());
 
 		NeoRule neoRule = (NeoRule) rule;
-
-		// Solve attribute CSPs, filter matches, and mask free parameters now bound by CSP
-		attrCSP.initialise(neoRule.getEMSLRule().getAttributeConstraints());
-		var filteredMatches = attrCSP.solveFilterAndMask(matches);
 		
 		// mask remaining free parameters
 		freeParameters.get(rule).forEach(param -> {
-			filteredMatches.forEach(match -> {
+			matches.forEach(match -> {
 				if(!match.hasValueForParameter(param))
 					match.addParameter(param, generateValueFor(parameterDataTypes.get(param), param));
 			});
 		});
 
-		var comatches = neoRule.applyAll(filteredMatches, ruleMasks.get(neoRule));
-		matchContainer.appliedRule(neoRule, filteredMatches, comatches);
+		var comatches = neoRule.applyAll(matches, ruleMasks.get(neoRule));
+		matchContainer.appliedRule(neoRule, matches, comatches);
 	}
 
 	private Object generateValueFor(DataType dataType, String parameterName) {

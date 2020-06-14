@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.emoflon.neo.cypher.common.NeoMask;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.emsl.eMSL.AttributeConstraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintArgValue;
 import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary.Concat;
+import org.neo4j.driver.v1.Record;
 
 public class AttributeConstraintContainer {
 	private Map<String, Supplier<NeoAttributeConstraint>> creators;
@@ -31,15 +33,17 @@ public class AttributeConstraintContainer {
 		this.attributeConstraints = attributeConstraints;
 	}
 
-	public Collection<NeoMatch> solveFilterAndMask(Collection<NeoMatch> matches) {
+	public Collection<NeoMatch> solveFilterAndMask(Collection<NeoMatch> matches, NeoMask mask) {
+		var dataItr = NeoMatch.getData(matches, mask).iterator();
 		var filteredMatches = new ArrayList<NeoMatch>();
 		for (var match : matches) {
+			var data = dataItr.next();
 			var constraints = new ArrayList<NeoAttributeConstraint>();
 			var parameterVariables = new HashMap<String, NeoAttributeConstraintVariable>();
 			for (var attrConstr : attributeConstraints) {		
 				var constraint = creators.get(attrConstr.getType().getName()).get();
 				for (var value : attrConstr.getValues()) {
-					var variable = createAndAddVariable(parameterVariables, value, match);
+					var variable = createAndAddVariable(parameterVariables, value, data);
 					constraint.addVariable(variable);
 				}
 				constraints.add(constraint);
@@ -61,7 +65,7 @@ public class AttributeConstraintContainer {
 		return filteredMatches;
 	}
 
-	private NeoAttributeConstraintVariable createAndAddVariable(Map<String, NeoAttributeConstraintVariable> parameterVariables, ConstraintArgValue value, NeoMatch match) {
+	private NeoAttributeConstraintVariable createAndAddVariable(Map<String, NeoAttributeConstraintVariable> parameterVariables, ConstraintArgValue value, Record data) {
 		var type = value.getType().getType();
 		var valueExp = value.getValue();
 
@@ -75,7 +79,7 @@ public class AttributeConstraintContainer {
 				return variable;
 			}
 		} else {
-			return new NeoAttributeConstant(type, valueExp, match);		
+			return new NeoAttributeConstant(type, valueExp, data);		
 		}
 	}
 }

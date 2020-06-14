@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.engine.api.patterns.IMask;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;
 import org.neo4j.driver.v1.Record;
@@ -53,11 +54,15 @@ public class NeoMatch implements IMatch {
 	public static String getMatchParameter() {
 		return "match";
 	}
-
+	
 	public static Collection<Record> getData(Collection<? extends NeoMatch> matches) {
+		return getData(matches, IMask.empty());
+	}
+
+	public static Collection<Record> getData(Collection<? extends NeoMatch> matches, IMask mask) {
 		if (matches.size() > 0) {
 			var pattern = (NeoPattern) matches.iterator().next().getPattern();
-			return pattern.getData(matches);
+			return pattern.getData(matches, mask);
 		} else
 			return Collections.emptyList();
 	}

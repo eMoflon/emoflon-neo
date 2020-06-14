@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
 import org.eclipse.core.runtime.preferences.InstanceScope
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
@@ -38,7 +39,6 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.eclipse.emf.ecore.util.EcoreUtil
 
 /**
  * Generates code from your model files on save.
@@ -53,7 +53,7 @@ class EMSLGenerator extends AbstractGenerator {
 	List<String> derivedGTFiles = new ArrayList
 	boolean cleanedUp
 
-	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {				
 		if(resource.contents.isEmpty) return
 
 		val apiPath = getAPIPath(resource)
