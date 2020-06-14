@@ -12,6 +12,8 @@ import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.emsl.eMSL.AttributeConstraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintArgValue;
 import org.emoflon.neo.emsl.eMSL.Parameter;
+import org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary.AddPrefix;
+import org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary.AddSuffix;
 import org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary.Concat;
 import org.neo4j.driver.v1.Record;
 
@@ -23,6 +25,8 @@ public class AttributeConstraintContainer {
 		creators = new HashMap<>();
 		
 		creators.put("concat", () -> new Concat());
+		creators.put("addSuffix", () -> new AddSuffix());
+		creators.put("addPrefix", () -> new AddPrefix());
 	}
 	
 	public void addCreator(String key, Supplier<NeoAttributeConstraint> creator) {
@@ -40,7 +44,10 @@ public class AttributeConstraintContainer {
 			var data = dataItr.next();
 			var constraints = new ArrayList<NeoAttributeConstraint>();
 			var parameterVariables = new HashMap<String, NeoAttributeConstraintVariable>();
-			for (var attrConstr : attributeConstraints) {		
+			for (var attrConstr : attributeConstraints) {	
+				if(!creators.containsKey(attrConstr.getType().getName()))
+					throw new IllegalStateException("You have to add a creator for: " + attrConstr.getType().getName());
+				
 				var constraint = creators.get(attrConstr.getType().getName()).get();
 				for (var value : attrConstr.getValues()) {
 					var variable = createAndAddVariable(parameterVariables, value, data);
@@ -52,8 +59,10 @@ public class AttributeConstraintContainer {
 			var isSatisfied = true;
 			for (var constraint : constraints) {
 				constraint.solve();
-				if (!constraint.isSatisfied())
+				if (!constraint.isSatisfied()) {
 					isSatisfied = false;
+					break;
+				}
 			}
 			
 			if(isSatisfied) {				

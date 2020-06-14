@@ -146,8 +146,9 @@ class EMSLProposalProvider extends AbstractEMSLProposalProvider {
 		]
 		
 		val completions = newHashSet
-		// Add neocore
+		// Add neocore and attr constr lib
 		completions.add('''"«EMSLUtil.ORG_EMOFLON_NEO_CORE_URI»"''')
+		completions.add('''"«EMSLUtil.ORG_EMOFLON_ATR_CNSTR_LIB_URI»"''')
 		// Add files
 		for (f : filteredFiles)
 			completions.add(plRes + f + '''"''')

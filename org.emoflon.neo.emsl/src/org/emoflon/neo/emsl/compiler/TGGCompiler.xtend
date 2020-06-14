@@ -216,7 +216,7 @@ class TGGCompiler {
 	}
 	
 	private def compileAttributeConstraints(Operation op, List<AttributeConstraint> attributeConstraints, Map<Parameter, ParameterData> paramsToData) {
-		// FIXME:  Sort CSP for operation
+		// FIXME:  Sort CSP for operation:  Create a searchplanction and sort
 		
 		'''
 			attributeConstraints {

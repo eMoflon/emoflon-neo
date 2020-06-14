@@ -278,6 +278,7 @@ AttributeConstraintType:
 	'}'
 ;
 
+//FIXME:  Add some way of marking the adornment as only for GEN
 ADORNMENT:
 	('B' | 'F')+
 ;
