@@ -19,6 +19,7 @@ import com.google.common.collect.BiMap
 import java.util.Map
 import java.util.HashSet
 import java.util.Collection
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 
 class TGGCompilerUtils {
 	enum ParameterDomain {
@@ -29,6 +30,8 @@ class TGGCompilerUtils {
 		if(value instanceof PrimitiveString) return '''"«value.literal»"'''
 
 		if(value instanceof PrimitiveInt) return '''«value.literal»'''
+		
+		if(value instanceof PrimitiveDouble) return '''«value.literal»'''
 
 		if(value instanceof PrimitiveBoolean) return '''«value.^true»'''
 
