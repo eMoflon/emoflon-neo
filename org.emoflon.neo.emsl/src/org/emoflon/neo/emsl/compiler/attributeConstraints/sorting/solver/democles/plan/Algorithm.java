@@ -18,13 +18,13 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Adornment;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Combiner;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Adornment;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Combiner;
 
 
 public class Algorithm<C extends Combiner<C, O>, O> {

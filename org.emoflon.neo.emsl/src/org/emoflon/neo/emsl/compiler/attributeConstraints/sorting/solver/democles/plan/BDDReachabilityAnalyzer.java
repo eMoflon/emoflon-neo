@@ -1,9 +1,9 @@
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan;
 
 import java.util.List;
 
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Adornment;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Combiner;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Adornment;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Combiner;
 
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDDomain;

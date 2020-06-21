@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.emoflon.neo.emsl
 Bundle-ManifestVersion: 2
 Bundle-Name: org.emoflon.neo.emsl
-Bundle-Vendor: My Company
+Bundle-Vendor: IAV GmbH
 Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: org.emoflon.neo.emsl; singleton:=true
 Bundle-ActivationPolicy: lazy
@@ -23,8 +23,13 @@ Require-Bundle: org.eclipse.xtext,
  org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.jdt.ui;bundle-version="3.18.0",
  org.apache.commons.lang3;bundle-version="3.1.0"
-Export-Package: org.emoflon.neo.emsl,
+Export-Package: net.sf.javabdd,
+ org.emoflon.neo.emsl,
  org.emoflon.neo.emsl.compiler,
+ org.emoflon.neo.emsl.compiler.attributeConstraints.sorting,
+ org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common,
+ org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan,
+ org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan.common,
  org.emoflon.neo.emsl.compiler.ops,
  org.emoflon.neo.emsl.eMSL,
  org.emoflon.neo.emsl.eMSL.impl,
@@ -42,3 +47,5 @@ Export-Package: org.emoflon.neo.emsl,
  org.emoflon.neo.neocore.util
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-13
+Bundle-ClassPath: lib/javabdd-1.0b2.jar,
+ .

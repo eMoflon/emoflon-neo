@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -6,35 +6,46 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.emsl.compiler.Operation;
+import org.emoflon.neo.emsl.compiler.ParameterData;
+import org.emoflon.neo.emsl.compiler.TGGCompiler;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Adornment;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan.Algorithm;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan.WeightedOperation;
+import org.emoflon.neo.emsl.compiler.ops.MODELGEN;
 import org.emoflon.neo.emsl.eMSL.AttributeConstraint;
 import org.emoflon.neo.emsl.eMSL.ConstraintArgValue;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Adornment;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan.Algorithm;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan.WeightedOperation;
+import org.emoflon.neo.emsl.eMSL.Parameter;
+import org.emoflon.neo.emsl.eMSL.ValueExpression;
 
 import com.google.common.collect.Lists;
 
-
 public class SearchPlanAction extends Algorithm<SimpleCombiner, AttributeConstraint> {
 
-	private final List<ConstraintArgValue> variables = new ArrayList<>();
+	private final List<InternalVariable> variables;
 	private final List<AttributeConstraint> constraints = new ArrayList<>();
-	private final boolean useGenAdornments;
+	private final Operation op;
+	private final Map<Parameter, ParameterData> paramsToData;
 
 	/**
 	 * @param variables
 	 * @param constraints
 	 * @param useGenAdornments
-	 * @param availableNodes
-	 *            Nodes from which bound values for parameters are taken.
+	 * @param availableNodes   Nodes from which bound values for parameters are
+	 *                         taken.
 	 */
-	public SearchPlanAction(List<ConstraintArgValue> variables, List<AttributeConstraint> constraints,
-			boolean useGenAdornments) {
-		this.variables.addAll(variables);
+	public SearchPlanAction(List<ValueExpression> variables, List<AttributeConstraint> constraints,
+			Operation op, Map<Parameter, ParameterData> paramsToData) {
+		this.variables = variables.stream()//
+				.map(v -> new InternalVariable(v, TGGCompiler.handleValue(v, paramsToData)))//
+				.distinct()//
+				.collect(Collectors.toList());
 		this.constraints.addAll(constraints);
-		this.useGenAdornments = useGenAdornments;
+		this.op = op;
+		this.paramsToData = paramsToData;
 	}
 
 	// Unsorted list of our constraints => return a new List where constraints are
@@ -77,6 +88,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, AttributeConstra
 			return Lists.reverse(sortedList);
 		} catch (Exception e) {
 			throw new IllegalStateException(
+					op.getClass().getSimpleName() + ": " +
 					constraints.stream().map(c -> c.getType().getName()).collect(Collectors.toList()) + ", "
 							+ e.getMessage());
 		} finally {
@@ -88,7 +100,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, AttributeConstra
 	private Adornment determineInputAdornment() {
 		boolean[] bits = new boolean[variables.size()];
 		for (int i = 0; i < variables.size(); i++) {
-			if (isBoundInPattern(variables.get(i))) {
+			if (isBoundInPattern(variables.get(i).getValue())) {
 				bits[i] = Adornment.B; // Bound <-> false !
 			} else {
 				bits[i] = Adornment.F; // Unbound <-> true !
@@ -109,11 +121,11 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, AttributeConstra
 	 * @param patternContainsNode
 	 * @return
 	 */
-	public static boolean isBoundInPattern(ConstraintArgValue variable) {
-		//FIXME:  Implement
-		throw new IllegalStateException("Unable to handle " + variable);
+	public boolean isBoundInPattern(ValueExpression value) {
+		var operationalisedValue = TGGCompiler.handleValue(value, paramsToData);
+		return !(operationalisedValue.startsWith("<") && operationalisedValue.endsWith(">"));
 	}
-	
+
 	/**
 	 * Create weighted operations from constraints
 	 * 
@@ -134,40 +146,41 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, AttributeConstra
 	}
 
 	private List<String> getAllowedAdornmentsForMode(AttributeConstraint constraint) {
-		//FIXME:  Take useGenAdornments flat into account
-		if (useGenAdornments)
-			return constraint.getType().getAdornments();
-		else
+		if (op instanceof MODELGEN) {
+			var adornments = new ArrayList<String>(constraint.getType().getAdornments());
+			adornments.addAll(constraint.getType().getGenAdornments());
+			return adornments;
+		} else
 			return constraint.getType().getAdornments();
 	}
 
 	private WeightedOperation<AttributeConstraint> createWeightedOperationForConstraintWithAdornment(
 			final AttributeConstraint constraint, final String adornment) {
-		long frees = adornment.codePoints().filter(c -> c == 'F').count();
+		long frees = adornment.chars().filter(c -> c == 'F').count();
 		float weight = (float) Math.pow(frees, 3);
 
 		return createOperation(constraint, createBoundMask(constraint, adornment),
 				createFreeMask(constraint, adornment), weight);
 	}
 
-	private Adornment createBoundMask(final AttributeConstraint constraint,
-			final String adornment) {
+	private Adornment createBoundMask(final AttributeConstraint constraint, final String adornment) {
 		return createMask(constraint, adornment, 'B');
 	}
 
-	private Adornment createFreeMask(final AttributeConstraint constraint,
-			final String adornment) {
+	private Adornment createFreeMask(final AttributeConstraint constraint, final String adornment) {
 		return createMask(constraint, adornment, 'F');
 	}
 
-	private Adornment createMask(final AttributeConstraint constraint,
-			final String adornment, char mode) {
+	private Adornment createMask(final AttributeConstraint constraint, final String adornment, char mode) {
 		boolean[] bits = new boolean[variables.size()];
 
+		var adornmentChars = adornment.split(" ");
+		assert (adornmentChars.length == constraint.getValues().size());
+
 		for (int i = 0; i < constraint.getValues().size(); i++) {
-			ConstraintArgValue variable = constraint.getValues().get(i);
-			int index = variables.indexOf(variable);
-			if (adornment.toCharArray()[i] == mode) {
+			ConstraintArgValue arg = constraint.getValues().get(i);
+			int index = variables.indexOf(new InternalVariable(arg.getValue(), TGGCompiler.handleValue(arg.getValue(), paramsToData)));
+			if (adornmentChars[i].equals(String.valueOf(mode))) {
 				bits[index] = true;
 			}
 		}

@@ -18,9 +18,9 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan.common;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan.common;
 
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.OperationRuntime;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.OperationRuntime;
 
 public class WeightedOperationBuilder<O extends OperationRuntime> {
 	protected float getWeight(O operation) {

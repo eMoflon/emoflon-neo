@@ -274,11 +274,16 @@ AttributeConstraintType:
 	'attributeConstraint' name=ID '(' 
 		(args+=ConstraintArgType (',' args+=ConstraintArgType)*)?	
 	')' '{'
-		(adornments+=ADORNMENT (',' adornments+=ADORNMENT)*)?
+		(
+			adornments+=ADORNMENT (',' adornments+=ADORNMENT)*
+		)?
+		(
+			'gen:' 
+			genAdornments+=ADORNMENT (',' genAdornments+=ADORNMENT)*
+		)?
 	'}'
 ;
 
-//FIXME:  Add some way of marking the adornment as only for GEN
 ADORNMENT:
 	('B' | 'F')+
 ;

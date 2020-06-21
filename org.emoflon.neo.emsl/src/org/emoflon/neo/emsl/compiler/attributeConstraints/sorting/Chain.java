@@ -18,7 +18,7 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting;
 
 public class Chain<T> {
 	private final Chain<T> next;

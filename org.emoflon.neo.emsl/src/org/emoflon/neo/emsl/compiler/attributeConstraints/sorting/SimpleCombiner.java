@@ -18,28 +18,31 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting;
 
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Adornment;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Combiner;
+import org.emoflon.neo.emsl.eMSL.AttributeConstraint;
 
-public class WeightedOperation<T> implements Comparable<WeightedOperation<T>> {
-	T operation;
-	float weight;
-	Adornment freeMask;
-	Adornment boundMask;
+public class SimpleCombiner implements Combiner<SimpleCombiner, AttributeConstraint> {
+	private final Chain<AttributeConstraint> last;
 	
-	public int compareTo(WeightedOperation<T> o) {
-		return weight < o.weight ? -1 : (weight == o.weight ? 0 : 1);
+	public SimpleCombiner() {
+		this.last = null;
 	}
 	
-	public String toString() {
-		if (operation != null && freeMask != null && boundMask != null) {
-			StringBuilder result = new StringBuilder(operation.toString());
-			result.append(" : ");
-			result.append(weight);
-			return result.toString();
-		} else {
-			return super.toString();
-		}
+	private SimpleCombiner(final SimpleCombiner src, final AttributeConstraint second) {
+		this.last = new Chain<AttributeConstraint>(second, src.last);
+	}
+	
+	public final SimpleCombiner combine(final AttributeConstraint second) {
+		return new SimpleCombiner(this, second);
+	}
+
+	public final boolean hasSameOrigin(AttributeConstraint operation) {
+		return last != null && last.getValue() == operation;
+	}
+	
+	public final Chain<AttributeConstraint> getRoot() {
+		return last;
 	}
 }

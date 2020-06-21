@@ -1,4 +1,4 @@
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common;
 
 import java.util.List;
 

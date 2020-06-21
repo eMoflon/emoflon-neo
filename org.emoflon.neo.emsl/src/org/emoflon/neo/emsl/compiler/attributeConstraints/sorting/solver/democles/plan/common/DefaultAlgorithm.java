@@ -1,14 +1,14 @@
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan.common;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan.common;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Adornment;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.Combiner;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.OperationRuntime;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common.SearchPlanAlgorithm;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan.Algorithm;
-import org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.plan.WeightedOperation;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Adornment;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.Combiner;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.OperationRuntime;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common.SearchPlanAlgorithm;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan.Algorithm;
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.plan.WeightedOperation;
 
 public class DefaultAlgorithm<C extends Combiner<C, O>, O extends OperationRuntime> extends Algorithm<C, O> implements SearchPlanAlgorithm<C, O>{
 	private WeightedOperationBuilder<O> builder;

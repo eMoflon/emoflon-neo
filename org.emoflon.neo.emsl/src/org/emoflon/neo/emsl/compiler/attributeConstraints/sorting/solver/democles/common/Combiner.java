@@ -18,7 +18,7 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common;
 
 public interface Combiner<U, V> {
 	public U combine(V second);

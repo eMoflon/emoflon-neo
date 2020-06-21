@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common;
 
 import java.util.Iterator;
 

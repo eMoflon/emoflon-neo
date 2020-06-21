@@ -18,11 +18,35 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.neo.engine.modules.attributeConstraints.sorting.solver.democles.common;
+package org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.solver.democles.common;
 
-public interface OperationRuntime {
-	public Object getOrigin();
-	public Adornment getAdornment();
-	public Adornment getFreeMask(Adornment inputAdornment);
-	public Adornment getBoundMask(Adornment inputAdornment);
+// Tuple
+abstract public class DataFrame {
+	
+	public final Object getValue(int index) {
+		if (index < 0 || index >= size()) {
+			throw new IndexOutOfBoundsException("No such variable: " + index);
+		}
+		return internalGet(index);
+	}
+	
+	public final void setValue(int index, Object value) {
+		if (index < 0 || index >= size()) {
+			throw new IndexOutOfBoundsException("No such variable: " + index);
+		}
+		if (value == null) {
+			throw new NullPointerException();
+		}
+		internalSet(index, value);
+	}
+	
+	abstract public int size();
+	
+	abstract public Object internalGet(int index);
+	abstract public void internalSet(int index, Object value);
+	abstract public int internalSize();
+	
+	public final boolean equals(Object other) {
+		throw new UnsupportedOperationException();
+	}
 }
