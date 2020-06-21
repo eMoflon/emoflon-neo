@@ -58,6 +58,7 @@ import org.apache.commons.lang3.StringUtils
 import org.emoflon.neo.emsl.eMSL.TargetNAC
 import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.AttributeConstraintType
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -111,7 +112,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	def String getDiagramBody(IEditorPart editor, ISelection selection) {
 		val EMSL_Spec root = getRoot(editor).get() as EMSL_Spec
-		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
+		var Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
+		selectedEntity = selectedEntity.filter[canBeVisualised]
 		val Optional<ModelNodeBlock> selectedNodeBlock = selectedEntity.flatMap([ e |
 			determineSelectedNodeBlock(selection, e)
 		])
@@ -132,6 +134,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			return visualiseEntity(selectedEntity.get, true)
 
 		visualiseNodeBlock(selectedNodeBlock.get, true)
+	}
+	
+	def canBeVisualised(Entity e) {
+		!(e instanceof AttributeConstraintType)
 	}
 
 	/**

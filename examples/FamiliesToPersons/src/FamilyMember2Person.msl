@@ -1,7 +1,7 @@
 import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
 import "platform:/resource/FamiliesToPersons/src/Schema.msl"
+import "platform:/plugin/org.emoflon.neo.neocore/model/AttributeConstraintsLibrary.msl"
 
-// Currently impossible: concat(", ", f.name, fm.name, p.name)
 abstract tripleRule FamilyMember2Person : FamiliesToPersons {	
 	source { 
 		families : FamilyRegister {
@@ -11,7 +11,7 @@ abstract tripleRule FamilyMember2Person : FamiliesToPersons {
 			.name := <familyName>
 		}
 		++ fm : FamilyMember {
-			.name := <firstName>
+			.name := <memberName>
 		}
 	}
 
@@ -20,12 +20,21 @@ abstract tripleRule FamilyMember2Person : FamiliesToPersons {
 			++ -persons->p
 		}
 		++ p : Person {
-			.name := <firstName>
+			.name := <personName>
 		}
 	}
 
 	correspondence {
 		families <- :FamiliesToPersons -> persons
 		++ fm <- :FamilyMemberToPerson -> p
-	}	
+	}
+	
+	attributeConstraints {
+  		concat(
+			separator=", ",
+			left=<familyName>,
+			right=<memberName>,
+			combined=<personName>
+		)
+	}
 }

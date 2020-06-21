@@ -45,7 +45,6 @@ public abstract class Generator<M extends IMatch, C extends ICoMatch> {
 	}
 
 	public void generate() {
-
 		progressMonitor.startStartup(startupModule.description());
 		startupModule.startup();
 		progressMonitor.finishStartup();

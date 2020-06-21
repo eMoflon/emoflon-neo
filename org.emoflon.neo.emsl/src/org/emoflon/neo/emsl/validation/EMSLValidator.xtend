@@ -3,12 +3,17 @@
  */
 package org.emoflon.neo.emsl.validation
 
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
+import java.util.List
 import java.util.function.Consumer
 import org.eclipse.emf.ecore.EObject
+import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.validation.Check
+import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
@@ -18,13 +23,16 @@ import org.emoflon.neo.emsl.eMSL.BuiltInType
 import org.emoflon.neo.emsl.eMSL.Condition
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.ConstraintBody
 import org.emoflon.neo.emsl.eMSL.ConstraintReference
 import org.emoflon.neo.emsl.eMSL.Correspondence
+import org.emoflon.neo.emsl.eMSL.DataType
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
 import org.emoflon.neo.emsl.eMSL.EnumValue
 import org.emoflon.neo.emsl.eMSL.GraphGrammar
 import org.emoflon.neo.emsl.eMSL.Implication
+import org.emoflon.neo.emsl.eMSL.ImportStatement
 import org.emoflon.neo.emsl.eMSL.LinkAttributeExpTarget
 import org.emoflon.neo.emsl.eMSL.Metamodel
 import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
@@ -35,9 +43,12 @@ import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint
+import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
+import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint
 import org.emoflon.neo.emsl.eMSL.PrimitiveBoolean
+import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt
 import org.emoflon.neo.emsl.eMSL.PrimitiveString
 import org.emoflon.neo.emsl.eMSL.RefinementCommand
@@ -48,21 +59,10 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
+import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerErrorType
 import org.emoflon.neo.emsl.util.FlattenerException
-import java.util.List
-import org.emoflon.neo.emsl.eMSL.Action
-import org.emoflon.neo.emsl.eMSL.NodeAttributeExpTarget
-import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
-import org.eclipse.xtext.EcoreUtil2
-import org.emoflon.neo.emsl.eMSL.ImportStatement
-import org.emoflon.neo.emsl.util.EMSLUtil
-import java.time.LocalDate
-import java.time.format.DateTimeParseException
-import org.emoflon.neo.emsl.eMSL.Parameter
-import org.emoflon.neo.emsl.eMSL.DataType
-import org.emoflon.neo.emsl.eMSL.ConstraintBody
 
 /**
  * This class contains custom validation rules. 

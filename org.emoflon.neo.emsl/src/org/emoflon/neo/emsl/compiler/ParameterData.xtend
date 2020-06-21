@@ -5,17 +5,18 @@ import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 import java.util.Optional
 
 class ParameterData {
-	
 	String value;
 	ParameterDomain domain;
 	ModelNodeBlock containingBlock;
 	String containingPropertyName;
+	Optional<String> boundValue;
 	
 	new(String paramName, ParameterDomain domain, ModelNodeBlock containingBlock, String containingPropertyName) {
 		this.value = '''<«paramName»>'''
 		this.domain = domain
 		this.containingBlock = containingBlock
 		this.containingPropertyName = containingPropertyName
+		boundValue = Optional.empty
 	}
 	
 	def getPrintValue() {
@@ -25,6 +26,13 @@ class ParameterData {
 			Optional.of('''«containingBlock.name»::«containingPropertyName»''')
 		else
 			Optional.empty
+	}
+	
+	def getBoundValue(){
+		if(!boundValue.present)
+			boundValue = printValue
+	
+		return boundValue
 	}
 	
 	def getDomain() {
@@ -46,6 +54,9 @@ class ParameterData {
 	}
 	
 	def unmap() {
+		if(!boundValue.present)
+			boundValue = printValue 
+		
 		map(null, null)
 	}
 }

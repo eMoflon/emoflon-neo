@@ -56,6 +56,7 @@ class EMSLUtil {
 
 	public static final String ORG_EMOFLON_NEO_CORE = "NeoCore";
 	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
+	public static final String ORG_EMOFLON_ATR_CNSTR_LIB_URI = "platform:/plugin/org.emoflon.neo.neocore/model/AttributeConstraintsLibrary.msl"
 
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"

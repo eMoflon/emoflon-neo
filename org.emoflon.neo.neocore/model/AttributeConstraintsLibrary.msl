@@ -1,0 +1,55 @@
+attributeConstraint concat(
+	separator : EString, 
+	left : EString, 
+	right : EString, 
+	combined : EString
+){
+	B B B B, 
+	B B B F, 
+	B B F B,
+	B F B B,
+	B F F B,
+	B F F F,
+	B B F F,
+	B F B F
+	
+	gen:
+	
+	B F F F,
+	B B F F,
+	B F B F
+}
+
+attributeConstraint addPrefix(
+	prefix : EString,
+	word : EString,
+	result : EString
+){
+	B B B,
+	B F B,
+	F B B,
+	B B F
+	
+	gen:
+	
+	B F F,
+	F F F,
+	F B F
+}
+
+attributeConstraint addSuffix(
+	word : EString,
+	suffix : EString,
+	result : EString
+){
+	B B B,
+	B F B,
+	F B B,
+	B B F
+	
+	gen:
+	
+	B F F,
+	F F F,
+	F B F
+}

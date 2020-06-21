@@ -7,6 +7,7 @@ Export-Package: .,
  gurobi,
  org.emoflon.neo.engine.modules,
  org.emoflon.neo.engine.modules.analysis,
+ org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary,
  org.emoflon.neo.engine.modules.cleanup,
  org.emoflon.neo.engine.modules.ilp,
  org.emoflon.neo.engine.modules.matchreprocessors,
@@ -21,7 +22,8 @@ Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.log4j;bundle-version="1.2.15",
  org.sat4j.core;bundle-version="2.3.5";visibility:=reexport,
- org.sat4j.pb;bundle-version="2.3.5";visibility:=reexport
+ org.sat4j.pb;bundle-version="2.3.5";visibility:=reexport,
+ org.emoflon.neo.emsl
 Bundle-ClassPath: lib/gurobi.jar,
  .
 Bundle-RequiredExecutionEnvironment: JavaSE-13

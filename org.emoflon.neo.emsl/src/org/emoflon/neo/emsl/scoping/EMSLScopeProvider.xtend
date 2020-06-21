@@ -17,8 +17,10 @@ import org.eclipse.xtext.scoping.impl.SimpleScope
 import org.eclipse.xtext.util.OnChangeEvictingCache
 import org.eclipse.xtext.util.SimpleAttributeResolver
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeConstraint
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.ConstraintArgValue
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.CorrespondenceType
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
@@ -43,6 +45,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.eMSL.AttributeConstraintType
 
 /**
  * This class contains custom scoping description.
@@ -156,12 +159,41 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 
 			if (tripleRuleInTGG(context, reference))
 				return handleTripleRuleInTGG(context, reference)
+			
+			if(typeOfAttrConstr(context, reference))
+				return handleTypeOfAttrConstr(context, reference)
+				
+			if(typeOfConstraintArgValue(context, reference))
+				return handleTypeOfConstraintArgValue(context, reference)
 
 		} catch (Exception e) {
 			// Problem determining specific scope
 		}
 
 		return super.getScope(context, reference)
+	}
+	
+	/*--------------------------------------------*/
+	/*----------- Attribute Constraints ----------*/
+	/*--------------------------------------------*/
+	private def handleTypeOfConstraintArgValue(EObject context, EReference reference) {
+		val constrArgVal = context as ConstraintArgValue
+		val attrConstr = constrArgVal.eContainer as AttributeConstraint
+		val attrConstrType = attrConstr.type
+		return Scopes.scopeFor(attrConstrType.args)
+	}
+	
+	private def handleTypeOfAttrConstr(EObject context, EReference reference){
+		val root = EcoreUtil2.getRootContainer(context)
+		determineScope(allTypesInAllImportedSpecs(root, AttributeConstraintType))
+	}
+	
+	private def typeOfConstraintArgValue(EObject context, EReference reference) {
+		context instanceof ConstraintArgValue && reference == EMSLPackage.Literals.CONSTRAINT_ARG_VALUE__TYPE
+	}
+	
+	private def typeOfAttrConstr(EObject context, EReference reference){
+		context instanceof AttributeConstraint && reference == EMSLPackage.Literals.ATTRIBUTE_CONSTRAINT__TYPE
 	}
 
 	/*---------------------------------*/
@@ -705,7 +737,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 						EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
 					])
 				} catch (Exception e) {
-					// TODO[Anjorin] Find out what the problem is here
+					// TODO Find out what the problem is here
 					// logger.debug("Unable to load: " + EMSLUtil.ORG_EMOFLON_NEO_CORE_URI)
 				}
 			}
