@@ -8,6 +8,7 @@ import org.emoflon.neo.emsl.eMSL.ValueExpression
 class InternalVariable {
 	@Accessors
 	transient ValueExpression value
+	@Accessors
 	String representation
 	
 	new(ValueExpression value, String representation) {
