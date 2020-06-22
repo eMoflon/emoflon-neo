@@ -196,6 +196,8 @@ class EMSLUtil {
 
 		if(value instanceof PrimitiveInt) return Integer.toString(PrimitiveInt.cast(value).getLiteral())
 
+		if(value instanceof PrimitiveDouble) return Double.toString(PrimitiveDouble.cast(value).getLiteral())
+
 		if(value instanceof PrimitiveBoolean) return Boolean.toString(PrimitiveBoolean.cast(value).isTrue())
 
 		if(value instanceof EnumValue) return "\"" + EnumValue.cast(value).getLiteral().getName().toString() + "\""
