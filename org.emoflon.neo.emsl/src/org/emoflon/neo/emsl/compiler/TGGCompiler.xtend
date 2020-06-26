@@ -9,12 +9,15 @@ import java.util.HashMap
 import java.util.HashSet
 import java.util.List
 import java.util.Map
+import java.util.Optional
 import java.util.Set
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.emoflon.neo.emsl.compiler.Operation.Domain
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
+import org.emoflon.neo.emsl.compiler.attributeConstraints.sorting.SearchPlanAction
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeConstraint
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.EMSLFactory
@@ -29,6 +32,7 @@ import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.SourceNAC
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
 import org.emoflon.neo.emsl.eMSL.TripleRule
+import org.emoflon.neo.emsl.eMSL.ValueExpression
 import org.emoflon.neo.emsl.generator.EMSLGenerator
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.neocore.util.PreProcessorUtil
@@ -57,7 +61,6 @@ class TGGCompiler {
 		val allMetamodels = new ArrayList
 		allMetamodels.addAll(tgg.srcMetamodels)
 		allMetamodels.addAll(tgg.trgMetamodels)
-		buildImportStatement(allMetamodels)
 		allMetamodels.add(PreProcessorUtil.instance.neoCore)
 		mapTypeNames(allMetamodels)
 		ruleNameToGreenElements = new HashMap();
@@ -67,6 +70,8 @@ class TGGCompiler {
 		generatedRules = new ArrayList()
 		generatedRules.add(generateSrcModelCreationRule)
 		generatedRules.add(generateTrgModelCreationRule)
+		
+		buildImportStatement(allMetamodels, flattenedRules)
 	}
 
 	def compileAll(IFileSystemAccess2 fsa) {
@@ -163,8 +168,15 @@ class TGGCompiler {
 		}
 	}
 
-	private def buildImportStatement(Iterable<Metamodel> metamodels) {
-		val resourcesToImport = metamodels.map[it.eResource.URI].toSet
+	private def buildImportStatement(Iterable<Metamodel> metamodels, Iterable<TripleRule> rules) {
+		val resourcesToImport = (metamodels.filter[
+			it.eResource !== null
+		].map [
+			it.eResource.URI
+		] + rules.flatMap [
+			it.attributeConstraints.map[it.type.eResource.URI]
+		]).toSet
+		
 		importStatements = '''
 			«FOR uri : resourcesToImport»
 				import "«uri»"
@@ -216,6 +228,8 @@ class TGGCompiler {
 				«FOR trgBlock : rule.trgNodeBlocks SEPARATOR "\n"»
 					«compileModelNodeBlock(op, trgBlock, Collections.emptySet, Domain.TRG, paramsToData, mapToModel, rule, ruleID)»
 				«ENDFOR»
+				
+				«compileAttributeConstraints(op, rule.attributeConstraints, paramsToData)»
 			} «IF !nacPatterns.isEmpty»when «rule.name»NAC«ENDIF»
 			
 			«IF (nacPatterns.size === 1)»
@@ -235,7 +249,44 @@ class TGGCompiler {
 			«ENDIF»
 		'''
 	}
+	
+	private def compileAttributeConstraints(Operation op, List<AttributeConstraint> attributeConstraints, Map<Parameter, ParameterData> paramsToData) {
+		val variables = attributeConstraints.flatMap[it.values].map[it.value].toSet.toList
+		val searchPlan = new SearchPlanAction(variables, attributeConstraints, op, paramsToData)
+		val sortedConstraints = searchPlan.sortConstraints
 
+		'''
+			attributeConstraints {
+				«FOR attrConstr : sortedConstraints»
+					«attrConstr.type.name»(
+						«FOR assignment : attrConstr.values SEPARATOR","»
+							«assignment.type.name»=«handleValue(assignment.value, paramsToData)»
+						«ENDFOR»
+					)
+				«ENDFOR»
+			}
+		'''
+	}
+
+	static def String handleValue(ValueExpression value, Map<Parameter, ParameterData> paramsToData) {
+		return getOperationalisedValue(value, paramsToData)//
+			.orElseGet([TGGCompilerUtils.handleValue(value)])
+	}
+
+	private static def getOperationalisedValue(ValueExpression value, Map<Parameter, ParameterData> paramsToData) {
+		if (value instanceof Parameter) {
+			val parametersInRule = paramsToData.filter [ k, v |
+				k.name.equals(value.name)
+			].values
+
+			if (parametersInRule.size > 0) {
+				val parameterDataInRule = parametersInRule.get(0)
+				return parameterDataInRule.boundValue
+			}
+		}
+		return Optional.empty()
+	}
+	
 	private def String getNacName(TripleRule rule, AtomicPattern pattern) {
 		'''«rule.name»_«pattern.name»'''
 	}
