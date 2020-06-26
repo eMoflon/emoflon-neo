@@ -17,7 +17,8 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SheRememberedCaterpillars"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanGUI"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanLanguage"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuite"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuiteGT"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuiteTGG"/>
 </provider>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137019574_4" label="case studies" name="case studies">
 <item elementID="=SokobanGUI" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -31,11 +32,12 @@
 <item elementID="=Quiltography" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=RiverCrossing" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=PacMan" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Chess" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=JavaKeywords" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=Chess" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137201994_7" label="tests" name="tests">
-<item elementID="=TestSuite" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=TestSuiteGT" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=TestSuiteTGG" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137041496_5" label="tggs" name="tggs">
 <item elementID="=CompanyToIT" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
