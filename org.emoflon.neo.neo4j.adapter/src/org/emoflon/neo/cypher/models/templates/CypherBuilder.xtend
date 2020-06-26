@@ -112,7 +112,7 @@ abstract class CypherBuilder {
 			RETURN id(r)
 		'''
 	}
-
+	
 	def static String removeTranslationAttributeForNodes(String modelName) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
@@ -130,7 +130,7 @@ abstract class CypherBuilder {
 	def static String getAllNodesInDelta(String modelName, String delta) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
-			WHERE n._«delta»_ = true
+			WHERE n.«delta» = true
 			RETURN DISTINCT id(n)
 		'''	
 	}
@@ -138,11 +138,18 @@ abstract class CypherBuilder {
 	def static String getAllEdgesInDelta(String modelName, String delta) {
 		'''
 			«matchAllEdgesInModel(modelName, "r")»
-			WHERE r._«delta»_ = true
+			WHERE r.«delta» = true
 			RETURN DISTINCT id(r)
 		'''	
 	}
 	
+	def static String getAllCorrsInDelta(String src, String trg, String delta) {
+		'''
+			«matchAllCorrs(src, trg, "r")»
+			WHERE r.«delta» = true
+			RETURN DISTINCT id(r)
+		'''
+	}
 	def static String getAllNodesInModel(String modelName) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
@@ -175,11 +182,17 @@ abstract class CypherBuilder {
 		'''
 	}
 	
-	def static String getModelNodes(String src, String trg){
+	def static String matchModelNodes(String src, String trg) {
 		'''
 			MATCH 
 				(src:NeoCore__Model {ename: "«src»"}),
 				(trg:NeoCore__Model {ename: "«trg»"})
+		'''
+	}
+	
+	def static String getModelNodes(String src, String trg){
+		'''
+			«matchModelNodes(src,trg)»
 			RETURN id(src), id(trg)
 		'''
 	}
@@ -205,29 +218,37 @@ abstract class CypherBuilder {
 	def static String prepareDeltaAttributeForNodes(String modelName, String delta) {
 		'''			
 			«matchAllNodesInModel(modelName, "n")»
-			SET n._«delta»_ = true
+			SET n.«delta» = true
 		'''
 	}
 	
 	def static String prepareDeltaAttributeForEdges(String modelName, String delta) {
 		'''			
 			«matchAllEdgesInModel(modelName, "r")»
-			SET r._«delta»_ = true
+			SET r.«delta» = true
 		'''
 	}
 	
 	def static String prepareDeltaAttributeForCorrs(String src, String trg, String delta) {
 		'''			
 			«matchAllCorrs(src, trg, "r")»
-			SET r._«delta»_ = true
+			SET r.«delta» = true
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForModelNodes(String src, String trg, String delta) {
+		'''			
+			«matchModelNodes(src, trg)»
+			SET src.«delta» = true,
+			trg.«delta» = true
 		'''
 	}
 	
 	def static String removeDeltaAttributeForNodes(String modelName, String delta) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
-			WHERE n._«delta»_ = true
-			remove n._«delta»_
+			WHERE n.«delta» = true
+			remove n.«delta»
 			
 		'''
 	}
@@ -235,8 +256,8 @@ abstract class CypherBuilder {
 	def static String removeDeltaAttributeForEdges(String modelName, String delta) {
 		'''
 			«matchAllEdgesInModel(modelName, "r")»
-			WHERE r._«delta»_ = true
-			remove r._«delta»_
+			WHERE r.«delta» = true
+			remove r.«delta»
 			
 		'''
 	}
@@ -244,9 +265,16 @@ abstract class CypherBuilder {
 	def static String removeDeltaAttributeForCorrs(String src, String trg, String delta) {
 		'''
 			«matchAllCorrs(src, trg, "r")»
-			WHERE r._«delta»_ = true
-			remove r._«delta»_
+			WHERE r.«delta» = true
+			remove r.«delta»
 			
+		'''
+	}
+	
+	def static String removeDeltaAttributeForModelNodes(String src, String trg, String delta) {
+		'''			
+			«matchModelNodes(src, trg)»
+			remove src.«delta», trg.«delta»
 		'''
 	}
 }

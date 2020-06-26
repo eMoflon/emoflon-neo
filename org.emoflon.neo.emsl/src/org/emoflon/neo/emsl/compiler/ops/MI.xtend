@@ -5,11 +5,11 @@ import java.util.Collection
 import java.util.Map
 import org.emoflon.neo.emsl.compiler.ILPOperation
 import org.emoflon.neo.emsl.compiler.ParameterData
+import org.emoflon.neo.emsl.compiler.TGGCompilerValidations
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ActionOperator
-import org.emoflon.neo.emsl.eMSL.Parameter
-import org.emoflon.neo.emsl.compiler.TGGCompilerValidations
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 class MI extends ILPOperation {
 
@@ -35,7 +35,7 @@ class MI extends ILPOperation {
 	}
 
 	override handleParameters(Map<Parameter, ParameterData> paramsToData,
-		Map<String, Collection<Parameter>> paramGroups, int ruleID, ArrayList<String> greenElements) {
+		Map<String, Collection<Parameter>> paramGroups, int ruleID, Map<Domain,ArrayList<String>> greenElements) {
 
 		for (group : paramGroups.values) {
 			val representative = paramsToData.get(selectParamGroupRepresentative(group, paramsToData, ruleID, greenElements))
@@ -48,11 +48,11 @@ class MI extends ILPOperation {
 	}
 
 	override selectParamGroupRepresentative(Collection<Parameter> paramGroup,
-		Map<Parameter, ParameterData> paramsToData, int ruleID, ArrayList<String> greenElements) {
+		Map<Parameter, ParameterData> paramsToData, int ruleID, Map<Domain,ArrayList<String>> greenElements) {
 			if (greenElements === null)
 				return paramGroup.head;
 			for (Parameter p : paramGroup) {
-				if (TGGCompilerValidations.binaryAND(ruleID, Math.pow(2, greenElements.indexOf(paramsToData.get(p).containingBlock.name)).intValue) == 0)
+				if (TGGCompilerValidations.binaryAND(ruleID, Math.pow(2,  getIndex(greenElements, paramsToData.get(p).containingBlock.name)).intValue) == 0)
 					return p;
 			}
 		return null;
@@ -146,36 +146,48 @@ class MI extends ILPOperation {
 		true
 	}
 
-//	override isComposed() {
-//		true
-//	}
-//	
-//	override getSubOps() {
-//		return (#[new CO(), new CC(), new BWD_OPT(), new FWD_OPT()])
-//	}
-//	
-	override getDeltaCondition(Action action) {
+	override getDeltaCondition(Action action, int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {
+		// Context
 		if (action === null || !ActionOperator::CREATE.equals(action.getOp()))
+			return ""
+		// CO Rule : Marked Element
+		else if (ruleID == 0)
 			return "~_ex_ : true"
+		// Optional Create Rule: Marked Element 
+		else if (!isGreenInRule(ruleID, greenElements, element))
+			return "~_cr_ : true"
+		// Optional Create Rule: Created Element
 		else
 			return ""
 	}
 
-	override String getAction(Action action, int ruleID, ArrayList<String> greenElements, String element) {
+	override String getAction(Action action, int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {
 		if (greenElements === null)
 			return ""
-		if (TGGCompilerValidations.binaryAND(ruleID, Math.pow(2, greenElements.indexOf(element)).intValue) > 0)
+		if (TGGCompilerValidations.binaryAND(ruleID, Math.pow(2, getIndex(greenElements, element)).intValue) > 0)
 			return getAction(action, null)
 		else
 			return ""
 
 	}
-
-	override String getConditionOperator(ConditionOperator propOp, int ruleID, ArrayList<String> greenElements,
+	
+	def getIndex(Map<Domain,ArrayList<String>> greenElements, String element) {
+		if (greenElements.get(Domain.CORR).contains(element))
+			return greenElements.get(Domain.CORR).indexOf(element);
+		if (greenElements.get(Domain.TRG).contains(element))
+			return greenElements.get(Domain.TRG).indexOf(element) + greenElements.get(Domain.CORR).size;
+		return greenElements.get(Domain.CORR).size + greenElements.get(Domain.TRG).size + greenElements.get(Domain.SRC).indexOf(element);
+	}
+	
+	def boolean isGreenInRule(int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {
+		return TGGCompilerValidations.binaryAND(ruleID, Math.pow(2,  getIndex(greenElements, element)).intValue) > 0;
+	}
+	
+	override String getConditionOperator(ConditionOperator propOp, int ruleID, Map<Domain,ArrayList<String>> greenElements,
 		String element) {
 		if (greenElements === null)
 			return super.getConditionOperator(propOp, null)
-		if (TGGCompilerValidations.binaryAND(ruleID, Math.pow(2, greenElements.indexOf(element)).intValue) > 0)
+		if (isGreenInRule(ruleID, greenElements, element))
 			return getConditionOperator(propOp, null)
 		else
 			return super.getConditionOperator(propOp, null)

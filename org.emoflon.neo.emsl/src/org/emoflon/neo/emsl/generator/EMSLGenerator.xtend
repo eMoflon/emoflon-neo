@@ -424,7 +424,7 @@ class EMSLGenerator extends AbstractGenerator {
 					Collection<NeoRule> rules = new HashSet<>();
 					
 					«FOR rule : gg.rules»
-						«FOR access : emslSpec.entities.filter[it instanceof Rule && (it as Rule).name.startsWith(rule.name)]»
+						«FOR access : emslSpec.entities.filter[it instanceof Rule && (it as Rule).name.equals(rule.name)]»
 							rules.add(getRule_«namingConvention((access as Rule).name)»().rule());
 						«ENDFOR»
 					«ENDFOR»

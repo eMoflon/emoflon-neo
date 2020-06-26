@@ -827,6 +827,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		
 		var srcEdges = executeQuery(CypherBuilder.getAllEdgesInDelta(sourceModel, delta));
 		var trgEdges = executeQuery(CypherBuilder.getAllEdgesInDelta(targetModel, delta));
+		var corrs = executeQuery(CypherBuilder.getAllCorrsInDelta(sourceModel, targetModel, delta));
 		
 		var allIDs = new HashSet<Long>();
 		
@@ -835,6 +836,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		
 		srcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		trgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		corrs.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		
 		return allIDs;
 	}
@@ -856,6 +858,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public void prepareModelWithContextDeltaAttribute(String sourceModelName, String targetModelName) {
+		
 		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForNodes(sourceModelName, NeoCoreConstants._EX_PROP));
 		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForEdges(sourceModelName, NeoCoreConstants._EX_PROP));
 		
@@ -863,6 +866,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForEdges(targetModelName, NeoCoreConstants._EX_PROP));
 		
 		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForCorrs(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
+//		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForModelNodes(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
 	}
 
 	public void removeContextDeltaAttributesFromModel(String sourceModelName, String targetModelName) {
@@ -873,5 +877,6 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeQueryForSideEffect(CypherBuilder.removeDeltaAttributeForEdges(targetModelName, NeoCoreConstants._EX_PROP));
 		
 		executeQueryForSideEffect(CypherBuilder.removeDeltaAttributeForCorrs(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
+//		executeQueryForSideEffect(CypherBuilder.removeDeltaAttributeForModelNodes(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
 	}
 }

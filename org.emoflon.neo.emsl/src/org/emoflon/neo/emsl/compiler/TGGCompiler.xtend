@@ -42,7 +42,7 @@ class TGGCompiler {
 	List<TripleRule> generatedRules
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
-	HashMap<String, ArrayList<String>> ruleNameToGreenElements
+	HashMap<String, Map<Domain,ArrayList<String>>> ruleNameToGreenElements
 	HashMap<String, ArrayList<Integer>> ruleNameToValidIDs
 
 	public final static String CREATE_SRC_MODEL_RULE = "createSrcModel"
@@ -103,7 +103,7 @@ class TGGCompiler {
 						«val greenElements = TGGCompilerValidations.getGreenElements(rule)»
 						«val validIDs = new ArrayList<Integer>()»
 						«ruleNameToGreenElements.put(rule.name, greenElements)»
-						«FOR i : 0 ..< Math.pow(2,greenElements.size).intValue - 1 /*No off-by-one error, we don't want the GEN rule!*/»
+						«FOR i : 0 ..< Math.pow(2,greenElements.get(Domain.SRC).size + greenElements.get(Domain.TRG).size + greenElements.get(Domain.CORR).size).intValue - 1 /*No off-by-one error, we don't want the GEN rule!*/»
 							«IF TGGCompilerValidations.isValidRule(op, rule, i, ruleNameToGreenElements.get(rule.name))»
 								«i > 0 ? rule.name + "_" + i : rule.name»
 								«{validIDs.add(i) ""}»
@@ -272,7 +272,9 @@ class TGGCompiler {
 				«compilePropertyStatement(op, property, domain, paramsToData, rule, ruleID, nodeBlock.name)»
 				«ENDFOR»
 				«op.getTranslation(nodeBlock.action, domain)»
-				«op.getDeltaCondition(nodeBlock.action)»
+				«IF flattenedRules.stream.anyMatch[name.equals(rule.name)]»
+					«op.getDeltaCondition(nodeBlock.action, ruleID, ruleNameToGreenElements.get(rule.name), nodeBlock.name)»
+				«ENDIF»
 			}
 		'''
 	}
@@ -281,7 +283,8 @@ class TGGCompiler {
 		Map<Parameter, ParameterData> paramsToData, TripleRule rule, int ruleID) {
 		val translate = op.getTranslation(relationStatement.action, domain)
 		val hasProperties = relationStatement.properties !== null && !relationStatement.properties.empty
-		val delta = op.getDeltaCondition(relationStatement.action)
+		val delta = flattenedRules.stream.anyMatch[name.equals(rule.name)] ? op.getDeltaCondition(relationStatement.action, ruleID, ruleNameToGreenElements.get(rule.name),
+				(relationStatement.eContainer as ModelNodeBlock).name + "->" + relationStatement.target.name) : ""
 		val action = op.multi ? op.getAction(relationStatement.action, ruleID, ruleNameToGreenElements.get(rule.name),
 				(relationStatement.eContainer as ModelNodeBlock).name + "->" + relationStatement.target.name) : op.
 				getAction(relationStatement.action, domain)

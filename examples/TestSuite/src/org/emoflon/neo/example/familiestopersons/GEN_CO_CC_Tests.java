@@ -1,8 +1,8 @@
 package org.emoflon.neo.example.familiestopersons;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static run.FamiliesToPersons_GEN_Run.TRG_MODEL_NAME;
-import static run.FamiliesToPersons_GEN_Run.SRC_MODEL_NAME;
+import static Schema.run.FamiliesToPersons_GEN_Run.TRG_MODEL_NAME;
+import static Schema.run.FamiliesToPersons_GEN_Run.SRC_MODEL_NAME;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

@@ -59,8 +59,13 @@ model moflonDoc {
 	es:Folder {
 		.name : "es"
 		-docs->EcoreUtil
+		-docs->esD
 		-subFolders->emoflon
 		-subFolders->cmoflon
+	}
+	
+	esD:Doc {
+		.name : "es"
 	}
 	
 	EcoreUtil:Doc {
@@ -70,7 +75,12 @@ model moflonDoc {
 	emoflon:Folder {
 		.name : "emoflon"
 		-docs->TGG
+		-docs->emoflonD
 		-subFolders->ibex
+	}
+	
+	emoflonD:Doc {
+		.name : "emoflon"
 	}
 	
 	TGG:Doc {
@@ -80,6 +90,11 @@ model moflonDoc {
 	ibex:Folder {
 		.name : "ibex"
 		-docs->IPM
+		-docs->ibexD
+	}
+	
+	ibexD:Doc {
+		.name : "ibex"
 	}
 	
 	IPM:Doc {
@@ -89,6 +104,11 @@ model moflonDoc {
 	cmoflon:Folder {
 		.name : "cmoflon"
 		-docs->GT
+		-docs->cmoflonD
+	}
+	
+	cmoflonD:Doc {
+		.name : "cmoflon"
 	}
 	
 	GT:Doc {
@@ -119,7 +139,7 @@ rule createCorrs {
 	EcoreUtilJ:Clazz {
 		.name : "EcoreUtil"
 		++-corr->EcoreUtilD {
-			._type_ := "ClazzToTable"
+			._type_ := "ClazzToDoc"
 		}
 	}
 	
@@ -135,7 +155,7 @@ rule createCorrs {
 	TGGJ:Clazz {
 		.name : "TGG"
 		++-corr->TGGD {
-			._type_ := "ClazzToTable"
+			._type_ := "ClazzToDoc"
 		}
 		
 	}
@@ -151,7 +171,7 @@ rule createCorrs {
 	IPMJ:Clazz {
 		.name : "IPM"
 		++-corr->IPMD {
-			._type_ := "ClazzToTable"
+			._type_ := "ClazzToDoc"
 		}
 	}
 	
@@ -166,7 +186,7 @@ rule createCorrs {
 	GTJ:Clazz {
 		.name : "GT"
 		++-corr->GTD {
-			._type_ := "ClazzToTable"
+			._type_ := "ClazzToDoc"
 		}
 	}
 	
@@ -227,7 +247,9 @@ model moflonDocChain -> moflonDoc {
 	// Doc
 	
 	ibex:Folder {
-		-docs->criticalClazz
+		-docs->criticalClazz {
+			~_cr_ : true
+		}
 	}
 	
 	criticalClazz:Doc {
@@ -258,7 +280,9 @@ model moflonJavaMultiDel -> moflonJava {
 model moflonDocMultiDel -> moflonDoc {
 		
 	ibex:Folder {
-		-docs->criticalClazz
+		-docs->criticalClazz {
+			~_cr_ : true
+		}
 	}
 	
 	criticalClazz:Doc {
@@ -277,7 +301,9 @@ model moflonDocSimple -> moflonDoc {
 		
 	cmoflon:Folder {
 		.name : "cmoflon"
-		-docs->criticalClazz
+		-docs->criticalClazz {
+			~_cr_ : true
+		}
 	}
 	
 	criticalClazz:Doc {

@@ -1,24 +1,25 @@
 package org.emoflon.neo.emsl.compiler
 
+import java.util.ArrayList
+import java.util.Collection
+import java.util.Collections
+import java.util.Map
 import org.emoflon.neo.emsl.compiler.ops.BWD
+import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
 import org.emoflon.neo.emsl.compiler.ops.CC
 import org.emoflon.neo.emsl.compiler.ops.CO
 import org.emoflon.neo.emsl.compiler.ops.FWD
-import org.emoflon.neo.emsl.compiler.ops.MODELGEN
-import org.emoflon.neo.emsl.eMSL.Action
-import org.emoflon.neo.emsl.eMSL.ActionOperator
-import org.emoflon.neo.emsl.eMSL.Correspondence
-import org.emoflon.neo.emsl.eMSL.Parameter
-import java.util.Map
-import java.util.Collection
-import org.emoflon.neo.emsl.eMSL.ConditionOperator
-import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
-import java.util.Collections
-import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
 import org.emoflon.neo.emsl.compiler.ops.FWD_OPT
 import org.emoflon.neo.emsl.compiler.ops.MI
-import org.eclipse.emf.ecore.EObject
-import java.util.ArrayList
+import org.emoflon.neo.emsl.compiler.ops.MODELGEN
+import org.emoflon.neo.emsl.eMSL.Action
+import org.emoflon.neo.emsl.eMSL.ConditionOperator
+import org.emoflon.neo.emsl.eMSL.Parameter
+import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
+import org.emoflon.neo.emsl.compiler.Operation.Domain
+import org.emoflon.neo.emsl.compiler.Operation.Domain
+import org.emoflon.neo.emsl.compiler.Operation.Domain
+import org.emoflon.neo.emsl.compiler.Operation.Domain
 
 interface Operation {
 	enum Domain {SRC, CORR, TRG}
@@ -39,7 +40,7 @@ interface Operation {
 
 	def String getTranslation(Action action, Domain domain)
 	
-	def String getDeltaCondition(Action action) {
+	def String getDeltaCondition(Action action, int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {
 		// default: no delta condition
 		'''
 		'''
@@ -77,21 +78,21 @@ interface Operation {
 		false
 	}
 	
-	def String getAction(Action action, int ruleID, ArrayList<String> greenElements, String element) {
+	def String getAction(Action action, int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {
 		return ""
 	}
 	
-	def String getConditionOperator(ConditionOperator propOp, int ruleID, ArrayList<String> greenElements, String element) {
+	def String getConditionOperator(ConditionOperator propOp, int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {
 		return ""
 	}
 	
 	def selectParamGroupRepresentative(Collection<Parameter> paramGroup,
-		Map<Parameter, ParameterData> paramsToData, int ruleID, ArrayList<String> greenElements) {
+		Map<Parameter, ParameterData> paramsToData, int ruleID, Map<Domain,ArrayList<String>> greenElements) {
 		return null		
 	}
 	
 	def handleParameters(Map<Parameter, ParameterData> paramsToData,
-		Map<String, Collection<Parameter>> paramGroups, int ruleID, ArrayList<String> greenElements) {
+		Map<String, Collection<Parameter>> paramGroups, int ruleID, Map<Domain,ArrayList<String>> greenElements) {
 		// do nothing		
 	}
 	

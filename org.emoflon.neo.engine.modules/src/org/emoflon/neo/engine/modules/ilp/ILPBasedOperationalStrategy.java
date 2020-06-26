@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,6 +20,7 @@ import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
@@ -49,6 +51,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> opRules;
 	protected Collection<NeoNegativeConstraint> negativeConstraints;
+	protected Optional<MatchContainer<NeoMatch, NeoCoMatch>> matchContainer = Optional.empty();
 
 	protected String sourceModel;
 	protected String targetModel;
@@ -369,9 +372,65 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	public String getInfo() {
 		return ilpProblem.getProblemInformation();
 	}
-
+	
 	public boolean isConsistent() throws Exception {
-		determineInconsistentElements();
+		if (inconsistentElements == null) {
+			logger.debug("Registering all matches...");
+			matchContainer.ifPresent(mc -> registerMatches(mc.streamAllCoMatches()));
+			computeWeights();
+			logger.debug("Registered all matches.");
+
+			inconsistentElements = determineInconsistentElements();
+			removeInconsistentElements(inconsistentElements);
+		}
+
 		return inconsistentElements.isEmpty();
+	}
+	
+	protected abstract void removeInconsistentElements(Collection<Long> inconsistentElts);
+	
+	protected void removeInconsistentElements(Collection<Long> inconsistentElts, boolean src, boolean corr, boolean trg) {
+		Set<Long> relevantElements = Collections.EMPTY_SET;
+		
+		if (src)
+			relevantElements.addAll(builder.getAllElementsOfModel(sourceModel));
+		if (corr)
+			relevantElements.addAll(builder.getAllCorrs(sourceModel, targetModel));
+		if (trg)
+			relevantElements.addAll(builder.getAllElementsOfModel(targetModel));
+				
+		matchContainer.ifPresent(mc -> {
+			var inconsistentEdges = mc.getRelRange().getIDs().stream()//
+					.filter(x -> relevantElements.contains(x) && (Long)x < 0)
+					.map(x -> -1 * (Long)x)//
+					.filter(x -> inconsistentElts.contains(x))//
+					.collect(Collectors.toSet());
+			
+			var inconsistentNodes = mc.getRelRange().getIDs().stream()//
+					.filter(x -> relevantElements.contains(x) && (Long)x > 0)
+					.map(x -> (Long)x)//
+					.filter(x -> inconsistentElts.contains(x))//
+					.collect(Collectors.toSet());
+			
+			builder.deleteEdges(inconsistentEdges);
+			inconsistentElts.removeAll(inconsistentEdges);
+			builder.deleteNodes(inconsistentNodes);
+			inconsistentElts.removeAll(inconsistentNodes);
+		});
+	}
+	
+	public void cleanup() {
+		try {
+			if (isConsistent()) {
+				logger.info("Your triple is consistent!");
+			} else {
+				logger.info("Your triple is inconsistent!");
+				var inconsistentElements = determineInconsistentElements();
+				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
+				logger.debug("Inconsistent element IDs: " + inconsistentElements);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
