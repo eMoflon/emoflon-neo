@@ -56,6 +56,7 @@ class EMSLUtil {
 
 	public static final String ORG_EMOFLON_NEO_CORE = "NeoCore";
 	public static final String ORG_EMOFLON_NEO_CORE_URI = "platform:/plugin/org.emoflon.neo.neocore/model/NeoCore.msl"
+	public static final String ORG_EMOFLON_ATR_CNSTR_LIB_URI = "platform:/plugin/org.emoflon.neo.neocore/model/AttributeConstraintsLibrary.msl"
 
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"
@@ -65,11 +66,12 @@ class EMSLUtil {
 	public static final String PARAM_NAME_FOR_MATCH = "match";
 
 	def static EMSL_Spec loadSpecification(String modelURI, String platformResourceURIRoot,
-		String platformPluginURIRoot) {
+		String platformPluginURIRoot, String neocoreURI) {
 		EMSLPackageImpl.init()
 		new StandaloneSetup().setPlatformUri(platformResourceURIRoot)
 		var Injector injector = new EMSLStandaloneSetup().createInjectorAndDoEMFRegistration()
 		var XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet)
+		resourceSet.URIConverter.URIMap.put(URI.createURI(ORG_EMOFLON_NEO_CORE_URI), URI.createURI(neocoreURI))
 		resourceSet.URIConverter.URIMap.put(URI.createURI("platform:/plugin/"), URI.createURI(platformPluginURIRoot))
 		resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE)
 		var Resource resource = resourceSet.getResource(URI.createURI(modelURI), true)
@@ -193,6 +195,8 @@ class EMSLUtil {
 		if(value instanceof PrimitiveString) return "\"" + PrimitiveString.cast(value).getLiteral() + "\""
 
 		if(value instanceof PrimitiveInt) return Integer.toString(PrimitiveInt.cast(value).getLiteral())
+
+		if(value instanceof PrimitiveDouble) return Double.toString(PrimitiveDouble.cast(value).getLiteral())
 
 		if(value instanceof PrimitiveBoolean) return Boolean.toString(PrimitiveBoolean.cast(value).isTrue())
 

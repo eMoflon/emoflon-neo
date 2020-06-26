@@ -12,4 +12,4 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter,
  org.emoflon.neo.engine.modules
 Automatic-Module-Name: RiverCrossing
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13

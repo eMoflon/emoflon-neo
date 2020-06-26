@@ -54,8 +54,7 @@ public class BoardGenerator {
 		NeoCoreBuilder builder = API_Common.createBuilder();
 
 		try {
-			Model model = new API_SokobanSimple(builder, API_Common.PLATFORM_RESOURCE_URI,
-					API_Common.PLATFORM_PLUGIN_URI).getModel_SokobanSimple();
+			Model model = new API_SokobanSimple(builder).getModel_SokobanSimple();
 
 			model.setName(modelName);
 			generateContents(model, modelSize);

@@ -62,7 +62,7 @@ class CO extends ILPOperation {
 	
 	override additionalFields(String tggName) {
 		'''
-			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+			private static final SupportedILPSolver solver = SupportedILPSolver.Sat4J;
 			private CheckOnlyOperationalStrategy checkOnly;
 		'''
 	}

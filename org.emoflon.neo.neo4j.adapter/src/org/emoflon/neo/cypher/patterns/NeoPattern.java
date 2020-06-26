@@ -203,10 +203,16 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 		}
 	}
 
-	public Collection<Record> getData(Collection<? extends NeoMatch> matches) {
+	public Collection<Record> getData(Collection<? extends NeoMatch> matches, IMask mask) {
 		var cypherQuery = getDataQuery();
 
-		var params = matches.stream().map(m -> m.convertToMap()).collect(Collectors.toList());
+		var params = matches.stream()//
+				.map(m -> {
+					var map = m.convertToMap();
+					map.putAll(mask.getParameters());
+					return map;
+				}).collect(Collectors.toList());
+	
 		var result = builder.executeQuery(cypherQuery, Map.of(NeoMatch.getMatchesParameter(), params));
 		logger.debug(matches);
 		logger.debug("\n" + cypherQuery);
@@ -217,6 +223,10 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 			var results = result.list();
 			return results;
 		}
+	}
+	
+	public Collection<Record> getData(Collection<? extends NeoMatch> matches) {
+		return getData(matches, IMask.empty());
 	}
 
 	private String getDataQuery() {

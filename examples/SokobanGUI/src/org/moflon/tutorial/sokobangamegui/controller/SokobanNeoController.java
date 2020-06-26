@@ -46,9 +46,8 @@ public class SokobanNeoController implements IController {
 
 	public SokobanNeoController(Function<IController, View> createView, Consumer<SokobanNeoController> createBoard) {
 		builder = API_Common.createBuilder();
-		api1 = new API_SokobanGUIPatterns(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
-		api2 = new API_SokobanPatternsRulesConstraints(builder, API_Common.PLATFORM_RESOURCE_URI,
-				API_Common.PLATFORM_PLUGIN_URI);
+		api1 = new API_SokobanGUIPatterns(builder);
+		api2 = new API_SokobanPatternsRulesConstraints(builder);
 
 		logger.info("Starting to build board...");
 		long tic = System.currentTimeMillis();
@@ -285,8 +284,7 @@ public class SokobanNeoController implements IController {
 	@Override
 	public void newBoard(int width, int height) {
 		try {
-			var language = new API_SokobanLanguage(builder, API_Common.PLATFORM_RESOURCE_URI,
-					API_Common.PLATFORM_PLUGIN_URI);
+			var language = new API_SokobanLanguage(builder);
 			var metamodel = language.getMetamodel_SokobanLanguage();
 			builder.clearDataBase();
 			builder.exportEMSLEntityToNeo4j(metamodel);
@@ -325,8 +323,7 @@ public class SokobanNeoController implements IController {
 
 	private void defaultBoard() {
 		try {
-			var exampleBoard = new API_SokobanSimpleTestField(builder, API_Common.PLATFORM_RESOURCE_URI,
-					API_Common.PLATFORM_PLUGIN_URI);
+			var exampleBoard = new API_SokobanSimpleTestField(builder);
 			var board = exampleBoard.getModel_SokobanSimpleTestField();
 			builder.exportEMSLEntityToNeo4j(board);
 			extractFields();

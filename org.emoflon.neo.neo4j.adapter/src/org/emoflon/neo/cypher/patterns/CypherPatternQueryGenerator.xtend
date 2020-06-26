@@ -43,7 +43,7 @@ class CypherPatternQueryGenerator {
 			// Data query for: «pattern.name»
 			UNWIND $«matchesParameter» AS «matchParameter»
 			
-			«matchAllElements(pattern, false)»
+			«matchAllElements(pattern, true)»
 			
 			WHERE
 				«FOR element : pattern.elements SEPARATOR " AND "»

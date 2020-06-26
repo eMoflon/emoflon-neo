@@ -42,4 +42,4 @@ Export-Package: CompanyToIT,
  run
 Automatic-Module-Name: CompanyToIT
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13

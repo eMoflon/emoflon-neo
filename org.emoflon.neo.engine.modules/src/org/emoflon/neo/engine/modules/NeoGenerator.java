@@ -29,6 +29,7 @@ import org.emoflon.neo.engine.generator.modules.IRuleScheduler;
 import org.emoflon.neo.engine.generator.modules.IStartupModule;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
+import org.emoflon.neo.engine.modules.attributeConstraints.AttributeConstraintContainer;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
@@ -38,6 +39,7 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	private Map<NeoRule, Collection<String>> boundParameters;
 	private Map<NeoRule, Collection<String>> freeParameters;
 	private Map<String, DataType> parameterDataTypes;
+	private AttributeConstraintContainer attrCSP;
 
 	public NeoGenerator(//
 			Collection<NeoRule> allRules, //
@@ -69,6 +71,8 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 		this.parameterValueGenerators.addAll(parameterValueGenerators);
 
 		mapParameters(allRules);
+		
+		attrCSP = new AttributeConstraintContainer();
 	}
 
 	private void mapParameters(Collection<NeoRule> rules) {
@@ -125,8 +129,13 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			});
 
 			ruleMasks.put(neoRule, mask);
+			var matches = neoRule.determineMatches(schedule, mask);
+			
+			// Solve attribute CSPs, filter matches, and mask free parameters now bound by CSP
+			attrCSP.initialise(neoRule.getEMSLRule().getAttributeConstraints());
+			var filteredMatches = attrCSP.solveFilterAndMask(matches, mask);
 
-			matchContainer.addAll(neoRule.determineMatches(schedule, mask), rule);
+			matchContainer.addAll(filteredMatches, rule);
 		});
 	}
 
@@ -137,10 +146,13 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 			throw new IllegalStateException("Unexpected type of rule: " + rule.getClass());
 
 		NeoRule neoRule = (NeoRule) rule;
-
-		// mask free parameters
+		
+		// mask remaining free parameters
 		freeParameters.get(rule).forEach(param -> {
-			matches.forEach(match -> match.addParameter(param, generateValueFor(parameterDataTypes.get(param), param)));
+			matches.forEach(match -> {
+				if(!match.hasValueForParameter(param))
+					match.addParameter(param, generateValueFor(parameterDataTypes.get(param), param));
+			});
 		});
 
 		var comatches = neoRule.applyAll(matches, ruleMasks.get(neoRule));
@@ -161,5 +173,9 @@ public class NeoGenerator extends Generator<NeoMatch, NeoCoMatch> {
 	protected MatchContainer<NeoMatch, NeoCoMatch> createMatchContainer(
 			Collection<? extends IRule<NeoMatch, NeoCoMatch>> allRules) {
 		return new NeoMatchContainer(allRules);
+	}
+	
+	public AttributeConstraintContainer getAttrConstrContainer() {
+		return attrCSP;
 	}
 }

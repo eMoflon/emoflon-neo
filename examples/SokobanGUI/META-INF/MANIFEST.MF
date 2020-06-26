@@ -19,7 +19,7 @@ Require-Bundle: org.apache.log4j,
  org.apache.commons.logging,
  org.apache.commons.lang3,
  org.emoflon.neo.engine.modules
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13
 Automatic-Module-Name: SokobanGUI
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ActivationPolicy: lazy

@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-Version: 0.0.1
 Bundle-SymbolicName: JavaKeywords;singleton:=true
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13
 Require-Bundle: org.emoflon.neo.neo4j.adapter,
  org.eclipse.xtext,
  org.apache.commons.logging,

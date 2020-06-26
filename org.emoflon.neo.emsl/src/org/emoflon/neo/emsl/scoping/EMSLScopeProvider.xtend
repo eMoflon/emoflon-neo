@@ -17,8 +17,10 @@ import org.eclipse.xtext.scoping.impl.SimpleScope
 import org.eclipse.xtext.util.OnChangeEvictingCache
 import org.eclipse.xtext.util.SimpleAttributeResolver
 import org.emoflon.neo.emsl.eMSL.AtomicPattern
+import org.emoflon.neo.emsl.eMSL.AttributeConstraint
 import org.emoflon.neo.emsl.eMSL.AttributeExpression
 import org.emoflon.neo.emsl.eMSL.Constraint
+import org.emoflon.neo.emsl.eMSL.ConstraintArgValue
 import org.emoflon.neo.emsl.eMSL.Correspondence
 import org.emoflon.neo.emsl.eMSL.CorrespondenceType
 import org.emoflon.neo.emsl.eMSL.EMSLPackage
@@ -43,6 +45,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
+import org.emoflon.neo.emsl.eMSL.AttributeConstraintType
 
 /**
  * This class contains custom scoping description.
@@ -55,108 +58,142 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	OnChangeEvictingCache cacheThisAndAllSuperTypes = new OnChangeEvictingCache
 
 	override getScope(EObject context, EReference reference) {
-		if (superTypeOfMetamodelNodeBlock(context, reference)) {
-			return handleNodeBlockSuperTypesInMetamodel(context as MetamodelNodeBlock, reference)
+		try {
+			if (superTypeOfMetamodelNodeBlock(context, reference)) {
+				return handleNodeBlockSuperTypesInMetamodel(context as MetamodelNodeBlock, reference)
+			}
+
+			if (typeOfNodeBlock(context, reference)) {
+				if (isInModel(context as ModelNodeBlock))
+					return handleNodeBlockTypesInModel(context as ModelNodeBlock, reference)
+				else if (isInPattern(context as ModelNodeBlock))
+					return handleNodeBlockTypesInPattern(context as ModelNodeBlock, reference)
+				else if (isInRule(context as ModelNodeBlock))
+					return handleNodeBlockTypesInRule(context as ModelNodeBlock, reference)
+				else if (isInTripleRule(context as ModelNodeBlock))
+					return handleNodeBlockTypesInTripleRule(context as ModelNodeBlock, reference)
+			}
+
+			if (valueOfRelationStatementInModel(context, reference))
+				return handleValueOfRelationStatementInModel(context as ModelRelationStatement, reference)
+
+			if (valueOfRelationStatementInMetamodel(context, reference))
+				return handleValueOfRelationStatementInMetamodel(context as MetamodelRelationStatement, reference)
+
+			if (valueOfRelationStatementInRule(context, reference))
+				return handleValueOfRelationStatementInRule(context as ModelRelationStatement, reference)
+
+			if (valueOfRelationStatementInPattern(context, reference))
+				return handleValueOfRelationStatementInPattern(context as ModelRelationStatement, reference)
+
+			if (valueOfRelationStatementInTripleRule(context, reference)) {
+				return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
+			}
+
+			if (typeOfRelationStatementInModelRelationStatement(context, reference)) {
+				return handleTypeOfRelationStatementInModelRelationStatement(context as ModelRelationStatement,
+					context.eContainer as ModelNodeBlock)
+			}
+
+			if (typeOfRelationStatementInModelRelationStatementType(context, reference)) {
+				return handleTypeOfRelationStatementInModelRelationStatementType(
+					context.eContainer as ModelRelationStatement, context.eContainer.eContainer as ModelNodeBlock)
+			}
+
+			if (typeOfRelationStatementInModelNodeBlock(context, reference))
+				return handleTypeOfRelationStatementInModelRelationStatementType(context as ModelNodeBlock)
+
+			if (nameOfPropertyStatement(context, reference)) {
+				return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement,
+					context.eContainer as ModelNodeBlock)
+			}
+
+			if (typeOfPropertyStatementInRelationStatement(context, reference))
+				return handleTypeOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
+
+			if (valueOfEnumInPropertyStatementInModel(context, reference))
+				return handleValueOfEnumInPropertyStatementInModel((context as EnumValue), reference)
+
+			if (valueOfNodeAttributeExpression(context, reference)) {
+				return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
+			}
+
+			if (nameOfSuperRefinementTypeOfSuperType(context, reference))
+				return handleNameOfSuperRefinementTypeOfSuperType(context, reference)
+
+			if (nameOfSuperRefinementTypeOfInRefinementCommand(context, reference))
+				return handleNameOfSuperRefinementTypeOfModelInRefinementCommand(context, reference)
+
+			if (sourceOfCorrespondence(context, reference))
+				return handleSourceOfCorrespondence(context, reference)
+
+			if (targetOfCorrespondence(context, reference))
+				return handleTargetOfCorrespondence(context as Correspondence, reference)
+
+			if (typeOfCorrespondence(context, reference))
+				return handleTypeOfCorrespondence(context as Correspondence, reference)
+
+			if (linkAttributeExpressionTargetsLink(context, reference))
+				return handleLinkAttributeExpressionTargetsLink(context, reference)
+
+			if (linkAttributeExpressionTargetsAttribute(context, reference))
+				return handleLinkAttributeExpressionTargetsAttribute(context, reference)
+
+			if (linkAttributeExpressionTargetsTarget(context, reference))
+				return handleLinkAttributeExpressionTargetsTarget(context, reference)
+
+			if (patternInApplicationCondition(context, reference))
+				return handlePatternInApplicationCondition(context, reference)
+
+			if (constraintReferenceInApplicationCondition(context, reference))
+				return handleConstraintReferenceInApplicationCondition(context, reference)
+
+			if (correspondenceDefinitionSrc(context, reference))
+				return handleCorrespondenceDefinition(context, reference)
+
+			if (srcMetamodelInTGG(context, reference))
+				return handleSrcMetamodelInTGG(context, reference)
+
+			if (trgMetamodelInTGG(context, reference))
+				return handleTrgMetamodelInTGG(context, reference)
+
+			if (tripleRuleInTGG(context, reference))
+				return handleTripleRuleInTGG(context, reference)
+			
+			if(typeOfAttrConstr(context, reference))
+				return handleTypeOfAttrConstr(context, reference)
+				
+			if(typeOfConstraintArgValue(context, reference))
+				return handleTypeOfConstraintArgValue(context, reference)
+
+		} catch (Exception e) {
+			// Problem determining specific scope
 		}
-
-		if (typeOfNodeBlock(context, reference)) {
-			if (isInModel(context as ModelNodeBlock))
-				return handleNodeBlockTypesInModel(context as ModelNodeBlock, reference)
-			else if (isInPattern(context as ModelNodeBlock))
-				return handleNodeBlockTypesInPattern(context as ModelNodeBlock, reference)
-			else if (isInRule(context as ModelNodeBlock))
-				return handleNodeBlockTypesInRule(context as ModelNodeBlock, reference)
-			else if (isInTripleRule(context as ModelNodeBlock))
-				return handleNodeBlockTypesInTripleRule(context as ModelNodeBlock, reference)
-		}
-
-		if (valueOfRelationStatementInModel(context, reference))
-			return handleValueOfRelationStatementInModel(context as ModelRelationStatement, reference)
-
-		if (valueOfRelationStatementInMetamodel(context, reference))
-			return handleValueOfRelationStatementInMetamodel(context as MetamodelRelationStatement, reference)
-
-		if (valueOfRelationStatementInRule(context, reference))
-			return handleValueOfRelationStatementInRule(context as ModelRelationStatement, reference)
-
-		if (valueOfRelationStatementInPattern(context, reference))
-			return handleValueOfRelationStatementInPattern(context as ModelRelationStatement, reference)
-
-		if (valueOfRelationStatementInTripleRule(context, reference)) {
-			return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
-		}
-
-		if (typeOfRelationStatementInModelRelationStatement(context, reference)) {
-			return handleTypeOfRelationStatementInModelRelationStatement(context as ModelRelationStatement,
-				context.eContainer as ModelNodeBlock)
-		}
-
-		if (typeOfRelationStatementInModelRelationStatementType(context, reference)) {
-			return handleTypeOfRelationStatementInModelRelationStatementType(
-				context.eContainer as ModelRelationStatement, context.eContainer.eContainer as ModelNodeBlock)
-		}
-
-		if (typeOfRelationStatementInModelNodeBlock(context, reference))
-			return handleTypeOfRelationStatementInModelRelationStatementType(context as ModelNodeBlock)
-
-		if (nameOfPropertyStatement(context, reference)) {
-			return handleTypeOfPropertyStatementInModelNodeBlock(context as ModelPropertyStatement,
-				context.eContainer as ModelNodeBlock)
-		}
-
-		if (typeOfPropertyStatementInRelationStatement(context, reference))
-			return handleTypeOfPropertyStatementInRelationStatement(context as ModelPropertyStatement, reference)
-
-		if (valueOfEnumInPropertyStatementInModel(context, reference))
-			return handleValueOfEnumInPropertyStatementInModel((context as EnumValue), reference)
-
-		if (valueOfNodeAttributeExpression(context, reference)) {
-			return handleNodeAttributeExpression(context as NodeAttributeExpTarget)
-		}
-
-		if (nameOfSuperRefinementTypeOfSuperType(context, reference))
-			return handleNameOfSuperRefinementTypeOfSuperType(context, reference)
-
-		if (nameOfSuperRefinementTypeOfInRefinementCommand(context, reference))
-			return handleNameOfSuperRefinementTypeOfModelInRefinementCommand(context, reference)
-
-		if (sourceOfCorrespondence(context, reference))
-			return handleSourceOfCorrespondence(context, reference)
-
-		if (targetOfCorrespondence(context, reference))
-			return handleTargetOfCorrespondence(context as Correspondence, reference)
-
-		if (typeOfCorrespondence(context, reference))
-			return handleTypeOfCorrespondence(context as Correspondence, reference)
-
-		if (linkAttributeExpressionTargetsLink(context, reference))
-			return handleLinkAttributeExpressionTargetsLink(context, reference)
-
-		if (linkAttributeExpressionTargetsAttribute(context, reference))
-			return handleLinkAttributeExpressionTargetsAttribute(context, reference)
-
-		if (linkAttributeExpressionTargetsTarget(context, reference))
-			return handleLinkAttributeExpressionTargetsTarget(context, reference)
-
-		if (patternInApplicationCondition(context, reference))
-			return handlePatternInApplicationCondition(context, reference)
-
-		if (constraintReferenceInApplicationCondition(context, reference))
-			return handleConstraintReferenceInApplicationCondition(context, reference)
-
-		if (correspondenceDefinitionSrc(context, reference))
-			return handleCorrespondenceDefinition(context, reference)
-
-		if (srcMetamodelInTGG(context, reference))
-			return handleSrcMetamodelInTGG(context, reference)
-
-		if (trgMetamodelInTGG(context, reference))
-			return handleTrgMetamodelInTGG(context, reference)
-
-		if (tripleRuleInTGG(context, reference))
-			return handleTripleRuleInTGG(context, reference)
 
 		return super.getScope(context, reference)
+	}
+	
+	/*--------------------------------------------*/
+	/*----------- Attribute Constraints ----------*/
+	/*--------------------------------------------*/
+	private def handleTypeOfConstraintArgValue(EObject context, EReference reference) {
+		val constrArgVal = context as ConstraintArgValue
+		val attrConstr = constrArgVal.eContainer as AttributeConstraint
+		val attrConstrType = attrConstr.type
+		return Scopes.scopeFor(attrConstrType.args)
+	}
+	
+	private def handleTypeOfAttrConstr(EObject context, EReference reference){
+		val root = EcoreUtil2.getRootContainer(context)
+		determineScope(allTypesInAllImportedSpecs(root, AttributeConstraintType))
+	}
+	
+	private def typeOfConstraintArgValue(EObject context, EReference reference) {
+		context instanceof ConstraintArgValue && reference == EMSLPackage.Literals.CONSTRAINT_ARG_VALUE__TYPE
+	}
+	
+	private def typeOfAttrConstr(EObject context, EReference reference){
+		context instanceof AttributeConstraint && reference == EMSLPackage.Literals.ATTRIBUTE_CONSTRAINT__TYPE
 	}
 
 	/*---------------------------------*/
@@ -502,9 +539,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns a scope for the value of a RelationStatement in a Model.
 	 */
 	private def handleValueOfRelationStatementInMetamodel(MetamodelRelationStatement statement, EReference reference) {
-		val metaModel = statement.eContainer.eContainer as Metamodel
-		val allNodeBlocks = new HashSet(metaModel.nodeBlocks)
-		return Scopes.scopeFor(allNodeBlocks)
+		determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(statement), MetamodelNodeBlock))
 	}
 
 	/*-------------------------------------*/
@@ -702,7 +737,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 						EcoreUtil2.getAllContentsOfType(sp, type).forEach[o|aliases.put(o, null)]
 					])
 				} catch (Exception e) {
-					// TODO[Anjorin] Find out what the problem is here
+					// TODO Find out what the problem is here
 					// logger.debug("Unable to load: " + EMSLUtil.ORG_EMOFLON_NEO_CORE_URI)
 				}
 			}

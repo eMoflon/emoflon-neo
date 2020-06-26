@@ -58,6 +58,7 @@ import org.apache.commons.lang3.StringUtils
 import org.emoflon.neo.emsl.eMSL.TargetNAC
 import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement
+import org.emoflon.neo.emsl.eMSL.AttributeConstraintType
 
 class EMSLDiagramTextProvider implements DiagramTextProvider {
 	static final int MAX_SIZE = 500
@@ -111,7 +112,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 
 	def String getDiagramBody(IEditorPart editor, ISelection selection) {
 		val EMSL_Spec root = getRoot(editor).get() as EMSL_Spec
-		val Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
+		var Optional<Entity> selectedEntity = determineSelectedEntity(selection, root)
+		selectedEntity = selectedEntity.filter[canBeVisualised]
 		val Optional<ModelNodeBlock> selectedNodeBlock = selectedEntity.flatMap([ e |
 			determineSelectedNodeBlock(selection, e)
 		])
@@ -132,6 +134,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 			return visualiseEntity(selectedEntity.get, true)
 
 		visualiseNodeBlock(selectedNodeBlock.get, true)
+	}
+	
+	def canBeVisualised(Entity e) {
+		!(e instanceof AttributeConstraintType)
 	}
 
 	/**
@@ -451,7 +457,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			package «IF entity.body.abstract»//«ENDIF»«entityCopy.body.name»«IF entity.body.abstract»//«ENDIF» «IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy.body)»
-				«visualiseNodeBlockInPattern2(entityCopy, nb, false)»
+				«visualiseNodeBlockInPattern(entityCopy, nb, false)»
 			«ENDFOR»
 			}
 			«IF entityCopy.condition !== null »
@@ -502,7 +508,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Pattern.
 	 */
-	def String visualiseNodeBlockInPattern2(Pattern entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
+	def String visualiseNodeBlockInPattern(Pattern entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
 		for (n : new EntityAttributeDispatcher().getPatternNodeBlocks(entity)) {
 			if (nodeBlock.name.equals(n.name))
@@ -576,7 +582,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		'''
 			package «IF entity.abstract»//«ENDIF»«(entityCopy as Rule).name»«IF entity.abstract»//«ENDIF»«IF mainSelection» <<Selection>> «ENDIF»{
 			«FOR nb : new EntityAttributeDispatcher().getNodeBlocks(entityCopy)»
-				«visualiseNodeBlockInRule2(entityCopy as Rule, nb, false)»
+				«visualiseNodeBlockInRule(entityCopy as Rule, nb, false)»
 			«ENDFOR»
 			}
 			«IF (entityCopy as Rule).condition !== null»
@@ -630,7 +636,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for a NodeBlock in a Rule.
 	 */
-	def String visualiseNodeBlockInRule2(Rule entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
+	def String visualiseNodeBlockInRule(Rule entity, ModelNodeBlock nodeBlock, boolean mainSelection) {
 		var node = nodeBlock
 		for (n : (new EntityAttributeDispatcher().getNodeBlocks((EMSLFlattener.flatten(entity))))) {
 			if (nodeBlock.name.equals(n.name))
@@ -658,11 +664,6 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 					«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
-			«IF (nb.eContainer as Rule).condition !== null »
-				legend bottom
-					«getConditionString((nb.eContainer as Rule))»
-				endlegend
-			«ENDIF»
 		'''
 	}
 

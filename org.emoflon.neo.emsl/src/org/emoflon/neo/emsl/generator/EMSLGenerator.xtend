@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
 import org.eclipse.core.runtime.preferences.InstanceScope
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
@@ -52,7 +53,7 @@ class EMSLGenerator extends AbstractGenerator {
 	List<String> derivedGTFiles = new ArrayList
 	boolean cleanedUp
 
-	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {				
 		if(resource.contents.isEmpty) return
 
 		val apiPath = getAPIPath(resource)
@@ -145,6 +146,7 @@ class EMSLGenerator extends AbstractGenerator {
 			public class API_Common {
 				// Default values (might have to be changed)
 				public static final String PLATFORM_PLUGIN_URI = "«getInstallLocation»";
+				public static final String NEOCORE_URI_INSTALLED = "«getNeoCoreURIInstalled»";
 				public static final String PLATFORM_RESOURCE_URI = "../";
 			
 				public static NeoCoreBuilder createBuilder() {
@@ -161,6 +163,13 @@ class EMSLGenerator extends AbstractGenerator {
 		val segments = fileURI.path.split("/")
 		val path = segments.take(segments.length - 1)
 		path.join("/") + "/"
+	}
+	
+	private def getNeoCoreURIInstalled(){
+		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
+		val fileURL = FileLocator.resolve(plugin.getEntry("/model/NeoCore.msl")).toString
+		val fileURI = new URI(fileURL.replace(" ", "%20")).normalize
+		return fileURI.path
 	}
 
 	def generateAPIFor(String apiName, String apiPath, EMSL_Spec spec, Resource resource) {
@@ -182,6 +191,7 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.emsl.util.*;
 			import org.neo4j.driver.v1.Value;
 			import org.neo4j.driver.v1.Record;
+			import org.eclipse.emf.common.util.URI;
 			import org.emoflon.neo.api.API_Common;
 			import java.util.Collection;
 			import java.util.HashSet;
@@ -198,12 +208,12 @@ class EMSLGenerator extends AbstractGenerator {
 			
 				/** Use this constructor for default values */
 				public «apiName»(NeoCoreBuilder builder) {
-					this(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+					this(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI, API_Common.NEOCORE_URI_INSTALLED);
 				}
 			
 				/** Use this constructor to configure values for loading EMSL files */
-				public «apiName»(NeoCoreBuilder builder, String platformResourceURIRoot, String platformPluginURIRoot){
-					spec = (EMSL_Spec) EMSLUtil.loadSpecification("«resource.URI»", platformResourceURIRoot, platformPluginURIRoot);
+				public «apiName»(NeoCoreBuilder builder, String platformResourceURIRoot, String platformPluginURIRoot, String neocoreURI){
+					spec = (EMSL_Spec) EMSLUtil.loadSpecification("«resource.URI»", platformResourceURIRoot, platformPluginURIRoot, neocoreURI);
 					this.builder = builder;
 				}
 			
@@ -456,7 +466,7 @@ class EMSLGenerator extends AbstractGenerator {
 						«val apiFQN = apiPath.replace("/", ".").replace("..", ".")»
 						«val mmName = namingConvention(mm.name)»
 						{
-							var api = new «apiFQN»(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI);
+							var api = new «apiFQN»(builder, API_Common.PLATFORM_RESOURCE_URI, API_Common.PLATFORM_PLUGIN_URI, API_Common.NEOCORE_URI_INSTALLED);
 							builder.exportEMSLEntityToNeo4j(api.getMetamodel_«mmName»());
 						}
 					«ENDFOR»
@@ -464,8 +474,12 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public Collection<TripleRule> getTripleRulesOf«rootName»(){
 					var rules = new HashSet<TripleRule>();
+					var rs = spec.eResource().getResourceSet();
 					«FOR tr : tgg.rules»
-						rules.add((TripleRule) spec.getEntities().get(«emslSpec.entities.indexOf(tr)»));
+					{
+						var uri = "«EcoreUtil.getURI(tr)»";
+						rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
+					}
 					«ENDFOR»
 					return rules;
 				}

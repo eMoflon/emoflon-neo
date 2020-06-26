@@ -31,9 +31,9 @@ class TGGAppGenerator {
 			@SuppressWarnings("unused")
 			public class «appName» {
 				«op.additionalFields(tgg.name)»
-				private static final Logger logger = Logger.getLogger(«appName».class);
-				private String srcModelName;
-				private String trgModelName;
+				protected static final Logger logger = Logger.getLogger(«appName».class);
+				protected String srcModelName;
+				protected String trgModelName;
 				
 				public static void main(String[] args) throws Exception {
 					Logger.getRootLogger().setLevel(Level.INFO);
