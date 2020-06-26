@@ -53,6 +53,9 @@ grammar JavaToDoc_BWD {
 			~_tr_ : false
 			~_tr_ := true
 		}
+		
+		attributeConstraints {
+		}
 	} when ClazzToDocRuleNAC
 	
 	constraint ClazzToDocRuleNAC = forbid ClazzToDocRule_clazzNameIsTaken
@@ -99,6 +102,9 @@ grammar JavaToDoc_BWD {
 			-elementOf->trgM
 			~_tr_ : false
 			~_tr_ := true
+		}
+		
+		attributeConstraints {
 		}
 	} when RootToRootRuleNAC
 	
@@ -148,7 +154,7 @@ grammar JavaToDoc_BWD {
 			{
 				._type_ := "PackageToFolder"
 			}
-			.name := doc::name
+			.name := subF::name
 		}
 	
 		f:Folder {
@@ -168,15 +174,18 @@ grammar JavaToDoc_BWD {
 				~_tr_ : false
 				~_tr_ := true
 			}
-			.name : doc::name
 			~_tr_ : false
 			~_tr_ := true
 		}
 		
 		doc:Doc {
 			-elementOf->trgM
+			.name : subF::name
 			~_tr_ : false
 			~_tr_ := true
+		}
+		
+		attributeConstraints {
 		}
 	} when SubToSubRuleNAC
 	
@@ -189,14 +198,14 @@ grammar JavaToDoc_BWD {
 			
 			package : Package {
 				-elementOf->srcM
-				.name : doc::name
+				.name : subF::name
 			}
 			
 			trgM : Model {
 				.ename : <__trgModelName>
 			}
 			
-			doc : Doc {
+			subF : Folder {
 				-elementOf->trgM
 			}
 		}
@@ -212,6 +221,9 @@ grammar JavaToDoc_BWD {
 			.ename : "SimpleJava"
 		}
 	
+		
+		attributeConstraints {
+		}
 	} when createSrcModelNAC
 	
 	constraint createSrcModelNAC = forbid createSrcModel_srcModelExists
@@ -240,6 +252,9 @@ grammar JavaToDoc_BWD {
 		mmSimpleDoc:MetaModel {
 			.ename : "SimpleDoc"
 			~_tr_ : true
+		}
+		
+		attributeConstraints {
 		}
 	} 
 	

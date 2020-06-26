@@ -47,6 +47,9 @@ grammar JavaToDoc_GEN {
 			++-elementOf->trgM
 			.name := <clazzName>
 		}
+		
+		attributeConstraints {
+		}
 	} when ClazzToDocRuleNAC
 	
 	constraint ClazzToDocRuleNAC = forbid ClazzToDocRule_clazzNameIsTaken
@@ -86,6 +89,9 @@ grammar JavaToDoc_GEN {
 		++f:Folder {
 			++-elementOf->trgM
 			.name := <packageName>
+		}
+		
+		attributeConstraints {
 		}
 	} when RootToRootRuleNAC
 	
@@ -147,6 +153,9 @@ grammar JavaToDoc_GEN {
 			++-elementOf->trgM
 			.name := <packageName>
 		}
+		
+		attributeConstraints {
+		}
 	} when SubToSubRuleNAC
 	
 	constraint SubToSubRuleNAC = forbid SubToSubRule_packageNameIsTaken
@@ -175,6 +184,9 @@ grammar JavaToDoc_GEN {
 			.ename : "SimpleJava"
 		}
 	
+		
+		attributeConstraints {
+		}
 	} when createSrcModelNAC
 	
 	constraint createSrcModelNAC = forbid createSrcModel_srcModelExists
@@ -197,6 +209,9 @@ grammar JavaToDoc_GEN {
 		
 		mmSimpleDoc:MetaModel {
 			.ename : "SimpleDoc"
+		}
+		
+		attributeConstraints {
 		}
 	} when createTrgModelNAC
 	

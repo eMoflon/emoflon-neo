@@ -46,6 +46,9 @@ grammar JavaToDoc_CO {
 		doc:Doc {
 			-elementOf->trgM
 		}
+		
+		attributeConstraints {
+		}
 	} 
 	
 	
@@ -65,11 +68,14 @@ grammar JavaToDoc_CO {
 			{
 				._type_ : "PackageToFolder"
 			}
+			.name : f::name
 		}
 	
 		f:Folder {
 			-elementOf->trgM
-			.name : p::name
+		}
+		
+		attributeConstraints {
 		}
 	} 
 	
@@ -99,7 +105,7 @@ grammar JavaToDoc_CO {
 			{
 				._type_ : "PackageToFolder"
 			}
-			.name : subF::name
+			.name : doc::name
 		}
 	
 		f:Folder {
@@ -110,11 +116,14 @@ grammar JavaToDoc_CO {
 		subF:Folder {
 			-elementOf->trgM
 			-docs->doc
+			.name : doc::name
 		}
 		
 		doc:Doc {
 			-elementOf->trgM
-			.name : subF::name
+		}
+		
+		attributeConstraints {
 		}
 	} 
 	
@@ -129,6 +138,9 @@ grammar JavaToDoc_CO {
 			.ename : "SimpleJava"
 		}
 	
+		
+		attributeConstraints {
+		}
 	} 
 	
 	
@@ -141,6 +153,9 @@ grammar JavaToDoc_CO {
 		
 		mmSimpleDoc:MetaModel {
 			.ename : "SimpleDoc"
+		}
+		
+		attributeConstraints {
 		}
 	} 
 	

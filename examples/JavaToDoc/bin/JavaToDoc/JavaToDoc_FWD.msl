@@ -53,6 +53,9 @@ grammar JavaToDoc_FWD {
 			++-elementOf->trgM
 			.name := c::name
 		}
+		
+		attributeConstraints {
+		}
 	} 
 	
 	
@@ -79,6 +82,9 @@ grammar JavaToDoc_FWD {
 		++f:Folder {
 			++-elementOf->trgM
 			.name := p::name
+		}
+		
+		attributeConstraints {
 		}
 	} 
 	
@@ -132,6 +138,9 @@ grammar JavaToDoc_FWD {
 			++-elementOf->trgM
 			.name := subP::name
 		}
+		
+		attributeConstraints {
+		}
 	} 
 	
 	
@@ -152,6 +161,9 @@ grammar JavaToDoc_FWD {
 			~_tr_ : true
 		}
 	
+		
+		attributeConstraints {
+		}
 	} 
 	
 	
@@ -165,6 +177,9 @@ grammar JavaToDoc_FWD {
 		
 		mmSimpleDoc:MetaModel {
 			.ename : "SimpleDoc"
+		}
+		
+		attributeConstraints {
 		}
 	} when createTrgModelNAC
 	
