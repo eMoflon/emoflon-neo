@@ -286,6 +286,7 @@ model moflonDocMultiDel -> moflonDoc {
 	}
 	
 	criticalClazz:Doc {
+		.name : "criticalClazz"
 		._cr_ : true
 	}
 }

@@ -118,7 +118,10 @@ public class TGGCompilerValidations {
 		int fwdRuleID = (((1 << s) - 1) << (t + c)) + (1 << c) - 1;
 		int bwdRuleID = (((1 << t) - 1) << c) + (1 << c) - 1;
 
-		return ruleID == coRuleID || ruleID == ccRuleID || ruleID == fwdRuleID || ruleID == bwdRuleID;
+		//return ruleID == coRuleID || ruleID == ccRuleID || ruleID == fwdRuleID || ruleID == bwdRuleID;
+		
+		//Ensures that either source or target are entirely black
+		return binaryOR(ruleID, fwdRuleID) == fwdRuleID || binaryOR(ruleID, bwdRuleID) == bwdRuleID;
 	}
 
 	private static boolean checkValidity(String srcAction, String relAction, String trgAction) {
@@ -131,6 +134,12 @@ public class TGGCompilerValidations {
 	public static int binaryAND(int a, int b) {
 		if (a >= 0 && b >= 0)
 			return a & b;
+		return 0;
+	}
+	
+	public static int binaryOR(int a, int b) {
+		if (a >= 0 && b >= 0)
+			return a | b;
 		return 0;
 	}
 }

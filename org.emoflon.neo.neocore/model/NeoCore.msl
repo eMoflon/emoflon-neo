@@ -11,9 +11,6 @@ metamodel NeoCore {
 		// Only <+>-
 		.isComposition:EBoolean
 		-eReferenceType(1..1)-> EClass
-		._de_ : EBoolean
-		._cr_ : EBoolean
-		._ex_ : EBoolean
 	}
 	
 	EAttributedElement : EObject {

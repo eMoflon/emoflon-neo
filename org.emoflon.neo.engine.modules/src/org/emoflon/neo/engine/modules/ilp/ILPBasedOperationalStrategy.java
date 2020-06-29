@@ -21,13 +21,14 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
-	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
+	protected static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
 
 	protected NeoCoreBuilder builder;
 
@@ -390,7 +391,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected abstract void removeInconsistentElements(Collection<Long> inconsistentElts);
 	
 	protected void removeInconsistentElements(Collection<Long> inconsistentElts, boolean src, boolean corr, boolean trg) {
-		Set<Long> relevantElements = Collections.EMPTY_SET;
+		Set<Long> relevantElements = new HashSet<Long>();
 		
 		if (src)
 			relevantElements.addAll(builder.getAllElementsOfModel(sourceModel));
@@ -401,14 +402,14 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 				
 		matchContainer.ifPresent(mc -> {
 			var inconsistentEdges = mc.getRelRange().getIDs().stream()//
-					.filter(x -> relevantElements.contains(x) && (Long)x < 0)
 					.map(x -> -1 * (Long)x)//
+					.filter(x -> relevantElements.contains(x) && (Long)x < 0)
 					.filter(x -> inconsistentElts.contains(x))//
 					.collect(Collectors.toSet());
 			
-			var inconsistentNodes = mc.getRelRange().getIDs().stream()//
-					.filter(x -> relevantElements.contains(x) && (Long)x > 0)
+			var inconsistentNodes = mc.getNodeRange().getIDs().stream()//
 					.map(x -> (Long)x)//
+					.filter(x -> relevantElements.contains(x) && (Long)x > 0)
 					.filter(x -> inconsistentElts.contains(x))//
 					.collect(Collectors.toSet());
 			
@@ -417,6 +418,17 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			builder.deleteNodes(inconsistentNodes);
 			inconsistentElts.removeAll(inconsistentNodes);
 		});
+	}
+	
+	@Override
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
+			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
+	) {
+		if (this.matchContainer.isEmpty())
+			this.matchContainer = Optional.of(matchContainer);
+
+		return matchContainer.getAllRulesToMatches();
 	}
 	
 	public void cleanup() {

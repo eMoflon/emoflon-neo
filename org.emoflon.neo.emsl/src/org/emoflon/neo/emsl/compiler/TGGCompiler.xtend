@@ -46,6 +46,7 @@ class TGGCompiler {
 	List<TripleRule> generatedRules
 	BiMap<MetamodelNodeBlock, String> nodeTypeNames
 	String importStatements
+	
 	HashMap<String, Map<Domain,ArrayList<String>>> ruleNameToGreenElements
 	HashMap<String, ArrayList<Integer>> ruleNameToValidIDs
 
@@ -63,6 +64,7 @@ class TGGCompiler {
 		allMetamodels.addAll(tgg.trgMetamodels)
 		allMetamodels.add(PreProcessorUtil.instance.neoCore)
 		mapTypeNames(allMetamodels)
+		new HashMap();
 		ruleNameToGreenElements = new HashMap();
 		ruleNameToValidIDs = new HashMap();
 
@@ -108,6 +110,7 @@ class TGGCompiler {
 						«val greenElements = TGGCompilerValidations.getGreenElements(rule)»
 						«val validIDs = new ArrayList<Integer>()»
 						«ruleNameToGreenElements.put(rule.name, greenElements)»
+						
 						«FOR i : 0 ..< Math.pow(2,greenElements.get(Domain.SRC).size + greenElements.get(Domain.TRG).size + greenElements.get(Domain.CORR).size).intValue - 1 /*No off-by-one error, we don't want the GEN rule!*/»
 							«IF TGGCompilerValidations.isValidRule(op, rule, i, ruleNameToGreenElements.get(rule.name))»
 								«i > 0 ? rule.name + "_" + i : rule.name»

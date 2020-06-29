@@ -50,7 +50,7 @@ class FWD_OPT extends ILPOperation {
 			import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
 			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-			import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+			import org.emoflon.neo.engine.modules.updatepolicies.ForwardTransformationOperationalStrategy;
 			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 			import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
@@ -60,7 +60,7 @@ class FWD_OPT extends ILPOperation {
 	override additionalFields(String tggName) {
 		'''
 			private static final SupportedILPSolver solver = SupportedILPSolver.Sat4J;
-			private CorrCreationOperationalStrategy forwardTransformation;
+			private ForwardTransformationOperationalStrategy forwardTransformation;
 		'''
 	}
 	
@@ -71,7 +71,7 @@ class FWD_OPT extends ILPOperation {
 			var fwd_optAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
 			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
-			forwardTransformation = new CorrCreationOperationalStrategy(//
+			forwardTransformation = new ForwardTransformationOperationalStrategy(//
 					solver, //
 					builder, //
 					genRules, //
@@ -98,7 +98,7 @@ class FWD_OPT extends ILPOperation {
 	override additionalMethods() {
 		'''
 
-			public CorrCreationOperationalStrategy runForwardTransformation() throws Exception {
+			public ForwardTransformationOperationalStrategy runForwardTransformation() throws Exception {
 				run();
 				return forwardTransformation;
 			}

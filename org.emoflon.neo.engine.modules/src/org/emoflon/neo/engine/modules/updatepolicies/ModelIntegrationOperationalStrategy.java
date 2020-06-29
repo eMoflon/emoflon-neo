@@ -2,33 +2,27 @@ package org.emoflon.neo.engine.modules.updatepolicies;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.HashSet;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import java.util.stream.Collectors;
+
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
-import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
-import org.emoflon.neo.engine.api.rules.IRule;
-import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
-import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
 public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
-	private static final Logger logger = Logger.getLogger(CheckOnlyOperationalStrategy.class);
-	private Optional<MatchContainer<NeoMatch, NeoCoMatch>> matchContainer = Optional.empty();
 	private Collection<Long> createDeltaElements;
 	private Collection<Long> deleteDeltaElements;
 	private Collection<Long> existingElements;
 	private Collection<Long> createdElements;
 
-	private static final double alpha = -30; // delete-delta
-	private static final double beta = 3; // create-delta
-	private static final double gamma = -1; // added elements
+	private static final double alpha = -10; // delete-delta
+	private static final double beta = 10; // create-delta
+	private static final double gamma = -0.1; // added elements
 
 	public ModelIntegrationOperationalStrategy(//
 			SupportedILPSolver solver, //
@@ -43,32 +37,23 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	}
 
 	@Override
-	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
-			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
-			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
-	) {
-		if (this.matchContainer.isEmpty())
-			this.matchContainer = Optional.of(matchContainer);
-
-		return matchContainer.getAllRulesToMatches();
-	}
-
-	@Override
 	public boolean isConsistent() throws Exception {
 		if (inconsistentElements == null) {
-			logger.debug("Determine element sets...");
 
+			logger.debug("Registering all matches...");
+			matchContainer.ifPresent(mc -> registerMatches(mc.streamAllCoMatches()));
+			logger.debug("Registered all matches.");
+			
+			logger.debug("Determine element sets...");
 			createDeltaElements = determineCreateDeltaElements();
 			deleteDeltaElements = determineDeleteDeltaElements();
 			existingElements = determineExistingElements();
 			createdElements = determineCreatedElements();
-
-			logger.debug("Registering all matches...");
-			matchContainer.ifPresent(mc -> registerMatches(mc.streamAllCoMatches()));
+			logger.debug("Element sets determined.");
 			computeWeights();
-			logger.debug("Registered all matches.");
 
 			inconsistentElements = determineInconsistentElements();
+			removeInconsistentElements(inconsistentElements);
 		}
 
 		return inconsistentElements.isEmpty();
@@ -76,19 +61,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 
 	@Override
 	public void cleanup() {
-		try {
-			if (isConsistent()) {
-				logger.info("Your triple is consistent!");
-			} else {
-				logger.info("Your triple is inconsistent!");
-				var inconsistentElements = determineInconsistentElements();
-				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
-				logger.debug("Inconsistent element IDs: " + inconsistentElements);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		super.cleanup();
 		builder.removeContextDeltaAttributesFromModel(sourceModel, targetModel);
 	}
 
@@ -162,6 +135,24 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 
 	@Override
 	protected void removeInconsistentElements(Collection<Long> inconsistentElts) {
-		removeInconsistentElements(inconsistentElts, true, true, true);
+		Set<Long> relevantElements = new HashSet<Long>();
+		relevantElements.addAll(builder.getAllElementsOfModel(sourceModel));
+		relevantElements.addAll(builder.getAllCorrs(sourceModel, targetModel));
+		relevantElements.addAll(builder.getAllElementsOfModel(targetModel));
+				
+		matchContainer.ifPresent(mc -> {
+			var inconsistentEdges = inconsistentElts.stream()//
+					.filter(x -> relevantElements.contains(x) && (Long)x < 0)
+					.collect(Collectors.toSet());
+			
+			var inconsistentNodes = inconsistentElts.stream()//
+					.filter(x -> relevantElements.contains(x) && (Long)x > 0)
+					.collect(Collectors.toSet());
+			
+			builder.deleteEdges(inconsistentEdges);
+			inconsistentElts.removeAll(inconsistentEdges);
+			builder.deleteNodes(inconsistentNodes);
+			inconsistentElts.removeAll(inconsistentNodes);
+		});
 	}
 }

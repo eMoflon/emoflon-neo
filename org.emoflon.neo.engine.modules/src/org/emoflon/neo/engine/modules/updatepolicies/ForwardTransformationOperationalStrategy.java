@@ -8,9 +8,9 @@ import org.emoflon.neo.engine.generator.modules.ICleanupModule;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
-public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
+public class ForwardTransformationOperationalStrategy extends ILPBasedOperationalStrategy implements ICleanupModule {
 
-	public CorrCreationOperationalStrategy(//
+	public ForwardTransformationOperationalStrategy(//
 			SupportedILPSolver solver, //
 			NeoCoreBuilder builder, //
 			Collection<NeoRule> genRules, //
@@ -24,11 +24,11 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 
 	@Override
 	public String description() {
-		return "ILP solving, deletion of inconsistent corrs";
+		return "ILP solving, deletion of inconsistent corrs and target model elements";
 	}
 	
 	@Override
 	protected void removeInconsistentElements(Collection<Long> inconsistentElts) {
-		removeInconsistentElements(inconsistentElts, false, true, false);
+		removeInconsistentElements(inconsistentElts, false, true, true);
 	}
 }
