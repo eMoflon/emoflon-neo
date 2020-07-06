@@ -98,7 +98,42 @@ public class TripleRuleFlattener extends RuleFlattener {
 						EcoreUtil.resolveAll(s.getReferencedType());
 						TripleRule tmpCopy = (TripleRule) EcoreUtil.copy(s.getReferencedType());
 						try {
-							corrs.addAll(EcoreUtil.copyAll(((TripleRule) flatten(tmpCopy, new HashSet<String>())).getCorrespondences()));
+							TripleRule flattenedTmpCopy = ((TripleRule) flatten(tmpCopy, new HashSet<String>()));
+							var flattenedCorrs = EcoreUtil.copyAll(flattenedTmpCopy.getCorrespondences());
+							// apply relabeling of nodes to fix node references of correspondences
+							if (((RefinementCommand) s).getRelabeling().size() > 0) {
+								for (var corr : flattenedCorrs) {
+									for (var relabeling : ((RefinementCommand) s).getRelabeling()) {
+										String srcNodeLabel = null;
+										String trgNodeLabel = null;
+										// handle source of correspondence
+										if (corr.getSource() != null && relabeling.getOldLabel().equals(corr.getSource().getName())) {
+											// add node with updated name
+											srcNodeLabel = relabeling.getNewLabel();
+										} else if (corr.getProxySource() != null && relabeling.getOldLabel().equals(corr.getProxySource())) {
+											// add node with updated name
+											srcNodeLabel = relabeling.getNewLabel();
+										}
+										if (srcNodeLabel != null) {
+											corr.setProxySource(srcNodeLabel);
+											corr.setSource(null);
+										}
+										// handle target of correspondence
+										if (corr.getTarget() != null && relabeling.getOldLabel().equals(corr.getTarget().getName())) {
+											// add node with updated name
+											trgNodeLabel = relabeling.getOldLabel();
+										} else if (corr.getProxyTarget() != null && relabeling.getOldLabel().equals(corr.getProxyTarget())) {
+											// add node with updated name
+											trgNodeLabel = relabeling.getNewLabel();
+										}
+										if (trgNodeLabel != null) {
+											corr.setProxyTarget(trgNodeLabel);
+											corr.setTarget(null);
+										}
+									}
+								}
+							}
+							corrs.addAll(flattenedCorrs);
 						} catch (FlattenerException e) {
 							// nothing to do here because recursive errors must have already appeared
 						}
