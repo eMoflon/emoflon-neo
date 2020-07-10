@@ -24,12 +24,12 @@ class BWD implements Operation {
 		return "_BWD"
 	}
 
-	override String getAction(Action action, boolean isSrc) {
-		if(!isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
+	override String getAction(Action action, Domain domain) {
+		if(domain.equals(Domain.TRG) || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
-	override String getTranslation(Action pAction, boolean isSrc) {
-		if(!isSrc) if(pAction === null ||
+	override String getTranslation(Action pAction, Domain domain) {
+		if(domain.equals(Domain.TRG)) if(pAction === null ||
 			!ActionOperator::CREATE.equals(
 				pAction.getOp())) return "~_tr_ : true" else return "~_tr_ : false\n~_tr_ := true" else return ""
 	}
@@ -45,8 +45,8 @@ class BWD implements Operation {
 		 }
 	}
 	
-	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
-		if(!isSrc && propOp === ConditionOperator.ASSIGN)
+	override getConditionOperator(ConditionOperator propOp, Domain domain) {
+		if(!domain.equals(Domain.SRC) && propOp === ConditionOperator.ASSIGN)
 			ConditionOperator.EQ.literal
 		else
 			propOp.literal

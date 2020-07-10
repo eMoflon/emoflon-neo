@@ -112,7 +112,7 @@ abstract class CypherBuilder {
 			RETURN id(r)
 		'''
 	}
-
+	
 	def static String removeTranslationAttributeForNodes(String modelName) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
@@ -126,7 +126,30 @@ abstract class CypherBuilder {
 			remove r._tr_
 		'''
 	}
-
+	
+	def static String getAllNodesInDelta(String modelName, String delta) {
+		'''
+			«matchAllNodesInModel(modelName, "n")»
+			WHERE n.«delta» = true
+			RETURN DISTINCT id(n)
+		'''	
+	}
+	
+	def static String getAllEdgesInDelta(String modelName, String delta) {
+		'''
+			«matchAllEdgesInModel(modelName, "r")»
+			WHERE r.«delta» = true
+			RETURN DISTINCT id(r)
+		'''	
+	}
+	
+	def static String getAllCorrsInDelta(String src, String trg, String delta) {
+		'''
+			«matchAllCorrs(src, trg, "r")»
+			WHERE r.«delta» = true
+			RETURN DISTINCT id(r)
+		'''
+	}
 	def static String getAllNodesInModel(String modelName) {
 		'''
 			«matchAllNodesInModel(modelName, "n")»
@@ -140,24 +163,36 @@ abstract class CypherBuilder {
 			RETURN DISTINCT id(r)
 		'''
 	}
-
-	def static String getAllCorrs(String src, String trg) {
-		'''
+	
+	def static String matchAllCorrs(String src, String trg, String relation) {
+		'''	
 			MATCH 
 				(src:NeoCore__Model {ename: "«src»"}),
 				(trg:NeoCore__Model {ename: "«trg»"}),
 				(a)-[:«NeoCoreConstants.META_EL_OF»]->(src), 
 				(b)-[:«NeoCoreConstants.META_EL_OF»]->(trg),
-				(a)-[r:«NeoCoreConstants.CORR»]->(b)
+				(a)-[«relation»:«NeoCoreConstants.CORR»]->(b)	
+		'''
+	}
+	
+	def static String getAllCorrs(String src, String trg) {
+		'''
+			«matchAllCorrs(src, trg, "r")»
 			RETURN DISTINCT id(r)
+		'''
+	}
+	
+	def static String matchModelNodes(String src, String trg) {
+		'''
+			MATCH 
+				(src:NeoCore__Model {ename: "«src»"}),
+				(trg:NeoCore__Model {ename: "«trg»"})
 		'''
 	}
 	
 	def static String getModelNodes(String src, String trg){
 		'''
-			MATCH 
-				(src:NeoCore__Model {ename: "«src»"}),
-				(trg:NeoCore__Model {ename: "«trg»"})
+			«matchModelNodes(src,trg)»
 			RETURN id(src), id(trg)
 		'''
 	}
@@ -177,6 +212,69 @@ abstract class CypherBuilder {
 				(m:NeoCore__Model {ename: "«model»"}),
 				(m)-[cts:«NeoCoreConstants.CONFORMS_TO_PROP»]->(mm)
 			RETURN DISTINCT id(cts)
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForNodes(String modelName, String delta) {
+		'''			
+			«matchAllNodesInModel(modelName, "n")»
+			SET n.«delta» = true
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForEdges(String modelName, String delta) {
+		'''			
+			«matchAllEdgesInModel(modelName, "r")»
+			SET r.«delta» = true
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForCorrs(String src, String trg, String delta) {
+		'''			
+			«matchAllCorrs(src, trg, "r")»
+			SET r.«delta» = true
+		'''
+	}
+	
+	def static String prepareDeltaAttributeForModelNodes(String src, String trg, String delta) {
+		'''			
+			«matchModelNodes(src, trg)»
+			SET src.«delta» = true,
+			trg.«delta» = true
+		'''
+	}
+	
+	def static String removeDeltaAttributeForNodes(String modelName, String delta) {
+		'''
+			«matchAllNodesInModel(modelName, "n")»
+			WHERE n.«delta» = true
+			remove n.«delta»
+			
+		'''
+	}
+
+	def static String removeDeltaAttributeForEdges(String modelName, String delta) {
+		'''
+			«matchAllEdgesInModel(modelName, "r")»
+			WHERE r.«delta» = true
+			remove r.«delta»
+			
+		'''
+	}
+	
+	def static String removeDeltaAttributeForCorrs(String src, String trg, String delta) {
+		'''
+			«matchAllCorrs(src, trg, "r")»
+			WHERE r.«delta» = true
+			remove r.«delta»
+			
+		'''
+	}
+	
+	def static String removeDeltaAttributeForModelNodes(String src, String trg, String delta) {
+		'''			
+			«matchModelNodes(src, trg)»
+			remove src.«delta», trg.«delta»
 		'''
 	}
 }

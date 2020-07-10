@@ -15,13 +15,13 @@ class BWD_OPT extends ILPOperation {
 		return "_BWD_OPT"
 	}
 	
-	override String getAction(Action action, boolean isSrc) {
-		if(!isSrc || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
+	override String getAction(Action action, Domain domain) {
+		if(domain.equals(Domain.TRG) || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 	
-	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
-		if(!isSrc)
-			super.getConditionOperator(propOp, isSrc)
+	override getConditionOperator(ConditionOperator propOp, Domain domain) {
+		if(!domain.equals(Domain.SRC))
+			super.getConditionOperator(propOp, domain)
 		else
 			propOp.literal
 	}
@@ -50,7 +50,7 @@ class BWD_OPT extends ILPOperation {
 			import org.emoflon.neo.engine.modules.ruleschedulers.BWD_OPTRuleScheduler;
 			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-			import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+			import org.emoflon.neo.engine.modules.updatepolicies.BackwardTransformationOperationalStrategy;
 			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 			import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
@@ -60,7 +60,7 @@ class BWD_OPT extends ILPOperation {
 	override additionalFields(String tggName) {
 		'''
 			private static final SupportedILPSolver solver = SupportedILPSolver.Sat4J;
-			private CorrCreationOperationalStrategy backwardTransformation;
+			private BackwardTransformationOperationalStrategy backwardTransformation;
 		'''
 	}
 	
@@ -71,7 +71,7 @@ class BWD_OPT extends ILPOperation {
 			var bwd_optAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
 			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
-			backwardTransformation = new CorrCreationOperationalStrategy(//
+			backwardTransformation = new BackwardTransformationOperationalStrategy(//
 					solver, //
 					builder, //
 					genRules, //
@@ -98,7 +98,7 @@ class BWD_OPT extends ILPOperation {
 	override additionalMethods() {
 				'''
 
-			public CorrCreationOperationalStrategy runBackwardTransformation() throws Exception {
+			public BackwardTransformationOperationalStrategy runBackwardTransformation() throws Exception {
 				run();
 				return backwardTransformation;
 			}

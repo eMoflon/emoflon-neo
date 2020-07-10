@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,13 +20,15 @@ import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
 public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMatch, NeoCoMatch> {
-	private static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
+	protected static final Logger logger = Logger.getLogger(ILPBasedOperationalStrategy.class);
 
 	protected NeoCoreBuilder builder;
 
@@ -43,12 +46,13 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private int constraintCounter;
 	private int variableCounter;
 	private int auxVariableCounter;
-	protected Map<IMatch, Integer> matchToWeight;
+	protected Map<IMatch, Double> matchToWeight;
 	private BinaryILPProblem ilpProblem;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> opRules;
 	protected Collection<NeoNegativeConstraint> negativeConstraints;
+	protected Optional<MatchContainer<NeoMatch, NeoCoMatch>> matchContainer = Optional.empty();
 
 	protected String sourceModel;
 	protected String targetModel;
@@ -128,7 +132,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected void computeWeights() {
 		matchToWeight = new HashMap<>();
 		for (var m : matchToId.keySet())
-			matchToWeight.put(m, getMarkedElts(m).size());
+			matchToWeight.put(m, (double)getMarkedElts(m).size());
 	}
 
 	private void addMatch(Long x, IMatch m, Map<Long, Set<IMatch>> matches) {
@@ -369,9 +373,76 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	public String getInfo() {
 		return ilpProblem.getProblemInformation();
 	}
-
+	
 	public boolean isConsistent() throws Exception {
-		determineInconsistentElements();
+		if (inconsistentElements == null) {
+			logger.debug("Registering all matches...");
+			matchContainer.ifPresent(mc -> registerMatches(mc.streamAllCoMatches()));
+			computeWeights();
+			logger.debug("Registered all matches.");
+
+			inconsistentElements = determineInconsistentElements();
+			removeInconsistentElements(inconsistentElements);
+		}
+
 		return inconsistentElements.isEmpty();
+	}
+	
+	protected abstract void removeInconsistentElements(Collection<Long> inconsistentElts);
+	
+	protected void removeInconsistentElements(Collection<Long> inconsistentElts, boolean src, boolean corr, boolean trg) {
+		Set<Long> relevantElements = new HashSet<Long>();
+		
+		if (src)
+			relevantElements.addAll(builder.getAllElementsOfModel(sourceModel));
+		if (corr)
+			relevantElements.addAll(builder.getAllCorrs(sourceModel, targetModel));
+		if (trg)
+			relevantElements.addAll(builder.getAllElementsOfModel(targetModel));
+				
+		matchContainer.ifPresent(mc -> {
+			var inconsistentEdges = mc.getRelRange().getIDs().stream()//
+					.map(x -> -1 * (Long)x)//
+					.filter(x -> relevantElements.contains(x) && (Long)x < 0)
+					.filter(x -> inconsistentElts.contains(x))//
+					.collect(Collectors.toSet());
+			
+			var inconsistentNodes = mc.getNodeRange().getIDs().stream()//
+					.map(x -> (Long)x)//
+					.filter(x -> relevantElements.contains(x) && (Long)x > 0)
+					.filter(x -> inconsistentElts.contains(x))//
+					.collect(Collectors.toSet());
+			
+			builder.deleteEdges(inconsistentEdges);
+			inconsistentElts.removeAll(inconsistentEdges);
+			builder.deleteNodes(inconsistentNodes);
+			inconsistentElts.removeAll(inconsistentNodes);
+		});
+	}
+	
+	@Override
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
+			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
+	) {
+		if (this.matchContainer.isEmpty())
+			this.matchContainer = Optional.of(matchContainer);
+
+		return matchContainer.getAllRulesToMatches();
+	}
+	
+	public void cleanup() {
+		try {
+			if (isConsistent()) {
+				logger.info("Your triple is consistent!");
+			} else {
+				logger.info("Your triple is inconsistent!");
+				var inconsistentElements = determineInconsistentElements();
+				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
+				logger.debug("Inconsistent element IDs: " + inconsistentElements);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

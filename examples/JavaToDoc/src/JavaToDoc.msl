@@ -1,0 +1,107 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+tripleGrammar JavaToDoc {
+	source {
+		SimpleJava
+	}
+	
+	target {
+		SimpleDoc
+	}
+	
+	correspondence {
+		Package <- PackageToFolder -> Folder
+		Clazz <- ClazzToDoc -> Doc
+	}
+	
+	rules {
+		ClazzToDocRule
+		RootToRootRule
+		SubToSubRule
+	}
+}
+
+tripleRule ClazzToDocRule : JavaToDoc {
+	source { 
+		p : Package {
+			++ -clazzes->c
+		}
+		++ c : Clazz {
+			.name := <clazzName>
+		}
+	}
+	
+	target {
+		f : Folder {
+			++ -docs->doc
+		}
+		++ doc : Doc {
+			.name := <clazzName>
+		}
+	}
+
+	correspondence {
+		p <-:PackageToFolder-> f
+		++ c <-:ClazzToDoc-> doc
+	}
+} forbid src(clazzNameIsTaken)
+
+pattern clazzNameIsTaken {
+	clazz : Clazz {
+		.name : <clazzName>
+	}
+}
+
+tripleRule RootToRootRule : JavaToDoc {
+	source { 
+		++ p : Package {
+			.name := <packageName>
+		}
+	}
+	
+	target {
+		++ f : Folder {
+			.name := <packageName>
+		}
+	}
+
+	correspondence {
+		++ p <-:PackageToFolder-> f
+	}
+} forbid src(packageNameIsTaken)
+
+pattern packageNameIsTaken {
+	package : Package {
+		.name : <packageName>
+	}
+}
+
+tripleRule SubToSubRule : JavaToDoc {
+	source { 
+		p : Package {
+			++ -subPackages->subP
+		}
+		++ subP : Package {
+			.name := <packageName>
+		}
+	}
+	
+	target {
+		f : Folder {
+			++ -subFolders->subF
+		}
+		++ subF : Folder {
+			++ -docs->doc
+			.name := <packageName>
+		}
+		++ doc : Doc {
+			.name := <packageName>
+		}
+	}
+
+	correspondence {
+		p <-:PackageToFolder-> f
+		++ subP <-:PackageToFolder-> subF
+	}
+} forbid src(packageNameIsTaken)

@@ -1,0 +1,105 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+model moflon {
+	
+	// Java
+	orgC:Package {
+		.name : "org"
+		-subPackages->esC
+		-corr->orgD
+	}	
+	
+	esC:Package {
+		.name : "es"
+		-clazzes->EcoreUtilC
+		-subPackages->emoflonC
+		-subPackages->cmoflonC
+		-corr->esD
+	}
+	
+	EcoreUtilC:Clazz {
+		.name : "EcoreUtil"
+		-corr->EcoreUtilD
+	}
+	
+	emoflonC:Package {
+		.name : "emoflon"
+		-clazzes->TGGC
+		-subPackages->ibexC
+		-corr->emoflonD
+	}
+	
+	TGGC:Clazz {
+		.name : "TGG"
+		-corr->TGGD
+	}
+	
+	ibexC:Package {
+		.name : "ibex"
+		-clazzes->IPMC
+		-corr->ibexD
+	}
+	
+	IPMC:Clazz {
+		.name : "IPM"
+		-corr->IPMD
+	}
+	
+	cmoflonC:Package {
+		.name : "cmoflon"
+		-clazzes->GTC
+		-corr->cmoflonD
+	}
+	
+	GTC:Clazz {
+		.name : "GT"
+		-corr->GTD
+	}
+	
+	// Doc
+	orgD:Folder {
+		.name : "org"
+		-subFolders->esD
+	}	
+	
+	esD:Folder {
+		.name : "es"
+		-docs->EcoreUtilD
+		-subFolders->emoflonD
+		-subFolders->cmoflonD
+	}
+	
+	EcoreUtilD:Doc {
+		.name : "EcoreUtil"
+	}
+	
+	emoflonD:Folder {
+		.name : "emoflon"
+		-docs->TGGD	
+		-subFolders->ibexD
+	}
+	
+	TGGD:Doc {
+		.name : "TGG"
+	}
+	
+	ibexD:Folder {
+		.name : "ibex"
+		-docs->IPMD
+	}
+	
+	IPMD:Doc {
+		.name : "IPM"
+	}
+	
+	cmoflonD:Folder {
+		.name : "cmoflon"
+		-docs->GTD
+	}
+	
+	GTD:Doc {
+		.name : "GT"
+	}
+}
+

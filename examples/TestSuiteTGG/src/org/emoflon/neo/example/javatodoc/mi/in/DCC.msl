@@ -1,0 +1,315 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+model moflonJava {
+	
+	// Java
+	org:Package {
+		.name : "org"
+		-subPackages->es
+	}	
+	
+	es:Package {
+		.name : "es"
+		-clazzes->EcoreUtil
+		-subPackages->emoflon
+		-subPackages->cmoflon
+	}
+	
+	EcoreUtil:Clazz {
+		.name : "EcoreUtil"
+	}
+	
+	emoflon:Package {
+		.name : "emoflon"
+		-clazzes->TGG
+		-subPackages->ibex
+	}
+	
+	TGG:Clazz {
+		.name : "TGG"
+	}
+	
+	ibex:Package {
+		.name : "ibex"
+		-clazzes->IPM
+	}
+	
+	IPM:Clazz {
+		.name : "IPM"
+	}
+	
+	cmoflon:Package {
+		.name : "cmoflon"
+		-clazzes->GT
+	}
+	
+	GT:Clazz {
+		.name : "GT"
+	}
+}
+
+model moflonDoc {
+	// Doc
+	org:Folder {
+		.name : "org"
+		-subFolders->es
+	}	
+	
+	es:Folder {
+		.name : "es"
+		-docs->EcoreUtil
+		-docs->esD
+		-subFolders->emoflon
+		-subFolders->cmoflon
+	}
+	
+	esD:Doc {
+		.name : "es"
+	}
+	
+	EcoreUtil:Doc {
+		.name : "EcoreUtil"
+	}
+	
+	emoflon:Folder {
+		.name : "emoflon"
+		-docs->TGG
+		-docs->emoflonD
+		-subFolders->ibex
+	}
+	
+	emoflonD:Doc {
+		.name : "emoflon"
+	}
+	
+	TGG:Doc {
+		.name : "TGG"
+	}
+	
+	ibex:Folder {
+		.name : "ibex"
+		-docs->IPM
+		-docs->ibexD
+	}
+	
+	ibexD:Doc {
+		.name : "ibex"
+	}
+	
+	IPM:Doc {
+		.name : "IPM"
+	}
+	
+	cmoflon:Folder {
+		.name : "cmoflon"
+		-docs->GT
+		-docs->cmoflonD
+	}
+	
+	cmoflonD:Doc {
+		.name : "cmoflon"
+	}
+	
+	GT:Doc {
+		.name : "GT"
+	}
+}
+
+rule createCorrs {
+		// Java
+	orgJ:Package {
+		.name : "org"
+		-subPackages->esJ
+		++-corr->orgD {
+			._type_ := "PackageToFolder"
+		}
+	}	
+	
+	esJ:Package {
+		.name : "es"
+		-clazzes->EcoreUtilJ
+		-subPackages->emoflonJ
+		-subPackages->cmoflonJ
+		++-corr->esD {
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	EcoreUtilJ:Clazz {
+		.name : "EcoreUtil"
+		++-corr->EcoreUtilD {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	emoflonJ:Package {
+		.name : "emoflon"
+		-clazzes->TGGJ
+		-subPackages->ibexJ
+		++-corr->emoflonD {
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	TGGJ:Clazz {
+		.name : "TGG"
+		++-corr->TGGD {
+			._type_ := "ClazzToDoc"
+		}
+		
+	}
+	
+	ibexJ:Package {
+		.name : "ibex"
+		-clazzes->IPMJ
+		++-corr->ibexD {
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	IPMJ:Clazz {
+		.name : "IPM"
+		++-corr->IPMD {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	cmoflonJ:Package {
+		.name : "cmoflon"
+		-clazzes->GTJ
+		++-corr->cmoflonD {
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	GTJ:Clazz {
+		.name : "GT"
+		++-corr->GTD {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+		// Doc
+	orgD:Folder {
+		.name : "org"
+		-subFolders->esD
+	}	
+	
+	esD:Folder {
+		.name : "es"
+		-docs->EcoreUtilD
+		-subFolders->emoflonD
+		-subFolders->cmoflonD
+	}
+	
+	EcoreUtilD:Doc {
+		.name : "EcoreUtil"
+	}
+	
+	emoflonD:Folder {
+		.name : "emoflon"
+		-docs->TGGD
+		-subFolders->ibexD
+	}
+	
+	TGGD:Doc {
+		.name : "TGG"
+	}
+	
+	ibexD:Folder {
+		.name : "ibex"
+		-docs->IPMD
+	}
+	
+	IPMD:Doc {
+		.name : "IPM"
+	}
+	
+	cmoflonD:Folder {
+		.name : "cmoflon"
+		-docs->GTD
+	}
+	
+	GTD:Doc {
+		.name : "GT"
+	}
+}
+
+model moflonJavaChain -> moflonJava {
+	
+	emoflon:Package {
+		._de_ : true
+	}
+}
+
+model moflonDocChain -> moflonDoc {
+	// Doc
+	
+	ibex:Folder {
+		-docs->criticalClazz {
+			~_cr_ : true
+		}
+	}
+	
+	criticalClazz:Doc {
+		.name : "criticalClazz"
+		._cr_ : true
+	}
+}
+
+model moflonJavaMultiDel -> moflonJava {
+	
+	es:Package {
+		._de_ : true
+	}
+	
+	TGG:Clazz {
+		._de_ : true
+	}
+	
+	ibex:Package {
+		._de_ : true
+	}
+	
+	cmoflon:Package {
+		._de_ : true
+	}
+}
+
+model moflonDocMultiDel -> moflonDoc {
+		
+	ibex:Folder {
+		-docs->criticalClazz {
+			~_cr_ : true
+		}
+	}
+	
+	criticalClazz:Doc {
+		.name : "criticalClazz"
+		._cr_ : true
+	}
+}
+
+model moflonJavaSimple -> moflonJava {
+	
+	cmoflon:Package {
+		._de_ : true
+	}
+}
+
+model moflonDocSimple -> moflonDoc {
+		
+	cmoflon:Folder {
+		.name : "cmoflon"
+		-docs->criticalClazz {
+			~_cr_ : true
+		}
+	}
+	
+	criticalClazz:Doc {
+		.name : "criticalClazz"
+		._cr_ : true
+	}
+}
+

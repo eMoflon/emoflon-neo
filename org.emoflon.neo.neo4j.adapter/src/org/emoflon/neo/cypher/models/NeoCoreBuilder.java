@@ -84,7 +84,10 @@ import com.google.common.collect.Streams;
 public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private static final Logger logger = Logger.getLogger(NeoCoreBuilder.class);
 
-	public static final Object TRANSLATION_MARKER = "_tr_";
+	private static final List<String> MARKERS = List.of(NeoCoreConstants._TR_PROP, //
+			NeoCoreConstants._DE_PROP, //
+			NeoCoreConstants._CR_PROP, //
+			NeoCoreConstants._EX_PROP);
 
 	private static final Object TYPE_AS_ATTRIBUTE = "_type_";
 
@@ -228,7 +231,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		});
 	}
 
-	private Collection<Metamodel> collectDependentMetamodels(Model m) {
+	public Collection<Metamodel> collectDependentMetamodels(Model m) {
 		return m.getNodeBlocks().stream()//
 				.map(nb -> (Metamodel) (nb.getType().eContainer()))//
 				.flatMap(mm -> collectReferencedMetamodels(mm).stream())//
@@ -398,7 +401,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			NodeCommand eenumLiteral, HashMap<Object, NodeCommand> blockToCommand) {
 		metamodel.getEnums().forEach(eenumNode -> {
 			var eenumCommand = cb.createNodeWithContAndType(//
-					List.of(new NeoProp(NAME_PROP, eenumNode.getName()),//
+					List.of(new NeoProp(NAME_PROP, eenumNode.getName()), //
 							new NeoProp(NAMESPACE_PROP, metamodel.getName())), //
 					NeoCoreBootstrapper.LABELS_FOR_AN_ENUM, eenum, mmNode);
 
@@ -455,13 +458,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore);
 			} else if (dataType instanceof UserDefinedType) {
 				var reference = ((UserDefinedType) dataType).getReference();
-				if(!blockToCommand.containsKey(reference)) {
+				if (!blockToCommand.containsKey(reference)) {
 					blockToCommand.put(reference, cb.matchNode(//
 							List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr), //
-									new NeoProp(NAMESPACE_PROP, ((Metamodel) reference.eContainer()).getName())),//
+									new NeoProp(NAMESPACE_PROP, ((Metamodel) reference.eContainer()).getName())), //
 							NeoCoreBootstrapper.LABELS_FOR_AN_ENUM));//
 				}
-				
+
 				typeofattr = blockToCommand.get(reference);
 			}
 
@@ -505,7 +508,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 					NeoCoreBootstrapper.LABELS_FOR_AN_EREFERENCE, eref, mmNode);
 
 			var refOwner = blockToCommand.get(nb);
-			
+
 			var target = rs.getTarget();
 			var targetMM = (Metamodel) target.eContainer();
 			if (!blockToCommand.containsKey(target)) {
@@ -515,13 +518,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 						NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS);
 				blockToCommand.put(target, existingNode);
 			}
-		
-			var	typeOfRef = blockToCommand.get(target);
-			if(typeOfRef == null) {
-				throw new IllegalStateException("Unable to resolve type of relation: '" + rs.getName() + "' in the context of class '" 
-						+ nb.getName() + "' in metamodel: " + nb.eContainer());
+
+			var typeOfRef = blockToCommand.get(target);
+			if (typeOfRef == null) {
+				throw new IllegalStateException("Unable to resolve type of relation: '" + rs.getName()
+						+ "' in the context of class '" + nb.getName() + "' in metamodel: " + nb.eContainer());
 			}
-			
+
 			cb.createEdge(EREFERENCES, refOwner, ref);
 			cb.createEdge(EREFERENCE_TYPE, ref, typeOfRef);
 
@@ -541,13 +544,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 				cb.createEdge(EATTRIBUTE_TYPE, attr, typeofattr);
 			});
 
-			addIsTranslatedAttributeForReference(cb, ref, neocore);
+			for (String mrk : MARKERS)
+				addAttributeForReference(cb, ref, neocore, mrk);
+
 		}
 	}
 
-	private void addIsTranslatedAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore) {
+	private void addAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore, String mrk) {
 		var attr = cb.matchNodeWithContainer(//
-				List.of(new NeoProp(NAME_PROP, NeoCoreConstants._TR_PROP)), //
+				List.of(new NeoProp(NAME_PROP, mrk)), //
 				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
 		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
@@ -556,7 +561,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			ModelNodeBlock nb) {
 		for (var rs : nb.getRelations()) {
 			var refOwner = blockToCommand.get(nb);
-			
+
 			var target = rs.getTarget();
 			if (!blockToCommand.containsKey(target)) {
 				var nodeBlockOfContainerOfTarget = (Model) target.eContainer();
@@ -693,7 +698,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	private Object inferTypeForEdgeAttribute(ValueExpression value, String relName, String propName,
 			MetamodelNodeBlock nodeType) {
-		if (propName.equals(TRANSLATION_MARKER)) {
+		if (MARKERS.contains(propName)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
 
@@ -713,7 +718,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private Object inferTypeForNodeAttribute(ValueExpression value, String propName, MetamodelNodeBlock nodeType) {
-		if (propName.equals(TRANSLATION_MARKER)) {
+		if (MARKERS.contains(propName)) {
 			return PrimitiveBoolean.class.cast(value).isTrue();
 		}
 
@@ -799,8 +804,8 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		return allIDs;
 	}
-	
-	public Collection<Long> getAllCorrs(String sourceModel, String targetModel){
+
+	public Collection<Long> getAllCorrs(String sourceModel, String targetModel) {
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
 		var allIDs = new HashSet<Long>();
 		allCorrs.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong() * -1)));
@@ -851,5 +856,76 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		trgModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
 		return allIDs;
+	}
+
+	public Collection<Long> getElementsInDelta(String sourceModel, String targetModel, String delta) {
+		var srcNodes = executeQuery(CypherBuilder.getAllNodesInDelta(sourceModel, delta));
+		var trgNodes = executeQuery(CypherBuilder.getAllNodesInDelta(targetModel, delta));
+
+		var srcEdges = executeQuery(CypherBuilder.getAllEdgesInDelta(sourceModel, delta));
+		var trgEdges = executeQuery(CypherBuilder.getAllEdgesInDelta(targetModel, delta));
+		var corrs = executeQuery(CypherBuilder.getAllCorrsInDelta(sourceModel, targetModel, delta));
+
+		var allIDs = new HashSet<Long>();
+
+		srcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		trgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+
+		srcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		trgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		corrs.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+
+		return allIDs;
+	}
+
+	public Collection<Long> getCreateDelta(String sourceModel, String targetModel) {
+		return getElementsInDelta(sourceModel, targetModel, NeoCoreConstants._CR_PROP);
+	}
+
+	public Collection<Long> getDeleteDelta(String sourceModel, String targetModel) {
+		return getElementsInDelta(sourceModel, targetModel, NeoCoreConstants._DE_PROP);
+	}
+
+	public Collection<Long> getExistingElements(String sourceModel, String targetModel) {
+		return getAllElementIDsInTriple(sourceModel, targetModel).stream()
+				.filter(e -> getElementsInDelta(sourceModel, targetModel, NeoCoreConstants._EX_PROP).contains(e))
+				.collect(Collectors.toSet());
+	}
+
+	public void setDeltaAttributes(Collection<Long> ids) {
+
+	}
+
+	public void prepareModelWithContextDeltaAttribute(String sourceModelName, String targetModelName) {
+
+		executeQueryForSideEffect(
+				CypherBuilder.prepareDeltaAttributeForNodes(sourceModelName, NeoCoreConstants._EX_PROP));
+		executeQueryForSideEffect(
+				CypherBuilder.prepareDeltaAttributeForEdges(sourceModelName, NeoCoreConstants._EX_PROP));
+
+		executeQueryForSideEffect(
+				CypherBuilder.prepareDeltaAttributeForNodes(targetModelName, NeoCoreConstants._EX_PROP));
+		executeQueryForSideEffect(
+				CypherBuilder.prepareDeltaAttributeForEdges(targetModelName, NeoCoreConstants._EX_PROP));
+
+		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForCorrs(sourceModelName, targetModelName,
+				NeoCoreConstants._EX_PROP));
+//		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForModelNodes(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
+	}
+
+	public void removeContextDeltaAttributesFromModel(String sourceModelName, String targetModelName) {
+		executeQueryForSideEffect(
+				CypherBuilder.removeDeltaAttributeForNodes(sourceModelName, NeoCoreConstants._EX_PROP));
+		executeQueryForSideEffect(
+				CypherBuilder.removeDeltaAttributeForEdges(sourceModelName, NeoCoreConstants._EX_PROP));
+
+		executeQueryForSideEffect(
+				CypherBuilder.removeDeltaAttributeForNodes(targetModelName, NeoCoreConstants._EX_PROP));
+		executeQueryForSideEffect(
+				CypherBuilder.removeDeltaAttributeForEdges(targetModelName, NeoCoreConstants._EX_PROP));
+
+		executeQueryForSideEffect(CypherBuilder.removeDeltaAttributeForCorrs(sourceModelName, targetModelName,
+				NeoCoreConstants._EX_PROP));
+//		executeQueryForSideEffect(CypherBuilder.removeDeltaAttributeForModelNodes(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
 	}
 }
