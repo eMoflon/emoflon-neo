@@ -1,5 +1,5 @@
-import "platform:/resource/FacebookToInstagram/src/Facebook.msl"
-import "platform:/resource/FacebookToInstagram/src/Instagram.msl"
+import "platform:/resource/FacebookToInstagramFASE/src/Facebook.msl"
+import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
 
 // 1.
 

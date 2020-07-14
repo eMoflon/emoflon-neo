@@ -61,47 +61,35 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	@Test
 	public void testOnlyAxioms() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetworkIslandRule, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUserIslandRule, 1);
+			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 1);
 		});
 	}
 
 	@Test
 	public void testOneOfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetworkIslandRule, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUserIslandRule, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserNetworkBridgeRule, 1)
+			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 1)
+					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 1)
 					.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreInterNetworkFollowers, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__ParentsIgnoreRule, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__SpouseIgnoreRule, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__SiblingsIgnoreRule, 1);
+					.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 1);
 		});
 	}
 
 	@Test
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetworkIslandRule, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUserIslandRule, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserNetworkBridgeRule, 10)
+			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 10)
+					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 10)
 					.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__IgnoreInterNetworkFollowers, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__ParentsIgnoreRule, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__SpouseIgnoreRule, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__SiblingsIgnoreRule, 10);
+					.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 10);
 		});
 	}
 
 	@Test
 	public void tryLotsOfUsers() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetworkIslandRule, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUserIslandRule, 100)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserNetworkBridgeRule, 100);
+			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 1)
+					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 100);
 		});
 	}
 }
