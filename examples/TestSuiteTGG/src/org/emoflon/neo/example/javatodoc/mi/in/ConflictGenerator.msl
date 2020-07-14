@@ -1,0 +1,164 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+rule SubSubOppositeConflict {
+	
+	srcM : Model 
+	trgM : Model 
+		
+	package:Package {
+		-elementOf->srcM
+		-corr->folder
+		++-subPackages->subPackage {
+			~_cr_ := true
+		}
+	}
+	
+	subPackage:Package {
+		-elementOf->srcM
+		-corr->subFolder
+	}
+	
+	folder:Folder {
+		-elementOf->trgM
+		++-docs->doc{
+			~_cr_ := true
+		}
+	}
+	
+	subFolder:Folder{
+		-elementOf->trgM
+		++-subFolders->folder {
+			~_cr_ := true
+		}
+	}
+	
+	++doc:Doc{
+		++-elementOf->trgM
+		~_cr_ := true
+		.name := folder::name
+	}
+} 
+//when SubSubOppositeConflictNAC
+
+constraint SubSubOppositeConflictNAC = PackageSubOfSubPackageNAC && PackageSubOfSubPackageNAC && FolderSubOfSubFolderNAC && SubFolderSubOfFolderNAC
+
+constraint PackageSubOfSubPackageNAC = forbid PackageSubOfSubPackage
+constraint SubPackageSubOfPackageNAC = forbid SubPackageSubOfPackage
+constraint FolderSubOfSubFolderNAC = forbid FolderSubOfSubFolder
+constraint SubFolderSubOfFolderNAC = forbid SubFolderSubOfFolder
+
+pattern SubPackageSubOfPackage {
+	package:Package {
+		-subPackages->subPackage 
+	}
+		subPackage:Package
+}
+
+pattern PackageSubOfSubPackage {
+	subPackage:Package {
+		-subPackages->package
+	}
+		package:Package
+}
+
+pattern SubFolderSubOfFolder {
+	folder:Folder {
+		-subFolders->subFolder
+	}
+		subFolder:Folder
+}
+
+pattern FolderSubOfSubFolder {
+	subFolder:Folder {
+		-subFolders->folder
+	}
+		folder:Folder
+}
+
+rule CreateDeleteConflict {
+	
+	srcM : Model 
+	trgM : Model
+	
+	package:Package {
+		-elementOf->srcM
+		-corr->folder
+		-subPackages->subPackage 
+	}
+	
+	subPackage:Package {
+		-elementOf->srcM
+		-corr->subFolder
+		++-clazzes->class {
+			~_cr_ := true
+		}
+	}
+	
+	++class:Clazz{
+		++-elementOf->srcM
+		.name := "NewClass"
+		~_cr_ := true
+	}
+	
+	folder:Folder {
+		-elementOf->trgM
+		-subFolders->subFolder {
+			~_de_ := true
+		}
+		++-docs->doc {
+			~_cr_ := true
+		}
+	}
+	
+	subFolder:Folder{
+		-elementOf->trgM
+		~_de_ := true
+		-docs->doc{
+			~_de_ := true
+		}
+	}
+	
+	doc:Doc{
+		-elementOf->trgM
+	}
+}			
+
+rule MoveDeleteConflict {
+	
+	srcM : Model 
+	trgM : Model
+	
+	package:Package {
+		-elementOf->srcM
+		-corr->folder
+		-subPackages->subPackage {
+			~_de_ := true
+		}
+	}
+	
+	otherPackage:Package {
+		-elementOf->srcM
+		++-subPackages->subPackage {
+			~_cr_ := true
+		}
+	}
+	
+	subPackage:Package {
+		-elementOf->srcM
+		-corr->subFolder
+	}
+	
+	folder:Folder {
+		-elementOf->trgM
+		-subFolders->subFolder {
+			~_de_ := true
+		}
+	}
+	
+	subFolder:Folder{
+		-elementOf->trgM
+		~_de_ := true
+	}
+}
+

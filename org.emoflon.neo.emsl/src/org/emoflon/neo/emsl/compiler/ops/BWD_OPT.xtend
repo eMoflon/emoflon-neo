@@ -1,14 +1,14 @@
 package org.emoflon.neo.emsl.compiler.ops
 
+import java.util.Collection
+import java.util.Map
 import org.emoflon.neo.emsl.compiler.ILPOperation
+import org.emoflon.neo.emsl.compiler.ParameterData
+import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ActionOperator
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
-import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.Parameter
-import org.emoflon.neo.emsl.compiler.ParameterData
-import java.util.Map
-import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 
 class BWD_OPT extends ILPOperation {
 	override String getNameExtension() {
@@ -57,9 +57,9 @@ class BWD_OPT extends ILPOperation {
 		'''
 	}
 	
-	override additionalFields(String tggName) {
+	override additionalFields(String tggName, String solver) {
 		'''
-			private static final SupportedILPSolver solver = SupportedILPSolver.Sat4J;
+			private static final SupportedILPSolver solver = SupportedILPSolver.«solver»;
 			private BackwardTransformationOperationalStrategy backwardTransformation;
 		'''
 	}

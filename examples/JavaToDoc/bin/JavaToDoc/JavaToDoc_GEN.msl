@@ -50,22 +50,8 @@ grammar JavaToDoc_GEN {
 		
 		attributeConstraints {
 		}
-	} when ClazzToDocRuleNAC
+	} 
 	
-	constraint ClazzToDocRuleNAC = forbid ClazzToDocRule_clazzNameIsTaken
-	
-		pattern ClazzToDocRule_clazzNameIsTaken {
-			srcM : Model {
-				.ename : <__srcModelName>
-			}
-			
-			clazz : Clazz {
-				-elementOf->srcM
-				.name : <clazzName>
-			}
-			
-			
-		}
 	
 	  rule RootToRootRule {
 	
@@ -93,22 +79,8 @@ grammar JavaToDoc_GEN {
 		
 		attributeConstraints {
 		}
-	} when RootToRootRuleNAC
+	} 
 	
-	constraint RootToRootRuleNAC = forbid RootToRootRule_packageNameIsTaken
-	
-		pattern RootToRootRule_packageNameIsTaken {
-			srcM : Model {
-				.ename : <__srcModelName>
-			}
-			
-			package : Package {
-				-elementOf->srcM
-				.name : <packageName>
-			}
-			
-			
-		}
 	
 	  rule SubToSubRule {
 	
@@ -156,22 +128,8 @@ grammar JavaToDoc_GEN {
 		
 		attributeConstraints {
 		}
-	} when SubToSubRuleNAC
+	} 
 	
-	constraint SubToSubRuleNAC = forbid SubToSubRule_packageNameIsTaken
-	
-		pattern SubToSubRule_packageNameIsTaken {
-			srcM : Model {
-				.ename : <__srcModelName>
-			}
-			
-			package : Package {
-				-elementOf->srcM
-				.name : <packageName>
-			}
-			
-			
-		}
 	
 	  rule createSrcModel {
 	

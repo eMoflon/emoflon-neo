@@ -35,7 +35,6 @@ grammar JavaToDoc_CC {
 			{
 				._type_ := "ClazzToDoc"
 			}
-			.name : doc::name
 		}
 	
 		f:Folder {
@@ -45,6 +44,7 @@ grammar JavaToDoc_CC {
 		
 		doc:Doc {
 			-elementOf->trgM
+			.name : c::name
 		}
 		
 		attributeConstraints {
@@ -68,11 +68,11 @@ grammar JavaToDoc_CC {
 			{
 				._type_ := "PackageToFolder"
 			}
-			.name : f::name
 		}
 	
 		f:Folder {
 			-elementOf->trgM
+			.name : p::name
 		}
 		
 		attributeConstraints {
@@ -105,7 +105,7 @@ grammar JavaToDoc_CC {
 			{
 				._type_ := "PackageToFolder"
 			}
-			.name : doc::name
+			.name : subF::name
 		}
 	
 		f:Folder {
@@ -116,11 +116,11 @@ grammar JavaToDoc_CC {
 		subF:Folder {
 			-elementOf->trgM
 			-docs->doc
-			.name : doc::name
 		}
 		
 		doc:Doc {
 			-elementOf->trgM
+			.name : subF::name
 		}
 		
 		attributeConstraints {

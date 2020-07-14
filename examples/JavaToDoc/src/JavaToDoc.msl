@@ -45,7 +45,9 @@ tripleRule ClazzToDocRule : JavaToDoc {
 		p <-:PackageToFolder-> f
 		++ c <-:ClazzToDoc-> doc
 	}
-} forbid src(clazzNameIsTaken)
+} 
+
+//forbid src(clazzNameIsTaken)
 
 pattern clazzNameIsTaken {
 	clazz : Clazz {
@@ -69,7 +71,8 @@ tripleRule RootToRootRule : JavaToDoc {
 	correspondence {
 		++ p <-:PackageToFolder-> f
 	}
-} forbid src(packageNameIsTaken)
+} 
+// forbid src(packageNameIsTaken)
 
 pattern packageNameIsTaken {
 	package : Package {
@@ -104,4 +107,5 @@ tripleRule SubToSubRule : JavaToDoc {
 		p <-:PackageToFolder-> f
 		++ subP <-:PackageToFolder-> subF
 	}
-} forbid src(packageNameIsTaken)
+} 
+//forbid src(packageNameIsTaken)

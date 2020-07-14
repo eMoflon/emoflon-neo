@@ -86,9 +86,9 @@ class MI extends ILPOperation {
 		'''
 	}
 
-	override additionalFields(String tggName) {
+	override additionalFields(String tggName, String solver) {
 		'''
-			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+			private static final SupportedILPSolver solver = SupportedILPSolver.«solver»;
 			private ModelIntegrationOperationalStrategy modelIntegration;
 		'''
 	}

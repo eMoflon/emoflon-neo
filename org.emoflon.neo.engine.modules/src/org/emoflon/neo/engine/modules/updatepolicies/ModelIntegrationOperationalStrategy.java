@@ -3,14 +3,20 @@ package org.emoflon.neo.engine.modules.updatepolicies;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
+import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
+import org.emoflon.neo.engine.api.rules.IRule;
+import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
+import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
@@ -22,7 +28,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 
 	private static final double alpha = -10; // delete-delta
 	private static final double beta = 10; // create-delta
-	private static final double gamma = -0.1; // added elements
+	private static final double gamma = -1; // added elements
 
 	public ModelIntegrationOperationalStrategy(//
 			SupportedILPSolver solver, //
@@ -114,15 +120,21 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	}
 
 	private Collection<Long> determineCreateDeltaElements() {
-		return builder.getCreateDelta(sourceModel, targetModel);
+		if (createDeltaElements == null)
+			createDeltaElements = builder.getCreateDelta(sourceModel, targetModel);
+		return createDeltaElements;
 	}
 
 	private Collection<Long> determineDeleteDeltaElements() {
-		return builder.getDeleteDelta(sourceModel, targetModel);
+		if (deleteDeltaElements == null)
+			deleteDeltaElements = builder.getDeleteDelta(sourceModel, targetModel);
+		return deleteDeltaElements;
 	}
 
 	private Collection<Long> determineExistingElements() {
-		return builder.getExistingElements(sourceModel, targetModel);
+		if (existingElements == null)
+			existingElements = builder.getExistingElements(sourceModel, targetModel);
+		return existingElements;
 	}
 
 	private Collection<Long> determineCreatedElements() {
@@ -154,5 +166,28 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			builder.deleteNodes(inconsistentNodes);
 			inconsistentElts.removeAll(inconsistentNodes);
 		});
+	}
+	
+	@Override
+	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
+			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
+			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
+	) {
+		var filteredRulesToMatches = new HashMap<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>>();
+		var allRulesToMatches =  super.selectMatches(matchContainer, progressMonitor);
+		determineCreateDeltaElements();
+		
+		for (IRule<NeoMatch,NeoCoMatch> r : allRulesToMatches.keySet()) {
+			// No CO rule
+			if (r.getCreatedNodeLabels().isEmpty() && r.getCreatedRelLabels().isEmpty()) 
+				filteredRulesToMatches.put(r, allRulesToMatches.get(r));
+			else {
+				filteredRulesToMatches.put(r, new HashSet<NeoMatch>());
+				for (NeoMatch m : allRulesToMatches.get(r)) 
+					if (m.getElements().stream().filter(e -> createDeltaElements.contains(e)).findAny().isPresent())
+						filteredRulesToMatches.get(r).add(m);
+			}
+		}
+		return filteredRulesToMatches;
 	}
 }

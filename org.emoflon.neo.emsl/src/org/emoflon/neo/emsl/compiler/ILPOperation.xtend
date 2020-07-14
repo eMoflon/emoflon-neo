@@ -34,6 +34,12 @@ abstract class ILPOperation implements Operation {
 		}
 	}
 	
+	override String additionalFields(String tggName) {
+		return additionalFields(tggName, "Gurobi")
+	}
+	
+	def String additionalFields(String tggName, String solver)
+	
 	def Parameter selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) 
 	
 	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {

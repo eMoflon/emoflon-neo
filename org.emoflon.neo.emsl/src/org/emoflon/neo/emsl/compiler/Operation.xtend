@@ -19,7 +19,6 @@ import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
 import org.emoflon.neo.emsl.compiler.Operation.Domain
 import org.emoflon.neo.emsl.compiler.Operation.Domain
 import org.emoflon.neo.emsl.compiler.Operation.Domain
-import org.emoflon.neo.emsl.compiler.Operation.Domain
 
 interface Operation {
 	enum Domain {SRC, CORR, TRG}

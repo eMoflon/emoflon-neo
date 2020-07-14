@@ -260,8 +260,31 @@ model moflonDocChain -> moflonDoc {
 
 model moflonJavaMultiDel -> moflonJava {
 	
+	org:Package{
+		-subPackages->es{
+			~_de_ : true
+		}
+	}
+	
 	es:Package {
 		._de_ : true
+		-clazzes->EcoreUtil
+		-subPackages->emoflon{
+			~_de_ : true
+		}
+		-subPackages->cmoflon{
+			~_de_ : true
+		}
+	}
+	
+	emoflon:Package {
+		._de_ : true
+		-clazzes->TGG{
+			~_de_ : true
+		}
+		-subPackages->ibex{
+			~_de_ : true
+		}
 	}
 	
 	TGG:Clazz {
@@ -270,10 +293,16 @@ model moflonJavaMultiDel -> moflonJava {
 	
 	ibex:Package {
 		._de_ : true
+		-clazzes->IPM{
+			~_de_ : true
+		}
 	}
 	
 	cmoflon:Package {
 		._de_ : true
+		-clazzes->GT{
+			~_de_ : true
+		}
 	}
 }
 
