@@ -10,7 +10,8 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.eclipse.xtext,
  org.apache.commons.logging;bundle-version="1.2.0",
  org.apache.commons.lang3,
- org.emoflon.neo.engine.modules
+ org.emoflon.neo.engine.modules,
+ org.emoflon.neo.neocore
 Export-Package: .,
  Transformations,
  Transformations.run,
