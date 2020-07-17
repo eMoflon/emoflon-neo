@@ -3,6 +3,7 @@ package org.emoflon.neo.engine.modules.ruleschedulers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.emoflon.neo.cypher.patterns.NeoMatch;
@@ -19,20 +20,22 @@ import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 import com.google.common.base.Functions;
 
 /**
- * This scheduler exploits the fact that rules with corr context can never match
- * for CC if there were no corrs created in the last step (they must have been
- * collected already).
+ * This scheduler exploits the fact that rules with created context can never match
+ * for OPT if there were no elements created in the last step (they must have been
+ * collected already). An exception is the first collection step, as this treats
+ * only the source and target model nodes.
  * 
  * @author aanjorin
  */
 public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 
-	private Collection<Object> allRelIDsUpToLastStep = new ArrayList<>();
-	private Collection<Object> allNodeIDsUpToLastStep = new ArrayList<>();
-	private boolean SRC;
-	private boolean CORR;
-	private boolean TRG;
-	private TripleRuleAnalyser analyser;
+	protected Collection<Object> allRelIDsUpToLastStep = new ArrayList<>();
+	protected Collection<Object> allNodeIDsUpToLastStep = new ArrayList<>();
+	protected boolean SRC;
+	protected boolean CORR;
+	protected boolean TRG;
+	protected int iteration = 0;
+	protected TripleRuleAnalyser analyser;
 
 	public OPTRuleScheduler(TripleRuleAnalyser analyser, boolean SRC, boolean CORR, boolean TRG) {
 		this.SRC = SRC;
@@ -46,6 +49,8 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
 			IMonitor<NeoMatch, NeoCoMatch> progressMonitor//
 	) {
+		iteration++;
+		
 		var latestRelIDs = matchContainer.getRelRange().remove(allRelIDsUpToLastStep);
 		allRelIDsUpToLastStep = matchContainer.getRelRange().getIDs();
 
@@ -59,13 +64,26 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 		INodeSampler nodeSampler = (type, ruleName, nodeName) -> {
 			return latestNodeIDs.getTypes().contains(type) ? Integer.MAX_VALUE : IRelSampler.EMPTY;
 		};
-
-		var scheduledRules = matchContainer.streamAllRules()//
+		
+		// source and target model
+		if (iteration == 1) {
+			return matchContainer.getAllRulesToMatches().entrySet().stream()//
+					.filter(r -> !r.getKey().isUserDefined())
+					.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
+		}
+		
+		// axioms
+		if (iteration == 2) {
+			return matchContainer.getAllRulesToMatches().entrySet().stream()//
+					.filter(r -> r.getKey().isUserDefined())
+					.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
+		}
+		
+		// other rules
+		return matchContainer.streamAllRules()//
 				.filter(r -> !analyser.hasRelevantContext(r.getName(), SRC, CORR, TRG)
-						|| latestRelIDs.getIDs().size() > 0 || latestNodeIDs.getIDs().size() > 0)//
-				.collect(Collectors.toMap(Functions.identity(), //
+						|| latestRelIDs.getIDs().size() > 0 || latestNodeIDs.getIDs().size() > 0)
+				.filter(r -> r.isUserDefined()).collect(Collectors.toMap(Functions.identity(), //
 						r -> new Schedule(-1, latestNodeIDs, latestRelIDs, r, nodeSampler, relSampler)));
-
-		return scheduledRules;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.compiler.ParameterData
 import java.util.Map
+import org.emoflon.neo.emsl.eMSL.ActionOperator
 
 class CC extends ILPOperation {
 
@@ -19,8 +20,8 @@ class CC extends ILPOperation {
 		return "_CC"
 	}
 	
-	override getAction(Action action, boolean isSrc) {
-		return ""
+	override getAction(Action action, Domain domain) {
+		if(!domain.equals(Domain.CORR) || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
 	override requiresCorrModelCreation() {

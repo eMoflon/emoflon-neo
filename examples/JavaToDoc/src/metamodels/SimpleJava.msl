@@ -1,0 +1,14 @@
+metamodel SimpleJava {
+	Package {
+		.name : EString
+		.fullQualifier : EString
+		<+>-clazzes(0..*)-> Clazz
+		<+>-subPackages(0..*)-> Package
+	}
+	
+	Clazz {
+		.name : EString
+		.body : EString
+	}
+}
+

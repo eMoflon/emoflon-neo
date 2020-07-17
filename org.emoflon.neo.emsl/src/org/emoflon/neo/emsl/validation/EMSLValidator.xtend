@@ -868,10 +868,10 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void typeOfSourceTargetInCorrespondence(Correspondence corr) {
-		if (corr.source?.type != corr.type.source) {
+		if (corr.source !== null && corr.source?.type != corr.type.source) {
 			error('''The source argument must be of type "«corr.type.source.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__SOURCE)
 		}
-		if (corr.target?.type != corr.type.target) {
+		if (corr.target !== null && corr.target?.type != corr.type.target) {
 			error('''The target argument must be of type "«corr.type.target.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
 		}
 	}

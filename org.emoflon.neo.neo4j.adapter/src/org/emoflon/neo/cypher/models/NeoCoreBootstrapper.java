@@ -37,6 +37,9 @@ import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.MODEL;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants._DE_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants._CR_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants._EX_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._TR_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._TYPE_PROP;
 
@@ -105,6 +108,15 @@ public class NeoCoreBootstrapper {
 
 	private static final List<NeoProp> _tr_Props = List.of(new NeoProp(NAME_PROP, _TR_PROP));
 	private static final List<String> _tr_Labels = LABELS_FOR_AN_EATTRIBUTE;
+	
+	private static final List<NeoProp> _de_Props = List.of(new NeoProp(NAME_PROP, _DE_PROP));
+	private static final List<String> _de_Labels = LABELS_FOR_AN_EATTRIBUTE;
+	
+	private static final List<NeoProp> _cr_Props = List.of(new NeoProp(NAME_PROP, _CR_PROP));
+	private static final List<String> _cr_Labels = LABELS_FOR_AN_EATTRIBUTE;
+	
+	private static final List<NeoProp> _ex_Props = List.of(new NeoProp(NAME_PROP, _EX_PROP));
+	private static final List<String> _ex_Labels = LABELS_FOR_AN_EATTRIBUTE;
 
 	private static final List<NeoProp> isCompositionProps = List.of(new NeoProp(NAME_PROP, ISCOMPOSITION_PROP));
 	private static final List<String> isCompositionLabels = LABELS_FOR_AN_EATTRIBUTE;
@@ -200,6 +212,9 @@ public class NeoCoreBootstrapper {
 			var name = cb.createNodeWithContAndType(nameProps, nameLabels, eattr, neocore);
 			var _type_ = cb.createNodeWithContAndType(_type_Props, _type_Labels, eattr, neocore);
 			var _tr_ = cb.createNodeWithContAndType(_tr_Props, _tr_Labels, eattr, neocore);
+			var _de_ = cb.createNodeWithContAndType(_de_Props, _de_Labels, eattr, neocore);
+			var _cr_ = cb.createNodeWithContAndType(_cr_Props, _cr_Labels, eattr, neocore);
+			var _ex_ = cb.createNodeWithContAndType(_ex_Props, _ex_Labels, eattr, neocore);
 			var isComposition = cb.createNodeWithContAndType(isCompositionProps, isCompositionLabels, eattr, neocore);
 			var isContainment = cb.createNodeWithContAndType(isContainmentProps, isContainmentLabels, eattr, neocore);
 			var eDataType = cb.createNodeWithContAndType(eDataTypeProps, eDataTypeLabels, eclass, neocore);
@@ -247,6 +262,15 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EATTRIBUTE_TYPE, _type_, eString);
 			cb.createEdge(EATTRIBUTES, eobject, _tr_);
 			cb.createEdge(EATTRIBUTE_TYPE, _tr_, eBoolean);
+			cb.createEdge(EATTRIBUTES, eobject, _de_);
+			cb.createEdge(EATTRIBUTES, eref, _de_);
+			cb.createEdge(EATTRIBUTE_TYPE, _de_, eBoolean);
+			cb.createEdge(EATTRIBUTES, eobject, _cr_);
+			cb.createEdge(EATTRIBUTES, eref, _cr_);
+			cb.createEdge(EATTRIBUTE_TYPE, _cr_, eBoolean);
+			cb.createEdge(EATTRIBUTES, eobject, _ex_);
+			cb.createEdge(EATTRIBUTES, eref, _ex_);
+			cb.createEdge(EATTRIBUTE_TYPE, _ex_, eBoolean);
 			cb.createEdge(EATTRIBUTES, econtainer, isComposition);
 			cb.createEdge(EATTRIBUTES, eref, isComposition);
 			cb.createEdge(EATTRIBUTE_TYPE, isComposition, eBoolean);

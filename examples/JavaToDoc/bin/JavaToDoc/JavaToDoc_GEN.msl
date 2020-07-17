@@ -1,0 +1,226 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+grammar JavaToDoc_GEN {
+	ClazzToDocRule
+	RootToRootRule
+	SubToSubRule
+	
+	createSrcModel
+	createTrgModel
+	}
+	
+	  rule ClazzToDocRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-clazzes->c
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		++c:Clazz {
+			++-elementOf->srcM
+			++-corr->doc
+			{
+				._type_ := "ClazzToDoc"
+			}
+			.name := <clazzName>
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-docs->doc
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := <clazzName>
+		}
+		
+		attributeConstraints {
+		}
+	} when ClazzToDocRuleNAC
+	
+	constraint ClazzToDocRuleNAC = forbid ClazzToDocRule_clazzNameIsTaken
+	
+		pattern ClazzToDocRule_clazzNameIsTaken {
+			srcM : Model {
+				.ename : <__srcModelName>
+			}
+			
+			clazz : Clazz {
+				-elementOf->srcM
+				.name : <clazzName>
+			}
+			
+			
+		}
+	
+	  rule RootToRootRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		++p:Package {
+			++-elementOf->srcM
+			++-corr->f
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name := <packageName>
+		}
+	
+		++f:Folder {
+			++-elementOf->trgM
+			.name := <packageName>
+		}
+		
+		attributeConstraints {
+		}
+	} when RootToRootRuleNAC
+	
+	constraint RootToRootRuleNAC = forbid RootToRootRule_packageNameIsTaken
+	
+		pattern RootToRootRule_packageNameIsTaken {
+			srcM : Model {
+				.ename : <__srcModelName>
+			}
+			
+			package : Package {
+				-elementOf->srcM
+				.name : <packageName>
+			}
+			
+			
+		}
+	
+	  rule SubToSubRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-subPackages->subP
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		++subP:Package {
+			++-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name := <packageName>
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		++subF:Folder {
+			++-elementOf->trgM
+			++-docs->doc
+			.name := <packageName>
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := <packageName>
+		}
+		
+		attributeConstraints {
+		}
+	} when SubToSubRuleNAC
+	
+	constraint SubToSubRuleNAC = forbid SubToSubRule_packageNameIsTaken
+	
+		pattern SubToSubRule_packageNameIsTaken {
+			srcM : Model {
+				.ename : <__srcModelName>
+			}
+			
+			package : Package {
+				-elementOf->srcM
+				.name : <packageName>
+			}
+			
+			
+		}
+	
+	  rule createSrcModel {
+	
+		++srcModel:Model {
+			++-conformsTo->mmSimpleJava
+			.ename := <__srcModelName>
+		}
+		
+		mmSimpleJava:MetaModel {
+			.ename : "SimpleJava"
+		}
+	
+		
+		attributeConstraints {
+		}
+	} when createSrcModelNAC
+	
+	constraint createSrcModelNAC = forbid createSrcModel_srcModelExists
+	
+		pattern createSrcModel_srcModelExists {
+			srcModel : Model {
+				.ename : <__srcModelName>
+			}
+			
+			
+		}
+	
+	  rule createTrgModel {
+	
+	
+		++trgModel:Model {
+			++-conformsTo->mmSimpleDoc
+			.ename := <__trgModelName>
+		}
+		
+		mmSimpleDoc:MetaModel {
+			.ename : "SimpleDoc"
+		}
+		
+		attributeConstraints {
+		}
+	} when createTrgModelNAC
+	
+	constraint createTrgModelNAC = forbid createTrgModel_trgModelExists
+	
+		pattern createTrgModel_trgModelExists {
+			trgModel : Model {
+				.ename : <__trgModelName>
+			}
+			
+			
+		}
