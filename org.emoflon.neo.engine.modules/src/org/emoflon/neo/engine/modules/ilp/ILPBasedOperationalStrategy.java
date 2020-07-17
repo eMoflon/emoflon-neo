@@ -293,6 +293,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			}
 		});
 	}
+	
+	//Positive constraint - edit Surbhi
+	protected void handlePositiveConstraints() {
+		
+	}
 
 	public Collection<Long> determineConsistentElements() throws Exception {
 		if (consistentElements == null) {
