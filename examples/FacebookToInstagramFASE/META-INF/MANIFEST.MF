@@ -1,23 +1,26 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: FacebookToInstagramEMSL-FASE
-Bundle-SymbolicName: FacebookToInstagram-FASE
+Bundle-Name: FacebookToInstagramFASE
+Bundle-SymbolicName: FacebookToInstagramFASE
 Bundle-Version: 1.0.0.qualifier
-Automatic-Module-Name: FacebookToInstagramEMSL-FASE
+Automatic-Module-Name: FacebookToInstagramFASE
 Bundle-RequiredExecutionEnvironment: JavaSE-13
 Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.emoflon.neo.engine.modules;bundle-version="1.0.0",
  org.eclipse.xtext;bundle-version="2.18.0",
  org.apache.commons.logging;bundle-version="1.2.0",
- FacebookToInstagram,
- FacebookToInstagram,
- FacebookToInstagram,
  org.apache.log4j,
- org.apache.commons.lang3
-Export-Package: .,
- Transformations,
+ org.apache.commons.lang3,
+ org.emoflon.neo.emf;bundle-version="1.0.0",
+ org.emoflon.neo.emsl.ide;bundle-version="1.0.0",
+ org.emoflon.neo.emsl.ui;bundle-version="1.0.0",
+ org.emoflon.neo.neocore;bundle-version="1.0.0",
+ org.emoflon.neo.victory.adapter;bundle-version="1.0.0",
+ org.emoflon.victory.ui;bundle-version="1.0.0"
+Export-Package: Transformations,
+ Transformations.run,
  org.emoflon.neo.api,
- org.emoflon.neo.api.Transformations
+ org.emoflon.neo.api.Transformations,
+ run
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.log4j,org.emoflon.neo.api,org.emoflon.neo.a
- pi.Transformations
+Import-Package: org.apache.log4j
