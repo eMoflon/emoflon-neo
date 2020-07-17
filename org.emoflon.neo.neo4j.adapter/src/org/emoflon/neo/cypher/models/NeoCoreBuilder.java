@@ -398,7 +398,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			NodeCommand eenumLiteral, HashMap<Object, NodeCommand> blockToCommand) {
 		metamodel.getEnums().forEach(eenumNode -> {
 			var eenumCommand = cb.createNodeWithContAndType(//
-					List.of(new NeoProp(NAME_PROP, eenumNode.getName()),//
+					List.of(new NeoProp(NAME_PROP, eenumNode.getName()), //
 							new NeoProp(NAMESPACE_PROP, metamodel.getName())), //
 					NeoCoreBootstrapper.LABELS_FOR_AN_ENUM, eenum, mmNode);
 
@@ -455,13 +455,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore);
 			} else if (dataType instanceof UserDefinedType) {
 				var reference = ((UserDefinedType) dataType).getReference();
-				if(!blockToCommand.containsKey(reference)) {
+				if (!blockToCommand.containsKey(reference)) {
 					blockToCommand.put(reference, cb.matchNode(//
 							List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr), //
-									new NeoProp(NAMESPACE_PROP, ((Metamodel) reference.eContainer()).getName())),//
+									new NeoProp(NAMESPACE_PROP, ((Metamodel) reference.eContainer()).getName())), //
 							NeoCoreBootstrapper.LABELS_FOR_AN_ENUM));//
 				}
-				
+
 				typeofattr = blockToCommand.get(reference);
 			}
 
@@ -505,7 +505,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 					NeoCoreBootstrapper.LABELS_FOR_AN_EREFERENCE, eref, mmNode);
 
 			var refOwner = blockToCommand.get(nb);
-			
+
 			var target = rs.getTarget();
 			var targetMM = (Metamodel) target.eContainer();
 			if (!blockToCommand.containsKey(target)) {
@@ -515,13 +515,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 						NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS);
 				blockToCommand.put(target, existingNode);
 			}
-		
-			var	typeOfRef = blockToCommand.get(target);
-			if(typeOfRef == null) {
-				throw new IllegalStateException("Unable to resolve type of relation: '" + rs.getName() + "' in the context of class '" 
-						+ nb.getName() + "' in metamodel: " + nb.eContainer());
+
+			var typeOfRef = blockToCommand.get(target);
+			if (typeOfRef == null) {
+				throw new IllegalStateException("Unable to resolve type of relation: '" + rs.getName()
+						+ "' in the context of class '" + nb.getName() + "' in metamodel: " + nb.eContainer());
 			}
-			
+
 			cb.createEdge(EREFERENCES, refOwner, ref);
 			cb.createEdge(EREFERENCE_TYPE, ref, typeOfRef);
 
@@ -556,7 +556,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			ModelNodeBlock nb) {
 		for (var rs : nb.getRelations()) {
 			var refOwner = blockToCommand.get(nb);
-			
+
 			var target = rs.getTarget();
 			if (!blockToCommand.containsKey(target)) {
 				var nodeBlockOfContainerOfTarget = (Model) target.eContainer();
@@ -799,8 +799,43 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		return allIDs;
 	}
-	
-	public Collection<Long> getAllCorrs(String sourceModel, String targetModel){
+
+	/**
+	 * Determine all nodes contained in the provided model. The model node is
+	 * included or excluded depending on the provided flag.
+	 * 
+	 * @param model            The ename of the model
+	 * @param includeModelNode The model node is included if true
+	 * @return IDs of all nodes
+	 */
+	public Collection<Long> getAllNodesOfModel(String model, boolean includeModelNode) {
+		var allNodes = executeQuery(CypherBuilder.getAllNodesInModel(model));
+		var allIDs = new HashSet<Long>();
+		allNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		
+		if(includeModelNode) {
+			var modelNode = executeQuery(CypherBuilder.getModelNodes(model));
+			modelNode.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		}
+		
+		return allIDs;
+	}
+
+	/**
+	 * Determine all relations contained in the provided model excluding all "meta"
+	 * edges such as elementOf and conformsTo edges.
+	 * 
+	 * @param model The ename of the model
+	 * @return IDs of all relations
+	 */
+	public Collection<Long> getAllRelsOfModel(String model) {
+		var allEdges = executeQuery(CypherBuilder.getAllRelsInModel(model));
+		var allIDs = new HashSet<Long>();
+		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
+		return allIDs;
+	}
+
+	public Collection<Long> getAllCorrs(String sourceModel, String targetModel) {
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
 		var allIDs = new HashSet<Long>();
 		allCorrs.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong() * -1)));
