@@ -28,7 +28,8 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.engine.modules;bundle-version="1.0.0",
  org.apache.commons.lang3;bundle-version="3.1.0",
  JavaToDoc,
- JavaToDoc
+ JavaToDoc,
+ org.emoflon.neo.neocore
 Export-Package: JavaToDoc,
  JavaToDoc.run,
  metamodels,
