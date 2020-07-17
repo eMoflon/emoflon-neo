@@ -25,7 +25,6 @@ import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.neo4j.driver.v1.StatementResult;
 
 public abstract class ENeoTest {
 	private static Scanner reader;
@@ -38,10 +37,10 @@ public abstract class ENeoTest {
 
 		logger.info("Database Connection established.");
 		builder = API_Common.createBuilder();
-		StatementResult result = builder.executeQuery("MATCH (n) RETURN count(n)");
+		var result = builder.executeQuery("MATCH (n) RETURN count(n)");
 
-		if (result.hasNext()) {
-			if (result.next().get(0).asInt() > 0) {
+		if (result.size() > 0) {
+			if (result.get(0).get(0).asInt() > 0) {
 				logger.info(
 						"Database not empty. All data will be removed! \n" + "Do you want to continue (Y=Yes / N=No)?");
 				reader = new Scanner(System.in);

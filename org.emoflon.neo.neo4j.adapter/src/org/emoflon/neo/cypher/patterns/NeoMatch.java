@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.emoflon.neo.engine.api.patterns.IMask;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.patterns.IPattern;
-import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.Record;
 
 /**
  * Class for storing a match of a pattern matching created after a query

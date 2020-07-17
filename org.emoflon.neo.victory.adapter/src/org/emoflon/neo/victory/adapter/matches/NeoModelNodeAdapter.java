@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.emoflon.neo.victory.adapter.common.NeoNodeAdapter;
 import org.emoflon.victory.ui.api.enums.Action;
 import org.emoflon.victory.ui.api.enums.Domain;
-import org.neo4j.driver.v1.types.Node;
+import org.neo4j.driver.types.Node;
 
 public class NeoModelNodeAdapter extends NeoNodeAdapter {
 	public NeoModelNodeAdapter(Node n, Domain domain) {

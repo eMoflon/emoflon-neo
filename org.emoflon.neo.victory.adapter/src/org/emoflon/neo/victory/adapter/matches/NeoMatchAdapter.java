@@ -20,8 +20,8 @@ import org.emoflon.victory.ui.api.Rule;
 import org.emoflon.victory.ui.api.enums.Domain;
 import org.emoflon.victory.ui.api.enums.EdgeType;
 import org.emoflon.victory.ui.api.impl.GraphBuilder;
-import org.neo4j.driver.v1.types.Node;
-import org.neo4j.driver.v1.types.Relationship;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 
 public class NeoMatchAdapter implements Match {
 	private NeoMatch match;
@@ -94,7 +94,7 @@ public class NeoMatchAdapter implements Match {
 		var nodesWithNeighbourhood = new HashSet<>(nodes);
 		Map<String, Object> params = Map.of("nodes", nodes);
 		var extraNodes = builder.executeQuery(MatchQuery.getNeighbouringNodes("nodes", 1), params);
-		for (var rec : extraNodes.list()) {
+		for (var rec : extraNodes) {
 			for (var node : rec.asMap().values()) {
 				var id = (Long) node;
 				nodesWithNeighbourhood.add(id);
@@ -108,7 +108,7 @@ public class NeoMatchAdapter implements Match {
 			Map<Long, NeoModelEdgeAdapter> relations, Collection<Long> srcElements) {
 		Map<String, Object> parameters = Map.of("nodes", nodes);
 		var result = builder.executeQuery(MatchQuery.getAllEdges("nodes"), parameters);
-		var allEdgesInMatch = result.list().stream()//
+		var allEdgesInMatch = result.stream()//
 				.flatMap(rec -> rec.asMap().values().stream())//
 				.map(v -> (Long) v)//
 				.collect(Collectors.toSet());
@@ -121,7 +121,7 @@ public class NeoMatchAdapter implements Match {
 		if (nodes.size() > 0) {
 			Map<String, Object> parameters = Map.of("nodes", nodes);
 			var matchNodes = builder.executeQuery(MatchQuery.getMatchNodes("nodes"), parameters);
-			for (var rec : matchNodes.list()) {
+			for (var rec : matchNodes) {
 				for (var node : rec.asMap().values()) {
 					var n = (Node) node;
 					var domain = srcElements.contains(n.id()) ? Domain.SRC : Domain.TRG;
@@ -132,7 +132,7 @@ public class NeoMatchAdapter implements Match {
 			if (edges.size() > 0) {
 				parameters = Map.of("edges", edges);
 				var matchEdges = builder.executeQuery(MatchQuery.getMatchEdges("edges"), parameters);
-				matchEdges.list().forEach(n -> {
+				matchEdges.forEach(n -> {
 					for (var val : n.asMap().values())
 						adaptRelation(nodeToNeoNode, relations, (Relationship) val);
 				});

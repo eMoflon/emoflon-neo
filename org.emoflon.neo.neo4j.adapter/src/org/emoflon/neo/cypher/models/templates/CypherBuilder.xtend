@@ -3,8 +3,8 @@ package org.emoflon.neo.cypher.models.templates
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import org.neo4j.driver.v1.Session
-import org.neo4j.driver.v1.StatementResult
+import org.neo4j.driver.Session
+import org.neo4j.driver.Result
 import org.apache.log4j.Logger
 import org.emoflon.neo.neocore.util.NeoCoreConstants
 
@@ -23,7 +23,7 @@ abstract class CypherBuilder {
 		nodesToMatch = new HashMap
 	}
 
-	def StatementResult runCypherCommand(Session session, String cmd) {
+	def Result runCypherCommand(Session session, String cmd) {
 		logger.debug("-------- Begin Cypher ----")
 		logger.debug(cmd)
 		logger.debug("-------- End -------")
@@ -31,7 +31,7 @@ abstract class CypherBuilder {
 		return session.run(cmd)
 	}
 
-	def StatementResult runCypherCommand(Session session, String cmd, Map<String, Object> params) {
+	def Result runCypherCommand(Session session, String cmd, Map<String, Object> params) {
 		logger.debug("-------- Begin Cypher ----")
 		logger.debug(cmd)
 		logger.debug("-------- End -------")

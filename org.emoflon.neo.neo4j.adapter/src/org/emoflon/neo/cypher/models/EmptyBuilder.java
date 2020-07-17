@@ -1,18 +1,19 @@
 package org.emoflon.neo.cypher.models;
 
+import java.util.List;
 import java.util.Map;
 
-import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.Record;
 
 public class EmptyBuilder implements IBuilder {
 
 	@Override
-	public StatementResult executeQuery(String cypherQuery) {
+	public List<Record> executeQuery(String cypherQuery) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public StatementResult executeQuery(String cypherQuery, Map<String, Object> params) {
+	public List<Record> executeQuery(String cypherQuery, Map<String, Object> params) {
 		throw new UnsupportedOperationException();
 	}
 

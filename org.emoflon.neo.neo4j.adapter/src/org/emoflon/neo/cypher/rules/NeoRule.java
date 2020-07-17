@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.patterns.IMask;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Schedule;
-import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.Record;
 
 import com.google.common.collect.Streams;
 
@@ -143,12 +144,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		extractCoMatches(result, comatches);
 	}
 
-	private void extractCoMatches(StatementResult result, Collection<NeoCoMatch> comatches) {
+	private void extractCoMatches(List<Record> result, Collection<NeoCoMatch> comatches) {
 		if (result == null) {
 			throw new NeoDatabaseException();
 		} else {
-			while (result.hasNext()) {
-				var record = result.next();
+			for (var record : result) {
 				comatches.add(new NeoCoMatch(postcondition, record));
 			}
 		}

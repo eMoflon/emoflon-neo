@@ -2,8 +2,8 @@ package org.emoflon.neo.cypher.models.templates
 
 import java.util.ArrayList
 import java.util.List
-import org.neo4j.driver.v1.Driver
-import org.neo4j.driver.v1.StatementResult
+import org.neo4j.driver.Driver
+import org.neo4j.driver.Result
 
 class CypherNodeMatcher extends CypherBuilder {
 	List<NodeCommand> nodesToReturn;
@@ -29,7 +29,7 @@ class CypherNodeMatcher extends CypherBuilder {
 		nodesToReturn.addAll(ncs)
 	}
 
-	def StatementResult run(Driver driver) {
+	def Result run(Driver driver) {
 		val session = driver.session
 		runCypherCommand(session, buildCommand)
 	}

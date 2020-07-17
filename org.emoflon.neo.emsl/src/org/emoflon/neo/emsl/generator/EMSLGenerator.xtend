@@ -7,7 +7,6 @@ import java.net.URI
 import java.util.ArrayList
 import java.util.List
 import java.util.function.Predicate
-import java.util.stream.Collectors
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
@@ -190,8 +189,8 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.rules.*;
 			import org.emoflon.neo.emsl.eMSL.*;
 			import org.emoflon.neo.emsl.util.*;
-			import org.neo4j.driver.v1.Value;
-			import org.neo4j.driver.v1.Record;
+			import org.neo4j.driver.Value;
+			import org.neo4j.driver.Record;
 			import org.eclipse.emf.common.util.URI;
 			import org.emoflon.neo.api.API_Common;
 			import java.util.Collection;

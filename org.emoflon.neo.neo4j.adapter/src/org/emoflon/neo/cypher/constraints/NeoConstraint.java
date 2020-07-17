@@ -29,7 +29,7 @@ public class NeoConstraint extends NeoPattern implements IConstraint {
 		if (result == null)
 			throw new NeoDatabaseException();
 
-		var results = result.list();
+		var results = result;
 
 		if (results.size() != 1)
 			throw new IllegalStateException("Constraints must return a single value! (check " + this + ")");
