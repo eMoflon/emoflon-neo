@@ -1,0 +1,188 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDoc.msl"
+
+tripleGrammar JavaToDocSLE {
+	source {
+		SimpleJava
+	}
+	
+	target {
+		SimpleDoc
+	}
+	
+	correspondence {
+		Class <- ClassToDoc -> Doc
+		Method <- MethodToEntry -> Entry
+		Parameter <- ParamToEntry -> Entry
+		Field <- FieldToEntry -> Entry
+	}
+	
+	rules {
+		ClassToDocRule
+		SubClassToSubDocRule
+		MethodToEntryRule
+		AddParameterRule
+		FieldToEntryRule
+		AddGlossarRule
+		LinkGlossarEntryRule
+		AddGlossarEntryRule
+	}
+}
+
+tripleRule ClassToDocRule : JavaToDocSLE {
+	source { 
+		++ c : Class {
+			.name := <ClassName>
+		}
+	}
+	
+	target {
+		++ d : Doc {
+			.name := <ClassName>
+		}
+	}
+
+	correspondence {
+		++ c <-:ClassToDoc-> d
+	}
+} 
+
+//forbid src(ClassNameIsTaken)
+
+pattern ClassNameIsTaken {
+	class : Class {
+		.name : <ClassName>
+	}
+}
+
+tripleRule SubClassToSubDocRule : JavaToDocSLE {
+	source { 
+		c : Class {
+			++ -subTypes->sc
+		}
+		++ sc : Class {
+			.name := <className>
+		}
+	}
+	
+	target {
+		d : Doc {
+			++ -hrefs->sd
+		}
+		++ sd : Doc {
+			.name := <docName>
+			.version := <version>
+		}
+		
+	}
+
+	correspondence {
+		c <-:ClassToDoc-> d
+		++ sc <-:ClassToDoc-> sd
+	}
+} 
+
+tripleRule MethodToEntryRule : JavaToDocSLE {
+	source { 
+		c : Class {
+			++ -methods-> m
+		}
+		++ m : Method {
+			.name := <methodName>
+		}
+	}
+	
+	target {
+		d : Doc {
+			++ -entries-> e
+		}
+		++ e : Entry {
+			.name := <entryName>
+		}
+	}
+
+	correspondence {
+		c <-:ClassToDoc-> d
+		++ m <-:MethodToEntry-> e
+	}
+}
+
+tripleRule AddParameterRule : JavaToDocSLE {
+	source { 
+		m : Method {
+			++ -parameters-> p
+		}
+		++ p : Parameter {
+			.name := <methodName>
+		}
+	}
+	
+	target {
+		e : Entry  {
+		
+		}
+	}
+
+	correspondence {
+		 m <-:MethodToEntry-> e
+		 ++ p <-:ParamToEntry-> e
+	}
+}
+
+tripleRule FieldToEntryRule : JavaToDocSLE {
+	source { 
+		c : Class {
+			++ -fields-> f
+		}
+		++ f : Field {
+			.name := <fieldName>
+		}
+	}
+	
+	target {
+		d : Doc {
+			++ -entries-> e
+		}
+		++ e : Entry  {
+			.name := <entryName>
+		}
+	}
+
+	correspondence {
+		 c <-:ClassToDoc-> d
+		 ++ f <-:FieldToEntry-> e
+	}
+}
+
+tripleRule AddGlossarRule : JavaToDocSLE {
+	target {
+		++ g : Glossary  {
+		}
+	} 
+}
+
+tripleRule LinkGlossarEntryRule : JavaToDocSLE {
+		
+	target {
+		e : Entry  {
+			++ -gEntries-> ge
+		}
+		
+		ge : GlossaryEntry {
+			
+		}
+	}
+}
+
+tripleRule AddGlossarEntryRule : JavaToDocSLE {
+		
+	target {
+		g : Glossary  {
+			++ -gEntries-> ge
+		}
+		
+		++ ge : GlossaryEntry {
+			
+		}
+	}
+}

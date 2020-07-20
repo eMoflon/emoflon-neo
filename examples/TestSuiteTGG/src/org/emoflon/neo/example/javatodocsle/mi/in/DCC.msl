@@ -1,0 +1,403 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDoc.msl"
+
+model moflonJava {
+	
+	// Java
+	C1:Class {
+		.name : "C1"
+		-fields-> f4b
+		-fields-> f4
+		-fields-> f5
+		-fields-> f7
+		-methods-> m6
+	}
+		
+	C2:Class {
+		.name : "C2"
+		-fields->f7
+		-methods-> m8
+	}
+	
+	C3:Class {
+		.name : "C3"
+		-subTypes-> C2
+		-fields-> f7
+	}
+	
+	f4b:Field {
+		.name : "f4b"
+	}	
+	
+	f4:Field {
+		.name : "f4"
+	}
+	
+	f5:Field {
+		.name : "f5"
+	}
+	
+	f7:Field {
+		.name : "f7"
+	}
+	
+	m6:Method {
+		.name : "m6"
+		-parameters-> p9
+		-parameters-> p10
+	}
+	
+	m8:Method {
+		.name : "m8"
+		-parameters-> p10
+		-parameters-> p11
+	}
+	
+	p9:Parameter {
+		.name : "p9"
+	}
+	
+	p10:Parameter {
+		.name : "p10"
+	}
+	
+	p11:Parameter {
+		.name : "p11"
+	}
+}
+
+model moflonDoc {
+	// Doc
+		
+	D1:Doc {
+		.name : "D1"
+		-entries-> e4f
+		-entries-> e4
+		-entries-> e5
+		-entries-> e6
+		-entries-> e7
+	}
+	
+	D2:Doc {
+		.name : "D2"
+		-entries-> e7
+		-entries-> e8
+	}
+		
+	D3:Doc {
+		.name : "D3"
+		-hrefs-> D2
+		-entries-> e7
+	}
+	
+	e4f:Entry {
+		.name : "e4f"
+	}
+	
+	e4:Entry {
+		.name : "e4"
+		-gEntries-> ge12
+	}
+	
+	e5:Entry {
+		.name : "e5"
+		-gEntries-> ge12
+	}
+	
+	e6:Entry {
+		.name : "e6"
+		-gEntries-> ge12
+	}
+	
+	e7:Entry {
+		.name : "e7"
+		-gEntries-> ge12
+		-gEntries-> ge13
+	}
+	
+	e8:Entry {
+		.name : "e8"
+		-gEntries-> ge13
+	}
+	
+	ge12:GlossaryEntry{
+		
+	}
+	
+	ge13:GlossaryEntry{
+		
+	}
+	
+	ge14:Glossary{
+		-gEntries-> ge12
+		-gEntries-> ge13
+	}
+}
+
+rule createCorrs {
+	// Java
+	C1:Class {
+		.name : "C1"
+		++-corr->D1 {
+			._type_ := "ClassToDoc"
+		}
+	}
+	
+	C2:Class {
+		.name : "C2"
+		-fields->f7
+		-methods-> m8
+		++-corr->D2 {
+			._type_ := "ClassToDoc"
+		}
+	}
+	
+	C3:Class {
+		.name : "C3"
+		-subTypes-> C2
+		-fields-> f7
+		++-corr->D3 {
+			._type_ := "ClassToDoc"
+		}
+	}
+	
+	f4b:Field {
+		.name : "f4b"
+		++-corr-> e4 {
+			._type_ := "FieldToEntry"
+		}
+	}	
+	
+	f4:Field {
+		.name : "f4"
+		++-corr-> e4f {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	f5:Field {
+		.name : "f5"
+		++-corr-> e5 {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	f7:Field {
+		.name : "f7"
+		++-corr-> e7 {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	m6:Method {
+		.name : "m6"
+		-parameters-> p9
+		-parameters-> p10
+		++-corr-> e6 {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	m8:Method {
+		.name : "m8"
+		-parameters-> p10
+		-parameters-> p11
+		++-corr-> e8 {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	p9:Parameter {
+		.name : "p9"
+		++-corr-> e6 {
+			._type_ := "ParamToEntry"
+		}
+	}
+	
+	p10:Parameter {
+		.name : "p10"
+		++-corr-> e6 {
+			._type_ := "ParamToEntry"
+		}
+	}
+	
+	p11:Parameter {
+		.name : "p11"
+		++-corr-> e8 {
+			._type_ := "ParamToEntry"
+		}
+	}
+	
+	// Doc
+	D1:Doc {
+		.name : "D1"
+		-entries-> e4f
+		-entries-> e4
+		-entries-> e5
+		-entries-> e6
+		-entries-> e7
+	}
+	
+	D2:Doc {
+		.name : "D2"
+		-entries-> e7
+		-entries-> e8
+	}
+		
+	D3:Doc {
+		.name : "D3"
+		-hrefs-> D2
+		-entries-> e7
+	}
+	
+	e4f:Entry {
+		.name : "e4f"
+	}
+	
+	e4:Entry {
+		.name : "e4"
+		-gEntries-> ge12
+	}
+	
+	e5:Entry {
+		.name : "e5"
+		-gEntries-> ge12
+	}
+	
+	e6:Entry {
+		.name : "e6"
+		-gEntries-> ge12
+	}
+	
+	e7:Entry {
+		.name : "e7"
+		-gEntries-> ge12
+		-gEntries-> ge13
+	}
+	
+	e8:Entry {
+		.name : "e8"
+		-gEntries-> ge13
+	}
+	
+	ge12:GlossaryEntry{
+		
+	}
+	
+	ge13:GlossaryEntry{
+		
+	}
+	
+	ge14:Glossary{
+		-gEntries-> ge12
+		-gEntries-> ge13
+	}	
+
+}
+
+model moflonJavaChain -> moflonJava {
+		
+	C1:Class {
+		-fields-> f4 {
+			~_cr_ : true
+		}
+		-methods-> m6 {
+			~_de_ : true
+		}
+	}
+	
+	f4:Field {
+		.name : "f4"
+		._cr_ : true
+	}
+	
+	m6:Method {
+		._de_ : true
+		-parameters-> p9 {
+			~_de_ : true
+		}
+		-parameters-> p10 {
+			~_de_ : true
+		}
+	}
+	
+	p9:Parameter {
+		._de_ : true
+	}
+	
+	C3:Class {
+		-fields-> f7 {
+			~_cr_ : true
+		}
+		-subTypes-> C2 {
+			~_cr_ : true
+		}
+	}
+	
+	C2:Class {
+		-fields-> f7 {
+			~_de_ : true
+		}
+		-methods-> m8{
+			~_cr_ : true
+		}
+	}
+	
+	m8:Method {
+		-parameters-> p10 {
+			~_cr_ : true
+		}
+	}
+}
+
+model moflonDocChain -> moflonDoc {
+	// Doc
+	D1:Doc {
+		-entries-> e4 {
+			~_cr_ : true
+		}
+		-entries-> e5 {
+			~_cr_ : true
+		}
+		-entries-> e7 {
+			~_cr_ : true
+		}
+	}
+	
+	D2:Doc {
+		-entries-> e7 {
+			~_de_ : true
+		}
+	}
+	
+	e4:Entry {
+		.name : "e4"
+		._cr_ : true
+		-gEntries-> ge12 {
+			~_cr_ : true
+		}
+	}
+	
+	e5:Entry {
+		.name : "e5"
+		-gEntries-> ge12 {
+			~_cr_ : true
+		}
+	}
+	
+	e6:Entry {
+		.name : "e6"
+		-gEntries-> ge12 {
+			~_cr_ : true
+		}
+	}
+	
+	e7:Entry {
+		-gEntries-> ge12 {
+			~_cr_ : true
+		}
+		-gEntries-> ge13 {
+			~_de_ : true
+		}
+	}
+}

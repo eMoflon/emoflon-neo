@@ -1,0 +1,22 @@
+metamodel SimpleJava {
+	Class {
+		.name : EString
+		<+>-subTypes(0..*)-> Class
+		<+>-methods(0..*)-> Method
+		<+>-fields(0..*)-> Field
+	}
+	
+	Method {
+		.name : EString
+		<+>-parameters(0..*)-> Parameter
+	}
+	
+	Field {
+		.name : EString
+	}
+	
+	Parameter {
+		.name : EString
+	}
+}
+

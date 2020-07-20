@@ -1,0 +1,21 @@
+metamodel SimpleDoc {
+	Doc {
+		.name : EString
+		.version : EInt
+		<+>-hrefs(0..*)-> Doc
+		<+>-entries(0..*)-> Entry
+	}
+	
+	Entry {
+		.name : EString
+		<+>-gEntries(0..*)-> GlossaryEntry
+	}
+	
+	GlossaryEntry {
+		
+	}
+	
+	Glossary {
+		<+>-gEntries(0..*)-> GlossaryEntry
+	}
+}
