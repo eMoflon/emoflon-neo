@@ -105,7 +105,7 @@ grammar JavaToDoc_CC {
 			{
 				._type_ := "PackageToFolder"
 			}
-			.name : subF::name
+			.name : doc::name
 		}
 	
 		f:Folder {
@@ -116,11 +116,11 @@ grammar JavaToDoc_CC {
 		subF:Folder {
 			-elementOf->trgM
 			-docs->doc
+			.name : doc::name
 		}
 		
 		doc:Doc {
 			-elementOf->trgM
-			.name : subF::name
 		}
 		
 		attributeConstraints {

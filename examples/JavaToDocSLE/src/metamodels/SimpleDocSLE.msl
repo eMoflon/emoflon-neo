@@ -1,7 +1,6 @@
-metamodel SimpleDoc {
+metamodel SimpleDocSLE {
 	Doc {
 		.name : EString
-		.version : EInt
 		<+>-hrefs(0..*)-> Doc
 		<+>-entries(0..*)-> Entry
 	}
@@ -12,10 +11,11 @@ metamodel SimpleDoc {
 	}
 	
 	GlossaryEntry {
-		
+		.name : EString
 	}
 	
 	Glossary {
+		.name : EString
 		<+>-gEntries(0..*)-> GlossaryEntry
 	}
 }

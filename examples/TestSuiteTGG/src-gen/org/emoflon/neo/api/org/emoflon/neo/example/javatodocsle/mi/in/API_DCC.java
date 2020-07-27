@@ -409,13 +409,10 @@ public class API_DCC {
 		
 		public class D1Node {
 			public String _name;
-			public int _version;
 			
 			public D1Node(Value _D1) {
 				if(!_D1.get("name").isNull())
 					this._name = _D1.get("name").asString();
-				if(!_D1.get("version").isNull())
-					this._version = _D1.get("version").asInt();
 			}
 		}
 		
@@ -446,13 +443,10 @@ public class API_DCC {
 		}
 		public class D2Node {
 			public String _name;
-			public int _version;
 			
 			public D2Node(Value _D2) {
 				if(!_D2.get("name").isNull())
 					this._name = _D2.get("name").asString();
-				if(!_D2.get("version").isNull())
-					this._version = _D2.get("version").asInt();
 			}
 		}
 		
@@ -468,13 +462,10 @@ public class API_DCC {
 		}
 		public class D3Node {
 			public String _name;
-			public int _version;
 			
 			public D3Node(Value _D3) {
 				if(!_D3.get("name").isNull())
 					this._name = _D3.get("name").asString();
-				if(!_D3.get("version").isNull())
-					this._version = _D3.get("version").asInt();
 			}
 		}
 		
@@ -573,20 +564,29 @@ public class API_DCC {
 			}
 		}
 		public class Ge12Node {
+			public String _name;
 			
 			public Ge12Node(Value _ge12) {
+				if(!_ge12.get("name").isNull())
+					this._name = _ge12.get("name").asString();
 			}
 		}
 		
 		public class Ge13Node {
+			public String _name;
 			
 			public Ge13Node(Value _ge13) {
+				if(!_ge13.get("name").isNull())
+					this._name = _ge13.get("name").asString();
 			}
 		}
 		
 		public class Ge14Node {
+			public String _name;
 			
 			public Ge14Node(Value _ge14) {
+				if(!_ge14.get("name").isNull())
+					this._name = _ge14.get("name").asString();
 			}
 		}
 		
@@ -1037,13 +1037,10 @@ public class API_DCC {
 		}
 		public class D1Node {
 			public String _name;
-			public int _version;
 			
 			public D1Node(Value _D1) {
 				if(!_D1.get("name").isNull())
 					this._name = _D1.get("name").asString();
-				if(!_D1.get("version").isNull())
-					this._version = _D1.get("version").asInt();
 			}
 		}
 		
@@ -1074,13 +1071,10 @@ public class API_DCC {
 		}
 		public class D2Node {
 			public String _name;
-			public int _version;
 			
 			public D2Node(Value _D2) {
 				if(!_D2.get("name").isNull())
 					this._name = _D2.get("name").asString();
-				if(!_D2.get("version").isNull())
-					this._version = _D2.get("version").asInt();
 			}
 		}
 		
@@ -1096,13 +1090,10 @@ public class API_DCC {
 		}
 		public class D3Node {
 			public String _name;
-			public int _version;
 			
 			public D3Node(Value _D3) {
 				if(!_D3.get("name").isNull())
 					this._name = _D3.get("name").asString();
-				if(!_D3.get("version").isNull())
-					this._version = _D3.get("version").asInt();
 			}
 		}
 		
@@ -1201,20 +1192,29 @@ public class API_DCC {
 			}
 		}
 		public class Ge12Node {
+			public String _name;
 			
 			public Ge12Node(Value _ge12) {
+				if(!_ge12.get("name").isNull())
+					this._name = _ge12.get("name").asString();
 			}
 		}
 		
 		public class Ge13Node {
+			public String _name;
 			
 			public Ge13Node(Value _ge13) {
+				if(!_ge13.get("name").isNull())
+					this._name = _ge13.get("name").asString();
 			}
 		}
 		
 		public class Ge14Node {
+			public String _name;
 			
 			public Ge14Node(Value _ge14) {
+				if(!_ge14.get("name").isNull())
+					this._name = _ge14.get("name").asString();
 			}
 		}
 		
@@ -1383,10 +1383,6 @@ public class API_DCC {
 			attributeMask.put("D1.name", value);
 			return this;
 		}
-		public CreateCorrsMask setD1Version(int value) {
-			attributeMask.put("D1.version", value);
-			return this;
-		}
 		public CreateCorrsMask setD2(Long value) {
 			nodeMask.put("D2", value);
 			return this;
@@ -1395,20 +1391,12 @@ public class API_DCC {
 			attributeMask.put("D2.name", value);
 			return this;
 		}
-		public CreateCorrsMask setD2Version(int value) {
-			attributeMask.put("D2.version", value);
-			return this;
-		}
 		public CreateCorrsMask setD3(Long value) {
 			nodeMask.put("D3", value);
 			return this;
 		}
 		public CreateCorrsMask setD3Name(String value) {
 			attributeMask.put("D3.name", value);
-			return this;
-		}
-		public CreateCorrsMask setD3Version(int value) {
-			attributeMask.put("D3.version", value);
 			return this;
 		}
 		public CreateCorrsMask setE4f(Long value) {
@@ -1463,12 +1451,24 @@ public class API_DCC {
 			nodeMask.put("ge12", value);
 			return this;
 		}
+		public CreateCorrsMask setGe12Name(String value) {
+			attributeMask.put("ge12.name", value);
+			return this;
+		}
 		public CreateCorrsMask setGe13(Long value) {
 			nodeMask.put("ge13", value);
 			return this;
 		}
+		public CreateCorrsMask setGe13Name(String value) {
+			attributeMask.put("ge13.name", value);
+			return this;
+		}
 		public CreateCorrsMask setGe14(Long value) {
 			nodeMask.put("ge14", value);
+			return this;
+		}
+		public CreateCorrsMask setGe14Name(String value) {
+			attributeMask.put("ge14.name", value);
 			return this;
 		}
 	}

@@ -18,7 +18,8 @@ Require-Bundle: TestSuiteGT;bundle-version="1.0.0",
  org.apache.log4j,
  org.apache.commons.lang3,
  FamiliesToPersons,
- JavaToDoc
+ JavaToDoc,
+ JavaToDocSLE
 Automatic-Module-Name: TestSuiteTGG
 Bundle-RequiredExecutionEnvironment: JavaSE-13
 Import-Package: JavaToDoc.run,

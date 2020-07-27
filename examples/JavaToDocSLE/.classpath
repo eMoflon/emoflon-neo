@@ -8,5 +8,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="C:/gurobi811/win64/lib/gurobi.jar"/>
+	<classpathentry kind="src" path="src-gen"/>
+	<classpathentry kind="src" path="tgg-gen"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

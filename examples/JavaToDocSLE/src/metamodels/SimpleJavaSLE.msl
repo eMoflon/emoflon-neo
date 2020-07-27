@@ -1,7 +1,7 @@
-metamodel SimpleJava {
-	Class {
+metamodel SimpleJavaSLE {
+	Clazz {
 		.name : EString
-		<+>-subTypes(0..*)-> Class
+		<+>-subTypes(0..*)-> Clazz
 		<+>-methods(0..*)-> Method
 		<+>-fields(0..*)-> Field
 	}

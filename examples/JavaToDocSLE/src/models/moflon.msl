@@ -1,10 +1,10 @@
-import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJava.msl"
-import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDoc.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
 
 model moflon {
 	
 	// Java
-	C1:Class {
+	C1:Clazz {
 		.name : "C1"
 		-fields-> f4b
 		-fields-> f4
@@ -13,13 +13,13 @@ model moflon {
 		-methods-> m6
 	}
 		
-	C2:Class {
+	C2:Clazz {
 		.name : "C2"
 		-fields->f7
 		-methods-> m8
 	}
 	
-	C3:Class {
+	C3:Clazz {
 		.name : "C3"
 		-subTypes-> C2
 		-fields-> f7

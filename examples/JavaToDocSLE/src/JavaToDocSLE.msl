@@ -1,67 +1,59 @@
-import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJava.msl"
-import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDoc.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
 
 tripleGrammar JavaToDocSLE {
 	source {
-		SimpleJava
+		SimpleJavaSLE
 	}
 	
 	target {
-		SimpleDoc
+		SimpleDocSLE
 	}
 	
 	correspondence {
-		Class <- ClassToDoc -> Doc
+		Clazz <- ClazzToDoc -> Doc
 		Method <- MethodToEntry -> Entry
 		Parameter <- ParamToEntry -> Entry
 		Field <- FieldToEntry -> Entry
 	}
 	
 	rules {
-		ClassToDocRule
-		SubClassToSubDocRule
+		ClazzToDocRule
+		SubClazzToSubDocRule
 		MethodToEntryRule
 		AddParameterRule
 		FieldToEntryRule
-		AddGlossarRule
-		LinkGlossarEntryRule
-		AddGlossarEntryRule
+		AddGlossaryRule
+		LinkGlossaryEntryRule
+		AddGlossaryEntryRule
 	}
 }
 
-tripleRule ClassToDocRule : JavaToDocSLE {
+tripleRule ClazzToDocRule : JavaToDocSLE {
 	source { 
-		++ c : Class {
-			.name := <ClassName>
+		++ c : Clazz {
+			.name := <clazzName>
 		}
 	}
 	
 	target {
 		++ d : Doc {
-			.name := <ClassName>
+			.name := <clazzName>
 		}
 	}
 
 	correspondence {
-		++ c <-:ClassToDoc-> d
+		++ c <-:ClazzToDoc-> d
 	}
 } 
 
-//forbid src(ClassNameIsTaken)
-
-pattern ClassNameIsTaken {
-	class : Class {
-		.name : <ClassName>
-	}
-}
-
-tripleRule SubClassToSubDocRule : JavaToDocSLE {
+tripleRule SubClazzToSubDocRule : JavaToDocSLE {
 	source { 
-		c : Class {
+		c : Clazz {
 			++ -subTypes->sc
 		}
-		++ sc : Class {
-			.name := <className>
+		++ sc : Clazz {
+			.name := <subClazzName>
 		}
 	}
 	
@@ -70,21 +62,20 @@ tripleRule SubClassToSubDocRule : JavaToDocSLE {
 			++ -hrefs->sd
 		}
 		++ sd : Doc {
-			.name := <docName>
-			.version := <version>
+			.name := <subClazzName>
 		}
 		
 	}
 
 	correspondence {
-		c <-:ClassToDoc-> d
-		++ sc <-:ClassToDoc-> sd
+		c <-:ClazzToDoc-> d
+		++ sc <-:ClazzToDoc-> sd
 	}
 } 
 
 tripleRule MethodToEntryRule : JavaToDocSLE {
 	source { 
-		c : Class {
+		c : Clazz {
 			++ -methods-> m
 		}
 		++ m : Method {
@@ -97,12 +88,12 @@ tripleRule MethodToEntryRule : JavaToDocSLE {
 			++ -entries-> e
 		}
 		++ e : Entry {
-			.name := <entryName>
+			.name := <methodName>
 		}
 	}
 
 	correspondence {
-		c <-:ClassToDoc-> d
+		c <-:ClazzToDoc-> d
 		++ m <-:MethodToEntry-> e
 	}
 }
@@ -110,16 +101,16 @@ tripleRule MethodToEntryRule : JavaToDocSLE {
 tripleRule AddParameterRule : JavaToDocSLE {
 	source { 
 		m : Method {
-			++ -parameters-> p
+			++ -parameters-> p	
 		}
 		++ p : Parameter {
-			.name := <methodName>
+			.name := <entryName>
 		}
 	}
 	
 	target {
 		e : Entry  {
-		
+			.name : <entryName>
 		}
 	}
 
@@ -131,7 +122,7 @@ tripleRule AddParameterRule : JavaToDocSLE {
 
 tripleRule FieldToEntryRule : JavaToDocSLE {
 	source { 
-		c : Class {
+		c : Clazz {
 			++ -fields-> f
 		}
 		++ f : Field {
@@ -144,25 +135,38 @@ tripleRule FieldToEntryRule : JavaToDocSLE {
 			++ -entries-> e
 		}
 		++ e : Entry  {
-			.name := <entryName>
+			.name := <fieldName>
 		}
 	}
 
 	correspondence {
-		 c <-:ClassToDoc-> d
+		 c <-:ClazzToDoc-> d
 		 ++ f <-:FieldToEntry-> e
 	}
 }
 
-tripleRule AddGlossarRule : JavaToDocSLE {
+tripleRule AddGlossaryRule : JavaToDocSLE {
+	source {
+		
+	}	
+	
 	target {
 		++ g : Glossary  {
+			.name := <glossaryName>
 		}
 	} 
+	
+	correspondence {
+		
+	}
 }
 
-tripleRule LinkGlossarEntryRule : JavaToDocSLE {
+tripleRule LinkGlossaryEntryRule : JavaToDocSLE {
+	
+	source {
 		
+	}	
+	
 	target {
 		e : Entry  {
 			++ -gEntries-> ge
@@ -172,17 +176,28 @@ tripleRule LinkGlossarEntryRule : JavaToDocSLE {
 			
 		}
 	}
+	
+	correspondence {
+		
+	}
 }
 
-tripleRule AddGlossarEntryRule : JavaToDocSLE {
+tripleRule AddGlossaryEntryRule : JavaToDocSLE {
+	source {
 		
+	}	
+	
 	target {
 		g : Glossary  {
 			++ -gEntries-> ge
 		}
 		
 		++ ge : GlossaryEntry {
-			
+			.name := <glossaryEntryName>
 		}
+	}
+	
+	correspondence {
+		
 	}
 }

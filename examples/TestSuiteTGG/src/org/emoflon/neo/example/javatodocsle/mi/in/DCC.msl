@@ -1,10 +1,10 @@
-import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJava.msl"
-import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDoc.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
 
 model moflonJava {
 	
 	// Java
-	C1:Class {
+	C1:Clazz {
 		.name : "C1"
 		-fields-> f4b
 		-fields-> f4
@@ -13,13 +13,13 @@ model moflonJava {
 		-methods-> m6
 	}
 		
-	C2:Class {
+	C2:Clazz {
 		.name : "C2"
 		-fields->f7
 		-methods-> m8
 	}
 	
-	C3:Class {
+	C3:Clazz {
 		.name : "C3"
 		-subTypes-> C2
 		-fields-> f7
@@ -136,28 +136,28 @@ model moflonDoc {
 
 rule createCorrs {
 	// Java
-	C1:Class {
+	C1:Clazz {
 		.name : "C1"
 		++-corr->D1 {
-			._type_ := "ClassToDoc"
+			._type_ := "ClazzToDoc"
 		}
 	}
 	
-	C2:Class {
+	C2:Clazz {
 		.name : "C2"
 		-fields->f7
 		-methods-> m8
 		++-corr->D2 {
-			._type_ := "ClassToDoc"
+			._type_ := "ClazzToDoc"
 		}
 	}
 	
-	C3:Class {
+	C3:Clazz {
 		.name : "C3"
 		-subTypes-> C2
 		-fields-> f7
 		++-corr->D3 {
-			._type_ := "ClassToDoc"
+			._type_ := "ClazzToDoc"
 		}
 	}
 	
@@ -297,7 +297,7 @@ rule createCorrs {
 
 model moflonJavaChain -> moflonJava {
 		
-	C1:Class {
+	C1:Clazz {
 		-fields-> f4 {
 			~_cr_ : true
 		}
@@ -325,7 +325,7 @@ model moflonJavaChain -> moflonJava {
 		._de_ : true
 	}
 	
-	C3:Class {
+	C3:Clazz {
 		-fields-> f7 {
 			~_cr_ : true
 		}
@@ -334,7 +334,7 @@ model moflonJavaChain -> moflonJava {
 		}
 	}
 	
-	C2:Class {
+	C2:Clazz {
 		-fields-> f7 {
 			~_de_ : true
 		}
