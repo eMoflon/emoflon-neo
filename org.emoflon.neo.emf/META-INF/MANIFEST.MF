@@ -14,6 +14,7 @@ Require-Bundle: org.apache.commons.io;bundle-version="2.2.0";visibility:=reexpor
  org.eclipse.xtend.lib.macro,
  org.eclipse.ui,
  org.eclipse.core.runtime,
- org.apache.log4j;bundle-version="1.2.15"
+ org.apache.log4j;bundle-version="1.2.15",
+ org.eclipse.emf.ecore.editor;bundle-version="2.17.0"
 Automatic-Module-Name: org.emoflon.neo.emf
 Bundle-RequiredExecutionEnvironment: JavaSE-13
