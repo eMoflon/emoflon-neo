@@ -300,4 +300,25 @@ class EMSLUtil {
 			iterateConstraintPatterns(body.reference.body, action)
 		}
 	}
+	
+	def static String escapeKeyWords(String s) {
+		switch (s) {
+			case null: "???"
+			case isEMSLKeyWord(s): '''^«s»'''
+			default: s
+		}
+	}
+	
+	def static boolean isEMSLKeyWord(String s){
+		switch (s) {
+			case "target",
+			case "abstract",
+			case "attributeConstraints",
+			case "pattern",
+			case "source",
+			case "rules": true
+			default:
+				false
+		}
+	}
 }
