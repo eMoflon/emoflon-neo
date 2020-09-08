@@ -114,7 +114,7 @@ grammar JavaToDoc_BWD {
 			{
 				._type_ := "PackageToFolder"
 			}
-			.name := subF::name
+			.name := doc::name
 		}
 	
 		f:Folder {
@@ -134,13 +134,13 @@ grammar JavaToDoc_BWD {
 				~_tr_ : false
 				~_tr_ := true
 			}
+			.name : doc::name
 			~_tr_ : false
 			~_tr_ := true
 		}
 		
 		doc:Doc {
 			-elementOf->trgM
-			.name : subF::name
 			~_tr_ : false
 			~_tr_ := true
 		}

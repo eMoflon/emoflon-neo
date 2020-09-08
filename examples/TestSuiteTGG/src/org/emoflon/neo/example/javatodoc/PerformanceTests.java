@@ -12,6 +12,7 @@ import org.emoflon.neo.api.API_JavaToDoc;
 import org.emoflon.neo.api.org.emoflon.neo.example.javatodoc.mi.in.API_ConflictGenerator;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import JavaToDoc.run.JavaToDoc_CO_Run;
@@ -48,7 +49,7 @@ public class PerformanceTests extends ENeoTest {
 
 	}
 
-	@Test
+	@Ignore
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
 			scheduler.setMax(API_JavaToDoc.JavaToDoc__RootToRootRule, 100)

@@ -68,11 +68,11 @@ grammar JavaToDoc_CO {
 			{
 				._type_ : "PackageToFolder"
 			}
+			.name : f::name
 		}
 	
 		f:Folder {
 			-elementOf->trgM
-			.name : p::name
 		}
 		
 		attributeConstraints {

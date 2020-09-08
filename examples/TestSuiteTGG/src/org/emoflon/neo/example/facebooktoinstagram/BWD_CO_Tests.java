@@ -3,12 +3,13 @@ package org.emoflon.neo.example.facebooktoinstagram;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
+
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramGrammar_BWD_Run;
-import Transformations.run.FacebookToInstagramGrammar_CO_Run;
+import Transformations.run.FacebookToInstagramFASE_BWD_Run;
+import Transformations.run.FacebookToInstagramFASE_CO_Run;
 
 public class BWD_CO_Tests extends ENeoTest {
 
@@ -16,8 +17,8 @@ public class BWD_CO_Tests extends ENeoTest {
 
 	private void runTest(Model trgModel, String srcName, String trgName) throws Exception {
 		builder.exportEMSLEntityToNeo4j(trgModel);
-		new FacebookToInstagramGrammar_BWD_Run(srcName, trgName).run();
-		assertTrue(new FacebookToInstagramGrammar_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		new FacebookToInstagramFASE_BWD_Run(srcName, trgName).run();
+		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
 	}
 
 	@Test

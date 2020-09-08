@@ -9,8 +9,8 @@ import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramGrammar_CO_Run;
-import Transformations.run.FacebookToInstagramGrammar_FWD_OPT_Run;
+import Transformations.run.FacebookToInstagramFASE_CO_Run;
+import Transformations.run.FacebookToInstagramFASE_FWD_OPT_Run;
 
 public class FWD_OPT_CO_Tests extends ENeoTest {
 
@@ -21,8 +21,8 @@ public class FWD_OPT_CO_Tests extends ENeoTest {
 		var metamodels = builder.collectDependentMetamodels(trgModel);
 		for (Metamodel m : metamodels) 
 			builder.exportEMSLEntityToNeo4j(m);
-		new FacebookToInstagramGrammar_FWD_OPT_Run(srcName, trgName).run();
-		assertTrue(new FacebookToInstagramGrammar_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		new FacebookToInstagramFASE_FWD_OPT_Run(srcName, trgName).run();
+		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
 	}
 
 	@Test
@@ -37,7 +37,6 @@ public class FWD_OPT_CO_Tests extends ENeoTest {
 
 	@Ignore
 	// Doesn't terminate because RequestFrienship is an ignore rule for FWD_OPT
-	@Test
 	public void testTriple3() throws Exception {
 		runTest(api.getModel_ConsistentSrc3(), api.getModel_ConsistentTrg3(), "ConsistentSrc3", "Target3");
 	}

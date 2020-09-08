@@ -11,6 +11,7 @@ import org.emoflon.neo.api.API_JavaToDocSLE;
 import org.emoflon.neo.api.org.emoflon.neo.example.javatodocsle.mi.in.API_ConflictGenerator;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import JavaToDocSLE.run.JavaToDocSLE_MI_Run;
@@ -54,7 +55,8 @@ public class PerformanceTests extends ENeoTest {
 			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
 		}, nrOfConflicts/2);
 	}
-	@Test
+	
+	@Ignore
 	public void testPerformance() throws Exception {
 		for (int i=11; i<=12; i++) {
 			for (int j=0; j<7; j++) {
