@@ -14,10 +14,10 @@ public class DirectMITests extends ENeoTest {
 	
 	@Test
 	public void testDCC_Chain() throws Exception {
-		exportTriple(api.getModel_MoflonJavaChain(), //
-				api.getModel_MoflonDocChain(), //
+		exportTriple(api.getModel_MoflonJava(), //
+				api.getModel_MoflonDoc(), //
 				api.getRule_CreateCorrs().rule());
-		new JavaToDocSLE_MI_Run("moflonJavaChain", "moflonDocChain").run();
-		testForConsistency(new JavaToDocSLE_CO_Run("moflonJavaChain", "moflonDocChain").runCheckOnly(), 84);
+		new JavaToDocSLE_MI_Run("moflonJava", "moflonDoc").run();
+		testForConsistency(new JavaToDocSLE_CO_Run("moflonJava", "moflonDoc").runCheckOnly(), 47);
 	}
 }

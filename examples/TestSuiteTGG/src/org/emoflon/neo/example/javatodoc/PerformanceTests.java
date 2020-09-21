@@ -13,8 +13,6 @@ import org.emoflon.neo.api.org.emoflon.neo.example.javatodoc.mi.in.API_ConflictG
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
-
 import JavaToDoc.run.JavaToDoc_CO_Run;
 import JavaToDoc.run.JavaToDoc_MI_Run;
 

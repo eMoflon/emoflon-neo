@@ -268,7 +268,6 @@ model moflonJavaMultiDel -> moflonJava {
 	
 	es:Package {
 		._de_ : true
-		-clazzes->EcoreUtil
 		-subPackages->emoflon{
 			~_de_ : true
 		}
@@ -304,6 +303,10 @@ model moflonJavaMultiDel -> moflonJava {
 			~_de_ : true
 		}
 	}
+	
+	IPM:Clazz
+	
+	GT:Clazz
 }
 
 model moflonDocMultiDel -> moflonDoc {

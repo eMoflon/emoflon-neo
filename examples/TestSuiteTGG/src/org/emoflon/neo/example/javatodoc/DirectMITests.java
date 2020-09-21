@@ -27,7 +27,7 @@ public class DirectMITests extends ENeoTest {
 				api.getModel_MoflonDocMultiDel(), //
 				api.getRule_CreateCorrs().rule());
 		new JavaToDoc_MI_Run("moflonJavaMultiDel", "moflonDocMultiDel").run();
-		testForConsistency(new JavaToDoc_CO_Run("moflonJavaMultiDel", "moflonDocMultiDel").runCheckOnly(), 38);
+		testForConsistency(new JavaToDoc_CO_Run("moflonJavaMultiDel", "moflonDocMultiDel").runCheckOnly(), 21);
 	}
 	
 	@Test

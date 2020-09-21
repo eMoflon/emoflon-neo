@@ -7,7 +7,9 @@ model moflon {
 	orgC:Package {
 		.name : "org"
 		-subPackages->esC
-		-corr->orgD
+		-corr->orgD {
+			._type_ : "PackageToFolder"
+		}
 	}	
 	
 	esC:Package {
@@ -15,46 +17,62 @@ model moflon {
 		-clazzes->EcoreUtilC
 		-subPackages->emoflonC
 		-subPackages->cmoflonC
-		-corr->esD
+		-corr->esD {
+			._type_ : "PackageToFolder"
+		}
 	}
 	
 	EcoreUtilC:Clazz {
 		.name : "EcoreUtil"
-		-corr->EcoreUtilD
+		-corr->EcoreUtilD {
+			._type_ : "ClazzToDoc"
+		}
 	}
 	
 	emoflonC:Package {
 		.name : "emoflon"
 		-clazzes->TGGC
 		-subPackages->ibexC
-		-corr->emoflonD
+		-corr->emoflonD {
+			._type_ : "PackageToFolder"
+		}
 	}
 	
 	TGGC:Clazz {
 		.name : "TGG"
-		-corr->TGGD
+		-corr->TGGD {
+			._type_ : "ClazzToDoc"
+		}
 	}
 	
 	ibexC:Package {
 		.name : "ibex"
 		-clazzes->IPMC
-		-corr->ibexD
+		-corr->ibexD {
+			._type_ : "PackageToFolder"
+		}
 	}
 	
 	IPMC:Clazz {
 		.name : "IPM"
-		-corr->IPMD
+		-corr->IPMD {
+			._type_ : "ClazzToDoc"
+		}
 	}
 	
 	cmoflonC:Package {
 		.name : "cmoflon"
 		-clazzes->GTC
-		-corr->cmoflonD
+		-corr->cmoflonD {
+			._type_ : "PackageToFolder"
+		}
 	}
 	
 	GTC:Clazz {
 		.name : "GT"
-		-corr->GTD
+		-corr->GTD {
+			._type_ : "ClazzToDoc"
+		}
 	}
 	
 	// Doc

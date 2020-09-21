@@ -30,7 +30,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 	public void testInconsistentTriple1_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc1(), //
 				api.getModel_ConsistentTrg1());
-		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc1", "ConsistentTrg1").runCheckOnly(), 4, 7);
+		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc1", "ConsistentTrg1").runCheckOnly(), 4, 13);
 	}
 
 	// ---
@@ -54,7 +54,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 	public void testInconsistentTriple2_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc2(), //
 				api.getModel_ConsistentTrg2());
-		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc2", "ConsistentTrg2").runCheckOnly(), 4, 14);
+		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc2", "ConsistentTrg2").runCheckOnly(), 4, 22);
 	}
 
 	// ---
@@ -78,7 +78,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 	public void testInconsistentTriple3_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc3(), //
 				api.getModel_ConsistentTrg3());
-		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc3", "ConsistentTrg3").runCheckOnly(), 4, 18);
+		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc3", "ConsistentTrg3").runCheckOnly(), 4, 31);
 	}
 
 	// ---
@@ -102,6 +102,6 @@ public class DirectCOAndCCTests extends ENeoTest {
 	public void testInconsistentTriple4_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc4(), //
 				api.getModel_ConsistentTrg4());
-		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc4", "ConsistentTrg4").runCheckOnly(), 4, 25);
+		testForInconsistency(new JavaToDoc_CO_Run("ConsistentSrc4", "ConsistentTrg4").runCheckOnly(), 4, 37);
 	}
 }

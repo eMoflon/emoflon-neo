@@ -6,8 +6,6 @@ import org.emoflon.neo.api.org.emoflon.neo.example.javatodoc.API_JavaToDocTriple
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
-
 import JavaToDoc.run.JavaToDoc_CO_Run;
 import JavaToDoc.run.JavaToDoc_FWD_Run;
 

@@ -210,13 +210,10 @@ public class API_DCC {
 		
 		public class OrgJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrgJNode(Value _orgJ) {
 				if(!_orgJ.get("name").isNull())
 					this._name = _orgJ.get("name").asString();
-				if(!_orgJ.get("fullQualifier").isNull())
-					this._fullQualifier = _orgJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -227,13 +224,10 @@ public class API_DCC {
 		}
 		public class EsJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public EsJNode(Value _esJ) {
 				if(!_esJ.get("name").isNull())
 					this._name = _esJ.get("name").asString();
-				if(!_esJ.get("fullQualifier").isNull())
-					this._fullQualifier = _esJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -254,25 +248,19 @@ public class API_DCC {
 		}
 		public class EcoreUtilJNode {
 			public String _name;
-			public String _body;
 			
 			public EcoreUtilJNode(Value _EcoreUtilJ) {
 				if(!_EcoreUtilJ.get("name").isNull())
 					this._name = _EcoreUtilJ.get("name").asString();
-				if(!_EcoreUtilJ.get("body").isNull())
-					this._body = _EcoreUtilJ.get("body").asString();
 			}
 		}
 		
 		public class EmoflonJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public EmoflonJNode(Value _emoflonJ) {
 				if(!_emoflonJ.get("name").isNull())
 					this._name = _emoflonJ.get("name").asString();
-				if(!_emoflonJ.get("fullQualifier").isNull())
-					this._fullQualifier = _emoflonJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -288,25 +276,19 @@ public class API_DCC {
 		}
 		public class TGGJNode {
 			public String _name;
-			public String _body;
 			
 			public TGGJNode(Value _TGGJ) {
 				if(!_TGGJ.get("name").isNull())
 					this._name = _TGGJ.get("name").asString();
-				if(!_TGGJ.get("body").isNull())
-					this._body = _TGGJ.get("body").asString();
 			}
 		}
 		
 		public class IbexJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public IbexJNode(Value _ibexJ) {
 				if(!_ibexJ.get("name").isNull())
 					this._name = _ibexJ.get("name").asString();
-				if(!_ibexJ.get("fullQualifier").isNull())
-					this._fullQualifier = _ibexJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -317,25 +299,19 @@ public class API_DCC {
 		}
 		public class IPMJNode {
 			public String _name;
-			public String _body;
 			
 			public IPMJNode(Value _IPMJ) {
 				if(!_IPMJ.get("name").isNull())
 					this._name = _IPMJ.get("name").asString();
-				if(!_IPMJ.get("body").isNull())
-					this._body = _IPMJ.get("body").asString();
 			}
 		}
 		
 		public class CmoflonJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public CmoflonJNode(Value _cmoflonJ) {
 				if(!_cmoflonJ.get("name").isNull())
 					this._name = _cmoflonJ.get("name").asString();
-				if(!_cmoflonJ.get("fullQualifier").isNull())
-					this._fullQualifier = _cmoflonJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -346,13 +322,10 @@ public class API_DCC {
 		}
 		public class GTJNode {
 			public String _name;
-			public String _body;
 			
 			public GTJNode(Value _GTJ) {
 				if(!_GTJ.get("name").isNull())
 					this._name = _GTJ.get("name").asString();
-				if(!_GTJ.get("body").isNull())
-					this._body = _GTJ.get("body").asString();
 			}
 		}
 		
@@ -396,13 +369,10 @@ public class API_DCC {
 		}
 		public class EcoreUtilDNode {
 			public String _name;
-			public String _content;
 			
 			public EcoreUtilDNode(Value _EcoreUtilD) {
 				if(!_EcoreUtilD.get("name").isNull())
 					this._name = _EcoreUtilD.get("name").asString();
-				if(!_EcoreUtilD.get("content").isNull())
-					this._content = _EcoreUtilD.get("content").asString();
 			}
 		}
 		
@@ -427,13 +397,10 @@ public class API_DCC {
 		}
 		public class TGGDNode {
 			public String _name;
-			public String _content;
 			
 			public TGGDNode(Value _TGGD) {
 				if(!_TGGD.get("name").isNull())
 					this._name = _TGGD.get("name").asString();
-				if(!_TGGD.get("content").isNull())
-					this._content = _TGGD.get("content").asString();
 			}
 		}
 		
@@ -453,13 +420,10 @@ public class API_DCC {
 		}
 		public class IPMDNode {
 			public String _name;
-			public String _content;
 			
 			public IPMDNode(Value _IPMD) {
 				if(!_IPMD.get("name").isNull())
 					this._name = _IPMD.get("name").asString();
-				if(!_IPMD.get("content").isNull())
-					this._content = _IPMD.get("content").asString();
 			}
 		}
 		
@@ -479,13 +443,10 @@ public class API_DCC {
 		}
 		public class GTDNode {
 			public String _name;
-			public String _content;
 			
 			public GTDNode(Value _GTD) {
 				if(!_GTD.get("name").isNull())
 					this._name = _GTD.get("name").asString();
-				if(!_GTD.get("content").isNull())
-					this._content = _GTD.get("content").asString();
 			}
 		}
 		
@@ -628,13 +589,10 @@ public class API_DCC {
 	
 		public class OrgJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrgJNode(Value _orgJ) {
 				if(!_orgJ.get("name").isNull())
 					this._name = _orgJ.get("name").asString();
-				if(!_orgJ.get("fullQualifier").isNull())
-					this._fullQualifier = _orgJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -653,13 +611,10 @@ public class API_DCC {
 		}
 		public class EsJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public EsJNode(Value _esJ) {
 				if(!_esJ.get("name").isNull())
 					this._name = _esJ.get("name").asString();
-				if(!_esJ.get("fullQualifier").isNull())
-					this._fullQualifier = _esJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -688,13 +643,10 @@ public class API_DCC {
 		}
 		public class EcoreUtilJNode {
 			public String _name;
-			public String _body;
 			
 			public EcoreUtilJNode(Value _EcoreUtilJ) {
 				if(!_EcoreUtilJ.get("name").isNull())
 					this._name = _EcoreUtilJ.get("name").asString();
-				if(!_EcoreUtilJ.get("body").isNull())
-					this._body = _EcoreUtilJ.get("body").asString();
 			}
 		}
 		
@@ -708,13 +660,10 @@ public class API_DCC {
 		}
 		public class EmoflonJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public EmoflonJNode(Value _emoflonJ) {
 				if(!_emoflonJ.get("name").isNull())
 					this._name = _emoflonJ.get("name").asString();
-				if(!_emoflonJ.get("fullQualifier").isNull())
-					this._fullQualifier = _emoflonJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -738,13 +687,10 @@ public class API_DCC {
 		}
 		public class TGGJNode {
 			public String _name;
-			public String _body;
 			
 			public TGGJNode(Value _TGGJ) {
 				if(!_TGGJ.get("name").isNull())
 					this._name = _TGGJ.get("name").asString();
-				if(!_TGGJ.get("body").isNull())
-					this._body = _TGGJ.get("body").asString();
 			}
 		}
 		
@@ -758,13 +704,10 @@ public class API_DCC {
 		}
 		public class IbexJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public IbexJNode(Value _ibexJ) {
 				if(!_ibexJ.get("name").isNull())
 					this._name = _ibexJ.get("name").asString();
-				if(!_ibexJ.get("fullQualifier").isNull())
-					this._fullQualifier = _ibexJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -783,13 +726,10 @@ public class API_DCC {
 		}
 		public class IPMJNode {
 			public String _name;
-			public String _body;
 			
 			public IPMJNode(Value _IPMJ) {
 				if(!_IPMJ.get("name").isNull())
 					this._name = _IPMJ.get("name").asString();
-				if(!_IPMJ.get("body").isNull())
-					this._body = _IPMJ.get("body").asString();
 			}
 		}
 		
@@ -803,13 +743,10 @@ public class API_DCC {
 		}
 		public class CmoflonJNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public CmoflonJNode(Value _cmoflonJ) {
 				if(!_cmoflonJ.get("name").isNull())
 					this._name = _cmoflonJ.get("name").asString();
-				if(!_cmoflonJ.get("fullQualifier").isNull())
-					this._fullQualifier = _cmoflonJ.get("fullQualifier").asString();
 			}
 		}
 		
@@ -828,13 +765,10 @@ public class API_DCC {
 		}
 		public class GTJNode {
 			public String _name;
-			public String _body;
 			
 			public GTJNode(Value _GTJ) {
 				if(!_GTJ.get("name").isNull())
 					this._name = _GTJ.get("name").asString();
-				if(!_GTJ.get("body").isNull())
-					this._body = _GTJ.get("body").asString();
 			}
 		}
 		
@@ -886,13 +820,10 @@ public class API_DCC {
 		}
 		public class EcoreUtilDNode {
 			public String _name;
-			public String _content;
 			
 			public EcoreUtilDNode(Value _EcoreUtilD) {
 				if(!_EcoreUtilD.get("name").isNull())
 					this._name = _EcoreUtilD.get("name").asString();
-				if(!_EcoreUtilD.get("content").isNull())
-					this._content = _EcoreUtilD.get("content").asString();
 			}
 		}
 		
@@ -917,13 +848,10 @@ public class API_DCC {
 		}
 		public class TGGDNode {
 			public String _name;
-			public String _content;
 			
 			public TGGDNode(Value _TGGD) {
 				if(!_TGGD.get("name").isNull())
 					this._name = _TGGD.get("name").asString();
-				if(!_TGGD.get("content").isNull())
-					this._content = _TGGD.get("content").asString();
 			}
 		}
 		
@@ -943,13 +871,10 @@ public class API_DCC {
 		}
 		public class IPMDNode {
 			public String _name;
-			public String _content;
 			
 			public IPMDNode(Value _IPMD) {
 				if(!_IPMD.get("name").isNull())
 					this._name = _IPMD.get("name").asString();
-				if(!_IPMD.get("content").isNull())
-					this._content = _IPMD.get("content").asString();
 			}
 		}
 		
@@ -969,13 +894,10 @@ public class API_DCC {
 		}
 		public class GTDNode {
 			public String _name;
-			public String _content;
 			
 			public GTDNode(Value _GTD) {
 				if(!_GTD.get("name").isNull())
 					this._name = _GTD.get("name").asString();
-				if(!_GTD.get("content").isNull())
-					this._content = _GTD.get("content").asString();
 			}
 		}
 		
@@ -990,10 +912,6 @@ public class API_DCC {
 			attributeMask.put("orgJ.name", value);
 			return this;
 		}
-		public CreateCorrsMask setOrgJFullQualifier(String value) {
-			attributeMask.put("orgJ.fullQualifier", value);
-			return this;
-		}
 		public CreateCorrsMask setOrgJ_corr_1_orgD_type_(String value) {
 			attributeMask.put("orgJ_corr_1_orgD._type_", value);
 			return this;
@@ -1004,10 +922,6 @@ public class API_DCC {
 		}
 		public CreateCorrsMask setEsJName(String value) {
 			attributeMask.put("esJ.name", value);
-			return this;
-		}
-		public CreateCorrsMask setEsJFullQualifier(String value) {
-			attributeMask.put("esJ.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrsMask setEsJ_corr_3_esD_type_(String value) {
@@ -1022,10 +936,6 @@ public class API_DCC {
 			attributeMask.put("EcoreUtilJ.name", value);
 			return this;
 		}
-		public CreateCorrsMask setEcoreUtilJBody(String value) {
-			attributeMask.put("EcoreUtilJ.body", value);
-			return this;
-		}
 		public CreateCorrsMask setEcoreUtilJ_corr_0_EcoreUtilD_type_(String value) {
 			attributeMask.put("EcoreUtilJ_corr_0_EcoreUtilD._type_", value);
 			return this;
@@ -1036,10 +946,6 @@ public class API_DCC {
 		}
 		public CreateCorrsMask setEmoflonJName(String value) {
 			attributeMask.put("emoflonJ.name", value);
-			return this;
-		}
-		public CreateCorrsMask setEmoflonJFullQualifier(String value) {
-			attributeMask.put("emoflonJ.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrsMask setEmoflonJ_corr_2_emoflonD_type_(String value) {
@@ -1054,10 +960,6 @@ public class API_DCC {
 			attributeMask.put("TGGJ.name", value);
 			return this;
 		}
-		public CreateCorrsMask setTGGJBody(String value) {
-			attributeMask.put("TGGJ.body", value);
-			return this;
-		}
 		public CreateCorrsMask setTGGJ_corr_0_TGGD_type_(String value) {
 			attributeMask.put("TGGJ_corr_0_TGGD._type_", value);
 			return this;
@@ -1068,10 +970,6 @@ public class API_DCC {
 		}
 		public CreateCorrsMask setIbexJName(String value) {
 			attributeMask.put("ibexJ.name", value);
-			return this;
-		}
-		public CreateCorrsMask setIbexJFullQualifier(String value) {
-			attributeMask.put("ibexJ.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrsMask setIbexJ_corr_1_ibexD_type_(String value) {
@@ -1086,10 +984,6 @@ public class API_DCC {
 			attributeMask.put("IPMJ.name", value);
 			return this;
 		}
-		public CreateCorrsMask setIPMJBody(String value) {
-			attributeMask.put("IPMJ.body", value);
-			return this;
-		}
 		public CreateCorrsMask setIPMJ_corr_0_IPMD_type_(String value) {
 			attributeMask.put("IPMJ_corr_0_IPMD._type_", value);
 			return this;
@@ -1102,10 +996,6 @@ public class API_DCC {
 			attributeMask.put("cmoflonJ.name", value);
 			return this;
 		}
-		public CreateCorrsMask setCmoflonJFullQualifier(String value) {
-			attributeMask.put("cmoflonJ.fullQualifier", value);
-			return this;
-		}
 		public CreateCorrsMask setCmoflonJ_corr_1_cmoflonD_type_(String value) {
 			attributeMask.put("cmoflonJ_corr_1_cmoflonD._type_", value);
 			return this;
@@ -1116,10 +1006,6 @@ public class API_DCC {
 		}
 		public CreateCorrsMask setGTJName(String value) {
 			attributeMask.put("GTJ.name", value);
-			return this;
-		}
-		public CreateCorrsMask setGTJBody(String value) {
-			attributeMask.put("GTJ.body", value);
 			return this;
 		}
 		public CreateCorrsMask setGTJ_corr_0_GTD_type_(String value) {
@@ -1150,10 +1036,6 @@ public class API_DCC {
 			attributeMask.put("EcoreUtilD.name", value);
 			return this;
 		}
-		public CreateCorrsMask setEcoreUtilDContent(String value) {
-			attributeMask.put("EcoreUtilD.content", value);
-			return this;
-		}
 		public CreateCorrsMask setEmoflonD(Long value) {
 			nodeMask.put("emoflonD", value);
 			return this;
@@ -1168,10 +1050,6 @@ public class API_DCC {
 		}
 		public CreateCorrsMask setTGGDName(String value) {
 			attributeMask.put("TGGD.name", value);
-			return this;
-		}
-		public CreateCorrsMask setTGGDContent(String value) {
-			attributeMask.put("TGGD.content", value);
 			return this;
 		}
 		public CreateCorrsMask setIbexD(Long value) {
@@ -1190,10 +1068,6 @@ public class API_DCC {
 			attributeMask.put("IPMD.name", value);
 			return this;
 		}
-		public CreateCorrsMask setIPMDContent(String value) {
-			attributeMask.put("IPMD.content", value);
-			return this;
-		}
 		public CreateCorrsMask setCmoflonD(Long value) {
 			nodeMask.put("cmoflonD", value);
 			return this;
@@ -1208,10 +1082,6 @@ public class API_DCC {
 		}
 		public CreateCorrsMask setGTDName(String value) {
 			attributeMask.put("GTD.name", value);
-			return this;
-		}
-		public CreateCorrsMask setGTDContent(String value) {
-			attributeMask.put("GTD.content", value);
 			return this;
 		}
 	}

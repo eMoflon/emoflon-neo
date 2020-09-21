@@ -4,33 +4,37 @@ import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
 model moflonJava {
 	
 	// Java
-	C1:Clazz {
-		.name : "C1"
-		-fields-> f4b
-		-fields-> f4
+	c1:Clazz {
+		.name : "c1"
+		-fields-> f4 {
+			~_cr_ : true
+		}
 		-fields-> f5
-		-fields-> f7
-		-methods-> m6
+		-methods-> m6 {
+			~_de_ : true
+		}
 	}
 		
-	C2:Clazz {
-		.name : "C2"
+	c2:Clazz {
+		.name : "c2"
+		-subTypes-> c3 {
+			~_cr_ : true
+		}
 		-fields->f7
 		-methods-> m8
 	}
 	
-	C3:Clazz {
-		.name : "C3"
-		-subTypes-> C2
-		-fields-> f7
+	c3:Clazz {
+		.name : "c3"
+		._cr_ : true
+		-fields-> f7 {
+			~_cr_ : true
+		}
 	}
-	
-	f4b:Field {
-		.name : "f4b"
-	}	
 	
 	f4:Field {
 		.name : "f4"
+		._cr_ : true
 	}
 	
 	f5:Field {
@@ -43,135 +47,102 @@ model moflonJava {
 	
 	m6:Method {
 		.name : "m6"
-		-parameters-> p9
-		-parameters-> p10
+		._de_ : true
+		-parameters-> p9 {
+			~_de_ : true
+		}
+		-parameters-> p10 {
+			~_de_ : true
+		}
 	}
 	
 	m8:Method {
 		.name : "m8"
-		-parameters-> p10
-		-parameters-> p11
+		-parameters-> p10 {
+			~_cr_ : true
+		}
 	}
 	
 	p9:Parameter {
 		.name : "p9"
+		._de_ : true
 	}
 	
 	p10:Parameter {
 		.name : "p10"
-	}
-	
-	p11:Parameter {
-		.name : "p11"
 	}
 }
 
 model moflonDoc {
 	// Doc
 		
-	D1:Doc {
-		.name : "D1"
-		-entries-> e4f
-		-entries-> e4
+	doc1:Doc {
+		.name : "c1"
+		-entries-> e4 {
+			~_cr_ : true
+		}
 		-entries-> e5
 		-entries-> e6
-		-entries-> e7
+		-entries-> e7 {
+			~_cr_ : true
+		}
 	}
 	
-	D2:Doc {
-		.name : "D2"
-		-entries-> e7
-		-entries-> e8
-	}
-		
-	D3:Doc {
-		.name : "D3"
-		-hrefs-> D2
-		-entries-> e7
-	}
-	
-	e4f:Entry {
-		.name : "e4f"
+	doc2:Doc {
+		.name : "c2"
+		-entries-> e7 {
+			~_de_ : true
+		}
+		-entries-> e8 
 	}
 	
 	e4:Entry {
-		.name : "e4"
-		-gEntries-> ge12
+		.name : "f4"
+		._cr_ : true
 	}
 	
 	e5:Entry {
-		.name : "e5"
-		-gEntries-> ge12
+		.name : "f5"
 	}
 	
 	e6:Entry {
-		.name : "e6"
-		-gEntries-> ge12
+		.name : "m6"
+		-gEntries-> ge12 {
+			~_cr_ : true
+		}
 	}
 	
 	e7:Entry {
-		.name : "e7"
-		-gEntries-> ge12
-		-gEntries-> ge13
+		.name : "f7"
 	}
 	
 	e8:Entry {
-		.name : "e8"
-		-gEntries-> ge13
+		.name : "m8"
 	}
 	
 	ge12:GlossaryEntry{
-		
+		.name : "ge12"
 	}
 	
-	ge13:GlossaryEntry{
-		
-	}
-	
-	ge14:Glossary{
+	g11:Glossary{
+		.name : "g11"
 		-gEntries-> ge12
-		-gEntries-> ge13
 	}
 }
 
 rule createCorrs {
 	// Java
-	C1:Clazz {
-		.name : "C1"
-		++-corr->D1 {
+	c1:Clazz {
+		.name : "c1"
+		++-corr->doc1 {
 			._type_ := "ClazzToDoc"
 		}
 	}
 	
-	C2:Clazz {
-		.name : "C2"
-		-fields->f7
-		-methods-> m8
-		++-corr->D2 {
+	c2:Clazz {
+		.name : "c2"
+		++-corr->doc2 {
 			._type_ := "ClazzToDoc"
-		}
-	}
-	
-	C3:Clazz {
-		.name : "C3"
-		-subTypes-> C2
-		-fields-> f7
-		++-corr->D3 {
-			._type_ := "ClazzToDoc"
-		}
-	}
-	
-	f4b:Field {
-		.name : "f4b"
-		++-corr-> e4 {
-			._type_ := "FieldToEntry"
-		}
-	}	
-	
-	f4:Field {
-		.name : "f4"
-		++-corr-> e4f {
-			._type_ := "FieldToEntry"
 		}
 	}
 	
@@ -191,8 +162,6 @@ rule createCorrs {
 	
 	m6:Method {
 		.name : "m6"
-		-parameters-> p9
-		-parameters-> p10
 		++-corr-> e6 {
 			._type_ := "MethodToEntry"
 		}
@@ -200,8 +169,6 @@ rule createCorrs {
 	
 	m8:Method {
 		.name : "m8"
-		-parameters-> p10
-		-parameters-> p11
 		++-corr-> e8 {
 			._type_ := "MethodToEntry"
 		}
@@ -221,183 +188,28 @@ rule createCorrs {
 		}
 	}
 	
-	p11:Parameter {
-		.name : "p11"
-		++-corr-> e8 {
-			._type_ := "ParamToEntry"
-		}
-	}
-	
 	// Doc
-	D1:Doc {
-		.name : "D1"
-		-entries-> e4f
-		-entries-> e4
-		-entries-> e5
-		-entries-> e6
-		-entries-> e7
+	doc1:Doc {
+		.name : "c1"
 	}
 	
-	D2:Doc {
-		.name : "D2"
-		-entries-> e7
-		-entries-> e8
-	}
-		
-	D3:Doc {
-		.name : "D3"
-		-hrefs-> D2
-		-entries-> e7
-	}
-	
-	e4f:Entry {
-		.name : "e4f"
-	}
-	
-	e4:Entry {
-		.name : "e4"
-		-gEntries-> ge12
+	doc2:Doc {
+		.name : "c2"
 	}
 	
 	e5:Entry {
-		.name : "e5"
-		-gEntries-> ge12
+		.name : "f5"
 	}
 	
 	e6:Entry {
-		.name : "e6"
-		-gEntries-> ge12
+		.name : "m6"
 	}
 	
 	e7:Entry {
-		.name : "e7"
-		-gEntries-> ge12
-		-gEntries-> ge13
+		.name : "f7"
 	}
 	
 	e8:Entry {
-		.name : "e8"
-		-gEntries-> ge13
-	}
-	
-	ge12:GlossaryEntry{
-		
-	}
-	
-	ge13:GlossaryEntry{
-		
-	}
-	
-	ge14:Glossary{
-		-gEntries-> ge12
-		-gEntries-> ge13
-	}	
-
-}
-
-model moflonJavaChain -> moflonJava {
-		
-	C1:Clazz {
-		-fields-> f4 {
-			~_cr_ : true
-		}
-		-methods-> m6 {
-			~_de_ : true
-		}
-	}
-	
-	f4:Field {
-		.name : "f4"
-		._cr_ : true
-	}
-	
-	m6:Method {
-		._de_ : true
-		-parameters-> p9 {
-			~_de_ : true
-		}
-		-parameters-> p10 {
-			~_de_ : true
-		}
-	}
-	
-	p9:Parameter {
-		._de_ : true
-	}
-	
-	C3:Clazz {
-		-fields-> f7 {
-			~_cr_ : true
-		}
-		-subTypes-> C2 {
-			~_cr_ : true
-		}
-	}
-	
-	C2:Clazz {
-		-fields-> f7 {
-			~_de_ : true
-		}
-		-methods-> m8{
-			~_cr_ : true
-		}
-	}
-	
-	m8:Method {
-		-parameters-> p10 {
-			~_cr_ : true
-		}
-	}
-}
-
-model moflonDocChain -> moflonDoc {
-	// Doc
-	D1:Doc {
-		-entries-> e4 {
-			~_cr_ : true
-		}
-		-entries-> e5 {
-			~_cr_ : true
-		}
-		-entries-> e7 {
-			~_cr_ : true
-		}
-	}
-	
-	D2:Doc {
-		-entries-> e7 {
-			~_de_ : true
-		}
-	}
-	
-	e4:Entry {
-		.name : "e4"
-		._cr_ : true
-		-gEntries-> ge12 {
-			~_cr_ : true
-		}
-	}
-	
-	e5:Entry {
-		.name : "e5"
-		-gEntries-> ge12 {
-			~_cr_ : true
-		}
-	}
-	
-	e6:Entry {
-		.name : "e6"
-		-gEntries-> ge12 {
-			~_cr_ : true
-		}
-	}
-	
-	e7:Entry {
-		-gEntries-> ge12 {
-			~_cr_ : true
-		}
-		-gEntries-> ge13 {
-			~_de_ : true
-		}
+		.name : "m8"
 	}
 }

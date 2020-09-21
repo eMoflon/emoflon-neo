@@ -165,13 +165,10 @@ public class API_ConflictGenerator {
 		
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -190,13 +187,10 @@ public class API_ConflictGenerator {
 		}
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -344,13 +338,10 @@ public class API_ConflictGenerator {
 		
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -374,13 +365,10 @@ public class API_ConflictGenerator {
 		}
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -437,13 +425,10 @@ public class API_ConflictGenerator {
 		}
 		public class DocNode {
 			public String _name;
-			public String _content;
 			
 			public DocNode(Value _doc) {
 				if(!_doc.get("name").isNull())
 					this._name = _doc.get("name").asString();
-				if(!_doc.get("content").isNull())
-					this._content = _doc.get("content").asString();
 			}
 		}
 		
@@ -511,10 +496,6 @@ public class API_ConflictGenerator {
 			attributeMask.put("package.name", value);
 			return this;
 		}
-		public SubSubOppositeConflictMask setPackageFullQualifier(String value) {
-			attributeMask.put("package.fullQualifier", value);
-			return this;
-		}
 		public SubSubOppositeConflictMask setPackage_corr_1_folder_type_(String value) {
 			attributeMask.put("package_corr_1_folder._type_", value);
 			return this;
@@ -525,10 +506,6 @@ public class API_ConflictGenerator {
 		}
 		public SubSubOppositeConflictMask setSubPackageName(String value) {
 			attributeMask.put("subPackage.name", value);
-			return this;
-		}
-		public SubSubOppositeConflictMask setSubPackageFullQualifier(String value) {
-			attributeMask.put("subPackage.fullQualifier", value);
 			return this;
 		}
 		public SubSubOppositeConflictMask setSubPackage_corr_1_subFolder_type_(String value) {
@@ -557,10 +534,6 @@ public class API_ConflictGenerator {
 		}
 		public SubSubOppositeConflictMask setDocName(String value) {
 			attributeMask.put("doc.name", value);
-			return this;
-		}
-		public SubSubOppositeConflictMask setDocContent(String value) {
-			attributeMask.put("doc.content", value);
 			return this;
 		}
 	}
@@ -639,13 +612,10 @@ public class API_ConflictGenerator {
 		
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -656,13 +626,10 @@ public class API_ConflictGenerator {
 		}
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -677,20 +644,12 @@ public class API_ConflictGenerator {
 			attributeMask.put("package.name", value);
 			return this;
 		}
-		public SubPackageSubOfPackageMask setPackageFullQualifier(String value) {
-			attributeMask.put("package.fullQualifier", value);
-			return this;
-		}
 		public SubPackageSubOfPackageMask setSubPackage(Long value) {
 			nodeMask.put("subPackage", value);
 			return this;
 		}
 		public SubPackageSubOfPackageMask setSubPackageName(String value) {
 			attributeMask.put("subPackage.name", value);
-			return this;
-		}
-		public SubPackageSubOfPackageMask setSubPackageFullQualifier(String value) {
-			attributeMask.put("subPackage.fullQualifier", value);
 			return this;
 		}
 	
@@ -740,13 +699,10 @@ public class API_ConflictGenerator {
 		
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -757,13 +713,10 @@ public class API_ConflictGenerator {
 		}
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -778,20 +731,12 @@ public class API_ConflictGenerator {
 			attributeMask.put("subPackage.name", value);
 			return this;
 		}
-		public PackageSubOfSubPackageMask setSubPackageFullQualifier(String value) {
-			attributeMask.put("subPackage.fullQualifier", value);
-			return this;
-		}
 		public PackageSubOfSubPackageMask setPackage(Long value) {
 			nodeMask.put("package", value);
 			return this;
 		}
 		public PackageSubOfSubPackageMask setPackageName(String value) {
 			attributeMask.put("package.name", value);
-			return this;
-		}
-		public PackageSubOfSubPackageMask setPackageFullQualifier(String value) {
-			attributeMask.put("package.fullQualifier", value);
 			return this;
 		}
 	
@@ -1111,13 +1056,10 @@ public class API_ConflictGenerator {
 		
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1141,13 +1083,10 @@ public class API_ConflictGenerator {
 		}
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1204,13 +1143,10 @@ public class API_ConflictGenerator {
 		}
 		public class DocNode {
 			public String _name;
-			public String _content;
 			
 			public DocNode(Value _doc) {
 				if(!_doc.get("name").isNull())
 					this._name = _doc.get("name").asString();
-				if(!_doc.get("content").isNull())
-					this._content = _doc.get("content").asString();
 			}
 		}
 		
@@ -1334,13 +1270,10 @@ public class API_ConflictGenerator {
 		
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1364,13 +1297,10 @@ public class API_ConflictGenerator {
 		}
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1394,13 +1324,10 @@ public class API_ConflictGenerator {
 		}
 		public class ClassNode {
 			public String _name;
-			public String _body;
 			
 			public ClassNode(Value _class) {
 				if(!_class.get("name").isNull())
 					this._name = _class.get("name").asString();
-				if(!_class.get("body").isNull())
-					this._body = _class.get("body").asString();
 			}
 		}
 		
@@ -1454,13 +1381,10 @@ public class API_ConflictGenerator {
 		}
 		public class DocNode {
 			public String _name;
-			public String _content;
 			
 			public DocNode(Value _doc) {
 				if(!_doc.get("name").isNull())
 					this._name = _doc.get("name").asString();
-				if(!_doc.get("content").isNull())
-					this._content = _doc.get("content").asString();
 			}
 		}
 		
@@ -1528,10 +1452,6 @@ public class API_ConflictGenerator {
 			attributeMask.put("package.name", value);
 			return this;
 		}
-		public CreateDeleteConflictMask setPackageFullQualifier(String value) {
-			attributeMask.put("package.fullQualifier", value);
-			return this;
-		}
 		public CreateDeleteConflictMask setPackage_corr_1_folder_type_(String value) {
 			attributeMask.put("package_corr_1_folder._type_", value);
 			return this;
@@ -1544,10 +1464,6 @@ public class API_ConflictGenerator {
 			attributeMask.put("subPackage.name", value);
 			return this;
 		}
-		public CreateDeleteConflictMask setSubPackageFullQualifier(String value) {
-			attributeMask.put("subPackage.fullQualifier", value);
-			return this;
-		}
 		public CreateDeleteConflictMask setSubPackage_corr_1_subFolder_type_(String value) {
 			attributeMask.put("subPackage_corr_1_subFolder._type_", value);
 			return this;
@@ -1558,10 +1474,6 @@ public class API_ConflictGenerator {
 		}
 		public CreateDeleteConflictMask setClassName(String value) {
 			attributeMask.put("class.name", value);
-			return this;
-		}
-		public CreateDeleteConflictMask setClassBody(String value) {
-			attributeMask.put("class.body", value);
 			return this;
 		}
 		public CreateDeleteConflictMask setFolder(Long value) {
@@ -1586,10 +1498,6 @@ public class API_ConflictGenerator {
 		}
 		public CreateDeleteConflictMask setDocName(String value) {
 			attributeMask.put("doc.name", value);
-			return this;
-		}
-		public CreateDeleteConflictMask setDocContent(String value) {
-			attributeMask.put("doc.content", value);
 			return this;
 		}
 	}
@@ -1730,13 +1638,10 @@ public class API_ConflictGenerator {
 		
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1760,13 +1665,10 @@ public class API_ConflictGenerator {
 		}
 		public class OtherPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OtherPackageNode(Value _otherPackage) {
 				if(!_otherPackage.get("name").isNull())
 					this._name = _otherPackage.get("name").asString();
-				if(!_otherPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _otherPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1777,13 +1679,10 @@ public class API_ConflictGenerator {
 		}
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1936,13 +1835,10 @@ public class API_ConflictGenerator {
 		
 		public class PackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public PackageNode(Value _package) {
 				if(!_package.get("name").isNull())
 					this._name = _package.get("name").asString();
-				if(!_package.get("fullQualifier").isNull())
-					this._fullQualifier = _package.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1966,13 +1862,10 @@ public class API_ConflictGenerator {
 		}
 		public class OtherPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OtherPackageNode(Value _otherPackage) {
 				if(!_otherPackage.get("name").isNull())
 					this._name = _otherPackage.get("name").asString();
-				if(!_otherPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _otherPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1988,13 +1881,10 @@ public class API_ConflictGenerator {
 		}
 		public class SubPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public SubPackageNode(Value _subPackage) {
 				if(!_subPackage.get("name").isNull())
 					this._name = _subPackage.get("name").asString();
-				if(!_subPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _subPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -2103,10 +1993,6 @@ public class API_ConflictGenerator {
 			attributeMask.put("package.name", value);
 			return this;
 		}
-		public MoveDeleteConflictMask setPackageFullQualifier(String value) {
-			attributeMask.put("package.fullQualifier", value);
-			return this;
-		}
 		public MoveDeleteConflictMask setPackage_corr_1_folder_type_(String value) {
 			attributeMask.put("package_corr_1_folder._type_", value);
 			return this;
@@ -2119,20 +2005,12 @@ public class API_ConflictGenerator {
 			attributeMask.put("otherPackage.name", value);
 			return this;
 		}
-		public MoveDeleteConflictMask setOtherPackageFullQualifier(String value) {
-			attributeMask.put("otherPackage.fullQualifier", value);
-			return this;
-		}
 		public MoveDeleteConflictMask setSubPackage(Long value) {
 			nodeMask.put("subPackage", value);
 			return this;
 		}
 		public MoveDeleteConflictMask setSubPackageName(String value) {
 			attributeMask.put("subPackage.name", value);
-			return this;
-		}
-		public MoveDeleteConflictMask setSubPackageFullQualifier(String value) {
-			attributeMask.put("subPackage.fullQualifier", value);
 			return this;
 		}
 		public MoveDeleteConflictMask setSubPackage_corr_1_subFolder_type_(String value) {

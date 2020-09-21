@@ -2,6 +2,7 @@ package org.emoflon.neo.example.facebooktoinstagram;
 
 import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import Transformations.run.FacebookToInstagramFASE_CC_Run;
@@ -64,7 +65,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 
 	// ---
 
-	@Test
+	@Ignore("TGG is not suitable for OPT strategies in this form")
 	public void testConsistentTriple3_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc3(), //
 				api.getModel_ConsistentTrg3(), //
@@ -73,7 +74,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 				30);
 	}
 
-	@Test
+	@Ignore("TGG is not suitable for OPT strategies in this form")
 	public void testConsistentTriple3_CC() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc3(), //
 				api.getModel_ConsistentTrg3());
@@ -81,7 +82,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 				30);
 	}
 
-	@Test
+	@Ignore("TGG is not suitable for OPT strategies in this form")
 	public void testInconsistentTriple3_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc3(), //
 				api.getModel_ConsistentTrg3());

@@ -12,8 +12,6 @@ import org.emoflon.neo.api.org.emoflon.neo.example.javatodocsle.mi.in.API_Confli
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
-
 import JavaToDocSLE.run.JavaToDocSLE_MI_Run;
 
 public class PerformanceTests extends ENeoTest {

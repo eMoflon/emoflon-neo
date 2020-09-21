@@ -101,10 +101,11 @@ tripleRule MethodToEntryRule : JavaToDocSLE {
 tripleRule AddParameterRule : JavaToDocSLE {
 	source { 
 		m : Method {
+			.name : <entryName>
 			++ -parameters-> p	
 		}
 		++ p : Parameter {
-			.name := <entryName>
+			.name := <paramName>
 		}
 	}
 	

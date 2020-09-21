@@ -106,13 +106,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -127,13 +124,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -174,13 +168,10 @@ public class API_JavaToDocTriplesForTesting {
 	
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -203,13 +194,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -241,10 +229,6 @@ public class API_JavaToDocTriplesForTesting {
 			attributeMask.put("origamiPackage.name", value);
 			return this;
 		}
-		public CreateCorrs1Mask setOrigamiPackageFullQualifier(String value) {
-			attributeMask.put("origamiPackage.fullQualifier", value);
-			return this;
-		}
 		public CreateCorrs1Mask setOrigamiPackage_corr_0_origamiFolder_type_(String value) {
 			attributeMask.put("origamiPackage_corr_0_origamiFolder._type_", value);
 			return this;
@@ -263,10 +247,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs1Mask setTonyPackageName(String value) {
 			attributeMask.put("tonyPackage.name", value);
-			return this;
-		}
-		public CreateCorrs1Mask setTonyPackageFullQualifier(String value) {
-			attributeMask.put("tonyPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs1Mask setTonyPackage_corr_0_tonyFolder_type_(String value) {
@@ -365,13 +345,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class BonsaiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public BonsaiPackageNode(Value _bonsaiPackage) {
 				if(!_bonsaiPackage.get("name").isNull())
 					this._name = _bonsaiPackage.get("name").asString();
-				if(!_bonsaiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _bonsaiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -386,13 +363,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -407,13 +381,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -463,13 +434,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class BonsaiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public BonsaiPackageNode(Value _bonsaiPackage) {
 				if(!_bonsaiPackage.get("name").isNull())
 					this._name = _bonsaiPackage.get("name").asString();
-				if(!_bonsaiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _bonsaiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -492,13 +460,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -521,13 +486,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -558,10 +520,6 @@ public class API_JavaToDocTriplesForTesting {
 			attributeMask.put("bonsaiPackage.name", value);
 			return this;
 		}
-		public CreateCorrs2Mask setBonsaiPackageFullQualifier(String value) {
-			attributeMask.put("bonsaiPackage.fullQualifier", value);
-			return this;
-		}
 		public CreateCorrs2Mask setBonsaiPackage_corr_0_bonsaiFolder_type_(String value) {
 			attributeMask.put("bonsaiPackage_corr_0_bonsaiFolder._type_", value);
 			return this;
@@ -582,10 +540,6 @@ public class API_JavaToDocTriplesForTesting {
 			attributeMask.put("tonyPackage.name", value);
 			return this;
 		}
-		public CreateCorrs2Mask setTonyPackageFullQualifier(String value) {
-			attributeMask.put("tonyPackage.fullQualifier", value);
-			return this;
-		}
 		public CreateCorrs2Mask setTonyPackage_corr_0_tonyFolder_type_(String value) {
 			attributeMask.put("tonyPackage_corr_0_tonyFolder._type_", value);
 			return this;
@@ -604,10 +558,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs2Mask setOrigamiPackageName(String value) {
 			attributeMask.put("origamiPackage.name", value);
-			return this;
-		}
-		public CreateCorrs2Mask setOrigamiPackageFullQualifier(String value) {
-			attributeMask.put("origamiPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs2Mask setOrigamiPackage_corr_0_origamiFolder_type_(String value) {
@@ -706,25 +656,19 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class ElrondPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public ElrondPackageNode(Value _elrondPackage) {
 				if(!_elrondPackage.get("name").isNull())
 					this._name = _elrondPackage.get("name").asString();
-				if(!_elrondPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _elrondPackage.get("fullQualifier").asString();
 			}
 		}
 		
 		public class BonsaiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public BonsaiPackageNode(Value _bonsaiPackage) {
 				if(!_bonsaiPackage.get("name").isNull())
 					this._name = _bonsaiPackage.get("name").asString();
-				if(!_bonsaiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _bonsaiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -739,13 +683,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -769,13 +710,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -834,13 +772,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class ElrondPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public ElrondPackageNode(Value _elrondPackage) {
 				if(!_elrondPackage.get("name").isNull())
 					this._name = _elrondPackage.get("name").asString();
-				if(!_elrondPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _elrondPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -854,13 +789,10 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public class BonsaiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public BonsaiPackageNode(Value _bonsaiPackage) {
 				if(!_bonsaiPackage.get("name").isNull())
 					this._name = _bonsaiPackage.get("name").asString();
-				if(!_bonsaiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _bonsaiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -883,13 +815,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -921,13 +850,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -958,10 +884,6 @@ public class API_JavaToDocTriplesForTesting {
 			attributeMask.put("elrondPackage.name", value);
 			return this;
 		}
-		public CreateCorrs3Mask setElrondPackageFullQualifier(String value) {
-			attributeMask.put("elrondPackage.fullQualifier", value);
-			return this;
-		}
 		public CreateCorrs3Mask setElrondPackage_corr_0_elrondFolder_type_(String value) {
 			attributeMask.put("elrondPackage_corr_0_elrondFolder._type_", value);
 			return this;
@@ -972,10 +894,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs3Mask setBonsaiPackageName(String value) {
 			attributeMask.put("bonsaiPackage.name", value);
-			return this;
-		}
-		public CreateCorrs3Mask setBonsaiPackageFullQualifier(String value) {
-			attributeMask.put("bonsaiPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs3Mask setBonsaiPackage_corr_0_bonsaiFolder_type_(String value) {
@@ -996,10 +914,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs3Mask setTonyPackageName(String value) {
 			attributeMask.put("tonyPackage.name", value);
-			return this;
-		}
-		public CreateCorrs3Mask setTonyPackageFullQualifier(String value) {
-			attributeMask.put("tonyPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs3Mask setTonyPackage_corr_0_tonyFolder_type_(String value) {
@@ -1028,10 +942,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs3Mask setOrigamiPackageName(String value) {
 			attributeMask.put("origamiPackage.name", value);
-			return this;
-		}
-		public CreateCorrs3Mask setOrigamiPackageFullQualifier(String value) {
-			attributeMask.put("origamiPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs3Mask setOrigamiPackage_corr_0_origamiFolder_type_(String value) {
@@ -1129,25 +1039,19 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class AragornClassNode {
 			public String _name;
-			public String _body;
 			
 			public AragornClassNode(Value _aragornClass) {
 				if(!_aragornClass.get("name").isNull())
 					this._name = _aragornClass.get("name").asString();
-				if(!_aragornClass.get("body").isNull())
-					this._body = _aragornClass.get("body").asString();
 			}
 		}
 		
 		public class AragornDocNode {
 			public String _name;
-			public String _content;
 			
 			public AragornDocNode(Value _aragornDoc) {
 				if(!_aragornDoc.get("name").isNull())
 					this._name = _aragornDoc.get("name").asString();
-				if(!_aragornDoc.get("content").isNull())
-					this._content = _aragornDoc.get("content").asString();
 			}
 		}
 		
@@ -1162,25 +1066,19 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class ElrondPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public ElrondPackageNode(Value _elrondPackage) {
 				if(!_elrondPackage.get("name").isNull())
 					this._name = _elrondPackage.get("name").asString();
-				if(!_elrondPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _elrondPackage.get("fullQualifier").asString();
 			}
 		}
 		
 		public class BonsaiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public BonsaiPackageNode(Value _bonsaiPackage) {
 				if(!_bonsaiPackage.get("name").isNull())
 					this._name = _bonsaiPackage.get("name").asString();
-				if(!_bonsaiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _bonsaiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1195,13 +1093,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1225,13 +1120,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1290,13 +1182,10 @@ public class API_JavaToDocTriplesForTesting {
 	
 		public class AragornClassNode {
 			public String _name;
-			public String _body;
 			
 			public AragornClassNode(Value _aragornClass) {
 				if(!_aragornClass.get("name").isNull())
 					this._name = _aragornClass.get("name").asString();
-				if(!_aragornClass.get("body").isNull())
-					this._body = _aragornClass.get("body").asString();
 			}
 		}
 		
@@ -1310,13 +1199,10 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public class AragornDocNode {
 			public String _name;
-			public String _content;
 			
 			public AragornDocNode(Value _aragornDoc) {
 				if(!_aragornDoc.get("name").isNull())
 					this._name = _aragornDoc.get("name").asString();
-				if(!_aragornDoc.get("content").isNull())
-					this._content = _aragornDoc.get("content").asString();
 			}
 		}
 		
@@ -1331,13 +1217,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class ElrondPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public ElrondPackageNode(Value _elrondPackage) {
 				if(!_elrondPackage.get("name").isNull())
 					this._name = _elrondPackage.get("name").asString();
-				if(!_elrondPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _elrondPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1351,13 +1234,10 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public class BonsaiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public BonsaiPackageNode(Value _bonsaiPackage) {
 				if(!_bonsaiPackage.get("name").isNull())
 					this._name = _bonsaiPackage.get("name").asString();
-				if(!_bonsaiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _bonsaiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1380,13 +1260,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class TonyPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public TonyPackageNode(Value _tonyPackage) {
 				if(!_tonyPackage.get("name").isNull())
 					this._name = _tonyPackage.get("name").asString();
-				if(!_tonyPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _tonyPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1418,13 +1295,10 @@ public class API_JavaToDocTriplesForTesting {
 		
 		public class OrigamiPackageNode {
 			public String _name;
-			public String _fullQualifier;
 			
 			public OrigamiPackageNode(Value _origamiPackage) {
 				if(!_origamiPackage.get("name").isNull())
 					this._name = _origamiPackage.get("name").asString();
-				if(!_origamiPackage.get("fullQualifier").isNull())
-					this._fullQualifier = _origamiPackage.get("fullQualifier").asString();
 			}
 		}
 		
@@ -1447,10 +1321,6 @@ public class API_JavaToDocTriplesForTesting {
 			attributeMask.put("aragornClass.name", value);
 			return this;
 		}
-		public CreateCorrs4Mask setAragornClassBody(String value) {
-			attributeMask.put("aragornClass.body", value);
-			return this;
-		}
 		public CreateCorrs4Mask setAragornClass_corr_0_aragornDoc_type_(String value) {
 			attributeMask.put("aragornClass_corr_0_aragornDoc._type_", value);
 			return this;
@@ -1461,10 +1331,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs4Mask setAragornDocName(String value) {
 			attributeMask.put("aragornDoc.name", value);
-			return this;
-		}
-		public CreateCorrs4Mask setAragornDocContent(String value) {
-			attributeMask.put("aragornDoc.content", value);
 			return this;
 		}
 		public CreateCorrs4Mask setBonsaiFolder(Long value) {
@@ -1483,10 +1349,6 @@ public class API_JavaToDocTriplesForTesting {
 			attributeMask.put("elrondPackage.name", value);
 			return this;
 		}
-		public CreateCorrs4Mask setElrondPackageFullQualifier(String value) {
-			attributeMask.put("elrondPackage.fullQualifier", value);
-			return this;
-		}
 		public CreateCorrs4Mask setElrondPackage_corr_0_elrondFolder_type_(String value) {
 			attributeMask.put("elrondPackage_corr_0_elrondFolder._type_", value);
 			return this;
@@ -1497,10 +1359,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs4Mask setBonsaiPackageName(String value) {
 			attributeMask.put("bonsaiPackage.name", value);
-			return this;
-		}
-		public CreateCorrs4Mask setBonsaiPackageFullQualifier(String value) {
-			attributeMask.put("bonsaiPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs4Mask setBonsaiPackage_corr_0_bonsaiFolder_type_(String value) {
@@ -1521,10 +1379,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs4Mask setTonyPackageName(String value) {
 			attributeMask.put("tonyPackage.name", value);
-			return this;
-		}
-		public CreateCorrs4Mask setTonyPackageFullQualifier(String value) {
-			attributeMask.put("tonyPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs4Mask setTonyPackage_corr_0_tonyFolder_type_(String value) {
@@ -1553,10 +1407,6 @@ public class API_JavaToDocTriplesForTesting {
 		}
 		public CreateCorrs4Mask setOrigamiPackageName(String value) {
 			attributeMask.put("origamiPackage.name", value);
-			return this;
-		}
-		public CreateCorrs4Mask setOrigamiPackageFullQualifier(String value) {
-			attributeMask.put("origamiPackage.fullQualifier", value);
 			return this;
 		}
 		public CreateCorrs4Mask setOrigamiPackage_corr_0_origamiFolder_type_(String value) {

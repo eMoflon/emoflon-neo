@@ -118,14 +118,15 @@ model moflon {
 	}
 	
 	ge12:GlossaryEntry{
-		
+		.name : "ge12"
 	}
 	
 	ge13:GlossaryEntry{
-		
+		.name : "ge13"
 	}
 	
 	ge14:Glossary{
+		.name : "ge14"
 		-gEntries-> ge12
 		-gEntries-> ge13
 	}

@@ -57,30 +57,20 @@ public class API_DCC {
 	}
 	
 	public class CreateCorrsAccess extends NeoRuleCoAccess<CreateCorrsData, CreateCorrsCoData, CreateCorrsMask> {
-		public final String _C1 = "C1";
-		public final String _C2 = "C2";
-		public final String _C3 = "C3";
-		public final String _f4b = "f4b";
-		public final String _f4 = "f4";
+		public final String _c1 = "c1";
+		public final String _c2 = "c2";
 		public final String _f5 = "f5";
 		public final String _f7 = "f7";
 		public final String _m6 = "m6";
 		public final String _m8 = "m8";
 		public final String _p9 = "p9";
 		public final String _p10 = "p10";
-		public final String _p11 = "p11";
-		public final String _D1 = "D1";
-		public final String _D2 = "D2";
-		public final String _D3 = "D3";
-		public final String _e4f = "e4f";
-		public final String _e4 = "e4";
+		public final String _doc1 = "doc1";
+		public final String _doc2 = "doc2";
 		public final String _e5 = "e5";
 		public final String _e6 = "e6";
 		public final String _e7 = "e7";
 		public final String _e8 = "e8";
-		public final String _ge12 = "ge12";
-		public final String _ge13 = "ge13";
-		public final String _ge14 = "ge14";
 		
 		@Override
 		public NeoRule rule(){
@@ -107,220 +97,68 @@ public class API_DCC {
 	}
 	
 	public class CreateCorrsData extends NeoData {
-		public final C1Node _C1;
-		public final C2Node _C2;
-		public final C2_fields_0_f7Rel _C2_fields_0_f7;
-		public final C2_methods_1_m8Rel _C2_methods_1_m8;
-		public final C3Node _C3;
-		public final C3_subTypes_0_C2Rel _C3_subTypes_0_C2;
-		public final C3_fields_1_f7Rel _C3_fields_1_f7;
-		public final F4bNode _f4b;
-		public final F4Node _f4;
+		public final C1Node _c1;
+		public final C2Node _c2;
 		public final F5Node _f5;
 		public final F7Node _f7;
 		public final M6Node _m6;
-		public final M6_parameters_0_p9Rel _m6_parameters_0_p9;
-		public final M6_parameters_1_p10Rel _m6_parameters_1_p10;
 		public final M8Node _m8;
-		public final M8_parameters_0_p10Rel _m8_parameters_0_p10;
-		public final M8_parameters_1_p11Rel _m8_parameters_1_p11;
 		public final P9Node _p9;
 		public final P10Node _p10;
-		public final P11Node _p11;
-		public final D1Node _D1;
-		public final D1_entries_0_e4fRel _D1_entries_0_e4f;
-		public final D1_entries_1_e4Rel _D1_entries_1_e4;
-		public final D1_entries_2_e5Rel _D1_entries_2_e5;
-		public final D1_entries_3_e6Rel _D1_entries_3_e6;
-		public final D1_entries_4_e7Rel _D1_entries_4_e7;
-		public final D2Node _D2;
-		public final D2_entries_0_e7Rel _D2_entries_0_e7;
-		public final D2_entries_1_e8Rel _D2_entries_1_e8;
-		public final D3Node _D3;
-		public final D3_hrefs_0_D2Rel _D3_hrefs_0_D2;
-		public final D3_entries_1_e7Rel _D3_entries_1_e7;
-		public final E4fNode _e4f;
-		public final E4Node _e4;
-		public final E4_gEntries_0_ge12Rel _e4_gEntries_0_ge12;
+		public final Doc1Node _doc1;
+		public final Doc2Node _doc2;
 		public final E5Node _e5;
-		public final E5_gEntries_0_ge12Rel _e5_gEntries_0_ge12;
 		public final E6Node _e6;
-		public final E6_gEntries_0_ge12Rel _e6_gEntries_0_ge12;
 		public final E7Node _e7;
-		public final E7_gEntries_0_ge12Rel _e7_gEntries_0_ge12;
-		public final E7_gEntries_1_ge13Rel _e7_gEntries_1_ge13;
 		public final E8Node _e8;
-		public final E8_gEntries_0_ge13Rel _e8_gEntries_0_ge13;
-		public final Ge12Node _ge12;
-		public final Ge13Node _ge13;
-		public final Ge14Node _ge14;
-		public final Ge14_gEntries_0_ge12Rel _ge14_gEntries_0_ge12;
-		public final Ge14_gEntries_1_ge13Rel _ge14_gEntries_1_ge13;
 		
 		public CreateCorrsData(Record data) {
-			var _C1 = data.get("C1");
-			this._C1 = new C1Node(_C1);
-			var _C2 = data.get("C2");
-			this._C2 = new C2Node(_C2);
-			var _C2_fields_0_f7 = data.get("C2_fields_0_f7");
-			this._C2_fields_0_f7 = new C2_fields_0_f7Rel(_C2_fields_0_f7);
-			var _C2_methods_1_m8 = data.get("C2_methods_1_m8");
-			this._C2_methods_1_m8 = new C2_methods_1_m8Rel(_C2_methods_1_m8);
-			var _C3 = data.get("C3");
-			this._C3 = new C3Node(_C3);
-			var _C3_subTypes_0_C2 = data.get("C3_subTypes_0_C2");
-			this._C3_subTypes_0_C2 = new C3_subTypes_0_C2Rel(_C3_subTypes_0_C2);
-			var _C3_fields_1_f7 = data.get("C3_fields_1_f7");
-			this._C3_fields_1_f7 = new C3_fields_1_f7Rel(_C3_fields_1_f7);
-			var _f4b = data.get("f4b");
-			this._f4b = new F4bNode(_f4b);
-			var _f4 = data.get("f4");
-			this._f4 = new F4Node(_f4);
+			var _c1 = data.get("c1");
+			this._c1 = new C1Node(_c1);
+			var _c2 = data.get("c2");
+			this._c2 = new C2Node(_c2);
 			var _f5 = data.get("f5");
 			this._f5 = new F5Node(_f5);
 			var _f7 = data.get("f7");
 			this._f7 = new F7Node(_f7);
 			var _m6 = data.get("m6");
 			this._m6 = new M6Node(_m6);
-			var _m6_parameters_0_p9 = data.get("m6_parameters_0_p9");
-			this._m6_parameters_0_p9 = new M6_parameters_0_p9Rel(_m6_parameters_0_p9);
-			var _m6_parameters_1_p10 = data.get("m6_parameters_1_p10");
-			this._m6_parameters_1_p10 = new M6_parameters_1_p10Rel(_m6_parameters_1_p10);
 			var _m8 = data.get("m8");
 			this._m8 = new M8Node(_m8);
-			var _m8_parameters_0_p10 = data.get("m8_parameters_0_p10");
-			this._m8_parameters_0_p10 = new M8_parameters_0_p10Rel(_m8_parameters_0_p10);
-			var _m8_parameters_1_p11 = data.get("m8_parameters_1_p11");
-			this._m8_parameters_1_p11 = new M8_parameters_1_p11Rel(_m8_parameters_1_p11);
 			var _p9 = data.get("p9");
 			this._p9 = new P9Node(_p9);
 			var _p10 = data.get("p10");
 			this._p10 = new P10Node(_p10);
-			var _p11 = data.get("p11");
-			this._p11 = new P11Node(_p11);
-			var _D1 = data.get("D1");
-			this._D1 = new D1Node(_D1);
-			var _D1_entries_0_e4f = data.get("D1_entries_0_e4f");
-			this._D1_entries_0_e4f = new D1_entries_0_e4fRel(_D1_entries_0_e4f);
-			var _D1_entries_1_e4 = data.get("D1_entries_1_e4");
-			this._D1_entries_1_e4 = new D1_entries_1_e4Rel(_D1_entries_1_e4);
-			var _D1_entries_2_e5 = data.get("D1_entries_2_e5");
-			this._D1_entries_2_e5 = new D1_entries_2_e5Rel(_D1_entries_2_e5);
-			var _D1_entries_3_e6 = data.get("D1_entries_3_e6");
-			this._D1_entries_3_e6 = new D1_entries_3_e6Rel(_D1_entries_3_e6);
-			var _D1_entries_4_e7 = data.get("D1_entries_4_e7");
-			this._D1_entries_4_e7 = new D1_entries_4_e7Rel(_D1_entries_4_e7);
-			var _D2 = data.get("D2");
-			this._D2 = new D2Node(_D2);
-			var _D2_entries_0_e7 = data.get("D2_entries_0_e7");
-			this._D2_entries_0_e7 = new D2_entries_0_e7Rel(_D2_entries_0_e7);
-			var _D2_entries_1_e8 = data.get("D2_entries_1_e8");
-			this._D2_entries_1_e8 = new D2_entries_1_e8Rel(_D2_entries_1_e8);
-			var _D3 = data.get("D3");
-			this._D3 = new D3Node(_D3);
-			var _D3_hrefs_0_D2 = data.get("D3_hrefs_0_D2");
-			this._D3_hrefs_0_D2 = new D3_hrefs_0_D2Rel(_D3_hrefs_0_D2);
-			var _D3_entries_1_e7 = data.get("D3_entries_1_e7");
-			this._D3_entries_1_e7 = new D3_entries_1_e7Rel(_D3_entries_1_e7);
-			var _e4f = data.get("e4f");
-			this._e4f = new E4fNode(_e4f);
-			var _e4 = data.get("e4");
-			this._e4 = new E4Node(_e4);
-			var _e4_gEntries_0_ge12 = data.get("e4_gEntries_0_ge12");
-			this._e4_gEntries_0_ge12 = new E4_gEntries_0_ge12Rel(_e4_gEntries_0_ge12);
+			var _doc1 = data.get("doc1");
+			this._doc1 = new Doc1Node(_doc1);
+			var _doc2 = data.get("doc2");
+			this._doc2 = new Doc2Node(_doc2);
 			var _e5 = data.get("e5");
 			this._e5 = new E5Node(_e5);
-			var _e5_gEntries_0_ge12 = data.get("e5_gEntries_0_ge12");
-			this._e5_gEntries_0_ge12 = new E5_gEntries_0_ge12Rel(_e5_gEntries_0_ge12);
 			var _e6 = data.get("e6");
 			this._e6 = new E6Node(_e6);
-			var _e6_gEntries_0_ge12 = data.get("e6_gEntries_0_ge12");
-			this._e6_gEntries_0_ge12 = new E6_gEntries_0_ge12Rel(_e6_gEntries_0_ge12);
 			var _e7 = data.get("e7");
 			this._e7 = new E7Node(_e7);
-			var _e7_gEntries_0_ge12 = data.get("e7_gEntries_0_ge12");
-			this._e7_gEntries_0_ge12 = new E7_gEntries_0_ge12Rel(_e7_gEntries_0_ge12);
-			var _e7_gEntries_1_ge13 = data.get("e7_gEntries_1_ge13");
-			this._e7_gEntries_1_ge13 = new E7_gEntries_1_ge13Rel(_e7_gEntries_1_ge13);
 			var _e8 = data.get("e8");
 			this._e8 = new E8Node(_e8);
-			var _e8_gEntries_0_ge13 = data.get("e8_gEntries_0_ge13");
-			this._e8_gEntries_0_ge13 = new E8_gEntries_0_ge13Rel(_e8_gEntries_0_ge13);
-			var _ge12 = data.get("ge12");
-			this._ge12 = new Ge12Node(_ge12);
-			var _ge13 = data.get("ge13");
-			this._ge13 = new Ge13Node(_ge13);
-			var _ge14 = data.get("ge14");
-			this._ge14 = new Ge14Node(_ge14);
-			var _ge14_gEntries_0_ge12 = data.get("ge14_gEntries_0_ge12");
-			this._ge14_gEntries_0_ge12 = new Ge14_gEntries_0_ge12Rel(_ge14_gEntries_0_ge12);
-			var _ge14_gEntries_1_ge13 = data.get("ge14_gEntries_1_ge13");
-			this._ge14_gEntries_1_ge13 = new Ge14_gEntries_1_ge13Rel(_ge14_gEntries_1_ge13);
 		}
 		
 		
 		public class C1Node {
 			public String _name;
 			
-			public C1Node(Value _C1) {
-				if(!_C1.get("name").isNull())
-					this._name = _C1.get("name").asString();
+			public C1Node(Value _c1) {
+				if(!_c1.get("name").isNull())
+					this._name = _c1.get("name").asString();
 			}
 		}
 		
 		public class C2Node {
 			public String _name;
 			
-			public C2Node(Value _C2) {
-				if(!_C2.get("name").isNull())
-					this._name = _C2.get("name").asString();
-			}
-		}
-		
-		public class C2_fields_0_f7Rel {
-		
-			public C2_fields_0_f7Rel(Value _C2_fields_0_f7) {
-			}
-		}
-		public class C2_methods_1_m8Rel {
-		
-			public C2_methods_1_m8Rel(Value _C2_methods_1_m8) {
-			}
-		}
-		public class C3Node {
-			public String _name;
-			
-			public C3Node(Value _C3) {
-				if(!_C3.get("name").isNull())
-					this._name = _C3.get("name").asString();
-			}
-		}
-		
-		public class C3_subTypes_0_C2Rel {
-		
-			public C3_subTypes_0_C2Rel(Value _C3_subTypes_0_C2) {
-			}
-		}
-		public class C3_fields_1_f7Rel {
-		
-			public C3_fields_1_f7Rel(Value _C3_fields_1_f7) {
-			}
-		}
-		public class F4bNode {
-			public String _name;
-			
-			public F4bNode(Value _f4b) {
-				if(!_f4b.get("name").isNull())
-					this._name = _f4b.get("name").asString();
-			}
-		}
-		
-		public class F4Node {
-			public String _name;
-			
-			public F4Node(Value _f4) {
-				if(!_f4.get("name").isNull())
-					this._name = _f4.get("name").asString();
+			public C2Node(Value _c2) {
+				if(!_c2.get("name").isNull())
+					this._name = _c2.get("name").asString();
 			}
 		}
 		
@@ -351,16 +189,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class M6_parameters_0_p9Rel {
-		
-			public M6_parameters_0_p9Rel(Value _m6_parameters_0_p9) {
-			}
-		}
-		public class M6_parameters_1_p10Rel {
-		
-			public M6_parameters_1_p10Rel(Value _m6_parameters_1_p10) {
-			}
-		}
 		public class M8Node {
 			public String _name;
 			
@@ -370,16 +198,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class M8_parameters_0_p10Rel {
-		
-			public M8_parameters_0_p10Rel(Value _m8_parameters_0_p10) {
-			}
-		}
-		public class M8_parameters_1_p11Rel {
-		
-			public M8_parameters_1_p11Rel(Value _m8_parameters_1_p11) {
-			}
-		}
 		public class P9Node {
 			public String _name;
 			
@@ -398,110 +216,24 @@ public class API_DCC {
 			}
 		}
 		
-		public class P11Node {
+		public class Doc1Node {
 			public String _name;
 			
-			public P11Node(Value _p11) {
-				if(!_p11.get("name").isNull())
-					this._name = _p11.get("name").asString();
+			public Doc1Node(Value _doc1) {
+				if(!_doc1.get("name").isNull())
+					this._name = _doc1.get("name").asString();
 			}
 		}
 		
-		public class D1Node {
+		public class Doc2Node {
 			public String _name;
 			
-			public D1Node(Value _D1) {
-				if(!_D1.get("name").isNull())
-					this._name = _D1.get("name").asString();
+			public Doc2Node(Value _doc2) {
+				if(!_doc2.get("name").isNull())
+					this._name = _doc2.get("name").asString();
 			}
 		}
 		
-		public class D1_entries_0_e4fRel {
-		
-			public D1_entries_0_e4fRel(Value _D1_entries_0_e4f) {
-			}
-		}
-		public class D1_entries_1_e4Rel {
-		
-			public D1_entries_1_e4Rel(Value _D1_entries_1_e4) {
-			}
-		}
-		public class D1_entries_2_e5Rel {
-		
-			public D1_entries_2_e5Rel(Value _D1_entries_2_e5) {
-			}
-		}
-		public class D1_entries_3_e6Rel {
-		
-			public D1_entries_3_e6Rel(Value _D1_entries_3_e6) {
-			}
-		}
-		public class D1_entries_4_e7Rel {
-		
-			public D1_entries_4_e7Rel(Value _D1_entries_4_e7) {
-			}
-		}
-		public class D2Node {
-			public String _name;
-			
-			public D2Node(Value _D2) {
-				if(!_D2.get("name").isNull())
-					this._name = _D2.get("name").asString();
-			}
-		}
-		
-		public class D2_entries_0_e7Rel {
-		
-			public D2_entries_0_e7Rel(Value _D2_entries_0_e7) {
-			}
-		}
-		public class D2_entries_1_e8Rel {
-		
-			public D2_entries_1_e8Rel(Value _D2_entries_1_e8) {
-			}
-		}
-		public class D3Node {
-			public String _name;
-			
-			public D3Node(Value _D3) {
-				if(!_D3.get("name").isNull())
-					this._name = _D3.get("name").asString();
-			}
-		}
-		
-		public class D3_hrefs_0_D2Rel {
-		
-			public D3_hrefs_0_D2Rel(Value _D3_hrefs_0_D2) {
-			}
-		}
-		public class D3_entries_1_e7Rel {
-		
-			public D3_entries_1_e7Rel(Value _D3_entries_1_e7) {
-			}
-		}
-		public class E4fNode {
-			public String _name;
-			
-			public E4fNode(Value _e4f) {
-				if(!_e4f.get("name").isNull())
-					this._name = _e4f.get("name").asString();
-			}
-		}
-		
-		public class E4Node {
-			public String _name;
-			
-			public E4Node(Value _e4) {
-				if(!_e4.get("name").isNull())
-					this._name = _e4.get("name").asString();
-			}
-		}
-		
-		public class E4_gEntries_0_ge12Rel {
-		
-			public E4_gEntries_0_ge12Rel(Value _e4_gEntries_0_ge12) {
-			}
-		}
 		public class E5Node {
 			public String _name;
 			
@@ -511,11 +243,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class E5_gEntries_0_ge12Rel {
-		
-			public E5_gEntries_0_ge12Rel(Value _e5_gEntries_0_ge12) {
-			}
-		}
 		public class E6Node {
 			public String _name;
 			
@@ -525,11 +252,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class E6_gEntries_0_ge12Rel {
-		
-			public E6_gEntries_0_ge12Rel(Value _e6_gEntries_0_ge12) {
-			}
-		}
 		public class E7Node {
 			public String _name;
 			
@@ -539,16 +261,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class E7_gEntries_0_ge12Rel {
-		
-			public E7_gEntries_0_ge12Rel(Value _e7_gEntries_0_ge12) {
-			}
-		}
-		public class E7_gEntries_1_ge13Rel {
-		
-			public E7_gEntries_1_ge13Rel(Value _e7_gEntries_1_ge13) {
-			}
-		}
 		public class E8Node {
 			public String _name;
 			
@@ -558,142 +270,41 @@ public class API_DCC {
 			}
 		}
 		
-		public class E8_gEntries_0_ge13Rel {
-		
-			public E8_gEntries_0_ge13Rel(Value _e8_gEntries_0_ge13) {
-			}
-		}
-		public class Ge12Node {
-			public String _name;
-			
-			public Ge12Node(Value _ge12) {
-				if(!_ge12.get("name").isNull())
-					this._name = _ge12.get("name").asString();
-			}
-		}
-		
-		public class Ge13Node {
-			public String _name;
-			
-			public Ge13Node(Value _ge13) {
-				if(!_ge13.get("name").isNull())
-					this._name = _ge13.get("name").asString();
-			}
-		}
-		
-		public class Ge14Node {
-			public String _name;
-			
-			public Ge14Node(Value _ge14) {
-				if(!_ge14.get("name").isNull())
-					this._name = _ge14.get("name").asString();
-			}
-		}
-		
-		public class Ge14_gEntries_0_ge12Rel {
-		
-			public Ge14_gEntries_0_ge12Rel(Value _ge14_gEntries_0_ge12) {
-			}
-		}
-		public class Ge14_gEntries_1_ge13Rel {
-		
-			public Ge14_gEntries_1_ge13Rel(Value _ge14_gEntries_1_ge13) {
-			}
-		}
 	}
 	
 	public class CreateCorrsCoData extends NeoData {
-		public final C1Node _C1;
-		public final C1_corr_0_D1Rel _C1_corr_0_D1;
-		public final C2Node _C2;
-		public final C2_fields_0_f7Rel _C2_fields_0_f7;
-		public final C2_methods_1_m8Rel _C2_methods_1_m8;
-		public final C2_corr_2_D2Rel _C2_corr_2_D2;
-		public final C3Node _C3;
-		public final C3_subTypes_0_C2Rel _C3_subTypes_0_C2;
-		public final C3_fields_1_f7Rel _C3_fields_1_f7;
-		public final C3_corr_2_D3Rel _C3_corr_2_D3;
-		public final F4bNode _f4b;
-		public final F4b_corr_0_e4Rel _f4b_corr_0_e4;
-		public final F4Node _f4;
-		public final F4_corr_0_e4fRel _f4_corr_0_e4f;
+		public final C1Node _c1;
+		public final C1_corr_0_doc1Rel _c1_corr_0_doc1;
+		public final C2Node _c2;
+		public final C2_corr_0_doc2Rel _c2_corr_0_doc2;
 		public final F5Node _f5;
 		public final F5_corr_0_e5Rel _f5_corr_0_e5;
 		public final F7Node _f7;
 		public final F7_corr_0_e7Rel _f7_corr_0_e7;
 		public final M6Node _m6;
-		public final M6_parameters_0_p9Rel _m6_parameters_0_p9;
-		public final M6_parameters_1_p10Rel _m6_parameters_1_p10;
-		public final M6_corr_2_e6Rel _m6_corr_2_e6;
+		public final M6_corr_0_e6Rel _m6_corr_0_e6;
 		public final M8Node _m8;
-		public final M8_parameters_0_p10Rel _m8_parameters_0_p10;
-		public final M8_parameters_1_p11Rel _m8_parameters_1_p11;
-		public final M8_corr_2_e8Rel _m8_corr_2_e8;
+		public final M8_corr_0_e8Rel _m8_corr_0_e8;
 		public final P9Node _p9;
 		public final P9_corr_0_e6Rel _p9_corr_0_e6;
 		public final P10Node _p10;
 		public final P10_corr_0_e6Rel _p10_corr_0_e6;
-		public final P11Node _p11;
-		public final P11_corr_0_e8Rel _p11_corr_0_e8;
-		public final D1Node _D1;
-		public final D1_entries_0_e4fRel _D1_entries_0_e4f;
-		public final D1_entries_1_e4Rel _D1_entries_1_e4;
-		public final D1_entries_2_e5Rel _D1_entries_2_e5;
-		public final D1_entries_3_e6Rel _D1_entries_3_e6;
-		public final D1_entries_4_e7Rel _D1_entries_4_e7;
-		public final D2Node _D2;
-		public final D2_entries_0_e7Rel _D2_entries_0_e7;
-		public final D2_entries_1_e8Rel _D2_entries_1_e8;
-		public final D3Node _D3;
-		public final D3_hrefs_0_D2Rel _D3_hrefs_0_D2;
-		public final D3_entries_1_e7Rel _D3_entries_1_e7;
-		public final E4fNode _e4f;
-		public final E4Node _e4;
-		public final E4_gEntries_0_ge12Rel _e4_gEntries_0_ge12;
+		public final Doc1Node _doc1;
+		public final Doc2Node _doc2;
 		public final E5Node _e5;
-		public final E5_gEntries_0_ge12Rel _e5_gEntries_0_ge12;
 		public final E6Node _e6;
-		public final E6_gEntries_0_ge12Rel _e6_gEntries_0_ge12;
 		public final E7Node _e7;
-		public final E7_gEntries_0_ge12Rel _e7_gEntries_0_ge12;
-		public final E7_gEntries_1_ge13Rel _e7_gEntries_1_ge13;
 		public final E8Node _e8;
-		public final E8_gEntries_0_ge13Rel _e8_gEntries_0_ge13;
-		public final Ge12Node _ge12;
-		public final Ge13Node _ge13;
-		public final Ge14Node _ge14;
-		public final Ge14_gEntries_0_ge12Rel _ge14_gEntries_0_ge12;
-		public final Ge14_gEntries_1_ge13Rel _ge14_gEntries_1_ge13;
 	
 		public CreateCorrsCoData(Record data) {
-			var _C1 = data.get("C1");
-			this._C1 = new C1Node(_C1);
-			var _C1_corr_0_D1 = data.get("C1_corr_0_D1");
-			this._C1_corr_0_D1 = new C1_corr_0_D1Rel(_C1_corr_0_D1);
-			var _C2 = data.get("C2");
-			this._C2 = new C2Node(_C2);
-			var _C2_fields_0_f7 = data.get("C2_fields_0_f7");
-			this._C2_fields_0_f7 = new C2_fields_0_f7Rel(_C2_fields_0_f7);
-			var _C2_methods_1_m8 = data.get("C2_methods_1_m8");
-			this._C2_methods_1_m8 = new C2_methods_1_m8Rel(_C2_methods_1_m8);
-			var _C2_corr_2_D2 = data.get("C2_corr_2_D2");
-			this._C2_corr_2_D2 = new C2_corr_2_D2Rel(_C2_corr_2_D2);
-			var _C3 = data.get("C3");
-			this._C3 = new C3Node(_C3);
-			var _C3_subTypes_0_C2 = data.get("C3_subTypes_0_C2");
-			this._C3_subTypes_0_C2 = new C3_subTypes_0_C2Rel(_C3_subTypes_0_C2);
-			var _C3_fields_1_f7 = data.get("C3_fields_1_f7");
-			this._C3_fields_1_f7 = new C3_fields_1_f7Rel(_C3_fields_1_f7);
-			var _C3_corr_2_D3 = data.get("C3_corr_2_D3");
-			this._C3_corr_2_D3 = new C3_corr_2_D3Rel(_C3_corr_2_D3);
-			var _f4b = data.get("f4b");
-			this._f4b = new F4bNode(_f4b);
-			var _f4b_corr_0_e4 = data.get("f4b_corr_0_e4");
-			this._f4b_corr_0_e4 = new F4b_corr_0_e4Rel(_f4b_corr_0_e4);
-			var _f4 = data.get("f4");
-			this._f4 = new F4Node(_f4);
-			var _f4_corr_0_e4f = data.get("f4_corr_0_e4f");
-			this._f4_corr_0_e4f = new F4_corr_0_e4fRel(_f4_corr_0_e4f);
+			var _c1 = data.get("c1");
+			this._c1 = new C1Node(_c1);
+			var _c1_corr_0_doc1 = data.get("c1_corr_0_doc1");
+			this._c1_corr_0_doc1 = new C1_corr_0_doc1Rel(_c1_corr_0_doc1);
+			var _c2 = data.get("c2");
+			this._c2 = new C2Node(_c2);
+			var _c2_corr_0_doc2 = data.get("c2_corr_0_doc2");
+			this._c2_corr_0_doc2 = new C2_corr_0_doc2Rel(_c2_corr_0_doc2);
 			var _f5 = data.get("f5");
 			this._f5 = new F5Node(_f5);
 			var _f5_corr_0_e5 = data.get("f5_corr_0_e5");
@@ -704,20 +315,12 @@ public class API_DCC {
 			this._f7_corr_0_e7 = new F7_corr_0_e7Rel(_f7_corr_0_e7);
 			var _m6 = data.get("m6");
 			this._m6 = new M6Node(_m6);
-			var _m6_parameters_0_p9 = data.get("m6_parameters_0_p9");
-			this._m6_parameters_0_p9 = new M6_parameters_0_p9Rel(_m6_parameters_0_p9);
-			var _m6_parameters_1_p10 = data.get("m6_parameters_1_p10");
-			this._m6_parameters_1_p10 = new M6_parameters_1_p10Rel(_m6_parameters_1_p10);
-			var _m6_corr_2_e6 = data.get("m6_corr_2_e6");
-			this._m6_corr_2_e6 = new M6_corr_2_e6Rel(_m6_corr_2_e6);
+			var _m6_corr_0_e6 = data.get("m6_corr_0_e6");
+			this._m6_corr_0_e6 = new M6_corr_0_e6Rel(_m6_corr_0_e6);
 			var _m8 = data.get("m8");
 			this._m8 = new M8Node(_m8);
-			var _m8_parameters_0_p10 = data.get("m8_parameters_0_p10");
-			this._m8_parameters_0_p10 = new M8_parameters_0_p10Rel(_m8_parameters_0_p10);
-			var _m8_parameters_1_p11 = data.get("m8_parameters_1_p11");
-			this._m8_parameters_1_p11 = new M8_parameters_1_p11Rel(_m8_parameters_1_p11);
-			var _m8_corr_2_e8 = data.get("m8_corr_2_e8");
-			this._m8_corr_2_e8 = new M8_corr_2_e8Rel(_m8_corr_2_e8);
+			var _m8_corr_0_e8 = data.get("m8_corr_0_e8");
+			this._m8_corr_0_e8 = new M8_corr_0_e8Rel(_m8_corr_0_e8);
 			var _p9 = data.get("p9");
 			this._p9 = new P9Node(_p9);
 			var _p9_corr_0_e6 = data.get("p9_corr_0_e6");
@@ -726,174 +329,53 @@ public class API_DCC {
 			this._p10 = new P10Node(_p10);
 			var _p10_corr_0_e6 = data.get("p10_corr_0_e6");
 			this._p10_corr_0_e6 = new P10_corr_0_e6Rel(_p10_corr_0_e6);
-			var _p11 = data.get("p11");
-			this._p11 = new P11Node(_p11);
-			var _p11_corr_0_e8 = data.get("p11_corr_0_e8");
-			this._p11_corr_0_e8 = new P11_corr_0_e8Rel(_p11_corr_0_e8);
-			var _D1 = data.get("D1");
-			this._D1 = new D1Node(_D1);
-			var _D1_entries_0_e4f = data.get("D1_entries_0_e4f");
-			this._D1_entries_0_e4f = new D1_entries_0_e4fRel(_D1_entries_0_e4f);
-			var _D1_entries_1_e4 = data.get("D1_entries_1_e4");
-			this._D1_entries_1_e4 = new D1_entries_1_e4Rel(_D1_entries_1_e4);
-			var _D1_entries_2_e5 = data.get("D1_entries_2_e5");
-			this._D1_entries_2_e5 = new D1_entries_2_e5Rel(_D1_entries_2_e5);
-			var _D1_entries_3_e6 = data.get("D1_entries_3_e6");
-			this._D1_entries_3_e6 = new D1_entries_3_e6Rel(_D1_entries_3_e6);
-			var _D1_entries_4_e7 = data.get("D1_entries_4_e7");
-			this._D1_entries_4_e7 = new D1_entries_4_e7Rel(_D1_entries_4_e7);
-			var _D2 = data.get("D2");
-			this._D2 = new D2Node(_D2);
-			var _D2_entries_0_e7 = data.get("D2_entries_0_e7");
-			this._D2_entries_0_e7 = new D2_entries_0_e7Rel(_D2_entries_0_e7);
-			var _D2_entries_1_e8 = data.get("D2_entries_1_e8");
-			this._D2_entries_1_e8 = new D2_entries_1_e8Rel(_D2_entries_1_e8);
-			var _D3 = data.get("D3");
-			this._D3 = new D3Node(_D3);
-			var _D3_hrefs_0_D2 = data.get("D3_hrefs_0_D2");
-			this._D3_hrefs_0_D2 = new D3_hrefs_0_D2Rel(_D3_hrefs_0_D2);
-			var _D3_entries_1_e7 = data.get("D3_entries_1_e7");
-			this._D3_entries_1_e7 = new D3_entries_1_e7Rel(_D3_entries_1_e7);
-			var _e4f = data.get("e4f");
-			this._e4f = new E4fNode(_e4f);
-			var _e4 = data.get("e4");
-			this._e4 = new E4Node(_e4);
-			var _e4_gEntries_0_ge12 = data.get("e4_gEntries_0_ge12");
-			this._e4_gEntries_0_ge12 = new E4_gEntries_0_ge12Rel(_e4_gEntries_0_ge12);
+			var _doc1 = data.get("doc1");
+			this._doc1 = new Doc1Node(_doc1);
+			var _doc2 = data.get("doc2");
+			this._doc2 = new Doc2Node(_doc2);
 			var _e5 = data.get("e5");
 			this._e5 = new E5Node(_e5);
-			var _e5_gEntries_0_ge12 = data.get("e5_gEntries_0_ge12");
-			this._e5_gEntries_0_ge12 = new E5_gEntries_0_ge12Rel(_e5_gEntries_0_ge12);
 			var _e6 = data.get("e6");
 			this._e6 = new E6Node(_e6);
-			var _e6_gEntries_0_ge12 = data.get("e6_gEntries_0_ge12");
-			this._e6_gEntries_0_ge12 = new E6_gEntries_0_ge12Rel(_e6_gEntries_0_ge12);
 			var _e7 = data.get("e7");
 			this._e7 = new E7Node(_e7);
-			var _e7_gEntries_0_ge12 = data.get("e7_gEntries_0_ge12");
-			this._e7_gEntries_0_ge12 = new E7_gEntries_0_ge12Rel(_e7_gEntries_0_ge12);
-			var _e7_gEntries_1_ge13 = data.get("e7_gEntries_1_ge13");
-			this._e7_gEntries_1_ge13 = new E7_gEntries_1_ge13Rel(_e7_gEntries_1_ge13);
 			var _e8 = data.get("e8");
 			this._e8 = new E8Node(_e8);
-			var _e8_gEntries_0_ge13 = data.get("e8_gEntries_0_ge13");
-			this._e8_gEntries_0_ge13 = new E8_gEntries_0_ge13Rel(_e8_gEntries_0_ge13);
-			var _ge12 = data.get("ge12");
-			this._ge12 = new Ge12Node(_ge12);
-			var _ge13 = data.get("ge13");
-			this._ge13 = new Ge13Node(_ge13);
-			var _ge14 = data.get("ge14");
-			this._ge14 = new Ge14Node(_ge14);
-			var _ge14_gEntries_0_ge12 = data.get("ge14_gEntries_0_ge12");
-			this._ge14_gEntries_0_ge12 = new Ge14_gEntries_0_ge12Rel(_ge14_gEntries_0_ge12);
-			var _ge14_gEntries_1_ge13 = data.get("ge14_gEntries_1_ge13");
-			this._ge14_gEntries_1_ge13 = new Ge14_gEntries_1_ge13Rel(_ge14_gEntries_1_ge13);
 		}
 		
 	
 		public class C1Node {
 			public String _name;
 			
-			public C1Node(Value _C1) {
-				if(!_C1.get("name").isNull())
-					this._name = _C1.get("name").asString();
+			public C1Node(Value _c1) {
+				if(!_c1.get("name").isNull())
+					this._name = _c1.get("name").asString();
 			}
 		}
 		
-		public class C1_corr_0_D1Rel {
+		public class C1_corr_0_doc1Rel {
 			public String __type_;
 		
-			public C1_corr_0_D1Rel(Value _C1_corr_0_D1) {
-				if(!_C1_corr_0_D1.get("_type_").isNull())
-					this.__type_ = _C1_corr_0_D1.get("_type_").asString();
+			public C1_corr_0_doc1Rel(Value _c1_corr_0_doc1) {
+				if(!_c1_corr_0_doc1.get("_type_").isNull())
+					this.__type_ = _c1_corr_0_doc1.get("_type_").asString();
 			}
 		}
 		public class C2Node {
 			public String _name;
 			
-			public C2Node(Value _C2) {
-				if(!_C2.get("name").isNull())
-					this._name = _C2.get("name").asString();
+			public C2Node(Value _c2) {
+				if(!_c2.get("name").isNull())
+					this._name = _c2.get("name").asString();
 			}
 		}
 		
-		public class C2_fields_0_f7Rel {
-		
-			public C2_fields_0_f7Rel(Value _C2_fields_0_f7) {
-			}
-		}
-		public class C2_methods_1_m8Rel {
-		
-			public C2_methods_1_m8Rel(Value _C2_methods_1_m8) {
-			}
-		}
-		public class C2_corr_2_D2Rel {
+		public class C2_corr_0_doc2Rel {
 			public String __type_;
 		
-			public C2_corr_2_D2Rel(Value _C2_corr_2_D2) {
-				if(!_C2_corr_2_D2.get("_type_").isNull())
-					this.__type_ = _C2_corr_2_D2.get("_type_").asString();
-			}
-		}
-		public class C3Node {
-			public String _name;
-			
-			public C3Node(Value _C3) {
-				if(!_C3.get("name").isNull())
-					this._name = _C3.get("name").asString();
-			}
-		}
-		
-		public class C3_subTypes_0_C2Rel {
-		
-			public C3_subTypes_0_C2Rel(Value _C3_subTypes_0_C2) {
-			}
-		}
-		public class C3_fields_1_f7Rel {
-		
-			public C3_fields_1_f7Rel(Value _C3_fields_1_f7) {
-			}
-		}
-		public class C3_corr_2_D3Rel {
-			public String __type_;
-		
-			public C3_corr_2_D3Rel(Value _C3_corr_2_D3) {
-				if(!_C3_corr_2_D3.get("_type_").isNull())
-					this.__type_ = _C3_corr_2_D3.get("_type_").asString();
-			}
-		}
-		public class F4bNode {
-			public String _name;
-			
-			public F4bNode(Value _f4b) {
-				if(!_f4b.get("name").isNull())
-					this._name = _f4b.get("name").asString();
-			}
-		}
-		
-		public class F4b_corr_0_e4Rel {
-			public String __type_;
-		
-			public F4b_corr_0_e4Rel(Value _f4b_corr_0_e4) {
-				if(!_f4b_corr_0_e4.get("_type_").isNull())
-					this.__type_ = _f4b_corr_0_e4.get("_type_").asString();
-			}
-		}
-		public class F4Node {
-			public String _name;
-			
-			public F4Node(Value _f4) {
-				if(!_f4.get("name").isNull())
-					this._name = _f4.get("name").asString();
-			}
-		}
-		
-		public class F4_corr_0_e4fRel {
-			public String __type_;
-		
-			public F4_corr_0_e4fRel(Value _f4_corr_0_e4f) {
-				if(!_f4_corr_0_e4f.get("_type_").isNull())
-					this.__type_ = _f4_corr_0_e4f.get("_type_").asString();
+			public C2_corr_0_doc2Rel(Value _c2_corr_0_doc2) {
+				if(!_c2_corr_0_doc2.get("_type_").isNull())
+					this.__type_ = _c2_corr_0_doc2.get("_type_").asString();
 			}
 		}
 		public class F5Node {
@@ -939,22 +421,12 @@ public class API_DCC {
 			}
 		}
 		
-		public class M6_parameters_0_p9Rel {
-		
-			public M6_parameters_0_p9Rel(Value _m6_parameters_0_p9) {
-			}
-		}
-		public class M6_parameters_1_p10Rel {
-		
-			public M6_parameters_1_p10Rel(Value _m6_parameters_1_p10) {
-			}
-		}
-		public class M6_corr_2_e6Rel {
+		public class M6_corr_0_e6Rel {
 			public String __type_;
 		
-			public M6_corr_2_e6Rel(Value _m6_corr_2_e6) {
-				if(!_m6_corr_2_e6.get("_type_").isNull())
-					this.__type_ = _m6_corr_2_e6.get("_type_").asString();
+			public M6_corr_0_e6Rel(Value _m6_corr_0_e6) {
+				if(!_m6_corr_0_e6.get("_type_").isNull())
+					this.__type_ = _m6_corr_0_e6.get("_type_").asString();
 			}
 		}
 		public class M8Node {
@@ -966,22 +438,12 @@ public class API_DCC {
 			}
 		}
 		
-		public class M8_parameters_0_p10Rel {
-		
-			public M8_parameters_0_p10Rel(Value _m8_parameters_0_p10) {
-			}
-		}
-		public class M8_parameters_1_p11Rel {
-		
-			public M8_parameters_1_p11Rel(Value _m8_parameters_1_p11) {
-			}
-		}
-		public class M8_corr_2_e8Rel {
+		public class M8_corr_0_e8Rel {
 			public String __type_;
 		
-			public M8_corr_2_e8Rel(Value _m8_corr_2_e8) {
-				if(!_m8_corr_2_e8.get("_type_").isNull())
-					this.__type_ = _m8_corr_2_e8.get("_type_").asString();
+			public M8_corr_0_e8Rel(Value _m8_corr_0_e8) {
+				if(!_m8_corr_0_e8.get("_type_").isNull())
+					this.__type_ = _m8_corr_0_e8.get("_type_").asString();
 			}
 		}
 		public class P9Node {
@@ -1018,118 +480,24 @@ public class API_DCC {
 					this.__type_ = _p10_corr_0_e6.get("_type_").asString();
 			}
 		}
-		public class P11Node {
+		public class Doc1Node {
 			public String _name;
 			
-			public P11Node(Value _p11) {
-				if(!_p11.get("name").isNull())
-					this._name = _p11.get("name").asString();
+			public Doc1Node(Value _doc1) {
+				if(!_doc1.get("name").isNull())
+					this._name = _doc1.get("name").asString();
 			}
 		}
 		
-		public class P11_corr_0_e8Rel {
-			public String __type_;
-		
-			public P11_corr_0_e8Rel(Value _p11_corr_0_e8) {
-				if(!_p11_corr_0_e8.get("_type_").isNull())
-					this.__type_ = _p11_corr_0_e8.get("_type_").asString();
-			}
-		}
-		public class D1Node {
+		public class Doc2Node {
 			public String _name;
 			
-			public D1Node(Value _D1) {
-				if(!_D1.get("name").isNull())
-					this._name = _D1.get("name").asString();
+			public Doc2Node(Value _doc2) {
+				if(!_doc2.get("name").isNull())
+					this._name = _doc2.get("name").asString();
 			}
 		}
 		
-		public class D1_entries_0_e4fRel {
-		
-			public D1_entries_0_e4fRel(Value _D1_entries_0_e4f) {
-			}
-		}
-		public class D1_entries_1_e4Rel {
-		
-			public D1_entries_1_e4Rel(Value _D1_entries_1_e4) {
-			}
-		}
-		public class D1_entries_2_e5Rel {
-		
-			public D1_entries_2_e5Rel(Value _D1_entries_2_e5) {
-			}
-		}
-		public class D1_entries_3_e6Rel {
-		
-			public D1_entries_3_e6Rel(Value _D1_entries_3_e6) {
-			}
-		}
-		public class D1_entries_4_e7Rel {
-		
-			public D1_entries_4_e7Rel(Value _D1_entries_4_e7) {
-			}
-		}
-		public class D2Node {
-			public String _name;
-			
-			public D2Node(Value _D2) {
-				if(!_D2.get("name").isNull())
-					this._name = _D2.get("name").asString();
-			}
-		}
-		
-		public class D2_entries_0_e7Rel {
-		
-			public D2_entries_0_e7Rel(Value _D2_entries_0_e7) {
-			}
-		}
-		public class D2_entries_1_e8Rel {
-		
-			public D2_entries_1_e8Rel(Value _D2_entries_1_e8) {
-			}
-		}
-		public class D3Node {
-			public String _name;
-			
-			public D3Node(Value _D3) {
-				if(!_D3.get("name").isNull())
-					this._name = _D3.get("name").asString();
-			}
-		}
-		
-		public class D3_hrefs_0_D2Rel {
-		
-			public D3_hrefs_0_D2Rel(Value _D3_hrefs_0_D2) {
-			}
-		}
-		public class D3_entries_1_e7Rel {
-		
-			public D3_entries_1_e7Rel(Value _D3_entries_1_e7) {
-			}
-		}
-		public class E4fNode {
-			public String _name;
-			
-			public E4fNode(Value _e4f) {
-				if(!_e4f.get("name").isNull())
-					this._name = _e4f.get("name").asString();
-			}
-		}
-		
-		public class E4Node {
-			public String _name;
-			
-			public E4Node(Value _e4) {
-				if(!_e4.get("name").isNull())
-					this._name = _e4.get("name").asString();
-			}
-		}
-		
-		public class E4_gEntries_0_ge12Rel {
-		
-			public E4_gEntries_0_ge12Rel(Value _e4_gEntries_0_ge12) {
-			}
-		}
 		public class E5Node {
 			public String _name;
 			
@@ -1139,11 +507,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class E5_gEntries_0_ge12Rel {
-		
-			public E5_gEntries_0_ge12Rel(Value _e5_gEntries_0_ge12) {
-			}
-		}
 		public class E6Node {
 			public String _name;
 			
@@ -1153,11 +516,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class E6_gEntries_0_ge12Rel {
-		
-			public E6_gEntries_0_ge12Rel(Value _e6_gEntries_0_ge12) {
-			}
-		}
 		public class E7Node {
 			public String _name;
 			
@@ -1167,16 +525,6 @@ public class API_DCC {
 			}
 		}
 		
-		public class E7_gEntries_0_ge12Rel {
-		
-			public E7_gEntries_0_ge12Rel(Value _e7_gEntries_0_ge12) {
-			}
-		}
-		public class E7_gEntries_1_ge13Rel {
-		
-			public E7_gEntries_1_ge13Rel(Value _e7_gEntries_1_ge13) {
-			}
-		}
 		public class E8Node {
 			public String _name;
 			
@@ -1186,109 +534,31 @@ public class API_DCC {
 			}
 		}
 		
-		public class E8_gEntries_0_ge13Rel {
-		
-			public E8_gEntries_0_ge13Rel(Value _e8_gEntries_0_ge13) {
-			}
-		}
-		public class Ge12Node {
-			public String _name;
-			
-			public Ge12Node(Value _ge12) {
-				if(!_ge12.get("name").isNull())
-					this._name = _ge12.get("name").asString();
-			}
-		}
-		
-		public class Ge13Node {
-			public String _name;
-			
-			public Ge13Node(Value _ge13) {
-				if(!_ge13.get("name").isNull())
-					this._name = _ge13.get("name").asString();
-			}
-		}
-		
-		public class Ge14Node {
-			public String _name;
-			
-			public Ge14Node(Value _ge14) {
-				if(!_ge14.get("name").isNull())
-					this._name = _ge14.get("name").asString();
-			}
-		}
-		
-		public class Ge14_gEntries_0_ge12Rel {
-		
-			public Ge14_gEntries_0_ge12Rel(Value _ge14_gEntries_0_ge12) {
-			}
-		}
-		public class Ge14_gEntries_1_ge13Rel {
-		
-			public Ge14_gEntries_1_ge13Rel(Value _ge14_gEntries_1_ge13) {
-			}
-		}
 	}
 	
 	public class CreateCorrsMask extends NeoMask {
 		public CreateCorrsMask setC1(Long value) {
-			nodeMask.put("C1", value);
+			nodeMask.put("c1", value);
 			return this;
 		}
 		public CreateCorrsMask setC1Name(String value) {
-			attributeMask.put("C1.name", value);
+			attributeMask.put("c1.name", value);
 			return this;
 		}
-		public CreateCorrsMask setC1_corr_0_D1_type_(String value) {
-			attributeMask.put("C1_corr_0_D1._type_", value);
+		public CreateCorrsMask setC1_corr_0_doc1_type_(String value) {
+			attributeMask.put("c1_corr_0_doc1._type_", value);
 			return this;
 		}
 		public CreateCorrsMask setC2(Long value) {
-			nodeMask.put("C2", value);
+			nodeMask.put("c2", value);
 			return this;
 		}
 		public CreateCorrsMask setC2Name(String value) {
-			attributeMask.put("C2.name", value);
+			attributeMask.put("c2.name", value);
 			return this;
 		}
-		public CreateCorrsMask setC2_corr_2_D2_type_(String value) {
-			attributeMask.put("C2_corr_2_D2._type_", value);
-			return this;
-		}
-		public CreateCorrsMask setC3(Long value) {
-			nodeMask.put("C3", value);
-			return this;
-		}
-		public CreateCorrsMask setC3Name(String value) {
-			attributeMask.put("C3.name", value);
-			return this;
-		}
-		public CreateCorrsMask setC3_corr_2_D3_type_(String value) {
-			attributeMask.put("C3_corr_2_D3._type_", value);
-			return this;
-		}
-		public CreateCorrsMask setF4b(Long value) {
-			nodeMask.put("f4b", value);
-			return this;
-		}
-		public CreateCorrsMask setF4bName(String value) {
-			attributeMask.put("f4b.name", value);
-			return this;
-		}
-		public CreateCorrsMask setF4b_corr_0_e4_type_(String value) {
-			attributeMask.put("f4b_corr_0_e4._type_", value);
-			return this;
-		}
-		public CreateCorrsMask setF4(Long value) {
-			nodeMask.put("f4", value);
-			return this;
-		}
-		public CreateCorrsMask setF4Name(String value) {
-			attributeMask.put("f4.name", value);
-			return this;
-		}
-		public CreateCorrsMask setF4_corr_0_e4f_type_(String value) {
-			attributeMask.put("f4_corr_0_e4f._type_", value);
+		public CreateCorrsMask setC2_corr_0_doc2_type_(String value) {
+			attributeMask.put("c2_corr_0_doc2._type_", value);
 			return this;
 		}
 		public CreateCorrsMask setF5(Long value) {
@@ -1323,8 +593,8 @@ public class API_DCC {
 			attributeMask.put("m6.name", value);
 			return this;
 		}
-		public CreateCorrsMask setM6_corr_2_e6_type_(String value) {
-			attributeMask.put("m6_corr_2_e6._type_", value);
+		public CreateCorrsMask setM6_corr_0_e6_type_(String value) {
+			attributeMask.put("m6_corr_0_e6._type_", value);
 			return this;
 		}
 		public CreateCorrsMask setM8(Long value) {
@@ -1335,8 +605,8 @@ public class API_DCC {
 			attributeMask.put("m8.name", value);
 			return this;
 		}
-		public CreateCorrsMask setM8_corr_2_e8_type_(String value) {
-			attributeMask.put("m8_corr_2_e8._type_", value);
+		public CreateCorrsMask setM8_corr_0_e8_type_(String value) {
+			attributeMask.put("m8_corr_0_e8._type_", value);
 			return this;
 		}
 		public CreateCorrsMask setP9(Long value) {
@@ -1363,56 +633,20 @@ public class API_DCC {
 			attributeMask.put("p10_corr_0_e6._type_", value);
 			return this;
 		}
-		public CreateCorrsMask setP11(Long value) {
-			nodeMask.put("p11", value);
+		public CreateCorrsMask setDoc1(Long value) {
+			nodeMask.put("doc1", value);
 			return this;
 		}
-		public CreateCorrsMask setP11Name(String value) {
-			attributeMask.put("p11.name", value);
+		public CreateCorrsMask setDoc1Name(String value) {
+			attributeMask.put("doc1.name", value);
 			return this;
 		}
-		public CreateCorrsMask setP11_corr_0_e8_type_(String value) {
-			attributeMask.put("p11_corr_0_e8._type_", value);
+		public CreateCorrsMask setDoc2(Long value) {
+			nodeMask.put("doc2", value);
 			return this;
 		}
-		public CreateCorrsMask setD1(Long value) {
-			nodeMask.put("D1", value);
-			return this;
-		}
-		public CreateCorrsMask setD1Name(String value) {
-			attributeMask.put("D1.name", value);
-			return this;
-		}
-		public CreateCorrsMask setD2(Long value) {
-			nodeMask.put("D2", value);
-			return this;
-		}
-		public CreateCorrsMask setD2Name(String value) {
-			attributeMask.put("D2.name", value);
-			return this;
-		}
-		public CreateCorrsMask setD3(Long value) {
-			nodeMask.put("D3", value);
-			return this;
-		}
-		public CreateCorrsMask setD3Name(String value) {
-			attributeMask.put("D3.name", value);
-			return this;
-		}
-		public CreateCorrsMask setE4f(Long value) {
-			nodeMask.put("e4f", value);
-			return this;
-		}
-		public CreateCorrsMask setE4fName(String value) {
-			attributeMask.put("e4f.name", value);
-			return this;
-		}
-		public CreateCorrsMask setE4(Long value) {
-			nodeMask.put("e4", value);
-			return this;
-		}
-		public CreateCorrsMask setE4Name(String value) {
-			attributeMask.put("e4.name", value);
+		public CreateCorrsMask setDoc2Name(String value) {
+			attributeMask.put("doc2.name", value);
 			return this;
 		}
 		public CreateCorrsMask setE5(Long value) {
@@ -1447,39 +681,5 @@ public class API_DCC {
 			attributeMask.put("e8.name", value);
 			return this;
 		}
-		public CreateCorrsMask setGe12(Long value) {
-			nodeMask.put("ge12", value);
-			return this;
-		}
-		public CreateCorrsMask setGe12Name(String value) {
-			attributeMask.put("ge12.name", value);
-			return this;
-		}
-		public CreateCorrsMask setGe13(Long value) {
-			nodeMask.put("ge13", value);
-			return this;
-		}
-		public CreateCorrsMask setGe13Name(String value) {
-			attributeMask.put("ge13.name", value);
-			return this;
-		}
-		public CreateCorrsMask setGe14(Long value) {
-			nodeMask.put("ge14", value);
-			return this;
-		}
-		public CreateCorrsMask setGe14Name(String value) {
-			attributeMask.put("ge14.name", value);
-			return this;
-		}
-	}
-	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodocsle/mi/in/DCC.msl#//@entities.3
-	public Model getModel_MoflonJavaChain(){
-		return (Model) spec.getEntities().get(3);
-	}
-	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodocsle/mi/in/DCC.msl#//@entities.4
-	public Model getModel_MoflonDocChain(){
-		return (Model) spec.getEntities().get(4);
 	}
 }
