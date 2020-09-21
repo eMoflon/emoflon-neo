@@ -728,7 +728,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseCondition(Entity entity) {
 		var conditionPattern = new ConstraintTraversalHelper().getConstraintPattern(entity)
-		var copiesOfConditionPatterns = new HashSet()
+		var copiesOfConditionPatterns = new ArrayList<Pattern>()
 		for (p : conditionPattern) {
 			if (p.name.equals(entity.name) && entity instanceof Pattern) {
 				throw new Exception("Using a pattern as its own condition is not allowed.")
@@ -752,7 +752,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			«ENDIF»
 			«IF entity instanceof Constraint && (entity as Constraint).body instanceof Implication»
-				«createLinksForConstraintPatterns(conditionPattern)»
+				«createLinksForConstraintPatterns(copiesOfConditionPatterns.map[Pattern p | p.body])»
 			«ENDIF»
 		'''
 	}
@@ -760,7 +760,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	/**
 	 * Returns the diagram text for the links between objects with the same name in the patterns of a constraint.
 	 */
-	def String createLinksForConstraintPatterns(ArrayList<AtomicPattern> patterns) {
+	def String createLinksForConstraintPatterns(List<AtomicPattern> patterns) {
 		var text = ""
 		for (p : patterns) {
 			for (AtomicPattern other : patterns) {
