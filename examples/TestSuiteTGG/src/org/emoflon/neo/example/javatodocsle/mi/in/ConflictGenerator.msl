@@ -1,0 +1,133 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
+
+rule MoveMoveConflict {
+	
+	srcM : Model 
+	trgM : Model
+	
+	clazz:Clazz {
+		-elementOf->srcM
+		-corr->doc
+		-subTypes->subClazz {
+			~_de_ := true
+		}
+	}
+	
+	otherClazz:Clazz {
+		-elementOf->srcM
+		++-subTypes->subClazz {
+			~_cr_ := true
+		}
+	}
+	
+	subClazz:Clazz {
+		-elementOf->srcM
+		-corr->subDoc
+	}
+	
+	doc:Doc {
+		-elementOf->trgM
+		-hrefs->subDoc {
+			~_de_ := true
+		}
+	}
+	
+	otherDoc:Doc {
+		-elementOf->trgM
+		++-hrefs->subDoc {
+			~_cr_ := true
+		}
+	}
+	
+	subDoc:Doc{
+		-elementOf->trgM
+	}
+}
+
+rule CreateDeleteConflict {
+	
+	srcM : Model 
+	trgM : Model
+	
+	clazz:Clazz {
+		-elementOf->srcM
+		-corr->doc
+		-subTypes->subClazz
+	}
+	
+	subClazz:Clazz {
+		-elementOf->srcM
+		-corr->subDoc
+		++-methods->method {
+			~_cr_ := true
+		}
+	}
+	
+	++method:Method{
+		++-elementOf->srcM
+		.name := "Test2"
+		._cr_ := true
+	}
+	
+	doc:Doc{
+		-elementOf->trgM
+		-hrefs->subDoc {
+			~_de_ := true
+		}
+		++-entries->entry {
+			~_cr_ := true
+		}
+	}
+	
+	subDoc:Doc{
+		-elementOf->trgM
+		~_de_ := true
+		-entries->entry{
+			~_de_ := true
+		}
+	}
+	
+	entry:Entry{
+		-elementOf->trgM
+	}
+}			
+
+rule MoveDeleteConflict {
+	
+	srcM : Model 
+	trgM : Model
+	
+	clazz:Clazz {
+		-elementOf->srcM
+		-corr->doc
+		-subTypes->subClazz {
+			~_de_ := true
+		}
+	}
+	
+	otherClazz:Clazz {
+		-elementOf->srcM
+		++-subTypes->subClazz {
+			~_cr_ := true
+		}
+	}
+	
+	subClazz:Clazz {
+		-elementOf->srcM
+		-corr->subDoc
+	}
+	
+	doc:Doc {
+		-elementOf->trgM
+		-hrefs->subDoc {
+			~_de_ := true
+		}
+	}
+	
+	subDoc:Doc{
+		-elementOf->trgM
+		._de_ := true
+	}
+}
+

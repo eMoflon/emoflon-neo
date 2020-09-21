@@ -56,28 +56,8 @@ grammar JavaToDoc_BWD {
 		
 		attributeConstraints {
 		}
-	} when ClazzToDocRuleNAC
+	} 
 	
-	constraint ClazzToDocRuleNAC = forbid ClazzToDocRule_clazzNameIsTaken
-	
-		pattern ClazzToDocRule_clazzNameIsTaken {
-			srcM : Model {
-				.ename : <__srcModelName>
-			}
-			
-			clazz : Clazz {
-				-elementOf->srcM
-				.name : doc::name
-			}
-			
-			trgM : Model {
-				.ename : <__trgModelName>
-			}
-			
-			doc : Doc {
-				-elementOf->trgM
-			}
-		}
 	
 	  rule RootToRootRule {
 	
@@ -106,28 +86,8 @@ grammar JavaToDoc_BWD {
 		
 		attributeConstraints {
 		}
-	} when RootToRootRuleNAC
+	} 
 	
-	constraint RootToRootRuleNAC = forbid RootToRootRule_packageNameIsTaken
-	
-		pattern RootToRootRule_packageNameIsTaken {
-			srcM : Model {
-				.ename : <__srcModelName>
-			}
-			
-			package : Package {
-				-elementOf->srcM
-				.name : f::name
-			}
-			
-			trgM : Model {
-				.ename : <__trgModelName>
-			}
-			
-			f : Folder {
-				-elementOf->trgM
-			}
-		}
 	
 	  rule SubToSubRule {
 	
@@ -187,28 +147,8 @@ grammar JavaToDoc_BWD {
 		
 		attributeConstraints {
 		}
-	} when SubToSubRuleNAC
+	} 
 	
-	constraint SubToSubRuleNAC = forbid SubToSubRule_packageNameIsTaken
-	
-		pattern SubToSubRule_packageNameIsTaken {
-			srcM : Model {
-				.ename : <__srcModelName>
-			}
-			
-			package : Package {
-				-elementOf->srcM
-				.name : subF::name
-			}
-			
-			trgM : Model {
-				.ename : <__trgModelName>
-			}
-			
-			subF : Folder {
-				-elementOf->trgM
-			}
-		}
 	
 	  rule createSrcModel {
 	

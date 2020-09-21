@@ -9,8 +9,8 @@ import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramGrammar_BWD_OPT_Run;
-import Transformations.run.FacebookToInstagramGrammar_CO_Run;
+import Transformations.run.FacebookToInstagramFASE_BWD_OPT_Run;
+import Transformations.run.FacebookToInstagramFASE_CO_Run;
 
 public class BWD_OPT_CO_Tests extends ENeoTest {
 
@@ -21,8 +21,8 @@ public class BWD_OPT_CO_Tests extends ENeoTest {
 		var metamodels = builder.collectDependentMetamodels(srcModel);
 		for (Metamodel m : metamodels) 
 			builder.exportEMSLEntityToNeo4j(m);
-		new FacebookToInstagramGrammar_BWD_OPT_Run(srcName, trgName).run();
-		assertTrue(new FacebookToInstagramGrammar_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		new FacebookToInstagramFASE_BWD_OPT_Run(srcName, trgName).run();
+		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
 	}
 
 	@Test

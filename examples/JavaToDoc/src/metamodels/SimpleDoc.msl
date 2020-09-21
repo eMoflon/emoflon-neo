@@ -7,6 +7,5 @@ metamodel SimpleDoc {
 	
 	Doc {
 		.name : EString
-		.content : EString
 	}
 }

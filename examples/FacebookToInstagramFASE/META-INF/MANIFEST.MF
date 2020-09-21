@@ -11,8 +11,7 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.commons.logging;bundle-version="1.2.0",
  org.apache.log4j,
  org.apache.commons.lang3
-Export-Package: .,
- Transformations,
+Export-Package: Transformations,
  Transformations.run,
  org.emoflon.neo.api,
  org.emoflon.neo.api.Transformations

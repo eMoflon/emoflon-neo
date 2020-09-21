@@ -181,7 +181,40 @@ pattern noDoubleFollowershipInstagramConstraint {
 	 
 constraint noDoubleFollowership = forbid noDoubleFollowershipInstagramConstraint
 
+pattern bidirectionalFollowership {
+	iu1 : InstagramLanguage.User {
+		-follows-> iu2
+	}
+	
+	iu2 : InstagramLanguage.User {
+		-follows-> iu1
+	}
+}
 
+pattern facebookFriendship {
+	fu1 : FacebookLanguage.User {
+		-corr-> iu1	
+	}
+	
+	fu2 : FacebookLanguage.User {
+		-corr-> iu2
+	}
+	
+	friendship : Friendship {
+		-friends-> fu1
+		-friends-> fu2
+	}
+	
+	iu1 : InstagramLanguage.User {
+		-follows-> iu2
+	}
+	
+	iu2 : InstagramLanguage.User {
+		-follows-> iu1
+	}
+}
+
+constraint enforceFriendship = if bidirectionalFollowership then facebookFriendship
 
 
 

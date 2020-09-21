@@ -4,30 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static run.JavaToDoc_GEN_Run.SRC_MODEL_NAME;
 import static run.JavaToDoc_GEN_Run.TRG_MODEL_NAME;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.emoflon.neo.api.API_JavaToDoc;
-import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_GEN;
-import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.engine.modules.NeoGenerator;
-import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
-import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
-import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
-import org.emoflon.neo.engine.modules.startup.NoOpStartup;
-import org.emoflon.neo.engine.modules.terminationcondition.CompositeTerminationConditionForGEN;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePolicy;
-import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
-import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
 import JavaToDoc.run.JavaToDoc_CC_Run;
 import JavaToDoc.run.JavaToDoc_CO_Run;
-import JavaToDoc.run.JavaToDoc_GEN_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 
@@ -90,33 +75,4 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 			.setMax(API_JavaToDoc.JavaToDoc__ClazzToDocRule, 100);
 		});
 	}
-}
-
-class JavaToDoc_GEN_TEST extends JavaToDoc_GEN_Run {
-	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
-
-	public JavaToDoc_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
-		super(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		this.configurator = configureScheduler;
-	}
-
-	@Override
-	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var allRules = new API_JavaToDoc_GEN(builder).getAllRulesForJavaToDoc_GEN();
-		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
-		configurator.accept(ruleScheduler);
-
-		return new NeoGenerator(//
-				allRules, //
-				new NoOpStartup(), //
-				new CompositeTerminationConditionForGEN(1, TimeUnit.MINUTES, ruleScheduler), //
-				new AllRulesAllMatchesScheduler(), //
-				new RandomSingleMatchUpdatePolicy(), //
-				new ParanoidNeoReprocessor(), //
-				new NoOpCleanup(), //
-				new HeartBeatAndReportMonitor(), //
-				new ModelNameValueGenerator("Source", "Target"), //
-				List.of(new LoremIpsumStringValueGenerator()));
-	}
-
 }
