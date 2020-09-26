@@ -3,13 +3,16 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Adapter
 Bundle-SymbolicName: org.emoflon.neo.victory.adapter
 Bundle-Version: 1.0.0.qualifier
-Export-Package: org.emoflon.neo.victory.adapter
+Export-Package: org.emoflon.neo.victory.adapter,
+ org.emoflon.neo.victory.adapter.common,
+ org.emoflon.neo.victory.adapter.matches,
+ org.emoflon.neo.victory.adapter.rules
 Require-Bundle: org.emoflon.victory.ui;bundle-version="1.0.0",
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.emsl,
  org.emoflon.neo.neo4j.adapter,
  org.eclipse.jdt.annotation;bundle-version="2.2.300",
- org.apache.commons.lang3;bundle-version="3.1.0",
- org.emoflon.neo.engine.modules
+ org.emoflon.neo.engine.modules,
+ org.apache.commons.lang;bundle-version="2.6.0"
 Automatic-Module-Name: org.emoflon.neo.victory.adapter
 Bundle-RequiredExecutionEnvironment: JavaSE-13

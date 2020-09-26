@@ -10,8 +10,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext,
  org.apache.commons.logging,
  org.apache.log4j,
- org.apache.commons.lang3
+ org.apache.commons.lang
 Automatic-Module-Name: org.emoflon.neo.neocore
 Bundle-ActivationPolicy: lazy
-Export-Package: org.emoflon.neo.neocore
+Export-Package: org.emoflon.neo.api,
+ org.emoflon.neo.neocore
 Bundle-RequiredExecutionEnvironment: JavaSE-13

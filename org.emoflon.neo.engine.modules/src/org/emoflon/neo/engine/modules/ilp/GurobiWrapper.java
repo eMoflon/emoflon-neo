@@ -45,7 +45,6 @@ final class GurobiWrapper extends ILPSolver {
 	 */
 	private final boolean onlyBinaryVariables;
 
-	private static final int MIN_TIMEOUT = 30;
 	private static final int MAX_TIMEOUT = 60 * 60; // 1 hour
 
 	/**

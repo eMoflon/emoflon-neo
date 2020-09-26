@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.emoflon.neo.emsl.compiler.Operation.Domain;
 import org.emoflon.neo.emsl.eMSL.ActionOperator;
 import org.emoflon.neo.emsl.eMSL.Correspondence;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
-import org.emoflon.neo.emsl.compiler.Operation.Domain;
 
 public class TGGCompilerValidations {
 
@@ -113,8 +113,6 @@ public class TGGCompilerValidations {
 		int t = greenElements.get(Domain.TRG).size(); // number of target elements
 		int c = greenElements.get(Domain.CORR).size(); // number of correspondences
 
-		int coRuleID = 0;
-		int ccRuleID = (1 << c) - 1;
 		int fwdRuleID = (((1 << s) - 1) << (t + c)) + (1 << c) - 1;
 		int bwdRuleID = (((1 << t) - 1) << c) + (1 << c) - 1;
 

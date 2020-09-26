@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -154,11 +153,11 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 				
 		matchContainer.ifPresent(mc -> {
 			var inconsistentEdges = inconsistentElts.stream()//
-					.filter(x -> relevantElements.contains(x) && (Long)x < 0)
+					.filter(x -> relevantElements.contains(x) && x < 0)
 					.collect(Collectors.toSet());
 			
 			var inconsistentNodes = inconsistentElts.stream()//
-					.filter(x -> relevantElements.contains(x) && (Long)x > 0)
+					.filter(x -> relevantElements.contains(x) && x > 0)
 					.collect(Collectors.toSet());
 			
 			builder.deleteEdges(inconsistentEdges);

@@ -2,7 +2,6 @@ package org.emoflon.neo.victory.adapter.common;
 
 import java.util.List;
 
-import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement;
 import org.emoflon.neo.neocore.util.NeoCoreConstants;
 import org.emoflon.victory.ui.api.enums.Action;

@@ -696,10 +696,6 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		allTypesInAllImportedSpecs(root, MetamodelNodeBlock)
 	}
 
-	private def allModelsInAllImportedSpecs(EObject root) {
-		allTypesInAllImportedSpecs(root, Model)
-	}
-
 	/**
 	 * Returns all objects of the given type from all imported specifications.
 	 */

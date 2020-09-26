@@ -1,6 +1,6 @@
 package org.emoflon.neo.victory.adapter.common;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.emoflon.victory.ui.api.Edge;
 import org.emoflon.victory.ui.api.Node;
 import org.emoflon.victory.ui.api.enums.Action;

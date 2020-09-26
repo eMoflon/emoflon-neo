@@ -54,7 +54,7 @@ import org.emoflon.neo.emsl.ui.util.ConstraintTraversalHelper
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.util.FlattenerException
 import org.emoflon.neo.emsl.eMSL.PrimitiveDouble
-import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang.StringUtils
 import org.emoflon.neo.emsl.eMSL.TargetNAC
 import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.ModelPropertyStatement

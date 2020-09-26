@@ -7,7 +7,6 @@ import java.net.URI
 import java.util.ArrayList
 import java.util.List
 import java.util.function.Predicate
-import java.util.stream.Collectors
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
