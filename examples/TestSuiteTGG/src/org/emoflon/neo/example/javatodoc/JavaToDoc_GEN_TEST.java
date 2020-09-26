@@ -21,6 +21,7 @@ import org.emoflon.neo.engine.modules.valueGenerators.RandomUUIDGenerator;
 
 import JavaToDoc.run.JavaToDoc_GEN_Run;
 
+
 class JavaToDoc_GEN_TEST extends JavaToDoc_GEN_Run {
 	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
 
