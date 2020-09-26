@@ -26,9 +26,10 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.emoflon.neo.engine.modules;bundle-version="1.0.0",
- org.apache.commons.lang3;bundle-version="3.1.0",
+ org.apache.commons.lang,
  JavaToDoc,
- JavaToDoc
+ JavaToDoc,
+ org.apache.commons.lang
 Export-Package: JavaToDoc,
  JavaToDoc.run,
  metamodels,
@@ -40,4 +41,4 @@ Export-Package: JavaToDoc,
  run
 Automatic-Module-Name: JavaToDoc
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-13

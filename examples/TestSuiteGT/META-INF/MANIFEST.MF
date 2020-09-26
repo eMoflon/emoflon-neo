@@ -37,11 +37,12 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  RiverCrossing;bundle-version="1.0.0",
  Chess,
  org.eclipse.core.resources;bundle-version="3.13.400",
- org.apache.commons.lang3,
+ org.apache.commons.lang,
  FamiliesToPersons;bundle-version="0.0.1",
  JavaToDoc,
  FacebookToInstagram-FASE;bundle-version="1.0.0",
- CompanyToIT
+ CompanyToIT,
+ org.apache.commons.lang
 Automatic-Module-Name: TestSuite
 Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.example,

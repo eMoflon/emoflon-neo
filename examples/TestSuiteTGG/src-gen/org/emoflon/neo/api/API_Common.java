@@ -6,11 +6,11 @@ import org.emoflon.neo.cypher.models.*;
 
 public class API_Common {
 	// Default values (might have to be changed)
-	public static final String PLATFORM_PLUGIN_URI = "/C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/";
-	public static final String NEOCORE_URI_INSTALLED = "/C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.neocore/model/NeoCore.msl";
+	public static final String PLATFORM_PLUGIN_URI = "/Users/anthonyanjorin/.p2/pool/plugins/";
+	public static final String NEOCORE_URI_INSTALLED = "/Users/anthonyanjorin/.p2/pool/plugins/org.emoflon.neo.neocore_1.0.0.202009262112/model/NeoCore.msl";
 	public static final String PLATFORM_RESOURCE_URI = "../";
 
 	public static NeoCoreBuilder createBuilder() {
-		return new NeoCoreBuilder("bolt://localhost:11002", "neo4j", "Neo1802!");
+		return new NeoCoreBuilder("bolt://localhost:7678", "neo4j", "admin");
 	}
 }

@@ -112,7 +112,7 @@ class EMSLGenerator extends AbstractGenerator {
 			ClasspathUtil.addDependencies(project, List.of("org.eclipse.xtext"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.logging"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.log4j"))
-			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.lang3"))
+			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.lang"))
 			ClasspathUtil.makeSourceFolderIfNecessary(srcFolder)
 			ClasspathUtil.makeSourceFolderIfNecessary(tggFolder)
 
