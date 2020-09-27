@@ -53,7 +53,6 @@ class TGGCompiler {
 	public final static String CREATE_SRC_MODEL_RULE = "createSrcModel"
 	public final static String CREATE_TRG_MODEL_RULE = "createTrgModel"
 
-//	public final static String CREATE_MODELS_RULE = "createModels"
 	new(TripleGrammar tgg, String apiPath, String apiName) {
 		this.tgg = tgg
 		this.apiPath = apiPath

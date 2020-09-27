@@ -35,7 +35,7 @@ abstract class ILPOperation implements Operation {
 	}
 	
 	override String additionalFields(String tggName) {
-		return additionalFields(tggName, "Gurobi")
+		return additionalFields(tggName, "Sat4J")
 	}
 	
 	def String additionalFields(String tggName, String solver)
@@ -44,5 +44,14 @@ abstract class ILPOperation implements Operation {
 	
 	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return Collections.emptyList
+	}
+	
+	override String additionalConstructors(String appName){
+		'''
+			public «appName»(String srcModelName, String trgModelName, SupportedILPSolver solver) {
+				this(srcModelName, trgModelName);
+				this.solver = solver;
+			}
+		'''
 	}
 }

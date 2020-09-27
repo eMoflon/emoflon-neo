@@ -22,6 +22,7 @@ import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,6 +32,7 @@ public abstract class ENeoTest {
 	private static Scanner reader;
 	protected static final Logger logger = Logger.getLogger(ENeoTest.class);
 	protected static NeoCoreBuilder builder;
+	protected static SupportedILPSolver solver = SupportedILPSolver.Sat4J;
 
 	@BeforeAll
 	public static void startDBConnection() throws Exception {

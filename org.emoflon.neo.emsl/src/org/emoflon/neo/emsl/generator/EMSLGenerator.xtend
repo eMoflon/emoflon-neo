@@ -425,9 +425,6 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(GraphGrammar gg, int index) {
 		if(gg.abstract) return ""
 		try {
-			
-//			val ruleMethods = gg.rules.stream.map["getRule_" + namingConvention(it.name) + "().rule()"].collect(
-//				Collectors.toSet)
 			'''
 				public Collection<NeoRule> getAllRulesFor«namingConvention(gg.name)»() {
 					Collection<NeoRule> rules = new HashSet<>();

@@ -45,7 +45,9 @@ class TGGAppGenerator {
 					this.srcModelName = srcModelName;
 					this.trgModelName = trgModelName;
 				}
-			
+				
+				«op.additionalConstructors(appName)»
+				
 				public void run() throws Exception {
 					try (var builder = API_Common.createBuilder()) {
 						«IF op.exportMetamodels»

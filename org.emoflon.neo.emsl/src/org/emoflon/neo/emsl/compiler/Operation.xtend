@@ -95,11 +95,7 @@ interface Operation {
 		// do nothing		
 	}
 	
-//	def boolean isComposed() {
-//		false
-//	}
-	
-//	def Collection<Operation> getSubOps() {
-//		Collections.emptyList
-//	}
+	def String additionalConstructors(String appName) {
+		
+	}
 }

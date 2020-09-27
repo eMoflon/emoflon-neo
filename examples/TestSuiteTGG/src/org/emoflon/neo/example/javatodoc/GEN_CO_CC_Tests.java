@@ -17,8 +17,8 @@ import JavaToDoc.run.JavaToDoc_CO_Run;
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		var testCOApp = new JavaToDoc_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testCCApp = new JavaToDoc_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCOApp = new JavaToDoc_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME, solver);
+		var testCCApp = new JavaToDoc_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME, solver);
 		var testGenApp = new JavaToDoc_GEN_TEST(configurator);
 
 		// Step 1. Run GEN to produce a triple

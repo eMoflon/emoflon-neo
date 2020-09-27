@@ -21,8 +21,8 @@ public class FWD_OPT_CO_Tests extends ENeoTest {
 		var metamodels = builder.collectDependentMetamodels(trgModel);
 		for (Metamodel m : metamodels) 
 			builder.exportEMSLEntityToNeo4j(m);
-		new FacebookToInstagramFASE_FWD_OPT_Run(srcName, trgName).run();
-		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		new FacebookToInstagramFASE_FWD_OPT_Run(srcName, trgName, solver).run();
+		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName, solver).runCheckOnly().isConsistent());
 	}
 
 	@Test

@@ -18,7 +18,7 @@ public class FWD_CO_Tests extends ENeoTest {
 	private void runTest(Model srcModel, String srcName, String trgName) throws Exception {
 		builder.exportEMSLEntityToNeo4j(srcModel);
 		new FacebookToInstagramFASE_FWD_Run(srcName, trgName).run();
-		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName, solver).runCheckOnly().isConsistent());
 	}
 
 	@Test

@@ -17,7 +17,7 @@ public class BWD_CO_Tests extends ENeoTest {
 	private void runTest(Model trgModel, String srcName, String trgName) throws Exception {
 		builder.exportEMSLEntityToNeo4j(trgModel);
 		new CompanyToIT_BWD_Run(srcName, trgName).run();
-		assertTrue(new CompanyToIT_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		assertTrue(new CompanyToIT_CO_Run(srcName, trgName, solver).runCheckOnly().isConsistent());
 	}
 
 	@Test

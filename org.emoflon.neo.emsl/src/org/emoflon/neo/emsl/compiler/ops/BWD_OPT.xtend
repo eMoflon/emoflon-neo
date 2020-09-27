@@ -59,7 +59,7 @@ class BWD_OPT extends ILPOperation {
 	
 	override additionalFields(String tggName, String solver) {
 		'''
-			private static final SupportedILPSolver solver = SupportedILPSolver.«solver»;
+			private static SupportedILPSolver solver = SupportedILPSolver.«solver»;
 			private BackwardTransformationOperationalStrategy backwardTransformation;
 		'''
 	}
@@ -96,8 +96,7 @@ class BWD_OPT extends ILPOperation {
 	}
 	
 	override additionalMethods() {
-				'''
-
+		'''
 			public BackwardTransformationOperationalStrategy runBackwardTransformation() throws Exception {
 				run();
 				return backwardTransformation;
