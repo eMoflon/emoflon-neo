@@ -156,17 +156,15 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	private def getInstallLocation() {
-		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
-		val fileURL = FileLocator.resolve(plugin.getEntry("/")).toString
-		val fileURI = new URI(fileURL.replace(" ", "%20")).normalize
-		val segments = fileURI.path.split("/")
+		val fileURI = getNeoCoreURIInstalled()
+		val segments = fileURI.split("/")
 		val path = segments.take(segments.length - 1)
 		path.join("/") + "/"
 	}
 	
 	private def getNeoCoreURIInstalled(){
 		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
-		val fileURL = FileLocator.resolve(plugin.getEntry("/model/NeoCore.msl")).toString
+		val fileURL = FileLocator.resolve(plugin.getEntry("/")).toString
 		val fileURI = new URI(fileURL.replace(" ", "%20")).normalize
 		return fileURI.path
 	}
