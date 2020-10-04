@@ -498,10 +498,13 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	 * Returns a scope for the target of a RelationStatement in a Model.
 	 */
 	private def handleTargetOfRelationStatementInModel(ModelRelationStatement statement, EReference reference) {
-		return Scopes.scopeFor(filterForCompatibleSuperTypes(
-			new HashSet((statement.eContainer.eContainer as Model).nodeBlocks),
-			statement
-		))
+		val root = getSpec(statement)
+ 		val thisModel = statement.eContainer.eContainer as Model
+ 		val allModels = allTypesInAllImportedSpecs(root, Model)
+ 		val allNodeBlocks = allModels.keySet.flatMap[m|m.nodeBlocks]
+ 		val allNodeBlocksOfRightType = filterForCompatibleSuperTypes(allNodeBlocks, statement)
+ 		val finalOptions = allNodeBlocksOfRightType.toInvertedMap[nb|allModels.get(nb.eContainer)]
+ 		return determineScope(finalOptions, Scopes.scopeFor(thisModel.nodeBlocks))
 	}
 
 	private def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(Iterable<ModelNodeBlock> allNodeBlocks,
