@@ -1,0 +1,540 @@
+import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
+
+model ConsistentSource1{
+	pr: PersonRegister{
+		-persons-> person1
+		-persons-> person2
+		-corr->fr {
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	person1 : Male{
+		.name : "Robert"
+	}
+	
+	person2 : Male{
+		.name : "John"
+	}
+	
+	fr: FamilyRegister{
+		-families->f
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father->fm1
+	}
+	
+	fm1: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	fm2: FamilyMember{
+		.name : "John"
+		-corr->person2{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+}
+
+model ConsistentTarget1{
+	fr: FamilyRegister{
+		-families->f
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-sons-> fm2
+	}
+	
+	fm1: FamilyMember{
+		.name : "Robert"
+	}
+	
+	fm2: FamilyMember{
+		.name : "John"
+	}
+}
+
+rule ConsistentTriple1{
+	pr: PersonRegister{
+		-persons-> person1
+		-persons-> person2
+		-corr->fr {
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	person1 : Male{
+		.name : "Robert"
+	}
+	
+	person2 : Male{
+		.name : "John"
+	}
+	
+	fr: FamilyRegister{
+		-families->f
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father->fm1
+		-sons-> fm2
+	}
+	
+	fm1: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	fm2: FamilyMember{
+		.name : "John"
+		-corr->person2{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+}
+
+rule InConsistentTriple1{
+	pr: PersonRegister{
+		-persons-> person1
+		-corr->fr {
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	person1 : Male{
+		.name : "Robert"
+	}
+	
+	fr: FamilyRegister{
+		-families->f
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father->fm1
+		-sons-> fm2
+	}
+	
+	fm1: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	fm2: FamilyMember{
+		.name : "John"
+	}
+}
+
+rule InConsistentTriple2{
+	pr: PersonRegister{
+		-persons-> person1
+		-persons-> person2
+		-corr->fr {
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	person1 : Male{
+		.name : "Robert"
+	}
+	
+	person2 : Male{
+		.name : "John"
+	}
+	
+	fr: FamilyRegister{
+		-families->f
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father->fm1
+	}
+	
+	fm1: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+}
+
+model ConsistentSource2{
+	fr: FamilyRegister{
+		-families->f
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father-> fm
+		-mother-> fm1
+	}
+	
+	fm: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	fm1: FamilyMember{
+		.name : "Martha"
+		-corr->person2{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister
+	person1: Male
+	person2: Female
+}
+
+model ConsistentTarget2{
+	pr: PersonRegister{
+		-persons->person1
+		-persons->person2
+	}
+	
+	person1: Male{
+		.name : "Robert"
+	}
+	person2: Female{
+		.name : "Martha"
+	}
+}
+
+rule ConsistentTriple2{
+	fr: FamilyRegister{
+		-families->f
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father-> fm
+		-mother-> fm1
+	}
+	
+	fm: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	fm1: FamilyMember{
+		.name : "Martha"
+		-corr->person2{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister{
+		-persons->person1
+		-persons->person2
+	}
+	
+	person1: Male{
+		.name : "Robert"
+	}
+	
+	person2: Female{
+		.name : "Martha"
+	}
+}
+
+rule InConsistentTriple3{
+	fr: FamilyRegister{
+		-families->f
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father-> fm
+		-mother-> fm1
+	}
+	
+	fm: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	fm1: FamilyMember{
+		.name : "Martha"
+	}
+	
+	pr: PersonRegister{
+		-persons->person1
+	}
+	
+	person1: Male{
+		.name : "Robert"
+	}
+}
+
+rule InConsistentTriple4{
+	fr: FamilyRegister{
+		-families->f
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	f: Family{
+		.name : "Edison"
+		-father-> fm
+	}
+	
+	fm: FamilyMember{
+		.name : "Robert"
+		-corr->person1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister{
+		-persons->person1
+		-persons->person2
+	}
+	
+	person1: Male{
+		.name : "Robert"
+	}
+	
+	person2: Female{
+		.name : "Martha"
+	}
+}
+
+model ConsistentSource3{
+	fr: FamilyRegister{
+		-families->fm
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	fm: Family{
+		.name : "Edison"
+		-father->f1
+	}
+	
+	f1: FamilyMember{
+		.name : "Robert"
+		-corr->p{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister
+	p : Male
+}
+
+model ConsistentTarget3{
+	pr: PersonRegister{
+		-persons->p
+	}
+	
+	p: Male{
+		.name : "Robert"		
+	}
+}
+
+rule ConsistentTriple3{
+	fr: FamilyRegister{
+		-families->fm
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	fm: Family{
+		.name : "Edison"
+		-father->f1
+	}
+	
+	f1: FamilyMember{
+		.name : "Robert"
+		-corr->p{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister{
+		-persons->p
+	}
+	
+	p: Male{
+		.name : "Robert"		
+	}
+}
+
+rule InConsistentTriple5{
+	fr: FamilyRegister{
+		-families->fm
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	fm: Family{
+		.name : "Edison"
+		-father->f1
+		-father->f2
+	}
+	
+	f1: FamilyMember{
+		.name : "Robert"
+		-corr->p{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	f2: FamilyMember{
+		.name : "Keith"
+		-corr->p1{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister{
+		-persons->p
+		-persons->p1
+	}
+	
+	p: Male{
+		.name : "Robert"		
+	}
+	
+	p1: Male{
+		.name : "Keith"		
+	}
+}
+
+model ConsistentSource4{
+	fr: FamilyRegister{
+		-families->fm
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	fm: Family{
+		.name : "Edison"
+		-mother->m1
+	}
+	
+	m1: FamilyMember{
+		.name : "Martha"
+		-corr->p{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister
+	p : Female
+}
+
+model ConsistentTarget4{
+	pr: PersonRegister{
+		-persons->p
+	}
+	
+	p: Female{
+		.name : "Martha"		
+	}
+}
+
+rule ConsistentTriple4{
+	fr: FamilyRegister{
+		-families->fm
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	fm: Family{
+		.name : "Edison"
+		-mother->m1
+	}
+	
+	m1: FamilyMember{
+		.name : "Martha"
+		-corr->p{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister{
+		-persons->p
+	}
+	
+	p: Female{
+		.name : "Martha"		
+	}
+}
+
+rule InConsistentTriple6{
+	fr: FamilyRegister{
+		-families->fm
+		-corr->pr{
+			._type_ : "FamiliesToPersons"
+		}
+	}
+	
+	fm: Family{
+		.name : "Edison"
+		-mother->m1
+		-mother->m2
+	}
+	
+	m1: FamilyMember{
+		.name : "Martha"
+		-corr->p{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	m2: FamilyMember{
+		.name : "Vanessa"
+		-corr->p{
+			._type_ : "FamilyMemberToPerson"
+		}
+	}
+	
+	pr: PersonRegister{
+		-persons->p
+		-persons->p1
+	}
+	
+	p: Female{
+		.name : "Martha"		
+	}
+	
+	p1: Female{
+		.name : "Vanessa"		
+	}
+}
+
+

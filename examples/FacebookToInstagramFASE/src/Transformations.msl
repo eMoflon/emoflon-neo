@@ -214,9 +214,6 @@ pattern PremisePattern {
 			
 }
 
-//constraint EnforceFriendhship = enforce ConclusionPattern
-
-//constraint EnforceFollowership =enforce PremisePattern
 constraint EnforceFriendship = if PremisePattern then ConclusionPattern
 //edit-ends
 

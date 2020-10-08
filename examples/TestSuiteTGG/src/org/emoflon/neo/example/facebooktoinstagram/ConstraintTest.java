@@ -18,7 +18,7 @@ public class ConstraintTest extends ENeoTest{
 		exportTriple(api.getModel_ConsistentSorce(), //
 				api.getModel_ConsistentTarget(), //
 				api.getRule_ConsistentTriple().rule());
-		testForConsistency(new FacebookToInstagramGrammar_CO_Run("ConsistentSorce", "ConsistentTarget").runCheckOnly(), 27);
+		testForConsistency(new FacebookToInstagramGrammar_CO_Run("ConsistentSorce", "ConsistentTarget").runCheckOnly(), 28);
 	}
 	
 	@Test
@@ -26,7 +26,7 @@ public class ConstraintTest extends ENeoTest{
 		exportTriple(api.getModel_ConsistentSorce(), //
 				api.getModel_ConsistentTarget());
 		testForConsistency(new FacebookToInstagramGrammar_CC_Run("ConsistentSource", "ConsistentTarget").runCorrCreation(),
-				27);
+				28);
 	}
 	
 	//co for inconsistent triple1
@@ -36,7 +36,7 @@ public class ConstraintTest extends ENeoTest{
 				api.getModel_ConsistentTarget(), //
 				api.getRule_InConsistentTriple1().rule());
 		testForInconsistency(new FacebookToInstagramGrammar_CO_Run("ConsistentSorce", "ConsistentTarget").runCheckOnly(),
-				27, 26);
+				28, 27);
 	}
 			
 	//co for inconsistent triple2
@@ -46,7 +46,7 @@ public class ConstraintTest extends ENeoTest{
 				api.getModel_ConsistentTarget(), //
 				api.getRule_InConsistentTriple2().rule());
 		testForInconsistency(new FacebookToInstagramGrammar_CO_Run("ConsistentSorce", "ConsistentTarget").runCheckOnly(),
-				27, 25);
+				28, 23);
 	}
 	
 	//co for inconsistent triple3
@@ -56,7 +56,7 @@ public class ConstraintTest extends ENeoTest{
 				api.getModel_ConsistentTarget(), //
 				api.getRule_InConsistentTriple3().rule());
 		testForInconsistency(new FacebookToInstagramGrammar_CO_Run("ConsistentSorce", "ConsistentTarget").runCheckOnly(),
-				27, 31);
+				28, 33);
 	}
 	
 }

@@ -1,0 +1,392 @@
+import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+
+model ConsistentSource1{	
+	it : IT {
+		.name : "Faunhofer"
+		-network-> network
+		-corr-> c{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	network : Network {
+		.name : "AnyNetwork"
+		-laptop->l1
+		-laptop->l2
+	}
+	
+	l1 : Laptop{
+		.name : "Laptop1"
+		-corr-> e1{
+			._type_ : "EmployeeToLaptop"
+		}
+	}
+	
+	l2 : Laptop{
+		.name : "Laptop2"
+		-corr-> e2{
+			._type_ : "EmployeeToLaptop"
+		}
+	}
+	
+	c: Company{
+		.name : "Fraunhofer"
+	}
+	
+	e1: Employee{
+		.name : "Mario"
+	}
+	
+	e2: Employee{
+		.name : "Michael"
+	}
+}
+
+model ConsistentTarget1{
+	c: Company{
+		.name : "Fraunhofer"
+		-employee-> e1
+		-employee-> e2
+	}
+	
+	e1: Employee{
+		.name : "Mario"
+	}
+	
+	e2: Employee{
+		.name : "Michael"
+	}
+}
+
+rule ConsistentTriple1{
+	it : IT {
+		.name : "Faunhofer"
+		-network-> network
+		-corr-> c{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	network : Network {
+		.name : "AnyNetwork"
+		-laptop->l1
+		-laptop->l2
+	}
+	
+	l1 : Laptop{
+		.name : "Laptop1"
+		-corr-> e1{
+			._type_ : "EmployeeToLaptop"
+		}
+	}
+	
+	l2 : Laptop{
+		.name : "Laptop2"
+		-corr-> e2{
+			._type_ : "EmployeeToLaptop"
+		}
+	}
+	
+	c: Company{
+		.name : "Fraunhofer"
+		-employee-> e1
+		-employee-> e2
+	}
+	
+	e1: Employee{
+		.name : "Mario"
+	}
+	
+	e2: Employee{
+		.name : "Michael"
+	}
+}
+
+rule InConsistentTriple1{
+	it : IT {
+		.name : "Faunhofer"
+		-network-> network
+		-corr-> c{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	network : Network {
+		.name : "AnyNetwork"
+		-laptop->l1
+	}
+	
+	l1 : Laptop{
+		.name : "Laptop1"
+		-corr-> e1{
+			._type_ : "EmployeeToLaptop"
+		}
+	}
+	
+	c: Company{
+		.name : "Fraunhofer"
+		-employee-> e1
+		-employee-> e2
+	}
+	
+	e1: Employee{
+		.name : "Mario"
+	}
+	
+	e2: Employee{
+		.name : "Michael"
+	}
+}
+
+rule InConsistentTriple2{
+	it : IT {
+		.name : "Faunhofer"
+		-network-> network
+		-corr-> c{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	network : Network {
+		.name : "AnyNetwork"
+		-laptop->l1
+		-laptop->l2
+	}
+	
+	l1 : Laptop{
+		.name : "Laptop1"
+		-corr-> e1{
+			._type_ : "EmployeeToLaptop"
+		}
+	}
+	
+	l2 : Laptop{
+		.name : "Laptop2"
+	}
+	
+	c: Company{
+		.name : "Fraunhofer"
+		-employee-> e1
+	}
+	
+	e1: Employee{
+		.name : "Mario"
+	}
+}
+
+model ConsistentSource2{
+	it: IT{
+		.name : "Fraunhofer"
+		-router->rout
+		-corr->c{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	rout: Router{
+		.name : "Router1"
+		-network->net
+		-corr->ad{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	net: Network{
+		.name : "Network1"
+	}
+	
+	c: Company{
+		.name: "Fraunhofer"
+	}
+	
+	ad: Admin{
+		.name : "Rene"
+	}
+}
+
+model ConsistentTarget2{
+	c: Company{
+		.name: "Fraunhofer"
+		-admin->ad
+	}
+	
+	ad: Admin{
+		.name : "Rene"
+	}
+}
+
+rule ConsistentTriple2{
+	it: IT{
+		.name : "Fraunhofer"
+		-router->rout
+		-corr->c{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	rout: Router{
+		.name : "Router1"
+		-network->net
+		-corr->ad{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	net: Network{
+		.name : "Network1"
+	}
+	
+	c: Company{
+		.name: "Fraunhofer"
+		-admin->ad
+	}
+	
+	ad: Admin{
+		.name : "Rene"
+	}
+}
+
+rule InConsistentTriple3{
+	it: IT{
+		.name : "Fraunhofer"
+		-router->rout
+		-corr->c{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	rout: Router{
+		.name : "Router1"
+		-network->net
+		-network->net1
+		-corr->ad{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	net: Network{
+		.name : "Network1"
+	}
+	
+	net1: Network{
+		.name : "Network2"
+	}
+	
+	c: Company{
+		.name: "Fraunhofer"
+		-admin->ad
+	}
+	
+	ad: Admin{
+		.name : "Rene"
+	}
+}
+
+model ConsistentSource3{
+	c: Company{
+		.name: "Fraunhofer"
+		-admin->ad
+		-corr-> it{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ad: Admin{
+		.name : "Rene"
+		-ceo->ceo
+		-corr->rout{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	ceo: CEO{
+		.name : "Julius"
+	}
+	
+	it: IT{
+		.name: "Fraunhofer"
+	}
+	
+	rout: Router{
+		.name: "Router1"
+	}
+}
+
+model ConsistentTarget3{
+	it: IT{
+		.name: "Fraunhofer"
+		-router->rout
+	}
+	
+	rout: Router{
+		.name: "Router1"
+	}
+}
+
+rule ConsistentTriple3{
+	c: Company{
+		.name: "Fraunhofer"
+		-admin->ad
+		-corr-> it{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ad: Admin{
+		.name : "Rene"
+		-ceo->ceo
+		-corr->rout{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	ceo: CEO{
+		.name : "Julius"
+	}
+	
+	it: IT{
+		.name: "Fraunhofer"
+		-router->rout
+	}
+	
+	rout: Router{
+		.name: "Router1"
+	}
+}
+
+rule InConsistentTriple4{
+	c: Company{
+		.name: "Fraunhofer"
+		-admin->ad
+		-corr-> it{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ad: Admin{
+		.name : "Rene"
+		-ceo->ceo1
+		-ceo->ceo2
+		-corr->rout{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	ceo1: CEO{
+		.name : "Julius"
+	}
+	
+	ceo2: CEO{
+		.name : "kai"
+	}
+	
+	it: IT{
+		.name: "Fraunhofer"
+		-router->rout
+	}
+	
+	rout: Router{
+		.name: "Router1"
+	}
+}
