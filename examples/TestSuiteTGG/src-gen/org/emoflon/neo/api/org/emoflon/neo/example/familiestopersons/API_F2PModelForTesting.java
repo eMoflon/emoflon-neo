@@ -2019,7 +2019,7 @@ public class API_F2PModelForTesting {
 	public class InConsistentTriple4Access extends NeoRuleCoAccess<InConsistentTriple4Data, InConsistentTriple4CoData, InConsistentTriple4Mask> {
 		public final String _fr = "fr";
 		public final String _f = "f";
-		public final String _fm1 = "fm1";
+		public final String _fm = "fm";
 		public final String _pr = "pr";
 		public final String _person1 = "person1";
 		public final String _person2 = "person2";
@@ -2053,9 +2053,9 @@ public class API_F2PModelForTesting {
 		public final Fr_families_0_fRel _fr_families_0_f;
 		public final Fr_corr_1_prRel _fr_corr_1_pr;
 		public final FNode _f;
-		public final F_mother_0_fm1Rel _f_mother_0_fm1;
-		public final Fm1Node _fm1;
-		public final Fm1_corr_0_person2Rel _fm1_corr_0_person2;
+		public final F_father_0_fmRel _f_father_0_fm;
+		public final FmNode _fm;
+		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
 		public final PrNode _pr;
 		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
 		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
@@ -2071,12 +2071,12 @@ public class API_F2PModelForTesting {
 			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
 			var _f = data.get("f");
 			this._f = new FNode(_f);
-			var _f_mother_0_fm1 = data.get("f_mother_0_fm1");
-			this._f_mother_0_fm1 = new F_mother_0_fm1Rel(_f_mother_0_fm1);
-			var _fm1 = data.get("fm1");
-			this._fm1 = new Fm1Node(_fm1);
-			var _fm1_corr_0_person2 = data.get("fm1_corr_0_person2");
-			this._fm1_corr_0_person2 = new Fm1_corr_0_person2Rel(_fm1_corr_0_person2);
+			var _f_father_0_fm = data.get("f_father_0_fm");
+			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
+			var _fm = data.get("fm");
+			this._fm = new FmNode(_fm);
+			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
+			this._fm_corr_0_person1 = new Fm_corr_0_person1Rel(_fm_corr_0_person1);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
 			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
@@ -2118,26 +2118,26 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class F_mother_0_fm1Rel {
+		public class F_father_0_fmRel {
 		
-			public F_mother_0_fm1Rel(Value _f_mother_0_fm1) {
+			public F_father_0_fmRel(Value _f_father_0_fm) {
 			}
 		}
-		public class Fm1Node {
+		public class FmNode {
 			public String _name;
 			
-			public Fm1Node(Value _fm1) {
-				if(!_fm1.get("name").isNull())
-					this._name = _fm1.get("name").asString();
+			public FmNode(Value _fm) {
+				if(!_fm.get("name").isNull())
+					this._name = _fm.get("name").asString();
 			}
 		}
 		
-		public class Fm1_corr_0_person2Rel {
+		public class Fm_corr_0_person1Rel {
 			public String __type_;
 		
-			public Fm1_corr_0_person2Rel(Value _fm1_corr_0_person2) {
-				if(!_fm1_corr_0_person2.get("_type_").isNull())
-					this.__type_ = _fm1_corr_0_person2.get("_type_").asString();
+			public Fm_corr_0_person1Rel(Value _fm_corr_0_person1) {
+				if(!_fm_corr_0_person1.get("_type_").isNull())
+					this.__type_ = _fm_corr_0_person1.get("_type_").asString();
 			}
 		}
 		public class PrNode {
@@ -2187,9 +2187,9 @@ public class API_F2PModelForTesting {
 		public final Fr_families_0_fRel _fr_families_0_f;
 		public final Fr_corr_1_prRel _fr_corr_1_pr;
 		public final FNode _f;
-		public final F_mother_0_fm1Rel _f_mother_0_fm1;
-		public final Fm1Node _fm1;
-		public final Fm1_corr_0_person2Rel _fm1_corr_0_person2;
+		public final F_father_0_fmRel _f_father_0_fm;
+		public final FmNode _fm;
+		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
 		public final PrNode _pr;
 		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
 		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
@@ -2205,12 +2205,12 @@ public class API_F2PModelForTesting {
 			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
 			var _f = data.get("f");
 			this._f = new FNode(_f);
-			var _f_mother_0_fm1 = data.get("f_mother_0_fm1");
-			this._f_mother_0_fm1 = new F_mother_0_fm1Rel(_f_mother_0_fm1);
-			var _fm1 = data.get("fm1");
-			this._fm1 = new Fm1Node(_fm1);
-			var _fm1_corr_0_person2 = data.get("fm1_corr_0_person2");
-			this._fm1_corr_0_person2 = new Fm1_corr_0_person2Rel(_fm1_corr_0_person2);
+			var _f_father_0_fm = data.get("f_father_0_fm");
+			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
+			var _fm = data.get("fm");
+			this._fm = new FmNode(_fm);
+			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
+			this._fm_corr_0_person1 = new Fm_corr_0_person1Rel(_fm_corr_0_person1);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
 			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
@@ -2252,26 +2252,26 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class F_mother_0_fm1Rel {
+		public class F_father_0_fmRel {
 		
-			public F_mother_0_fm1Rel(Value _f_mother_0_fm1) {
+			public F_father_0_fmRel(Value _f_father_0_fm) {
 			}
 		}
-		public class Fm1Node {
+		public class FmNode {
 			public String _name;
 			
-			public Fm1Node(Value _fm1) {
-				if(!_fm1.get("name").isNull())
-					this._name = _fm1.get("name").asString();
+			public FmNode(Value _fm) {
+				if(!_fm.get("name").isNull())
+					this._name = _fm.get("name").asString();
 			}
 		}
 		
-		public class Fm1_corr_0_person2Rel {
+		public class Fm_corr_0_person1Rel {
 			public String __type_;
 		
-			public Fm1_corr_0_person2Rel(Value _fm1_corr_0_person2) {
-				if(!_fm1_corr_0_person2.get("_type_").isNull())
-					this.__type_ = _fm1_corr_0_person2.get("_type_").asString();
+			public Fm_corr_0_person1Rel(Value _fm_corr_0_person1) {
+				if(!_fm_corr_0_person1.get("_type_").isNull())
+					this.__type_ = _fm_corr_0_person1.get("_type_").asString();
 			}
 		}
 		public class PrNode {
@@ -2333,16 +2333,16 @@ public class API_F2PModelForTesting {
 			attributeMask.put("f.name", value);
 			return this;
 		}
-		public InConsistentTriple4Mask setFm1(Long value) {
-			nodeMask.put("fm1", value);
+		public InConsistentTriple4Mask setFm(Long value) {
+			nodeMask.put("fm", value);
 			return this;
 		}
-		public InConsistentTriple4Mask setFm1Name(String value) {
-			attributeMask.put("fm1.name", value);
+		public InConsistentTriple4Mask setFmName(String value) {
+			attributeMask.put("fm.name", value);
 			return this;
 		}
-		public InConsistentTriple4Mask setFm1_corr_0_person2_type_(String value) {
-			attributeMask.put("fm1_corr_0_person2._type_", value);
+		public InConsistentTriple4Mask setFm_corr_0_person1_type_(String value) {
+			attributeMask.put("fm_corr_0_person1._type_", value);
 			return this;
 		}
 		public InConsistentTriple4Mask setPr(Long value) {

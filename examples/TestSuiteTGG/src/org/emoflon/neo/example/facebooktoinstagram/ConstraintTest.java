@@ -25,7 +25,7 @@ public class ConstraintTest extends ENeoTest{
 	public void testConsistentTriple_CC() throws Exception {
 		exportTriple(api.getModel_ConsistentSorce(), //
 				api.getModel_ConsistentTarget());
-		testForConsistency(new FacebookToInstagramGrammar_CC_Run("ConsistentSource", "ConsistentTarget").runCorrCreation(),
+		testForConsistency(new FacebookToInstagramGrammar_CC_Run("ConsistentSorce", "ConsistentTarget").runCorrCreation(),
 				28);
 	}
 	

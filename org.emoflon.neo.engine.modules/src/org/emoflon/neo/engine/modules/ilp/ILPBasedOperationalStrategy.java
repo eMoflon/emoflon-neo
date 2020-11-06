@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.cypher.constraints.NeoNegativeConstraint;
+import org.emoflon.neo.cypher.constraints.NeoPositiveConstraint;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
@@ -49,6 +50,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> opRules;
 	protected Collection<NeoNegativeConstraint> negativeConstraints;
+	protected Collection<NeoPositiveConstraint> positiveCollection;
+	protected Collection<NeoPositiveConstraint> conclusionCollection;
 
 	protected String sourceModel;
 	protected String targetModel;
@@ -293,10 +296,72 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			}
 		});
 	}
-	
-	//Positive constraint - edit Surbhi
+
+	// Positive constraint - edit Surbhi
 	protected void handlePositiveConstraints() {
+		long tic = System.currentTimeMillis();
+		logger.info("Checking for positive constraint...");
+		var premise = positiveCollection.stream().flatMap(pr -> pr.getPremise().stream());
+		var conclusion = positiveCollection.stream().flatMap(pr -> pr.getConclusion().stream());
+		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
+		premise.forEach(p-> {
+			var elements = extractNodeIDs(p.getPattern().getContextNodeLabels(), p);
+			elements.addAll(extractRelIDs(p.getPattern().getContextRelLabels(), p));
+
+			var auxVariablesP = new ArrayList<String>();
+			var elementsThatCanNeverBeMarked = new ArrayList<Long>();
+			
+			elements.forEach(elt -> {
+				var creatingMatches = elementToCreatingMatches.getOrDefault(elt, Collections.emptySet());
+
+				if (!creatingMatches.isEmpty()) {
+					var auxVarForEltP = "aux" + auxVariableCounter++;
+					auxVariablesP.add(auxVarForEltP);
+
+					//!aux2=>!d2
+					ilpProblem.addNegativeImplication(Stream.of(auxVarForEltP),
+							creatingMatches.stream().map(this::varNameFor),
+							registerConstraint("AUX_" + p.getPattern().getName() + "_" + elt));
+					
+					//--------------------------------------------
+					
+					//------------------------------------------------
+				} else {
+					elementsThatCanNeverBeMarked.add(elt);
+				}
+			});
+		});
 		
+		conclusion.forEach(c-> {
+			var elements1 = extractNodeIDs(c.getPattern().getContextNodeLabels(), c);
+			elements1.addAll(extractRelIDs(c.getPattern().getContextRelLabels(), c));
+
+			var auxVariablesC = new ArrayList<String>();
+			var elementsThatCanNeverBeMarkedCC = new ArrayList<Long>();
+			
+			elements1.forEach(elt1 -> {
+				var creatingMatches1 = elementToCreatingMatches.getOrDefault(elt1, Collections.emptySet());
+
+				if (!creatingMatches1.isEmpty()) {
+					var auxVarForEltC = "aux" + auxVariableCounter++;
+					auxVariablesC.add(auxVarForEltC);
+
+					//negative because !aux2=>!c10 and which is same as c10=>aux2
+					ilpProblem.addNegativeImplication(
+							Stream.of(auxVarForEltC),
+							creatingMatches1.stream().map(this::varNameFor),
+							registerConstraint("AUX_" + c.getPattern().getName() + "_" + elt1));
+				} else {
+					elementsThatCanNeverBeMarkedCC.add(elt1);
+				}
+			});
+		});
+		
+//		ilpProblem.addImplication(
+//				Stream.of(auxVarForEltP),
+//				Stream.of(auxVarForEltC),
+//				registerConstraint("AUX_" + c.getPattern().getName() + "_" + elt1 + "AUX_" + p.getPattern().getName() + "_" + elt));
+
 	}
 
 	public Collection<Long> determineConsistentElements() throws Exception {
