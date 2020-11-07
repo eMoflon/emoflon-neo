@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_JavaToDocSLE;
-import org.emoflon.neo.api.JavaToDocSLE.API_JavaToDocSLE_FWD;
+import org.emoflon.neo.api.javatodocsle.API_Common;
+import org.emoflon.neo.api.javatodocsle.API_JavaToDocSLE;
+import org.emoflon.neo.api.javatodocsle.tgg.API_JavaToDocSLE_FWD;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.RemoveTranslateAttributes;

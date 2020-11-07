@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SheRememberedCaterpillars
 Bundle-SymbolicName: SheRememberedCaterpillars
 Bundle-Version: 1.0.0.qualifier
-Export-Package: .,
- org.emoflon.neo.api
+Export-Package: .
 Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.eclipse.xtext,
  org.apache.commons.logging,

@@ -13,7 +13,6 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter,
  org.emoflon.neo.engine.modules,
  org.apache.commons.lang
 Automatic-Module-Name: GameOfLife
-Export-Package: org.emoflon.neo.api,
- org.emoflon.neo.api.spec,
+Export-Package: 
  spec,
  ui

@@ -4,12 +4,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Facebook;
-import org.emoflon.neo.api.API_Instagram;
-import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_BWD;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_FWD;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.api.facebooktoinstagram.API_Facebook;
+import org.emoflon.neo.api.facebooktoinstagram.API_Instagram;
+import org.emoflon.neo.api.facebooktoinstagram.API_Transformations;
+import org.emoflon.neo.api.facebooktoinstagram.run.FacebookToInstagramGrammar_BWD_Run;
+import org.emoflon.neo.api.facebooktoinstagram.run.FacebookToInstagramGrammar_FWD_Run;
+import org.emoflon.neo.api.facebooktoinstagram.run.FacebookToInstagramGrammar_GEN_Run;
+import org.emoflon.neo.api.facebooktoinstagram.tgg.API_FacebookToInstagramGrammar_BWD;
+import org.emoflon.neo.api.facebooktoinstagram.tgg.API_FacebookToInstagramGrammar_FWD;
+import org.emoflon.neo.api.facebooktoinstagram.tgg.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
@@ -29,9 +32,6 @@ import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
-import Transformations.run.FacebookToInstagramGrammar_BWD_Run;
-import Transformations.run.FacebookToInstagramGrammar_FWD_Run;
-import Transformations.run.FacebookToInstagramGrammar_GEN_Run;
 
 public class Benchmark {
 	private static final Logger logger = Logger.getLogger(Benchmark.class);

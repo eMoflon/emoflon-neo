@@ -5,12 +5,12 @@ import java.util.Collection
 import java.util.Collections
 import java.util.Map
 import org.emoflon.neo.emsl.compiler.ops.BWD
-import org.emoflon.neo.emsl.compiler.ops.BWD_OPT
-import org.emoflon.neo.emsl.compiler.ops.CC
-import org.emoflon.neo.emsl.compiler.ops.CO
+import org.emoflon.neo.emsl.compiler.ops.ilp.BWD_OPT
+import org.emoflon.neo.emsl.compiler.ops.ilp.CC
+import org.emoflon.neo.emsl.compiler.ops.ilp.CO
 import org.emoflon.neo.emsl.compiler.ops.FWD
-import org.emoflon.neo.emsl.compiler.ops.FWD_OPT
-import org.emoflon.neo.emsl.compiler.ops.MI
+import org.emoflon.neo.emsl.compiler.ops.ilp.FWD_OPT
+import org.emoflon.neo.emsl.compiler.ops.ilp.MI
 import org.emoflon.neo.emsl.compiler.ops.MODELGEN
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ConditionOperator

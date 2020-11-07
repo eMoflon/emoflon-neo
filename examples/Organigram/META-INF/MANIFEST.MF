@@ -11,7 +11,5 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.emoflon.neo.engine.modules,
  org.apache.commons.lang
 Automatic-Module-Name: Organigram
-Export-Package: .,
- org.emoflon.neo.api
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13

@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_BWD;
-import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_FWD;
-import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_GEN;
-import org.emoflon.neo.api.metamodels.API_SimpleJava;
+import org.emoflon.neo.api.javatodoc.metamodels.API_SimpleJava;
+import org.emoflon.neo.api.javatodoc.tgg.API_JavaToDoc_BWD;
+import org.emoflon.neo.api.javatodoc.tgg.API_JavaToDoc_FWD;
+import org.emoflon.neo.api.javatodoc.tgg.API_JavaToDoc_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
@@ -26,10 +26,9 @@ import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-
-import JavaToDoc.run.JavaToDoc_BWD_Run;
-import JavaToDoc.run.JavaToDoc_FWD_Run;
-import JavaToDoc.run.JavaToDoc_GEN_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_GEN_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_FWD_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_BWD_Run;
 
 public class Benchmark {
 	private static final Logger logger = Logger.getLogger(Benchmark.class);

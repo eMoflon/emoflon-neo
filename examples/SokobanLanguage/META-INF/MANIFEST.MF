@@ -31,12 +31,9 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
 Automatic-Module-Name: SokobanLanguage
 Export-Package: metamodels,
  models,
- org.emoflon.neo.api,
- org.emoflon.neo.api.metamodels,
- org.emoflon.neo.api.models,
- org.emoflon.neo.api.rules,
- org.emoflon.neo.api.rules.SokobanTGGs,
- rules,
- rules.SokobanTGGs
+ org.emoflon.neo.api.sokobanlanguage.metamodels,
+ org.emoflon.neo.api.sokobanlanguage.models,
+ org.emoflon.neo.api.sokobanlanguage.rules,
+ rules
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13

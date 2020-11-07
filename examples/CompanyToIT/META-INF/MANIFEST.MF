@@ -32,15 +32,9 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  CompanyToIT,
  CompanyToIT,
  org.apache.commons.lang
-Export-Package: CompanyToIT,
- CompanyToIT.run,
+Export-Package: 
  metamodels,
- models,
- org.emoflon.neo.api,
- org.emoflon.neo.api.CompanyToIT,
- org.emoflon.neo.api.metamodels,
- org.emoflon.neo.api.models,
- run
+ models
 Automatic-Module-Name: CompanyToIT
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13

@@ -1,8 +1,7 @@
-package org.emoflon.neo.emsl.compiler.ops
+package org.emoflon.neo.emsl.compiler.ops.ilp
 
 import java.util.Collection
 import java.util.Map
-import org.emoflon.neo.emsl.compiler.ILPOperation
 import org.emoflon.neo.emsl.compiler.ParameterData
 import org.emoflon.neo.emsl.compiler.TGGCompilerUtils.ParameterDomain
 import org.emoflon.neo.emsl.eMSL.Action
@@ -32,29 +31,6 @@ class BWD_OPT extends ILPOperation {
 	
 	override selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) {
 		paramGroup.findFirst[param | paramsToData.get(param).domain.equals(ParameterDomain.TRG)]
-	}
-	
-	override additionalImports(String tggName, String packagePath) {
-		'''
-			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;
-			import static «packagePath».run.«tggName»_GEN_Run.TRG_MODEL_NAME;
-			
-			import java.util.Collection;
-			import java.util.Collections;
-			import java.util.List;
-			import org.emoflon.neo.engine.api.constraints.IConstraint;
-			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
-			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-			import org.emoflon.neo.engine.modules.matchreprocessors.BWD_OPTReprocessor;
-			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
-			import org.emoflon.neo.engine.modules.ruleschedulers.BWD_OPTRuleScheduler;
-			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
-			import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-			import org.emoflon.neo.engine.modules.updatepolicies.BackwardTransformationOperationalStrategy;
-			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
-			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-			import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
-		'''
 	}
 	
 	override additionalFields(String tggName, String solver) {
@@ -110,5 +86,14 @@ class BWD_OPT extends ILPOperation {
 	
 	override exportMetamodels() {
 		false
+	}
+	
+	override additionalImports(String tggName, String packagePath) {
+		'''
+			«super.additionalImports(tggName, packagePath)»
+			import org.emoflon.neo.engine.modules.updatepolicies.BackwardTransformationOperationalStrategy;
+			import org.emoflon.neo.engine.modules.ruleschedulers.BWD_OPTRuleScheduler;
+			import org.emoflon.neo.engine.modules.matchreprocessors.BWD_OPTReprocessor;
+		'''
 	}
 }

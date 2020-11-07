@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SokobanGUI
 Bundle-SymbolicName: SokobanGUI
 Bundle-Version: 1.0.0.qualifier
-Export-Package: org.emoflon.neo.api,
- org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns,
+Export-Package: 
  org.moflon.tutorial.sokobangamegui.controller,
  org.moflon.tutorial.sokobangamegui.patterns,
  org.moflon.tutorial.sokobangamegui.view,

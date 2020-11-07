@@ -39,6 +39,7 @@ import org.emoflon.neo.neocore.util.PreProcessorUtil
 
 class TGGCompiler {
 	final String BASE_FOLDER = EMSLGenerator.TGG_GEN_FOLDER + "/";
+	final String apiRoot
 	final String apiPath
 	final String apiName
 	TripleGrammar tgg
@@ -53,10 +54,11 @@ class TGGCompiler {
 	public final static String CREATE_SRC_MODEL_RULE = "createSrcModel"
 	public final static String CREATE_TRG_MODEL_RULE = "createTrgModel"
 
-	new(TripleGrammar tgg, String apiPath, String apiName) {
+	new(TripleGrammar tgg, String apiRoot, String apiPath, String apiName) {
 		this.tgg = tgg
-		this.apiPath = apiPath
 		this.apiName = apiName
+		this.apiPath = apiPath
+		this.apiRoot = apiRoot
 
 		val allMetamodels = new ArrayList
 		allMetamodels.addAll(tgg.srcMetamodels)
@@ -78,9 +80,11 @@ class TGGCompiler {
 	def compileAll(IFileSystemAccess2 fsa) {
 		val appGenerator = new TGGAppGenerator(tgg)
 		var generatedFiles = new ArrayList<String>
-		val pathToGeneratedFiles = '''«apiPath»/«apiName»'''
+		var pathToGeneratedFiles = '''«apiRoot»'''
+		if(!apiPath.empty) pathToGeneratedFiles += "/" + apiPath
 		for (Operation operation : Operation.allOps) {
-			val ruleFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/«tgg.name»«operation.nameExtension».msl'''
+			val prefix = apiPath.empty? "tgg/" : apiPath + "/tgg/"
+			val ruleFileLocation = '''«BASE_FOLDER»«prefix»«tgg.name»«operation.nameExtension».msl'''
 			// Important:  the actual file location must be without a "../"!
 			fsa.generateFile("../" + ruleFileLocation, compile(operation))
 			generatedFiles.add(ruleFileLocation)
@@ -88,9 +92,9 @@ class TGGCompiler {
 			val appName = '''«tgg.name»«operation.nameExtension»_Run'''
 			val appFileLocation = '''«BASE_FOLDER»«pathToGeneratedFiles»/run/«appName».java'''
 			fsa.deleteFile("../" + appFileLocation);
-			var packagePath = apiPath.replace('/', '.')
+			var packagePath = pathToGeneratedFiles.replace('/', '.')
 			if(packagePath.startsWith('.')) packagePath = packagePath.substring(1)
-			fsa.generateFile("../" + appFileLocation, appGenerator.generateApp(operation, packagePath, apiName))
+			fsa.generateFile("../" + appFileLocation, appGenerator.generateApp(operation, packagePath, apiName, apiRoot.replace("/", ".")))
 			generatedFiles.add(appFileLocation)
 		}
 
@@ -98,7 +102,6 @@ class TGGCompiler {
 	}
 
 	private def String compile(Operation op) {
-
 		'''
 			«importStatements»
 			
