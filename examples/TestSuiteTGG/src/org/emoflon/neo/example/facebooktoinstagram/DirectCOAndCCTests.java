@@ -1,12 +1,10 @@
 package org.emoflon.neo.example.facebooktoinstagram;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramFASE_CC_Run;
-import Transformations.run.FacebookToInstagramFASE_CO_Run;
 
 public class DirectCOAndCCTests extends ENeoTest {
 

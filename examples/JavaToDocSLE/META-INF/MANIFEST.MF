@@ -33,6 +33,7 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
 Export-Package: 
  metamodels,
  models,
+ org.emoflon.neo.api.javatodocsle,
  run
 Automatic-Module-Name: JavaToDocSLE
 Bundle-ActivationPolicy: lazy

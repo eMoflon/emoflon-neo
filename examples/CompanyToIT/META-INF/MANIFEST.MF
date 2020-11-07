@@ -34,7 +34,9 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.apache.commons.lang
 Export-Package: 
  metamodels,
- models
+ models,
+ org.emoflon.neo.api.companytoit,
+ org.emoflon.neo.api.companytoit.tgg
 Automatic-Module-Name: CompanyToIT
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13

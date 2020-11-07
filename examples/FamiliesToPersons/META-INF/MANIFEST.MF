@@ -12,3 +12,6 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter,
  org.apache.commons.logging;bundle-version="1.2.0",
  org.apache.commons.lang
 Automatic-Module-Name: FamiliesToPersons
+Export-Package: org.emoflon.neo.api.familiestopersons,
+ org.emoflon.neo.api.familiestopersons.run,
+ org.emoflon.neo.api.familiestopersons.tgg

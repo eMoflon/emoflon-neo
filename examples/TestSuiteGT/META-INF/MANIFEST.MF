@@ -45,6 +45,7 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  org.apache.commons.lang
 Automatic-Module-Name: TestSuite
 Export-Package: 
+ org.emoflon.neo.api.testsuitegt,
  org.emoflon.neo.example,
  org.emoflon.neo.example.chess,
  org.emoflon.neo.example.fruitgarden,
