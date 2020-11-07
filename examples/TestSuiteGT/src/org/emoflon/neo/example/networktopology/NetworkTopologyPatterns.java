@@ -1,6 +1,6 @@
 package org.emoflon.neo.example.networktopology;
 
-import org.emoflon.neo.api.API_NetworkTopology;
+import org.emoflon.neo.api.networktopology.API_NetworkTopology;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
