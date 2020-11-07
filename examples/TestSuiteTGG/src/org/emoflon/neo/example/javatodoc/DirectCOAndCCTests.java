@@ -1,11 +1,10 @@
 package org.emoflon.neo.example.javatodoc;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.javatodoc.API_JavaToDocTriplesForTesting;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CC_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.API_JavaToDocTriplesForTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
-
-import JavaToDoc.run.JavaToDoc_CC_Run;
-import JavaToDoc.run.JavaToDoc_CO_Run;
 
 public class DirectCOAndCCTests extends ENeoTest {
 

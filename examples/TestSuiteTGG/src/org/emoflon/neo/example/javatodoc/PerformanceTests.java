@@ -8,13 +8,13 @@ import java.util.function.Consumer;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_JavaToDoc;
-import org.emoflon.neo.api.org.emoflon.neo.example.javatodoc.mi.in.API_ConflictGenerator;
+import org.emoflon.neo.api.javatodoc.API_JavaToDoc;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_MI_Run;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.mi.in.API_ConflictGenerator;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import JavaToDoc.run.JavaToDoc_CO_Run;
-import JavaToDoc.run.JavaToDoc_MI_Run;
 
 public class PerformanceTests extends ENeoTest {
 

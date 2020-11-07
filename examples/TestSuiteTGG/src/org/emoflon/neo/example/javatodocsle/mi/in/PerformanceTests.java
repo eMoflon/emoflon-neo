@@ -13,7 +13,7 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
 
-import run.JavaToDocSLE_MI_Run;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_MI_Run;
 
 public class PerformanceTests extends ENeoTest {
 

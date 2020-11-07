@@ -6,13 +6,12 @@ import static run.JavaToDoc_GEN_Run.TRG_MODEL_NAME;
 
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.API_JavaToDoc;
+import org.emoflon.neo.api.javatodoc.API_JavaToDoc;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CC_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
-
-import JavaToDoc.run.JavaToDoc_CC_Run;
-import JavaToDoc.run.JavaToDoc_CO_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 

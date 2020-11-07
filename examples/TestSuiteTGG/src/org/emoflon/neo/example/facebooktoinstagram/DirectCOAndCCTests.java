@@ -1,5 +1,7 @@
 package org.emoflon.neo.example.facebooktoinstagram;
 
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CC_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CO_Run;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;

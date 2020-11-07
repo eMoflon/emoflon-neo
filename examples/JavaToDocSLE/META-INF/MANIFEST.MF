@@ -34,6 +34,8 @@ Export-Package:
  metamodels,
  models,
  org.emoflon.neo.api.javatodocsle,
+ org.emoflon.neo.api.javatodocsle.run,
+ org.emoflon.neo.api.javatodocsle.tgg,
  run
 Automatic-Module-Name: JavaToDocSLE
 Bundle-ActivationPolicy: lazy

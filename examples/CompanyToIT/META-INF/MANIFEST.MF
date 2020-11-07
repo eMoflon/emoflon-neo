@@ -36,7 +36,9 @@ Export-Package:
  metamodels,
  models,
  org.emoflon.neo.api.companytoit,
- org.emoflon.neo.api.companytoit.tgg
+ org.emoflon.neo.api.companytoit.run,
+ org.emoflon.neo.api.companytoit.tgg,
+ run
 Automatic-Module-Name: CompanyToIT
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13

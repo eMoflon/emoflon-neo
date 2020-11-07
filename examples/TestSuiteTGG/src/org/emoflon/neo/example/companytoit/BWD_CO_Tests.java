@@ -7,6 +7,9 @@ import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_BWD_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
+
 public class BWD_CO_Tests extends ENeoTest {
 
 	private API_CompanyToITTriplesForTesting api = new API_CompanyToITTriplesForTesting(builder);

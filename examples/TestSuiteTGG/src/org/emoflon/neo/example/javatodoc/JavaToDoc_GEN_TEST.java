@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_GEN;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_GEN_Run;
+import org.emoflon.neo.api.javatodoc.tgg.API_JavaToDoc_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -18,8 +19,6 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.engine.modules.updatepolicies.AllMatchesUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.RandomUUIDGenerator;
-
-import JavaToDoc.run.JavaToDoc_GEN_Run;
 
 
 class JavaToDoc_GEN_TEST extends JavaToDoc_GEN_Run {

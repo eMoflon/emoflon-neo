@@ -2,6 +2,8 @@ package org.emoflon.neo.example.companytoit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_BWD_OPT_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;

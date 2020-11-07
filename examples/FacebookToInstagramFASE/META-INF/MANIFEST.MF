@@ -12,3 +12,6 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.log4j,
  org.apache.commons.lang
 Bundle-ActivationPolicy: lazy
+Export-Package: org.emoflon.neo.api.facebooktoinstagramfase,
+ org.emoflon.neo.api.facebooktoinstagramfase.run,
+ org.emoflon.neo.api.facebooktoinstagramfase.tgg

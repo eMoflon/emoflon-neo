@@ -1,12 +1,10 @@
 package org.emoflon.neo.example.javatodoc;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.javatodoc.mi.in.API_DCC;
-
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_MI_Run;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.mi.in.API_DCC;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
-
-import JavaToDoc.run.JavaToDoc_CO_Run;
-import JavaToDoc.run.JavaToDoc_MI_Run;
 
 public class DirectMITests extends ENeoTest {
 

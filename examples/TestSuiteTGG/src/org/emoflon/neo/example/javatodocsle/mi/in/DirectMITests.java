@@ -4,6 +4,9 @@ import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodocsle.mi.
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_MI_Run;
+
 
 public class DirectMITests extends ENeoTest {
 

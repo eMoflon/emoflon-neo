@@ -9,6 +9,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.emoflon.neo.api.companytoit.API_CompanyToIT;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CC_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_GEN_Run;
 import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;

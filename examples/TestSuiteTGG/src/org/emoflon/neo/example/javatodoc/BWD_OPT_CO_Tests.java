@@ -2,14 +2,13 @@ package org.emoflon.neo.example.javatodoc;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.javatodoc.API_JavaToDocTriplesForTesting;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_BWD_OPT_Run;
+import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.API_JavaToDocTriplesForTesting;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
-
-import JavaToDoc.run.JavaToDoc_BWD_OPT_Run;
-import JavaToDoc.run.JavaToDoc_CO_Run;
 
 public class BWD_OPT_CO_Tests extends ENeoTest {
 
