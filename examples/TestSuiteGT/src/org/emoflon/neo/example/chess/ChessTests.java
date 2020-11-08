@@ -31,7 +31,6 @@ class ChessTests extends ENeoTest {
 	}
 	
 	@Test
-	@Disabled
 	void test_CaroKannDefense() {
 		initDB(models.getModel_CaroKannDefense());
 		expectSingleMatch(patterns.getPattern_CaroKannDefense());

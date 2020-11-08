@@ -29,9 +29,9 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.apache.commons.lang,
  JavaToDocSLE,
  JavaToDocSLE,
- org.apache.commons.lang
-Export-Package: 
- metamodels,
+ org.apache.commons.lang,
+ org.emoflon.neo.neocore
+Export-Package: metamodels,
  models,
  org.emoflon.neo.api.javatodocsle,
  org.emoflon.neo.api.javatodocsle.run,

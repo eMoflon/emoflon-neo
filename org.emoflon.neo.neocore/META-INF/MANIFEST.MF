@@ -13,6 +13,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang
 Automatic-Module-Name: org.emoflon.neo.neocore
 Bundle-ActivationPolicy: lazy
-Export-Package: org.emoflon.neo.api,
+Export-Package: 
  org.emoflon.neo.neocore
 Bundle-RequiredExecutionEnvironment: JavaSE-13

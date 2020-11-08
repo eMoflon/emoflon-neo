@@ -27,7 +27,8 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.engine;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.neo.emf;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.neo.engine.modules;bundle-version="1.0.0",
- org.apache.commons.lang
+ org.apache.commons.lang,
+ org.emoflon.neo.neocore
 Automatic-Module-Name: SokobanLanguage
 Export-Package: metamodels,
  models,

@@ -1,19 +1,19 @@
 package org.emoflon.neo.example.javatodocsle.mi.in;
 
-import static run.JavaToDocSLE_GEN_Run.SRC_MODEL_NAME;
-import static run.JavaToDocSLE_GEN_Run.TRG_MODEL_NAME;
+
+import static org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_GEN_Run.TRG_MODEL_NAME;
 
 import java.util.function.Consumer;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.javatodocsle.API_JavaToDocSLE;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_MI_Run;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodocsle.mi.in.API_ConflictGenerator;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-
-import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_MI_Run;
 
 public class PerformanceTests extends ENeoTest {
 

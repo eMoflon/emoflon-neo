@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: TestSuite
 Bundle-SymbolicName: TestSuiteGT
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
- org.eclipse.emf.common;bundle-version="2.15.0",
+Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.eclipse.xtext;bundle-version="2.16.0",
  org.emoflon.neo.emsl;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
@@ -27,6 +26,7 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  org.apiguardian,
  org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.emf;bundle-version="1.0.0",
+ SokobanLanguage;bundle-version="1.0.0",
  SheRememberedCaterpillars;bundle-version="1.0.0",
  PacMan;bundle-version="1.0.0",
  Organigram;bundle-version="1.0.0",
@@ -37,15 +37,14 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  RiverCrossing;bundle-version="1.0.0",
  Chess,
  org.eclipse.core.resources;bundle-version="3.13.400",
- org.apache.commons.lang,
  FamiliesToPersons;bundle-version="0.0.1",
  JavaToDoc,
  FacebookToInstagram-FASE;bundle-version="1.0.0",
  CompanyToIT,
+ org.emoflon.neo.neocore,
  org.apache.commons.lang
 Automatic-Module-Name: TestSuite
-Export-Package: 
- org.emoflon.neo.api.testsuitegt,
+Export-Package: org.emoflon.neo.api.testsuitegt,
  org.emoflon.neo.example,
  org.emoflon.neo.example.chess,
  org.emoflon.neo.example.fruitgarden,

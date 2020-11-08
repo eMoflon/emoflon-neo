@@ -8,8 +8,6 @@ import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.facebooktoinstag
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class FWD_OPT_CO_Tests extends ENeoTest {
