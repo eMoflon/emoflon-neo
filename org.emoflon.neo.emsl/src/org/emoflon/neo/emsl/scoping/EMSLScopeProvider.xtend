@@ -46,6 +46,7 @@ import org.emoflon.neo.emsl.eMSL.UserDefinedType
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.util.EntityAttributeDispatcher
 import org.emoflon.neo.emsl.eMSL.AttributeConstraintType
+import org.eclipse.xtext.resource.EObjectDescription
 
 /**
  * This class contains custom scoping description.
@@ -96,7 +97,7 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			}
 
 			if (typeOfRelationStatementInModelRelationStatementType(context, reference)) {
-				return handleTypeOfRelationStatementInModelRelationStatementType(
+				return handleTypeOfRelationStatementInModelRelationStatement(
 					context.eContainer as ModelRelationStatement, context.eContainer.eContainer as ModelNodeBlock)
 			}
 
@@ -398,22 +399,10 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 			determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(context), MetamodelRelationStatement))
 		} else {
 			val relations = new HashSet()
-			thisAndAllSuperTypes(container.type).forEach[t|relations.addAll(t.relations)]
-			Scopes.scopeFor(relations)
-		}
-	}
-
-	/**
-	 * Returns the scope for the name of a RelationStatement.
-	 */
-	def handleTypeOfRelationStatementInModelRelationStatementType(ModelRelationStatement relation,
-		ModelNodeBlock container) {
-		if (relation.name !== null) {
-			determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(relation), MetamodelRelationStatement))
-		} else {
-			val relations = new HashSet()
-			thisAndAllSuperTypes(container.type).forEach[t|relations.addAll(t.relations)]
-			Scopes.scopeFor(relations)
+			thisAndAllSuperTypes(container.type).forEach[t | relations.addAll(t.relations)]
+			val scopeNoKeywords = relations.filter[!EMSLUtil.isEMSLKeyWord(it.name)]
+			val scopeKeywords = new SimpleScope(relations.filter[EMSLUtil.isEMSLKeyWord(it.name)].map[EObjectDescription.create("^" + it.name, it)])
+			Scopes.scopeFor(scopeNoKeywords, scopeKeywords)
 		}
 	}
 
