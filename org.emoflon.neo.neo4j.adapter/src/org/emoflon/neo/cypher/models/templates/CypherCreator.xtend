@@ -4,8 +4,8 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import org.neo4j.driver.v1.Driver
-import org.neo4j.driver.v1.Session
+import org.neo4j.driver.Driver
+import org.neo4j.driver.Session
 import org.emoflon.neo.neocore.util.NeoCoreConstants
 
 class CypherCreator extends CypherBuilder {

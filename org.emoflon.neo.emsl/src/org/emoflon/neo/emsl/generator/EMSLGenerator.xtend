@@ -117,6 +117,7 @@ class EMSLGenerator extends AbstractGenerator {
 			ClasspathUtil.setUpAsXtextProject(project)
 			ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neo4j.adapter"))
 			ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.engine.modules"))
+			ClasspathUtil.addDependencies(project, List.of("org.emoflon.neo.neocore"))
 			ClasspathUtil.addDependencies(project, List.of("org.eclipse.xtext"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.logging"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.log4j"))
@@ -194,8 +195,8 @@ class EMSLGenerator extends AbstractGenerator {
 			import org.emoflon.neo.engine.api.rules.*;
 			import org.emoflon.neo.emsl.eMSL.*;
 			import org.emoflon.neo.emsl.util.*;
-			import org.neo4j.driver.v1.Value;
-			import org.neo4j.driver.v1.Record;
+			import org.neo4j.driver.Value;
+			import org.neo4j.driver.Record;
 			import org.eclipse.emf.common.util.URI;
 			import «getAPIRoot(resource, true)».API_Common;
 			import java.util.Collection;

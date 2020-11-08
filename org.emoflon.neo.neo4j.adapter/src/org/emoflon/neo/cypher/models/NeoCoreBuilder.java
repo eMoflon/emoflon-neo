@@ -74,10 +74,11 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.neocore.util.NeoCoreConstants;
-import org.neo4j.driver.v1.AuthTokens;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
 
 import com.google.common.collect.Streams;
 
@@ -113,28 +114,21 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	@Override
-	public StatementResult executeQuery(String cypherStatement) {
+	public List<Record> executeQuery(String cypherStatement) {
 		return executeQuery(cypherStatement, Collections.emptyMap());
 	}
 
 	@Override
-	public StatementResult executeQuery(String cypherStatement, Map<String, Object> parameters) {
-		var session = driver.session();
-		var transaction = session.beginTransaction();
+	public List<Record> executeQuery(String cypherStatement, Map<String, Object> parameters) {
+		try (var session = driver.session()) {
 
-		try {
-			StatementResult result;
-			if (parameters.isEmpty())
-				result = transaction.run(cypherStatement.trim());
-			else
-				result = transaction.run(cypherStatement.trim(), parameters);
-
-			transaction.success();
-			transaction.close();
-			return result;
+			return session.writeTransaction(transaction -> {
+				if (parameters.isEmpty())
+					return transaction.run(cypherStatement.trim()).list();
+				else
+					return transaction.run(cypherStatement.trim(), parameters).list();
+			});
 		} catch (Exception e) {
-			transaction.failure();
-			transaction.close();
 			logger.error(e);
 			e.printStackTrace();
 			return null;
@@ -146,8 +140,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public void executeQueryForSideEffect(String cypherStatement, Map<String, Object> parameters) {
-		var result = executeQuery(cypherStatement, parameters);
-		result.consume();
+		executeQuery(cypherStatement, parameters);
 	}
 
 	public void clearDataBase() {
@@ -305,7 +298,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		creator.run(driver);
 	}
 
-	private StatementResult executeActionAsMatchTransaction(Consumer<CypherNodeMatcher> action) {
+	private Result executeActionAsMatchTransaction(Consumer<CypherNodeMatcher> action) {
 		var matcher = new CypherNodeMatcher();
 		action.accept(matcher);
 		return matcher.run(driver);
@@ -333,12 +326,21 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var bootstrapper = new NeoCoreBootstrapper();
 		bootstrapper.bootstrapNeoCore(this);
 
-		executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
-				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.MODEL) + ") ASSERT mm.ename IS UNIQUE");
-		executeQueryForSideEffect(//
-				"CREATE INDEX ON :" + //
-						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.ECLASS) + //
-						"(" + NeoCoreConstants.NAME_PROP + ")");
+		try {
+			executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
+					+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.MODEL) + ") ASSERT mm.ename IS UNIQUE");
+		} catch (Exception e) {
+			// Constraint might exist already
+		}
+		
+		try {
+			executeQueryForSideEffect(//
+					"CREATE INDEX ON :" + //
+							NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.ECLASS) + //
+							"(" + NeoCoreConstants.NAME_PROP + ")");
+		} catch (Exception e) {
+			// Index might exist already
+		}
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) throws FlattenerException {
@@ -420,7 +422,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private List<Metamodel> removeExistingMetamodels(Collection<Metamodel> metamodels) {
 		var newMetamodels = new ArrayList<Metamodel>();
 		newMetamodels.addAll(metamodels);
-		StatementResult result = executeActionAsMatchTransaction(cb -> {
+		Result result = executeActionAsMatchTransaction(cb -> {
 			var nc = cb.matchNode(List.of(), NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
 			cb.returnWith(nc);
 		});
@@ -432,7 +434,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private List<Model> removeExistingModels(Collection<Model> models) {
 		var newModels = new ArrayList<Model>();
 		newModels.addAll(models);
-		StatementResult result = executeActionAsMatchTransaction(cb -> {
+		Result result = executeActionAsMatchTransaction(cb -> {
 			var nc = cb.matchNode(List.of(), NeoCoreBootstrapper.LABELS_FOR_A_MODEL);
 			cb.returnWith(nc);
 		});
@@ -742,12 +744,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 	public long noOfNodesInDatabase() {
 		var result = executeQuery("MATCH (n) return count(n)");
-		return (long) result.list().get(0).asMap().values().iterator().next();
+		return (long) result.get(0).asMap().values().iterator().next();
 	}
 
 	public long noOfEdgesInDatabase() {
 		var result = executeQuery("MATCH ()-[r]->() return count(r)");
-		return (long) result.list().get(0).asMap().values().iterator().next();
+		return (long) result.get(0).asMap().values().iterator().next();
 	}
 
 	public long noOfElementsInDatabase() {
@@ -800,15 +802,50 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var allNodes = executeQuery(CypherBuilder.getAllNodesInModel(model));
 		var allEdges = executeQuery(CypherBuilder.getAllRelsInModel(model));
 		var allIDs = new HashSet<Long>();
-		allNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-		allEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		allEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		return allIDs;
+	}
+
+	/**
+	 * Determine all nodes contained in the provided model. The model node is
+	 * included or excluded depending on the provided flag.
+	 * 
+	 * @param model            The ename of the model
+	 * @param includeModelNode The model node is included if true
+	 * @return IDs of all nodes
+	 */
+	public Collection<Long> getAllNodesOfModel(String model, boolean includeModelNode) {
+		var allNodes = executeQuery(CypherBuilder.getAllNodesInModel(model));
+		var allIDs = new HashSet<Long>();
+		allNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		
+		if(includeModelNode) {
+			var modelNode = executeQuery(CypherBuilder.getModelNodes(model));
+			modelNode.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		}
+		
+		return allIDs;
+	}
+
+	/**
+	 * Determine all relations contained in the provided model excluding all "meta"
+	 * edges such as elementOf and conformsTo edges.
+	 * 
+	 * @param model The ename of the model
+	 * @return IDs of all relations
+	 */
+	public Collection<Long> getAllRelsOfModel(String model) {
+		var allEdges = executeQuery(CypherBuilder.getAllRelsInModel(model));
+		var allIDs = new HashSet<Long>();
+		allEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong())));
 		return allIDs;
 	}
 
 	public Collection<Long> getAllCorrs(String sourceModel, String targetModel) {
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
 		var allIDs = new HashSet<Long>();
-		allCorrs.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allCorrs.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 		return allIDs;
 	}
 
@@ -840,20 +877,20 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		var allIDs = new HashSet<Long>();
 
-		allSrcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-		allTrgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		allSrcNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		allTrgNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 
-		allSrcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allSrcElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allSrcEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allSrcElOfEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
-		allTrgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allTrgElOfEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allTrgEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allTrgElOfEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
-		allCorrs.list().forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		allCorrs.forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
-		modelNodes.list().forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
-		srcModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		trgModelEdges.list().forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		modelNodes.forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
+		srcModelEdges.forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		trgModelEdges.forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
 		return allIDs;
 	}
@@ -868,12 +905,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		var allIDs = new HashSet<Long>();
 
-		srcNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-		trgNodes.list().forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		srcNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
+		trgNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 
-		srcEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		trgEdges.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		corrs.list().forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		srcEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		trgEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
+		corrs.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
 		return allIDs;
 	}

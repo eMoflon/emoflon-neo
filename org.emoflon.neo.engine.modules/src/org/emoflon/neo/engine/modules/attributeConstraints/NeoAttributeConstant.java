@@ -8,7 +8,7 @@ import org.emoflon.neo.emsl.eMSL.PrimitiveDouble;
 import org.emoflon.neo.emsl.eMSL.PrimitiveInt;
 import org.emoflon.neo.emsl.eMSL.PrimitiveString;
 import org.emoflon.neo.emsl.eMSL.ValueExpression;
-import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.Record;
 
 public class NeoAttributeConstant extends NeoAttributeConstraintVariable {
 

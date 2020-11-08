@@ -24,8 +24,7 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.patterns.IMask;
 import org.emoflon.neo.engine.api.patterns.IPattern;
 import org.emoflon.neo.engine.generator.Schedule;
-import org.neo4j.driver.v1.Record;
-import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.Record;
 
 public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	private static Logger logger = Logger.getLogger(NeoPattern.class);
@@ -154,13 +153,12 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 		return extractMatches(result);
 	}
 
-	private Collection<NeoMatch> extractMatches(StatementResult result) {
+	private Collection<NeoMatch> extractMatches(List<Record> result) {
 		if (result == null) {
 			throw new NeoDatabaseException();
 		} else {
 			var matches = new ArrayList<NeoMatch>();
-			while (result.hasNext()) {
-				var record = result.next();
+			for (var record : result) {
 				matches.add(new NeoMatch(this, record));
 			}
 
@@ -191,7 +189,7 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 		if (result == null) {
 			throw new NeoDatabaseException();
 		} else {
-			var hashCode = result.list().stream()//
+			var hashCode = result.stream()//
 					.map(res -> res.asMap().get(NeoMatch.getIdParameter()).toString())//
 					.collect(Collectors.toList());
 
@@ -220,7 +218,7 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 		if (result == null) {
 			throw new NeoDatabaseException();
 		} else {
-			var results = result.list();
+			var results = result;
 			return results;
 		}
 	}

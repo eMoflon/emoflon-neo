@@ -116,8 +116,6 @@ public class TGGCompilerValidations {
 		int fwdRuleID = (((1 << s) - 1) << (t + c)) + (1 << c) - 1;
 		int bwdRuleID = (((1 << t) - 1) << c) + (1 << c) - 1;
 
-		//return ruleID == coRuleID || ruleID == ccRuleID || ruleID == fwdRuleID || ruleID == bwdRuleID;
-		
 		//Ensures that either source or target are entirely black
 		return binaryOR(ruleID, fwdRuleID) == fwdRuleID || binaryOR(ruleID, bwdRuleID) == bwdRuleID;
 	}

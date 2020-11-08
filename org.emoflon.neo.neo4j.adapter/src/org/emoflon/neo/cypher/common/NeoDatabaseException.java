@@ -1,6 +1,6 @@
 package org.emoflon.neo.cypher.common;
 
-import org.neo4j.driver.v1.exceptions.DatabaseException;
+import org.neo4j.driver.exceptions.DatabaseException;
 
 public class NeoDatabaseException extends DatabaseException {
 
