@@ -1,44 +1,55 @@
 metamodel SheRememberedCaterpillars {
 	Game {
+		
 		<>-characters(0..*)->Character
 		<>-objects(0..*)->PlatformObject
 	}
 	
 	NamedElement {
 		.name : EString
+		
 	}
 	
 	Character : Colored, NamedElement {
+		
 		-standsOn(1..1)->Platform
 	}
 	
 	PlatformObject : NamedElement {
+		
 	}
 	
 	Platform : PlatformObject {
+		
 		-charactersStandingOn(0..*)->Character
 		-neighbors(0..6)->Platform
 	}
 	
 	SimplePlatform : Platform {
+		
 		-connectedBy(0..1)->PlatformConnector
 	}
 	
 	ExitPlatform : Platform {
+		
 	}
 	
 	PlatformConnector : PlatformObject, Colored {
+		
 		-connects(2..2)->SimplePlatform
 	}
 	
 	Bridge : PlatformConnector {
+		
 	}
 	
 	Wall : PlatformConnector {
+		
 	}
 	
 	Colored {
 		.color : COLOR
+		
 	}
 	
 	enum COLOR {
@@ -49,32 +60,32 @@ metamodel SheRememberedCaterpillars {
 }
 
 model Game {
-	o1 : Game {
-		-characters -> o2
+	o1 : Character {
+		.color : BLUE
+		.name : "Mario"
+	
+		-standsOn -> o2
+	}
+	o2 : SimplePlatform {
+		.name : "platform easy"
+	
+		-charactersStandingOn -> o1
+		-connectedBy -> o4
+	}
+	o3 : Bridge {
+		.color : BLUE
+	
+	}
+	o4 : Wall {
+		.color : BLUE
+	
+		-connects -> o2
+	}
+	o0 : Game {
+	
+		-characters -> o1
+		-objects -> o2
 		-objects -> o3
 		-objects -> o4
-		-objects -> o5
 	}
-	
-	o2 : Character {
-		.color : BLUE
-				.name : "Mario"
-		-standsOn -> o3
-	}
-	
-	o3 : SimplePlatform {
-				.name : "platform easy"
-		-charactersStandingOn -> o2
-		-connectedBy -> o5
-	}
-	
-	o4 : Bridge {
-		.color : BLUE
-	}
-	
-	o5 : Wall {
-		.color : BLUE
-		-connects -> o3
-	}
-	
 }
