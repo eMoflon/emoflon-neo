@@ -1,0 +1,11 @@
+metamodel SimpleDoc {
+	Folder {
+		.name : EString
+		<+>-docs(0..*)-> Doc
+		<+>-subFolders(0..*)-> Folder
+	}
+	
+	Doc {
+		.name : EString
+	}
+}

@@ -1,0 +1,325 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
+
+grammar JavaToDocSLE_GEN {
+	ClazzToDocRule
+	SubClazzToSubDocRule
+	MethodToEntryRule
+	AddParameterRule
+	FieldToEntryRule
+	AddGlossaryRule
+	LinkGlossaryEntryRule
+	AddGlossaryEntryRule
+	
+	createSrcModel
+	createTrgModel
+	}
+	
+	  rule ClazzToDocRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		++c:Clazz {
+			++-elementOf->srcM
+			++-corr->d
+			{
+				._type_ := "ClazzToDoc"
+			}
+			.name := <clazzName>
+		}
+	
+		++d:Doc {
+			++-elementOf->trgM
+			.name := <clazzName>
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule SubClazzToSubDocRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-subTypes->sc
+			-corr->d
+			{
+				._type_ : "ClazzToDoc"
+			}
+		}
+		
+		++sc:Clazz {
+			++-elementOf->srcM
+			++-corr->sd
+			{
+				._type_ := "ClazzToDoc"
+			}
+			.name := <subClazzName>
+		}
+	
+		d:Doc {
+			-elementOf->trgM
+			++-hrefs->sd
+		}
+		
+		++sd:Doc {
+			++-elementOf->trgM
+			.name := <subClazzName>
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule MethodToEntryRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-methods->m
+			-corr->d
+			{
+				._type_ : "ClazzToDoc"
+			}
+		}
+		
+		++m:Method {
+			++-elementOf->srcM
+			++-corr->e
+			{
+				._type_ := "MethodToEntry"
+			}
+			.name := <methodName>
+		}
+	
+		d:Doc {
+			-elementOf->trgM
+			++-entries->e
+		}
+		
+		++e:Entry {
+			++-elementOf->trgM
+			.name := <methodName>
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule AddParameterRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		m:Method {
+			-elementOf->srcM
+			++-parameters->p
+			-corr->e
+			{
+				._type_ : "MethodToEntry"
+			}
+			.name : <entryName>
+		}
+		
+		++p:Parameter {
+			++-elementOf->srcM
+			++-corr->e
+			{
+				._type_ := "ParamToEntry"
+			}
+			.name := <paramName>
+		}
+	
+		e:Entry {
+			-elementOf->trgM
+			.name : <entryName>
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule FieldToEntryRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-fields->f
+			-corr->d
+			{
+				._type_ : "ClazzToDoc"
+			}
+		}
+		
+		++f:Field {
+			++-elementOf->srcM
+			++-corr->e
+			{
+				._type_ := "FieldToEntry"
+			}
+			.name := <fieldName>
+		}
+	
+		d:Doc {
+			-elementOf->trgM
+			++-entries->e
+		}
+		
+		++e:Entry {
+			++-elementOf->trgM
+			.name := <fieldName>
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule AddGlossaryRule {
+	
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+	
+		++g:Glossary {
+			++-elementOf->trgM
+			.name := <glossaryName>
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule LinkGlossaryEntryRule {
+	
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+	
+		e:Entry {
+			-elementOf->trgM
+			++-gEntries->ge
+		}
+		
+		ge:GlossaryEntry {
+			-elementOf->trgM
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule AddGlossaryEntryRule {
+	
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+	
+		g:Glossary {
+			-elementOf->trgM
+			++-gEntries->ge
+		}
+		
+		++ge:GlossaryEntry {
+			++-elementOf->trgM
+			.name := <glossaryEntryName>
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule createSrcModel {
+	
+		++srcModel:Model {
+			++-conformsTo->mmSimpleJavaSLE
+			.ename := <__srcModelName>
+		}
+		
+		mmSimpleJavaSLE:MetaModel {
+			.ename : "SimpleJavaSLE"
+		}
+	
+		
+		attributeConstraints {
+		}
+	} when createSrcModelNAC
+	
+	constraint createSrcModelNAC = forbid createSrcModel_srcModelExists
+	
+		pattern createSrcModel_srcModelExists {
+			srcModel : Model {
+				.ename : <__srcModelName>
+			}
+			
+			
+		}
+	
+	  rule createTrgModel {
+	
+	
+		++trgModel:Model {
+			++-conformsTo->mmSimpleDocSLE
+			.ename := <__trgModelName>
+		}
+		
+		mmSimpleDocSLE:MetaModel {
+			.ename : "SimpleDocSLE"
+		}
+		
+		attributeConstraints {
+		}
+	} when createTrgModelNAC
+	
+	constraint createTrgModelNAC = forbid createTrgModel_trgModelExists
+	
+		pattern createTrgModel_trgModelExists {
+			trgModel : Model {
+				.ename : <__trgModelName>
+			}
+			
+			
+		}

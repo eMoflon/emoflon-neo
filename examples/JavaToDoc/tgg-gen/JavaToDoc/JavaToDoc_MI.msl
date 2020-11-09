@@ -1,0 +1,1493 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+grammar JavaToDoc_MI {
+	
+	ClazzToDocRule
+	ClazzToDocRule_1
+	ClazzToDocRule_2
+	ClazzToDocRule_3
+	ClazzToDocRule_7
+	ClazzToDocRule_8
+	ClazzToDocRule_9
+	ClazzToDocRule_25
+	
+	RootToRootRule
+	RootToRootRule_1
+	RootToRootRule_3
+	RootToRootRule_5
+	
+	SubToSubRule
+	SubToSubRule_1
+	SubToSubRule_2
+	SubToSubRule_3
+	SubToSubRule_8
+	SubToSubRule_9
+	SubToSubRule_10
+	SubToSubRule_11
+	SubToSubRule_15
+	SubToSubRule_24
+	SubToSubRule_25
+	SubToSubRule_26
+	SubToSubRule_27
+	SubToSubRule_31
+	SubToSubRule_32
+	SubToSubRule_33
+	SubToSubRule_97
+	
+	createSrcModel
+	createTrgModel
+	}
+	
+	  rule ClazzToDocRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-clazzes->c
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			-corr->doc
+			{
+				._type_ : "ClazzToDoc"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : c::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule ClazzToDocRule_1 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-clazzes->c
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-corr->doc
+			{
+				._type_ := "ClazzToDoc"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : c::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule ClazzToDocRule_2 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-clazzes->c
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			-corr->doc
+			{
+				._type_ : "ClazzToDoc"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-docs->doc
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : c::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule ClazzToDocRule_3 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-clazzes->c
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-corr->doc
+			{
+				._type_ := "ClazzToDoc"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-docs->doc
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : c::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule ClazzToDocRule_7 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-clazzes->c
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-corr->doc
+			{
+				._type_ := "ClazzToDoc"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-docs->doc
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := c::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule ClazzToDocRule_8 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-clazzes->c
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			-corr->doc
+			{
+				._type_ : "ClazzToDoc"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : c::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule ClazzToDocRule_9 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-clazzes->c
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-corr->doc
+			{
+				._type_ := "ClazzToDoc"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : c::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule ClazzToDocRule_25 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-clazzes->c
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		++c:Clazz {
+			++-elementOf->srcM
+			++-corr->doc
+			{
+				._type_ := "ClazzToDoc"
+			}
+			.name := doc::name
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule RootToRootRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			.name : p::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule RootToRootRule_1 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-corr->f
+			{
+				._type_ := "PackageToFolder"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			.name : p::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule RootToRootRule_3 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-corr->f
+			{
+				._type_ := "PackageToFolder"
+			}
+			~_ex_ : true
+		}
+	
+		++f:Folder {
+			++-elementOf->trgM
+			.name := p::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule RootToRootRule_5 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		++p:Package {
+			++-elementOf->srcM
+			++-corr->f
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name := f::name
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule SubToSubRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			-corr->subF
+			{
+				._type_ : "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_1 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_2 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			-corr->subF
+			{
+				._type_ : "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_3 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_8 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			-corr->subF
+			{
+				._type_ : "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_9 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_10 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			-corr->subF
+			{
+				._type_ : "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_11 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_15 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		++subF:Folder {
+			++-elementOf->trgM
+			++-docs->doc
+			.name := subP::name
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subP::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_24 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			-corr->subF
+			{
+				._type_ : "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := subF::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_25 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := subF::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_26 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			-corr->subF
+			{
+				._type_ : "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := subF::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_27 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			++-docs->doc
+			~_ex_ : true
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := subF::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_31 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			-subPackages->subP
+			{
+				~_ex_ : true
+			}
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			++-subFolders->subF
+		}
+		
+		++subF:Folder {
+			++-elementOf->trgM
+			++-docs->doc
+			.name := subP::name
+		}
+		
+		++doc:Doc {
+			++-elementOf->trgM
+			.name := subP::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_32 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-subPackages->subP
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			-corr->subF
+			{
+				._type_ : "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_33 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-subPackages->subP
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		subP:Package {
+			-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name : subF::name
+			~_ex_ : true
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	  rule SubToSubRule_97 {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		p:Package {
+			-elementOf->srcM
+			++-subPackages->subP
+			-corr->f
+			{
+				._type_ : "PackageToFolder"
+			}
+		}
+		
+		++subP:Package {
+			++-elementOf->srcM
+			++-corr->subF
+			{
+				._type_ := "PackageToFolder"
+			}
+			.name := subF::name
+		}
+	
+		f:Folder {
+			-elementOf->trgM
+			-subFolders->subF
+			{
+				~_ex_ : true
+			}
+		}
+		
+		subF:Folder {
+			-elementOf->trgM
+			-docs->doc
+			{
+				~_ex_ : true
+			}
+			~_ex_ : true
+		}
+		
+		doc:Doc {
+			-elementOf->trgM
+			.name : subF::name
+			~_ex_ : true
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule createSrcModel {
+	
+		srcModel:Model {
+			-conformsTo->mmSimpleJava
+		}
+		
+		mmSimpleJava:MetaModel {
+			.ename : "SimpleJava"
+		}
+	
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule createTrgModel {
+	
+	
+		trgModel:Model {
+			-conformsTo->mmSimpleDoc
+		}
+		
+		mmSimpleDoc:MetaModel {
+			.ename : "SimpleDoc"
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
