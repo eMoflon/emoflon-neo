@@ -9,6 +9,7 @@ import org.emoflon.neo.cypher.patterns.NeoImplicationPattern;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
+import org.emoflon.neo.emsl.eMSL.Implication;
 import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
 import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
 import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
@@ -40,10 +41,10 @@ public class NeoPositiveConstraint extends NeoConstraint implements IPositiveCon
 	
 	public NeoPositiveConstraint(Constraint constraint, IBuilder builder) {
 		super(constraint, builder);
-		var body = (PositiveConstraint)constraint.getBody();
-		premisePattern = NeoPatternFactory.createNeoPattern(body.getPattern(), builder);
+		var body = (Implication)constraint.getBody();
 		
-		conclusionPattern = NeoPatternFactory.createNeoPattern(body.getPattern(), builder);
+		premisePattern = NeoPatternFactory.createNeoPattern(body.getPremise(), builder);
+		conclusionPattern = NeoPatternFactory.createNeoPattern(body.getConclusion(), builder);
 	}
 	
 	

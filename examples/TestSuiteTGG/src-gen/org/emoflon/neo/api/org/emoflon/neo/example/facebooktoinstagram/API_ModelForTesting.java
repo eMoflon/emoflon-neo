@@ -4,6 +4,7 @@
 package org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram;
 
 import org.emoflon.neo.cypher.common.*;
+import org.emoflon.neo.cypher.constraints.*;
 import org.emoflon.neo.cypher.factories.*;
 import org.emoflon.neo.cypher.models.*;
 import org.emoflon.neo.cypher.patterns.*;

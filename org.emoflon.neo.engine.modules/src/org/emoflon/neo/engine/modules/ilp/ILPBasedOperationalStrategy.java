@@ -11,9 +11,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.emoflon.neo.cypher.constraints.NeoConstraint;
 import org.emoflon.neo.cypher.constraints.NeoNegativeConstraint;
 import org.emoflon.neo.cypher.constraints.NeoPositiveConstraint;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.cypher.patterns.NeoBasicPattern;
+import org.emoflon.neo.cypher.patterns.NeoImplicationPattern;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
@@ -50,8 +53,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> opRules;
 	protected Collection<NeoNegativeConstraint> negativeConstraints;
-	protected Collection<NeoPositiveConstraint> positiveCollection;
-	protected Collection<NeoPositiveConstraint> conclusionCollection;
+	protected Collection<NeoPositiveConstraint> positiveConstraints;
 
 	protected String sourceModel;
 	protected String targetModel;
@@ -84,12 +86,15 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		opRules.forEach(tr -> this.opRules.put(tr.getName(), tr));
 
 		this.negativeConstraints = new ArrayList<>();
-		negativeConstraints.forEach(nc -> {
-			if (nc instanceof NeoNegativeConstraint) {
-				this.negativeConstraints.add((NeoNegativeConstraint) nc);
+		this.positiveConstraints = new ArrayList<>();
+		negativeConstraints.forEach(c -> {
+			if (c instanceof NeoNegativeConstraint) {
+				this.negativeConstraints.add((NeoNegativeConstraint) c);
+			} else if (c instanceof NeoPositiveConstraint){
+				this.positiveConstraints.add((NeoPositiveConstraint) c);
 			} else {
 				throw new IllegalArgumentException(
-						"Only negative domain constraints are supported at the moment: " + nc);
+						"Only negative constraints and if/else constraints are supported at the moment: " + c);
 			}
 		});
 	}
@@ -112,6 +117,9 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 		logger.debug("Handling constraint violations...");
 		handleConstraintViolations();
+		
+		logger.debug("Handling positive constraints...");
+		handlePositiveConstraints();
 
 		logger.debug("Created ILP problem.");
 	}
@@ -301,8 +309,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected void handlePositiveConstraints() {
 		long tic = System.currentTimeMillis();
 		logger.info("Checking for positive constraint...");
-		var premise = positiveCollection.stream().flatMap(pr -> pr.getPremise().stream());
-		var conclusion = positiveCollection.stream().flatMap(pr -> pr.getConclusion().stream());
+		var premise = positiveConstraints.stream().flatMap(pr -> pr.getPremise().stream());
+		var conclusion = positiveConstraints.stream().flatMap(pr -> pr.getConclusion().stream());
 		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
 		premise.forEach(p-> {
 			var elements = extractNodeIDs(p.getPattern().getContextNodeLabels(), p);

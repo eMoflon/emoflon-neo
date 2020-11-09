@@ -69,13 +69,14 @@ class CO extends ILPOperation {
 	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
+			var api = new API_«packageName»(builder);
 			var genAPI = new API_«tggName»_GEN(builder);
 			var coAPI = new API_«fullOpName»(builder);
 			checkOnly = new CheckOnlyOperationalStrategy(//
 					solver, //
 					genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN(), //
-					coAPI.getAllRulesFor«tggName.toFirstUpper»_CO(), //
-					getNegativeConstraints(builder), //
+					coAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
+					api.getConstraintsOf«tggName.toFirstUpper»(), //
 					builder, //
 					srcModelName, //
 					trgModelName//
@@ -101,10 +102,6 @@ class CO extends ILPOperation {
 			public CheckOnlyOperationalStrategy runCheckOnly() throws Exception {
 				run();
 				return checkOnly;
-			}
-			
-			protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-				return Collections.emptyList();
 			}
 		'''
 	}

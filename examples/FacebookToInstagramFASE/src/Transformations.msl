@@ -27,6 +27,12 @@ tripleGrammar FacebookToInstagramGrammar {
 		RequestFriendship
 		AcceptFriendship
 	}
+	
+	constraints {
+		noDoubleFriendship
+		noDoubleFollowership
+		EnforceFriendship
+	}
 }
 
 tripleRule NetworkToNetwork : FacebookToInstagramGrammar {

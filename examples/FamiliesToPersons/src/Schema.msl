@@ -34,6 +34,13 @@ tripleGrammar FamiliesToPersons {
 		SonToMale
 		SonOfExistingFamilyToMale
 	}
+	
+	constraints {
+		FatherSonMale
+		FatherMotherFamilyMember
+		No2Father
+		No2Mother
+	}
 }
 
 //Surbhi-edit

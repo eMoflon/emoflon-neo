@@ -23,6 +23,12 @@ tripleGrammar CompanyToIT {
 		EmployeeToPCRule
 		EmployeeToLaptopRule
 	}
+	
+	constraints {
+		NetworkHas2Laptops
+		No2Network
+		No2Ceo
+	}
 }
 
 tripleRule CompanyToITRule : CompanyToIT {
