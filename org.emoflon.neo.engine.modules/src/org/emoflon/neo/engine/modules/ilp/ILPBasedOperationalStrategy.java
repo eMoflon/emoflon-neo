@@ -24,6 +24,7 @@ import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
+import org.emoflon.neo.engine.ilp.ILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
@@ -47,7 +48,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	private int variableCounter;
 	private int auxVariableCounter;
 	protected Map<IMatch, Double> matchToWeight;
-	private BinaryILPProblem ilpProblem;
+	protected BinaryILPProblem ilpProblem;
 
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> genRules;
 	protected Map<String, IRule<NeoMatch, NeoCoMatch>> opRules;
@@ -100,7 +101,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		constraintCounter = 0;
 		variableCounter = 0;
 		auxVariableCounter = 0;
-		ilpProblem = ILPFactory.createBinaryILPProblem();
+		ilpProblem = ILPFactory.createBinaryILPProblem(isExact());
 
 		logger.debug("Defining exclusions...");
 		defineILPExclusions();
@@ -116,6 +117,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 		logger.debug("Created ILP problem.");
 	}
+
+	protected abstract boolean isExact();
 
 	protected void registerMatches(Stream<? extends NeoMatch> matches) {
 		matches.forEach(m -> {

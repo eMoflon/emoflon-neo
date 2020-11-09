@@ -145,6 +145,10 @@ class MI extends ILPOperation {
 	override boolean isMulti() {
 		true
 	}
+	
+	override boolean isExact() {
+		false
+	}
 
 	override getDeltaCondition(Action action, int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {
 		// Context

@@ -13,6 +13,7 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
 import JavaToDocSLE.run.JavaToDocSLE_MI_Run;
+import org.junit.jupiter.api.Test;
 
 public class PerformanceTests extends ENeoTest {
 
@@ -54,16 +55,16 @@ public class PerformanceTests extends ENeoTest {
 		}, nrOfConflicts/2);
 	}
 	
-	@Ignore
+	@Test
 	public void testPerformance() throws Exception {
-		for (int i=11; i<=12; i++) {
+		for (int i=1; i<=2; i++) {
 			for (int j=0; j<7; j++) {
 				logger.info("Iteration: " + j + ". Start new configuration: " + i * 1000 + " elements, 100 conflicts...");
 				runTestForFixedSize(i, 100);
 				clearDB();
 			}
 		}
-		for (int i=11; i<=12;i++) {
+		for (int i=1; i<=2;i++) {
 			for (int j=0; j<7; j++) {
 				logger.info("Iteration: " + j + ". Start new configuration: 5000 elements, " + i * 20 + " conflicts...");
 				runTestForFixedSize(5, i * 20);

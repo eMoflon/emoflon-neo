@@ -3,6 +3,7 @@ package org.emoflon.neo.engine.modules.ilp;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem;
 import org.emoflon.neo.engine.ilp.ILPSolver;
+import org.emoflon.neo.engine.ilp.MOEAProblem;
 
 /**
  * This static class offers methods to create ILP solvers and ILP problems
@@ -10,7 +11,10 @@ import org.emoflon.neo.engine.ilp.ILPSolver;
  * @author Robin Oppermann
  */
 public final class ILPFactory {
-
+	
+	public static final SupportedILPSolver exactSolver = SupportedILPSolver.Gurobi;
+	public static final SupportedILPSolver heuristicSolver = SupportedILPSolver.MOEA;
+	
 	/**
 	 * Private constructor. Should never be used as this class should only be used
 	 * in a static context
@@ -34,6 +38,8 @@ public final class ILPFactory {
 			return new GurobiWrapper(ilpProblem, true);
 		case Sat4J:
 			return new Sat4JWrapper(ilpProblem);
+		case MOEA:
+			return new MOEAWrapper(ilpProblem);
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -55,6 +61,8 @@ public final class ILPFactory {
 			return new GurobiWrapper(ilpProblem, false);
 		case Sat4J:
 			throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
+		case MOEA:
+			throw new UnsupportedOperationException("MOEA does not support arbitrary ILP");
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -75,8 +83,11 @@ public final class ILPFactory {
 	 *
 	 * @return The created problem
 	 */
-	public static BinaryILPProblem createBinaryILPProblem() {
-		return new BinaryILPProblem();
+	public static BinaryILPProblem createBinaryILPProblem(boolean isExact) {
+		if (isExact)
+			return new BinaryILPProblem();
+		else
+			return new MOEAProblem();
 	}
 
 	/**
@@ -93,6 +104,10 @@ public final class ILPFactory {
 		/**
 		 * Use the SAT4J solver (distributed with eclipse)
 		 */
-		Sat4J
+		Sat4J,
+		/**
+		 * Not an ILP solver, but some external framework for evolutionary algorithms
+		 */
+		MOEA
 	}
 }
