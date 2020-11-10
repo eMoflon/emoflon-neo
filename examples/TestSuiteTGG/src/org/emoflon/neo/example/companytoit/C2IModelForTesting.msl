@@ -1,49 +1,7 @@
 import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
 import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
 
-model ConsistentSource1{	
-	it : IT {
-		.name : "Faunhofer"
-		-network-> network
-		-corr-> c{
-			._type_ : "CompanyToIT"
-		}
-	}
-	
-	network : Network {
-		.name : "AnyNetwork"
-		-laptop->l1
-		-laptop->l2
-	}
-	
-	l1 : Laptop{
-		.name : "Laptop1"
-		-corr-> e1{
-			._type_ : "EmployeeToLaptop"
-		}
-	}
-	
-	l2 : Laptop{
-		.name : "Laptop2"
-		-corr-> e2{
-			._type_ : "EmployeeToLaptop"
-		}
-	}
-	
-	c: Company{
-		.name : "Fraunhofer"
-	}
-	
-	e1: Employee{
-		.name : "Mario"
-	}
-	
-	e2: Employee{
-		.name : "Michael"
-	}
-}
-
-model ConsistentTarget1{
+model ConsistentSource1{
 	c: Company{
 		.name : "Fraunhofer"
 		-employee-> e1
@@ -56,6 +14,26 @@ model ConsistentTarget1{
 	
 	e2: Employee{
 		.name : "Michael"
+	}	
+}
+
+model ConsistentTarget1{
+	it : IT {
+		.name : "Faunhofer"
+	}
+	
+	network : Network {
+		.name : "AnyNetwork"
+		-laptop->l1
+		-laptop->l2
+	}
+	
+	l1 : Laptop{
+		.name : "Laptop1"
+	}
+	
+	l2 : Laptop{
+		.name : "Laptop2"
 	}
 }
 
@@ -176,28 +154,9 @@ rule InConsistentTriple2{
 }
 
 model ConsistentSource2{
-	it: IT{
-		.name : "Fraunhofer"
-		-router->rout
-		-corr->c{
-			._type_ : "CompanyToIT"
-		}
-	}
-	
-	rout: Router{
-		.name : "Router1"
-		-network->net
-		-corr->ad{
-			._type_ : "AdminToRouter"
-		}
-	}
-	
-	net: Network{
-		.name : "Network1"
-	}
-	
 	c: Company{
 		.name: "Fraunhofer"
+		-admin->ad
 	}
 	
 	ad: Admin{
@@ -206,13 +165,18 @@ model ConsistentSource2{
 }
 
 model ConsistentTarget2{
-	c: Company{
-		.name: "Fraunhofer"
-		-admin->ad
+	it: IT{
+		.name : "Fraunhofer"
+		-router->rout
 	}
 	
-	ad: Admin{
-		.name : "Rene"
+	rout: Router{
+		.name : "Router1"
+		-network->net
+	}
+	
+	net: Network{
+		.name : "Network1"
 	}
 }
 
@@ -287,29 +251,15 @@ model ConsistentSource3{
 	c: Company{
 		.name: "Fraunhofer"
 		-admin->ad
-		-corr-> it{
-			._type_ : "CompanyToIT"
-		}
 	}
 	
 	ad: Admin{
 		.name : "Rene"
 		-ceo->ceo
-		-corr->rout{
-			._type_ : "AdminToRouter"
-		}
 	}
 	
 	ceo: CEO{
 		.name : "Julius"
-	}
-	
-	it: IT{
-		.name: "Fraunhofer"
-	}
-	
-	rout: Router{
-		.name: "Router1"
 	}
 }
 
