@@ -279,16 +279,23 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «dataClassName» extends NeoData {
-					«classMembers(patternBody.nodeBlocks)»
-					
-					«constructor(dataClassName, patternBody.nodeBlocks)»
-					
-					«helperClasses(patternBody.nodeBlocks)»
+					«IF emslSpec.isGenerateDataAPI»
+						«classMembers(patternBody.nodeBlocks)»
+						
+						«constructor(dataClassName, patternBody.nodeBlocks)»
+						
+						«helperClasses(patternBody.nodeBlocks)»
+					«ELSE»
+						public «dataClassName»(Record data) {
+							
+						}
+					«ENDIF»
 				}
 				
 				public class «maskClassName» extends NeoMask {
-					«maskMethods(patternBody.nodeBlocks, maskClassName)»
-				
+					«IF emslSpec.isGenerateDataAPI»
+						«maskMethods(patternBody.nodeBlocks, maskClassName)»
+					«ENDIF»
 				}
 			'''
 		} catch (Exception e) {
@@ -549,27 +556,41 @@ class EMSLGenerator extends AbstractGenerator {
 				}
 				
 				public class «dataClassName» extends NeoData {
-					«val blackAndRedNodes = [ModelNodeBlock n | n.action === null || n.action.op == ActionOperator.DELETE]»
-					«val blackAndRedEdges = [ModelRelationStatement e | e.action === null || e.action.op == ActionOperator.DELETE]»
-					«classMembers(rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
-					
-					«constructor(dataClassName, rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
-					
-					«helperClasses(rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
+					«IF emslSpec.isGenerateDataAPI»
+						«val blackAndRedNodes = [ModelNodeBlock n | n.action === null || n.action.op == ActionOperator.DELETE]»
+						«val blackAndRedEdges = [ModelRelationStatement e | e.action === null || e.action.op == ActionOperator.DELETE]»
+						«classMembers(rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
+						
+						«constructor(dataClassName, rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
+						
+						«helperClasses(rule.nodeBlocks, blackAndRedNodes, blackAndRedEdges)»
+					«ELSE»
+						public «dataClassName»(Record data) {
+						
+						}
+					«ENDIF»
 				}
 				
 				public class «codataClassName» extends NeoData {
-					«val blackAndGreenNodes = [ModelNodeBlock n | n.action === null || n.action.op == ActionOperator.CREATE]»
-					«val blackAndGreenEdges = [ModelRelationStatement e | e.action === null || e.action.op == ActionOperator.CREATE]»
-					«classMembers(rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
-				
-					«constructor(codataClassName, rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
-				
-					«helperClasses(rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
+					«IF emslSpec.isGenerateDataAPI»
+						«val blackAndGreenNodes = [ModelNodeBlock n | n.action === null || n.action.op == ActionOperator.CREATE]»
+						«val blackAndGreenEdges = [ModelRelationStatement e | e.action === null || e.action.op == ActionOperator.CREATE]»
+						«classMembers(rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
+						
+						«constructor(codataClassName, rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
+						
+						«helperClasses(rule.nodeBlocks, blackAndGreenNodes, blackAndGreenEdges)»
+					«ELSE»
+						public «codataClassName»(Record data) {
+						
+						}
+					«ENDIF»
 				}
 				
 				public class «maskClassName» extends NeoMask {
-					«maskMethods(rule.nodeBlocks, maskClassName)»
+					«IF emslSpec.isGenerateDataAPI»
+						«maskMethods(rule.nodeBlocks, maskClassName)»
+					«ENDIF»
 				}
 			'''
 		} catch (Exception e) {

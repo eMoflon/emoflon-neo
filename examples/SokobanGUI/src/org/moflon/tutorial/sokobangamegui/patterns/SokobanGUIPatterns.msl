@@ -1,3 +1,5 @@
+@Data_API
+
 import "platform:/resource/SokobanLanguage/src/metamodels/SokobanLanguage.msl"
 
 pattern board {

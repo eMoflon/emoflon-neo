@@ -1,3 +1,5 @@
+@Data_API
+
 import "platform:/resource/Quiltography/src/QuiltographyLanguage.msl"
 
 // Alle Bücher eines gewissen Authors
