@@ -317,7 +317,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			elements.addAll(extractRelIDs(p.getPattern().getContextRelLabels(), p));
 
 			var auxVariablesP = new ArrayList<String>();
-			var elementsThatCanNeverBeMarked = new ArrayList<Long>();
+			var elementsThatCanNeverBeMarkedP = new ArrayList<Long>();
 			
 			elements.forEach(elt -> {
 				var creatingMatches = elementToCreatingMatches.getOrDefault(elt, Collections.emptySet());
@@ -338,28 +338,33 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 						elements1.addAll(extractRelIDs(c.getPattern().getContextRelLabels(), c));
 
 						var auxVariablesC = new ArrayList<String>();
-						var elementsThatCanNeverBeMarkedCC = new ArrayList<Long>();
+						var elementsThatCanNeverBeMarkedC = new ArrayList<Long>();
 						
 						elements1.forEach(elt1 -> {
 							var creatingMatches1 = elementToCreatingMatches.getOrDefault(elt1, Collections.emptySet());
 
 							if (!creatingMatches1.isEmpty()) {
+								//c10=>aux2
 								var auxVarForEltC = "aux" + auxVariableCounter++;
 								auxVariablesC.add(auxVarForEltC);
-
+								//!c10=>!aux2
+								ilpProblem.addNegativeImplication(creatingMatches1.stream().map(this::varNameFor),
+										Stream.of(auxVarForEltC),
+										registerConstraint("AUX_" + c.getPattern().getName() + "_" + elt1));
+								//p=>c10 v c11
 								ilpProblem.addImplication(
 										Stream.of(auxVarForEltP),
 										Stream.of(auxVarForEltC),
 										registerConstraint("AUX_" + c.getPattern().getName() + "_" + elt1 + "AUX_" + p.getPattern().getName() + "_" + elt));
 							} else {
-								elementsThatCanNeverBeMarkedCC.add(elt1);
+								elementsThatCanNeverBeMarkedC.add(elt1);
 							}
 						});
 					});
 					
 					//------------------------------------------------
 				} else {
-					elementsThatCanNeverBeMarked.add(elt);
+					elementsThatCanNeverBeMarkedP.add(elt);
 				}
 			});
 		});

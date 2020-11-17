@@ -31,7 +31,7 @@ public class ConstraintTest extends ENeoTest{
 	
 	//co for inconsistent triple1
 	@Test
-	public void testInConsistentTriple1_CO1() throws Exception {
+	public void testInConsistentTriple1_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSorce(), //
 				api.getModel_ConsistentTarget(), //
 				api.getRule_InConsistentTriple1().rule());
