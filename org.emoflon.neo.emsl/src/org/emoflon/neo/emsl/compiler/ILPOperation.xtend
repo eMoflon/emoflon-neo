@@ -1,20 +1,20 @@
 package org.emoflon.neo.emsl.compiler
 
+import java.util.Collection
+import java.util.Collections
+import java.util.Map
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
-import java.util.Map
 import org.emoflon.neo.emsl.eMSL.Parameter
-import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
-import java.util.Collections
 
 abstract class ILPOperation implements Operation {
 
-	override getTranslation(Action action, boolean isSrc) {
+	override getTranslation(Action action, Domain domain) {
 		return ""
 	}
 
-	override getConditionOperator(ConditionOperator propOp, boolean isSrc) {
+	override getConditionOperator(ConditionOperator propOp, Domain domain) {
 		if (propOp === ConditionOperator.ASSIGN)
 			ConditionOperator.EQ.literal
 		else
@@ -34,9 +34,31 @@ abstract class ILPOperation implements Operation {
 		}
 	}
 	
+	override String additionalFields(String tggName) {
+		if (isExact)
+			return additionalFields(tggName, "Gurobi")
+		else
+			return additionalFields(tggName, "MOEA")
+	}
+	
+	def String additionalFields(String tggName, String solver)
+	
 	def Parameter selectParamGroupRepresentative(Collection<Parameter> paramGroup, Map<Parameter, ParameterData> paramsToData) 
 	
 	override Iterable<TripleRuleNAC> preprocessNACs(Iterable<TripleRuleNAC> nacs) {
 		return Collections.emptyList
+	}
+	
+	override String additionalConstructors(String appName){
+		'''
+			public «appName»(String srcModelName, String trgModelName, SupportedILPSolver solver) {
+				this(srcModelName, trgModelName);
+				this.solver = solver;
+			}
+		'''
+	}
+	
+	def boolean isExact() {
+		true
 	}
 }

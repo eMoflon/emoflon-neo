@@ -9,6 +9,8 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/FruitGardenLanguage"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/GameOfLife"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/JavaKeywords"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/JavaToDoc"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/JavaToDocSLE"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/NetworkTopology"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/Organigram"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/PacMan"/>
@@ -17,31 +19,7 @@
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SheRememberedCaterpillars"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanGUI"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/SokobanLanguage"/>
-<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuite"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuiteGT"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-neo.git,master,examples/TestSuiteTGG"/>
 </provider>
-<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137019574_4" label="case studies" name="case studies">
-<item elementID="=SokobanGUI" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=GameOfLife" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-</workingSets>
-<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137191851_6" label="gt" name="gt">
-<item elementID="=Organigram" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FruitGardenLanguage" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=NetworkTopology" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SheRememberedCaterpillars" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Quiltography" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=RiverCrossing" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=PacMan" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=Chess" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=JavaKeywords" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-</workingSets>
-<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137201994_7" label="tests" name="tests">
-<item elementID="=TestSuite" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-</workingSets>
-<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1573137041496_5" label="tggs" name="tggs">
-<item elementID="=CompanyToIT" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=SokobanLanguage" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FacebookToInstagram" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FacebookToInstagramFASE" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=FamiliesToPersons" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-</workingSets>
 </psf>

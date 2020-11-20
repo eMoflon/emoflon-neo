@@ -1,11 +1,12 @@
 package org.emoflon.neo.emsl.compiler.ops
 
-import org.emoflon.neo.emsl.compiler.ILPOperation
-import org.emoflon.neo.emsl.eMSL.Action
 import java.util.Collection
-import org.emoflon.neo.emsl.eMSL.Parameter
-import org.emoflon.neo.emsl.compiler.ParameterData
 import java.util.Map
+import org.emoflon.neo.emsl.compiler.ILPOperation
+import org.emoflon.neo.emsl.compiler.ParameterData
+import org.emoflon.neo.emsl.eMSL.Action
+import org.emoflon.neo.emsl.eMSL.ActionOperator
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 class CC extends ILPOperation {
 
@@ -19,8 +20,8 @@ class CC extends ILPOperation {
 		return "_CC"
 	}
 	
-	override getAction(Action action, boolean isSrc) {
-		return ""
+	override getAction(Action action, Domain domain) {
+		if(!domain.equals(Domain.CORR) || action === null || !ActionOperator::CREATE.equals(action.getOp())) return "" else return "++"
 	}
 
 	override requiresCorrModelCreation() {
@@ -60,9 +61,9 @@ class CC extends ILPOperation {
 		'''
 	}
 	
-	override additionalFields(String tggName) {
+	override additionalFields(String tggName, String solver) {
 		'''
-			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+			private static SupportedILPSolver solver = SupportedILPSolver.«solver»;
 			private CorrCreationOperationalStrategy corrCreation;
 		'''
 	}

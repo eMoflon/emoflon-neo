@@ -3,7 +3,6 @@ package org.emoflon.neo.engine.modules.updatepolicies;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
@@ -49,23 +48,17 @@ public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy im
 	}
 
 	@Override
-	public void cleanup() {
-		try {
-			if (isConsistent()) {
-				logger.info("Your triple is consistent!");
-			} else {
-				logger.info("Your triple is inconsistent!");
-				var inconsistentElements = determineInconsistentElements();
-				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
-				logger.debug(inconsistentElements);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
 	public String description() {
 		return "ILP solving";
+	}
+	
+	@Override
+	protected void removeInconsistentElements(Collection<Long> inconsistentElts) {
+		removeInconsistentElements(inconsistentElts, false, false, false);
+	}
+	
+	@Override
+	protected boolean isExact() {
+		return true;
 	}
 }

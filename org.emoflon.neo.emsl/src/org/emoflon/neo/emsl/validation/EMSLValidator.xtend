@@ -338,7 +338,13 @@ class EMSLValidator extends AbstractEMSLValidator {
 		for (entity : spec.entities) {
 			var dispatcher = dispatcher
 			if (!namelistsOfEntities.get(entity.eClass.name).contains(dispatcher.getName(entity))) {
-				namelistsOfEntities.get(entity.eClass.name).add(dispatcher.getName(entity))
+				if (entity instanceof Rule && !namelistsOfEntities.get("Pattern").contains(dispatcher.getName(entity))
+					|| entity instanceof Pattern && !namelistsOfEntities.get("Rule").contains(dispatcher.getName(entity))
+					|| !(entity instanceof Pattern) && !(entity instanceof Rule)) {
+					namelistsOfEntities.get(entity.eClass.name).add(dispatcher.getName(entity))
+				} else {
+					error("Patterns and Rules in the same file cannot have the same name.", entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
+				}
 			} else {
 				if (entity instanceof Rule)
 					error(SAME_NAMES_OF_ENTITIES(entity.eClass.name), entity, EMSLPackage.Literals.SUPER_TYPE__NAME)
@@ -868,10 +874,10 @@ class EMSLValidator extends AbstractEMSLValidator {
 	 */
 	@Check
 	def void typeOfSourceTargetInCorrespondence(Correspondence corr) {
-		if (corr.source?.type != corr.type.source) {
+		if (corr.source !== null && corr.source?.type != corr.type.source) {
 			error('''The source argument must be of type "«corr.type.source.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__SOURCE)
 		}
-		if (corr.target?.type != corr.type.target) {
+		if (corr.target !== null && corr.target?.type != corr.type.target) {
 			error('''The target argument must be of type "«corr.type.target.name»".''', corr, EMSLPackage.Literals.CORRESPONDENCE__TARGET)
 		}
 	}

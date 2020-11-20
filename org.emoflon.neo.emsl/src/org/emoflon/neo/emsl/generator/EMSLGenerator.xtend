@@ -7,7 +7,6 @@ import java.net.URI
 import java.util.ArrayList
 import java.util.List
 import java.util.function.Predicate
-import java.util.stream.Collectors
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
@@ -114,7 +113,7 @@ class EMSLGenerator extends AbstractGenerator {
 			ClasspathUtil.addDependencies(project, List.of("org.eclipse.xtext"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.logging"))
 			ClasspathUtil.addDependencies(project, List.of("org.apache.log4j"))
-			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.lang3"))
+			ClasspathUtil.addDependencies(project, List.of("org.apache.commons.lang"))
 			ClasspathUtil.makeSourceFolderIfNecessary(srcFolder)
 			ClasspathUtil.makeSourceFolderIfNecessary(tggFolder)
 
@@ -158,17 +157,15 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	private def getInstallLocation() {
-		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
-		val fileURL = FileLocator.resolve(plugin.getEntry("/")).toString
-		val fileURI = new URI(fileURL.replace(" ", "%20")).normalize
-		val segments = fileURI.path.split("/")
+		val fileURI = getNeoCoreURIInstalled()
+		val segments = fileURI.split("/")
 		val path = segments.take(segments.length - 1)
 		path.join("/") + "/"
 	}
 
 	private def getNeoCoreURIInstalled() {
 		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
-		val fileURL = FileLocator.resolve(plugin.getEntry("/model/NeoCore.msl")).toString
+		val fileURL = FileLocator.resolve(plugin.getEntry("/")).toString
 		val fileURI = new URI(fileURL.replace(" ", "%20")).normalize
 		return fileURI.path
 	}
@@ -432,12 +429,15 @@ class EMSLGenerator extends AbstractGenerator {
 				Collectors.toSet)
 			val constraintMethods = gg.constraints.stream.map["getConstraint_" + namingConvention(it.name) + "().constraint()"].collect(
 				Collectors.toSet)
-
+				
 			'''
 				public Collection<NeoRule> getAllRulesFor«namingConvention(gg.name)»() {
 					Collection<NeoRule> rules = new HashSet<>();
-					«FOR access : ruleMethods»
-						rules.add(«access»);
+					
+					«FOR rule : gg.rules»
+						«FOR access : emslSpec.entities.filter[it instanceof Rule && (it as Rule).name.equals(rule.name)]»
+							rules.add(getRule_«namingConvention((access as Rule).name)»().rule());
+						«ENDFOR»
 					«ENDFOR»
 					return rules;
 				}
@@ -452,7 +452,7 @@ class EMSLGenerator extends AbstractGenerator {
 				
 				public Collection<Rule> getAllEMSLRulesFor«namingConvention(gg.name)»(){
 					var rules = new HashSet<Rule>();
-					«FOR r : gg.rules»
+					«FOR r : emslSpec.entities.filter[it instanceof Rule]»
 						rules.add((Rule) spec.getEntities().get(«emslSpec.entities.indexOf(r)»));
 					«ENDFOR»
 					return rules;

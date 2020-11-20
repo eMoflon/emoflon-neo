@@ -16,7 +16,8 @@ Export-Package: .,
  org.emoflon.neo.engine.modules.startup,
  org.emoflon.neo.engine.modules.terminationcondition,
  org.emoflon.neo.engine.modules.updatepolicies,
- org.emoflon.neo.engine.modules.valueGenerators
+ org.emoflon.neo.engine.modules.valueGenerators,
+ org.moeaframework.problem
 Automatic-Module-Name: org.emoflon.neo.generator
 Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",

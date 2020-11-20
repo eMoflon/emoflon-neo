@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_Common;
 import org.emoflon.neo.api.API_Instagram;
 import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
@@ -42,9 +42,9 @@ public class FacebookToInstagramFASE_GEN_Run {
 	public void runGenerator() throws FlattenerException, Exception {
 		try (var builder = API_Common.createBuilder()) {
 			var api = new API_Transformations(builder);
-			api.exportMetamodelsForFacebookToInstagramGrammar();
+			api.exportMetamodelsForFacebookToInstagramFASE();
 
-			var genAPI = new API_FacebookToInstagramGrammar_GEN(builder);
+			var genAPI = new API_FacebookToInstagramFASE_GEN(builder);
 			var generator = createGenerator(api, genAPI, builder);
 
 			logger.info("Start model generation...");
@@ -53,35 +53,35 @@ public class FacebookToInstagramFASE_GEN_Run {
 		}
 	}
 
-	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramGrammar_GEN genAPI,
+	protected NeoGenerator createGenerator(API_Transformations api, API_FacebookToInstagramFASE_GEN genAPI,
 			NeoCoreBuilder builder) {
-		var allRules = genAPI.getAllRulesForFacebookToInstagramGrammar_GEN();
+		var allRules = genAPI.getAllRulesForFacebookToInstagramFASE_GEN();
 
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, -1)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 5)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 5000)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 50000)
-				.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 30000);
+				.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 5)
+				.setMax(API_Transformations.FacebookToInstagramFASE__UserToUser, 5000)
+				.setMax(API_Transformations.FacebookToInstagramFASE__RequestFriendship, 50000)
+				.setMax(API_Transformations.FacebookToInstagramFASE__AcceptFriendship, 30000);
 
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
 			switch (ruleName) {
-			case API_Transformations.FacebookToInstagramGrammar__UserToUser:
+			case API_Transformations.FacebookToInstagramFASE__UserToUser:
 				switch (nodeName) {
-				case API_Transformations.FacebookToInstagramGrammar__UserToUser__fn:
+				case API_Transformations.FacebookToInstagramFASE__UserToUser__fn:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;
 				}
-			case API_Transformations.FacebookToInstagramGrammar__RequestFriendship:
+			case API_Transformations.FacebookToInstagramFASE__RequestFriendship:
 				switch (type) {
 				case API_Instagram.InstagramLanguage__User:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;
 				}
-			case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship:
+			case API_Transformations.FacebookToInstagramFASE__AcceptFriendship:
 				switch (nodeName) {
-				case API_Transformations.FacebookToInstagramGrammar__AcceptFriendship__iu1:
+				case API_Transformations.FacebookToInstagramFASE__AcceptFriendship__iu1:
 					return 1;
 				default:
 					return INodeSampler.EMPTY;

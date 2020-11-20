@@ -1,8 +1,8 @@
 package org.emoflon.neo.example.familiestopersons;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
-import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+import static Schema.run.FamiliesToPersons_GEN_Run.TRG_MODEL_NAME;
+import static Schema.run.FamiliesToPersons_GEN_Run.SRC_MODEL_NAME;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -39,8 +39,8 @@ import Schema.run.FamiliesToPersons_GEN_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		var testCOApp = new FamiliesToPersons_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testCCApp = new FamiliesToPersons_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCOApp = new FamiliesToPersons_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME, solver);
+		var testCCApp = new FamiliesToPersons_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME, solver);
 		var testGenApp = new FamiliesToPersons_GEN_TEST(configurator);
 
 		// Step 1. Run GEN to produce a triple

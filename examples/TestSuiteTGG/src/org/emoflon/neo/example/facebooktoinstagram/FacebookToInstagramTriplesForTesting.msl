@@ -76,7 +76,7 @@ rule createCorrs2 -> createCorrs1 {
 model ConsistentSrc3 -> ConsistentSrc2[fu -> fu1] {
 	fn : FacebookLanguage.Network {
 		-users-> fu2
-		-friendships-> friends
+		-friendships-> friendship
 	}
 	
 	fu1 : FacebookLanguage.User
@@ -85,7 +85,7 @@ model ConsistentSrc3 -> ConsistentSrc2[fu -> fu1] {
 		.name : "Otto"
 	}
 	
-	friends : Friendship {
+	friendship : Friendship {
 		-friends-> fu1
 		-friends-> fu2
 	}

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.neo.emsl.eMSL.AtomicPattern;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
@@ -63,7 +63,7 @@ public class EMSLFlattener {
 	}
 
 	private SuperType flattenEntity() throws FlattenerException {
-		Validate.inclusiveBetween(1, 1, entities.size());
+		Validate.isTrue(entities.size() == 1);
 		return flattener.flatten(entities.get(0), new HashSet<String>());
 	}
 

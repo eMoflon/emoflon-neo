@@ -3,37 +3,41 @@ package org.emoflon.neo.example.facebooktoinstagram;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForTesting;
+import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.jupiter.api.Disabled;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramGrammar_CO_Run;
-import Transformations.run.FacebookToInstagramGrammar_FWD_OPT_Run;
+import Transformations.run.FacebookToInstagramFASE_CO_Run;
+import Transformations.run.FacebookToInstagramFASE_FWD_OPT_Run;
 
-@Disabled("Waiting for fix from Nils")
 public class FWD_OPT_CO_Tests extends ENeoTest {
 
 	private API_FacebookToInstagramTriplesForTesting api = new API_FacebookToInstagramTriplesForTesting(builder);
 
-	private void runTest(Model srcModel, String srcName, String trgName) throws Exception {
+	private void runTest(Model srcModel, Model trgModel, String srcName, String trgName) throws Exception {
 		builder.exportEMSLEntityToNeo4j(srcModel);
-		new FacebookToInstagramGrammar_FWD_OPT_Run(srcName, trgName).run();
-		assertTrue(new FacebookToInstagramGrammar_CO_Run(srcName, trgName).runCheckOnly().isConsistent());
+		var metamodels = builder.collectDependentMetamodels(trgModel);
+		for (Metamodel m : metamodels) 
+			builder.exportEMSLEntityToNeo4j(m);
+		new FacebookToInstagramFASE_FWD_OPT_Run(srcName, trgName, solver).run();
+		assertTrue(new FacebookToInstagramFASE_CO_Run(srcName, trgName, solver).runCheckOnly().isConsistent());
 	}
 
 	@Test
 	public void testTriple1() throws Exception {
-		runTest(api.getModel_ConsistentSrc1(), "ConsistentSrc1", "Target1");
+		runTest(api.getModel_ConsistentSrc1(), api.getModel_ConsistentTrg1(), "ConsistentSrc1", "Target1");
 	}
 
 	@Test
 	public void testTriple2() throws Exception {
-		runTest(api.getModel_ConsistentSrc2(), "ConsistentSrc2", "Target2");
+		runTest(api.getModel_ConsistentSrc2(), api.getModel_ConsistentTrg2(), "ConsistentSrc2", "Target2");
 	}
 
-	@Test
+	@Ignore
+	// Doesn't terminate because RequestFrienship is an ignore rule for FWD_OPT
 	public void testTriple3() throws Exception {
-		runTest(api.getModel_ConsistentSrc3(), "ConsistentSrc3", "Target3");
+		runTest(api.getModel_ConsistentSrc3(), api.getModel_ConsistentTrg3(), "ConsistentSrc3", "Target3");
 	}
 }

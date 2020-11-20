@@ -1,0 +1,215 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
+
+model moflonJava {
+	
+	// Java
+	c1:Clazz {
+		.name : "c1"
+		-fields-> f4 {
+			~_cr_ : true
+		}
+		-fields-> f5
+		-methods-> m6 {
+			~_de_ : true
+		}
+	}
+		
+	c2:Clazz {
+		.name : "c2"
+		-subTypes-> c3 {
+			~_cr_ : true
+		}
+		-fields->f7
+		-methods-> m8
+	}
+	
+	c3:Clazz {
+		.name : "c3"
+		._cr_ : true
+		-fields-> f7 {
+			~_cr_ : true
+		}
+	}
+	
+	f4:Field {
+		.name : "f4"
+		._cr_ : true
+	}
+	
+	f5:Field {
+		.name : "f5"
+	}
+	
+	f7:Field {
+		.name : "f7"
+	}
+	
+	m6:Method {
+		.name : "m6"
+		._de_ : true
+		-parameters-> p9 {
+			~_de_ : true
+		}
+		-parameters-> p10 {
+			~_de_ : true
+		}
+	}
+	
+	m8:Method {
+		.name : "m8"
+		-parameters-> p10 {
+			~_cr_ : true
+		}
+	}
+	
+	p9:Parameter {
+		.name : "p9"
+		._de_ : true
+	}
+	
+	p10:Parameter {
+		.name : "p10"
+	}
+}
+
+model moflonDoc {
+	// Doc
+		
+	doc1:Doc {
+		.name : "c1"
+		-entries-> e4 {
+			~_cr_ : true
+		}
+		-entries-> e5
+		-entries-> e6
+		-entries-> e7 {
+			~_cr_ : true
+		}
+	}
+	
+	doc2:Doc {
+		.name : "c2"
+		-entries-> e7 {
+			~_de_ : true
+		}
+		-entries-> e8 
+	}
+	
+	e4:Entry {
+		.name : "f4"
+		._cr_ : true
+	}
+	
+	e5:Entry {
+		.name : "f5"
+	}
+	
+	e6:Entry {
+		.name : "m6"
+		-gEntries-> ge12 {
+			~_cr_ : true
+		}
+	}
+	
+	e7:Entry {
+		.name : "f7"
+	}
+	
+	e8:Entry {
+		.name : "m8"
+	}
+	
+	ge12:GlossaryEntry{
+		.name : "ge12"
+	}
+	
+	g11:Glossary{
+		.name : "g11"
+		-gEntries-> ge12
+	}
+}
+
+rule createCorrs {
+	// Java
+	c1:Clazz {
+		.name : "c1"
+		++-corr->doc1 {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	c2:Clazz {
+		.name : "c2"
+		++-corr->doc2 {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	f5:Field {
+		.name : "f5"
+		++-corr-> e5 {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	f7:Field {
+		.name : "f7"
+		++-corr-> e7 {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	m6:Method {
+		.name : "m6"
+		++-corr-> e6 {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	m8:Method {
+		.name : "m8"
+		++-corr-> e8 {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	p9:Parameter {
+		.name : "p9"
+		++-corr-> e6 {
+			._type_ := "ParamToEntry"
+		}
+	}
+	
+	p10:Parameter {
+		.name : "p10"
+		++-corr-> e6 {
+			._type_ := "ParamToEntry"
+		}
+	}
+	
+	// Doc
+	doc1:Doc {
+		.name : "c1"
+	}
+	
+	doc2:Doc {
+		.name : "c2"
+	}
+	
+	e5:Entry {
+		.name : "f5"
+	}
+	
+	e6:Entry {
+		.name : "m6"
+	}
+	
+	e7:Entry {
+		.name : "f7"
+	}
+	
+	e8:Entry {
+		.name : "m8"
+	}
+}

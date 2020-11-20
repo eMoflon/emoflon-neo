@@ -3,7 +3,7 @@ package org.emoflon.neo.victory.adapter.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.emoflon.victory.ui.api.Node;
 import org.emoflon.victory.ui.api.enums.Action;
 import org.emoflon.victory.ui.api.enums.Domain;

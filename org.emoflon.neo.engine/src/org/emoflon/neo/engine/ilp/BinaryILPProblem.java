@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * for computing a valid solution.
  *
  */
-public final class BinaryILPProblem extends ILPProblem {
+public class BinaryILPProblem extends ILPProblem {
 	/**
 	 * This map contains all defined implications
 	 */

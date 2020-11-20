@@ -19,8 +19,53 @@ matcher and modelling framework.
    </license>
 
    <requires>
-      <import feature="net.sourceforge.plantuml.feature" version="1.1.23"/>
-      <import feature="net.sourceforge.plantuml.lib.feature" version="1.2019.0"/>
+      <import plugin="org.apache.commons.io" version="2.2.0" match="greaterOrEqual"/>
+      <import plugin="com.google.guava"/>
+      <import plugin="org.eclipse.emf.ecore.xmi" version="2.15.0" match="greaterOrEqual"/>
+      <import plugin="org.emoflon.neo.emsl" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.xbase.lib"/>
+      <import plugin="org.eclipse.xtend.lib"/>
+      <import plugin="org.eclipse.xtend.lib.macro"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.apache.log4j" version="1.2.15" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext"/>
+      <import plugin="org.eclipse.xtext.xbase"/>
+      <import plugin="org.eclipse.equinox.common" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.xtext.xbase.lib" version="2.14.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.util"/>
+      <import plugin="org.eclipse.emf.common"/>
+      <import plugin="org.eclipse.xtend.lib" version="2.14.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui" version="3.111.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.15.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.13.200" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.16.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.18.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.lang" version="2.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.ide"/>
+      <import plugin="org.eclipse.xtext.xbase.ide"/>
+      <import plugin="org.eclipse.xtext.ui"/>
+      <import plugin="org.eclipse.xtext.ui.shared"/>
+      <import plugin="org.eclipse.xtext.ui.codetemplates.ui"/>
+      <import plugin="org.eclipse.ui.editors" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.compare"/>
+      <import plugin="org.eclipse.xtext.builder"/>
+      <import plugin="org.eclipse.e4.core.commands" version="0.12.400" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.console" version="3.8.300" match="greaterOrEqual"/>
+      <import plugin="net.sourceforge.plantuml.eclipse"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.emoflon.neo.engine" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.emoflon.neo.neo4j.adapter" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.sat4j.core" version="2.3.5" match="greaterOrEqual"/>
+      <import plugin="org.sat4j.pb" version="2.3.5" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.logging"/>
+      <import plugin="org.emoflon.victory.ui" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.annotation" version="2.2.300" match="greaterOrEqual"/>
+      <import plugin="net.sourceforge.plantuml.lib"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.jface"/>
    </requires>
 
    <plugin

@@ -45,7 +45,6 @@ final class GurobiWrapper extends ILPSolver {
 	 */
 	private final boolean onlyBinaryVariables;
 
-	private static final int MIN_TIMEOUT = 30;
 	private static final int MAX_TIMEOUT = 60 * 60; // 1 hour
 
 	/**
@@ -79,14 +78,16 @@ final class GurobiWrapper extends ILPSolver {
 	@Override
 	public ILPSolution solveILP() throws GRBException {
 		ILPSolver.logger.debug(this.ilpProblem.getProblemInformation());
-
-		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
-		currentTimeout = GurobiWrapper.MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
-		if (currentTimeout < 0) {
-			currentTimeout = GurobiWrapper.MAX_TIMEOUT;
-		}
-		currentTimeout = Math.min(currentTimeout, GurobiWrapper.MAX_TIMEOUT);
-
+		
+//  Temporarily commented out due to performance tests
+//		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
+//		currentTimeout = GurobiWrapper.MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
+//		if (currentTimeout < 0) {
+//			currentTimeout = GurobiWrapper.MAX_TIMEOUT;
+//		}
+//		currentTimeout = Math.min(currentTimeout, GurobiWrapper.MAX_TIMEOUT);
+		
+		long currentTimeout = GurobiWrapper.MAX_TIMEOUT / 2;
 		this.prepareModel();
 		this.solveModel(currentTimeout);
 		return this.retrieveSolution();

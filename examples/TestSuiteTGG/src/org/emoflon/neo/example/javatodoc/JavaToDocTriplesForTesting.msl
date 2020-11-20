@@ -1,0 +1,179 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+// 1.
+
+model ConsistentSrc1 {
+	origamiPackage:Package {
+		.name : "Origami"
+		-subPackages->tonyPackage
+	}
+	
+	tonyPackage:Package {
+		.name : "Tony"
+	}
+}
+
+model ConsistentTrg1 {
+	origamiFolder:Folder {
+		.name : "Origami"
+		-subFolders->tonyFolder
+	}
+	
+	tonyFolder:Folder {
+		.name : "Tony"
+		-docs->tonyDoc
+	}
+	
+	tonyDoc:Doc {
+		.name : "Tony"
+	}
+}
+
+rule createCorrs1 {
+	origamiPackage:Package {
+		.name : "Origami"
+		++-corr->origamiFolder {
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	origamiFolder:Folder {
+		.name : "Origami"
+	}
+	
+	tonyPackage:Package {
+		.name : "Tony"
+		++-corr->tonyFolder{
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	tonyFolder:Folder {
+		.name : "Tony"
+	}
+}
+
+// 2.
+
+model ConsistentSrc2 -> ConsistentSrc1 {
+	origamiPackage:Package {
+		.name : "Origami"
+		-subPackages->bonsaiPackage
+	}
+	
+	bonsaiPackage:Package {
+		.name : "Bonsai"
+	}
+}
+
+model ConsistentTrg2 -> ConsistentTrg1 {
+	origamiFolder:Folder {
+		.name : "Origami"
+		-subFolders->bonsaiFolder
+		
+	}
+	
+	bonsaiFolder:Folder {
+		.name : "Bonsai"
+		-docs->bonsaiDoc
+	}
+	
+	bonsaiDoc:Doc {
+		.name : "Bonsai"
+	}
+}
+
+
+
+rule createCorrs2 -> createCorrs1 {
+	
+	bonsaiPackage:Package {
+		.name : "Bonsai"
+		++-corr->bonsaiFolder{
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	bonsaiFolder:Folder {
+		.name : "Bonsai"
+	}
+}
+
+// 3.
+
+model ConsistentSrc3 -> ConsistentSrc2 {
+	tonyPackage:Package {
+		.name : "Tony"
+		-subPackages->elrondPackage
+	}
+	
+	elrondPackage:Package {
+		.name : "Elrond"
+	}
+}
+
+model ConsistentTrg3 -> ConsistentTrg2 {
+	tonyFolder : Folder {
+		.name : "Tony"
+		-subFolders-> elrondFolder
+	}
+	
+	elrondFolder : Folder {
+		.name : "Elrond"
+		-docs->elrondDoc
+	}
+	
+	elrondDoc : Doc {
+		.name : "Elrond"
+	}
+}
+
+rule createCorrs3 -> createCorrs2 {
+
+	elrondPackage:Package {
+		.name : "Elrond"
+		++-corr->elrondFolder{
+			._type_ := "PackageToFolder"
+		}
+	}
+	
+	elrondFolder : Folder {
+		.name : "Elrond"
+	}
+}
+
+// 4.
+
+model ConsistentSrc4 -> ConsistentSrc3 {
+	bonsaiPackage : Package {
+		-clazzes-> aragornClass
+	}
+
+	aragornClass : Clazz {
+		.name : "Aragorn"
+	}
+}
+
+model ConsistentTrg4 -> ConsistentTrg3 {
+	bonsaiFolder : Folder {
+		-docs-> aragornDoc
+	}
+		
+	aragornDoc : Doc {
+		.name : "Aragorn"
+	}
+}
+
+rule createCorrs4 -> createCorrs3 {
+	aragornClass:Clazz {
+		.name : "Aragorn"
+		++ -corr->aragornDoc {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	aragornDoc : Doc {
+		.name : "Aragorn"
+	}
+}

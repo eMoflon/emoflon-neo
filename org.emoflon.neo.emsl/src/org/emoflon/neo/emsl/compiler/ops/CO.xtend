@@ -1,11 +1,11 @@
 package org.emoflon.neo.emsl.compiler.ops
 
-import org.emoflon.neo.emsl.compiler.ILPOperation
-import org.emoflon.neo.emsl.eMSL.Action
 import java.util.Collection
-import org.emoflon.neo.emsl.eMSL.Parameter
-import org.emoflon.neo.emsl.compiler.ParameterData
 import java.util.Map
+import org.emoflon.neo.emsl.compiler.ILPOperation
+import org.emoflon.neo.emsl.compiler.ParameterData
+import org.emoflon.neo.emsl.eMSL.Action
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 class CO extends ILPOperation {
 
@@ -19,7 +19,7 @@ class CO extends ILPOperation {
 		return "_CO"
 	}
 	
-	override getAction(Action action, boolean isSrc) {
+	override getAction(Action action, Domain domain) {
 		return ""
 	}
 
@@ -48,7 +48,7 @@ class CO extends ILPOperation {
 			import org.emoflon.neo.engine.api.constraints.IConstraint;
 			import org.emoflon.neo.api.«packagePath».API_«tggName»_GEN;
 			import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-			import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
+			import org.emoflon.neo.engine.modules.matchreprocessors.COReprocessor;
 			import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 			import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 			import org.emoflon.neo.engine.modules.startup.NoOpStartup;
@@ -56,12 +56,13 @@ class CO extends ILPOperation {
 			import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 			import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 			import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+			import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 		'''
 	}
 	
-	override additionalFields(String tggName) {
+	override additionalFields(String tggName, String solver) {
 		'''
-			private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+			private static SupportedILPSolver solver = SupportedILPSolver.«solver»;
 			private CheckOnlyOperationalStrategy checkOnly;
 		'''
 	}
@@ -72,6 +73,7 @@ class CO extends ILPOperation {
 			var api = new API_«packageName»(builder);
 			var genAPI = new API_«tggName»_GEN(builder);
 			var coAPI = new API_«fullOpName»(builder);
+			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
 			checkOnly = new CheckOnlyOperationalStrategy(//
 					solver, //
 					genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN(), //
@@ -88,7 +90,7 @@ class CO extends ILPOperation {
 					new OneShotTerminationCondition(), //
 					new AllRulesAllMatchesScheduler(), //
 					checkOnly, //
-					new NoOpReprocessor(), //
+					new COReprocessor(analyser), //
 					checkOnly, //
 					new HeartBeatAndReportMonitor(), //
 					new ModelNameValueGenerator(srcModelName, trgModelName), //

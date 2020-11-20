@@ -74,20 +74,20 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 					return handleNodeBlockTypesInTripleRule(context as ModelNodeBlock, reference)
 			}
 
-			if (valueOfRelationStatementInModel(context, reference))
-				return handleValueOfRelationStatementInModel(context as ModelRelationStatement, reference)
+			if (targetOfRelationStatementInModel(context, reference))
+				return handleTargetOfRelationStatementInModel(context as ModelRelationStatement, reference)
 
-			if (valueOfRelationStatementInMetamodel(context, reference))
-				return handleValueOfRelationStatementInMetamodel(context as MetamodelRelationStatement, reference)
+			if (targetOfRelationStatementInMetamodel(context, reference))
+				return handleTargetOfRelationStatementInMetamodel(context as MetamodelRelationStatement, reference)
 
-			if (valueOfRelationStatementInRule(context, reference))
-				return handleValueOfRelationStatementInRule(context as ModelRelationStatement, reference)
+			if (targetOfRelationStatementInRule(context, reference))
+				return handleTargetOfRelationStatementInRule(context as ModelRelationStatement, reference)
 
-			if (valueOfRelationStatementInPattern(context, reference))
-				return handleValueOfRelationStatementInPattern(context as ModelRelationStatement, reference)
+			if (targetOfRelationStatementInPattern(context, reference))
+				return handleTargetOfRelationStatementInPattern(context as ModelRelationStatement, reference)
 
-			if (valueOfRelationStatementInTripleRule(context, reference)) {
-				return handleValueOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
+			if (targetOfRelationStatementInTripleRule(context, reference)) {
+				return handleTargetOfRelationStatementInTripleRule(context as ModelRelationStatement, reference)
 			}
 
 			if (typeOfRelationStatementInModelRelationStatement(context, reference)) {
@@ -425,18 +425,18 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	/**
-	 * Returns whether to build a scope for the value of a RelationStatement in a Rule.
+	 * Returns whether to build a scope for the target of a RelationStatement in a Rule.
 	 */
-	def valueOfRelationStatementInRule(EObject context, EReference reference) {
+	def targetOfRelationStatementInRule(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement &&
 			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof Rule
 	}
 
 	/**
-	 * Returns the scope for the value of a RelationStatement in a Rule.
+	 * Returns the scope for the target of a RelationStatement in a Rule.
 	 */
-	def handleValueOfRelationStatementInRule(ModelRelationStatement statement, EReference reference) {
+	def handleTargetOfRelationStatementInRule(ModelRelationStatement statement, EReference reference) {
 		return Scopes.scopeFor(filterForCompatibleSuperTypes(
 			new HashSet((statement.eContainer.eContainer as Rule).nodeBlocks),
 			statement
@@ -444,18 +444,18 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	/**
-	 * Returns whether to build a scope for the value of a RelationStatement in a TripleRule.
+	 * Returns whether to build a scope for the target of a RelationStatement in a TripleRule.
 	 */
-	def valueOfRelationStatementInTripleRule(EObject context, EReference reference) {
+	def targetOfRelationStatementInTripleRule(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement &&
 			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof TripleRule
 	}
 
 	/**
-	 * Returns the scope for the value of a RelationStatement in a TripleRule.
+	 * Returns the scope for the target of a RelationStatement in a TripleRule.
 	 */
-	private def handleValueOfRelationStatementInTripleRule(ModelRelationStatement statement, EReference reference) {
+	private def handleTargetOfRelationStatementInTripleRule(ModelRelationStatement statement, EReference reference) {
 		val tripleRule = statement.eContainer.eContainer as TripleRule
 		val allNodeBlocks = new HashSet()
 		if ((statement.eContainer.eContainer as TripleRule).srcNodeBlocks.contains(statement.eContainer))
@@ -467,18 +467,18 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	/**
-	 * Returns whether to build a scope for the value of a RelationStatement in a Pattern.
+	 * Returns whether to build a scope for the target of a RelationStatement in a Pattern.
 	 */
-	private def valueOfRelationStatementInPattern(EObject context, EReference reference) {
+	private def targetOfRelationStatementInPattern(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement &&
 			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof AtomicPattern
 	}
 
 	/**
-	 * Returns a scope for the value of a RelationStatement in a Pattern.
+	 * Returns a scope for the target of a RelationStatement in a Pattern.
 	 */
-	private def handleValueOfRelationStatementInPattern(ModelRelationStatement statement, EReference reference) {
+	private def handleTargetOfRelationStatementInPattern(ModelRelationStatement statement, EReference reference) {
 		return Scopes.scopeFor(filterForCompatibleSuperTypes(
 			new HashSet((statement.eContainer.eContainer as AtomicPattern).nodeBlocks),
 			statement
@@ -486,25 +486,25 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	/**
-	 * Returns whether to build a scope for the value of a RelationStatement in a Model.
+	 * Returns whether to build a scope for the target of a RelationStatement in a Model.
 	 */
-	private def valueOfRelationStatementInModel(EObject context, EReference reference) {
+	private def targetOfRelationStatementInModel(EObject context, EReference reference) {
 		context instanceof ModelRelationStatement &&
 			reference == EMSLPackage.Literals.MODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof Model
 	}
 
 	/**
-	 * Returns a scope for the value of a RelationStatement in a Model.
+	 * Returns a scope for the target of a RelationStatement in a Model.
 	 */
-	private def handleValueOfRelationStatementInModel(ModelRelationStatement statement, EReference reference) {
+	private def handleTargetOfRelationStatementInModel(ModelRelationStatement statement, EReference reference) {
 		val root = getSpec(statement)
-		val thisModel = statement.eContainer.eContainer as Model
-		val allModels = allModelsInAllImportedSpecs(root)
-		val allNodeBlocks = allModels.keySet.flatMap[m|m.nodeBlocks]
-		val allNodeBlocksOfRightType = filterForCompatibleSuperTypes(allNodeBlocks, statement)
-		val finalOptions = allNodeBlocksOfRightType.toInvertedMap[nb|allModels.get(nb.eContainer)]
-		return determineScope(finalOptions, Scopes.scopeFor(thisModel.nodeBlocks))
+ 		val thisModel = statement.eContainer.eContainer as Model
+ 		val allModels = allTypesInAllImportedSpecs(root, Model)
+ 		val allNodeBlocks = allModels.keySet.flatMap[m|m.nodeBlocks]
+ 		val allNodeBlocksOfRightType = filterForCompatibleSuperTypes(allNodeBlocks, statement)
+ 		val finalOptions = allNodeBlocksOfRightType.toInvertedMap[nb|allModels.get(nb.eContainer)]
+ 		return determineScope(finalOptions, Scopes.scopeFor(thisModel.nodeBlocks))
 	}
 
 	private def Iterable<ModelNodeBlock> filterForCompatibleSuperTypes(Iterable<ModelNodeBlock> allNodeBlocks,
@@ -527,18 +527,18 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 	}
 
 	/**
-	 * Returns whether to build a scope for the value of a RelationStatement in a Model.
+	 * Returns whether to build a scope for the target of a RelationStatement in a Metamodel.
 	 */
-	private def valueOfRelationStatementInMetamodel(EObject context, EReference reference) {
+	private def targetOfRelationStatementInMetamodel(EObject context, EReference reference) {
 		context instanceof MetamodelRelationStatement &&
 			reference == EMSLPackage.Literals.METAMODEL_RELATION_STATEMENT__TARGET &&
 			context.eContainer?.eContainer instanceof Metamodel
 	}
 
 	/**
-	 * Returns a scope for the value of a RelationStatement in a Model.
+	 * Returns a scope for the target of a RelationStatement in a Metamodel.
 	 */
-	private def handleValueOfRelationStatementInMetamodel(MetamodelRelationStatement statement, EReference reference) {
+	private def handleTargetOfRelationStatementInMetamodel(MetamodelRelationStatement statement, EReference reference) {
 		determineScope(allTypesInAllImportedSpecs(EcoreUtil.getRootContainer(statement), MetamodelNodeBlock))
 	}
 
@@ -699,10 +699,6 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 		allTypesInAllImportedSpecs(root, MetamodelNodeBlock)
 	}
 
-	private def allModelsInAllImportedSpecs(EObject root) {
-		allTypesInAllImportedSpecs(root, Model)
-	}
-
 	/**
 	 * Returns all objects of the given type from all imported specifications.
 	 */
@@ -850,8 +846,12 @@ class EMSLScopeProvider extends AbstractEMSLScopeProvider {
 							SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 					else {
 						if (eob instanceof AtomicPattern) {
-							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer.eContainer),
+							try {
+								QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer.eContainer),
 								eobName)
+							} catch (IllegalArgumentException e) {
+								return null;
+							}
 						} else {
 							QualifiedName.create(SimpleAttributeResolver.NAME_RESOLVER.apply(eob.eContainer), eobName)
 						}
