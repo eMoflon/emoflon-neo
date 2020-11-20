@@ -32,7 +32,7 @@ import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 @SuppressWarnings("unused")
 public class JavaToDocSLE_CC_Run {
-	private static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 	private CorrCreationOperationalStrategy corrCreation;
 	protected static final Logger logger = Logger.getLogger(JavaToDocSLE_CC_Run.class);
 	protected String srcModelName;
@@ -48,12 +48,7 @@ public class JavaToDocSLE_CC_Run {
 		this.srcModelName = srcModelName;
 		this.trgModelName = trgModelName;
 	}
-	
-	public JavaToDocSLE_CC_Run(String srcModelName, String trgModelName, SupportedILPSolver solver) {
-		this(srcModelName, trgModelName);
-		this.solver = solver;
-	}
-	
+
 	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 	
@@ -66,6 +61,7 @@ public class JavaToDocSLE_CC_Run {
 	}
 	
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_JavaToDocSLE(builder);
 		var genAPI = new API_JavaToDocSLE_GEN(builder);
 		var ccAPI = new API_JavaToDocSLE_CC(builder);
 		var genRules = genAPI.getAllRulesForJavaToDocSLE_GEN();
@@ -75,7 +71,7 @@ public class JavaToDocSLE_CC_Run {
 				builder, //
 				genRules, //
 				ccAPI.getAllRulesForJavaToDocSLE_CC(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfJavaToDocSLE(), //
 				srcModelName, //
 				trgModelName//
 		);
@@ -92,13 +88,9 @@ public class JavaToDocSLE_CC_Run {
 				new ModelNameValueGenerator(srcModelName, trgModelName), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
-	
+			
 	public CorrCreationOperationalStrategy runCorrCreation() throws Exception {
 		run();
 		return corrCreation;
-	}
-	
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		return Collections.emptyList();
 	}
 }

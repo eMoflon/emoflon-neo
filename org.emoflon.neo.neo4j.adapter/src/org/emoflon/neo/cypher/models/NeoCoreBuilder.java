@@ -150,7 +150,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	public void clearDataBase() {
 		executeQueryForSideEffect("MATCH (n) DETACH DELETE n");
 	}
-
+	public void clearModel(String modelName) {
+		executeQueryForSideEffect("match(n)-[r]->(m:NeoCore__Model) Where m.ename = '" + modelName + "' detach delete n,m");
+	}
+	
 	@Override
 	public void close() throws Exception {
 		driver.close();

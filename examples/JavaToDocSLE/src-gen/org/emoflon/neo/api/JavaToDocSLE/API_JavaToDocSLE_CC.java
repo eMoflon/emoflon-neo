@@ -4,6 +4,7 @@
 package org.emoflon.neo.api.JavaToDocSLE;
 
 import org.emoflon.neo.cypher.common.*;
+import org.emoflon.neo.cypher.constraints.*;
 import org.emoflon.neo.cypher.factories.*;
 import org.emoflon.neo.cypher.models.*;
 import org.emoflon.neo.cypher.patterns.*;
@@ -44,18 +45,19 @@ public class API_JavaToDocSLE_CC {
 	//:~> platform:/resource/JavaToDocSLE/tgg-gen/JavaToDocSLE/JavaToDocSLE_CC.msl#//@entities.0
 	public Collection<NeoRule> getAllRulesForJavaToDocSLE_CC() {
 		Collection<NeoRule> rules = new HashSet<>();
-		
-		rules.add(getRule_ClazzToDocRule().rule());
 		rules.add(getRule_SubClazzToSubDocRule().rule());
 		rules.add(getRule_MethodToEntryRule().rule());
 		rules.add(getRule_AddParameterRule().rule());
-		rules.add(getRule_FieldToEntryRule().rule());
-		rules.add(getRule_AddGlossaryRule().rule());
-		rules.add(getRule_LinkGlossaryEntryRule().rule());
-		rules.add(getRule_AddGlossaryEntryRule().rule());
-		rules.add(getRule_CreateSrcModel().rule());
 		rules.add(getRule_CreateTrgModel().rule());
+		rules.add(getRule_FieldToEntryRule().rule());
+		rules.add(getRule_ClazzToDocRule().rule());
+		rules.add(getRule_CreateSrcModel().rule());
 		return rules;
+	}
+	
+	public Collection<NeoConstraint> getAllConstraintsForJavaToDocSLE_CC() {
+		Collection<NeoConstraint> constraints = new HashSet<>();
+		return constraints;
 	}
 	
 	public Collection<Rule> getAllEMSLRulesForJavaToDocSLE_CC(){
@@ -67,9 +69,6 @@ public class API_JavaToDocSLE_CC {
 		rules.add((Rule) spec.getEntities().get(5));
 		rules.add((Rule) spec.getEntities().get(6));
 		rules.add((Rule) spec.getEntities().get(7));
-		rules.add((Rule) spec.getEntities().get(8));
-		rules.add((Rule) spec.getEntities().get(9));
-		rules.add((Rule) spec.getEntities().get(10));
 		return rules;
 	}
 	
@@ -135,42 +134,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -234,42 +215,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -324,18 +287,6 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("srcM._tr_", value);
 			return this;
 		}
-		public ClazzToDocRuleMask setSrcM_de_(boolean value) {
-			attributeMask.put("srcM._de_", value);
-			return this;
-		}
-		public ClazzToDocRuleMask setSrcM_cr_(boolean value) {
-			attributeMask.put("srcM._cr_", value);
-			return this;
-		}
-		public ClazzToDocRuleMask setSrcM_ex_(boolean value) {
-			attributeMask.put("srcM._ex_", value);
-			return this;
-		}
 		public ClazzToDocRuleMask setTrgM(Long value) {
 			nodeMask.put("trgM", value);
 			return this;
@@ -346,18 +297,6 @@ public class API_JavaToDocSLE_CC {
 		}
 		public ClazzToDocRuleMask setTrgM_tr_(boolean value) {
 			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public ClazzToDocRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public ClazzToDocRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public ClazzToDocRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
 			return this;
 		}
 		public ClazzToDocRuleMask setC(Long value) {
@@ -467,42 +406,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -633,42 +554,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -769,18 +672,6 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("srcM._tr_", value);
 			return this;
 		}
-		public SubClazzToSubDocRuleMask setSrcM_de_(boolean value) {
-			attributeMask.put("srcM._de_", value);
-			return this;
-		}
-		public SubClazzToSubDocRuleMask setSrcM_cr_(boolean value) {
-			attributeMask.put("srcM._cr_", value);
-			return this;
-		}
-		public SubClazzToSubDocRuleMask setSrcM_ex_(boolean value) {
-			attributeMask.put("srcM._ex_", value);
-			return this;
-		}
 		public SubClazzToSubDocRuleMask setTrgM(Long value) {
 			nodeMask.put("trgM", value);
 			return this;
@@ -791,18 +682,6 @@ public class API_JavaToDocSLE_CC {
 		}
 		public SubClazzToSubDocRuleMask setTrgM_tr_(boolean value) {
 			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public SubClazzToSubDocRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public SubClazzToSubDocRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public SubClazzToSubDocRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
 			return this;
 		}
 		public SubClazzToSubDocRuleMask setC(Long value) {
@@ -932,42 +811,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -1098,42 +959,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -1234,18 +1077,6 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("srcM._tr_", value);
 			return this;
 		}
-		public MethodToEntryRuleMask setSrcM_de_(boolean value) {
-			attributeMask.put("srcM._de_", value);
-			return this;
-		}
-		public MethodToEntryRuleMask setSrcM_cr_(boolean value) {
-			attributeMask.put("srcM._cr_", value);
-			return this;
-		}
-		public MethodToEntryRuleMask setSrcM_ex_(boolean value) {
-			attributeMask.put("srcM._ex_", value);
-			return this;
-		}
 		public MethodToEntryRuleMask setTrgM(Long value) {
 			nodeMask.put("trgM", value);
 			return this;
@@ -1256,18 +1087,6 @@ public class API_JavaToDocSLE_CC {
 		}
 		public MethodToEntryRuleMask setTrgM_tr_(boolean value) {
 			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public MethodToEntryRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public MethodToEntryRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public MethodToEntryRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
 			return this;
 		}
 		public MethodToEntryRuleMask setC(Long value) {
@@ -1387,42 +1206,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -1525,42 +1326,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -1642,18 +1425,6 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("srcM._tr_", value);
 			return this;
 		}
-		public AddParameterRuleMask setSrcM_de_(boolean value) {
-			attributeMask.put("srcM._de_", value);
-			return this;
-		}
-		public AddParameterRuleMask setSrcM_cr_(boolean value) {
-			attributeMask.put("srcM._cr_", value);
-			return this;
-		}
-		public AddParameterRuleMask setSrcM_ex_(boolean value) {
-			attributeMask.put("srcM._ex_", value);
-			return this;
-		}
 		public AddParameterRuleMask setTrgM(Long value) {
 			nodeMask.put("trgM", value);
 			return this;
@@ -1664,18 +1435,6 @@ public class API_JavaToDocSLE_CC {
 		}
 		public AddParameterRuleMask setTrgM_tr_(boolean value) {
 			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public AddParameterRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public AddParameterRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public AddParameterRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
 			return this;
 		}
 		public AddParameterRuleMask setM(Long value) {
@@ -1797,42 +1556,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -1963,42 +1704,24 @@ public class API_JavaToDocSLE_CC {
 		public class SrcMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcMNode(Value _srcM) {
 				if(!_srcM.get("ename").isNull())
 					this._ename = _srcM.get("ename").asString();
 				if(!_srcM.get("_tr_").isNull())
 					this.__tr_ = _srcM.get("_tr_").asBoolean();
-				if(!_srcM.get("_de_").isNull())
-					this.__de_ = _srcM.get("_de_").asBoolean();
-				if(!_srcM.get("_cr_").isNull())
-					this.__cr_ = _srcM.get("_cr_").asBoolean();
-				if(!_srcM.get("_ex_").isNull())
-					this.__ex_ = _srcM.get("_ex_").asBoolean();
 			}
 		}
 		
 		public class TrgMNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgMNode(Value _trgM) {
 				if(!_trgM.get("ename").isNull())
 					this._ename = _trgM.get("ename").asString();
 				if(!_trgM.get("_tr_").isNull())
 					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -2099,18 +1822,6 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("srcM._tr_", value);
 			return this;
 		}
-		public FieldToEntryRuleMask setSrcM_de_(boolean value) {
-			attributeMask.put("srcM._de_", value);
-			return this;
-		}
-		public FieldToEntryRuleMask setSrcM_cr_(boolean value) {
-			attributeMask.put("srcM._cr_", value);
-			return this;
-		}
-		public FieldToEntryRuleMask setSrcM_ex_(boolean value) {
-			attributeMask.put("srcM._ex_", value);
-			return this;
-		}
 		public FieldToEntryRuleMask setTrgM(Long value) {
 			nodeMask.put("trgM", value);
 			return this;
@@ -2121,18 +1832,6 @@ public class API_JavaToDocSLE_CC {
 		}
 		public FieldToEntryRuleMask setTrgM_tr_(boolean value) {
 			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public FieldToEntryRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public FieldToEntryRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public FieldToEntryRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
 			return this;
 		}
 		public FieldToEntryRuleMask setC(Long value) {
@@ -2178,652 +1877,6 @@ public class API_JavaToDocSLE_CC {
 	}
 	
 	//:~> platform:/resource/JavaToDocSLE/tgg-gen/JavaToDocSLE/JavaToDocSLE_CC.msl#//@entities.6
-	public AddGlossaryRuleAccess getRule_AddGlossaryRule() {
-		return new AddGlossaryRuleAccess();
-	}
-	
-	public class AddGlossaryRuleAccess extends NeoRuleCoAccess<AddGlossaryRuleData, AddGlossaryRuleCoData, AddGlossaryRuleMask> {
-		public final String _trgM = "trgM";
-		public final String _g = "g";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(6);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<AddGlossaryRuleData> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new AddGlossaryRuleData(d));
-		}
-			
-		@Override
-		public Stream<AddGlossaryRuleCoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new AddGlossaryRuleCoData(d));
-		}
-		
-		@Override
-		public AddGlossaryRuleMask mask() {
-			return new AddGlossaryRuleMask();
-		}
-	}
-	
-	public class AddGlossaryRuleData extends NeoData {
-		public final TrgMNode _trgM;
-		public final GNode _g;
-		public final G_elementOf_0_trgMRel _g_elementOf_0_trgM;
-		
-		public AddGlossaryRuleData(Record data) {
-			var _trgM = data.get("trgM");
-			this._trgM = new TrgMNode(_trgM);
-			var _g = data.get("g");
-			this._g = new GNode(_g);
-			var _g_elementOf_0_trgM = data.get("g_elementOf_0_trgM");
-			this._g_elementOf_0_trgM = new G_elementOf_0_trgMRel(_g_elementOf_0_trgM);
-		}
-		
-		
-		public class TrgMNode {
-			public String _ename;
-			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
-			
-			public TrgMNode(Value _trgM) {
-				if(!_trgM.get("ename").isNull())
-					this._ename = _trgM.get("ename").asString();
-				if(!_trgM.get("_tr_").isNull())
-					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
-			}
-		}
-		
-		public class GNode {
-			public String _name;
-			
-			public GNode(Value _g) {
-				if(!_g.get("name").isNull())
-					this._name = _g.get("name").asString();
-			}
-		}
-		
-		public class G_elementOf_0_trgMRel {
-		
-			public G_elementOf_0_trgMRel(Value _g_elementOf_0_trgM) {
-			}
-		}
-	}
-	
-	public class AddGlossaryRuleCoData extends NeoData {
-		public final TrgMNode _trgM;
-		public final GNode _g;
-		public final G_elementOf_0_trgMRel _g_elementOf_0_trgM;
-	
-		public AddGlossaryRuleCoData(Record data) {
-			var _trgM = data.get("trgM");
-			this._trgM = new TrgMNode(_trgM);
-			var _g = data.get("g");
-			this._g = new GNode(_g);
-			var _g_elementOf_0_trgM = data.get("g_elementOf_0_trgM");
-			this._g_elementOf_0_trgM = new G_elementOf_0_trgMRel(_g_elementOf_0_trgM);
-		}
-		
-	
-		public class TrgMNode {
-			public String _ename;
-			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
-			
-			public TrgMNode(Value _trgM) {
-				if(!_trgM.get("ename").isNull())
-					this._ename = _trgM.get("ename").asString();
-				if(!_trgM.get("_tr_").isNull())
-					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
-			}
-		}
-		
-		public class GNode {
-			public String _name;
-			
-			public GNode(Value _g) {
-				if(!_g.get("name").isNull())
-					this._name = _g.get("name").asString();
-			}
-		}
-		
-		public class G_elementOf_0_trgMRel {
-		
-			public G_elementOf_0_trgMRel(Value _g_elementOf_0_trgM) {
-			}
-		}
-	}
-	
-	public class AddGlossaryRuleMask extends NeoMask {
-		public AddGlossaryRuleMask setTrgM(Long value) {
-			nodeMask.put("trgM", value);
-			return this;
-		}
-		public AddGlossaryRuleMask setTrgMEname(String value) {
-			attributeMask.put("trgM.ename", value);
-			return this;
-		}
-		public AddGlossaryRuleMask setTrgM_tr_(boolean value) {
-			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public AddGlossaryRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public AddGlossaryRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public AddGlossaryRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
-			return this;
-		}
-		public AddGlossaryRuleMask setG(Long value) {
-			nodeMask.put("g", value);
-			return this;
-		}
-		public AddGlossaryRuleMask setGName(String value) {
-			attributeMask.put("g.name", value);
-			return this;
-		}
-	}
-	
-	//:~> platform:/resource/JavaToDocSLE/tgg-gen/JavaToDocSLE/JavaToDocSLE_CC.msl#//@entities.7
-	public LinkGlossaryEntryRuleAccess getRule_LinkGlossaryEntryRule() {
-		return new LinkGlossaryEntryRuleAccess();
-	}
-	
-	public class LinkGlossaryEntryRuleAccess extends NeoRuleCoAccess<LinkGlossaryEntryRuleData, LinkGlossaryEntryRuleCoData, LinkGlossaryEntryRuleMask> {
-		public final String _trgM = "trgM";
-		public final String _e = "e";
-		public final String _ge = "ge";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(7);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<LinkGlossaryEntryRuleData> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new LinkGlossaryEntryRuleData(d));
-		}
-			
-		@Override
-		public Stream<LinkGlossaryEntryRuleCoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new LinkGlossaryEntryRuleCoData(d));
-		}
-		
-		@Override
-		public LinkGlossaryEntryRuleMask mask() {
-			return new LinkGlossaryEntryRuleMask();
-		}
-	}
-	
-	public class LinkGlossaryEntryRuleData extends NeoData {
-		public final TrgMNode _trgM;
-		public final ENode _e;
-		public final E_elementOf_0_trgMRel _e_elementOf_0_trgM;
-		public final E_gEntries_1_geRel _e_gEntries_1_ge;
-		public final GeNode _ge;
-		public final Ge_elementOf_0_trgMRel _ge_elementOf_0_trgM;
-		
-		public LinkGlossaryEntryRuleData(Record data) {
-			var _trgM = data.get("trgM");
-			this._trgM = new TrgMNode(_trgM);
-			var _e = data.get("e");
-			this._e = new ENode(_e);
-			var _e_elementOf_0_trgM = data.get("e_elementOf_0_trgM");
-			this._e_elementOf_0_trgM = new E_elementOf_0_trgMRel(_e_elementOf_0_trgM);
-			var _e_gEntries_1_ge = data.get("e_gEntries_1_ge");
-			this._e_gEntries_1_ge = new E_gEntries_1_geRel(_e_gEntries_1_ge);
-			var _ge = data.get("ge");
-			this._ge = new GeNode(_ge);
-			var _ge_elementOf_0_trgM = data.get("ge_elementOf_0_trgM");
-			this._ge_elementOf_0_trgM = new Ge_elementOf_0_trgMRel(_ge_elementOf_0_trgM);
-		}
-		
-		
-		public class TrgMNode {
-			public String _ename;
-			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
-			
-			public TrgMNode(Value _trgM) {
-				if(!_trgM.get("ename").isNull())
-					this._ename = _trgM.get("ename").asString();
-				if(!_trgM.get("_tr_").isNull())
-					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
-			}
-		}
-		
-		public class ENode {
-			public String _name;
-			
-			public ENode(Value _e) {
-				if(!_e.get("name").isNull())
-					this._name = _e.get("name").asString();
-			}
-		}
-		
-		public class E_elementOf_0_trgMRel {
-		
-			public E_elementOf_0_trgMRel(Value _e_elementOf_0_trgM) {
-			}
-		}
-		public class E_gEntries_1_geRel {
-		
-			public E_gEntries_1_geRel(Value _e_gEntries_1_ge) {
-			}
-		}
-		public class GeNode {
-			public String _name;
-			
-			public GeNode(Value _ge) {
-				if(!_ge.get("name").isNull())
-					this._name = _ge.get("name").asString();
-			}
-		}
-		
-		public class Ge_elementOf_0_trgMRel {
-		
-			public Ge_elementOf_0_trgMRel(Value _ge_elementOf_0_trgM) {
-			}
-		}
-	}
-	
-	public class LinkGlossaryEntryRuleCoData extends NeoData {
-		public final TrgMNode _trgM;
-		public final ENode _e;
-		public final E_elementOf_0_trgMRel _e_elementOf_0_trgM;
-		public final E_gEntries_1_geRel _e_gEntries_1_ge;
-		public final GeNode _ge;
-		public final Ge_elementOf_0_trgMRel _ge_elementOf_0_trgM;
-	
-		public LinkGlossaryEntryRuleCoData(Record data) {
-			var _trgM = data.get("trgM");
-			this._trgM = new TrgMNode(_trgM);
-			var _e = data.get("e");
-			this._e = new ENode(_e);
-			var _e_elementOf_0_trgM = data.get("e_elementOf_0_trgM");
-			this._e_elementOf_0_trgM = new E_elementOf_0_trgMRel(_e_elementOf_0_trgM);
-			var _e_gEntries_1_ge = data.get("e_gEntries_1_ge");
-			this._e_gEntries_1_ge = new E_gEntries_1_geRel(_e_gEntries_1_ge);
-			var _ge = data.get("ge");
-			this._ge = new GeNode(_ge);
-			var _ge_elementOf_0_trgM = data.get("ge_elementOf_0_trgM");
-			this._ge_elementOf_0_trgM = new Ge_elementOf_0_trgMRel(_ge_elementOf_0_trgM);
-		}
-		
-	
-		public class TrgMNode {
-			public String _ename;
-			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
-			
-			public TrgMNode(Value _trgM) {
-				if(!_trgM.get("ename").isNull())
-					this._ename = _trgM.get("ename").asString();
-				if(!_trgM.get("_tr_").isNull())
-					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
-			}
-		}
-		
-		public class ENode {
-			public String _name;
-			
-			public ENode(Value _e) {
-				if(!_e.get("name").isNull())
-					this._name = _e.get("name").asString();
-			}
-		}
-		
-		public class E_elementOf_0_trgMRel {
-		
-			public E_elementOf_0_trgMRel(Value _e_elementOf_0_trgM) {
-			}
-		}
-		public class E_gEntries_1_geRel {
-		
-			public E_gEntries_1_geRel(Value _e_gEntries_1_ge) {
-			}
-		}
-		public class GeNode {
-			public String _name;
-			
-			public GeNode(Value _ge) {
-				if(!_ge.get("name").isNull())
-					this._name = _ge.get("name").asString();
-			}
-		}
-		
-		public class Ge_elementOf_0_trgMRel {
-		
-			public Ge_elementOf_0_trgMRel(Value _ge_elementOf_0_trgM) {
-			}
-		}
-	}
-	
-	public class LinkGlossaryEntryRuleMask extends NeoMask {
-		public LinkGlossaryEntryRuleMask setTrgM(Long value) {
-			nodeMask.put("trgM", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setTrgMEname(String value) {
-			attributeMask.put("trgM.ename", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setTrgM_tr_(boolean value) {
-			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setE(Long value) {
-			nodeMask.put("e", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setEName(String value) {
-			attributeMask.put("e.name", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setGe(Long value) {
-			nodeMask.put("ge", value);
-			return this;
-		}
-		public LinkGlossaryEntryRuleMask setGeName(String value) {
-			attributeMask.put("ge.name", value);
-			return this;
-		}
-	}
-	
-	//:~> platform:/resource/JavaToDocSLE/tgg-gen/JavaToDocSLE/JavaToDocSLE_CC.msl#//@entities.8
-	public AddGlossaryEntryRuleAccess getRule_AddGlossaryEntryRule() {
-		return new AddGlossaryEntryRuleAccess();
-	}
-	
-	public class AddGlossaryEntryRuleAccess extends NeoRuleCoAccess<AddGlossaryEntryRuleData, AddGlossaryEntryRuleCoData, AddGlossaryEntryRuleMask> {
-		public final String _trgM = "trgM";
-		public final String _g = "g";
-		public final String _ge = "ge";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(8);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<AddGlossaryEntryRuleData> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new AddGlossaryEntryRuleData(d));
-		}
-			
-		@Override
-		public Stream<AddGlossaryEntryRuleCoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new AddGlossaryEntryRuleCoData(d));
-		}
-		
-		@Override
-		public AddGlossaryEntryRuleMask mask() {
-			return new AddGlossaryEntryRuleMask();
-		}
-	}
-	
-	public class AddGlossaryEntryRuleData extends NeoData {
-		public final TrgMNode _trgM;
-		public final GNode _g;
-		public final G_elementOf_0_trgMRel _g_elementOf_0_trgM;
-		public final G_gEntries_1_geRel _g_gEntries_1_ge;
-		public final GeNode _ge;
-		public final Ge_elementOf_0_trgMRel _ge_elementOf_0_trgM;
-		
-		public AddGlossaryEntryRuleData(Record data) {
-			var _trgM = data.get("trgM");
-			this._trgM = new TrgMNode(_trgM);
-			var _g = data.get("g");
-			this._g = new GNode(_g);
-			var _g_elementOf_0_trgM = data.get("g_elementOf_0_trgM");
-			this._g_elementOf_0_trgM = new G_elementOf_0_trgMRel(_g_elementOf_0_trgM);
-			var _g_gEntries_1_ge = data.get("g_gEntries_1_ge");
-			this._g_gEntries_1_ge = new G_gEntries_1_geRel(_g_gEntries_1_ge);
-			var _ge = data.get("ge");
-			this._ge = new GeNode(_ge);
-			var _ge_elementOf_0_trgM = data.get("ge_elementOf_0_trgM");
-			this._ge_elementOf_0_trgM = new Ge_elementOf_0_trgMRel(_ge_elementOf_0_trgM);
-		}
-		
-		
-		public class TrgMNode {
-			public String _ename;
-			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
-			
-			public TrgMNode(Value _trgM) {
-				if(!_trgM.get("ename").isNull())
-					this._ename = _trgM.get("ename").asString();
-				if(!_trgM.get("_tr_").isNull())
-					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
-			}
-		}
-		
-		public class GNode {
-			public String _name;
-			
-			public GNode(Value _g) {
-				if(!_g.get("name").isNull())
-					this._name = _g.get("name").asString();
-			}
-		}
-		
-		public class G_elementOf_0_trgMRel {
-		
-			public G_elementOf_0_trgMRel(Value _g_elementOf_0_trgM) {
-			}
-		}
-		public class G_gEntries_1_geRel {
-		
-			public G_gEntries_1_geRel(Value _g_gEntries_1_ge) {
-			}
-		}
-		public class GeNode {
-			public String _name;
-			
-			public GeNode(Value _ge) {
-				if(!_ge.get("name").isNull())
-					this._name = _ge.get("name").asString();
-			}
-		}
-		
-		public class Ge_elementOf_0_trgMRel {
-		
-			public Ge_elementOf_0_trgMRel(Value _ge_elementOf_0_trgM) {
-			}
-		}
-	}
-	
-	public class AddGlossaryEntryRuleCoData extends NeoData {
-		public final TrgMNode _trgM;
-		public final GNode _g;
-		public final G_elementOf_0_trgMRel _g_elementOf_0_trgM;
-		public final G_gEntries_1_geRel _g_gEntries_1_ge;
-		public final GeNode _ge;
-		public final Ge_elementOf_0_trgMRel _ge_elementOf_0_trgM;
-	
-		public AddGlossaryEntryRuleCoData(Record data) {
-			var _trgM = data.get("trgM");
-			this._trgM = new TrgMNode(_trgM);
-			var _g = data.get("g");
-			this._g = new GNode(_g);
-			var _g_elementOf_0_trgM = data.get("g_elementOf_0_trgM");
-			this._g_elementOf_0_trgM = new G_elementOf_0_trgMRel(_g_elementOf_0_trgM);
-			var _g_gEntries_1_ge = data.get("g_gEntries_1_ge");
-			this._g_gEntries_1_ge = new G_gEntries_1_geRel(_g_gEntries_1_ge);
-			var _ge = data.get("ge");
-			this._ge = new GeNode(_ge);
-			var _ge_elementOf_0_trgM = data.get("ge_elementOf_0_trgM");
-			this._ge_elementOf_0_trgM = new Ge_elementOf_0_trgMRel(_ge_elementOf_0_trgM);
-		}
-		
-	
-		public class TrgMNode {
-			public String _ename;
-			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
-			
-			public TrgMNode(Value _trgM) {
-				if(!_trgM.get("ename").isNull())
-					this._ename = _trgM.get("ename").asString();
-				if(!_trgM.get("_tr_").isNull())
-					this.__tr_ = _trgM.get("_tr_").asBoolean();
-				if(!_trgM.get("_de_").isNull())
-					this.__de_ = _trgM.get("_de_").asBoolean();
-				if(!_trgM.get("_cr_").isNull())
-					this.__cr_ = _trgM.get("_cr_").asBoolean();
-				if(!_trgM.get("_ex_").isNull())
-					this.__ex_ = _trgM.get("_ex_").asBoolean();
-			}
-		}
-		
-		public class GNode {
-			public String _name;
-			
-			public GNode(Value _g) {
-				if(!_g.get("name").isNull())
-					this._name = _g.get("name").asString();
-			}
-		}
-		
-		public class G_elementOf_0_trgMRel {
-		
-			public G_elementOf_0_trgMRel(Value _g_elementOf_0_trgM) {
-			}
-		}
-		public class G_gEntries_1_geRel {
-		
-			public G_gEntries_1_geRel(Value _g_gEntries_1_ge) {
-			}
-		}
-		public class GeNode {
-			public String _name;
-			
-			public GeNode(Value _ge) {
-				if(!_ge.get("name").isNull())
-					this._name = _ge.get("name").asString();
-			}
-		}
-		
-		public class Ge_elementOf_0_trgMRel {
-		
-			public Ge_elementOf_0_trgMRel(Value _ge_elementOf_0_trgM) {
-			}
-		}
-	}
-	
-	public class AddGlossaryEntryRuleMask extends NeoMask {
-		public AddGlossaryEntryRuleMask setTrgM(Long value) {
-			nodeMask.put("trgM", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setTrgMEname(String value) {
-			attributeMask.put("trgM.ename", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setTrgM_tr_(boolean value) {
-			attributeMask.put("trgM._tr_", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setTrgM_de_(boolean value) {
-			attributeMask.put("trgM._de_", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setTrgM_cr_(boolean value) {
-			attributeMask.put("trgM._cr_", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setTrgM_ex_(boolean value) {
-			attributeMask.put("trgM._ex_", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setG(Long value) {
-			nodeMask.put("g", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setGName(String value) {
-			attributeMask.put("g.name", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setGe(Long value) {
-			nodeMask.put("ge", value);
-			return this;
-		}
-		public AddGlossaryEntryRuleMask setGeName(String value) {
-			attributeMask.put("ge.name", value);
-			return this;
-		}
-	}
-	
-	//:~> platform:/resource/JavaToDocSLE/tgg-gen/JavaToDocSLE/JavaToDocSLE_CC.msl#//@entities.9
 	public CreateSrcModelAccess getRule_CreateSrcModel() {
 		return new CreateSrcModelAccess();
 	}
@@ -2834,7 +1887,7 @@ public class API_JavaToDocSLE_CC {
 		
 		@Override
 		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(9);
+			var r = (Rule) spec.getEntities().get(6);
 			return NeoRuleFactory.createNeoRule(r, builder);
 		}
 		
@@ -2874,21 +1927,12 @@ public class API_JavaToDocSLE_CC {
 		public class SrcModelNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcModelNode(Value _srcModel) {
 				if(!_srcModel.get("ename").isNull())
 					this._ename = _srcModel.get("ename").asString();
 				if(!_srcModel.get("_tr_").isNull())
 					this.__tr_ = _srcModel.get("_tr_").asBoolean();
-				if(!_srcModel.get("_de_").isNull())
-					this.__de_ = _srcModel.get("_de_").asBoolean();
-				if(!_srcModel.get("_cr_").isNull())
-					this.__cr_ = _srcModel.get("_cr_").asBoolean();
-				if(!_srcModel.get("_ex_").isNull())
-					this.__ex_ = _srcModel.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -2900,21 +1944,12 @@ public class API_JavaToDocSLE_CC {
 		public class MmSimpleJavaSLENode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public MmSimpleJavaSLENode(Value _mmSimpleJavaSLE) {
 				if(!_mmSimpleJavaSLE.get("ename").isNull())
 					this._ename = _mmSimpleJavaSLE.get("ename").asString();
 				if(!_mmSimpleJavaSLE.get("_tr_").isNull())
 					this.__tr_ = _mmSimpleJavaSLE.get("_tr_").asBoolean();
-				if(!_mmSimpleJavaSLE.get("_de_").isNull())
-					this.__de_ = _mmSimpleJavaSLE.get("_de_").asBoolean();
-				if(!_mmSimpleJavaSLE.get("_cr_").isNull())
-					this.__cr_ = _mmSimpleJavaSLE.get("_cr_").asBoolean();
-				if(!_mmSimpleJavaSLE.get("_ex_").isNull())
-					this.__ex_ = _mmSimpleJavaSLE.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -2938,21 +1973,12 @@ public class API_JavaToDocSLE_CC {
 		public class SrcModelNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public SrcModelNode(Value _srcModel) {
 				if(!_srcModel.get("ename").isNull())
 					this._ename = _srcModel.get("ename").asString();
 				if(!_srcModel.get("_tr_").isNull())
 					this.__tr_ = _srcModel.get("_tr_").asBoolean();
-				if(!_srcModel.get("_de_").isNull())
-					this.__de_ = _srcModel.get("_de_").asBoolean();
-				if(!_srcModel.get("_cr_").isNull())
-					this.__cr_ = _srcModel.get("_cr_").asBoolean();
-				if(!_srcModel.get("_ex_").isNull())
-					this.__ex_ = _srcModel.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -2964,21 +1990,12 @@ public class API_JavaToDocSLE_CC {
 		public class MmSimpleJavaSLENode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public MmSimpleJavaSLENode(Value _mmSimpleJavaSLE) {
 				if(!_mmSimpleJavaSLE.get("ename").isNull())
 					this._ename = _mmSimpleJavaSLE.get("ename").asString();
 				if(!_mmSimpleJavaSLE.get("_tr_").isNull())
 					this.__tr_ = _mmSimpleJavaSLE.get("_tr_").asBoolean();
-				if(!_mmSimpleJavaSLE.get("_de_").isNull())
-					this.__de_ = _mmSimpleJavaSLE.get("_de_").asBoolean();
-				if(!_mmSimpleJavaSLE.get("_cr_").isNull())
-					this.__cr_ = _mmSimpleJavaSLE.get("_cr_").asBoolean();
-				if(!_mmSimpleJavaSLE.get("_ex_").isNull())
-					this.__ex_ = _mmSimpleJavaSLE.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -2997,18 +2014,6 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("srcModel._tr_", value);
 			return this;
 		}
-		public CreateSrcModelMask setSrcModel_de_(boolean value) {
-			attributeMask.put("srcModel._de_", value);
-			return this;
-		}
-		public CreateSrcModelMask setSrcModel_cr_(boolean value) {
-			attributeMask.put("srcModel._cr_", value);
-			return this;
-		}
-		public CreateSrcModelMask setSrcModel_ex_(boolean value) {
-			attributeMask.put("srcModel._ex_", value);
-			return this;
-		}
 		public CreateSrcModelMask setMmSimpleJavaSLE(Long value) {
 			nodeMask.put("mmSimpleJavaSLE", value);
 			return this;
@@ -3021,21 +2026,9 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("mmSimpleJavaSLE._tr_", value);
 			return this;
 		}
-		public CreateSrcModelMask setMmSimpleJavaSLE_de_(boolean value) {
-			attributeMask.put("mmSimpleJavaSLE._de_", value);
-			return this;
-		}
-		public CreateSrcModelMask setMmSimpleJavaSLE_cr_(boolean value) {
-			attributeMask.put("mmSimpleJavaSLE._cr_", value);
-			return this;
-		}
-		public CreateSrcModelMask setMmSimpleJavaSLE_ex_(boolean value) {
-			attributeMask.put("mmSimpleJavaSLE._ex_", value);
-			return this;
-		}
 	}
 	
-	//:~> platform:/resource/JavaToDocSLE/tgg-gen/JavaToDocSLE/JavaToDocSLE_CC.msl#//@entities.10
+	//:~> platform:/resource/JavaToDocSLE/tgg-gen/JavaToDocSLE/JavaToDocSLE_CC.msl#//@entities.7
 	public CreateTrgModelAccess getRule_CreateTrgModel() {
 		return new CreateTrgModelAccess();
 	}
@@ -3046,7 +2039,7 @@ public class API_JavaToDocSLE_CC {
 		
 		@Override
 		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(10);
+			var r = (Rule) spec.getEntities().get(7);
 			return NeoRuleFactory.createNeoRule(r, builder);
 		}
 		
@@ -3086,21 +2079,12 @@ public class API_JavaToDocSLE_CC {
 		public class TrgModelNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgModelNode(Value _trgModel) {
 				if(!_trgModel.get("ename").isNull())
 					this._ename = _trgModel.get("ename").asString();
 				if(!_trgModel.get("_tr_").isNull())
 					this.__tr_ = _trgModel.get("_tr_").asBoolean();
-				if(!_trgModel.get("_de_").isNull())
-					this.__de_ = _trgModel.get("_de_").asBoolean();
-				if(!_trgModel.get("_cr_").isNull())
-					this.__cr_ = _trgModel.get("_cr_").asBoolean();
-				if(!_trgModel.get("_ex_").isNull())
-					this.__ex_ = _trgModel.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -3112,21 +2096,12 @@ public class API_JavaToDocSLE_CC {
 		public class MmSimpleDocSLENode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public MmSimpleDocSLENode(Value _mmSimpleDocSLE) {
 				if(!_mmSimpleDocSLE.get("ename").isNull())
 					this._ename = _mmSimpleDocSLE.get("ename").asString();
 				if(!_mmSimpleDocSLE.get("_tr_").isNull())
 					this.__tr_ = _mmSimpleDocSLE.get("_tr_").asBoolean();
-				if(!_mmSimpleDocSLE.get("_de_").isNull())
-					this.__de_ = _mmSimpleDocSLE.get("_de_").asBoolean();
-				if(!_mmSimpleDocSLE.get("_cr_").isNull())
-					this.__cr_ = _mmSimpleDocSLE.get("_cr_").asBoolean();
-				if(!_mmSimpleDocSLE.get("_ex_").isNull())
-					this.__ex_ = _mmSimpleDocSLE.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -3150,21 +2125,12 @@ public class API_JavaToDocSLE_CC {
 		public class TrgModelNode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public TrgModelNode(Value _trgModel) {
 				if(!_trgModel.get("ename").isNull())
 					this._ename = _trgModel.get("ename").asString();
 				if(!_trgModel.get("_tr_").isNull())
 					this.__tr_ = _trgModel.get("_tr_").asBoolean();
-				if(!_trgModel.get("_de_").isNull())
-					this.__de_ = _trgModel.get("_de_").asBoolean();
-				if(!_trgModel.get("_cr_").isNull())
-					this.__cr_ = _trgModel.get("_cr_").asBoolean();
-				if(!_trgModel.get("_ex_").isNull())
-					this.__ex_ = _trgModel.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -3176,21 +2142,12 @@ public class API_JavaToDocSLE_CC {
 		public class MmSimpleDocSLENode {
 			public String _ename;
 			public boolean __tr_;
-			public boolean __de_;
-			public boolean __cr_;
-			public boolean __ex_;
 			
 			public MmSimpleDocSLENode(Value _mmSimpleDocSLE) {
 				if(!_mmSimpleDocSLE.get("ename").isNull())
 					this._ename = _mmSimpleDocSLE.get("ename").asString();
 				if(!_mmSimpleDocSLE.get("_tr_").isNull())
 					this.__tr_ = _mmSimpleDocSLE.get("_tr_").asBoolean();
-				if(!_mmSimpleDocSLE.get("_de_").isNull())
-					this.__de_ = _mmSimpleDocSLE.get("_de_").asBoolean();
-				if(!_mmSimpleDocSLE.get("_cr_").isNull())
-					this.__cr_ = _mmSimpleDocSLE.get("_cr_").asBoolean();
-				if(!_mmSimpleDocSLE.get("_ex_").isNull())
-					this.__ex_ = _mmSimpleDocSLE.get("_ex_").asBoolean();
 			}
 		}
 		
@@ -3209,18 +2166,6 @@ public class API_JavaToDocSLE_CC {
 			attributeMask.put("trgModel._tr_", value);
 			return this;
 		}
-		public CreateTrgModelMask setTrgModel_de_(boolean value) {
-			attributeMask.put("trgModel._de_", value);
-			return this;
-		}
-		public CreateTrgModelMask setTrgModel_cr_(boolean value) {
-			attributeMask.put("trgModel._cr_", value);
-			return this;
-		}
-		public CreateTrgModelMask setTrgModel_ex_(boolean value) {
-			attributeMask.put("trgModel._ex_", value);
-			return this;
-		}
 		public CreateTrgModelMask setMmSimpleDocSLE(Long value) {
 			nodeMask.put("mmSimpleDocSLE", value);
 			return this;
@@ -3231,18 +2176,6 @@ public class API_JavaToDocSLE_CC {
 		}
 		public CreateTrgModelMask setMmSimpleDocSLE_tr_(boolean value) {
 			attributeMask.put("mmSimpleDocSLE._tr_", value);
-			return this;
-		}
-		public CreateTrgModelMask setMmSimpleDocSLE_de_(boolean value) {
-			attributeMask.put("mmSimpleDocSLE._de_", value);
-			return this;
-		}
-		public CreateTrgModelMask setMmSimpleDocSLE_cr_(boolean value) {
-			attributeMask.put("mmSimpleDocSLE._cr_", value);
-			return this;
-		}
-		public CreateTrgModelMask setMmSimpleDocSLE_ex_(boolean value) {
-			attributeMask.put("mmSimpleDocSLE._ex_", value);
 			return this;
 		}
 	}

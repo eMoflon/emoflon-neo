@@ -4,6 +4,7 @@
 package org.emoflon.neo.api;
 
 import org.emoflon.neo.cypher.common.*;
+import org.emoflon.neo.cypher.constraints.*;
 import org.emoflon.neo.cypher.factories.*;
 import org.emoflon.neo.cypher.models.*;
 import org.emoflon.neo.cypher.patterns.*;
@@ -76,19 +77,13 @@ public class API_JavaToDocSLE {
 			var uri = "platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.5";
 			rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
 		}
-		{
-			var uri = "platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.6";
-			rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
-		}
-		{
-			var uri = "platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.7";
-			rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
-		}
-		{
-			var uri = "platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.8";
-			rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
-		}
 		return rules;
+	}
+	
+	public Collection<IConstraint> getConstraintsOfJavaToDocSLE(){
+		var constraints = new HashSet<IConstraint>();
+		var rs = spec.eResource().getResourceSet();
+		return constraints;
 	}
 	
 	//:~> platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.1
@@ -122,18 +117,4 @@ public class API_JavaToDocSLE {
 	public static final String JavaToDocSLE__FieldToEntryRule__f = "f";
 	public static final String JavaToDocSLE__FieldToEntryRule__d = "d";
 	public static final String JavaToDocSLE__FieldToEntryRule__e = "e";
-	
-	//:~> platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.6
-	public static final String JavaToDocSLE__AddGlossaryRule = "AddGlossaryRule";
-	public static final String JavaToDocSLE__AddGlossaryRule__g = "g";
-	
-	//:~> platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.7
-	public static final String JavaToDocSLE__LinkGlossaryEntryRule = "LinkGlossaryEntryRule";
-	public static final String JavaToDocSLE__LinkGlossaryEntryRule__e = "e";
-	public static final String JavaToDocSLE__LinkGlossaryEntryRule__ge = "ge";
-	
-	//:~> platform:/resource/JavaToDocSLE/src/JavaToDocSLE.msl#//@entities.8
-	public static final String JavaToDocSLE__AddGlossaryEntryRule = "AddGlossaryEntryRule";
-	public static final String JavaToDocSLE__AddGlossaryEntryRule__g = "g";
-	public static final String JavaToDocSLE__AddGlossaryEntryRule__ge = "ge";
 }

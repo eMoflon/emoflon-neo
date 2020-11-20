@@ -20,7 +20,7 @@ import java.util.List;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.api.JavaToDocSLE.API_JavaToDocSLE_GEN;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
-import org.emoflon.neo.engine.modules.matchreprocessors.COReprocessor;
+import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.AllRulesAllMatchesScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
@@ -28,11 +28,10 @@ import org.emoflon.neo.engine.modules.terminationcondition.OneShotTerminationCon
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 @SuppressWarnings("unused")
 public class JavaToDocSLE_CO_Run {
-	private static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 	private CheckOnlyOperationalStrategy checkOnly;
 	protected static final Logger logger = Logger.getLogger(JavaToDocSLE_CO_Run.class);
 	protected String srcModelName;
@@ -48,12 +47,7 @@ public class JavaToDocSLE_CO_Run {
 		this.srcModelName = srcModelName;
 		this.trgModelName = trgModelName;
 	}
-	
-	public JavaToDocSLE_CO_Run(String srcModelName, String trgModelName, SupportedILPSolver solver) {
-		this(srcModelName, trgModelName);
-		this.solver = solver;
-	}
-	
+
 	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 	
@@ -66,14 +60,14 @@ public class JavaToDocSLE_CO_Run {
 	}
 	
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_JavaToDocSLE(builder);
 		var genAPI = new API_JavaToDocSLE_GEN(builder);
 		var coAPI = new API_JavaToDocSLE_CO(builder);
-		var analyser = new TripleRuleAnalyser(new API_JavaToDocSLE(builder).getTripleRulesOfJavaToDocSLE());
 		checkOnly = new CheckOnlyOperationalStrategy(//
 				solver, //
 				genAPI.getAllRulesForJavaToDocSLE_GEN(), //
 				coAPI.getAllRulesForJavaToDocSLE_CO(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfJavaToDocSLE(), //
 				builder, //
 				srcModelName, //
 				trgModelName//
@@ -85,7 +79,7 @@ public class JavaToDocSLE_CO_Run {
 				new OneShotTerminationCondition(), //
 				new AllRulesAllMatchesScheduler(), //
 				checkOnly, //
-				new COReprocessor(analyser), //
+				new NoOpReprocessor(), //
 				checkOnly, //
 				new HeartBeatAndReportMonitor(), //
 				new ModelNameValueGenerator(srcModelName, trgModelName), //
@@ -95,9 +89,5 @@ public class JavaToDocSLE_CO_Run {
 	public CheckOnlyOperationalStrategy runCheckOnly() throws Exception {
 		run();
 		return checkOnly;
-	}
-	
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		return Collections.emptyList();
 	}
 }

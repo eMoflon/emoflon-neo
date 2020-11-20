@@ -41,8 +41,7 @@ public class JavaToDocSLE_BWD_Run {
 		this.srcModelName = srcModelName;
 		this.trgModelName = trgModelName;
 	}
-	
-	
+
 	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 			new API_JavaToDocSLE(builder).exportMetamodelsForJavaToDocSLE();
