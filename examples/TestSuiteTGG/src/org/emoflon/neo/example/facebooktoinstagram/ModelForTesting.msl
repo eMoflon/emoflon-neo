@@ -2,10 +2,12 @@ import "platform:/resource/FacebookToInstagramFASE/src/Facebook.msl"
 import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
 
 //Consistent Source - Constraint and rules
-model ConsistentSorce {
+model ConsistentSource {
 	fb: FacebookLanguage.Network{
 		.description : "Fb Network"
 		-friendships-> fr
+		-users-> f1
+		-users->f2
 	}
 	
 	fr: Friendship{
@@ -45,15 +47,9 @@ model ConsistentTarget {
 rule ConsistentTriple{
 	fb: FacebookLanguage.Network{
 		.description : "Fb Network"
-			-friendships->fr
 			-corr-> in{
 			._type_ : "NetworkToNetwork"
 		}
-	}
-	
-	fr: Friendship{
-		-friends-> f1
-		-friends-> f2
 	}
 	
 	f1: FacebookLanguage.User{
@@ -72,51 +68,20 @@ rule ConsistentTriple{
 	
 	in : InstagramLanguage.Network {
 		.description : "Insta network"
-		 -users-> i1
-		 -users-> i2
 	}
 	
 	i1 : InstagramLanguage.User{
 		.name : "Monica"
-		-follows-> i2
 	}
 	
 	i2 : InstagramLanguage.User{
 		.name : "Rachel"
-		-follows-> i1
 	}
 }
 
-//Inconsistent triple - Rule application
-rule InConsistentTriple1{
-	fb: FacebookLanguage.Network{
-		.description : "Fb Network"
-			-friendships->fr
-			-corr-> in{
-			._type_ : "NetworkToNetwork"
-		}
-	}
-	
-	fr: Friendship{
-		-friends-> f1
-		-friends-> f2
-	}
-	
-	f1: FacebookLanguage.User{
-		.name : "Monica"
-		-corr->i1{
-			._type_ : "UserToUser"
-		}
-	}
-	
-	f2: FacebookLanguage.User{
-		.name : "Rachel"
-		-corr->i2{
-			._type_ : "UserToUser"
-		}
-	}
-	
-	in : InstagramLanguage.Network {
+//InConsistent Target - Violating Rule application
+model InConsistentTarget1 {
+   	in : InstagramLanguage.Network {
 		.description : "Insta network"
 		 -users-> i1
 		 -users-> i2
@@ -132,57 +97,31 @@ rule InConsistentTriple1{
 	}
 }
 
-//Inconsistent triple - Positive constraint
-rule InConsistentTriple2{
+//Inconsistent Source - Violating Positive constraint
+model InConsistentSource1 {
 	fb: FacebookLanguage.Network{
 		.description : "Fb Network"
 		-users-> f1
 		-users->f2
-		-corr-> in{
-			._type_ : "NetworkToNetwork"
-		}
 	}
 	
 	f1: FacebookLanguage.User{
 		.name : "Monica"
-		-corr->i1{
-			._type_ : "UserToUser"
-		}
 	}
 	
 	f2: FacebookLanguage.User{
 		.name : "Rachel"
-		-corr->i2{
-			._type_ : "UserToUser"
-		}
-	}
-	
-	in : InstagramLanguage.Network {
-		.description : "Insta network"
-		 -users-> i1
-		 -users-> i2
-	}
-	
-	i1 : InstagramLanguage.User{
-		.name : "Monica"
-		-follows-> i2
-	}
-	
-	i2 : InstagramLanguage.User{
-		.name : "Rachel"
-		-follows-> i1
-	}
+    }
 }
 
-//Inconsistent triple - Negative constraint
-rule InConsistentTriple3{
+//Inconsistent source - Violating Negative constraint
+model InConsistentSource2 {
 	fb: FacebookLanguage.Network{
 		.description : "Fb Network"
-			-friendships->fr1
-			-friendships->fr2
-			-corr-> in{
-			._type_ : "NetworkToNetwork"
-		}
+		-friendships-> fr1
+		-friendships->fr2
+		-users-> f1
+		-users->f2
 	}
 	
 	fr1: Friendship{
@@ -197,31 +136,9 @@ rule InConsistentTriple3{
 	
 	f1: FacebookLanguage.User{
 		.name : "Monica"
-		-corr->i1{
-			._type_ : "UserToUser"
-		}
 	}
 	
 	f2: FacebookLanguage.User{
 		.name : "Rachel"
-		-corr->i2{
-			._type_ : "UserToUser"
-		}
-	}
-	
-	in : InstagramLanguage.Network {
-		.description : "Insta network"
-		 -users-> i1
-		 -users-> i2
-	}
-	
-	i1 : InstagramLanguage.User{
-		.name : "Monica"
-		-follows-> i2
-	}
-	
-	i2 : InstagramLanguage.User{
-		.name : "Rachel"
-		-follows-> i1
-	}
+    }
 }

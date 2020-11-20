@@ -62,7 +62,6 @@ public class API_F2PModelForTesting {
 		public final String _person1 = "person1";
 		public final String _person2 = "person2";
 		public final String _fr = "fr";
-		public final String _f = "f";
 		public final String _fm1 = "fm1";
 		public final String _fm2 = "fm2";
 		
@@ -92,16 +91,10 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple1Data extends NeoData {
 		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
-		public final Pr_corr_2_frRel _pr_corr_2_fr;
+		public final Pr_corr_0_frRel _pr_corr_0_fr;
 		public final Person1Node _person1;
 		public final Person2Node _person2;
 		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final FNode _f;
-		public final F_father_0_fm1Rel _f_father_0_fm1;
-		public final F_sons_1_fm2Rel _f_sons_1_fm2;
 		public final Fm1Node _fm1;
 		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
 		public final Fm2Node _fm2;
@@ -110,26 +103,14 @@ public class API_F2PModelForTesting {
 		public ConsistentTriple1Data(Record data) {
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
-			var _pr_corr_2_fr = data.get("pr_corr_2_fr");
-			this._pr_corr_2_fr = new Pr_corr_2_frRel(_pr_corr_2_fr);
+			var _pr_corr_0_fr = data.get("pr_corr_0_fr");
+			this._pr_corr_0_fr = new Pr_corr_0_frRel(_pr_corr_0_fr);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _person2 = data.get("person2");
 			this._person2 = new Person2Node(_person2);
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm1 = data.get("f_father_0_fm1");
-			this._f_father_0_fm1 = new F_father_0_fm1Rel(_f_father_0_fm1);
-			var _f_sons_1_fm2 = data.get("f_sons_1_fm2");
-			this._f_sons_1_fm2 = new F_sons_1_fm2Rel(_f_sons_1_fm2);
 			var _fm1 = data.get("fm1");
 			this._fm1 = new Fm1Node(_fm1);
 			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
@@ -147,22 +128,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
-		public class Pr_corr_2_frRel {
+		public class Pr_corr_0_frRel {
 			public String __type_;
 		
-			public Pr_corr_2_frRel(Value _pr_corr_2_fr) {
-				if(!_pr_corr_2_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_2_fr.get("_type_").asString();
+			public Pr_corr_0_frRel(Value _pr_corr_0_fr) {
+				if(!_pr_corr_0_fr.get("_type_").isNull())
+					this.__type_ = _pr_corr_0_fr.get("_type_").asString();
 			}
 		}
 		public class Person1Node {
@@ -195,30 +166,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fm1Rel {
-		
-			public F_father_0_fm1Rel(Value _f_father_0_fm1) {
-			}
-		}
-		public class F_sons_1_fm2Rel {
-		
-			public F_sons_1_fm2Rel(Value _f_sons_1_fm2) {
-			}
-		}
 		public class Fm1Node {
 			public String _name;
 			
@@ -257,16 +204,10 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple1CoData extends NeoData {
 		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
-		public final Pr_corr_2_frRel _pr_corr_2_fr;
+		public final Pr_corr_0_frRel _pr_corr_0_fr;
 		public final Person1Node _person1;
 		public final Person2Node _person2;
 		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final FNode _f;
-		public final F_father_0_fm1Rel _f_father_0_fm1;
-		public final F_sons_1_fm2Rel _f_sons_1_fm2;
 		public final Fm1Node _fm1;
 		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
 		public final Fm2Node _fm2;
@@ -275,26 +216,14 @@ public class API_F2PModelForTesting {
 		public ConsistentTriple1CoData(Record data) {
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
-			var _pr_corr_2_fr = data.get("pr_corr_2_fr");
-			this._pr_corr_2_fr = new Pr_corr_2_frRel(_pr_corr_2_fr);
+			var _pr_corr_0_fr = data.get("pr_corr_0_fr");
+			this._pr_corr_0_fr = new Pr_corr_0_frRel(_pr_corr_0_fr);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _person2 = data.get("person2");
 			this._person2 = new Person2Node(_person2);
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm1 = data.get("f_father_0_fm1");
-			this._f_father_0_fm1 = new F_father_0_fm1Rel(_f_father_0_fm1);
-			var _f_sons_1_fm2 = data.get("f_sons_1_fm2");
-			this._f_sons_1_fm2 = new F_sons_1_fm2Rel(_f_sons_1_fm2);
 			var _fm1 = data.get("fm1");
 			this._fm1 = new Fm1Node(_fm1);
 			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
@@ -312,22 +241,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
-		public class Pr_corr_2_frRel {
+		public class Pr_corr_0_frRel {
 			public String __type_;
 		
-			public Pr_corr_2_frRel(Value _pr_corr_2_fr) {
-				if(!_pr_corr_2_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_2_fr.get("_type_").asString();
+			public Pr_corr_0_frRel(Value _pr_corr_0_fr) {
+				if(!_pr_corr_0_fr.get("_type_").isNull())
+					this.__type_ = _pr_corr_0_fr.get("_type_").asString();
 			}
 		}
 		public class Person1Node {
@@ -360,30 +279,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fm1Rel {
-		
-			public F_father_0_fm1Rel(Value _f_father_0_fm1) {
-			}
-		}
-		public class F_sons_1_fm2Rel {
-		
-			public F_sons_1_fm2Rel(Value _f_sons_1_fm2) {
-			}
-		}
 		public class Fm1Node {
 			public String _name;
 			
@@ -425,8 +320,8 @@ public class API_F2PModelForTesting {
 			nodeMask.put("pr", value);
 			return this;
 		}
-		public ConsistentTriple1Mask setPr_corr_2_fr_type_(String value) {
-			attributeMask.put("pr_corr_2_fr._type_", value);
+		public ConsistentTriple1Mask setPr_corr_0_fr_type_(String value) {
+			attributeMask.put("pr_corr_0_fr._type_", value);
 			return this;
 		}
 		public ConsistentTriple1Mask setPerson1(Long value) {
@@ -457,14 +352,6 @@ public class API_F2PModelForTesting {
 			nodeMask.put("fr", value);
 			return this;
 		}
-		public ConsistentTriple1Mask setF(Long value) {
-			nodeMask.put("f", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setFName(String value) {
-			attributeMask.put("f.name", value);
-			return this;
-		}
 		public ConsistentTriple1Mask setFm1(Long value) {
 			nodeMask.put("fm1", value);
 			return this;
@@ -492,6 +379,11 @@ public class API_F2PModelForTesting {
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.3
+	public Model getModel_InConsistentTarget1(){
+		return (Model) spec.getEntities().get(3);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.4
 	public InConsistentTriple1Access getRule_InConsistentTriple1() {
 		return new InConsistentTriple1Access();
 	}
@@ -500,13 +392,11 @@ public class API_F2PModelForTesting {
 		public final String _pr = "pr";
 		public final String _person1 = "person1";
 		public final String _fr = "fr";
-		public final String _f = "f";
 		public final String _fm1 = "fm1";
-		public final String _fm2 = "fm2";
 		
 		@Override
 		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(3);
+			var r = (Rule) spec.getEntities().get(4);
 			return NeoRuleFactory.createNeoRule(r, builder);
 		}
 		
@@ -530,43 +420,25 @@ public class API_F2PModelForTesting {
 	
 	public class InConsistentTriple1Data extends NeoData {
 		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_corr_1_frRel _pr_corr_1_fr;
+		public final Pr_corr_0_frRel _pr_corr_0_fr;
 		public final Person1Node _person1;
 		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final FNode _f;
-		public final F_father_0_fm1Rel _f_father_0_fm1;
-		public final F_sons_1_fm2Rel _f_sons_1_fm2;
 		public final Fm1Node _fm1;
 		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
-		public final Fm2Node _fm2;
 		
 		public InConsistentTriple1Data(Record data) {
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_corr_1_fr = data.get("pr_corr_1_fr");
-			this._pr_corr_1_fr = new Pr_corr_1_frRel(_pr_corr_1_fr);
+			var _pr_corr_0_fr = data.get("pr_corr_0_fr");
+			this._pr_corr_0_fr = new Pr_corr_0_frRel(_pr_corr_0_fr);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm1 = data.get("f_father_0_fm1");
-			this._f_father_0_fm1 = new F_father_0_fm1Rel(_f_father_0_fm1);
-			var _f_sons_1_fm2 = data.get("f_sons_1_fm2");
-			this._f_sons_1_fm2 = new F_sons_1_fm2Rel(_f_sons_1_fm2);
 			var _fm1 = data.get("fm1");
 			this._fm1 = new Fm1Node(_fm1);
 			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
 			this._fm1_corr_0_person1 = new Fm1_corr_0_person1Rel(_fm1_corr_0_person1);
-			var _fm2 = data.get("fm2");
-			this._fm2 = new Fm2Node(_fm2);
 		}
 		
 		
@@ -576,17 +448,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_corr_1_frRel {
+		public class Pr_corr_0_frRel {
 			public String __type_;
 		
-			public Pr_corr_1_frRel(Value _pr_corr_1_fr) {
-				if(!_pr_corr_1_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_1_fr.get("_type_").asString();
+			public Pr_corr_0_frRel(Value _pr_corr_0_fr) {
+				if(!_pr_corr_0_fr.get("_type_").isNull())
+					this.__type_ = _pr_corr_0_fr.get("_type_").asString();
 			}
 		}
 		public class Person1Node {
@@ -607,30 +474,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fm1Rel {
-		
-			public F_father_0_fm1Rel(Value _f_father_0_fm1) {
-			}
-		}
-		public class F_sons_1_fm2Rel {
-		
-			public F_sons_1_fm2Rel(Value _f_sons_1_fm2) {
-			}
-		}
 		public class Fm1Node {
 			public String _name;
 			
@@ -648,56 +491,29 @@ public class API_F2PModelForTesting {
 					this.__type_ = _fm1_corr_0_person1.get("_type_").asString();
 			}
 		}
-		public class Fm2Node {
-			public String _name;
-			
-			public Fm2Node(Value _fm2) {
-				if(!_fm2.get("name").isNull())
-					this._name = _fm2.get("name").asString();
-			}
-		}
-		
 	}
 	
 	public class InConsistentTriple1CoData extends NeoData {
 		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_corr_1_frRel _pr_corr_1_fr;
+		public final Pr_corr_0_frRel _pr_corr_0_fr;
 		public final Person1Node _person1;
 		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final FNode _f;
-		public final F_father_0_fm1Rel _f_father_0_fm1;
-		public final F_sons_1_fm2Rel _f_sons_1_fm2;
 		public final Fm1Node _fm1;
 		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
-		public final Fm2Node _fm2;
 	
 		public InConsistentTriple1CoData(Record data) {
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_corr_1_fr = data.get("pr_corr_1_fr");
-			this._pr_corr_1_fr = new Pr_corr_1_frRel(_pr_corr_1_fr);
+			var _pr_corr_0_fr = data.get("pr_corr_0_fr");
+			this._pr_corr_0_fr = new Pr_corr_0_frRel(_pr_corr_0_fr);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm1 = data.get("f_father_0_fm1");
-			this._f_father_0_fm1 = new F_father_0_fm1Rel(_f_father_0_fm1);
-			var _f_sons_1_fm2 = data.get("f_sons_1_fm2");
-			this._f_sons_1_fm2 = new F_sons_1_fm2Rel(_f_sons_1_fm2);
 			var _fm1 = data.get("fm1");
 			this._fm1 = new Fm1Node(_fm1);
 			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
 			this._fm1_corr_0_person1 = new Fm1_corr_0_person1Rel(_fm1_corr_0_person1);
-			var _fm2 = data.get("fm2");
-			this._fm2 = new Fm2Node(_fm2);
 		}
 		
 	
@@ -707,17 +523,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_corr_1_frRel {
+		public class Pr_corr_0_frRel {
 			public String __type_;
 		
-			public Pr_corr_1_frRel(Value _pr_corr_1_fr) {
-				if(!_pr_corr_1_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_1_fr.get("_type_").asString();
+			public Pr_corr_0_frRel(Value _pr_corr_0_fr) {
+				if(!_pr_corr_0_fr.get("_type_").isNull())
+					this.__type_ = _pr_corr_0_fr.get("_type_").asString();
 			}
 		}
 		public class Person1Node {
@@ -738,30 +549,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fm1Rel {
-		
-			public F_father_0_fm1Rel(Value _f_father_0_fm1) {
-			}
-		}
-		public class F_sons_1_fm2Rel {
-		
-			public F_sons_1_fm2Rel(Value _f_sons_1_fm2) {
-			}
-		}
 		public class Fm1Node {
 			public String _name;
 			
@@ -779,15 +566,6 @@ public class API_F2PModelForTesting {
 					this.__type_ = _fm1_corr_0_person1.get("_type_").asString();
 			}
 		}
-		public class Fm2Node {
-			public String _name;
-			
-			public Fm2Node(Value _fm2) {
-				if(!_fm2.get("name").isNull())
-					this._name = _fm2.get("name").asString();
-			}
-		}
-		
 	}
 	
 	public class InConsistentTriple1Mask extends NeoMask {
@@ -795,8 +573,8 @@ public class API_F2PModelForTesting {
 			nodeMask.put("pr", value);
 			return this;
 		}
-		public InConsistentTriple1Mask setPr_corr_1_fr_type_(String value) {
-			attributeMask.put("pr_corr_1_fr._type_", value);
+		public InConsistentTriple1Mask setPr_corr_0_fr_type_(String value) {
+			attributeMask.put("pr_corr_0_fr._type_", value);
 			return this;
 		}
 		public InConsistentTriple1Mask setPerson1(Long value) {
@@ -815,14 +593,6 @@ public class API_F2PModelForTesting {
 			nodeMask.put("fr", value);
 			return this;
 		}
-		public InConsistentTriple1Mask setF(Long value) {
-			nodeMask.put("f", value);
-			return this;
-		}
-		public InConsistentTriple1Mask setFName(String value) {
-			attributeMask.put("f.name", value);
-			return this;
-		}
 		public InConsistentTriple1Mask setFm1(Long value) {
 			nodeMask.put("fm1", value);
 			return this;
@@ -835,398 +605,30 @@ public class API_F2PModelForTesting {
 			attributeMask.put("fm1_corr_0_person1._type_", value);
 			return this;
 		}
-		public InConsistentTriple1Mask setFm2(Long value) {
-			nodeMask.put("fm2", value);
-			return this;
-		}
-		public InConsistentTriple1Mask setFm2Name(String value) {
-			attributeMask.put("fm2.name", value);
-			return this;
-		}
-	}
-	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.4
-	public InConsistentTriple2Access getRule_InConsistentTriple2() {
-		return new InConsistentTriple2Access();
-	}
-	
-	public class InConsistentTriple2Access extends NeoRuleCoAccess<InConsistentTriple2Data, InConsistentTriple2CoData, InConsistentTriple2Mask> {
-		public final String _pr = "pr";
-		public final String _person1 = "person1";
-		public final String _person2 = "person2";
-		public final String _fr = "fr";
-		public final String _f = "f";
-		public final String _fm1 = "fm1";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(4);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<InConsistentTriple2Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple2Data(d));
-		}
-			
-		@Override
-		public Stream<InConsistentTriple2CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple2CoData(d));
-		}
-		
-		@Override
-		public InConsistentTriple2Mask mask() {
-			return new InConsistentTriple2Mask();
-		}
-	}
-	
-	public class InConsistentTriple2Data extends NeoData {
-		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
-		public final Pr_corr_2_frRel _pr_corr_2_fr;
-		public final Person1Node _person1;
-		public final Person2Node _person2;
-		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final FNode _f;
-		public final F_father_0_fm1Rel _f_father_0_fm1;
-		public final Fm1Node _fm1;
-		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
-		
-		public InConsistentTriple2Data(Record data) {
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
-			var _pr_corr_2_fr = data.get("pr_corr_2_fr");
-			this._pr_corr_2_fr = new Pr_corr_2_frRel(_pr_corr_2_fr);
-			var _person1 = data.get("person1");
-			this._person1 = new Person1Node(_person1);
-			var _person2 = data.get("person2");
-			this._person2 = new Person2Node(_person2);
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm1 = data.get("f_father_0_fm1");
-			this._f_father_0_fm1 = new F_father_0_fm1Rel(_f_father_0_fm1);
-			var _fm1 = data.get("fm1");
-			this._fm1 = new Fm1Node(_fm1);
-			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
-			this._fm1_corr_0_person1 = new Fm1_corr_0_person1Rel(_fm1_corr_0_person1);
-		}
-		
-		
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
-		public class Pr_corr_2_frRel {
-			public String __type_;
-		
-			public Pr_corr_2_frRel(Value _pr_corr_2_fr) {
-				if(!_pr_corr_2_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_2_fr.get("_type_").asString();
-			}
-		}
-		public class Person1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person1Node(Value _person1) {
-				if(!_person1.get("name").isNull())
-					this._name = _person1.get("name").asString();
-				if(!_person1.get("birthday").isNull())
-					this._birthday = _person1.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class Person2Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person2Node(Value _person2) {
-				if(!_person2.get("name").isNull())
-					this._name = _person2.get("name").asString();
-				if(!_person2.get("birthday").isNull())
-					this._birthday = _person2.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fm1Rel {
-		
-			public F_father_0_fm1Rel(Value _f_father_0_fm1) {
-			}
-		}
-		public class Fm1Node {
-			public String _name;
-			
-			public Fm1Node(Value _fm1) {
-				if(!_fm1.get("name").isNull())
-					this._name = _fm1.get("name").asString();
-			}
-		}
-		
-		public class Fm1_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm1_corr_0_person1Rel(Value _fm1_corr_0_person1) {
-				if(!_fm1_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm1_corr_0_person1.get("_type_").asString();
-			}
-		}
-	}
-	
-	public class InConsistentTriple2CoData extends NeoData {
-		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
-		public final Pr_corr_2_frRel _pr_corr_2_fr;
-		public final Person1Node _person1;
-		public final Person2Node _person2;
-		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final FNode _f;
-		public final F_father_0_fm1Rel _f_father_0_fm1;
-		public final Fm1Node _fm1;
-		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
-	
-		public InConsistentTriple2CoData(Record data) {
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
-			var _pr_corr_2_fr = data.get("pr_corr_2_fr");
-			this._pr_corr_2_fr = new Pr_corr_2_frRel(_pr_corr_2_fr);
-			var _person1 = data.get("person1");
-			this._person1 = new Person1Node(_person1);
-			var _person2 = data.get("person2");
-			this._person2 = new Person2Node(_person2);
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm1 = data.get("f_father_0_fm1");
-			this._f_father_0_fm1 = new F_father_0_fm1Rel(_f_father_0_fm1);
-			var _fm1 = data.get("fm1");
-			this._fm1 = new Fm1Node(_fm1);
-			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
-			this._fm1_corr_0_person1 = new Fm1_corr_0_person1Rel(_fm1_corr_0_person1);
-		}
-		
-	
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
-		public class Pr_corr_2_frRel {
-			public String __type_;
-		
-			public Pr_corr_2_frRel(Value _pr_corr_2_fr) {
-				if(!_pr_corr_2_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_2_fr.get("_type_").asString();
-			}
-		}
-		public class Person1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person1Node(Value _person1) {
-				if(!_person1.get("name").isNull())
-					this._name = _person1.get("name").asString();
-				if(!_person1.get("birthday").isNull())
-					this._birthday = _person1.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class Person2Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person2Node(Value _person2) {
-				if(!_person2.get("name").isNull())
-					this._name = _person2.get("name").asString();
-				if(!_person2.get("birthday").isNull())
-					this._birthday = _person2.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fm1Rel {
-		
-			public F_father_0_fm1Rel(Value _f_father_0_fm1) {
-			}
-		}
-		public class Fm1Node {
-			public String _name;
-			
-			public Fm1Node(Value _fm1) {
-				if(!_fm1.get("name").isNull())
-					this._name = _fm1.get("name").asString();
-			}
-		}
-		
-		public class Fm1_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm1_corr_0_person1Rel(Value _fm1_corr_0_person1) {
-				if(!_fm1_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm1_corr_0_person1.get("_type_").asString();
-			}
-		}
-	}
-	
-	public class InConsistentTriple2Mask extends NeoMask {
-		public InConsistentTriple2Mask setPr(Long value) {
-			nodeMask.put("pr", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setPr_corr_2_fr_type_(String value) {
-			attributeMask.put("pr_corr_2_fr._type_", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setPerson1(Long value) {
-			nodeMask.put("person1", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setPerson1Name(String value) {
-			attributeMask.put("person1.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setPerson1Birthday(LocalDate value) {
-			attributeMask.put("person1.birthday", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setPerson2(Long value) {
-			nodeMask.put("person2", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setPerson2Name(String value) {
-			attributeMask.put("person2.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setPerson2Birthday(LocalDate value) {
-			attributeMask.put("person2.birthday", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setFr(Long value) {
-			nodeMask.put("fr", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setF(Long value) {
-			nodeMask.put("f", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setFName(String value) {
-			attributeMask.put("f.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setFm1(Long value) {
-			nodeMask.put("fm1", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setFm1Name(String value) {
-			attributeMask.put("fm1.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setFm1_corr_0_person1_type_(String value) {
-			attributeMask.put("fm1_corr_0_person1._type_", value);
-			return this;
-		}
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.5
-	public Model getModel_ConsistentSource2(){
+	public Model getModel_InConsistentSource1(){
 		return (Model) spec.getEntities().get(5);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.6
-	public Model getModel_ConsistentTarget2(){
+	public Model getModel_ConsistentSource2(){
 		return (Model) spec.getEntities().get(6);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.7
+	public Model getModel_ConsistentTarget2(){
+		return (Model) spec.getEntities().get(7);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.8
 	public ConsistentTriple2Access getRule_ConsistentTriple2() {
 		return new ConsistentTriple2Access();
 	}
 	
 	public class ConsistentTriple2Access extends NeoRuleCoAccess<ConsistentTriple2Data, ConsistentTriple2CoData, ConsistentTriple2Mask> {
 		public final String _fr = "fr";
-		public final String _f = "f";
 		public final String _fm = "fm";
 		public final String _fm1 = "fm1";
 		public final String _pr = "pr";
@@ -1235,7 +637,7 @@ public class API_F2PModelForTesting {
 		
 		@Override
 		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(7);
+			var r = (Rule) spec.getEntities().get(8);
 			return NeoRuleFactory.createNeoRule(r, builder);
 		}
 		
@@ -1259,34 +661,20 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple2Data extends NeoData {
 		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FNode _f;
-		public final F_father_0_fmRel _f_father_0_fm;
-		public final F_mother_1_fm1Rel _f_mother_1_fm1;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final FmNode _fm;
 		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
 		public final Fm1Node _fm1;
 		public final Fm1_corr_0_person2Rel _fm1_corr_0_person2;
 		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
 		public final Person1Node _person1;
 		public final Person2Node _person2;
 		
 		public ConsistentTriple2Data(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm = data.get("f_father_0_fm");
-			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
-			var _f_mother_1_fm1 = data.get("f_mother_1_fm1");
-			this._f_mother_1_fm1 = new F_mother_1_fm1Rel(_f_mother_1_fm1);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _fm = data.get("fm");
 			this._fm = new FmNode(_fm);
 			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
@@ -1297,10 +685,6 @@ public class API_F2PModelForTesting {
 			this._fm1_corr_0_person2 = new Fm1_corr_0_person2Rel(_fm1_corr_0_person2);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _person2 = data.get("person2");
@@ -1314,36 +698,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class Fr_corr_1_prRel {
+		public class Fr_corr_0_prRel {
 			public String __type_;
 		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fmRel {
-		
-			public F_father_0_fmRel(Value _f_father_0_fm) {
-			}
-		}
-		public class F_mother_1_fm1Rel {
-		
-			public F_mother_1_fm1Rel(Value _f_mother_1_fm1) {
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
 			}
 		}
 		public class FmNode {
@@ -1386,16 +746,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
 		public class Person1Node {
 			public String _name;
 			public LocalDate _birthday;
@@ -1424,34 +774,20 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple2CoData extends NeoData {
 		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FNode _f;
-		public final F_father_0_fmRel _f_father_0_fm;
-		public final F_mother_1_fm1Rel _f_mother_1_fm1;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final FmNode _fm;
 		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
 		public final Fm1Node _fm1;
 		public final Fm1_corr_0_person2Rel _fm1_corr_0_person2;
 		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
 		public final Person1Node _person1;
 		public final Person2Node _person2;
 	
 		public ConsistentTriple2CoData(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm = data.get("f_father_0_fm");
-			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
-			var _f_mother_1_fm1 = data.get("f_mother_1_fm1");
-			this._f_mother_1_fm1 = new F_mother_1_fm1Rel(_f_mother_1_fm1);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _fm = data.get("fm");
 			this._fm = new FmNode(_fm);
 			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
@@ -1462,10 +798,6 @@ public class API_F2PModelForTesting {
 			this._fm1_corr_0_person2 = new Fm1_corr_0_person2Rel(_fm1_corr_0_person2);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _person2 = data.get("person2");
@@ -1479,36 +811,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class Fr_corr_1_prRel {
+		public class Fr_corr_0_prRel {
 			public String __type_;
 		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fmRel {
-		
-			public F_father_0_fmRel(Value _f_father_0_fm) {
-			}
-		}
-		public class F_mother_1_fm1Rel {
-		
-			public F_mother_1_fm1Rel(Value _f_mother_1_fm1) {
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
 			}
 		}
 		public class FmNode {
@@ -1551,16 +859,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
 		public class Person1Node {
 			public String _name;
 			public LocalDate _birthday;
@@ -1592,16 +890,8 @@ public class API_F2PModelForTesting {
 			nodeMask.put("fr", value);
 			return this;
 		}
-		public ConsistentTriple2Mask setFr_corr_1_pr_type_(String value) {
-			attributeMask.put("fr_corr_1_pr._type_", value);
-			return this;
-		}
-		public ConsistentTriple2Mask setF(Long value) {
-			nodeMask.put("f", value);
-			return this;
-		}
-		public ConsistentTriple2Mask setFName(String value) {
-			attributeMask.put("f.name", value);
+		public ConsistentTriple2Mask setFr_corr_0_pr_type_(String value) {
+			attributeMask.put("fr_corr_0_pr._type_", value);
 			return this;
 		}
 		public ConsistentTriple2Mask setFm(Long value) {
@@ -1658,749 +948,366 @@ public class API_F2PModelForTesting {
 		}
 	}
 	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.8
-	public InConsistentTriple3Access getRule_InConsistentTriple3() {
-		return new InConsistentTriple3Access();
-	}
-	
-	public class InConsistentTriple3Access extends NeoRuleCoAccess<InConsistentTriple3Data, InConsistentTriple3CoData, InConsistentTriple3Mask> {
-		public final String _fr = "fr";
-		public final String _f = "f";
-		public final String _fm = "fm";
-		public final String _fm1 = "fm1";
-		public final String _pr = "pr";
-		public final String _person1 = "person1";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(8);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<InConsistentTriple3Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple3Data(d));
-		}
-			
-		@Override
-		public Stream<InConsistentTriple3CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple3CoData(d));
-		}
-		
-		@Override
-		public InConsistentTriple3Mask mask() {
-			return new InConsistentTriple3Mask();
-		}
-	}
-	
-	public class InConsistentTriple3Data extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FNode _f;
-		public final F_father_0_fmRel _f_father_0_fm;
-		public final F_mother_1_fm1Rel _f_mother_1_fm1;
-		public final FmNode _fm;
-		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
-		public final Fm1Node _fm1;
-		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Person1Node _person1;
-		
-		public InConsistentTriple3Data(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm = data.get("f_father_0_fm");
-			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
-			var _f_mother_1_fm1 = data.get("f_mother_1_fm1");
-			this._f_mother_1_fm1 = new F_mother_1_fm1Rel(_f_mother_1_fm1);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
-			this._fm_corr_0_person1 = new Fm_corr_0_person1Rel(_fm_corr_0_person1);
-			var _fm1 = data.get("fm1");
-			this._fm1 = new Fm1Node(_fm1);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _person1 = data.get("person1");
-			this._person1 = new Person1Node(_person1);
-		}
-		
-		
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fmRel {
-		
-			public F_father_0_fmRel(Value _f_father_0_fm) {
-			}
-		}
-		public class F_mother_1_fm1Rel {
-		
-			public F_mother_1_fm1Rel(Value _f_mother_1_fm1) {
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm_corr_0_person1Rel(Value _fm_corr_0_person1) {
-				if(!_fm_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm_corr_0_person1.get("_type_").asString();
-			}
-		}
-		public class Fm1Node {
-			public String _name;
-			
-			public Fm1Node(Value _fm1) {
-				if(!_fm1.get("name").isNull())
-					this._name = _fm1.get("name").asString();
-			}
-		}
-		
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Person1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person1Node(Value _person1) {
-				if(!_person1.get("name").isNull())
-					this._name = _person1.get("name").asString();
-				if(!_person1.get("birthday").isNull())
-					this._birthday = _person1.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple3CoData extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FNode _f;
-		public final F_father_0_fmRel _f_father_0_fm;
-		public final F_mother_1_fm1Rel _f_mother_1_fm1;
-		public final FmNode _fm;
-		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
-		public final Fm1Node _fm1;
-		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Person1Node _person1;
-	
-		public InConsistentTriple3CoData(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm = data.get("f_father_0_fm");
-			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
-			var _f_mother_1_fm1 = data.get("f_mother_1_fm1");
-			this._f_mother_1_fm1 = new F_mother_1_fm1Rel(_f_mother_1_fm1);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
-			this._fm_corr_0_person1 = new Fm_corr_0_person1Rel(_fm_corr_0_person1);
-			var _fm1 = data.get("fm1");
-			this._fm1 = new Fm1Node(_fm1);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _person1 = data.get("person1");
-			this._person1 = new Person1Node(_person1);
-		}
-		
-	
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fmRel {
-		
-			public F_father_0_fmRel(Value _f_father_0_fm) {
-			}
-		}
-		public class F_mother_1_fm1Rel {
-		
-			public F_mother_1_fm1Rel(Value _f_mother_1_fm1) {
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm_corr_0_person1Rel(Value _fm_corr_0_person1) {
-				if(!_fm_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm_corr_0_person1.get("_type_").asString();
-			}
-		}
-		public class Fm1Node {
-			public String _name;
-			
-			public Fm1Node(Value _fm1) {
-				if(!_fm1.get("name").isNull())
-					this._name = _fm1.get("name").asString();
-			}
-		}
-		
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Person1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person1Node(Value _person1) {
-				if(!_person1.get("name").isNull())
-					this._name = _person1.get("name").asString();
-				if(!_person1.get("birthday").isNull())
-					this._birthday = _person1.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple3Mask extends NeoMask {
-		public InConsistentTriple3Mask setFr(Long value) {
-			nodeMask.put("fr", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setFr_corr_1_pr_type_(String value) {
-			attributeMask.put("fr_corr_1_pr._type_", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setF(Long value) {
-			nodeMask.put("f", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setFName(String value) {
-			attributeMask.put("f.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setFm(Long value) {
-			nodeMask.put("fm", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setFmName(String value) {
-			attributeMask.put("fm.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setFm_corr_0_person1_type_(String value) {
-			attributeMask.put("fm_corr_0_person1._type_", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setFm1(Long value) {
-			nodeMask.put("fm1", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setFm1Name(String value) {
-			attributeMask.put("fm1.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setPr(Long value) {
-			nodeMask.put("pr", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setPerson1(Long value) {
-			nodeMask.put("person1", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setPerson1Name(String value) {
-			attributeMask.put("person1.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setPerson1Birthday(LocalDate value) {
-			attributeMask.put("person1.birthday", value);
-			return this;
-		}
-	}
-	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.9
-	public InConsistentTriple4Access getRule_InConsistentTriple4() {
-		return new InConsistentTriple4Access();
-	}
-	
-	public class InConsistentTriple4Access extends NeoRuleCoAccess<InConsistentTriple4Data, InConsistentTriple4CoData, InConsistentTriple4Mask> {
-		public final String _fr = "fr";
-		public final String _f = "f";
-		public final String _fm = "fm";
-		public final String _pr = "pr";
-		public final String _person1 = "person1";
-		public final String _person2 = "person2";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(9);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<InConsistentTriple4Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple4Data(d));
-		}
-			
-		@Override
-		public Stream<InConsistentTriple4CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple4CoData(d));
-		}
-		
-		@Override
-		public InConsistentTriple4Mask mask() {
-			return new InConsistentTriple4Mask();
-		}
-	}
-	
-	public class InConsistentTriple4Data extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FNode _f;
-		public final F_father_0_fmRel _f_father_0_fm;
-		public final FmNode _fm;
-		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
-		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
-		public final Person1Node _person1;
-		public final Person2Node _person2;
-		
-		public InConsistentTriple4Data(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm = data.get("f_father_0_fm");
-			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
-			this._fm_corr_0_person1 = new Fm_corr_0_person1Rel(_fm_corr_0_person1);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
-			var _person1 = data.get("person1");
-			this._person1 = new Person1Node(_person1);
-			var _person2 = data.get("person2");
-			this._person2 = new Person2Node(_person2);
-		}
-		
-		
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fmRel {
-		
-			public F_father_0_fmRel(Value _f_father_0_fm) {
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm_corr_0_person1Rel(Value _fm_corr_0_person1) {
-				if(!_fm_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm_corr_0_person1.get("_type_").asString();
-			}
-		}
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
-		public class Person1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person1Node(Value _person1) {
-				if(!_person1.get("name").isNull())
-					this._name = _person1.get("name").asString();
-				if(!_person1.get("birthday").isNull())
-					this._birthday = _person1.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class Person2Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person2Node(Value _person2) {
-				if(!_person2.get("name").isNull())
-					this._name = _person2.get("name").asString();
-				if(!_person2.get("birthday").isNull())
-					this._birthday = _person2.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple4CoData extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fRel _fr_families_0_f;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FNode _f;
-		public final F_father_0_fmRel _f_father_0_fm;
-		public final FmNode _fm;
-		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
-		public final PrNode _pr;
-		public final Pr_persons_0_person1Rel _pr_persons_0_person1;
-		public final Pr_persons_1_person2Rel _pr_persons_1_person2;
-		public final Person1Node _person1;
-		public final Person2Node _person2;
-	
-		public InConsistentTriple4CoData(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_f = data.get("fr_families_0_f");
-			this._fr_families_0_f = new Fr_families_0_fRel(_fr_families_0_f);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _f = data.get("f");
-			this._f = new FNode(_f);
-			var _f_father_0_fm = data.get("f_father_0_fm");
-			this._f_father_0_fm = new F_father_0_fmRel(_f_father_0_fm);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
-			this._fm_corr_0_person1 = new Fm_corr_0_person1Rel(_fm_corr_0_person1);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_person1 = data.get("pr_persons_0_person1");
-			this._pr_persons_0_person1 = new Pr_persons_0_person1Rel(_pr_persons_0_person1);
-			var _pr_persons_1_person2 = data.get("pr_persons_1_person2");
-			this._pr_persons_1_person2 = new Pr_persons_1_person2Rel(_pr_persons_1_person2);
-			var _person1 = data.get("person1");
-			this._person1 = new Person1Node(_person1);
-			var _person2 = data.get("person2");
-			this._person2 = new Person2Node(_person2);
-		}
-		
-	
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fRel {
-		
-			public Fr_families_0_fRel(Value _fr_families_0_f) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FNode {
-			public String _name;
-			
-			public FNode(Value _f) {
-				if(!_f.get("name").isNull())
-					this._name = _f.get("name").asString();
-			}
-		}
-		
-		public class F_father_0_fmRel {
-		
-			public F_father_0_fmRel(Value _f_father_0_fm) {
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm_corr_0_person1Rel(Value _fm_corr_0_person1) {
-				if(!_fm_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm_corr_0_person1.get("_type_").asString();
-			}
-		}
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_person1Rel {
-		
-			public Pr_persons_0_person1Rel(Value _pr_persons_0_person1) {
-			}
-		}
-		public class Pr_persons_1_person2Rel {
-		
-			public Pr_persons_1_person2Rel(Value _pr_persons_1_person2) {
-			}
-		}
-		public class Person1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person1Node(Value _person1) {
-				if(!_person1.get("name").isNull())
-					this._name = _person1.get("name").asString();
-				if(!_person1.get("birthday").isNull())
-					this._birthday = _person1.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class Person2Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public Person2Node(Value _person2) {
-				if(!_person2.get("name").isNull())
-					this._name = _person2.get("name").asString();
-				if(!_person2.get("birthday").isNull())
-					this._birthday = _person2.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple4Mask extends NeoMask {
-		public InConsistentTriple4Mask setFr(Long value) {
-			nodeMask.put("fr", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setFr_corr_1_pr_type_(String value) {
-			attributeMask.put("fr_corr_1_pr._type_", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setF(Long value) {
-			nodeMask.put("f", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setFName(String value) {
-			attributeMask.put("f.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setFm(Long value) {
-			nodeMask.put("fm", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setFmName(String value) {
-			attributeMask.put("fm.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setFm_corr_0_person1_type_(String value) {
-			attributeMask.put("fm_corr_0_person1._type_", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setPr(Long value) {
-			nodeMask.put("pr", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setPerson1(Long value) {
-			nodeMask.put("person1", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setPerson1Name(String value) {
-			attributeMask.put("person1.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setPerson1Birthday(LocalDate value) {
-			attributeMask.put("person1.birthday", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setPerson2(Long value) {
-			nodeMask.put("person2", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setPerson2Name(String value) {
-			attributeMask.put("person2.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setPerson2Birthday(LocalDate value) {
-			attributeMask.put("person2.birthday", value);
-			return this;
-		}
+	public Model getModel_InConsistentSource2(){
+		return (Model) spec.getEntities().get(9);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.10
-	public Model getModel_ConsistentSource3(){
+	public Model getModel_InConsistentTarget2(){
 		return (Model) spec.getEntities().get(10);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.11
-	public Model getModel_ConsistentTarget3(){
-		return (Model) spec.getEntities().get(11);
+	public InConsistentTriple2Access getRule_InConsistentTriple2() {
+		return new InConsistentTriple2Access();
+	}
+	
+	public class InConsistentTriple2Access extends NeoRuleCoAccess<InConsistentTriple2Data, InConsistentTriple2CoData, InConsistentTriple2Mask> {
+		public final String _fr = "fr";
+		public final String _f1 = "f1";
+		public final String _f2 = "f2";
+		public final String _pr = "pr";
+		public final String _p = "p";
+		public final String _p1 = "p1";
+		
+		@Override
+		public NeoRule rule(){
+			var r = (Rule) spec.getEntities().get(11);
+			return NeoRuleFactory.createNeoRule(r, builder);
+		}
+		
+		@Override
+		public Stream<InConsistentTriple2Data> data(Collection<NeoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple2Data(d));
+		}
+			
+		@Override
+		public Stream<InConsistentTriple2CoData> codata(Collection<NeoCoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple2CoData(d));
+		}
+		
+		@Override
+		public InConsistentTriple2Mask mask() {
+			return new InConsistentTriple2Mask();
+		}
+	}
+	
+	public class InConsistentTriple2Data extends NeoData {
+		public final FrNode _fr;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
+		public final F1Node _f1;
+		public final F1_corr_0_pRel _f1_corr_0_p;
+		public final F2Node _f2;
+		public final F2_corr_0_p1Rel _f2_corr_0_p1;
+		public final PrNode _pr;
+		public final PNode _p;
+		public final P1Node _p1;
+		
+		public InConsistentTriple2Data(Record data) {
+			var _fr = data.get("fr");
+			this._fr = new FrNode(_fr);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f1_corr_0_p = data.get("f1_corr_0_p");
+			this._f1_corr_0_p = new F1_corr_0_pRel(_f1_corr_0_p);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+			var _f2_corr_0_p1 = data.get("f2_corr_0_p1");
+			this._f2_corr_0_p1 = new F2_corr_0_p1Rel(_f2_corr_0_p1);
+			var _pr = data.get("pr");
+			this._pr = new PrNode(_pr);
+			var _p = data.get("p");
+			this._p = new PNode(_p);
+			var _p1 = data.get("p1");
+			this._p1 = new P1Node(_p1);
+		}
+		
+		
+		public class FrNode {
+			
+			public FrNode(Value _fr) {
+			}
+		}
+		
+		public class Fr_corr_0_prRel {
+			public String __type_;
+		
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
+			}
+		}
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class F1_corr_0_pRel {
+			public String __type_;
+		
+			public F1_corr_0_pRel(Value _f1_corr_0_p) {
+				if(!_f1_corr_0_p.get("_type_").isNull())
+					this.__type_ = _f1_corr_0_p.get("_type_").asString();
+			}
+		}
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+		public class F2_corr_0_p1Rel {
+			public String __type_;
+		
+			public F2_corr_0_p1Rel(Value _f2_corr_0_p1) {
+				if(!_f2_corr_0_p1.get("_type_").isNull())
+					this.__type_ = _f2_corr_0_p1.get("_type_").asString();
+			}
+		}
+		public class PrNode {
+			
+			public PrNode(Value _pr) {
+			}
+		}
+		
+		public class PNode {
+			public String _name;
+			public LocalDate _birthday;
+			
+			public PNode(Value _p) {
+				if(!_p.get("name").isNull())
+					this._name = _p.get("name").asString();
+				if(!_p.get("birthday").isNull())
+					this._birthday = _p.get("birthday").asLocalDate();
+			}
+		}
+		
+		public class P1Node {
+			public String _name;
+			public LocalDate _birthday;
+			
+			public P1Node(Value _p1) {
+				if(!_p1.get("name").isNull())
+					this._name = _p1.get("name").asString();
+				if(!_p1.get("birthday").isNull())
+					this._birthday = _p1.get("birthday").asLocalDate();
+			}
+		}
+		
+	}
+	
+	public class InConsistentTriple2CoData extends NeoData {
+		public final FrNode _fr;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
+		public final F1Node _f1;
+		public final F1_corr_0_pRel _f1_corr_0_p;
+		public final F2Node _f2;
+		public final F2_corr_0_p1Rel _f2_corr_0_p1;
+		public final PrNode _pr;
+		public final PNode _p;
+		public final P1Node _p1;
+	
+		public InConsistentTriple2CoData(Record data) {
+			var _fr = data.get("fr");
+			this._fr = new FrNode(_fr);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f1_corr_0_p = data.get("f1_corr_0_p");
+			this._f1_corr_0_p = new F1_corr_0_pRel(_f1_corr_0_p);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+			var _f2_corr_0_p1 = data.get("f2_corr_0_p1");
+			this._f2_corr_0_p1 = new F2_corr_0_p1Rel(_f2_corr_0_p1);
+			var _pr = data.get("pr");
+			this._pr = new PrNode(_pr);
+			var _p = data.get("p");
+			this._p = new PNode(_p);
+			var _p1 = data.get("p1");
+			this._p1 = new P1Node(_p1);
+		}
+		
+	
+		public class FrNode {
+			
+			public FrNode(Value _fr) {
+			}
+		}
+		
+		public class Fr_corr_0_prRel {
+			public String __type_;
+		
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
+			}
+		}
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class F1_corr_0_pRel {
+			public String __type_;
+		
+			public F1_corr_0_pRel(Value _f1_corr_0_p) {
+				if(!_f1_corr_0_p.get("_type_").isNull())
+					this.__type_ = _f1_corr_0_p.get("_type_").asString();
+			}
+		}
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+		public class F2_corr_0_p1Rel {
+			public String __type_;
+		
+			public F2_corr_0_p1Rel(Value _f2_corr_0_p1) {
+				if(!_f2_corr_0_p1.get("_type_").isNull())
+					this.__type_ = _f2_corr_0_p1.get("_type_").asString();
+			}
+		}
+		public class PrNode {
+			
+			public PrNode(Value _pr) {
+			}
+		}
+		
+		public class PNode {
+			public String _name;
+			public LocalDate _birthday;
+			
+			public PNode(Value _p) {
+				if(!_p.get("name").isNull())
+					this._name = _p.get("name").asString();
+				if(!_p.get("birthday").isNull())
+					this._birthday = _p.get("birthday").asLocalDate();
+			}
+		}
+		
+		public class P1Node {
+			public String _name;
+			public LocalDate _birthday;
+			
+			public P1Node(Value _p1) {
+				if(!_p1.get("name").isNull())
+					this._name = _p1.get("name").asString();
+				if(!_p1.get("birthday").isNull())
+					this._birthday = _p1.get("birthday").asLocalDate();
+			}
+		}
+		
+	}
+	
+	public class InConsistentTriple2Mask extends NeoMask {
+		public InConsistentTriple2Mask setFr(Long value) {
+			nodeMask.put("fr", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setFr_corr_0_pr_type_(String value) {
+			attributeMask.put("fr_corr_0_pr._type_", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF1(Long value) {
+			nodeMask.put("f1", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF1Name(String value) {
+			attributeMask.put("f1.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF1_corr_0_p_type_(String value) {
+			attributeMask.put("f1_corr_0_p._type_", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF2(Long value) {
+			nodeMask.put("f2", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF2Name(String value) {
+			attributeMask.put("f2.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF2_corr_0_p1_type_(String value) {
+			attributeMask.put("f2_corr_0_p1._type_", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setPr(Long value) {
+			nodeMask.put("pr", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setP(Long value) {
+			nodeMask.put("p", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setPName(String value) {
+			attributeMask.put("p.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setPBirthday(LocalDate value) {
+			attributeMask.put("p.birthday", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setP1(Long value) {
+			nodeMask.put("p1", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setP1Name(String value) {
+			attributeMask.put("p1.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setP1Birthday(LocalDate value) {
+			attributeMask.put("p1.birthday", value);
+			return this;
+		}
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.12
+	public Model getModel_ConsistentSource3(){
+		return (Model) spec.getEntities().get(12);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.13
+	public Model getModel_ConsistentTarget3(){
+		return (Model) spec.getEntities().get(13);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.14
 	public ConsistentTriple3Access getRule_ConsistentTriple3() {
 		return new ConsistentTriple3Access();
 	}
 	
 	public class ConsistentTriple3Access extends NeoRuleCoAccess<ConsistentTriple3Data, ConsistentTriple3CoData, ConsistentTriple3Mask> {
 		public final String _fr = "fr";
-		public final String _fm = "fm";
-		public final String _f1 = "f1";
+		public final String _m1 = "m1";
 		public final String _pr = "pr";
 		public final String _p = "p";
 		
 		@Override
 		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(12);
+			var r = (Rule) spec.getEntities().get(14);
 			return NeoRuleFactory.createNeoRule(r, builder);
 		}
 		
@@ -2424,35 +1331,23 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple3Data extends NeoData {
 		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_father_0_f1Rel _fm_father_0_f1;
-		public final F1Node _f1;
-		public final F1_corr_0_pRel _f1_corr_0_p;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
+		public final M1Node _m1;
+		public final M1_corr_0_pRel _m1_corr_0_p;
 		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
 		public final PNode _p;
 		
 		public ConsistentTriple3Data(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_father_0_f1 = data.get("fm_father_0_f1");
-			this._fm_father_0_f1 = new Fm_father_0_f1Rel(_fm_father_0_f1);
-			var _f1 = data.get("f1");
-			this._f1 = new F1Node(_f1);
-			var _f1_corr_0_p = data.get("f1_corr_0_p");
-			this._f1_corr_0_p = new F1_corr_0_pRel(_f1_corr_0_p);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
+			var _m1 = data.get("m1");
+			this._m1 = new M1Node(_m1);
+			var _m1_corr_0_p = data.get("m1_corr_0_p");
+			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
 			var _p = data.get("p");
 			this._p = new PNode(_p);
 		}
@@ -2464,48 +1359,29 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
+		public class Fr_corr_0_prRel {
 			public String __type_;
 		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
 			}
 		}
-		public class FmNode {
+		public class M1Node {
 			public String _name;
 			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
+			public M1Node(Value _m1) {
+				if(!_m1.get("name").isNull())
+					this._name = _m1.get("name").asString();
 			}
 		}
 		
-		public class Fm_father_0_f1Rel {
-		
-			public Fm_father_0_f1Rel(Value _fm_father_0_f1) {
-			}
-		}
-		public class F1Node {
-			public String _name;
-			
-			public F1Node(Value _f1) {
-				if(!_f1.get("name").isNull())
-					this._name = _f1.get("name").asString();
-			}
-		}
-		
-		public class F1_corr_0_pRel {
+		public class M1_corr_0_pRel {
 			public String __type_;
 		
-			public F1_corr_0_pRel(Value _f1_corr_0_p) {
-				if(!_f1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _f1_corr_0_p.get("_type_").asString();
+			public M1_corr_0_pRel(Value _m1_corr_0_p) {
+				if(!_m1_corr_0_p.get("_type_").isNull())
+					this.__type_ = _m1_corr_0_p.get("_type_").asString();
 			}
 		}
 		public class PrNode {
@@ -2514,11 +1390,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
 		public class PNode {
 			public String _name;
 			public LocalDate _birthday;
@@ -2535,35 +1406,23 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple3CoData extends NeoData {
 		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_father_0_f1Rel _fm_father_0_f1;
-		public final F1Node _f1;
-		public final F1_corr_0_pRel _f1_corr_0_p;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
+		public final M1Node _m1;
+		public final M1_corr_0_pRel _m1_corr_0_p;
 		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
 		public final PNode _p;
 	
 		public ConsistentTriple3CoData(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_father_0_f1 = data.get("fm_father_0_f1");
-			this._fm_father_0_f1 = new Fm_father_0_f1Rel(_fm_father_0_f1);
-			var _f1 = data.get("f1");
-			this._f1 = new F1Node(_f1);
-			var _f1_corr_0_p = data.get("f1_corr_0_p");
-			this._f1_corr_0_p = new F1_corr_0_pRel(_f1_corr_0_p);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
+			var _m1 = data.get("m1");
+			this._m1 = new M1Node(_m1);
+			var _m1_corr_0_p = data.get("m1_corr_0_p");
+			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
 			var _p = data.get("p");
 			this._p = new PNode(_p);
 		}
@@ -2575,48 +1434,29 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
+		public class Fr_corr_0_prRel {
 			public String __type_;
 		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
 			}
 		}
-		public class FmNode {
+		public class M1Node {
 			public String _name;
 			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
+			public M1Node(Value _m1) {
+				if(!_m1.get("name").isNull())
+					this._name = _m1.get("name").asString();
 			}
 		}
 		
-		public class Fm_father_0_f1Rel {
-		
-			public Fm_father_0_f1Rel(Value _fm_father_0_f1) {
-			}
-		}
-		public class F1Node {
-			public String _name;
-			
-			public F1Node(Value _f1) {
-				if(!_f1.get("name").isNull())
-					this._name = _f1.get("name").asString();
-			}
-		}
-		
-		public class F1_corr_0_pRel {
+		public class M1_corr_0_pRel {
 			public String __type_;
 		
-			public F1_corr_0_pRel(Value _f1_corr_0_p) {
-				if(!_f1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _f1_corr_0_p.get("_type_").asString();
+			public M1_corr_0_pRel(Value _m1_corr_0_p) {
+				if(!_m1_corr_0_p.get("_type_").isNull())
+					this.__type_ = _m1_corr_0_p.get("_type_").asString();
 			}
 		}
 		public class PrNode {
@@ -2625,11 +1465,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
 		public class PNode {
 			public String _name;
 			public LocalDate _birthday;
@@ -2649,28 +1484,20 @@ public class API_F2PModelForTesting {
 			nodeMask.put("fr", value);
 			return this;
 		}
-		public ConsistentTriple3Mask setFr_corr_1_pr_type_(String value) {
-			attributeMask.put("fr_corr_1_pr._type_", value);
+		public ConsistentTriple3Mask setFr_corr_0_pr_type_(String value) {
+			attributeMask.put("fr_corr_0_pr._type_", value);
 			return this;
 		}
-		public ConsistentTriple3Mask setFm(Long value) {
-			nodeMask.put("fm", value);
+		public ConsistentTriple3Mask setM1(Long value) {
+			nodeMask.put("m1", value);
 			return this;
 		}
-		public ConsistentTriple3Mask setFmName(String value) {
-			attributeMask.put("fm.name", value);
+		public ConsistentTriple3Mask setM1Name(String value) {
+			attributeMask.put("m1.name", value);
 			return this;
 		}
-		public ConsistentTriple3Mask setF1(Long value) {
-			nodeMask.put("f1", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setF1Name(String value) {
-			attributeMask.put("f1.name", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setF1_corr_0_p_type_(String value) {
-			attributeMask.put("f1_corr_0_p._type_", value);
+		public ConsistentTriple3Mask setM1_corr_0_p_type_(String value) {
+			attributeMask.put("m1_corr_0_p._type_", value);
 			return this;
 		}
 		public ConsistentTriple3Mask setPr(Long value) {
@@ -2691,768 +1518,23 @@ public class API_F2PModelForTesting {
 		}
 	}
 	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.13
-	public InConsistentTriple5Access getRule_InConsistentTriple5() {
-		return new InConsistentTriple5Access();
-	}
-	
-	public class InConsistentTriple5Access extends NeoRuleCoAccess<InConsistentTriple5Data, InConsistentTriple5CoData, InConsistentTriple5Mask> {
-		public final String _fr = "fr";
-		public final String _fm = "fm";
-		public final String _f1 = "f1";
-		public final String _f2 = "f2";
-		public final String _pr = "pr";
-		public final String _p = "p";
-		public final String _p1 = "p1";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(13);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<InConsistentTriple5Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple5Data(d));
-		}
-			
-		@Override
-		public Stream<InConsistentTriple5CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple5CoData(d));
-		}
-		
-		@Override
-		public InConsistentTriple5Mask mask() {
-			return new InConsistentTriple5Mask();
-		}
-	}
-	
-	public class InConsistentTriple5Data extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_father_0_f1Rel _fm_father_0_f1;
-		public final Fm_father_1_f2Rel _fm_father_1_f2;
-		public final F1Node _f1;
-		public final F1_corr_0_pRel _f1_corr_0_p;
-		public final F2Node _f2;
-		public final F2_corr_0_p1Rel _f2_corr_0_p1;
-		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
-		public final Pr_persons_1_p1Rel _pr_persons_1_p1;
-		public final PNode _p;
-		public final P1Node _p1;
-		
-		public InConsistentTriple5Data(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_father_0_f1 = data.get("fm_father_0_f1");
-			this._fm_father_0_f1 = new Fm_father_0_f1Rel(_fm_father_0_f1);
-			var _fm_father_1_f2 = data.get("fm_father_1_f2");
-			this._fm_father_1_f2 = new Fm_father_1_f2Rel(_fm_father_1_f2);
-			var _f1 = data.get("f1");
-			this._f1 = new F1Node(_f1);
-			var _f1_corr_0_p = data.get("f1_corr_0_p");
-			this._f1_corr_0_p = new F1_corr_0_pRel(_f1_corr_0_p);
-			var _f2 = data.get("f2");
-			this._f2 = new F2Node(_f2);
-			var _f2_corr_0_p1 = data.get("f2_corr_0_p1");
-			this._f2_corr_0_p1 = new F2_corr_0_p1Rel(_f2_corr_0_p1);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
-			var _pr_persons_1_p1 = data.get("pr_persons_1_p1");
-			this._pr_persons_1_p1 = new Pr_persons_1_p1Rel(_pr_persons_1_p1);
-			var _p = data.get("p");
-			this._p = new PNode(_p);
-			var _p1 = data.get("p1");
-			this._p1 = new P1Node(_p1);
-		}
-		
-		
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_father_0_f1Rel {
-		
-			public Fm_father_0_f1Rel(Value _fm_father_0_f1) {
-			}
-		}
-		public class Fm_father_1_f2Rel {
-		
-			public Fm_father_1_f2Rel(Value _fm_father_1_f2) {
-			}
-		}
-		public class F1Node {
-			public String _name;
-			
-			public F1Node(Value _f1) {
-				if(!_f1.get("name").isNull())
-					this._name = _f1.get("name").asString();
-			}
-		}
-		
-		public class F1_corr_0_pRel {
-			public String __type_;
-		
-			public F1_corr_0_pRel(Value _f1_corr_0_p) {
-				if(!_f1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _f1_corr_0_p.get("_type_").asString();
-			}
-		}
-		public class F2Node {
-			public String _name;
-			
-			public F2Node(Value _f2) {
-				if(!_f2.get("name").isNull())
-					this._name = _f2.get("name").asString();
-			}
-		}
-		
-		public class F2_corr_0_p1Rel {
-			public String __type_;
-		
-			public F2_corr_0_p1Rel(Value _f2_corr_0_p1) {
-				if(!_f2_corr_0_p1.get("_type_").isNull())
-					this.__type_ = _f2_corr_0_p1.get("_type_").asString();
-			}
-		}
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
-		public class Pr_persons_1_p1Rel {
-		
-			public Pr_persons_1_p1Rel(Value _pr_persons_1_p1) {
-			}
-		}
-		public class PNode {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public PNode(Value _p) {
-				if(!_p.get("name").isNull())
-					this._name = _p.get("name").asString();
-				if(!_p.get("birthday").isNull())
-					this._birthday = _p.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class P1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public P1Node(Value _p1) {
-				if(!_p1.get("name").isNull())
-					this._name = _p1.get("name").asString();
-				if(!_p1.get("birthday").isNull())
-					this._birthday = _p1.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple5CoData extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_father_0_f1Rel _fm_father_0_f1;
-		public final Fm_father_1_f2Rel _fm_father_1_f2;
-		public final F1Node _f1;
-		public final F1_corr_0_pRel _f1_corr_0_p;
-		public final F2Node _f2;
-		public final F2_corr_0_p1Rel _f2_corr_0_p1;
-		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
-		public final Pr_persons_1_p1Rel _pr_persons_1_p1;
-		public final PNode _p;
-		public final P1Node _p1;
-	
-		public InConsistentTriple5CoData(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_father_0_f1 = data.get("fm_father_0_f1");
-			this._fm_father_0_f1 = new Fm_father_0_f1Rel(_fm_father_0_f1);
-			var _fm_father_1_f2 = data.get("fm_father_1_f2");
-			this._fm_father_1_f2 = new Fm_father_1_f2Rel(_fm_father_1_f2);
-			var _f1 = data.get("f1");
-			this._f1 = new F1Node(_f1);
-			var _f1_corr_0_p = data.get("f1_corr_0_p");
-			this._f1_corr_0_p = new F1_corr_0_pRel(_f1_corr_0_p);
-			var _f2 = data.get("f2");
-			this._f2 = new F2Node(_f2);
-			var _f2_corr_0_p1 = data.get("f2_corr_0_p1");
-			this._f2_corr_0_p1 = new F2_corr_0_p1Rel(_f2_corr_0_p1);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
-			var _pr_persons_1_p1 = data.get("pr_persons_1_p1");
-			this._pr_persons_1_p1 = new Pr_persons_1_p1Rel(_pr_persons_1_p1);
-			var _p = data.get("p");
-			this._p = new PNode(_p);
-			var _p1 = data.get("p1");
-			this._p1 = new P1Node(_p1);
-		}
-		
-	
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_father_0_f1Rel {
-		
-			public Fm_father_0_f1Rel(Value _fm_father_0_f1) {
-			}
-		}
-		public class Fm_father_1_f2Rel {
-		
-			public Fm_father_1_f2Rel(Value _fm_father_1_f2) {
-			}
-		}
-		public class F1Node {
-			public String _name;
-			
-			public F1Node(Value _f1) {
-				if(!_f1.get("name").isNull())
-					this._name = _f1.get("name").asString();
-			}
-		}
-		
-		public class F1_corr_0_pRel {
-			public String __type_;
-		
-			public F1_corr_0_pRel(Value _f1_corr_0_p) {
-				if(!_f1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _f1_corr_0_p.get("_type_").asString();
-			}
-		}
-		public class F2Node {
-			public String _name;
-			
-			public F2Node(Value _f2) {
-				if(!_f2.get("name").isNull())
-					this._name = _f2.get("name").asString();
-			}
-		}
-		
-		public class F2_corr_0_p1Rel {
-			public String __type_;
-		
-			public F2_corr_0_p1Rel(Value _f2_corr_0_p1) {
-				if(!_f2_corr_0_p1.get("_type_").isNull())
-					this.__type_ = _f2_corr_0_p1.get("_type_").asString();
-			}
-		}
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
-		public class Pr_persons_1_p1Rel {
-		
-			public Pr_persons_1_p1Rel(Value _pr_persons_1_p1) {
-			}
-		}
-		public class PNode {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public PNode(Value _p) {
-				if(!_p.get("name").isNull())
-					this._name = _p.get("name").asString();
-				if(!_p.get("birthday").isNull())
-					this._birthday = _p.get("birthday").asLocalDate();
-			}
-		}
-		
-		public class P1Node {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public P1Node(Value _p1) {
-				if(!_p1.get("name").isNull())
-					this._name = _p1.get("name").asString();
-				if(!_p1.get("birthday").isNull())
-					this._birthday = _p1.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple5Mask extends NeoMask {
-		public InConsistentTriple5Mask setFr(Long value) {
-			nodeMask.put("fr", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setFr_corr_1_pr_type_(String value) {
-			attributeMask.put("fr_corr_1_pr._type_", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setFm(Long value) {
-			nodeMask.put("fm", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setFmName(String value) {
-			attributeMask.put("fm.name", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setF1(Long value) {
-			nodeMask.put("f1", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setF1Name(String value) {
-			attributeMask.put("f1.name", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setF1_corr_0_p_type_(String value) {
-			attributeMask.put("f1_corr_0_p._type_", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setF2(Long value) {
-			nodeMask.put("f2", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setF2Name(String value) {
-			attributeMask.put("f2.name", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setF2_corr_0_p1_type_(String value) {
-			attributeMask.put("f2_corr_0_p1._type_", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setPr(Long value) {
-			nodeMask.put("pr", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setP(Long value) {
-			nodeMask.put("p", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setPName(String value) {
-			attributeMask.put("p.name", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setPBirthday(LocalDate value) {
-			attributeMask.put("p.birthday", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setP1(Long value) {
-			nodeMask.put("p1", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setP1Name(String value) {
-			attributeMask.put("p1.name", value);
-			return this;
-		}
-		public InConsistentTriple5Mask setP1Birthday(LocalDate value) {
-			attributeMask.put("p1.birthday", value);
-			return this;
-		}
-	}
-	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.14
-	public Model getModel_ConsistentSource4(){
-		return (Model) spec.getEntities().get(14);
-	}
-	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.15
-	public Model getModel_ConsistentTarget4(){
+	public Model getModel_InConsistentSource3(){
 		return (Model) spec.getEntities().get(15);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.16
-	public ConsistentTriple4Access getRule_ConsistentTriple4() {
-		return new ConsistentTriple4Access();
-	}
-	
-	public class ConsistentTriple4Access extends NeoRuleCoAccess<ConsistentTriple4Data, ConsistentTriple4CoData, ConsistentTriple4Mask> {
-		public final String _fr = "fr";
-		public final String _fm = "fm";
-		public final String _m1 = "m1";
-		public final String _pr = "pr";
-		public final String _p = "p";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(16);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<ConsistentTriple4Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new ConsistentTriple4Data(d));
-		}
-			
-		@Override
-		public Stream<ConsistentTriple4CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new ConsistentTriple4CoData(d));
-		}
-		
-		@Override
-		public ConsistentTriple4Mask mask() {
-			return new ConsistentTriple4Mask();
-		}
-	}
-	
-	public class ConsistentTriple4Data extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_mother_0_m1Rel _fm_mother_0_m1;
-		public final M1Node _m1;
-		public final M1_corr_0_pRel _m1_corr_0_p;
-		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
-		public final PNode _p;
-		
-		public ConsistentTriple4Data(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_mother_0_m1 = data.get("fm_mother_0_m1");
-			this._fm_mother_0_m1 = new Fm_mother_0_m1Rel(_fm_mother_0_m1);
-			var _m1 = data.get("m1");
-			this._m1 = new M1Node(_m1);
-			var _m1_corr_0_p = data.get("m1_corr_0_p");
-			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
-			var _p = data.get("p");
-			this._p = new PNode(_p);
-		}
-		
-		
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_mother_0_m1Rel {
-		
-			public Fm_mother_0_m1Rel(Value _fm_mother_0_m1) {
-			}
-		}
-		public class M1Node {
-			public String _name;
-			
-			public M1Node(Value _m1) {
-				if(!_m1.get("name").isNull())
-					this._name = _m1.get("name").asString();
-			}
-		}
-		
-		public class M1_corr_0_pRel {
-			public String __type_;
-		
-			public M1_corr_0_pRel(Value _m1_corr_0_p) {
-				if(!_m1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _m1_corr_0_p.get("_type_").asString();
-			}
-		}
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
-		public class PNode {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public PNode(Value _p) {
-				if(!_p.get("name").isNull())
-					this._name = _p.get("name").asString();
-				if(!_p.get("birthday").isNull())
-					this._birthday = _p.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class ConsistentTriple4CoData extends NeoData {
-		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_mother_0_m1Rel _fm_mother_0_m1;
-		public final M1Node _m1;
-		public final M1_corr_0_pRel _m1_corr_0_p;
-		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
-		public final PNode _p;
-	
-		public ConsistentTriple4CoData(Record data) {
-			var _fr = data.get("fr");
-			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_mother_0_m1 = data.get("fm_mother_0_m1");
-			this._fm_mother_0_m1 = new Fm_mother_0_m1Rel(_fm_mother_0_m1);
-			var _m1 = data.get("m1");
-			this._m1 = new M1Node(_m1);
-			var _m1_corr_0_p = data.get("m1_corr_0_p");
-			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
-			var _pr = data.get("pr");
-			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
-			var _p = data.get("p");
-			this._p = new PNode(_p);
-		}
-		
-	
-		public class FrNode {
-			
-			public FrNode(Value _fr) {
-			}
-		}
-		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
-			public String __type_;
-		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_mother_0_m1Rel {
-		
-			public Fm_mother_0_m1Rel(Value _fm_mother_0_m1) {
-			}
-		}
-		public class M1Node {
-			public String _name;
-			
-			public M1Node(Value _m1) {
-				if(!_m1.get("name").isNull())
-					this._name = _m1.get("name").asString();
-			}
-		}
-		
-		public class M1_corr_0_pRel {
-			public String __type_;
-		
-			public M1_corr_0_pRel(Value _m1_corr_0_p) {
-				if(!_m1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _m1_corr_0_p.get("_type_").asString();
-			}
-		}
-		public class PrNode {
-			
-			public PrNode(Value _pr) {
-			}
-		}
-		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
-		public class PNode {
-			public String _name;
-			public LocalDate _birthday;
-			
-			public PNode(Value _p) {
-				if(!_p.get("name").isNull())
-					this._name = _p.get("name").asString();
-				if(!_p.get("birthday").isNull())
-					this._birthday = _p.get("birthday").asLocalDate();
-			}
-		}
-		
-	}
-	
-	public class ConsistentTriple4Mask extends NeoMask {
-		public ConsistentTriple4Mask setFr(Long value) {
-			nodeMask.put("fr", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setFr_corr_1_pr_type_(String value) {
-			attributeMask.put("fr_corr_1_pr._type_", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setFm(Long value) {
-			nodeMask.put("fm", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setFmName(String value) {
-			attributeMask.put("fm.name", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setM1(Long value) {
-			nodeMask.put("m1", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setM1Name(String value) {
-			attributeMask.put("m1.name", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setM1_corr_0_p_type_(String value) {
-			attributeMask.put("m1_corr_0_p._type_", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setPr(Long value) {
-			nodeMask.put("pr", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setP(Long value) {
-			nodeMask.put("p", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setPName(String value) {
-			attributeMask.put("p.name", value);
-			return this;
-		}
-		public ConsistentTriple4Mask setPBirthday(LocalDate value) {
-			attributeMask.put("p.birthday", value);
-			return this;
-		}
+	public Model getModel_InConsistentTarget3(){
+		return (Model) spec.getEntities().get(16);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/familiestopersons/F2PModelForTesting.msl#//@entities.17
-	public InConsistentTriple6Access getRule_InConsistentTriple6() {
-		return new InConsistentTriple6Access();
+	public InConsistentTriple3Access getRule_InConsistentTriple3() {
+		return new InConsistentTriple3Access();
 	}
 	
-	public class InConsistentTriple6Access extends NeoRuleCoAccess<InConsistentTriple6Data, InConsistentTriple6CoData, InConsistentTriple6Mask> {
+	public class InConsistentTriple3Access extends NeoRuleCoAccess<InConsistentTriple3Data, InConsistentTriple3CoData, InConsistentTriple3Mask> {
 		public final String _fr = "fr";
-		public final String _fm = "fm";
 		public final String _m1 = "m1";
 		public final String _m2 = "m2";
 		public final String _pr = "pr";
@@ -3466,67 +1548,49 @@ public class API_F2PModelForTesting {
 		}
 		
 		@Override
-		public Stream<InConsistentTriple6Data> data(Collection<NeoMatch> matches) {
+		public Stream<InConsistentTriple3Data> data(Collection<NeoMatch> matches) {
 			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple6Data(d));
+			return data.stream().map(d -> new InConsistentTriple3Data(d));
 		}
 			
 		@Override
-		public Stream<InConsistentTriple6CoData> codata(Collection<NeoCoMatch> matches) {
+		public Stream<InConsistentTriple3CoData> codata(Collection<NeoCoMatch> matches) {
 			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple6CoData(d));
+			return data.stream().map(d -> new InConsistentTriple3CoData(d));
 		}
 		
 		@Override
-		public InConsistentTriple6Mask mask() {
-			return new InConsistentTriple6Mask();
+		public InConsistentTriple3Mask mask() {
+			return new InConsistentTriple3Mask();
 		}
 	}
 	
-	public class InConsistentTriple6Data extends NeoData {
+	public class InConsistentTriple3Data extends NeoData {
 		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_mother_0_m1Rel _fm_mother_0_m1;
-		public final Fm_mother_1_m2Rel _fm_mother_1_m2;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final M1Node _m1;
 		public final M1_corr_0_pRel _m1_corr_0_p;
 		public final M2Node _m2;
-		public final M2_corr_0_pRel _m2_corr_0_p;
+		public final M2_corr_0_p1Rel _m2_corr_0_p1;
 		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
-		public final Pr_persons_1_p1Rel _pr_persons_1_p1;
 		public final PNode _p;
 		public final P1Node _p1;
 		
-		public InConsistentTriple6Data(Record data) {
+		public InConsistentTriple3Data(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_mother_0_m1 = data.get("fm_mother_0_m1");
-			this._fm_mother_0_m1 = new Fm_mother_0_m1Rel(_fm_mother_0_m1);
-			var _fm_mother_1_m2 = data.get("fm_mother_1_m2");
-			this._fm_mother_1_m2 = new Fm_mother_1_m2Rel(_fm_mother_1_m2);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _m1 = data.get("m1");
 			this._m1 = new M1Node(_m1);
 			var _m1_corr_0_p = data.get("m1_corr_0_p");
 			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
 			var _m2 = data.get("m2");
 			this._m2 = new M2Node(_m2);
-			var _m2_corr_0_p = data.get("m2_corr_0_p");
-			this._m2_corr_0_p = new M2_corr_0_pRel(_m2_corr_0_p);
+			var _m2_corr_0_p1 = data.get("m2_corr_0_p1");
+			this._m2_corr_0_p1 = new M2_corr_0_p1Rel(_m2_corr_0_p1);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
-			var _pr_persons_1_p1 = data.get("pr_persons_1_p1");
-			this._pr_persons_1_p1 = new Pr_persons_1_p1Rel(_pr_persons_1_p1);
 			var _p = data.get("p");
 			this._p = new PNode(_p);
 			var _p1 = data.get("p1");
@@ -3540,36 +1604,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
+		public class Fr_corr_0_prRel {
 			public String __type_;
 		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_mother_0_m1Rel {
-		
-			public Fm_mother_0_m1Rel(Value _fm_mother_0_m1) {
-			}
-		}
-		public class Fm_mother_1_m2Rel {
-		
-			public Fm_mother_1_m2Rel(Value _fm_mother_1_m2) {
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
 			}
 		}
 		public class M1Node {
@@ -3598,12 +1638,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class M2_corr_0_pRel {
+		public class M2_corr_0_p1Rel {
 			public String __type_;
 		
-			public M2_corr_0_pRel(Value _m2_corr_0_p) {
-				if(!_m2_corr_0_p.get("_type_").isNull())
-					this.__type_ = _m2_corr_0_p.get("_type_").asString();
+			public M2_corr_0_p1Rel(Value _m2_corr_0_p1) {
+				if(!_m2_corr_0_p1.get("_type_").isNull())
+					this.__type_ = _m2_corr_0_p1.get("_type_").asString();
 			}
 		}
 		public class PrNode {
@@ -3612,16 +1652,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
-		public class Pr_persons_1_p1Rel {
-		
-			public Pr_persons_1_p1Rel(Value _pr_persons_1_p1) {
-			}
-		}
 		public class PNode {
 			public String _name;
 			public LocalDate _birthday;
@@ -3648,50 +1678,32 @@ public class API_F2PModelForTesting {
 		
 	}
 	
-	public class InConsistentTriple6CoData extends NeoData {
+	public class InConsistentTriple3CoData extends NeoData {
 		public final FrNode _fr;
-		public final Fr_families_0_fmRel _fr_families_0_fm;
-		public final Fr_corr_1_prRel _fr_corr_1_pr;
-		public final FmNode _fm;
-		public final Fm_mother_0_m1Rel _fm_mother_0_m1;
-		public final Fm_mother_1_m2Rel _fm_mother_1_m2;
+		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final M1Node _m1;
 		public final M1_corr_0_pRel _m1_corr_0_p;
 		public final M2Node _m2;
-		public final M2_corr_0_pRel _m2_corr_0_p;
+		public final M2_corr_0_p1Rel _m2_corr_0_p1;
 		public final PrNode _pr;
-		public final Pr_persons_0_pRel _pr_persons_0_p;
-		public final Pr_persons_1_p1Rel _pr_persons_1_p1;
 		public final PNode _p;
 		public final P1Node _p1;
 	
-		public InConsistentTriple6CoData(Record data) {
+		public InConsistentTriple3CoData(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_families_0_fm = data.get("fr_families_0_fm");
-			this._fr_families_0_fm = new Fr_families_0_fmRel(_fr_families_0_fm);
-			var _fr_corr_1_pr = data.get("fr_corr_1_pr");
-			this._fr_corr_1_pr = new Fr_corr_1_prRel(_fr_corr_1_pr);
-			var _fm = data.get("fm");
-			this._fm = new FmNode(_fm);
-			var _fm_mother_0_m1 = data.get("fm_mother_0_m1");
-			this._fm_mother_0_m1 = new Fm_mother_0_m1Rel(_fm_mother_0_m1);
-			var _fm_mother_1_m2 = data.get("fm_mother_1_m2");
-			this._fm_mother_1_m2 = new Fm_mother_1_m2Rel(_fm_mother_1_m2);
+			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
+			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _m1 = data.get("m1");
 			this._m1 = new M1Node(_m1);
 			var _m1_corr_0_p = data.get("m1_corr_0_p");
 			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
 			var _m2 = data.get("m2");
 			this._m2 = new M2Node(_m2);
-			var _m2_corr_0_p = data.get("m2_corr_0_p");
-			this._m2_corr_0_p = new M2_corr_0_pRel(_m2_corr_0_p);
+			var _m2_corr_0_p1 = data.get("m2_corr_0_p1");
+			this._m2_corr_0_p1 = new M2_corr_0_p1Rel(_m2_corr_0_p1);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_persons_0_p = data.get("pr_persons_0_p");
-			this._pr_persons_0_p = new Pr_persons_0_pRel(_pr_persons_0_p);
-			var _pr_persons_1_p1 = data.get("pr_persons_1_p1");
-			this._pr_persons_1_p1 = new Pr_persons_1_p1Rel(_pr_persons_1_p1);
 			var _p = data.get("p");
 			this._p = new PNode(_p);
 			var _p1 = data.get("p1");
@@ -3705,36 +1717,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_families_0_fmRel {
-		
-			public Fr_families_0_fmRel(Value _fr_families_0_fm) {
-			}
-		}
-		public class Fr_corr_1_prRel {
+		public class Fr_corr_0_prRel {
 			public String __type_;
 		
-			public Fr_corr_1_prRel(Value _fr_corr_1_pr) {
-				if(!_fr_corr_1_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_1_pr.get("_type_").asString();
-			}
-		}
-		public class FmNode {
-			public String _name;
-			
-			public FmNode(Value _fm) {
-				if(!_fm.get("name").isNull())
-					this._name = _fm.get("name").asString();
-			}
-		}
-		
-		public class Fm_mother_0_m1Rel {
-		
-			public Fm_mother_0_m1Rel(Value _fm_mother_0_m1) {
-			}
-		}
-		public class Fm_mother_1_m2Rel {
-		
-			public Fm_mother_1_m2Rel(Value _fm_mother_1_m2) {
+			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
+				if(!_fr_corr_0_pr.get("_type_").isNull())
+					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
 			}
 		}
 		public class M1Node {
@@ -3763,12 +1751,12 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class M2_corr_0_pRel {
+		public class M2_corr_0_p1Rel {
 			public String __type_;
 		
-			public M2_corr_0_pRel(Value _m2_corr_0_p) {
-				if(!_m2_corr_0_p.get("_type_").isNull())
-					this.__type_ = _m2_corr_0_p.get("_type_").asString();
+			public M2_corr_0_p1Rel(Value _m2_corr_0_p1) {
+				if(!_m2_corr_0_p1.get("_type_").isNull())
+					this.__type_ = _m2_corr_0_p1.get("_type_").asString();
 			}
 		}
 		public class PrNode {
@@ -3777,16 +1765,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_persons_0_pRel {
-		
-			public Pr_persons_0_pRel(Value _pr_persons_0_p) {
-			}
-		}
-		public class Pr_persons_1_p1Rel {
-		
-			public Pr_persons_1_p1Rel(Value _pr_persons_1_p1) {
-			}
-		}
 		public class PNode {
 			public String _name;
 			public LocalDate _birthday;
@@ -3813,72 +1791,64 @@ public class API_F2PModelForTesting {
 		
 	}
 	
-	public class InConsistentTriple6Mask extends NeoMask {
-		public InConsistentTriple6Mask setFr(Long value) {
+	public class InConsistentTriple3Mask extends NeoMask {
+		public InConsistentTriple3Mask setFr(Long value) {
 			nodeMask.put("fr", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setFr_corr_1_pr_type_(String value) {
-			attributeMask.put("fr_corr_1_pr._type_", value);
+		public InConsistentTriple3Mask setFr_corr_0_pr_type_(String value) {
+			attributeMask.put("fr_corr_0_pr._type_", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setFm(Long value) {
-			nodeMask.put("fm", value);
-			return this;
-		}
-		public InConsistentTriple6Mask setFmName(String value) {
-			attributeMask.put("fm.name", value);
-			return this;
-		}
-		public InConsistentTriple6Mask setM1(Long value) {
+		public InConsistentTriple3Mask setM1(Long value) {
 			nodeMask.put("m1", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setM1Name(String value) {
+		public InConsistentTriple3Mask setM1Name(String value) {
 			attributeMask.put("m1.name", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setM1_corr_0_p_type_(String value) {
+		public InConsistentTriple3Mask setM1_corr_0_p_type_(String value) {
 			attributeMask.put("m1_corr_0_p._type_", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setM2(Long value) {
+		public InConsistentTriple3Mask setM2(Long value) {
 			nodeMask.put("m2", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setM2Name(String value) {
+		public InConsistentTriple3Mask setM2Name(String value) {
 			attributeMask.put("m2.name", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setM2_corr_0_p_type_(String value) {
-			attributeMask.put("m2_corr_0_p._type_", value);
+		public InConsistentTriple3Mask setM2_corr_0_p1_type_(String value) {
+			attributeMask.put("m2_corr_0_p1._type_", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setPr(Long value) {
+		public InConsistentTriple3Mask setPr(Long value) {
 			nodeMask.put("pr", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setP(Long value) {
+		public InConsistentTriple3Mask setP(Long value) {
 			nodeMask.put("p", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setPName(String value) {
+		public InConsistentTriple3Mask setPName(String value) {
 			attributeMask.put("p.name", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setPBirthday(LocalDate value) {
+		public InConsistentTriple3Mask setPBirthday(LocalDate value) {
 			attributeMask.put("p.birthday", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setP1(Long value) {
+		public InConsistentTriple3Mask setP1(Long value) {
 			nodeMask.put("p1", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setP1Name(String value) {
+		public InConsistentTriple3Mask setP1Name(String value) {
 			attributeMask.put("p1.name", value);
 			return this;
 		}
-		public InConsistentTriple6Mask setP1Birthday(LocalDate value) {
+		public InConsistentTriple3Mask setP1Birthday(LocalDate value) {
 			attributeMask.put("p1.birthday", value);
 			return this;
 		}

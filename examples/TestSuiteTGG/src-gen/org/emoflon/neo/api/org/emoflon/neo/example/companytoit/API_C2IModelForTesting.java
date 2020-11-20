@@ -59,7 +59,6 @@ public class API_C2IModelForTesting {
 	
 	public class ConsistentTriple1Access extends NeoRuleCoAccess<ConsistentTriple1Data, ConsistentTriple1CoData, ConsistentTriple1Mask> {
 		public final String _it = "it";
-		public final String _network = "network";
 		public final String _l1 = "l1";
 		public final String _l2 = "l2";
 		public final String _c = "c";
@@ -92,34 +91,20 @@ public class API_C2IModelForTesting {
 	
 	public class ConsistentTriple1Data extends NeoData {
 		public final ItNode _it;
-		public final It_network_0_networkRel _it_network_0_network;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final NetworkNode _network;
-		public final Network_laptop_0_l1Rel _network_laptop_0_l1;
-		public final Network_laptop_1_l2Rel _network_laptop_1_l2;
+		public final It_corr_0_cRel _it_corr_0_c;
 		public final L1Node _l1;
 		public final L1_corr_0_e1Rel _l1_corr_0_e1;
 		public final L2Node _l2;
 		public final L2_corr_0_e2Rel _l2_corr_0_e2;
 		public final CNode _c;
-		public final C_employee_0_e1Rel _c_employee_0_e1;
-		public final C_employee_1_e2Rel _c_employee_1_e2;
 		public final E1Node _e1;
 		public final E2Node _e2;
 		
 		public ConsistentTriple1Data(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_network_0_network = data.get("it_network_0_network");
-			this._it_network_0_network = new It_network_0_networkRel(_it_network_0_network);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _network = data.get("network");
-			this._network = new NetworkNode(_network);
-			var _network_laptop_0_l1 = data.get("network_laptop_0_l1");
-			this._network_laptop_0_l1 = new Network_laptop_0_l1Rel(_network_laptop_0_l1);
-			var _network_laptop_1_l2 = data.get("network_laptop_1_l2");
-			this._network_laptop_1_l2 = new Network_laptop_1_l2Rel(_network_laptop_1_l2);
+			var _it_corr_0_c = data.get("it_corr_0_c");
+			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _l1 = data.get("l1");
 			this._l1 = new L1Node(_l1);
 			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
@@ -130,10 +115,6 @@ public class API_C2IModelForTesting {
 			this._l2_corr_0_e2 = new L2_corr_0_e2Rel(_l2_corr_0_e2);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
-			var _c_employee_0_e1 = data.get("c_employee_0_e1");
-			this._c_employee_0_e1 = new C_employee_0_e1Rel(_c_employee_0_e1);
-			var _c_employee_1_e2 = data.get("c_employee_1_e2");
-			this._c_employee_1_e2 = new C_employee_1_e2Rel(_c_employee_1_e2);
 			var _e1 = data.get("e1");
 			this._e1 = new E1Node(_e1);
 			var _e2 = data.get("e2");
@@ -150,36 +131,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_network_0_networkRel {
-		
-			public It_network_0_networkRel(Value _it_network_0_network) {
-			}
-		}
-		public class It_corr_1_cRel {
+		public class It_corr_0_cRel {
 			public String __type_;
 		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class NetworkNode {
-			public String _name;
-			
-			public NetworkNode(Value _network) {
-				if(!_network.get("name").isNull())
-					this._name = _network.get("name").asString();
-			}
-		}
-		
-		public class Network_laptop_0_l1Rel {
-		
-			public Network_laptop_0_l1Rel(Value _network_laptop_0_l1) {
-			}
-		}
-		public class Network_laptop_1_l2Rel {
-		
-			public Network_laptop_1_l2Rel(Value _network_laptop_1_l2) {
+			public It_corr_0_cRel(Value _it_corr_0_c) {
+				if(!_it_corr_0_c.get("_type_").isNull())
+					this.__type_ = _it_corr_0_c.get("_type_").asString();
 			}
 		}
 		public class L1Node {
@@ -225,16 +182,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class C_employee_0_e1Rel {
-		
-			public C_employee_0_e1Rel(Value _c_employee_0_e1) {
-			}
-		}
-		public class C_employee_1_e2Rel {
-		
-			public C_employee_1_e2Rel(Value _c_employee_1_e2) {
-			}
-		}
 		public class E1Node {
 			public String _name;
 			
@@ -257,34 +204,20 @@ public class API_C2IModelForTesting {
 	
 	public class ConsistentTriple1CoData extends NeoData {
 		public final ItNode _it;
-		public final It_network_0_networkRel _it_network_0_network;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final NetworkNode _network;
-		public final Network_laptop_0_l1Rel _network_laptop_0_l1;
-		public final Network_laptop_1_l2Rel _network_laptop_1_l2;
+		public final It_corr_0_cRel _it_corr_0_c;
 		public final L1Node _l1;
 		public final L1_corr_0_e1Rel _l1_corr_0_e1;
 		public final L2Node _l2;
 		public final L2_corr_0_e2Rel _l2_corr_0_e2;
 		public final CNode _c;
-		public final C_employee_0_e1Rel _c_employee_0_e1;
-		public final C_employee_1_e2Rel _c_employee_1_e2;
 		public final E1Node _e1;
 		public final E2Node _e2;
 	
 		public ConsistentTriple1CoData(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_network_0_network = data.get("it_network_0_network");
-			this._it_network_0_network = new It_network_0_networkRel(_it_network_0_network);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _network = data.get("network");
-			this._network = new NetworkNode(_network);
-			var _network_laptop_0_l1 = data.get("network_laptop_0_l1");
-			this._network_laptop_0_l1 = new Network_laptop_0_l1Rel(_network_laptop_0_l1);
-			var _network_laptop_1_l2 = data.get("network_laptop_1_l2");
-			this._network_laptop_1_l2 = new Network_laptop_1_l2Rel(_network_laptop_1_l2);
+			var _it_corr_0_c = data.get("it_corr_0_c");
+			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _l1 = data.get("l1");
 			this._l1 = new L1Node(_l1);
 			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
@@ -295,10 +228,6 @@ public class API_C2IModelForTesting {
 			this._l2_corr_0_e2 = new L2_corr_0_e2Rel(_l2_corr_0_e2);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
-			var _c_employee_0_e1 = data.get("c_employee_0_e1");
-			this._c_employee_0_e1 = new C_employee_0_e1Rel(_c_employee_0_e1);
-			var _c_employee_1_e2 = data.get("c_employee_1_e2");
-			this._c_employee_1_e2 = new C_employee_1_e2Rel(_c_employee_1_e2);
 			var _e1 = data.get("e1");
 			this._e1 = new E1Node(_e1);
 			var _e2 = data.get("e2");
@@ -315,36 +244,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_network_0_networkRel {
-		
-			public It_network_0_networkRel(Value _it_network_0_network) {
-			}
-		}
-		public class It_corr_1_cRel {
+		public class It_corr_0_cRel {
 			public String __type_;
 		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class NetworkNode {
-			public String _name;
-			
-			public NetworkNode(Value _network) {
-				if(!_network.get("name").isNull())
-					this._name = _network.get("name").asString();
-			}
-		}
-		
-		public class Network_laptop_0_l1Rel {
-		
-			public Network_laptop_0_l1Rel(Value _network_laptop_0_l1) {
-			}
-		}
-		public class Network_laptop_1_l2Rel {
-		
-			public Network_laptop_1_l2Rel(Value _network_laptop_1_l2) {
+			public It_corr_0_cRel(Value _it_corr_0_c) {
+				if(!_it_corr_0_c.get("_type_").isNull())
+					this.__type_ = _it_corr_0_c.get("_type_").asString();
 			}
 		}
 		public class L1Node {
@@ -390,16 +295,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class C_employee_0_e1Rel {
-		
-			public C_employee_0_e1Rel(Value _c_employee_0_e1) {
-			}
-		}
-		public class C_employee_1_e2Rel {
-		
-			public C_employee_1_e2Rel(Value _c_employee_1_e2) {
-			}
-		}
 		public class E1Node {
 			public String _name;
 			
@@ -429,16 +324,8 @@ public class API_C2IModelForTesting {
 			attributeMask.put("it.name", value);
 			return this;
 		}
-		public ConsistentTriple1Mask setIt_corr_1_c_type_(String value) {
-			attributeMask.put("it_corr_1_c._type_", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setNetwork(Long value) {
-			nodeMask.put("network", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setNetworkName(String value) {
-			attributeMask.put("network.name", value);
+		public ConsistentTriple1Mask setIt_corr_0_c_type_(String value) {
+			attributeMask.put("it_corr_0_c._type_", value);
 			return this;
 		}
 		public ConsistentTriple1Mask setL1(Long value) {
@@ -492,21 +379,24 @@ public class API_C2IModelForTesting {
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.3
+	public Model getModel_InConsistentTarget1(){
+		return (Model) spec.getEntities().get(3);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.4
 	public InConsistentTriple1Access getRule_InConsistentTriple1() {
 		return new InConsistentTriple1Access();
 	}
 	
 	public class InConsistentTriple1Access extends NeoRuleCoAccess<InConsistentTriple1Data, InConsistentTriple1CoData, InConsistentTriple1Mask> {
 		public final String _it = "it";
-		public final String _network = "network";
 		public final String _l1 = "l1";
 		public final String _c = "c";
 		public final String _e1 = "e1";
-		public final String _e2 = "e2";
 		
 		@Override
 		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(3);
+			var r = (Rule) spec.getEntities().get(4);
 			return NeoRuleFactory.createNeoRule(r, builder);
 		}
 		
@@ -530,43 +420,25 @@ public class API_C2IModelForTesting {
 	
 	public class InConsistentTriple1Data extends NeoData {
 		public final ItNode _it;
-		public final It_network_0_networkRel _it_network_0_network;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final NetworkNode _network;
-		public final Network_laptop_0_l1Rel _network_laptop_0_l1;
+		public final It_corr_0_cRel _it_corr_0_c;
 		public final L1Node _l1;
 		public final L1_corr_0_e1Rel _l1_corr_0_e1;
 		public final CNode _c;
-		public final C_employee_0_e1Rel _c_employee_0_e1;
-		public final C_employee_1_e2Rel _c_employee_1_e2;
 		public final E1Node _e1;
-		public final E2Node _e2;
 		
 		public InConsistentTriple1Data(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_network_0_network = data.get("it_network_0_network");
-			this._it_network_0_network = new It_network_0_networkRel(_it_network_0_network);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _network = data.get("network");
-			this._network = new NetworkNode(_network);
-			var _network_laptop_0_l1 = data.get("network_laptop_0_l1");
-			this._network_laptop_0_l1 = new Network_laptop_0_l1Rel(_network_laptop_0_l1);
+			var _it_corr_0_c = data.get("it_corr_0_c");
+			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _l1 = data.get("l1");
 			this._l1 = new L1Node(_l1);
 			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
 			this._l1_corr_0_e1 = new L1_corr_0_e1Rel(_l1_corr_0_e1);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
-			var _c_employee_0_e1 = data.get("c_employee_0_e1");
-			this._c_employee_0_e1 = new C_employee_0_e1Rel(_c_employee_0_e1);
-			var _c_employee_1_e2 = data.get("c_employee_1_e2");
-			this._c_employee_1_e2 = new C_employee_1_e2Rel(_c_employee_1_e2);
 			var _e1 = data.get("e1");
 			this._e1 = new E1Node(_e1);
-			var _e2 = data.get("e2");
-			this._e2 = new E2Node(_e2);
 		}
 		
 		
@@ -579,31 +451,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_network_0_networkRel {
-		
-			public It_network_0_networkRel(Value _it_network_0_network) {
-			}
-		}
-		public class It_corr_1_cRel {
+		public class It_corr_0_cRel {
 			public String __type_;
 		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class NetworkNode {
-			public String _name;
-			
-			public NetworkNode(Value _network) {
-				if(!_network.get("name").isNull())
-					this._name = _network.get("name").asString();
-			}
-		}
-		
-		public class Network_laptop_0_l1Rel {
-		
-			public Network_laptop_0_l1Rel(Value _network_laptop_0_l1) {
+			public It_corr_0_cRel(Value _it_corr_0_c) {
+				if(!_it_corr_0_c.get("_type_").isNull())
+					this.__type_ = _it_corr_0_c.get("_type_").asString();
 			}
 		}
 		public class L1Node {
@@ -632,31 +485,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class C_employee_0_e1Rel {
-		
-			public C_employee_0_e1Rel(Value _c_employee_0_e1) {
-			}
-		}
-		public class C_employee_1_e2Rel {
-		
-			public C_employee_1_e2Rel(Value _c_employee_1_e2) {
-			}
-		}
 		public class E1Node {
 			public String _name;
 			
 			public E1Node(Value _e1) {
 				if(!_e1.get("name").isNull())
 					this._name = _e1.get("name").asString();
-			}
-		}
-		
-		public class E2Node {
-			public String _name;
-			
-			public E2Node(Value _e2) {
-				if(!_e2.get("name").isNull())
-					this._name = _e2.get("name").asString();
 			}
 		}
 		
@@ -664,43 +498,25 @@ public class API_C2IModelForTesting {
 	
 	public class InConsistentTriple1CoData extends NeoData {
 		public final ItNode _it;
-		public final It_network_0_networkRel _it_network_0_network;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final NetworkNode _network;
-		public final Network_laptop_0_l1Rel _network_laptop_0_l1;
+		public final It_corr_0_cRel _it_corr_0_c;
 		public final L1Node _l1;
 		public final L1_corr_0_e1Rel _l1_corr_0_e1;
 		public final CNode _c;
-		public final C_employee_0_e1Rel _c_employee_0_e1;
-		public final C_employee_1_e2Rel _c_employee_1_e2;
 		public final E1Node _e1;
-		public final E2Node _e2;
 	
 		public InConsistentTriple1CoData(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_network_0_network = data.get("it_network_0_network");
-			this._it_network_0_network = new It_network_0_networkRel(_it_network_0_network);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _network = data.get("network");
-			this._network = new NetworkNode(_network);
-			var _network_laptop_0_l1 = data.get("network_laptop_0_l1");
-			this._network_laptop_0_l1 = new Network_laptop_0_l1Rel(_network_laptop_0_l1);
+			var _it_corr_0_c = data.get("it_corr_0_c");
+			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _l1 = data.get("l1");
 			this._l1 = new L1Node(_l1);
 			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
 			this._l1_corr_0_e1 = new L1_corr_0_e1Rel(_l1_corr_0_e1);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
-			var _c_employee_0_e1 = data.get("c_employee_0_e1");
-			this._c_employee_0_e1 = new C_employee_0_e1Rel(_c_employee_0_e1);
-			var _c_employee_1_e2 = data.get("c_employee_1_e2");
-			this._c_employee_1_e2 = new C_employee_1_e2Rel(_c_employee_1_e2);
 			var _e1 = data.get("e1");
 			this._e1 = new E1Node(_e1);
-			var _e2 = data.get("e2");
-			this._e2 = new E2Node(_e2);
 		}
 		
 	
@@ -713,31 +529,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_network_0_networkRel {
-		
-			public It_network_0_networkRel(Value _it_network_0_network) {
-			}
-		}
-		public class It_corr_1_cRel {
+		public class It_corr_0_cRel {
 			public String __type_;
 		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class NetworkNode {
-			public String _name;
-			
-			public NetworkNode(Value _network) {
-				if(!_network.get("name").isNull())
-					this._name = _network.get("name").asString();
-			}
-		}
-		
-		public class Network_laptop_0_l1Rel {
-		
-			public Network_laptop_0_l1Rel(Value _network_laptop_0_l1) {
+			public It_corr_0_cRel(Value _it_corr_0_c) {
+				if(!_it_corr_0_c.get("_type_").isNull())
+					this.__type_ = _it_corr_0_c.get("_type_").asString();
 			}
 		}
 		public class L1Node {
@@ -766,31 +563,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class C_employee_0_e1Rel {
-		
-			public C_employee_0_e1Rel(Value _c_employee_0_e1) {
-			}
-		}
-		public class C_employee_1_e2Rel {
-		
-			public C_employee_1_e2Rel(Value _c_employee_1_e2) {
-			}
-		}
 		public class E1Node {
 			public String _name;
 			
 			public E1Node(Value _e1) {
 				if(!_e1.get("name").isNull())
 					this._name = _e1.get("name").asString();
-			}
-		}
-		
-		public class E2Node {
-			public String _name;
-			
-			public E2Node(Value _e2) {
-				if(!_e2.get("name").isNull())
-					this._name = _e2.get("name").asString();
 			}
 		}
 		
@@ -805,16 +583,8 @@ public class API_C2IModelForTesting {
 			attributeMask.put("it.name", value);
 			return this;
 		}
-		public InConsistentTriple1Mask setIt_corr_1_c_type_(String value) {
-			attributeMask.put("it_corr_1_c._type_", value);
-			return this;
-		}
-		public InConsistentTriple1Mask setNetwork(Long value) {
-			nodeMask.put("network", value);
-			return this;
-		}
-		public InConsistentTriple1Mask setNetworkName(String value) {
-			attributeMask.put("network.name", value);
+		public InConsistentTriple1Mask setIt_corr_0_c_type_(String value) {
+			attributeMask.put("it_corr_0_c._type_", value);
 			return this;
 		}
 		public InConsistentTriple1Mask setL1(Long value) {
@@ -845,391 +615,24 @@ public class API_C2IModelForTesting {
 			attributeMask.put("e1.name", value);
 			return this;
 		}
-		public InConsistentTriple1Mask setE2(Long value) {
-			nodeMask.put("e2", value);
-			return this;
-		}
-		public InConsistentTriple1Mask setE2Name(String value) {
-			attributeMask.put("e2.name", value);
-			return this;
-		}
-	}
-	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.4
-	public InConsistentTriple2Access getRule_InConsistentTriple2() {
-		return new InConsistentTriple2Access();
-	}
-	
-	public class InConsistentTriple2Access extends NeoRuleCoAccess<InConsistentTriple2Data, InConsistentTriple2CoData, InConsistentTriple2Mask> {
-		public final String _it = "it";
-		public final String _network = "network";
-		public final String _l1 = "l1";
-		public final String _l2 = "l2";
-		public final String _c = "c";
-		public final String _e1 = "e1";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(4);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<InConsistentTriple2Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple2Data(d));
-		}
-			
-		@Override
-		public Stream<InConsistentTriple2CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple2CoData(d));
-		}
-		
-		@Override
-		public InConsistentTriple2Mask mask() {
-			return new InConsistentTriple2Mask();
-		}
-	}
-	
-	public class InConsistentTriple2Data extends NeoData {
-		public final ItNode _it;
-		public final It_network_0_networkRel _it_network_0_network;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final NetworkNode _network;
-		public final Network_laptop_0_l1Rel _network_laptop_0_l1;
-		public final Network_laptop_1_l2Rel _network_laptop_1_l2;
-		public final L1Node _l1;
-		public final L1_corr_0_e1Rel _l1_corr_0_e1;
-		public final L2Node _l2;
-		public final CNode _c;
-		public final C_employee_0_e1Rel _c_employee_0_e1;
-		public final E1Node _e1;
-		
-		public InConsistentTriple2Data(Record data) {
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_network_0_network = data.get("it_network_0_network");
-			this._it_network_0_network = new It_network_0_networkRel(_it_network_0_network);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _network = data.get("network");
-			this._network = new NetworkNode(_network);
-			var _network_laptop_0_l1 = data.get("network_laptop_0_l1");
-			this._network_laptop_0_l1 = new Network_laptop_0_l1Rel(_network_laptop_0_l1);
-			var _network_laptop_1_l2 = data.get("network_laptop_1_l2");
-			this._network_laptop_1_l2 = new Network_laptop_1_l2Rel(_network_laptop_1_l2);
-			var _l1 = data.get("l1");
-			this._l1 = new L1Node(_l1);
-			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
-			this._l1_corr_0_e1 = new L1_corr_0_e1Rel(_l1_corr_0_e1);
-			var _l2 = data.get("l2");
-			this._l2 = new L2Node(_l2);
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_employee_0_e1 = data.get("c_employee_0_e1");
-			this._c_employee_0_e1 = new C_employee_0_e1Rel(_c_employee_0_e1);
-			var _e1 = data.get("e1");
-			this._e1 = new E1Node(_e1);
-		}
-		
-		
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_network_0_networkRel {
-		
-			public It_network_0_networkRel(Value _it_network_0_network) {
-			}
-		}
-		public class It_corr_1_cRel {
-			public String __type_;
-		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class NetworkNode {
-			public String _name;
-			
-			public NetworkNode(Value _network) {
-				if(!_network.get("name").isNull())
-					this._name = _network.get("name").asString();
-			}
-		}
-		
-		public class Network_laptop_0_l1Rel {
-		
-			public Network_laptop_0_l1Rel(Value _network_laptop_0_l1) {
-			}
-		}
-		public class Network_laptop_1_l2Rel {
-		
-			public Network_laptop_1_l2Rel(Value _network_laptop_1_l2) {
-			}
-		}
-		public class L1Node {
-			public String _name;
-			
-			public L1Node(Value _l1) {
-				if(!_l1.get("name").isNull())
-					this._name = _l1.get("name").asString();
-			}
-		}
-		
-		public class L1_corr_0_e1Rel {
-			public String __type_;
-		
-			public L1_corr_0_e1Rel(Value _l1_corr_0_e1) {
-				if(!_l1_corr_0_e1.get("_type_").isNull())
-					this.__type_ = _l1_corr_0_e1.get("_type_").asString();
-			}
-		}
-		public class L2Node {
-			public String _name;
-			
-			public L2Node(Value _l2) {
-				if(!_l2.get("name").isNull())
-					this._name = _l2.get("name").asString();
-			}
-		}
-		
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_employee_0_e1Rel {
-		
-			public C_employee_0_e1Rel(Value _c_employee_0_e1) {
-			}
-		}
-		public class E1Node {
-			public String _name;
-			
-			public E1Node(Value _e1) {
-				if(!_e1.get("name").isNull())
-					this._name = _e1.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple2CoData extends NeoData {
-		public final ItNode _it;
-		public final It_network_0_networkRel _it_network_0_network;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final NetworkNode _network;
-		public final Network_laptop_0_l1Rel _network_laptop_0_l1;
-		public final Network_laptop_1_l2Rel _network_laptop_1_l2;
-		public final L1Node _l1;
-		public final L1_corr_0_e1Rel _l1_corr_0_e1;
-		public final L2Node _l2;
-		public final CNode _c;
-		public final C_employee_0_e1Rel _c_employee_0_e1;
-		public final E1Node _e1;
-	
-		public InConsistentTriple2CoData(Record data) {
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_network_0_network = data.get("it_network_0_network");
-			this._it_network_0_network = new It_network_0_networkRel(_it_network_0_network);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _network = data.get("network");
-			this._network = new NetworkNode(_network);
-			var _network_laptop_0_l1 = data.get("network_laptop_0_l1");
-			this._network_laptop_0_l1 = new Network_laptop_0_l1Rel(_network_laptop_0_l1);
-			var _network_laptop_1_l2 = data.get("network_laptop_1_l2");
-			this._network_laptop_1_l2 = new Network_laptop_1_l2Rel(_network_laptop_1_l2);
-			var _l1 = data.get("l1");
-			this._l1 = new L1Node(_l1);
-			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
-			this._l1_corr_0_e1 = new L1_corr_0_e1Rel(_l1_corr_0_e1);
-			var _l2 = data.get("l2");
-			this._l2 = new L2Node(_l2);
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_employee_0_e1 = data.get("c_employee_0_e1");
-			this._c_employee_0_e1 = new C_employee_0_e1Rel(_c_employee_0_e1);
-			var _e1 = data.get("e1");
-			this._e1 = new E1Node(_e1);
-		}
-		
-	
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_network_0_networkRel {
-		
-			public It_network_0_networkRel(Value _it_network_0_network) {
-			}
-		}
-		public class It_corr_1_cRel {
-			public String __type_;
-		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class NetworkNode {
-			public String _name;
-			
-			public NetworkNode(Value _network) {
-				if(!_network.get("name").isNull())
-					this._name = _network.get("name").asString();
-			}
-		}
-		
-		public class Network_laptop_0_l1Rel {
-		
-			public Network_laptop_0_l1Rel(Value _network_laptop_0_l1) {
-			}
-		}
-		public class Network_laptop_1_l2Rel {
-		
-			public Network_laptop_1_l2Rel(Value _network_laptop_1_l2) {
-			}
-		}
-		public class L1Node {
-			public String _name;
-			
-			public L1Node(Value _l1) {
-				if(!_l1.get("name").isNull())
-					this._name = _l1.get("name").asString();
-			}
-		}
-		
-		public class L1_corr_0_e1Rel {
-			public String __type_;
-		
-			public L1_corr_0_e1Rel(Value _l1_corr_0_e1) {
-				if(!_l1_corr_0_e1.get("_type_").isNull())
-					this.__type_ = _l1_corr_0_e1.get("_type_").asString();
-			}
-		}
-		public class L2Node {
-			public String _name;
-			
-			public L2Node(Value _l2) {
-				if(!_l2.get("name").isNull())
-					this._name = _l2.get("name").asString();
-			}
-		}
-		
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_employee_0_e1Rel {
-		
-			public C_employee_0_e1Rel(Value _c_employee_0_e1) {
-			}
-		}
-		public class E1Node {
-			public String _name;
-			
-			public E1Node(Value _e1) {
-				if(!_e1.get("name").isNull())
-					this._name = _e1.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple2Mask extends NeoMask {
-		public InConsistentTriple2Mask setIt(Long value) {
-			nodeMask.put("it", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setItName(String value) {
-			attributeMask.put("it.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setIt_corr_1_c_type_(String value) {
-			attributeMask.put("it_corr_1_c._type_", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setNetwork(Long value) {
-			nodeMask.put("network", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setNetworkName(String value) {
-			attributeMask.put("network.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setL1(Long value) {
-			nodeMask.put("l1", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setL1Name(String value) {
-			attributeMask.put("l1.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setL1_corr_0_e1_type_(String value) {
-			attributeMask.put("l1_corr_0_e1._type_", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setL2(Long value) {
-			nodeMask.put("l2", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setL2Name(String value) {
-			attributeMask.put("l2.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setC(Long value) {
-			nodeMask.put("c", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setCName(String value) {
-			attributeMask.put("c.name", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setE1(Long value) {
-			nodeMask.put("e1", value);
-			return this;
-		}
-		public InConsistentTriple2Mask setE1Name(String value) {
-			attributeMask.put("e1.name", value);
-			return this;
-		}
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.5
-	public Model getModel_ConsistentSource2(){
+	public Model getModel_InConsistentSource1(){
 		return (Model) spec.getEntities().get(5);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.6
-	public Model getModel_ConsistentTarget2(){
+	public Model getModel_ConsistentSource2(){
 		return (Model) spec.getEntities().get(6);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.7
+	public Model getModel_ConsistentTarget2(){
+		return (Model) spec.getEntities().get(7);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.8
 	public ConsistentTriple2Access getRule_ConsistentTriple2() {
 		return new ConsistentTriple2Access();
 	}
@@ -1237,13 +640,12 @@ public class API_C2IModelForTesting {
 	public class ConsistentTriple2Access extends NeoRuleCoAccess<ConsistentTriple2Data, ConsistentTriple2CoData, ConsistentTriple2Mask> {
 		public final String _it = "it";
 		public final String _rout = "rout";
-		public final String _net = "net";
 		public final String _c = "c";
 		public final String _ad = "ad";
 		
 		@Override
 		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(7);
+			var r = (Rule) spec.getEntities().get(8);
 			return NeoRuleFactory.createNeoRule(r, builder);
 		}
 		
@@ -1267,35 +669,23 @@ public class API_C2IModelForTesting {
 	
 	public class ConsistentTriple2Data extends NeoData {
 		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final It_corr_1_cRel _it_corr_1_c;
+		public final It_corr_0_cRel _it_corr_0_c;
 		public final RoutNode _rout;
-		public final Rout_network_0_netRel _rout_network_0_net;
-		public final Rout_corr_1_adRel _rout_corr_1_ad;
-		public final NetNode _net;
+		public final Rout_corr_0_adRel _rout_corr_0_ad;
 		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
 		public final AdNode _ad;
 		
 		public ConsistentTriple2Data(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
+			var _it_corr_0_c = data.get("it_corr_0_c");
+			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _rout = data.get("rout");
 			this._rout = new RoutNode(_rout);
-			var _rout_network_0_net = data.get("rout_network_0_net");
-			this._rout_network_0_net = new Rout_network_0_netRel(_rout_network_0_net);
-			var _rout_corr_1_ad = data.get("rout_corr_1_ad");
-			this._rout_corr_1_ad = new Rout_corr_1_adRel(_rout_corr_1_ad);
-			var _net = data.get("net");
-			this._net = new NetNode(_net);
+			var _rout_corr_0_ad = data.get("rout_corr_0_ad");
+			this._rout_corr_0_ad = new Rout_corr_0_adRel(_rout_corr_0_ad);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
 			var _ad = data.get("ad");
 			this._ad = new AdNode(_ad);
 		}
@@ -1310,17 +700,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class It_corr_1_cRel {
+		public class It_corr_0_cRel {
 			public String __type_;
 		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
+			public It_corr_0_cRel(Value _it_corr_0_c) {
+				if(!_it_corr_0_c.get("_type_").isNull())
+					this.__type_ = _it_corr_0_c.get("_type_").asString();
 			}
 		}
 		public class RoutNode {
@@ -1332,28 +717,14 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class Rout_network_0_netRel {
-		
-			public Rout_network_0_netRel(Value _rout_network_0_net) {
-			}
-		}
-		public class Rout_corr_1_adRel {
+		public class Rout_corr_0_adRel {
 			public String __type_;
 		
-			public Rout_corr_1_adRel(Value _rout_corr_1_ad) {
-				if(!_rout_corr_1_ad.get("_type_").isNull())
-					this.__type_ = _rout_corr_1_ad.get("_type_").asString();
+			public Rout_corr_0_adRel(Value _rout_corr_0_ad) {
+				if(!_rout_corr_0_ad.get("_type_").isNull())
+					this.__type_ = _rout_corr_0_ad.get("_type_").asString();
 			}
 		}
-		public class NetNode {
-			public String _name;
-			
-			public NetNode(Value _net) {
-				if(!_net.get("name").isNull())
-					this._name = _net.get("name").asString();
-			}
-		}
-		
 		public class CNode {
 			public String _name;
 			
@@ -1363,11 +734,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
 		public class AdNode {
 			public String _name;
 			
@@ -1381,35 +747,23 @@ public class API_C2IModelForTesting {
 	
 	public class ConsistentTriple2CoData extends NeoData {
 		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final It_corr_1_cRel _it_corr_1_c;
+		public final It_corr_0_cRel _it_corr_0_c;
 		public final RoutNode _rout;
-		public final Rout_network_0_netRel _rout_network_0_net;
-		public final Rout_corr_1_adRel _rout_corr_1_ad;
-		public final NetNode _net;
+		public final Rout_corr_0_adRel _rout_corr_0_ad;
 		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
 		public final AdNode _ad;
 	
 		public ConsistentTriple2CoData(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
+			var _it_corr_0_c = data.get("it_corr_0_c");
+			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _rout = data.get("rout");
 			this._rout = new RoutNode(_rout);
-			var _rout_network_0_net = data.get("rout_network_0_net");
-			this._rout_network_0_net = new Rout_network_0_netRel(_rout_network_0_net);
-			var _rout_corr_1_ad = data.get("rout_corr_1_ad");
-			this._rout_corr_1_ad = new Rout_corr_1_adRel(_rout_corr_1_ad);
-			var _net = data.get("net");
-			this._net = new NetNode(_net);
+			var _rout_corr_0_ad = data.get("rout_corr_0_ad");
+			this._rout_corr_0_ad = new Rout_corr_0_adRel(_rout_corr_0_ad);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
 			var _ad = data.get("ad");
 			this._ad = new AdNode(_ad);
 		}
@@ -1424,17 +778,12 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class It_corr_1_cRel {
+		public class It_corr_0_cRel {
 			public String __type_;
 		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
+			public It_corr_0_cRel(Value _it_corr_0_c) {
+				if(!_it_corr_0_c.get("_type_").isNull())
+					this.__type_ = _it_corr_0_c.get("_type_").asString();
 			}
 		}
 		public class RoutNode {
@@ -1446,28 +795,14 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class Rout_network_0_netRel {
-		
-			public Rout_network_0_netRel(Value _rout_network_0_net) {
-			}
-		}
-		public class Rout_corr_1_adRel {
+		public class Rout_corr_0_adRel {
 			public String __type_;
 		
-			public Rout_corr_1_adRel(Value _rout_corr_1_ad) {
-				if(!_rout_corr_1_ad.get("_type_").isNull())
-					this.__type_ = _rout_corr_1_ad.get("_type_").asString();
+			public Rout_corr_0_adRel(Value _rout_corr_0_ad) {
+				if(!_rout_corr_0_ad.get("_type_").isNull())
+					this.__type_ = _rout_corr_0_ad.get("_type_").asString();
 			}
 		}
-		public class NetNode {
-			public String _name;
-			
-			public NetNode(Value _net) {
-				if(!_net.get("name").isNull())
-					this._name = _net.get("name").asString();
-			}
-		}
-		
 		public class CNode {
 			public String _name;
 			
@@ -1477,11 +812,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
 		public class AdNode {
 			public String _name;
 			
@@ -1502,8 +832,8 @@ public class API_C2IModelForTesting {
 			attributeMask.put("it.name", value);
 			return this;
 		}
-		public ConsistentTriple2Mask setIt_corr_1_c_type_(String value) {
-			attributeMask.put("it_corr_1_c._type_", value);
+		public ConsistentTriple2Mask setIt_corr_0_c_type_(String value) {
+			attributeMask.put("it_corr_0_c._type_", value);
 			return this;
 		}
 		public ConsistentTriple2Mask setRout(Long value) {
@@ -1514,16 +844,8 @@ public class API_C2IModelForTesting {
 			attributeMask.put("rout.name", value);
 			return this;
 		}
-		public ConsistentTriple2Mask setRout_corr_1_ad_type_(String value) {
-			attributeMask.put("rout_corr_1_ad._type_", value);
-			return this;
-		}
-		public ConsistentTriple2Mask setNet(Long value) {
-			nodeMask.put("net", value);
-			return this;
-		}
-		public ConsistentTriple2Mask setNetName(String value) {
-			attributeMask.put("net.name", value);
+		public ConsistentTriple2Mask setRout_corr_0_ad_type_(String value) {
+			attributeMask.put("rout_corr_0_ad._type_", value);
 			return this;
 		}
 		public ConsistentTriple2Mask setC(Long value) {
@@ -1544,1056 +866,23 @@ public class API_C2IModelForTesting {
 		}
 	}
 	
-	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.8
-	public InConsistentTriple3Access getRule_InConsistentTriple3() {
-		return new InConsistentTriple3Access();
-	}
-	
-	public class InConsistentTriple3Access extends NeoRuleCoAccess<InConsistentTriple3Data, InConsistentTriple3CoData, InConsistentTriple3Mask> {
-		public final String _it = "it";
-		public final String _rout = "rout";
-		public final String _net = "net";
-		public final String _net1 = "net1";
-		public final String _c = "c";
-		public final String _ad = "ad";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(8);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<InConsistentTriple3Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple3Data(d));
-		}
-			
-		@Override
-		public Stream<InConsistentTriple3CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple3CoData(d));
-		}
-		
-		@Override
-		public InConsistentTriple3Mask mask() {
-			return new InConsistentTriple3Mask();
-		}
-	}
-	
-	public class InConsistentTriple3Data extends NeoData {
-		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final RoutNode _rout;
-		public final Rout_network_0_netRel _rout_network_0_net;
-		public final Rout_network_1_net1Rel _rout_network_1_net1;
-		public final Rout_corr_2_adRel _rout_corr_2_ad;
-		public final NetNode _net;
-		public final Net1Node _net1;
-		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
-		public final AdNode _ad;
-		
-		public InConsistentTriple3Data(Record data) {
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _rout = data.get("rout");
-			this._rout = new RoutNode(_rout);
-			var _rout_network_0_net = data.get("rout_network_0_net");
-			this._rout_network_0_net = new Rout_network_0_netRel(_rout_network_0_net);
-			var _rout_network_1_net1 = data.get("rout_network_1_net1");
-			this._rout_network_1_net1 = new Rout_network_1_net1Rel(_rout_network_1_net1);
-			var _rout_corr_2_ad = data.get("rout_corr_2_ad");
-			this._rout_corr_2_ad = new Rout_corr_2_adRel(_rout_corr_2_ad);
-			var _net = data.get("net");
-			this._net = new NetNode(_net);
-			var _net1 = data.get("net1");
-			this._net1 = new Net1Node(_net1);
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
-			var _ad = data.get("ad");
-			this._ad = new AdNode(_ad);
-		}
-		
-		
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class It_corr_1_cRel {
-			public String __type_;
-		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class RoutNode {
-			public String _name;
-			
-			public RoutNode(Value _rout) {
-				if(!_rout.get("name").isNull())
-					this._name = _rout.get("name").asString();
-			}
-		}
-		
-		public class Rout_network_0_netRel {
-		
-			public Rout_network_0_netRel(Value _rout_network_0_net) {
-			}
-		}
-		public class Rout_network_1_net1Rel {
-		
-			public Rout_network_1_net1Rel(Value _rout_network_1_net1) {
-			}
-		}
-		public class Rout_corr_2_adRel {
-			public String __type_;
-		
-			public Rout_corr_2_adRel(Value _rout_corr_2_ad) {
-				if(!_rout_corr_2_ad.get("_type_").isNull())
-					this.__type_ = _rout_corr_2_ad.get("_type_").asString();
-			}
-		}
-		public class NetNode {
-			public String _name;
-			
-			public NetNode(Value _net) {
-				if(!_net.get("name").isNull())
-					this._name = _net.get("name").asString();
-			}
-		}
-		
-		public class Net1Node {
-			public String _name;
-			
-			public Net1Node(Value _net1) {
-				if(!_net1.get("name").isNull())
-					this._name = _net1.get("name").asString();
-			}
-		}
-		
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
-		public class AdNode {
-			public String _name;
-			
-			public AdNode(Value _ad) {
-				if(!_ad.get("name").isNull())
-					this._name = _ad.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple3CoData extends NeoData {
-		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final It_corr_1_cRel _it_corr_1_c;
-		public final RoutNode _rout;
-		public final Rout_network_0_netRel _rout_network_0_net;
-		public final Rout_network_1_net1Rel _rout_network_1_net1;
-		public final Rout_corr_2_adRel _rout_corr_2_ad;
-		public final NetNode _net;
-		public final Net1Node _net1;
-		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
-		public final AdNode _ad;
-	
-		public InConsistentTriple3CoData(Record data) {
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _it_corr_1_c = data.get("it_corr_1_c");
-			this._it_corr_1_c = new It_corr_1_cRel(_it_corr_1_c);
-			var _rout = data.get("rout");
-			this._rout = new RoutNode(_rout);
-			var _rout_network_0_net = data.get("rout_network_0_net");
-			this._rout_network_0_net = new Rout_network_0_netRel(_rout_network_0_net);
-			var _rout_network_1_net1 = data.get("rout_network_1_net1");
-			this._rout_network_1_net1 = new Rout_network_1_net1Rel(_rout_network_1_net1);
-			var _rout_corr_2_ad = data.get("rout_corr_2_ad");
-			this._rout_corr_2_ad = new Rout_corr_2_adRel(_rout_corr_2_ad);
-			var _net = data.get("net");
-			this._net = new NetNode(_net);
-			var _net1 = data.get("net1");
-			this._net1 = new Net1Node(_net1);
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
-			var _ad = data.get("ad");
-			this._ad = new AdNode(_ad);
-		}
-		
-	
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class It_corr_1_cRel {
-			public String __type_;
-		
-			public It_corr_1_cRel(Value _it_corr_1_c) {
-				if(!_it_corr_1_c.get("_type_").isNull())
-					this.__type_ = _it_corr_1_c.get("_type_").asString();
-			}
-		}
-		public class RoutNode {
-			public String _name;
-			
-			public RoutNode(Value _rout) {
-				if(!_rout.get("name").isNull())
-					this._name = _rout.get("name").asString();
-			}
-		}
-		
-		public class Rout_network_0_netRel {
-		
-			public Rout_network_0_netRel(Value _rout_network_0_net) {
-			}
-		}
-		public class Rout_network_1_net1Rel {
-		
-			public Rout_network_1_net1Rel(Value _rout_network_1_net1) {
-			}
-		}
-		public class Rout_corr_2_adRel {
-			public String __type_;
-		
-			public Rout_corr_2_adRel(Value _rout_corr_2_ad) {
-				if(!_rout_corr_2_ad.get("_type_").isNull())
-					this.__type_ = _rout_corr_2_ad.get("_type_").asString();
-			}
-		}
-		public class NetNode {
-			public String _name;
-			
-			public NetNode(Value _net) {
-				if(!_net.get("name").isNull())
-					this._name = _net.get("name").asString();
-			}
-		}
-		
-		public class Net1Node {
-			public String _name;
-			
-			public Net1Node(Value _net1) {
-				if(!_net1.get("name").isNull())
-					this._name = _net1.get("name").asString();
-			}
-		}
-		
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
-		public class AdNode {
-			public String _name;
-			
-			public AdNode(Value _ad) {
-				if(!_ad.get("name").isNull())
-					this._name = _ad.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple3Mask extends NeoMask {
-		public InConsistentTriple3Mask setIt(Long value) {
-			nodeMask.put("it", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setItName(String value) {
-			attributeMask.put("it.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setIt_corr_1_c_type_(String value) {
-			attributeMask.put("it_corr_1_c._type_", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setRout(Long value) {
-			nodeMask.put("rout", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setRoutName(String value) {
-			attributeMask.put("rout.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setRout_corr_2_ad_type_(String value) {
-			attributeMask.put("rout_corr_2_ad._type_", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setNet(Long value) {
-			nodeMask.put("net", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setNetName(String value) {
-			attributeMask.put("net.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setNet1(Long value) {
-			nodeMask.put("net1", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setNet1Name(String value) {
-			attributeMask.put("net1.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setC(Long value) {
-			nodeMask.put("c", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setCName(String value) {
-			attributeMask.put("c.name", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setAd(Long value) {
-			nodeMask.put("ad", value);
-			return this;
-		}
-		public InConsistentTriple3Mask setAdName(String value) {
-			attributeMask.put("ad.name", value);
-			return this;
-		}
-	}
-	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.9
-	public Model getModel_ConsistentSource3(){
+	public Model getModel_InConsistentTarget2(){
 		return (Model) spec.getEntities().get(9);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.10
-	public Model getModel_ConsistentTarget3(){
+	public Model getModel_ConsistentSource3(){
 		return (Model) spec.getEntities().get(10);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.11
-	public ConsistentTriple3Access getRule_ConsistentTriple3() {
-		return new ConsistentTriple3Access();
-	}
-	
-	public class ConsistentTriple3Access extends NeoRuleCoAccess<ConsistentTriple3Data, ConsistentTriple3CoData, ConsistentTriple3Mask> {
-		public final String _c = "c";
-		public final String _ad = "ad";
-		public final String _ceo = "ceo";
-		public final String _it = "it";
-		public final String _rout = "rout";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(11);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<ConsistentTriple3Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new ConsistentTriple3Data(d));
-		}
-			
-		@Override
-		public Stream<ConsistentTriple3CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new ConsistentTriple3CoData(d));
-		}
-		
-		@Override
-		public ConsistentTriple3Mask mask() {
-			return new ConsistentTriple3Mask();
-		}
-	}
-	
-	public class ConsistentTriple3Data extends NeoData {
-		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
-		public final C_corr_1_itRel _c_corr_1_it;
-		public final AdNode _ad;
-		public final Ad_ceo_0_ceoRel _ad_ceo_0_ceo;
-		public final Ad_corr_1_routRel _ad_corr_1_rout;
-		public final CeoNode _ceo;
-		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final RoutNode _rout;
-		
-		public ConsistentTriple3Data(Record data) {
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
-			var _c_corr_1_it = data.get("c_corr_1_it");
-			this._c_corr_1_it = new C_corr_1_itRel(_c_corr_1_it);
-			var _ad = data.get("ad");
-			this._ad = new AdNode(_ad);
-			var _ad_ceo_0_ceo = data.get("ad_ceo_0_ceo");
-			this._ad_ceo_0_ceo = new Ad_ceo_0_ceoRel(_ad_ceo_0_ceo);
-			var _ad_corr_1_rout = data.get("ad_corr_1_rout");
-			this._ad_corr_1_rout = new Ad_corr_1_routRel(_ad_corr_1_rout);
-			var _ceo = data.get("ceo");
-			this._ceo = new CeoNode(_ceo);
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _rout = data.get("rout");
-			this._rout = new RoutNode(_rout);
-		}
-		
-		
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
-		public class C_corr_1_itRel {
-			public String __type_;
-		
-			public C_corr_1_itRel(Value _c_corr_1_it) {
-				if(!_c_corr_1_it.get("_type_").isNull())
-					this.__type_ = _c_corr_1_it.get("_type_").asString();
-			}
-		}
-		public class AdNode {
-			public String _name;
-			
-			public AdNode(Value _ad) {
-				if(!_ad.get("name").isNull())
-					this._name = _ad.get("name").asString();
-			}
-		}
-		
-		public class Ad_ceo_0_ceoRel {
-		
-			public Ad_ceo_0_ceoRel(Value _ad_ceo_0_ceo) {
-			}
-		}
-		public class Ad_corr_1_routRel {
-			public String __type_;
-		
-			public Ad_corr_1_routRel(Value _ad_corr_1_rout) {
-				if(!_ad_corr_1_rout.get("_type_").isNull())
-					this.__type_ = _ad_corr_1_rout.get("_type_").asString();
-			}
-		}
-		public class CeoNode {
-			public String _name;
-			
-			public CeoNode(Value _ceo) {
-				if(!_ceo.get("name").isNull())
-					this._name = _ceo.get("name").asString();
-			}
-		}
-		
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class RoutNode {
-			public String _name;
-			
-			public RoutNode(Value _rout) {
-				if(!_rout.get("name").isNull())
-					this._name = _rout.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class ConsistentTriple3CoData extends NeoData {
-		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
-		public final C_corr_1_itRel _c_corr_1_it;
-		public final AdNode _ad;
-		public final Ad_ceo_0_ceoRel _ad_ceo_0_ceo;
-		public final Ad_corr_1_routRel _ad_corr_1_rout;
-		public final CeoNode _ceo;
-		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final RoutNode _rout;
-	
-		public ConsistentTriple3CoData(Record data) {
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
-			var _c_corr_1_it = data.get("c_corr_1_it");
-			this._c_corr_1_it = new C_corr_1_itRel(_c_corr_1_it);
-			var _ad = data.get("ad");
-			this._ad = new AdNode(_ad);
-			var _ad_ceo_0_ceo = data.get("ad_ceo_0_ceo");
-			this._ad_ceo_0_ceo = new Ad_ceo_0_ceoRel(_ad_ceo_0_ceo);
-			var _ad_corr_1_rout = data.get("ad_corr_1_rout");
-			this._ad_corr_1_rout = new Ad_corr_1_routRel(_ad_corr_1_rout);
-			var _ceo = data.get("ceo");
-			this._ceo = new CeoNode(_ceo);
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _rout = data.get("rout");
-			this._rout = new RoutNode(_rout);
-		}
-		
-	
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
-		public class C_corr_1_itRel {
-			public String __type_;
-		
-			public C_corr_1_itRel(Value _c_corr_1_it) {
-				if(!_c_corr_1_it.get("_type_").isNull())
-					this.__type_ = _c_corr_1_it.get("_type_").asString();
-			}
-		}
-		public class AdNode {
-			public String _name;
-			
-			public AdNode(Value _ad) {
-				if(!_ad.get("name").isNull())
-					this._name = _ad.get("name").asString();
-			}
-		}
-		
-		public class Ad_ceo_0_ceoRel {
-		
-			public Ad_ceo_0_ceoRel(Value _ad_ceo_0_ceo) {
-			}
-		}
-		public class Ad_corr_1_routRel {
-			public String __type_;
-		
-			public Ad_corr_1_routRel(Value _ad_corr_1_rout) {
-				if(!_ad_corr_1_rout.get("_type_").isNull())
-					this.__type_ = _ad_corr_1_rout.get("_type_").asString();
-			}
-		}
-		public class CeoNode {
-			public String _name;
-			
-			public CeoNode(Value _ceo) {
-				if(!_ceo.get("name").isNull())
-					this._name = _ceo.get("name").asString();
-			}
-		}
-		
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class RoutNode {
-			public String _name;
-			
-			public RoutNode(Value _rout) {
-				if(!_rout.get("name").isNull())
-					this._name = _rout.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class ConsistentTriple3Mask extends NeoMask {
-		public ConsistentTriple3Mask setC(Long value) {
-			nodeMask.put("c", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setCName(String value) {
-			attributeMask.put("c.name", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setC_corr_1_it_type_(String value) {
-			attributeMask.put("c_corr_1_it._type_", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setAd(Long value) {
-			nodeMask.put("ad", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setAdName(String value) {
-			attributeMask.put("ad.name", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setAd_corr_1_rout_type_(String value) {
-			attributeMask.put("ad_corr_1_rout._type_", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setCeo(Long value) {
-			nodeMask.put("ceo", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setCeoName(String value) {
-			attributeMask.put("ceo.name", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setIt(Long value) {
-			nodeMask.put("it", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setItName(String value) {
-			attributeMask.put("it.name", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setRout(Long value) {
-			nodeMask.put("rout", value);
-			return this;
-		}
-		public ConsistentTriple3Mask setRoutName(String value) {
-			attributeMask.put("rout.name", value);
-			return this;
-		}
+	public Model getModel_ConsistentTarget3(){
+		return (Model) spec.getEntities().get(11);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.12
-	public InConsistentTriple4Access getRule_InConsistentTriple4() {
-		return new InConsistentTriple4Access();
-	}
-	
-	public class InConsistentTriple4Access extends NeoRuleCoAccess<InConsistentTriple4Data, InConsistentTriple4CoData, InConsistentTriple4Mask> {
-		public final String _c = "c";
-		public final String _ad = "ad";
-		public final String _ceo1 = "ceo1";
-		public final String _ceo2 = "ceo2";
-		public final String _it = "it";
-		public final String _rout = "rout";
-		
-		@Override
-		public NeoRule rule(){
-			var r = (Rule) spec.getEntities().get(12);
-			return NeoRuleFactory.createNeoRule(r, builder);
-		}
-		
-		@Override
-		public Stream<InConsistentTriple4Data> data(Collection<NeoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple4Data(d));
-		}
-			
-		@Override
-		public Stream<InConsistentTriple4CoData> codata(Collection<NeoCoMatch> matches) {
-			var data = NeoMatch.getData(matches);
-			return data.stream().map(d -> new InConsistentTriple4CoData(d));
-		}
-		
-		@Override
-		public InConsistentTriple4Mask mask() {
-			return new InConsistentTriple4Mask();
-		}
-	}
-	
-	public class InConsistentTriple4Data extends NeoData {
-		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
-		public final C_corr_1_itRel _c_corr_1_it;
-		public final AdNode _ad;
-		public final Ad_ceo_0_ceo1Rel _ad_ceo_0_ceo1;
-		public final Ad_ceo_1_ceo2Rel _ad_ceo_1_ceo2;
-		public final Ad_corr_2_routRel _ad_corr_2_rout;
-		public final Ceo1Node _ceo1;
-		public final Ceo2Node _ceo2;
-		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final RoutNode _rout;
-		
-		public InConsistentTriple4Data(Record data) {
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
-			var _c_corr_1_it = data.get("c_corr_1_it");
-			this._c_corr_1_it = new C_corr_1_itRel(_c_corr_1_it);
-			var _ad = data.get("ad");
-			this._ad = new AdNode(_ad);
-			var _ad_ceo_0_ceo1 = data.get("ad_ceo_0_ceo1");
-			this._ad_ceo_0_ceo1 = new Ad_ceo_0_ceo1Rel(_ad_ceo_0_ceo1);
-			var _ad_ceo_1_ceo2 = data.get("ad_ceo_1_ceo2");
-			this._ad_ceo_1_ceo2 = new Ad_ceo_1_ceo2Rel(_ad_ceo_1_ceo2);
-			var _ad_corr_2_rout = data.get("ad_corr_2_rout");
-			this._ad_corr_2_rout = new Ad_corr_2_routRel(_ad_corr_2_rout);
-			var _ceo1 = data.get("ceo1");
-			this._ceo1 = new Ceo1Node(_ceo1);
-			var _ceo2 = data.get("ceo2");
-			this._ceo2 = new Ceo2Node(_ceo2);
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _rout = data.get("rout");
-			this._rout = new RoutNode(_rout);
-		}
-		
-		
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
-		public class C_corr_1_itRel {
-			public String __type_;
-		
-			public C_corr_1_itRel(Value _c_corr_1_it) {
-				if(!_c_corr_1_it.get("_type_").isNull())
-					this.__type_ = _c_corr_1_it.get("_type_").asString();
-			}
-		}
-		public class AdNode {
-			public String _name;
-			
-			public AdNode(Value _ad) {
-				if(!_ad.get("name").isNull())
-					this._name = _ad.get("name").asString();
-			}
-		}
-		
-		public class Ad_ceo_0_ceo1Rel {
-		
-			public Ad_ceo_0_ceo1Rel(Value _ad_ceo_0_ceo1) {
-			}
-		}
-		public class Ad_ceo_1_ceo2Rel {
-		
-			public Ad_ceo_1_ceo2Rel(Value _ad_ceo_1_ceo2) {
-			}
-		}
-		public class Ad_corr_2_routRel {
-			public String __type_;
-		
-			public Ad_corr_2_routRel(Value _ad_corr_2_rout) {
-				if(!_ad_corr_2_rout.get("_type_").isNull())
-					this.__type_ = _ad_corr_2_rout.get("_type_").asString();
-			}
-		}
-		public class Ceo1Node {
-			public String _name;
-			
-			public Ceo1Node(Value _ceo1) {
-				if(!_ceo1.get("name").isNull())
-					this._name = _ceo1.get("name").asString();
-			}
-		}
-		
-		public class Ceo2Node {
-			public String _name;
-			
-			public Ceo2Node(Value _ceo2) {
-				if(!_ceo2.get("name").isNull())
-					this._name = _ceo2.get("name").asString();
-			}
-		}
-		
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class RoutNode {
-			public String _name;
-			
-			public RoutNode(Value _rout) {
-				if(!_rout.get("name").isNull())
-					this._name = _rout.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple4CoData extends NeoData {
-		public final CNode _c;
-		public final C_admin_0_adRel _c_admin_0_ad;
-		public final C_corr_1_itRel _c_corr_1_it;
-		public final AdNode _ad;
-		public final Ad_ceo_0_ceo1Rel _ad_ceo_0_ceo1;
-		public final Ad_ceo_1_ceo2Rel _ad_ceo_1_ceo2;
-		public final Ad_corr_2_routRel _ad_corr_2_rout;
-		public final Ceo1Node _ceo1;
-		public final Ceo2Node _ceo2;
-		public final ItNode _it;
-		public final It_router_0_routRel _it_router_0_rout;
-		public final RoutNode _rout;
-	
-		public InConsistentTriple4CoData(Record data) {
-			var _c = data.get("c");
-			this._c = new CNode(_c);
-			var _c_admin_0_ad = data.get("c_admin_0_ad");
-			this._c_admin_0_ad = new C_admin_0_adRel(_c_admin_0_ad);
-			var _c_corr_1_it = data.get("c_corr_1_it");
-			this._c_corr_1_it = new C_corr_1_itRel(_c_corr_1_it);
-			var _ad = data.get("ad");
-			this._ad = new AdNode(_ad);
-			var _ad_ceo_0_ceo1 = data.get("ad_ceo_0_ceo1");
-			this._ad_ceo_0_ceo1 = new Ad_ceo_0_ceo1Rel(_ad_ceo_0_ceo1);
-			var _ad_ceo_1_ceo2 = data.get("ad_ceo_1_ceo2");
-			this._ad_ceo_1_ceo2 = new Ad_ceo_1_ceo2Rel(_ad_ceo_1_ceo2);
-			var _ad_corr_2_rout = data.get("ad_corr_2_rout");
-			this._ad_corr_2_rout = new Ad_corr_2_routRel(_ad_corr_2_rout);
-			var _ceo1 = data.get("ceo1");
-			this._ceo1 = new Ceo1Node(_ceo1);
-			var _ceo2 = data.get("ceo2");
-			this._ceo2 = new Ceo2Node(_ceo2);
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_router_0_rout = data.get("it_router_0_rout");
-			this._it_router_0_rout = new It_router_0_routRel(_it_router_0_rout);
-			var _rout = data.get("rout");
-			this._rout = new RoutNode(_rout);
-		}
-		
-	
-		public class CNode {
-			public String _name;
-			
-			public CNode(Value _c) {
-				if(!_c.get("name").isNull())
-					this._name = _c.get("name").asString();
-			}
-		}
-		
-		public class C_admin_0_adRel {
-		
-			public C_admin_0_adRel(Value _c_admin_0_ad) {
-			}
-		}
-		public class C_corr_1_itRel {
-			public String __type_;
-		
-			public C_corr_1_itRel(Value _c_corr_1_it) {
-				if(!_c_corr_1_it.get("_type_").isNull())
-					this.__type_ = _c_corr_1_it.get("_type_").asString();
-			}
-		}
-		public class AdNode {
-			public String _name;
-			
-			public AdNode(Value _ad) {
-				if(!_ad.get("name").isNull())
-					this._name = _ad.get("name").asString();
-			}
-		}
-		
-		public class Ad_ceo_0_ceo1Rel {
-		
-			public Ad_ceo_0_ceo1Rel(Value _ad_ceo_0_ceo1) {
-			}
-		}
-		public class Ad_ceo_1_ceo2Rel {
-		
-			public Ad_ceo_1_ceo2Rel(Value _ad_ceo_1_ceo2) {
-			}
-		}
-		public class Ad_corr_2_routRel {
-			public String __type_;
-		
-			public Ad_corr_2_routRel(Value _ad_corr_2_rout) {
-				if(!_ad_corr_2_rout.get("_type_").isNull())
-					this.__type_ = _ad_corr_2_rout.get("_type_").asString();
-			}
-		}
-		public class Ceo1Node {
-			public String _name;
-			
-			public Ceo1Node(Value _ceo1) {
-				if(!_ceo1.get("name").isNull())
-					this._name = _ceo1.get("name").asString();
-			}
-		}
-		
-		public class Ceo2Node {
-			public String _name;
-			
-			public Ceo2Node(Value _ceo2) {
-				if(!_ceo2.get("name").isNull())
-					this._name = _ceo2.get("name").asString();
-			}
-		}
-		
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_router_0_routRel {
-		
-			public It_router_0_routRel(Value _it_router_0_rout) {
-			}
-		}
-		public class RoutNode {
-			public String _name;
-			
-			public RoutNode(Value _rout) {
-				if(!_rout.get("name").isNull())
-					this._name = _rout.get("name").asString();
-			}
-		}
-		
-	}
-	
-	public class InConsistentTriple4Mask extends NeoMask {
-		public InConsistentTriple4Mask setC(Long value) {
-			nodeMask.put("c", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setCName(String value) {
-			attributeMask.put("c.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setC_corr_1_it_type_(String value) {
-			attributeMask.put("c_corr_1_it._type_", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setAd(Long value) {
-			nodeMask.put("ad", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setAdName(String value) {
-			attributeMask.put("ad.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setAd_corr_2_rout_type_(String value) {
-			attributeMask.put("ad_corr_2_rout._type_", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setCeo1(Long value) {
-			nodeMask.put("ceo1", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setCeo1Name(String value) {
-			attributeMask.put("ceo1.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setCeo2(Long value) {
-			nodeMask.put("ceo2", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setCeo2Name(String value) {
-			attributeMask.put("ceo2.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setIt(Long value) {
-			nodeMask.put("it", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setItName(String value) {
-			attributeMask.put("it.name", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setRout(Long value) {
-			nodeMask.put("rout", value);
-			return this;
-		}
-		public InConsistentTriple4Mask setRoutName(String value) {
-			attributeMask.put("rout.name", value);
-			return this;
-		}
+	public Model getModel_InConsistentSource3(){
+		return (Model) spec.getEntities().get(12);
 	}
 }
