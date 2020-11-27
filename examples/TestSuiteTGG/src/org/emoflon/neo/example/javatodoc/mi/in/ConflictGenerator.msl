@@ -2,12 +2,7 @@ import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
 import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
 
 rule SubSubOppositeConflict {
-	
-	srcM : Model 
-	trgM : Model 
-		
 	package:Package {
-		-elementOf->srcM
 		-corr->folder
 		++-subPackages->subPackage {
 			~_cr_ := true
@@ -15,26 +10,25 @@ rule SubSubOppositeConflict {
 	}
 	
 	subPackage:Package {
-		-elementOf->srcM
+		.enamespace : package::enamespace
 		-corr->subFolder
 	}
 	
 	folder:Folder {
-		-elementOf->trgM
 		++-docs->doc{
 			~_cr_ := true
 		}
 	}
 	
 	subFolder:Folder{
-		-elementOf->trgM
+		.enamespace : folder::enamespace
 		++-subFolders->folder {
 			~_cr_ := true
 		}
 	}
 	
 	++doc:Doc{
-		++-elementOf->trgM
+		.enamespace := folder::enamespace
 		~_cr_ := true
 		.name := folder::name
 	}
@@ -78,17 +72,13 @@ pattern FolderSubOfSubFolder {
 
 rule CreateDeleteConflict {
 	
-	srcM : Model 
-	trgM : Model
-	
 	package:Package {
-		-elementOf->srcM
 		-corr->folder
 		-subPackages->subPackage 
 	}
 	
 	subPackage:Package {
-		-elementOf->srcM
+		.enamespace : package::enamespace
 		-corr->subFolder
 		++-clazzes->class {
 			~_cr_ := true
@@ -96,13 +86,12 @@ rule CreateDeleteConflict {
 	}
 	
 	++class:Clazz{
-		++-elementOf->srcM
+		.enamespace := package::enamespace
 		.name := "NewClass"
 		~_cr_ := true
 	}
 	
 	folder:Folder {
-		-elementOf->trgM
 		-subFolders->subFolder {
 			~_de_ := true
 		}
@@ -112,7 +101,7 @@ rule CreateDeleteConflict {
 	}
 	
 	subFolder:Folder{
-		-elementOf->trgM
+		.enamespace : folder::enamespace
 		~_de_ := true
 		-docs->doc{
 			~_de_ := true
@@ -120,17 +109,13 @@ rule CreateDeleteConflict {
 	}
 	
 	doc:Doc{
-		-elementOf->trgM
+		.enamespace : folder::enamespace
 	}
 }			
 
 rule MoveDeleteConflict {
 	
-	srcM : Model 
-	trgM : Model
-	
 	package:Package {
-		-elementOf->srcM
 		-corr->folder
 		-subPackages->subPackage {
 			~_de_ := true
@@ -138,26 +123,25 @@ rule MoveDeleteConflict {
 	}
 	
 	otherPackage:Package {
-		-elementOf->srcM
+		.enamespace : package::enamespace
 		++-subPackages->subPackage {
 			~_cr_ := true
 		}
 	}
 	
 	subPackage:Package {
-		-elementOf->srcM
+		.enamespace : package::enamespace
 		-corr->subFolder
 	}
 	
 	folder:Folder {
-		-elementOf->trgM
 		-subFolders->subFolder {
 			~_de_ := true
 		}
 	}
 	
 	subFolder:Folder{
-		-elementOf->trgM
+		.enamespace : folder::enamespace
 		~_de_ := true
 	}
 }

@@ -18,7 +18,6 @@ import org.emoflon.neo.cypher.common.NeoRelation;
 import org.emoflon.neo.cypher.models.IBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPattern;
-import org.emoflon.neo.emsl.compiler.TGGCompiler;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -247,11 +246,5 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Collection<String> getCreatedRelLabels() {
 		return greenRels.keySet();
-	}
-
-	@Override
-	public boolean isUserDefined() {
-		return !(emslRule.getName().equals(TGGCompiler.CREATE_SRC_MODEL_RULE)
-				|| emslRule.getName().equals(TGGCompiler.CREATE_TRG_MODEL_RULE));
 	}
 }

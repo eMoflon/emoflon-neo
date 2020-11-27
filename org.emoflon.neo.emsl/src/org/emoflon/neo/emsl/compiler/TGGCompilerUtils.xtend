@@ -73,23 +73,11 @@ class TGGCompilerUtils {
 		
 		'''
 			pattern «newPatternName» {
-				«IF mapToModel»
-					«modelDomain»M : Model {
-						.ename : <__«modelDomain»ModelName>
-					}
-					
-				«ENDIF»
 				«nodeBlocks»
-				
-				«IF !requiredExternalBlocks.isEmpty»
-					«externalDomain»M : Model {
-						.ename : <__«externalDomain»ModelName>
-					}
-				«ENDIF»
 				
 				«FOR nodeBlock : requiredExternalBlocks»
 					«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)» {
-						-elementOf->«externalDomain»M
+						.enamespace : <__«externalDomain»ModelName>
 					}
 				«ENDFOR»
 			}
@@ -99,7 +87,7 @@ class TGGCompilerUtils {
 	def static String simplePrintNodeBlock(ModelNodeBlock nodeBlock, String domain, BiMap<MetamodelNodeBlock, String> nodeTypeNames, Map<Parameter, ParameterData> paramsToData, Collection<ModelNodeBlock> requiredNodeBlocks, boolean mapToModel) {
 		'''
 			«nodeBlock.name» : «nodeTypeNames.get(nodeBlock.type)» {
-				«IF mapToModel»-elementOf->«domain»M«ENDIF»
+				«IF mapToModel».enamespace : <__«domain»ModelName>«ENDIF»
 				«FOR relation : nodeBlock.relations»
 					«simplePrintRelationStatement(relation, paramsToData, requiredNodeBlocks)»
 				«ENDFOR»

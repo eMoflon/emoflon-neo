@@ -33,11 +33,11 @@ pattern occupiedFields -> fields, occupied {
 pattern figureTypes {
 	figClass:EClass {
 		.ename : "Figure"
-		-elementOf->mm
+		.enamespace : mm::ename
 	}
 	
 	eclass:EClass {
-		-elementOf->mm
+		.enamespace : mm::ename
 		-eSuperType(1..*)->figClass
 	}
 	

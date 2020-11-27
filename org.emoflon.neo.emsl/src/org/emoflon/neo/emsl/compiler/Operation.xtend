@@ -73,6 +73,10 @@ interface Operation {
 
 	def boolean exportMetamodels()
 	
+	/**
+	 * This is true if more than one operational rule might be produced for just one rule.
+	 * This is for example the case for model integration (concurrent synchronisation)
+	 */
 	def boolean isMulti() {
 		false
 	}

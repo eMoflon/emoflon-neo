@@ -368,14 +368,14 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		executeActionAsCreateTransaction((cb) -> {
 			// Match required classes from NeoCore
 			var neocore = cb.matchNode(neoCoreProps, neoCoreLabels);
-			var eclass = cb.matchNodeWithContainer(eclassProps, eclassLabels, neocore);
-			var eref = cb.matchNodeWithContainer(erefProps, erefLabels, neocore);
-			var edatatype = cb.matchNodeWithContainer(eDataTypeProps, eDataTypeLabels, neocore);
-			var eattribute = cb.matchNodeWithContainer(eattrProps, eattrLabels, neocore);
-			var eobject = cb.matchNodeWithContainer(eobjectProps, eobjectLabels, neocore);
-			var mmodel = cb.matchNodeWithContainer(mmodelProps, mmodelLabels, neocore);
-			var eenum = cb.matchNodeWithContainer(eenumProps, eenumLabels, neocore);
-			var eenumLiteral = cb.matchNodeWithContainer(eenumLiteralProps, eenumLiteralLabels, neocore);
+			var eclass = cb.matchNodeWithContainer(eclassProps, eclassLabels, neocore.getName());
+			var eref = cb.matchNodeWithContainer(erefProps, erefLabels, neocore.getName());
+			var edatatype = cb.matchNodeWithContainer(eDataTypeProps, eDataTypeLabels, neocore.getName());
+			var eattribute = cb.matchNodeWithContainer(eattrProps, eattrLabels, neocore.getName());
+			var eobject = cb.matchNodeWithContainer(eobjectProps, eobjectLabels, neocore.getName());
+			var mmodel = cb.matchNodeWithContainer(mmodelProps, mmodelLabels, neocore.getName());
+			var eenum = cb.matchNodeWithContainer(eenumProps, eenumLabels, neocore.getName());
+			var eenumLiteral = cb.matchNodeWithContainer(eenumLiteralProps, eenumLiteralLabels, neocore.getName());
 
 			// Create metamodel nodes and handle node blocks for all metamodels
 			var mmNodes = new HashMap<Metamodel, NodeCommand>();
@@ -402,17 +402,17 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private void handleEnumsInMetamodel(CypherCreator cb, Metamodel metamodel, NodeCommand mmNode, NodeCommand eenum,
 			NodeCommand eenumLiteral, HashMap<Object, NodeCommand> blockToCommand) {
 		metamodel.getEnums().forEach(eenumNode -> {
-			var eenumCommand = cb.createNodeWithContAndType(//
+			var eenumCommand = cb.createNodeWithType(//
 					List.of(new NeoProp(NAME_PROP, eenumNode.getName()), //
 							new NeoProp(NAMESPACE_PROP, metamodel.getName())), //
-					NeoCoreBootstrapper.LABELS_FOR_AN_ENUM, eenum, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_ENUM, eenum);
 
 			blockToCommand.put(eenumNode, eenumCommand);
 
 			for (EnumLiteral literal : eenumNode.getLiterals()) {
-				var literalCommand = cb.createNodeWithContAndType(//
+				var literalCommand = cb.createNodeWithType(//
 						List.of(new NeoProp(NAME_PROP, literal.getName())), //
-						NeoCoreBootstrapper.LABELS_FOR_AN_ENUMLITERAL, eenumLiteral, mmNode);
+						NeoCoreBootstrapper.LABELS_FOR_AN_ENUMLITERAL, eenumLiteral);
 
 				cb.createEdge(ELITERALS, eenumCommand, literalCommand);
 			}
@@ -446,9 +446,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private void handleAttributes(CypherCreator cb, NodeCommand neocore, NodeCommand edatatype, NodeCommand eattribute,
 			HashMap<Object, NodeCommand> blockToCommand, NodeCommand mmNode, MetamodelNodeBlock nb) {
 		for (var ps : nb.getProperties()) {
-			var attr = cb.createNodeWithContAndType(//
+			var attr = cb.createNodeWithType(//
 					List.of(new NeoProp(NAME_PROP, ps.getName())), //
-					NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, eattribute, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, eattribute);
 			var attrOwner = blockToCommand.get(nb);
 			var nameOfTypeofAttr = inferType(ps);
 
@@ -457,7 +457,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			if (dataType instanceof BuiltInType) {
 				typeofattr = cb.matchNodeWithContainer(//
 						List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr)), //
-						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore);
+						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore.getName());
 			} else if (dataType instanceof UserDefinedType) {
 				var reference = ((UserDefinedType) dataType).getReference();
 				if (!blockToCommand.containsKey(reference)) {
@@ -505,9 +505,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			var isContainmentProp = new NeoProp(NeoCoreConstants.ISCONTAINMENT_PROP,
 					rs.getKind().equals(RelationKind.COMPOSITION) || rs.getKind().equals(RelationKind.AGGREGATION));
 
-			var ref = cb.createNodeWithContAndType(//
+			var ref = cb.createNodeWithType(//
 					List.of(new NeoProp(NAME_PROP, rs.getName()), isCompProp, isContainmentProp), //
-					NeoCoreBootstrapper.LABELS_FOR_AN_EREFERENCE, eref, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_EREFERENCE, eref);
 
 			var refOwner = blockToCommand.get(nb);
 
@@ -532,15 +532,15 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 			// Handle attributes of the relation
 			rs.getProperties().forEach(ps -> {
-				var attr = cb.createNodeWithContAndType(//
+				var attr = cb.createNodeWithType(//
 						List.of(new NeoProp(NAME_PROP, ps.getName())), //
-						NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, eattribute, mmNode);
+						NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, eattribute);
 
 				var nameOfTypeofAttr = inferType(ps);
 
 				var typeofattr = cb.matchNodeWithContainer(//
 						List.of(new NeoProp(NAME_PROP, nameOfTypeofAttr)), //
-						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore);
+						NeoCoreBootstrapper.LABELS_FOR_AN_EDATATYPE, neocore.getName());
 
 				cb.createEdge(EATTRIBUTES, ref, attr);
 				cb.createEdge(EATTRIBUTE_TYPE, attr, typeofattr);
@@ -555,7 +555,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	private void addAttributeForReference(CypherCreator cb, NodeCommand ref, NodeCommand neocore, String mrk) {
 		var attr = cb.matchNodeWithContainer(//
 				List.of(new NeoProp(NAME_PROP, mrk)), //
-				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore);
+				NeoCoreBootstrapper.LABELS_FOR_AN_EATTRIBUTE, neocore.getName());
 		cb.createEdge(EATTRIBUTES, ref, attr);
 	}
 
@@ -567,14 +567,10 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			var target = rs.getTarget();
 			if (!blockToCommand.containsKey(target)) {
 				var nodeBlockOfContainerOfTarget = (Model) target.eContainer();
-				var matchedContainerOfTarget = cb.matchNode(//
-						List.of(new NeoProp(NAME_PROP, nodeBlockOfContainerOfTarget.getName())), //
-						NeoCoreBootstrapper.LABELS_FOR_A_MODEL);
-
 				var typeOfRef = cb.matchNodeWithContainer(//
-						List.of(new NeoProp(NAME_PROP, rs.getTarget().getName())), //
+						List.of(new NeoProp(NAME_PROP, rs.getTarget().getName()), new NeoProp(NAMESPACE_PROP, nodeBlockOfContainerOfTarget.getName())), //
 						computeLabelsFromType(rs.getTarget().getType()), //
-						matchedContainerOfTarget);
+						nodeBlockOfContainerOfTarget.getName());
 				blockToCommand.put(target, typeOfRef);
 			}
 
@@ -617,11 +613,11 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		cb.createEdge(META_TYPE, mmNode, mmodel);
 
 		metamodel.getNodeBlocks().forEach(nb -> {
-			var nbNode = cb.createNodeWithContAndType(//
+			var nbNode = cb.createNodeWithType(//
 					List.of(new NeoProp(NAME_PROP, nb.getName()), //
 							new NeoProp(ABSTRACT_PROP, nb.isAbstract()),
 							new NeoProp(NAMESPACE_PROP, metamodel.getName())),
-					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, eclass, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, eclass);
 
 			if (nb.getSuperTypes().isEmpty()) {
 				cb.createEdge(ESUPER_TYPE, nbNode, eobject);
@@ -647,7 +643,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 			var typeOfNode = cb.matchNodeWithContainer(//
 					List.of(new NeoProp(NAME_PROP, nb.getType().getName()), new NeoProp(NAMESPACE_PROP, mm.getName())), //
-					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, mmNode);
+					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, mm.getName());
 
 			cb.createEdge(CONFORMS_TO_PROP, mNode, mmNode);
 			cb.createEdge(META_TYPE, mNode, nodeCommandForModel);
@@ -659,12 +655,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			});
 
 			props.add(new NeoProp(NAME_PROP, nb.getName()));
+			props.add(new NeoProp(NAMESPACE_PROP, model.getName()));
 
 			var allLabels = new ArrayList<String>();
 			allLabels.addAll(computeLabelsFromType(nb.getType()));
 
-			var nbNode = cb.createNodeWithContAndType(//
-					props, allLabels, typeOfNode, mNode);
+			var nbNode = cb.createNodeWithType(props, allLabels, typeOfNode);
 
 			blockToCommand.put(nb, nbNode);
 		});
@@ -812,19 +808,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	 * included or excluded depending on the provided flag.
 	 * 
 	 * @param model            The ename of the model
-	 * @param includeModelNode The model node is included if true
 	 * @return IDs of all nodes
 	 */
-	public Collection<Long> getAllNodesOfModel(String model, boolean includeModelNode) {
+	public Collection<Long> getAllNodesOfModel(String model) {
 		var allNodes = executeQuery(CypherBuilder.getAllNodesInModel(model));
 		var allIDs = new HashSet<Long>();
 		allNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-		
-		if(includeModelNode) {
-			var modelNode = executeQuery(CypherBuilder.getModelNodes(model));
-			modelNode.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
-		}
-		
 		return allIDs;
 	}
 
@@ -864,16 +853,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var allTrgNodes = executeQuery(CypherBuilder.getAllNodesInModel(targetModel));
 
 		var allSrcEdges = executeQuery(CypherBuilder.getAllRelsInModel(sourceModel));
-		var allSrcElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(sourceModel));
-
 		var allTrgEdges = executeQuery(CypherBuilder.getAllRelsInModel(targetModel));
-		var allTrgElOfEdges = executeQuery(CypherBuilder.getAllElOfEdgesInModel(targetModel));
 
 		var allCorrs = executeQuery(CypherBuilder.getAllCorrs(sourceModel, targetModel));
-
-		var modelNodes = executeQuery(CypherBuilder.getModelNodes(sourceModel, targetModel));
-		var srcModelEdges = executeQuery(CypherBuilder.getConformsToEdges(sourceModel));
-		var trgModelEdges = executeQuery(CypherBuilder.getConformsToEdges(targetModel));
 
 		var allIDs = new HashSet<Long>();
 
@@ -881,16 +863,9 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		allTrgNodes.forEach(n -> n.values().forEach(v -> allIDs.add(v.asLong())));
 
 		allSrcEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allSrcElOfEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-
 		allTrgEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		allTrgElOfEdges.forEach(r -> r.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
 		allCorrs.forEach(c -> c.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-
-		modelNodes.forEach(m -> m.values().forEach(v -> allIDs.add(v.asLong())));
-		srcModelEdges.forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
-		trgModelEdges.forEach(me -> me.values().forEach(v -> allIDs.add(v.asLong() * -1)));
 
 		return allIDs;
 	}
@@ -947,7 +922,6 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForCorrs(sourceModelName, targetModelName,
 				NeoCoreConstants._EX_PROP));
-//		executeQueryForSideEffect(CypherBuilder.prepareDeltaAttributeForModelNodes(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
 	}
 
 	public void removeContextDeltaAttributesFromModel(String sourceModelName, String targetModelName) {
@@ -963,6 +937,5 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 
 		executeQueryForSideEffect(CypherBuilder.removeDeltaAttributeForCorrs(sourceModelName, targetModelName,
 				NeoCoreConstants._EX_PROP));
-//		executeQueryForSideEffect(CypherBuilder.removeDeltaAttributeForModelNodes(sourceModelName, targetModelName, NeoCoreConstants._EX_PROP));
 	}
 }

@@ -37,50 +37,25 @@ class CypherCreator extends CypherBuilder {
 		return nc
 	}
 
-	def createNodeWithCont(List< NeoProp> props, List<String> labels,  NodeCommand container) {
+	def createNodeWithType(List< NeoProp> props, List<String> labels,  NodeCommand type) {
 		val nc = createNode(props, labels)
-		createEdge(NeoCoreConstants.META_EL_OF, nc, container)
-		return nc
-	}
-
-	def createNodeWithContAndType(List< NeoProp> props, List<String> labels,  NodeCommand type,  NodeCommand container) {
-		val nc = createNodeWithCont(props, labels, container)
 		createEdge(NeoCoreConstants.META_TYPE, nc, type)
 		return nc
 	}
 
-	def matchNodeWithContainer(List< NeoProp> props, List<String> labels,  NodeCommand container) {
-		if (!nodesToMatch.values.contains(container))
-			throw new IllegalArgumentException("A node's container must be matched: " + container)
-
+	def matchNodeWithContainer(List< NeoProp> props, List<String> labels,  String container) {
 		val key = createKeyForNodeWithContainer(props, labels, container)
 		if (nodesToMatch.containsKey(key))
 			return nodesToMatch.get(key)
 		else {
 			val nc = new  NodeCommand(props, labels.subList(0, 1))
 			nodesToMatch.put(key, nc)
-			if (!props.exists[it.key == NeoCoreConstants.NAMESPACE_PROP])
-				matchEdge(List.of, NeoCoreConstants.META_EL_OF, nc, container)
 			return nc
 		}
 	}
 
-	private def String createKeyForNodeWithContainer(List< NeoProp> props, List<String> labels,  NodeCommand container) {
-		'''«props.join("-")»-«labels.join("-")»-«container.name»'''
-	}
-
-	private def matchEdge(List< NeoProp> props, String label,  NodeCommand from,  NodeCommand to) {
-		if (props === null)
-			throw new IllegalArgumentException("Property list should not be null")
-
-		val key = createKeyForEdge(props, label, from, to)
-		if (edgesToMatch.containsKey(key))
-			return edgesToMatch.get(key)
-		else {
-			val ec = new  EdgeCommand(props, label, from, to)
-			edgesToMatch.put(key, ec)
-			return ec
-		}
+	private def String createKeyForNodeWithContainer(List< NeoProp> props, List<String> labels,  String container) {
+		'''«props.join("-")»-«labels.join("-")»-«container»'''
 	}
 
 	private def String createKeyForEdge(List< NeoProp> props, String label,  NodeCommand from,  NodeCommand to) {
