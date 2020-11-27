@@ -16,7 +16,7 @@ public class DirectMITests extends ENeoTest {
 				api.getModel_MoflonDocChain(), //
 				api.getRule_CreateCorrs().rule());
 		new JavaToDoc_MI_Run("moflonJavaChain", "moflonDocChain").run();
-		testForConsistency(new JavaToDoc_CO_Run("moflonJavaChain", "moflonDocChain", solver).runCheckOnly(), 84);
+		testForConsistency(new JavaToDoc_CO_Run("moflonJavaChain", "moflonDocChain", solver).runCheckOnly(), 56);
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class DirectMITests extends ENeoTest {
 				api.getModel_MoflonDocMultiDel(), //
 				api.getRule_CreateCorrs().rule());
 		new JavaToDoc_MI_Run("moflonJavaMultiDel", "moflonDocMultiDel").run();
-		testForConsistency(new JavaToDoc_CO_Run("moflonJavaMultiDel", "moflonDocMultiDel", solver).runCheckOnly(), 21);
+		testForConsistency(new JavaToDoc_CO_Run("moflonJavaMultiDel", "moflonDocMultiDel", solver).runCheckOnly(), 11);
 	}
 	
 	@Test
@@ -34,6 +34,6 @@ public class DirectMITests extends ENeoTest {
 				api.getModel_MoflonDocSimple(), //
 				api.getRule_CreateCorrs().rule());
 		new JavaToDoc_MI_Run("moflonJavaSimple", "moflonDocSimple").run();
-		testForConsistency(new JavaToDoc_CO_Run("moflonJavaSimple", "moflonDocSimple", solver).runCheckOnly(), 84);
+		testForConsistency(new JavaToDoc_CO_Run("moflonJavaSimple", "moflonDocSimple", solver).runCheckOnly(), 56);
 	}
 }

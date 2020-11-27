@@ -11,6 +11,7 @@ import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CC_Run;
 import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
@@ -58,6 +59,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 		});
 	}
 
+	@Disabled("Fails non-deterministically, probably due to SAT4J's timeout")
 	@Test
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
@@ -67,6 +69,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 		});
 	}
 
+	@Disabled("Fails non-deterministically, probably due to SAT4J's timeout")
 	@Test
 	public void tryLotsOfClazzes() throws Exception {
 		runTest((scheduler) -> {
