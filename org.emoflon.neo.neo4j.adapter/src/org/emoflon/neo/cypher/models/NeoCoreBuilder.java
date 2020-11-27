@@ -326,21 +326,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		var bootstrapper = new NeoCoreBootstrapper();
 		bootstrapper.bootstrapNeoCore(this);
 
-		try {
-			executeQueryForSideEffect("CREATE CONSTRAINT ON (mm:" //
-					+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.MODEL) + ") ASSERT mm.ename IS UNIQUE");
-		} catch (Exception e) {
-			// Constraint might exist already
-		}
-		
-		try {
-			executeQueryForSideEffect(//
-					"CREATE INDEX ON :" + //
-							NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.ECLASS) + //
-							"(" + NeoCoreConstants.NAME_PROP + ")");
-		} catch (Exception e) {
-			// Index might exist already
-		}
+		executeQueryForSideEffect("CREATE CONSTRAINT IF NOT EXISTS ON (mm:" //
+				+ NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.MODEL) + ") ASSERT mm.ename IS UNIQUE");
+
+		executeQueryForSideEffect(//
+				"CREATE INDEX IF NOT EXISTS FOR (n:" + //
+						NeoCoreBootstrapper.addNeoCoreNamespace(NeoCoreConstants.ECLASS) + //
+						") ON (n." + NeoCoreConstants.NAME_PROP + ")");
 	}
 
 	private void exportModelsToNeo4j(List<Model> newModels) throws FlattenerException {
