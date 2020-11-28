@@ -35,7 +35,7 @@ public class ConstraintTesting extends ENeoTest{
 				api.getModel_InConsistentTarget1(), //
 				api.getRule_InConsistentTriple1().rule());
 		testForInconsistency(new CompanyToIT_CO_Run("ConsistentSource1", "InConsistentTarget1").runCheckOnly(),
-				24, 4);
+				4, 16);
 	}
 			
 	//co for inconsistent triple2
@@ -45,7 +45,7 @@ public class ConstraintTesting extends ENeoTest{
 				api.getModel_ConsistentTarget1(), //
 				api.getRule_InConsistentTriple1().rule());
 		testForInconsistency(new CompanyToIT_CO_Run("InConsistentSource1", "ConsistentTarget1").runCheckOnly(),
-				24, 4);
+				4, 16);
 	}
 	
 	//co-cc for consistent triple2
@@ -72,7 +72,7 @@ public class ConstraintTesting extends ENeoTest{
 				api.getModel_InConsistentTarget2(), //
 				api.getRule_ConsistentTriple2().rule());
 		testForInconsistency(new CompanyToIT_CO_Run("ConsistentSource2", "InConsistentTarget2").runCheckOnly(),
-				17, 3);
+				4, 16);
 	}
 		
 	//co-cc for consistent triple3
@@ -99,6 +99,6 @@ public class ConstraintTesting extends ENeoTest{
 					api.getModel_ConsistentTarget3(), //
 					api.getRule_ConsistentTriple2().rule());
 			testForInconsistency(new CompanyToIT_CO_Run("InConsistentSource3", "ConsistentTarget3").runCheckOnly(),
-					17, 3);
+					4, 16);
 		}	
 }

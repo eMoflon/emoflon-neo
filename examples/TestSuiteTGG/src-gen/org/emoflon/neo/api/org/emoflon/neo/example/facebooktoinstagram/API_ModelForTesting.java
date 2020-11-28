@@ -59,9 +59,9 @@ public class API_ModelForTesting {
 	
 	public class ConsistentTripleAccess extends NeoRuleCoAccess<ConsistentTripleData, ConsistentTripleCoData, ConsistentTripleMask> {
 		public final String _fb = "fb";
+		public final String _in = "in";
 		public final String _f1 = "f1";
 		public final String _f2 = "f2";
-		public final String _in = "in";
 		public final String _i1 = "i1";
 		public final String _i2 = "i2";
 		
@@ -91,30 +91,21 @@ public class API_ModelForTesting {
 	
 	public class ConsistentTripleData extends NeoData {
 		public final FbNode _fb;
-		public final Fb_corr_0_inRel _fb_corr_0_in;
-		public final F1Node _f1;
-		public final F1_corr_0_i1Rel _f1_corr_0_i1;
-		public final F2Node _f2;
-		public final F2_corr_0_i2Rel _f2_corr_0_i2;
 		public final InNode _in;
+		public final F1Node _f1;
+		public final F2Node _f2;
 		public final I1Node _i1;
 		public final I2Node _i2;
 		
 		public ConsistentTripleData(Record data) {
 			var _fb = data.get("fb");
 			this._fb = new FbNode(_fb);
-			var _fb_corr_0_in = data.get("fb_corr_0_in");
-			this._fb_corr_0_in = new Fb_corr_0_inRel(_fb_corr_0_in);
-			var _f1 = data.get("f1");
-			this._f1 = new F1Node(_f1);
-			var _f1_corr_0_i1 = data.get("f1_corr_0_i1");
-			this._f1_corr_0_i1 = new F1_corr_0_i1Rel(_f1_corr_0_i1);
-			var _f2 = data.get("f2");
-			this._f2 = new F2Node(_f2);
-			var _f2_corr_0_i2 = data.get("f2_corr_0_i2");
-			this._f2_corr_0_i2 = new F2_corr_0_i2Rel(_f2_corr_0_i2);
 			var _in = data.get("in");
 			this._in = new InNode(_in);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
 			var _i1 = data.get("i1");
 			this._i1 = new I1Node(_i1);
 			var _i2 = data.get("i2");
@@ -131,14 +122,15 @@ public class API_ModelForTesting {
 			}
 		}
 		
-		public class Fb_corr_0_inRel {
-			public String __type_;
-		
-			public Fb_corr_0_inRel(Value _fb_corr_0_in) {
-				if(!_fb_corr_0_in.get("_type_").isNull())
-					this.__type_ = _fb_corr_0_in.get("_type_").asString();
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
 			}
 		}
+		
 		public class F1Node {
 			public String _name;
 			
@@ -148,37 +140,12 @@ public class API_ModelForTesting {
 			}
 		}
 		
-		public class F1_corr_0_i1Rel {
-			public String __type_;
-		
-			public F1_corr_0_i1Rel(Value _f1_corr_0_i1) {
-				if(!_f1_corr_0_i1.get("_type_").isNull())
-					this.__type_ = _f1_corr_0_i1.get("_type_").asString();
-			}
-		}
 		public class F2Node {
 			public String _name;
 			
 			public F2Node(Value _f2) {
 				if(!_f2.get("name").isNull())
 					this._name = _f2.get("name").asString();
-			}
-		}
-		
-		public class F2_corr_0_i2Rel {
-			public String __type_;
-		
-			public F2_corr_0_i2Rel(Value _f2_corr_0_i2) {
-				if(!_f2_corr_0_i2.get("_type_").isNull())
-					this.__type_ = _f2_corr_0_i2.get("_type_").asString();
-			}
-		}
-		public class InNode {
-			public String _description;
-			
-			public InNode(Value _in) {
-				if(!_in.get("description").isNull())
-					this._description = _in.get("description").asString();
 			}
 		}
 		
@@ -205,11 +172,11 @@ public class API_ModelForTesting {
 	public class ConsistentTripleCoData extends NeoData {
 		public final FbNode _fb;
 		public final Fb_corr_0_inRel _fb_corr_0_in;
+		public final InNode _in;
 		public final F1Node _f1;
 		public final F1_corr_0_i1Rel _f1_corr_0_i1;
 		public final F2Node _f2;
 		public final F2_corr_0_i2Rel _f2_corr_0_i2;
-		public final InNode _in;
 		public final I1Node _i1;
 		public final I2Node _i2;
 	
@@ -218,6 +185,8 @@ public class API_ModelForTesting {
 			this._fb = new FbNode(_fb);
 			var _fb_corr_0_in = data.get("fb_corr_0_in");
 			this._fb_corr_0_in = new Fb_corr_0_inRel(_fb_corr_0_in);
+			var _in = data.get("in");
+			this._in = new InNode(_in);
 			var _f1 = data.get("f1");
 			this._f1 = new F1Node(_f1);
 			var _f1_corr_0_i1 = data.get("f1_corr_0_i1");
@@ -226,8 +195,6 @@ public class API_ModelForTesting {
 			this._f2 = new F2Node(_f2);
 			var _f2_corr_0_i2 = data.get("f2_corr_0_i2");
 			this._f2_corr_0_i2 = new F2_corr_0_i2Rel(_f2_corr_0_i2);
-			var _in = data.get("in");
-			this._in = new InNode(_in);
 			var _i1 = data.get("i1");
 			this._i1 = new I1Node(_i1);
 			var _i2 = data.get("i2");
@@ -252,6 +219,15 @@ public class API_ModelForTesting {
 					this.__type_ = _fb_corr_0_in.get("_type_").asString();
 			}
 		}
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
+			}
+		}
+		
 		public class F1Node {
 			public String _name;
 			
@@ -286,15 +262,6 @@ public class API_ModelForTesting {
 					this.__type_ = _f2_corr_0_i2.get("_type_").asString();
 			}
 		}
-		public class InNode {
-			public String _description;
-			
-			public InNode(Value _in) {
-				if(!_in.get("description").isNull())
-					this._description = _in.get("description").asString();
-			}
-		}
-		
 		public class I1Node {
 			public String _name;
 			
@@ -328,6 +295,14 @@ public class API_ModelForTesting {
 			attributeMask.put("fb_corr_0_in._type_", value);
 			return this;
 		}
+		public ConsistentTripleMask setIn(Long value) {
+			nodeMask.put("in", value);
+			return this;
+		}
+		public ConsistentTripleMask setInDescription(String value) {
+			attributeMask.put("in.description", value);
+			return this;
+		}
 		public ConsistentTripleMask setF1(Long value) {
 			nodeMask.put("f1", value);
 			return this;
@@ -350,14 +325,6 @@ public class API_ModelForTesting {
 		}
 		public ConsistentTripleMask setF2_corr_0_i2_type_(String value) {
 			attributeMask.put("f2_corr_0_i2._type_", value);
-			return this;
-		}
-		public ConsistentTripleMask setIn(Long value) {
-			nodeMask.put("in", value);
-			return this;
-		}
-		public ConsistentTripleMask setInDescription(String value) {
-			attributeMask.put("in.description", value);
 			return this;
 		}
 		public ConsistentTripleMask setI1(Long value) {

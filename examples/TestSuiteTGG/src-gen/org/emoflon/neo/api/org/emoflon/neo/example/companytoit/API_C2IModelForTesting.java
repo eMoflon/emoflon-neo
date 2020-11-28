@@ -91,11 +91,8 @@ public class API_C2IModelForTesting {
 	
 	public class ConsistentTriple1Data extends NeoData {
 		public final ItNode _it;
-		public final It_corr_0_cRel _it_corr_0_c;
 		public final L1Node _l1;
-		public final L1_corr_0_e1Rel _l1_corr_0_e1;
 		public final L2Node _l2;
-		public final L2_corr_0_e2Rel _l2_corr_0_e2;
 		public final CNode _c;
 		public final E1Node _e1;
 		public final E2Node _e2;
@@ -103,16 +100,10 @@ public class API_C2IModelForTesting {
 		public ConsistentTriple1Data(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_corr_0_c = data.get("it_corr_0_c");
-			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _l1 = data.get("l1");
 			this._l1 = new L1Node(_l1);
-			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
-			this._l1_corr_0_e1 = new L1_corr_0_e1Rel(_l1_corr_0_e1);
 			var _l2 = data.get("l2");
 			this._l2 = new L2Node(_l2);
-			var _l2_corr_0_e2 = data.get("l2_corr_0_e2");
-			this._l2_corr_0_e2 = new L2_corr_0_e2Rel(_l2_corr_0_e2);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
 			var _e1 = data.get("e1");
@@ -131,14 +122,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_corr_0_cRel {
-			public String __type_;
-		
-			public It_corr_0_cRel(Value _it_corr_0_c) {
-				if(!_it_corr_0_c.get("_type_").isNull())
-					this.__type_ = _it_corr_0_c.get("_type_").asString();
-			}
-		}
 		public class L1Node {
 			public String _name;
 			
@@ -148,14 +131,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class L1_corr_0_e1Rel {
-			public String __type_;
-		
-			public L1_corr_0_e1Rel(Value _l1_corr_0_e1) {
-				if(!_l1_corr_0_e1.get("_type_").isNull())
-					this.__type_ = _l1_corr_0_e1.get("_type_").asString();
-			}
-		}
 		public class L2Node {
 			public String _name;
 			
@@ -165,14 +140,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class L2_corr_0_e2Rel {
-			public String __type_;
-		
-			public L2_corr_0_e2Rel(Value _l2_corr_0_e2) {
-				if(!_l2_corr_0_e2.get("_type_").isNull())
-					this.__type_ = _l2_corr_0_e2.get("_type_").asString();
-			}
-		}
 		public class CNode {
 			public String _name;
 			
@@ -420,21 +387,15 @@ public class API_C2IModelForTesting {
 	
 	public class InConsistentTriple1Data extends NeoData {
 		public final ItNode _it;
-		public final It_corr_0_cRel _it_corr_0_c;
 		public final L1Node _l1;
-		public final L1_corr_0_e1Rel _l1_corr_0_e1;
 		public final CNode _c;
 		public final E1Node _e1;
 		
 		public InConsistentTriple1Data(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_corr_0_c = data.get("it_corr_0_c");
-			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _l1 = data.get("l1");
 			this._l1 = new L1Node(_l1);
-			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
-			this._l1_corr_0_e1 = new L1_corr_0_e1Rel(_l1_corr_0_e1);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
 			var _e1 = data.get("e1");
@@ -451,14 +412,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_corr_0_cRel {
-			public String __type_;
-		
-			public It_corr_0_cRel(Value _it_corr_0_c) {
-				if(!_it_corr_0_c.get("_type_").isNull())
-					this.__type_ = _it_corr_0_c.get("_type_").asString();
-			}
-		}
 		public class L1Node {
 			public String _name;
 			
@@ -468,14 +421,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class L1_corr_0_e1Rel {
-			public String __type_;
-		
-			public L1_corr_0_e1Rel(Value _l1_corr_0_e1) {
-				if(!_l1_corr_0_e1.get("_type_").isNull())
-					this.__type_ = _l1_corr_0_e1.get("_type_").asString();
-			}
-		}
 		public class CNode {
 			public String _name;
 			
@@ -669,21 +614,15 @@ public class API_C2IModelForTesting {
 	
 	public class ConsistentTriple2Data extends NeoData {
 		public final ItNode _it;
-		public final It_corr_0_cRel _it_corr_0_c;
 		public final RoutNode _rout;
-		public final Rout_corr_0_adRel _rout_corr_0_ad;
 		public final CNode _c;
 		public final AdNode _ad;
 		
 		public ConsistentTriple2Data(Record data) {
 			var _it = data.get("it");
 			this._it = new ItNode(_it);
-			var _it_corr_0_c = data.get("it_corr_0_c");
-			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
 			var _rout = data.get("rout");
 			this._rout = new RoutNode(_rout);
-			var _rout_corr_0_ad = data.get("rout_corr_0_ad");
-			this._rout_corr_0_ad = new Rout_corr_0_adRel(_rout_corr_0_ad);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
 			var _ad = data.get("ad");
@@ -700,14 +639,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class It_corr_0_cRel {
-			public String __type_;
-		
-			public It_corr_0_cRel(Value _it_corr_0_c) {
-				if(!_it_corr_0_c.get("_type_").isNull())
-					this.__type_ = _it_corr_0_c.get("_type_").asString();
-			}
-		}
 		public class RoutNode {
 			public String _name;
 			
@@ -717,14 +648,6 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
-		public class Rout_corr_0_adRel {
-			public String __type_;
-		
-			public Rout_corr_0_adRel(Value _rout_corr_0_ad) {
-				if(!_rout_corr_0_ad.get("_type_").isNull())
-					this.__type_ = _rout_corr_0_ad.get("_type_").asString();
-			}
-		}
 		public class CNode {
 			public String _name;
 			

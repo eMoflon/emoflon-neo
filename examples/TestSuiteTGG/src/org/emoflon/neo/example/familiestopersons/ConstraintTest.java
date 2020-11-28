@@ -17,7 +17,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_ConsistentSource1(), //
 					api.getModel_ConsistentTarget1(), //
 					api.getRule_ConsistentTriple1().rule());
-			testForConsistency(new FamiliesToPersons_CO_Run("ConsistentSource1", "ConsistentTarget1").runCheckOnly(), 24);
+			testForConsistency(new FamiliesToPersons_CO_Run("ConsistentSource1", "ConsistentTarget1").runCheckOnly(), 4);
 		}
 		
 		@Test
@@ -25,7 +25,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_ConsistentSource1(), //
 					api.getModel_ConsistentTarget1());
 			testForConsistency(new FamiliesToPersons_CC_Run("ConsistentSource1", "ConsistentTarget1").runCorrCreation(),
-					24);
+					4);
 		}
 		
 		//co for inconsistent triple1
@@ -35,7 +35,7 @@ public class ConstraintTest extends ENeoTest{
 					api.getModel_InConsistentTarget1(), //
 					api.getRule_InConsistentTriple1().rule());
 			testForInconsistency(new FamiliesToPersons_CO_Run("ConsistentSource1", "InConsistentTarget1").runCheckOnly(),
-					24, 4);
+					4, 17);
 		}
 		
 		//co for inconsistent triple2
@@ -45,7 +45,7 @@ public class ConstraintTest extends ENeoTest{
 					api.getModel_ConsistentTarget1(), //
 					api.getRule_InConsistentTriple1().rule());
 			testForInconsistency(new FamiliesToPersons_CO_Run("InConsistentSource1", "ConsistentTarget1").runCheckOnly(),
-					24, 4);
+					4, 17);
 		}
 				
 		//co-cc for consistent triple2
@@ -54,7 +54,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_ConsistentSource2(), //
 					api.getModel_ConsistentTarget2(), //
 					api.getRule_ConsistentTriple2().rule());
-			testForConsistency(new FamiliesToPersons_CO_Run("ConsistentSource2", "ConsistentTarget2").runCheckOnly(), 24);
+			testForConsistency(new FamiliesToPersons_CO_Run("ConsistentSource2", "ConsistentTarget2").runCheckOnly(), 4);
 		}
 				
 		@Test
@@ -62,7 +62,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_ConsistentSource2(), //
 					api.getModel_ConsistentTarget2());
 			testForConsistency(new FamiliesToPersons_CC_Run("ConsistentSource2", "ConsistentTarget2").runCorrCreation(),
-					24);
+					4);
 		}
 				
 		//co for inconsistent triple3
@@ -72,7 +72,7 @@ public class ConstraintTest extends ENeoTest{
 					api.getModel_InConsistentTarget1(), //
 					api.getRule_InConsistentTriple1().rule());
 			testForInconsistency(new FamiliesToPersons_CO_Run("ConsistentSource2", "InConsistentTarget1").runCheckOnly(),
-					24, 4);
+					4, 17);
 		}
 				
 		//co for inconsistent triple4
@@ -82,7 +82,7 @@ public class ConstraintTest extends ENeoTest{
 					api.getModel_ConsistentTarget2(), //
 					api.getRule_InConsistentTriple1().rule());
 			testForInconsistency(new FamiliesToPersons_CO_Run("InConsistentSource1", "ConsistentTarget2").runCheckOnly(),
-					24, 4);
+					4, 17);
 		}
 		
 		//co-cc for consistent triple3
@@ -91,7 +91,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_InConsistentSource1(), //
 					api.getModel_InConsistentTarget1(), //
 					api.getRule_InConsistentTriple1().rule());
-			testForConsistency(new FamiliesToPersons_CO_Run("InConsistentSource1", "InConsistentTarget1").runCheckOnly(), 17);
+			testForConsistency(new FamiliesToPersons_CO_Run("InConsistentSource1", "InConsistentTarget1").runCheckOnly(), 4);
 		}
 					
 		@Test
@@ -99,7 +99,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_InConsistentSource1(), //
 					api.getModel_InConsistentTarget1());
 			testForConsistency(new FamiliesToPersons_CC_Run("InConsistentSource1", "InConsistentTarget1").runCorrCreation(),
-					17);
+					4);
 		}
 						
 		//co for inconsistent triple5
@@ -109,7 +109,7 @@ public class ConstraintTest extends ENeoTest{
 					api.getModel_InConsistentTarget2(), //
 					api.getRule_InConsistentTriple2().rule());
 			testForInconsistency(new FamiliesToPersons_CO_Run("InConsistentSource2", "InConsistentTarget2").runCheckOnly(),
-					17, 7);
+					4, 19);
 		}
 		
 		//co-cc for consistent triple4
@@ -118,7 +118,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_ConsistentSource3(), //
 					api.getModel_ConsistentTarget3(), //
 					api.getRule_ConsistentTriple3().rule());
-			testForConsistency(new FamiliesToPersons_CO_Run("ConsistentSource3", "ConsistentTarget3").runCheckOnly(), 17);
+			testForConsistency(new FamiliesToPersons_CO_Run("ConsistentSource3", "ConsistentTarget3").runCheckOnly(), 4);
 		}
 						
 		@Test
@@ -126,7 +126,7 @@ public class ConstraintTest extends ENeoTest{
 			exportTriple(api.getModel_ConsistentSource3(), //
 					api.getModel_ConsistentTarget3());
 			testForConsistency(new FamiliesToPersons_CC_Run("ConsistentSource3", "ConsistentTarget3").runCorrCreation(),
-					17);
+					4);
 		}
 								
 		//co for inconsistent triple6
@@ -136,7 +136,7 @@ public class ConstraintTest extends ENeoTest{
 					api.getModel_InConsistentTarget3(), //
 					api.getRule_InConsistentTriple3().rule());
 			testForInconsistency(new FamiliesToPersons_CO_Run("InConsistentSource3", "InConsistentTarget3").runCheckOnly(),
-					17, 7);
+					4, 19);
 		}
 
 }

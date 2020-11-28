@@ -91,20 +91,15 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple1Data extends NeoData {
 		public final PrNode _pr;
-		public final Pr_corr_0_frRel _pr_corr_0_fr;
 		public final Person1Node _person1;
 		public final Person2Node _person2;
 		public final FrNode _fr;
 		public final Fm1Node _fm1;
-		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
 		public final Fm2Node _fm2;
-		public final Fm2_corr_0_person2Rel _fm2_corr_0_person2;
 		
 		public ConsistentTriple1Data(Record data) {
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_corr_0_fr = data.get("pr_corr_0_fr");
-			this._pr_corr_0_fr = new Pr_corr_0_frRel(_pr_corr_0_fr);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _person2 = data.get("person2");
@@ -113,12 +108,8 @@ public class API_F2PModelForTesting {
 			this._fr = new FrNode(_fr);
 			var _fm1 = data.get("fm1");
 			this._fm1 = new Fm1Node(_fm1);
-			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
-			this._fm1_corr_0_person1 = new Fm1_corr_0_person1Rel(_fm1_corr_0_person1);
 			var _fm2 = data.get("fm2");
 			this._fm2 = new Fm2Node(_fm2);
-			var _fm2_corr_0_person2 = data.get("fm2_corr_0_person2");
-			this._fm2_corr_0_person2 = new Fm2_corr_0_person2Rel(_fm2_corr_0_person2);
 		}
 		
 		
@@ -128,14 +119,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_corr_0_frRel {
-			public String __type_;
-		
-			public Pr_corr_0_frRel(Value _pr_corr_0_fr) {
-				if(!_pr_corr_0_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_0_fr.get("_type_").asString();
-			}
-		}
 		public class Person1Node {
 			public String _name;
 			public LocalDate _birthday;
@@ -175,14 +158,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fm1_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm1_corr_0_person1Rel(Value _fm1_corr_0_person1) {
-				if(!_fm1_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm1_corr_0_person1.get("_type_").asString();
-			}
-		}
 		public class Fm2Node {
 			public String _name;
 			
@@ -192,14 +167,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fm2_corr_0_person2Rel {
-			public String __type_;
-		
-			public Fm2_corr_0_person2Rel(Value _fm2_corr_0_person2) {
-				if(!_fm2_corr_0_person2.get("_type_").isNull())
-					this.__type_ = _fm2_corr_0_person2.get("_type_").asString();
-			}
-		}
 	}
 	
 	public class ConsistentTriple1CoData extends NeoData {
@@ -420,25 +387,19 @@ public class API_F2PModelForTesting {
 	
 	public class InConsistentTriple1Data extends NeoData {
 		public final PrNode _pr;
-		public final Pr_corr_0_frRel _pr_corr_0_fr;
 		public final Person1Node _person1;
 		public final FrNode _fr;
 		public final Fm1Node _fm1;
-		public final Fm1_corr_0_person1Rel _fm1_corr_0_person1;
 		
 		public InConsistentTriple1Data(Record data) {
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
-			var _pr_corr_0_fr = data.get("pr_corr_0_fr");
-			this._pr_corr_0_fr = new Pr_corr_0_frRel(_pr_corr_0_fr);
 			var _person1 = data.get("person1");
 			this._person1 = new Person1Node(_person1);
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
 			var _fm1 = data.get("fm1");
 			this._fm1 = new Fm1Node(_fm1);
-			var _fm1_corr_0_person1 = data.get("fm1_corr_0_person1");
-			this._fm1_corr_0_person1 = new Fm1_corr_0_person1Rel(_fm1_corr_0_person1);
 		}
 		
 		
@@ -448,14 +409,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Pr_corr_0_frRel {
-			public String __type_;
-		
-			public Pr_corr_0_frRel(Value _pr_corr_0_fr) {
-				if(!_pr_corr_0_fr.get("_type_").isNull())
-					this.__type_ = _pr_corr_0_fr.get("_type_").asString();
-			}
-		}
 		public class Person1Node {
 			public String _name;
 			public LocalDate _birthday;
@@ -483,14 +436,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fm1_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm1_corr_0_person1Rel(Value _fm1_corr_0_person1) {
-				if(!_fm1_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm1_corr_0_person1.get("_type_").asString();
-			}
-		}
 	}
 	
 	public class InConsistentTriple1CoData extends NeoData {
@@ -661,11 +606,8 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple2Data extends NeoData {
 		public final FrNode _fr;
-		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final FmNode _fm;
-		public final Fm_corr_0_person1Rel _fm_corr_0_person1;
 		public final Fm1Node _fm1;
-		public final Fm1_corr_0_person2Rel _fm1_corr_0_person2;
 		public final PrNode _pr;
 		public final Person1Node _person1;
 		public final Person2Node _person2;
@@ -673,16 +615,10 @@ public class API_F2PModelForTesting {
 		public ConsistentTriple2Data(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
-			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _fm = data.get("fm");
 			this._fm = new FmNode(_fm);
-			var _fm_corr_0_person1 = data.get("fm_corr_0_person1");
-			this._fm_corr_0_person1 = new Fm_corr_0_person1Rel(_fm_corr_0_person1);
 			var _fm1 = data.get("fm1");
 			this._fm1 = new Fm1Node(_fm1);
-			var _fm1_corr_0_person2 = data.get("fm1_corr_0_person2");
-			this._fm1_corr_0_person2 = new Fm1_corr_0_person2Rel(_fm1_corr_0_person2);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
 			var _person1 = data.get("person1");
@@ -698,14 +634,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_corr_0_prRel {
-			public String __type_;
-		
-			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
-				if(!_fr_corr_0_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
-			}
-		}
 		public class FmNode {
 			public String _name;
 			
@@ -715,14 +643,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fm_corr_0_person1Rel {
-			public String __type_;
-		
-			public Fm_corr_0_person1Rel(Value _fm_corr_0_person1) {
-				if(!_fm_corr_0_person1.get("_type_").isNull())
-					this.__type_ = _fm_corr_0_person1.get("_type_").asString();
-			}
-		}
 		public class Fm1Node {
 			public String _name;
 			
@@ -732,14 +652,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fm1_corr_0_person2Rel {
-			public String __type_;
-		
-			public Fm1_corr_0_person2Rel(Value _fm1_corr_0_person2) {
-				if(!_fm1_corr_0_person2.get("_type_").isNull())
-					this.__type_ = _fm1_corr_0_person2.get("_type_").asString();
-			}
-		}
 		public class PrNode {
 			
 			public PrNode(Value _pr) {
@@ -997,11 +909,8 @@ public class API_F2PModelForTesting {
 	
 	public class InConsistentTriple2Data extends NeoData {
 		public final FrNode _fr;
-		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final F1Node _f1;
-		public final F1_corr_0_pRel _f1_corr_0_p;
 		public final F2Node _f2;
-		public final F2_corr_0_p1Rel _f2_corr_0_p1;
 		public final PrNode _pr;
 		public final PNode _p;
 		public final P1Node _p1;
@@ -1009,16 +918,10 @@ public class API_F2PModelForTesting {
 		public InConsistentTriple2Data(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
-			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _f1 = data.get("f1");
 			this._f1 = new F1Node(_f1);
-			var _f1_corr_0_p = data.get("f1_corr_0_p");
-			this._f1_corr_0_p = new F1_corr_0_pRel(_f1_corr_0_p);
 			var _f2 = data.get("f2");
 			this._f2 = new F2Node(_f2);
-			var _f2_corr_0_p1 = data.get("f2_corr_0_p1");
-			this._f2_corr_0_p1 = new F2_corr_0_p1Rel(_f2_corr_0_p1);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
 			var _p = data.get("p");
@@ -1034,14 +937,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_corr_0_prRel {
-			public String __type_;
-		
-			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
-				if(!_fr_corr_0_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
-			}
-		}
 		public class F1Node {
 			public String _name;
 			
@@ -1051,14 +946,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class F1_corr_0_pRel {
-			public String __type_;
-		
-			public F1_corr_0_pRel(Value _f1_corr_0_p) {
-				if(!_f1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _f1_corr_0_p.get("_type_").asString();
-			}
-		}
 		public class F2Node {
 			public String _name;
 			
@@ -1068,14 +955,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class F2_corr_0_p1Rel {
-			public String __type_;
-		
-			public F2_corr_0_p1Rel(Value _f2_corr_0_p1) {
-				if(!_f2_corr_0_p1.get("_type_").isNull())
-					this.__type_ = _f2_corr_0_p1.get("_type_").asString();
-			}
-		}
 		public class PrNode {
 			
 			public PrNode(Value _pr) {
@@ -1331,21 +1210,15 @@ public class API_F2PModelForTesting {
 	
 	public class ConsistentTriple3Data extends NeoData {
 		public final FrNode _fr;
-		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final M1Node _m1;
-		public final M1_corr_0_pRel _m1_corr_0_p;
 		public final PrNode _pr;
 		public final PNode _p;
 		
 		public ConsistentTriple3Data(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
-			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _m1 = data.get("m1");
 			this._m1 = new M1Node(_m1);
-			var _m1_corr_0_p = data.get("m1_corr_0_p");
-			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
 			var _p = data.get("p");
@@ -1359,14 +1232,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_corr_0_prRel {
-			public String __type_;
-		
-			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
-				if(!_fr_corr_0_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
-			}
-		}
 		public class M1Node {
 			public String _name;
 			
@@ -1376,14 +1241,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class M1_corr_0_pRel {
-			public String __type_;
-		
-			public M1_corr_0_pRel(Value _m1_corr_0_p) {
-				if(!_m1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _m1_corr_0_p.get("_type_").asString();
-			}
-		}
 		public class PrNode {
 			
 			public PrNode(Value _pr) {
@@ -1567,11 +1424,8 @@ public class API_F2PModelForTesting {
 	
 	public class InConsistentTriple3Data extends NeoData {
 		public final FrNode _fr;
-		public final Fr_corr_0_prRel _fr_corr_0_pr;
 		public final M1Node _m1;
-		public final M1_corr_0_pRel _m1_corr_0_p;
 		public final M2Node _m2;
-		public final M2_corr_0_p1Rel _m2_corr_0_p1;
 		public final PrNode _pr;
 		public final PNode _p;
 		public final P1Node _p1;
@@ -1579,16 +1433,10 @@ public class API_F2PModelForTesting {
 		public InConsistentTriple3Data(Record data) {
 			var _fr = data.get("fr");
 			this._fr = new FrNode(_fr);
-			var _fr_corr_0_pr = data.get("fr_corr_0_pr");
-			this._fr_corr_0_pr = new Fr_corr_0_prRel(_fr_corr_0_pr);
 			var _m1 = data.get("m1");
 			this._m1 = new M1Node(_m1);
-			var _m1_corr_0_p = data.get("m1_corr_0_p");
-			this._m1_corr_0_p = new M1_corr_0_pRel(_m1_corr_0_p);
 			var _m2 = data.get("m2");
 			this._m2 = new M2Node(_m2);
-			var _m2_corr_0_p1 = data.get("m2_corr_0_p1");
-			this._m2_corr_0_p1 = new M2_corr_0_p1Rel(_m2_corr_0_p1);
 			var _pr = data.get("pr");
 			this._pr = new PrNode(_pr);
 			var _p = data.get("p");
@@ -1604,14 +1452,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class Fr_corr_0_prRel {
-			public String __type_;
-		
-			public Fr_corr_0_prRel(Value _fr_corr_0_pr) {
-				if(!_fr_corr_0_pr.get("_type_").isNull())
-					this.__type_ = _fr_corr_0_pr.get("_type_").asString();
-			}
-		}
 		public class M1Node {
 			public String _name;
 			
@@ -1621,14 +1461,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class M1_corr_0_pRel {
-			public String __type_;
-		
-			public M1_corr_0_pRel(Value _m1_corr_0_p) {
-				if(!_m1_corr_0_p.get("_type_").isNull())
-					this.__type_ = _m1_corr_0_p.get("_type_").asString();
-			}
-		}
 		public class M2Node {
 			public String _name;
 			
@@ -1638,14 +1470,6 @@ public class API_F2PModelForTesting {
 			}
 		}
 		
-		public class M2_corr_0_p1Rel {
-			public String __type_;
-		
-			public M2_corr_0_p1Rel(Value _m2_corr_0_p1) {
-				if(!_m2_corr_0_p1.get("_type_").isNull())
-					this.__type_ = _m2_corr_0_p1.get("_type_").asString();
-			}
-		}
 		public class PrNode {
 			
 			public PrNode(Value _pr) {

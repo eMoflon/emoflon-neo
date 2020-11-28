@@ -37,8 +37,8 @@ model ConsistentTarget1{
 
 rule ConsistentTriple1{
 	pr: PersonRegister{
-		-corr->fr {
-			._type_ : "FamiliesToPersons"
+		++ -corr->fr {
+			._type_ := "FamiliesToPersons"
 		}
 	}
 	
@@ -55,15 +55,15 @@ rule ConsistentTriple1{
 	
 	fm1: FamilyMember{
 		.name : "Robert"
-		-corr->person1{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->person1{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
 	fm2: FamilyMember{
 		.name : "John"
-		-corr->person2{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->person2{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 }
@@ -81,8 +81,8 @@ model InConsistentTarget1{
 
 rule InConsistentTriple1{
 	pr: PersonRegister{
-		-corr->fr {
-			._type_ : "FamiliesToPersons"
+		++ -corr->fr {
+			._type_ := "FamiliesToPersons"
 		}
 	}
 	
@@ -95,8 +95,8 @@ rule InConsistentTriple1{
 	
 	fm1: FamilyMember{
 		.name : "Robert"
-		-corr->person1{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->person1{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 }
@@ -152,22 +152,22 @@ model ConsistentTarget2{
 
 rule ConsistentTriple2{
 	fr: FamilyRegister{
-		-corr->pr{
-			._type_ : "FamiliesToPersons"
+		++ -corr->pr{
+			._type_ := "FamiliesToPersons"
 		}
 	}
 	
 	fm: FamilyMember{
 		.name : "Robert"
-		-corr->person1{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->person1{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
 	fm1: FamilyMember{
 		.name : "Martha"
-		-corr->person2{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->person2{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
@@ -221,22 +221,22 @@ model InConsistentTarget2{
 
 rule InConsistentTriple2{
 	fr: FamilyRegister{
-		-corr->pr{
-			._type_ : "FamiliesToPersons"
+		++ -corr->pr{
+			._type_ := "FamiliesToPersons"
 		}
 	}
 	
 	f1: FamilyMember{
 		.name : "Robert"
-		-corr->p{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->p{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
 	f2: FamilyMember{
 		.name : "Keith"
-		-corr->p1{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->p1{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
@@ -278,15 +278,15 @@ model ConsistentTarget3{
 
 rule ConsistentTriple3{
 	fr: FamilyRegister{
-		-corr->pr{
-			._type_ : "FamiliesToPersons"
+		++ -corr->pr{
+			._type_ := "FamiliesToPersons"
 		}
 	}
 	
 	m1: FamilyMember{
 		.name : "Martha"
-		-corr->p{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->p{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
@@ -335,22 +335,22 @@ model InConsistentTarget3{
 
 rule InConsistentTriple3{
 	fr: FamilyRegister{
-		-corr->pr{
-			._type_ : "FamiliesToPersons"
+		++ -corr->pr{
+			._type_ := "FamiliesToPersons"
 		}
 	}
 	
 	m1: FamilyMember{
 		.name : "Martha"
-		-corr->p{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->p{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
 	m2: FamilyMember{
 		.name : "Vanessa"
-		-corr->p1{
-			._type_ : "FamilyMemberToPerson"
+		++ -corr->p1{
+			._type_ := "FamilyMemberToPerson"
 		}
 	}
 	
