@@ -4,17 +4,11 @@ import java.util.Collection;
 
 import org.emoflon.neo.cypher.factories.NeoPatternFactory;
 import org.emoflon.neo.cypher.models.IBuilder;
-import org.emoflon.neo.cypher.patterns.NeoBasicPattern;
-import org.emoflon.neo.cypher.patterns.NeoImplicationPattern;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPattern;
 import org.emoflon.neo.emsl.eMSL.Constraint;
 import org.emoflon.neo.emsl.eMSL.Implication;
-import org.emoflon.neo.emsl.eMSL.NegativeConstraint;
-import org.emoflon.neo.emsl.eMSL.PositiveConstraint;
-import org.emoflon.neo.engine.api.constraints.INegativeConstraint;
 import org.emoflon.neo.engine.api.constraints.IPositiveConstraint;
-import org.emoflon.neo.engine.api.patterns.IPattern;
 
 public class NeoPositiveConstraint extends NeoConstraint implements IPositiveConstraint<NeoMatch> {
 	

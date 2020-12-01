@@ -4,7 +4,7 @@ import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
 //Consistent Source - Constraint and rules
 model ConsistentSource {
 	fb: FacebookLanguage.Network{
-		.description : "Fb Network"
+		.description : "Network"
 		-friendships-> fr
 		-users-> f1
 		-users->f2
@@ -27,7 +27,7 @@ model ConsistentSource {
 //Consistent Target - Constraint and rules
 model ConsistentTarget {
    	in : InstagramLanguage.Network {
-		.description : "Insta network"
+		.description : "Network"
 		 -users-> i1
 		 -users-> i2
 	}
@@ -46,28 +46,28 @@ model ConsistentTarget {
 //Consistent triple - Rules
 rule ConsistentTriple{
 	fb: FacebookLanguage.Network{
-		.description : "Fb Network"
-			-corr-> in{
-			._type_ : "NetworkToNetwork"
+		.description : "Network"
+			++ -corr-> in{
+			._type_ := "NetworkToNetwork"
 		}
+	}
+	
+	in : InstagramLanguage.Network {
+		.description : "Network"
 	}
 	
 	f1: FacebookLanguage.User{
 		.name : "Monica"
-		-corr->i1{
-			._type_ : "UserToUser"
+		++ -corr->i1{
+			._type_ := "UserToUser"
 		}
 	}
 	
 	f2: FacebookLanguage.User{
 		.name : "Rachel"
-		-corr->i2{
-			._type_ : "UserToUser"
+		++ -corr->i2{
+			._type_ := "UserToUser"
 		}
-	}
-	
-	in : InstagramLanguage.Network {
-		.description : "Insta network"
 	}
 	
 	i1 : InstagramLanguage.User{
@@ -82,7 +82,7 @@ rule ConsistentTriple{
 //InConsistent Target - Violating Rule application
 model InConsistentTarget1 {
    	in : InstagramLanguage.Network {
-		.description : "Insta network"
+		.description : "Network"
 		 -users-> i1
 		 -users-> i2
 	}
@@ -100,7 +100,7 @@ model InConsistentTarget1 {
 //Inconsistent Source - Violating Positive constraint
 model InConsistentSource1 {
 	fb: FacebookLanguage.Network{
-		.description : "Fb Network"
+		.description : "Network"
 		-users-> f1
 		-users->f2
 	}
@@ -117,7 +117,7 @@ model InConsistentSource1 {
 //Inconsistent source - Violating Negative constraint
 model InConsistentSource2 {
 	fb: FacebookLanguage.Network{
-		.description : "Fb Network"
+		.description : "Network"
 		-friendships-> fr1
 		-friendships->fr2
 		-users-> f1

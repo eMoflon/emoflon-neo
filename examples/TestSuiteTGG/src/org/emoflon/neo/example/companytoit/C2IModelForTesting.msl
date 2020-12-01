@@ -20,7 +20,7 @@ model ConsistentSource1{
 model ConsistentTarget1{
 	it : IT {
 		-network-> network
-		.name : "Faunhofer"
+		.name : "Fraunhofer"
 	}
 	
 	network : Network {
@@ -40,23 +40,23 @@ model ConsistentTarget1{
 
 rule ConsistentTriple1{
 	it : IT {
-		.name : "Faunhofer"
-		-corr-> c{
-			._type_ : "CompanyToIT"
+		.name : "Fraunhofer"
+		++ -corr-> c{
+			._type_ := "CompanyToIT"
 		}
 	}
 	
 	l1 : Laptop{
 		.name : "Laptop1"
-		-corr-> e1{
-			._type_ : "EmployeeToLaptop"
+		++ -corr-> e1{
+			._type_ := "EmployeeToLaptop"
 		}
 	}
 	
 	l2 : Laptop{
 		.name : "Laptop2"
-		-corr-> e2{
-			._type_ : "EmployeeToLaptop"
+		++ -corr-> e2{
+			._type_ := "EmployeeToLaptop"
 		}
 	}
 	
@@ -75,8 +75,8 @@ rule ConsistentTriple1{
 
 model InConsistentTarget1{
 	it : IT {
+		.name : "Fraunhofer"
 		-network-> network
-		.name : "Faunhofer"
 	}
 	
 	network : Network {
@@ -91,16 +91,16 @@ model InConsistentTarget1{
 
 rule InConsistentTriple1{
 	it : IT {
-		.name : "Faunhofer"
-		-corr-> c{
-			._type_ : "CompanyToIT"
+		.name : "Fraunhofer"
+		++ -corr-> c{
+			._type_ := "CompanyToIT"
 		}
 	}
 	
 	l1 : Laptop{
 		.name : "Laptop1"
-		-corr-> e1{
-			._type_ : "EmployeeToLaptop"
+		++ -corr-> e1{
+			._type_ := "EmployeeToLaptop"
 		}
 	}
 	
@@ -147,22 +147,22 @@ model ConsistentTarget2{
 	}
 	
 	net: Network{
-		.name : "Network1"
+		.name : "AnyNetwork"
 	}
 }
 
 rule ConsistentTriple2{
 	it: IT{
 		.name : "Fraunhofer"
-		-corr->c{
-			._type_ : "CompanyToIT"
+		++ -corr->c{
+			._type_ := "CompanyToIT"
 		}
 	}
 	
 	rout: Router{
 		.name : "Router1"
-		-corr->ad{
-			._type_ : "AdminToRouter"
+		++ -corr->ad{
+			._type_ := "AdminToRouter"
 		}
 	}
 	
@@ -188,7 +188,7 @@ model InConsistentTarget2{
 	}
 	
 	net: Network{
-		.name : "Network1"
+		.name : "AnyNetwork"
 	}
 	
 	net1: Network{

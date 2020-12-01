@@ -319,64 +319,84 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		var premise = positiveConstraints.stream().flatMap(pr -> pr.getPremise().stream());
 		var conclusion = positiveConstraints.stream().flatMap(pr -> pr.getConclusion().stream());
 		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
+		
 		premise.forEach(p-> {
-			var elements = extractNodeIDs(p.getPattern().getContextNodeLabels(), p);
-			elements.addAll(extractRelIDs(p.getPattern().getContextRelLabels(), p));
+			var elementsP = extractNodeIDs(p.getPattern().getContextNodeLabels(), p);
+			elementsP.addAll(extractRelIDs(p.getPattern().getContextRelLabels(), p));
 
 			var auxVariablesP = new ArrayList<String>();
 			var elementsThatCanNeverBeMarkedP = new ArrayList<Long>();
 			
-			elements.forEach(elt -> {
-				var creatingMatches = elementToCreatingMatches.getOrDefault(elt, Collections.emptySet());
+			elementsP.forEach(eltP -> {
+				var creatingMatchesP = elementToCreatingMatches.getOrDefault(eltP, Collections.emptySet());
 
-				if (!creatingMatches.isEmpty()) {
+				if (!creatingMatchesP.isEmpty()) {
 					//d2=>aux2
 					var auxVarForEltP = "aux" + auxVariableCounter++;
 					auxVariablesP.add(auxVarForEltP);
 
 					//!aux2=>!d2
 					ilpProblem.addNegativeImplication(Stream.of(auxVarForEltP),
-							creatingMatches.stream().map(this::varNameFor),
-							registerConstraint("AUX_" + p.getPattern().getName() + "_" + elt));
+							creatingMatchesP.stream().map(this::varNameFor),
+							registerConstraint("AUX_P" + p.getPattern().getName() + "_" + eltP));
 					
 					//--------------------------------------------
-					conclusion.forEach(c-> {
-						var elements1 = extractNodeIDs(c.getPattern().getContextNodeLabels(), c);
-						elements1.addAll(extractRelIDs(c.getPattern().getContextRelLabels(), c));
-
-						var auxVariablesC = new ArrayList<String>();
-						var elementsThatCanNeverBeMarkedC = new ArrayList<Long>();
-						
-						elements1.forEach(elt1 -> {
-							var creatingMatches1 = elementToCreatingMatches.getOrDefault(elt1, Collections.emptySet());
-
-							if (!creatingMatches1.isEmpty()) {
-								//c10=>aux2
-								var auxVarForEltC = "aux" + auxVariableCounter++;
-								auxVariablesC.add(auxVarForEltC);
-								//!c10=>!aux2
-								ilpProblem.addNegativeImplication(creatingMatches1.stream().map(this::varNameFor),
-										Stream.of(auxVarForEltC),
-										registerConstraint("AUX_" + c.getPattern().getName() + "_" + elt1));
-								//p=>c10 v c11
-								ilpProblem.addImplication(
-										Stream.of(auxVarForEltP),
-										Stream.of(auxVarForEltC),
-										registerConstraint("AUX_" + c.getPattern().getName() + "_" + elt1 + "AUX_" + p.getPattern().getName() + "_" + elt));
-							} else {
-								elementsThatCanNeverBeMarkedC.add(elt1);
-							}
-						});
-					});
-					
+										
 					//------------------------------------------------
 				} else {
-					elementsThatCanNeverBeMarkedP.add(elt);
+					elementsThatCanNeverBeMarkedP.add(eltP);
 				}
 			});
-		});
-		
-}
+			
+			if (elementsThatCanNeverBeMarkedP.isEmpty()) {
+				
+				conclusion.forEach(c-> {
+					var elementsC = extractNodeIDs(c.getPattern().getContextNodeLabels(), c);
+					elementsC.addAll(extractRelIDs(c.getPattern().getContextRelLabels(), c));
+
+					var auxVariablesC = new ArrayList<String>();
+					var elementsThatCanNeverBeMarkedC = new ArrayList<Long>();
+					
+					elementsC.forEach(eltC -> {
+						var creatingMatchesC = elementToCreatingMatches.getOrDefault(eltC, Collections.emptySet());
+
+						if (!creatingMatchesC.isEmpty()) {
+							//c10=>aux2
+							var auxVarForEltC = "aux" + auxVariableCounter++;
+							auxVariablesC.add(auxVarForEltC);
+							
+							//!c10=> !aux2 ^ !aux3 ^...
+							ilpProblem.addNegativeImplication(
+									creatingMatchesC.stream().map(this::varNameFor),
+									Stream.of(auxVarForEltC),
+									registerConstraint("AUX_C" + c.getPattern().getName() + "_" + eltC));
+							
+//							//p9=>c10 v c11
+//							ilpProblem.addImplication(
+//									auxVariablesP.stream(),
+//									auxVariablesC.stream(),
+//									registerConstraint("AUX_P" + p.getPattern().getName() + "_" + auxVariablesP.size() + "AUX_C" + c.getPattern().getName() + "_" + eltC));
+
+							
+						} else {
+							elementsThatCanNeverBeMarkedC.add(eltC);
+						}
+						
+					});
+					
+					if (elementsThatCanNeverBeMarkedC.isEmpty()) {
+					    //p9=>c10 v c11
+						ilpProblem.addImplication( 
+								auxVariablesP.stream(),
+								auxVariablesC.stream(),
+								registerConstraint("AUX_P" + p.getPattern().getName() + "_" + auxVariablesP.size() + "AUX_C" + c.getPattern().getName() + "_" + auxVariablesC.size()));
+
+					}
+			});			
+
+			}
+    	});
+    }
 
 	public Collection<Long> determineConsistentElements() throws Exception {
 		if (consistentElements == null) {
