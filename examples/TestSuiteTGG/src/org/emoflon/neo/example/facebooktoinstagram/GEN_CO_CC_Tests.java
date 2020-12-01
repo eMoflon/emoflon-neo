@@ -1,7 +1,7 @@
 package org.emoflon.neo.example.facebooktoinstagram;
 
-import static Transformations.run.FacebookToInstagramGrammar_GEN_Run.SRC_MODEL_NAME;
-import static Transformations.run.FacebookToInstagramGrammar_GEN_Run.TRG_MODEL_NAME;
+import static Transformations.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static Transformations.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -25,15 +25,15 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramGrammar_CC_Run;
-import Transformations.run.FacebookToInstagramGrammar_CO_Run;
-import Transformations.run.FacebookToInstagramGrammar_GEN_Run;
+import Transformations.run.FacebookToInstagramFASE_CC_Run;
+import Transformations.run.FacebookToInstagramFASE_CO_Run;
+import Transformations.run.FacebookToInstagramFASE_GEN_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		var testCOApp = new FacebookToInstagramGrammar_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testCCApp = new FacebookToInstagramGrammar_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCOApp = new FacebookToInstagramFASE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCCApp = new FacebookToInstagramFASE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		var testGenApp = new FacebookToInstagram_GEN_TEST(configurator);
 
 		// Step 1. Run GEN to produce a triple
@@ -61,40 +61,40 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	@Test
 	public void testOnlyAxioms() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 1);
+			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 1);
 		});
 	}
 
 	@Test
 	public void testOneOfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 1);
+			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 1)
+					.setMax(API_Transformations.FacebookToInstagramFASE__UserToUser, 1)
+					.setMax(API_Transformations.FacebookToInstagramFASE__RequestFriendship, 1)
+					.setMax(API_Transformations.FacebookToInstagramFASE__AcceptFriendship, 1);
 		});
 	}
 
 	@Test
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__RequestFriendship, 10)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__AcceptFriendship, 10);
+			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 10)
+					.setMax(API_Transformations.FacebookToInstagramFASE__UserToUser, 10)
+					.setMax(API_Transformations.FacebookToInstagramFASE__RequestFriendship, 10)
+					.setMax(API_Transformations.FacebookToInstagramFASE__AcceptFriendship, 10);
 		});
 	}
 
 	@Test
 	public void tryLotsOfUsers() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramGrammar__NetworkToNetwork, 1)
-					.setMax(API_Transformations.FacebookToInstagramGrammar__UserToUser, 100);
+			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 1)
+					.setMax(API_Transformations.FacebookToInstagramFASE__UserToUser, 100);
 		});
 	}
 }
 
-class FacebookToInstagram_GEN_TEST extends FacebookToInstagramGrammar_GEN_Run {
+class FacebookToInstagram_GEN_TEST extends FacebookToInstagramFASE_GEN_Run {
 	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
 
 	public FacebookToInstagram_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
@@ -104,7 +104,7 @@ class FacebookToInstagram_GEN_TEST extends FacebookToInstagramGrammar_GEN_Run {
 
 	@Override
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var allRules = new API_FacebookToInstagramGrammar_GEN(builder).getAllRulesForFacebookToInstagramGrammar_GEN();
+		var allRules = new API_FacebookToInstagramFASE_GEN(builder).getAllRulesForFacebookToInstagramFASE_GEN();
 		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
 

@@ -66,6 +66,7 @@ public class JavaToDoc_FWD_OPT_Run {
 	}
 	
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_JavaToDoc(builder);
 		var genAPI = new API_JavaToDoc_GEN(builder);
 		var fwd_optAPI = new API_JavaToDoc_FWD_OPT(builder);
 		var genRules = genAPI.getAllRulesForJavaToDoc_GEN();
@@ -75,7 +76,7 @@ public class JavaToDoc_FWD_OPT_Run {
 				builder, //
 				genRules, //
 				fwd_optAPI.getAllRulesForJavaToDoc_FWD_OPT(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfJavaToDoc(), //
 				srcModelName, //
 				trgModelName//
 		);
@@ -96,9 +97,5 @@ public class JavaToDoc_FWD_OPT_Run {
 	public ForwardTransformationOperationalStrategy runForwardTransformation() throws Exception {
 		run();
 		return forwardTransformation;
-	}
-	
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		return Collections.emptyList();
 	}
 }

@@ -25,15 +25,15 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+import org.emoflon.neo.engine.modules.updatepolicies.ForwardTransformationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 @SuppressWarnings("unused")
 public class JavaToDocSLE_FWD_OPT_Run {
-	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
-	private CorrCreationOperationalStrategy forwardTransformation;
+	private static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	private ForwardTransformationOperationalStrategy forwardTransformation;
 	protected static final Logger logger = Logger.getLogger(JavaToDocSLE_FWD_OPT_Run.class);
 	protected String srcModelName;
 	protected String trgModelName;
@@ -48,7 +48,12 @@ public class JavaToDocSLE_FWD_OPT_Run {
 		this.srcModelName = srcModelName;
 		this.trgModelName = trgModelName;
 	}
-
+	
+	public JavaToDocSLE_FWD_OPT_Run(String srcModelName, String trgModelName, SupportedILPSolver solver) {
+		this(srcModelName, trgModelName);
+		this.solver = solver;
+	}
+	
 	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 	
@@ -66,7 +71,7 @@ public class JavaToDocSLE_FWD_OPT_Run {
 		var fwd_optAPI = new API_JavaToDocSLE_FWD_OPT(builder);
 		var genRules = genAPI.getAllRulesForJavaToDocSLE_GEN();
 		var analyser = new TripleRuleAnalyser(new API_JavaToDocSLE(builder).getTripleRulesOfJavaToDocSLE());
-		forwardTransformation = new CorrCreationOperationalStrategy(//
+		forwardTransformation = new ForwardTransformationOperationalStrategy(//
 				solver, //
 				builder, //
 				genRules, //
@@ -89,7 +94,7 @@ public class JavaToDocSLE_FWD_OPT_Run {
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
 	
-	public CorrCreationOperationalStrategy runForwardTransformation() throws Exception {
+	public ForwardTransformationOperationalStrategy runForwardTransformation() throws Exception {
 		run();
 		return forwardTransformation;
 	}

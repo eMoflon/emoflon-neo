@@ -32,7 +32,7 @@ import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 @SuppressWarnings("unused")
 public class JavaToDocSLE_CC_Run {
-	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	private static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 	private CorrCreationOperationalStrategy corrCreation;
 	protected static final Logger logger = Logger.getLogger(JavaToDocSLE_CC_Run.class);
 	protected String srcModelName;
@@ -48,7 +48,12 @@ public class JavaToDocSLE_CC_Run {
 		this.srcModelName = srcModelName;
 		this.trgModelName = trgModelName;
 	}
-
+	
+	public JavaToDocSLE_CC_Run(String srcModelName, String trgModelName, SupportedILPSolver solver) {
+		this(srcModelName, trgModelName);
+		this.solver = solver;
+	}
+	
 	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 	

@@ -66,6 +66,7 @@ public class JavaToDoc_CC_Run {
 	}
 	
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_JavaToDoc(builder);
 		var genAPI = new API_JavaToDoc_GEN(builder);
 		var ccAPI = new API_JavaToDoc_CC(builder);
 		var genRules = genAPI.getAllRulesForJavaToDoc_GEN();
@@ -75,7 +76,7 @@ public class JavaToDoc_CC_Run {
 				builder, //
 				genRules, //
 				ccAPI.getAllRulesForJavaToDoc_CC(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfJavaToDoc(), //
 				srcModelName, //
 				trgModelName//
 		);
@@ -92,13 +93,9 @@ public class JavaToDoc_CC_Run {
 				new ModelNameValueGenerator(srcModelName, trgModelName), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
-	
+			
 	public CorrCreationOperationalStrategy runCorrCreation() throws Exception {
 		run();
 		return corrCreation;
-	}
-	
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		return Collections.emptyList();
 	}
 }

@@ -25,15 +25,15 @@ import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
 import org.emoflon.neo.engine.modules.ruleschedulers.BWD_OPTRuleScheduler;
 import org.emoflon.neo.engine.modules.startup.NoOpStartup;
 import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
-import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
+import org.emoflon.neo.engine.modules.updatepolicies.BackwardTransformationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 @SuppressWarnings("unused")
 public class JavaToDocSLE_BWD_OPT_Run {
-	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
-	private CorrCreationOperationalStrategy backwardTransformation;
+	private static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	private BackwardTransformationOperationalStrategy backwardTransformation;
 	protected static final Logger logger = Logger.getLogger(JavaToDocSLE_BWD_OPT_Run.class);
 	protected String srcModelName;
 	protected String trgModelName;
@@ -48,7 +48,12 @@ public class JavaToDocSLE_BWD_OPT_Run {
 		this.srcModelName = srcModelName;
 		this.trgModelName = trgModelName;
 	}
-
+	
+	public JavaToDocSLE_BWD_OPT_Run(String srcModelName, String trgModelName, SupportedILPSolver solver) {
+		this(srcModelName, trgModelName);
+		this.solver = solver;
+	}
+	
 	public void run() throws Exception {
 		try (var builder = API_Common.createBuilder()) {
 	
@@ -66,7 +71,7 @@ public class JavaToDocSLE_BWD_OPT_Run {
 		var bwd_optAPI = new API_JavaToDocSLE_BWD_OPT(builder);
 		var genRules = genAPI.getAllRulesForJavaToDocSLE_GEN();
 		var analyser = new TripleRuleAnalyser(new API_JavaToDocSLE(builder).getTripleRulesOfJavaToDocSLE());
-		backwardTransformation = new CorrCreationOperationalStrategy(//
+		backwardTransformation = new BackwardTransformationOperationalStrategy(//
 				solver, //
 				builder, //
 				genRules, //
@@ -88,8 +93,7 @@ public class JavaToDocSLE_BWD_OPT_Run {
 				new ModelNameValueGenerator(srcModelName, trgModelName), //
 				List.of(new LoremIpsumStringValueGenerator()));
 	}
-	
-	public CorrCreationOperationalStrategy runBackwardTransformation() throws Exception {
+	public BackwardTransformationOperationalStrategy runBackwardTransformation() throws Exception {
 		run();
 		return backwardTransformation;
 	}

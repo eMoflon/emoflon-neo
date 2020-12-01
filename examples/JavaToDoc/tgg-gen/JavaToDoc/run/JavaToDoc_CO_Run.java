@@ -66,6 +66,7 @@ public class JavaToDoc_CO_Run {
 	}
 	
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_JavaToDoc(builder);
 		var genAPI = new API_JavaToDoc_GEN(builder);
 		var coAPI = new API_JavaToDoc_CO(builder);
 		var analyser = new TripleRuleAnalyser(new API_JavaToDoc(builder).getTripleRulesOfJavaToDoc());
@@ -73,7 +74,7 @@ public class JavaToDoc_CO_Run {
 				solver, //
 				genAPI.getAllRulesForJavaToDoc_GEN(), //
 				coAPI.getAllRulesForJavaToDoc_CO(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfJavaToDoc(), //
 				builder, //
 				srcModelName, //
 				trgModelName//
@@ -95,9 +96,5 @@ public class JavaToDoc_CO_Run {
 	public CheckOnlyOperationalStrategy runCheckOnly() throws Exception {
 		run();
 		return checkOnly;
-	}
-	
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		return Collections.emptyList();
 	}
 }

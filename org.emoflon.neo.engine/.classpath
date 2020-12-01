@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="/org.emoflon.neo.engine.modules/lib/jcommon-1.0.20.jar"/>
 	<classpathentry kind="lib" path="/org.emoflon.neo.engine.modules/lib/jfreechart-1.0.15.jar"/>
 	<classpathentry kind="lib" path="/org.emoflon.neo.engine.modules/lib/JMetal-4.3.jar"/>
-	<classpathentry kind="lib" path="/org.emoflon.neo.engine.modules/lib/MOEAFramework-2.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="/org.emoflon.neo.engine.modules/lib/MOEAFramework-2.13.jar"/>
 	<classpathentry kind="lib" path="/org.emoflon.neo.engine.modules/lib/rsyntaxtextarea.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -4,6 +4,7 @@
 package org.emoflon.neo.api.JavaToDoc;
 
 import org.emoflon.neo.cypher.common.*;
+import org.emoflon.neo.cypher.constraints.*;
 import org.emoflon.neo.cypher.factories.*;
 import org.emoflon.neo.cypher.models.*;
 import org.emoflon.neo.cypher.patterns.*;
@@ -51,6 +52,11 @@ public class API_JavaToDoc_FWD_OPT {
 		rules.add(getRule_CreateSrcModel().rule());
 		rules.add(getRule_CreateTrgModel().rule());
 		return rules;
+	}
+	
+	public Collection<NeoConstraint> getAllConstraintsForJavaToDoc_FWD_OPT() {
+		Collection<NeoConstraint> constraints = new HashSet<>();
+		return constraints;
 	}
 	
 	public Collection<Rule> getAllEMSLRulesForJavaToDoc_FWD_OPT(){

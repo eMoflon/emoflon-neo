@@ -7,223 +7,231 @@ grammar JavaToDocSLE_FWD_OPT {
 	MethodToEntryRule
 	AddParameterRule
 	FieldToEntryRule
+	
 	createSrcModel
 	createTrgModel
-}
-
-rule ClazzToDocRule {
-	srcM : Model {
-		.ename : <__srcModelName>
 	}
 	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
+	  rule ClazzToDocRule {
 	
-	c:Clazz {
-		-elementOf->srcM
-		++-corr->d
-		{
-			._type_ := "ClazzToDoc"
+		srcM : Model {
+			.ename : <__srcModelName>
 		}
-	}
-
-	++d:Doc {
-		++-elementOf->trgM
-		.name := c::name
-	}
-	
-	attributeConstraints {
-	}
-} 
-
-
-rule SubClazzToSubDocRule {
-	srcM : Model {
-		.ename : <__srcModelName>
-	}
-	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
-	
-	c:Clazz {
-		-elementOf->srcM
-		-subTypes->sc
-		-corr->d
-		{
-			._type_ : "ClazzToDoc"
+		
+		trgM : Model {
+			.ename : <__trgModelName>
 		}
-	}
-	
-	sc:Clazz {
-		-elementOf->srcM
-		++-corr->sd
-		{
-			._type_ := "ClazzToDoc"
+		
+		c:Clazz {
+			-elementOf->srcM
+			++-corr->d
+			{
+				._type_ := "ClazzToDoc"
+			}
 		}
-	}
-
-	d:Doc {
-		-elementOf->trgM
-		++-hrefs->sd
-	}
 	
-	++sd:Doc {
-		++-elementOf->trgM
-		.name := sc::name
-	}
-	
-	attributeConstraints {
-	}
-} 
-
-
-rule MethodToEntryRule {
-	srcM : Model {
-		.ename : <__srcModelName>
-	}
-	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
-	
-	c:Clazz {
-		-elementOf->srcM
-		-methods->m
-		-corr->d
-		{
-			._type_ : "ClazzToDoc"
+		++d:Doc {
+			++-elementOf->trgM
+			.name := c::name
 		}
-	}
-	
-	m:Method {
-		-elementOf->srcM
-		++-corr->e
-		{
-			._type_ := "MethodToEntry"
+		
+		attributeConstraints {
 		}
-	}
-
-	d:Doc {
-		-elementOf->trgM
-		++-entries->e
-	}
+	} 
 	
-	++e:Entry {
-		++-elementOf->trgM
-		.name := m::name
-	}
 	
-	attributeConstraints {
-	}
-} 
-
-
-rule AddParameterRule {
-	srcM : Model {
-		.ename : <__srcModelName>
-	}
+	  rule SubClazzToSubDocRule {
 	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
-	
-	m:Method {
-		-elementOf->srcM
-		-parameters->p
-		-corr->e
-		{
-			._type_ : "MethodToEntry"
+		srcM : Model {
+			.ename : <__srcModelName>
 		}
-	}
-	
-	p:Parameter {
-		-elementOf->srcM
-		++-corr->e
-		{
-			._type_ := "ParamToEntry"
+		
+		trgM : Model {
+			.ename : <__trgModelName>
 		}
-	}
-
-	e:Entry {
-		-elementOf->trgM
-		.name : m::name
-	}
-	
-	attributeConstraints {
-	}
-} 
-
-
-rule FieldToEntryRule {
-	srcM : Model {
-		.ename : <__srcModelName>
-	}
-	
-	trgM : Model {
-		.ename : <__trgModelName>
-	}
-	
-	c:Clazz {
-		-elementOf->srcM
-		-fields->f
-		-corr->d
-		{
-			._type_ : "ClazzToDoc"
+		
+		c:Clazz {
+			-elementOf->srcM
+			-subTypes->sc
+			-corr->d
+			{
+				._type_ : "ClazzToDoc"
+			}
 		}
-	}
-	
-	f:Field {
-		-elementOf->srcM
-		++-corr->e
-		{
-			._type_ := "FieldToEntry"
+		
+		sc:Clazz {
+			-elementOf->srcM
+			++-corr->sd
+			{
+				._type_ := "ClazzToDoc"
+			}
 		}
-	}
-
-	d:Doc {
-		-elementOf->trgM
-		++-entries->e
-	}
 	
-	++e:Entry {
-		++-elementOf->trgM
-		.name := f::name
-	}
+		d:Doc {
+			-elementOf->trgM
+			++-hrefs->sd
+		}
+		
+		++sd:Doc {
+			++-elementOf->trgM
+			.name := sc::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
 	
-	attributeConstraints {
-	}
-} 
-
-
-rule createSrcModel {
-	srcModel:Model {
-		-conformsTo->mmSimpleJavaSLE
-	}
 	
-	mmSimpleJavaSLE:MetaModel {
-		.ename : "SimpleJavaSLE"
-	}
-
+	  rule MethodToEntryRule {
 	
-	attributeConstraints {
-	}
-} 
-
-
-rule createTrgModel {
-
-	++trgModel:Model {
-		++-conformsTo->mmSimpleDocSLE
-		.ename := <__trgModelName>
-	}
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			-methods->m
+			-corr->d
+			{
+				._type_ : "ClazzToDoc"
+			}
+		}
+		
+		m:Method {
+			-elementOf->srcM
+			++-corr->e
+			{
+				._type_ := "MethodToEntry"
+			}
+		}
 	
-	mmSimpleDocSLE:MetaModel {
-		.ename : "SimpleDocSLE"
-	}
+		d:Doc {
+			-elementOf->trgM
+			++-entries->e
+		}
+		
+		++e:Entry {
+			++-elementOf->trgM
+			.name := m::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
 	
-	attributeConstraints {
-	}
-} 
-
+	
+	  rule AddParameterRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		m:Method {
+			-elementOf->srcM
+			-parameters->p
+			-corr->e
+			{
+				._type_ : "MethodToEntry"
+			}
+		}
+		
+		p:Parameter {
+			-elementOf->srcM
+			++-corr->e
+			{
+				._type_ := "ParamToEntry"
+			}
+		}
+	
+		e:Entry {
+			-elementOf->trgM
+			.name : m::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule FieldToEntryRule {
+	
+		srcM : Model {
+			.ename : <__srcModelName>
+		}
+		
+		trgM : Model {
+			.ename : <__trgModelName>
+		}
+		
+		c:Clazz {
+			-elementOf->srcM
+			-fields->f
+			-corr->d
+			{
+				._type_ : "ClazzToDoc"
+			}
+		}
+		
+		f:Field {
+			-elementOf->srcM
+			++-corr->e
+			{
+				._type_ := "FieldToEntry"
+			}
+		}
+	
+		d:Doc {
+			-elementOf->trgM
+			++-entries->e
+		}
+		
+		++e:Entry {
+			++-elementOf->trgM
+			.name := f::name
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule createSrcModel {
+	
+		srcModel:Model {
+			-conformsTo->mmSimpleJavaSLE
+		}
+		
+		mmSimpleJavaSLE:MetaModel {
+			.ename : "SimpleJavaSLE"
+		}
+	
+		
+		attributeConstraints {
+		}
+	} 
+	
+	
+	  rule createTrgModel {
+	
+	
+		++trgModel:Model {
+			++-conformsTo->mmSimpleDocSLE
+			.ename := <__trgModelName>
+		}
+		
+		mmSimpleDocSLE:MetaModel {
+			.ename : "SimpleDocSLE"
+		}
+		
+		attributeConstraints {
+		}
+	} 
+	

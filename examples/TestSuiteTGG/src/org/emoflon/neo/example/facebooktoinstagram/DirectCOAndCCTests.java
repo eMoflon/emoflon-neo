@@ -31,9 +31,8 @@ public class DirectCOAndCCTests extends ENeoTest {
 	@Test
 	public void testInconsistentTriple1_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc1(), //
-				api.getModel_ConsistentTrg1(),
-				api.getRule_CreateCorrs1().rule());
-		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc1", "ConsistentTrg1", solver).runCheckOnly(),
+				api.getModel_ConsistentTrg1());
+		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc1", "InconsistentTrg1", solver).runCheckOnly(),
 				4, 4);
 	}
 
@@ -59,9 +58,8 @@ public class DirectCOAndCCTests extends ENeoTest {
 	@Test
 	public void testInconsistentTriple2_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc2(), //
-				api.getModel_ConsistentTrg2(),
-				api.getRule_CreateCorrs2().rule());
-		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc2", "ConsistentTrg2", solver).runCheckOnly(),
+				api.getModel_ConsistentTrg2());
+		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc2", "InconsistentTrg2", solver).runCheckOnly(),
 				4, 10);
 	}
 

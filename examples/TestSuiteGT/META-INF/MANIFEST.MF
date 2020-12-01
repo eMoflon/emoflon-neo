@@ -40,7 +40,8 @@ Require-Bundle: SokobanLanguage;bundle-version="1.0.0",
  CompanyToIT;bundle-version="1.0.0",
  org.apache.commons.lang3,
  FamiliesToPersons;bundle-version="0.0.1",
- FacebookToInstagramFASE;bundle-version="1.0.0"
+ FacebookToInstagramFASE;bundle-version="1.0.0",
+ org.apache.commons.lang
 Automatic-Module-Name: TestSuite
 Export-Package: org.emoflon.neo.api,
  org.emoflon.neo.example,

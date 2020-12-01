@@ -30,8 +30,8 @@ tripleGrammar JavaToDocSLE {
 	
 //	constraints{
 //		NoTwoGlossaries
-//		NoEmptyDoc
-//		SameNameSameGlossaryEntry
+//		NoDoubleGlossaryLink
+//		NoTripleInheritance
 //	}
 }
 
@@ -215,54 +215,29 @@ tripleRule FieldToEntryRule : JavaToDocSLE {
 //}
 //
 //constraint NoTwoGlossaries = forbid TwoGlossaries
-
-//pattern OneDoc {
-//	d : Doc
-//}
 //
-//pattern DocWithEntry {
-//	d : Doc {
-//		-entries-> e
-//	}
-//	
-//	e : Entry
-//}
-//
-//constraint NoEmptyDoc = if OneDoc then DocWithEntry
-//
-//pattern SameMethodName {
-//	
-//	c : Clazz {
-//		-methods-> m1
-//		-methods-> m2
-//	}
-//	
-//	m1 : Method {
-//		.name : <methodName>
-//		-corr-> e1
-//	}
-//	
-//	m2 : Method {
-//		.name : <methodName>
-//		-corr-> e2
-//	}
-//	
-//	e1 : Entry 
-//	
-//	e2 : Entry 
-//}
-//
-//pattern SameGlossaryEntry {
-//
-//	e1 : Entry {
-//		-gEntries-> ge
-//	}
-//	
-//	e2 : Entry {
-//		-gEntries-> ge
-//	}
-//	
+//pattern DoubleGlossaryLink {
 //	ge : GlossaryEntry
+//	
+//	e : Entry {
+//		-gEntries->ge
+//		-gEntries->ge
+//	}
 //}
 //
-//constraint SameNameSameGlossaryEntry = if SameMethodName then SameGlossaryEntry
+//constraint NoDoubleGlossaryLink = forbid DoubleGlossaryLink
+//
+//pattern TripleInheritance {
+//	c1: Clazz {
+//		-subTypes-> c2
+//	}
+//	
+//	c2: Clazz {
+//		-subTypes-> c3
+//	}
+//	
+//	c3: Clazz 
+//}
+//
+//constraint NoTripleInheritance = forbid TripleInheritance
+		

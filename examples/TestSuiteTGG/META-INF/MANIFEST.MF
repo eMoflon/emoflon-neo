@@ -18,6 +18,8 @@ Require-Bundle: TestSuiteGT;bundle-version="1.0.0",
  org.apache.commons.lang3,
  FamiliesToPersons,
  FacebookToInstagramFASE;bundle-version="1.0.0",
- JavaToDocSLE;bundle-version="1.0.0"
+ JavaToDocSLE;bundle-version="1.0.0",
+ org.apache.commons.lang
 Automatic-Module-Name: TestSuiteTGG
 Bundle-RequiredExecutionEnvironment: JavaSE-13
+Import-Package: org.junit

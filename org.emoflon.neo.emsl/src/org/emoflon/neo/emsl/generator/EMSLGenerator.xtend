@@ -39,6 +39,7 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.impl.TripleGrammarImpl
+import java.util.stream.Collectors
 
 /**
  * Generates code from your model files on save.

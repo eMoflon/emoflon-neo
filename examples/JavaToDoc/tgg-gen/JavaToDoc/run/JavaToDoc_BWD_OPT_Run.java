@@ -66,6 +66,7 @@ public class JavaToDoc_BWD_OPT_Run {
 	}
 	
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_JavaToDoc(builder);
 		var genAPI = new API_JavaToDoc_GEN(builder);
 		var bwd_optAPI = new API_JavaToDoc_BWD_OPT(builder);
 		var genRules = genAPI.getAllRulesForJavaToDoc_GEN();
@@ -75,7 +76,7 @@ public class JavaToDoc_BWD_OPT_Run {
 				builder, //
 				genRules, //
 				bwd_optAPI.getAllRulesForJavaToDoc_BWD_OPT(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfJavaToDoc(), //
 				srcModelName, //
 				trgModelName//
 		);
@@ -95,9 +96,5 @@ public class JavaToDoc_BWD_OPT_Run {
 	public BackwardTransformationOperationalStrategy runBackwardTransformation() throws Exception {
 		run();
 		return backwardTransformation;
-	}
-	
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		return Collections.emptyList();
 	}
 }

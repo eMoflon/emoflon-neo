@@ -4,6 +4,7 @@
 package org.emoflon.neo.api;
 
 import org.emoflon.neo.cypher.common.*;
+import org.emoflon.neo.cypher.constraints.*;
 import org.emoflon.neo.cypher.factories.*;
 import org.emoflon.neo.cypher.models.*;
 import org.emoflon.neo.cypher.patterns.*;
@@ -69,6 +70,12 @@ public class API_JavaToDoc {
 			rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
 		}
 		return rules;
+	}
+	
+	public Collection<IConstraint> getConstraintsOfJavaToDoc(){
+		var constraints = new HashSet<IConstraint>();
+		var rs = spec.eResource().getResourceSet();
+		return constraints;
 	}
 	
 	//:~> platform:/resource/JavaToDoc/src/JavaToDoc.msl#//@entities.1

@@ -11,6 +11,8 @@ import org.emoflon.neo.example.ENeoTest;
 import JavaToDocSLE.run.JavaToDocSLE_BWD_OPT_Run;
 import JavaToDocSLE.run.JavaToDocSLE_CC_Run;
 import JavaToDocSLE.run.JavaToDocSLE_CO_Run;
+import JavaToDocSLE.run.JavaToDocSLE_FWD_OPT_Run;
+
 import org.junit.jupiter.api.Test;;
 
 public class PerformanceTests extends ENeoTest {
@@ -20,7 +22,7 @@ public class PerformanceTests extends ENeoTest {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var testCOApp = new JavaToDocSLE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		var testCCApp = new JavaToDocSLE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		//var testFWD_OPTApp = new JavaToDocSLE_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testFWD_OPTApp = new JavaToDocSLE_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		var testBWD_OPTApp = new JavaToDocSLE_BWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		
 		var testGenApp = new JavaToDocSLE_GEN_TEST((scheduler) -> {
@@ -31,7 +33,7 @@ public class PerformanceTests extends ENeoTest {
 			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddParameterRule, 40 * nrOfApplications);
 //			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryRule, 1)
 //			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryEntryRule, 40 * nrOfApplications)
-//			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications)
+//			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
 		});
 		
 		// Step 2. Run ops
@@ -53,32 +55,33 @@ public class PerformanceTests extends ENeoTest {
 //			Logger.getRootLogger().setLevel(Level.OFF);
 //			clearDB();
 //		}
-		
-//		for (int j=0; j<nrOfIterations; j++) {
-//			testGenApp.run();
-//			Logger.getRootLogger().setLevel(Level.INFO);
-//			logger.info("FWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
-//			testFWD_OPTApp.run();
-//			Logger.getRootLogger().setLevel(Level.OFF);
-//			clearDB();
-//		}
-		
 		for (int j=0; j<nrOfIterations; j++) {
 			testGenApp.run();
 			builder.deleteAllCorrs();
-			builder.clearModel(SRC_MODEL_NAME);
-			//Logger.getRootLogger().setLevel(Level.INFO);
-			logger.info("BWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
-			testBWD_OPTApp.run();
+			builder.clearModel(TRG_MODEL_NAME);
+			Logger.getRootLogger().setLevel(Level.INFO);
+			logger.info("FWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+			testFWD_OPTApp.run();
 			Logger.getRootLogger().setLevel(Level.OFF);
 			clearDB();
 		}
+		
+//		for (int j=0; j<nrOfIterations; j++) {
+//			testGenApp.run();
+//			builder.deleteAllCorrs();
+//			builder.clearModel(SRC_MODEL_NAME);
+//			Logger.getRootLogger().setLevel(Level.INFO);
+//			logger.info("BWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+//			testBWD_OPTApp.run();
+//			Logger.getRootLogger().setLevel(Level.OFF);
+//			clearDB();
+//		}
 	}
 	
 	@Test
 	public void testPerformance() throws Exception {
 		for (int i : new int[]{1,2,5,10,20,50}) {
-			//Logger.getRootLogger().setLevel(Level.OFF);
+			Logger.getRootLogger().setLevel(Level.OFF);
 			runTestForFixedSize(i, 5);
 		}
 	}
