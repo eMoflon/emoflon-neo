@@ -312,7 +312,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		return result.stream().count() == 0;
 	}
 
-	private void bootstrapNeoCoreIfNecessary() {
+	public void bootstrapNeoCoreIfNecessary() {
 		if (ecoreIsNotPresent()) {
 			logger.info("Trying to bootstrap NeoCore...");
 			bootstrapNeoCore();

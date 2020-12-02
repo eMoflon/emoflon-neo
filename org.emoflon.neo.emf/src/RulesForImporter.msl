@@ -1,0 +1,10 @@
+rule ImportMetamodel {
+	neoCore:MetaModel {
+		.ename : "NeoCore"
+	}
+	
+	++ mm:MetaModel {
+		++ -conformsTo->neoCore
+		.ename := <name>
+	}
+}

@@ -19,7 +19,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = EmslActivator.getInstance().getPreferenceStore();
-		store.setDefault(EMSLUtil.P_URI, "bolt://localhost:11002");
+		store.setDefault(EMSLUtil.P_URI, "bolt://localhost:7687");
 		store.setDefault(EMSLUtil.P_USER, "neo4j");
 		store.setDefault(EMSLUtil.P_PASSWORD, "test");
 	}

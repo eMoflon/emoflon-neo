@@ -18,11 +18,15 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.emoflon.neo.emf.EMFImporter;
+import org.emoflon.neo.emf.Neo4jImporter;
+import org.emoflon.neo.emsl.ui.internal.EmslActivator;
+import org.emoflon.neo.emsl.util.EMSLUtil;
 
 public class EMFConverterHandler extends AbstractHandler {
 
@@ -36,16 +40,42 @@ public class EMFConverterHandler extends AbstractHandler {
 		var resourceSet = extractResourceSet(selection);
 		resourceSet.ifPresent(rs -> {
 			EcoreUtil.resolveAll(rs);
-			var mslContent = new EMFImporter().generateEMSLModels(rs);
-			var mslFile = chooseFileToCreate(shell);
-			try (var is = createInputStream(mslContent)) {
-				mslFile.create(is, true, new NullProgressMonitor());
-			} catch (CoreException | IOException e) {
-				logger.error("Unable to perform conversion to EMSL: " + e);
+						
+			if(importToEMSL(shell)) {
+				var mslContent = new EMFImporter().generateEMSLModels(rs);
+				var mslFile = chooseFileToCreate(shell);
+				try (var is = createInputStream(mslContent)) {
+					mslFile.create(is, true, new NullProgressMonitor());
+				} catch (CoreException | IOException e) {
+					logger.error("Unable to perform conversion to EMSL: " + e);
+				}				
+			} else {
+				logger.info("Importing EMF model(s) directly to Neo4j...");
+				
+				logger.info("Trying to connect to your Neo4j database...");
+
+				String uri = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_URI);
+				String userName = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_USER);
+				String password = EmslActivator.getInstance().getPreferenceStore().getString(EMSLUtil.P_PASSWORD);
+
+				logger.info("Connection URI: " + uri);
+				logger.info("User: " + userName);
+				logger.info("Password: " + password);
+				
+				new Neo4jImporter().importEMFModels(rs, uri, userName, password);
 			}
 		});
 
 		return null;
+	}
+
+	private boolean importToEMSL(Shell parentShell) {
+		var dialog = new MessageDialog(parentShell, "eNeo Import", null,
+			    "How do you want to import your EMF model(s) to eNeo?", MessageDialog.QUESTION, 
+			    new String[] { "eMSL", "Neo4j" }, 0);
+			int result = dialog.open();
+		
+		return result == 0;
 	}
 
 	private IFile chooseFileToCreate(Shell parentShell) {
