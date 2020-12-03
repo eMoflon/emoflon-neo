@@ -219,7 +219,11 @@ class EMSLGenerator extends AbstractGenerator {
 			
 				/** Use this constructor to configure values for loading EMSL files */
 				public «apiName»(NeoCoreBuilder builder, String platformResourceURIRoot, String platformPluginURIRoot, String neocoreURI){
-					spec = (EMSL_Spec) EMSLUtil.loadSpecification("«resource.URI»", platformResourceURIRoot, platformPluginURIRoot, neocoreURI);
+					this((EMSL_Spec) EMSLUtil.loadSpecification("«resource.URI»", platformResourceURIRoot, platformPluginURIRoot, neocoreURI), builder);
+				}
+			
+				public API_RulesForImporter(EMSL_Spec spec, NeoCoreBuilder builder) {
+					this.spec = spec;
 					this.builder = builder;
 				}
 			
