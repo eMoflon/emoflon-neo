@@ -58,12 +58,15 @@ public class API_C2IModelForTesting {
 	}
 	
 	public class ConsistentTriple1Access extends NeoRuleCoAccess<ConsistentTriple1Data, ConsistentTriple1CoData, ConsistentTriple1Mask> {
-		public final String _it = "it";
-		public final String _l1 = "l1";
-		public final String _l2 = "l2";
 		public final String _c = "c";
+		public final String _a1 = "a1";
 		public final String _e1 = "e1";
 		public final String _e2 = "e2";
+		public final String _it = "it";
+		public final String _router = "router";
+		public final String _network = "network";
+		public final String _l1 = "l1";
+		public final String _l2 = "l2";
 		
 		@Override
 		public NeoRule rule(){
@@ -90,55 +93,37 @@ public class API_C2IModelForTesting {
 	}
 	
 	public class ConsistentTriple1Data extends NeoData {
-		public final ItNode _it;
-		public final L1Node _l1;
-		public final L2Node _l2;
 		public final CNode _c;
+		public final A1Node _a1;
 		public final E1Node _e1;
 		public final E2Node _e2;
+		public final ItNode _it;
+		public final RouterNode _router;
+		public final NetworkNode _network;
+		public final L1Node _l1;
+		public final L2Node _l2;
 		
 		public ConsistentTriple1Data(Record data) {
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _l1 = data.get("l1");
-			this._l1 = new L1Node(_l1);
-			var _l2 = data.get("l2");
-			this._l2 = new L2Node(_l2);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
+			var _a1 = data.get("a1");
+			this._a1 = new A1Node(_a1);
 			var _e1 = data.get("e1");
 			this._e1 = new E1Node(_e1);
 			var _e2 = data.get("e2");
 			this._e2 = new E2Node(_e2);
+			var _it = data.get("it");
+			this._it = new ItNode(_it);
+			var _router = data.get("router");
+			this._router = new RouterNode(_router);
+			var _network = data.get("network");
+			this._network = new NetworkNode(_network);
+			var _l1 = data.get("l1");
+			this._l1 = new L1Node(_l1);
+			var _l2 = data.get("l2");
+			this._l2 = new L2Node(_l2);
 		}
 		
-		
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class L1Node {
-			public String _name;
-			
-			public L1Node(Value _l1) {
-				if(!_l1.get("name").isNull())
-					this._name = _l1.get("name").asString();
-			}
-		}
-		
-		public class L2Node {
-			public String _name;
-			
-			public L2Node(Value _l2) {
-				if(!_l2.get("name").isNull())
-					this._name = _l2.get("name").asString();
-			}
-		}
 		
 		public class CNode {
 			public String _name;
@@ -146,6 +131,15 @@ public class API_C2IModelForTesting {
 			public CNode(Value _c) {
 				if(!_c.get("name").isNull())
 					this._name = _c.get("name").asString();
+			}
+		}
+		
+		public class A1Node {
+			public String _name;
+			
+			public A1Node(Value _a1) {
+				if(!_a1.get("name").isNull())
+					this._name = _a1.get("name").asString();
 			}
 		}
 		
@@ -164,95 +158,101 @@ public class API_C2IModelForTesting {
 			public E2Node(Value _e2) {
 				if(!_e2.get("name").isNull())
 					this._name = _e2.get("name").asString();
+			}
+		}
+		
+		public class ItNode {
+			public String _name;
+			
+			public ItNode(Value _it) {
+				if(!_it.get("name").isNull())
+					this._name = _it.get("name").asString();
+			}
+		}
+		
+		public class RouterNode {
+			public String _name;
+			
+			public RouterNode(Value _router) {
+				if(!_router.get("name").isNull())
+					this._name = _router.get("name").asString();
+			}
+		}
+		
+		public class NetworkNode {
+			public String _name;
+			
+			public NetworkNode(Value _network) {
+				if(!_network.get("name").isNull())
+					this._name = _network.get("name").asString();
+			}
+		}
+		
+		public class L1Node {
+			public String _name;
+			
+			public L1Node(Value _l1) {
+				if(!_l1.get("name").isNull())
+					this._name = _l1.get("name").asString();
+			}
+		}
+		
+		public class L2Node {
+			public String _name;
+			
+			public L2Node(Value _l2) {
+				if(!_l2.get("name").isNull())
+					this._name = _l2.get("name").asString();
 			}
 		}
 		
 	}
 	
 	public class ConsistentTriple1CoData extends NeoData {
-		public final ItNode _it;
-		public final It_corr_0_cRel _it_corr_0_c;
-		public final L1Node _l1;
-		public final L1_corr_0_e1Rel _l1_corr_0_e1;
-		public final L2Node _l2;
-		public final L2_corr_0_e2Rel _l2_corr_0_e2;
 		public final CNode _c;
+		public final C_corr_0_itRel _c_corr_0_it;
+		public final A1Node _a1;
+		public final A1_corr_0_routerRel _a1_corr_0_router;
 		public final E1Node _e1;
+		public final E1_corr_0_l1Rel _e1_corr_0_l1;
 		public final E2Node _e2;
+		public final E2_corr_0_l2Rel _e2_corr_0_l2;
+		public final ItNode _it;
+		public final RouterNode _router;
+		public final NetworkNode _network;
+		public final L1Node _l1;
+		public final L2Node _l2;
 	
 		public ConsistentTriple1CoData(Record data) {
-			var _it = data.get("it");
-			this._it = new ItNode(_it);
-			var _it_corr_0_c = data.get("it_corr_0_c");
-			this._it_corr_0_c = new It_corr_0_cRel(_it_corr_0_c);
-			var _l1 = data.get("l1");
-			this._l1 = new L1Node(_l1);
-			var _l1_corr_0_e1 = data.get("l1_corr_0_e1");
-			this._l1_corr_0_e1 = new L1_corr_0_e1Rel(_l1_corr_0_e1);
-			var _l2 = data.get("l2");
-			this._l2 = new L2Node(_l2);
-			var _l2_corr_0_e2 = data.get("l2_corr_0_e2");
-			this._l2_corr_0_e2 = new L2_corr_0_e2Rel(_l2_corr_0_e2);
 			var _c = data.get("c");
 			this._c = new CNode(_c);
+			var _c_corr_0_it = data.get("c_corr_0_it");
+			this._c_corr_0_it = new C_corr_0_itRel(_c_corr_0_it);
+			var _a1 = data.get("a1");
+			this._a1 = new A1Node(_a1);
+			var _a1_corr_0_router = data.get("a1_corr_0_router");
+			this._a1_corr_0_router = new A1_corr_0_routerRel(_a1_corr_0_router);
 			var _e1 = data.get("e1");
 			this._e1 = new E1Node(_e1);
+			var _e1_corr_0_l1 = data.get("e1_corr_0_l1");
+			this._e1_corr_0_l1 = new E1_corr_0_l1Rel(_e1_corr_0_l1);
 			var _e2 = data.get("e2");
 			this._e2 = new E2Node(_e2);
+			var _e2_corr_0_l2 = data.get("e2_corr_0_l2");
+			this._e2_corr_0_l2 = new E2_corr_0_l2Rel(_e2_corr_0_l2);
+			var _it = data.get("it");
+			this._it = new ItNode(_it);
+			var _router = data.get("router");
+			this._router = new RouterNode(_router);
+			var _network = data.get("network");
+			this._network = new NetworkNode(_network);
+			var _l1 = data.get("l1");
+			this._l1 = new L1Node(_l1);
+			var _l2 = data.get("l2");
+			this._l2 = new L2Node(_l2);
 		}
 		
 	
-		public class ItNode {
-			public String _name;
-			
-			public ItNode(Value _it) {
-				if(!_it.get("name").isNull())
-					this._name = _it.get("name").asString();
-			}
-		}
-		
-		public class It_corr_0_cRel {
-			public String __type_;
-		
-			public It_corr_0_cRel(Value _it_corr_0_c) {
-				if(!_it_corr_0_c.get("_type_").isNull())
-					this.__type_ = _it_corr_0_c.get("_type_").asString();
-			}
-		}
-		public class L1Node {
-			public String _name;
-			
-			public L1Node(Value _l1) {
-				if(!_l1.get("name").isNull())
-					this._name = _l1.get("name").asString();
-			}
-		}
-		
-		public class L1_corr_0_e1Rel {
-			public String __type_;
-		
-			public L1_corr_0_e1Rel(Value _l1_corr_0_e1) {
-				if(!_l1_corr_0_e1.get("_type_").isNull())
-					this.__type_ = _l1_corr_0_e1.get("_type_").asString();
-			}
-		}
-		public class L2Node {
-			public String _name;
-			
-			public L2Node(Value _l2) {
-				if(!_l2.get("name").isNull())
-					this._name = _l2.get("name").asString();
-			}
-		}
-		
-		public class L2_corr_0_e2Rel {
-			public String __type_;
-		
-			public L2_corr_0_e2Rel(Value _l2_corr_0_e2) {
-				if(!_l2_corr_0_e2.get("_type_").isNull())
-					this.__type_ = _l2_corr_0_e2.get("_type_").asString();
-			}
-		}
 		public class CNode {
 			public String _name;
 			
@@ -262,6 +262,31 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
+		public class C_corr_0_itRel {
+			public String __type_;
+		
+			public C_corr_0_itRel(Value _c_corr_0_it) {
+				if(!_c_corr_0_it.get("_type_").isNull())
+					this.__type_ = _c_corr_0_it.get("_type_").asString();
+			}
+		}
+		public class A1Node {
+			public String _name;
+			
+			public A1Node(Value _a1) {
+				if(!_a1.get("name").isNull())
+					this._name = _a1.get("name").asString();
+			}
+		}
+		
+		public class A1_corr_0_routerRel {
+			public String __type_;
+		
+			public A1_corr_0_routerRel(Value _a1_corr_0_router) {
+				if(!_a1_corr_0_router.get("_type_").isNull())
+					this.__type_ = _a1_corr_0_router.get("_type_").asString();
+			}
+		}
 		public class E1Node {
 			public String _name;
 			
@@ -271,6 +296,14 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
+		public class E1_corr_0_l1Rel {
+			public String __type_;
+		
+			public E1_corr_0_l1Rel(Value _e1_corr_0_l1) {
+				if(!_e1_corr_0_l1.get("_type_").isNull())
+					this.__type_ = _e1_corr_0_l1.get("_type_").asString();
+			}
+		}
 		public class E2Node {
 			public String _name;
 			
@@ -280,51 +313,84 @@ public class API_C2IModelForTesting {
 			}
 		}
 		
+		public class E2_corr_0_l2Rel {
+			public String __type_;
+		
+			public E2_corr_0_l2Rel(Value _e2_corr_0_l2) {
+				if(!_e2_corr_0_l2.get("_type_").isNull())
+					this.__type_ = _e2_corr_0_l2.get("_type_").asString();
+			}
+		}
+		public class ItNode {
+			public String _name;
+			
+			public ItNode(Value _it) {
+				if(!_it.get("name").isNull())
+					this._name = _it.get("name").asString();
+			}
+		}
+		
+		public class RouterNode {
+			public String _name;
+			
+			public RouterNode(Value _router) {
+				if(!_router.get("name").isNull())
+					this._name = _router.get("name").asString();
+			}
+		}
+		
+		public class NetworkNode {
+			public String _name;
+			
+			public NetworkNode(Value _network) {
+				if(!_network.get("name").isNull())
+					this._name = _network.get("name").asString();
+			}
+		}
+		
+		public class L1Node {
+			public String _name;
+			
+			public L1Node(Value _l1) {
+				if(!_l1.get("name").isNull())
+					this._name = _l1.get("name").asString();
+			}
+		}
+		
+		public class L2Node {
+			public String _name;
+			
+			public L2Node(Value _l2) {
+				if(!_l2.get("name").isNull())
+					this._name = _l2.get("name").asString();
+			}
+		}
+		
 	}
 	
 	public class ConsistentTriple1Mask extends NeoMask {
-		public ConsistentTriple1Mask setIt(Long value) {
-			nodeMask.put("it", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setItName(String value) {
-			attributeMask.put("it.name", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setIt_corr_0_c_type_(String value) {
-			attributeMask.put("it_corr_0_c._type_", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setL1(Long value) {
-			nodeMask.put("l1", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setL1Name(String value) {
-			attributeMask.put("l1.name", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setL1_corr_0_e1_type_(String value) {
-			attributeMask.put("l1_corr_0_e1._type_", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setL2(Long value) {
-			nodeMask.put("l2", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setL2Name(String value) {
-			attributeMask.put("l2.name", value);
-			return this;
-		}
-		public ConsistentTriple1Mask setL2_corr_0_e2_type_(String value) {
-			attributeMask.put("l2_corr_0_e2._type_", value);
-			return this;
-		}
 		public ConsistentTriple1Mask setC(Long value) {
 			nodeMask.put("c", value);
 			return this;
 		}
 		public ConsistentTriple1Mask setCName(String value) {
 			attributeMask.put("c.name", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setC_corr_0_it_type_(String value) {
+			attributeMask.put("c_corr_0_it._type_", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setA1(Long value) {
+			nodeMask.put("a1", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setA1Name(String value) {
+			attributeMask.put("a1.name", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setA1_corr_0_router_type_(String value) {
+			attributeMask.put("a1_corr_0_router._type_", value);
 			return this;
 		}
 		public ConsistentTriple1Mask setE1(Long value) {
@@ -335,12 +401,60 @@ public class API_C2IModelForTesting {
 			attributeMask.put("e1.name", value);
 			return this;
 		}
+		public ConsistentTriple1Mask setE1_corr_0_l1_type_(String value) {
+			attributeMask.put("e1_corr_0_l1._type_", value);
+			return this;
+		}
 		public ConsistentTriple1Mask setE2(Long value) {
 			nodeMask.put("e2", value);
 			return this;
 		}
 		public ConsistentTriple1Mask setE2Name(String value) {
 			attributeMask.put("e2.name", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setE2_corr_0_l2_type_(String value) {
+			attributeMask.put("e2_corr_0_l2._type_", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setIt(Long value) {
+			nodeMask.put("it", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setItName(String value) {
+			attributeMask.put("it.name", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setRouter(Long value) {
+			nodeMask.put("router", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setRouterName(String value) {
+			attributeMask.put("router.name", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setNetwork(Long value) {
+			nodeMask.put("network", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setNetworkName(String value) {
+			attributeMask.put("network.name", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setL1(Long value) {
+			nodeMask.put("l1", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setL1Name(String value) {
+			attributeMask.put("l1.name", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setL2(Long value) {
+			nodeMask.put("l2", value);
+			return this;
+		}
+		public ConsistentTriple1Mask setL2Name(String value) {
+			attributeMask.put("l2.name", value);
 			return this;
 		}
 	}

@@ -12,12 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.cypher.constraints.NeoConstraint;
 import org.emoflon.neo.cypher.constraints.NeoNegativeConstraint;
 import org.emoflon.neo.cypher.constraints.NeoPositiveConstraint;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.cypher.patterns.NeoBasicPattern;
-import org.emoflon.neo.cypher.patterns.NeoImplicationPattern;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
@@ -28,7 +25,6 @@ import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
-import org.emoflon.neo.engine.ilp.ILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 

@@ -107,6 +107,7 @@ grammar JavaToDocSLE_CO {
 			{
 				._type_ : "MethodToEntry"
 			}
+			.name : e::name
 		}
 	
 		d:Doc {
@@ -116,7 +117,6 @@ grammar JavaToDocSLE_CO {
 		
 		e:Entry {
 			-elementOf->trgM
-			.name : m::name
 		}
 		
 		attributeConstraints {
@@ -186,7 +186,6 @@ grammar JavaToDocSLE_CO {
 			{
 				._type_ : "FieldToEntry"
 			}
-			.name : e::name
 		}
 	
 		d:Doc {
@@ -196,6 +195,7 @@ grammar JavaToDocSLE_CO {
 		
 		e:Entry {
 			-elementOf->trgM
+			.name : f::name
 		}
 		
 		attributeConstraints {
