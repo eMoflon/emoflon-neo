@@ -48,3 +48,4 @@ Export-Package: .,
 Bundle-RequiredExecutionEnvironment: JavaSE-13
 Bundle-ClassPath: lib/javabdd-1.0b2.jar,
  .
+Import-Package: org.apache.log4j

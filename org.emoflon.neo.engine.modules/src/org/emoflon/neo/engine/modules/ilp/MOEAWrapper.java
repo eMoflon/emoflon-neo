@@ -49,7 +49,7 @@ public final class MOEAWrapper extends ILPSolver{
 		
 		NondominatedPopulation result = new Executor()
 				.withAlgorithm("NSGAII")
-				.withProblem(ilpProblem)
+//				.withProblem(ilpProblem)
 				.withMaxEvaluations(100000)
 				.run();
 		
