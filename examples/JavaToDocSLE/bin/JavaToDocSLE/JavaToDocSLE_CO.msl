@@ -65,6 +65,7 @@ grammar JavaToDocSLE_CO {
 			{
 				._type_ : "ClazzToDoc"
 			}
+			.name : sd::name
 		}
 	
 		d:Doc {
@@ -74,7 +75,6 @@ grammar JavaToDocSLE_CO {
 		
 		sd:Doc {
 			-elementOf->trgM
-			.name : sc::name
 		}
 		
 		attributeConstraints {

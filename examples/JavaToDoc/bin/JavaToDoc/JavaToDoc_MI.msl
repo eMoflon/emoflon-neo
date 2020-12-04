@@ -428,12 +428,12 @@ grammar JavaToDoc_MI {
 			{
 				._type_ : "PackageToFolder"
 			}
+			.name : f::name
 			~_ex_ : true
 		}
 	
 		f:Folder {
 			-elementOf->trgM
-			.name : p::name
 			~_ex_ : true
 		}
 		
@@ -457,12 +457,12 @@ grammar JavaToDoc_MI {
 			{
 				._type_ := "PackageToFolder"
 			}
+			.name : f::name
 			~_ex_ : true
 		}
 	
 		f:Folder {
 			-elementOf->trgM
-			.name : p::name
 			~_ex_ : true
 		}
 		
@@ -1003,6 +1003,7 @@ grammar JavaToDoc_MI {
 			{
 				._type_ := "PackageToFolder"
 			}
+			.name : doc::name
 			~_ex_ : true
 		}
 	
@@ -1014,12 +1015,11 @@ grammar JavaToDoc_MI {
 		++subF:Folder {
 			++-elementOf->trgM
 			++-docs->doc
-			.name := subP::name
+			.name := doc::name
 		}
 		
 		doc:Doc {
 			-elementOf->trgM
-			.name : subP::name
 			~_ex_ : true
 		}
 		

@@ -29,9 +29,9 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.victory.adapter;bundle-version="1.0.0",
  org.emoflon.victory.ui;bundle-version="1.0.0",
  org.apache.commons.lang,
- CompanyToIT,
- CompanyToIT,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ CompanyToIT;bundle-version="1.0.0",
+ CompanyToIT;bundle-version="1.0.0"
 Export-Package: CompanyToIT,
  CompanyToIT.run,
  metamodels,

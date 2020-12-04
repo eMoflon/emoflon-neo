@@ -28,11 +28,11 @@ grammar JavaToDocSLE_CC {
 			{
 				._type_ := "ClazzToDoc"
 			}
-			.name : d::name
 		}
 	
 		d:Doc {
 			-elementOf->trgM
+			.name : c::name
 		}
 		
 		attributeConstraints {
@@ -65,7 +65,6 @@ grammar JavaToDocSLE_CC {
 			{
 				._type_ := "ClazzToDoc"
 			}
-			.name : sd::name
 		}
 	
 		d:Doc {
@@ -75,6 +74,7 @@ grammar JavaToDocSLE_CC {
 		
 		sd:Doc {
 			-elementOf->trgM
+			.name : sc::name
 		}
 		
 		attributeConstraints {
@@ -107,7 +107,6 @@ grammar JavaToDocSLE_CC {
 			{
 				._type_ := "MethodToEntry"
 			}
-			.name : e::name
 		}
 	
 		d:Doc {
@@ -117,6 +116,7 @@ grammar JavaToDocSLE_CC {
 		
 		e:Entry {
 			-elementOf->trgM
+			.name : m::name
 		}
 		
 		attributeConstraints {
@@ -141,6 +141,7 @@ grammar JavaToDocSLE_CC {
 			{
 				._type_ : "MethodToEntry"
 			}
+			.name : e::name
 		}
 		
 		p:Parameter {
@@ -153,7 +154,6 @@ grammar JavaToDocSLE_CC {
 	
 		e:Entry {
 			-elementOf->trgM
-			.name : m::name
 		}
 		
 		attributeConstraints {
