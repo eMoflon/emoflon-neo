@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.emoflon.neo.engine
 Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
  com.keypoint,
+ gurobi,
  jmetal.core,
  jmetal.encodings.solutionType,
  jmetal.encodings.variable,
@@ -269,4 +270,5 @@ Bundle-ClassPath: .,
  lib/jfreechart-1.0.15.jar,
  lib/JMetal-4.3.jar,
  lib/MOEAFramework-2.13.jar,
+ lib/gurobi.jar,
  lib/rsyntaxtextarea.jar

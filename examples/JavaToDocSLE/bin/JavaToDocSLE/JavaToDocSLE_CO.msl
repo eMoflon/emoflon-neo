@@ -28,11 +28,11 @@ grammar JavaToDocSLE_CO {
 			{
 				._type_ : "ClazzToDoc"
 			}
+			.name : d::name
 		}
 	
 		d:Doc {
 			-elementOf->trgM
-			.name : c::name
 		}
 		
 		attributeConstraints {

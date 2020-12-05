@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emoflon.neo.cypher.constraints.NeoNegativeConstraint;
@@ -91,7 +92,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		negativeConstraints.forEach(c -> {
 			if (c instanceof NeoNegativeConstraint) {
 				this.negativeConstraints.add((NeoNegativeConstraint) c);
-			} else if (c instanceof NeoPositiveConstraint){
+			} else if (c instanceof NeoPositiveConstraint) {
 				this.positiveConstraints.add((NeoPositiveConstraint) c);
 			} else {
 				throw new IllegalArgumentException(
@@ -118,7 +119,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 		logger.debug("Handling constraint violations...");
 		handleConstraintViolations();
-		
+
 		logger.debug("Handling positive constraints...");
 		handlePositiveConstraints();
 
@@ -142,7 +143,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected void computeWeights() {
 		matchToWeight = new HashMap<>();
 		for (var m : matchToId.keySet())
-			matchToWeight.put(m, (double)getMarkedElts(m).size());
+			matchToWeight.put(m, (double) getMarkedElts(m).size());
 	}
 
 	private void addMatch(Long x, IMatch m, Map<Long, Set<IMatch>> matches) {
@@ -312,87 +313,101 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected void handlePositiveConstraints() {
 		long tic = System.currentTimeMillis();
 		logger.info("Checking for positive constraint...");
-		var premise = positiveConstraints.stream().flatMap(pr -> pr.getPremise().stream());
-		var conclusion = positiveConstraints.stream().flatMap(pr -> pr.getConclusion().stream());
-		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
 		
-		premise.forEach(p-> {
-			var elementsP = extractNodeIDs(p.getPattern().getContextNodeLabels(), p);
-			elementsP.addAll(extractRelIDs(p.getPattern().getContextRelLabels(), p));
-
-			var auxVariablesP = new ArrayList<String>();
-			var elementsThatCanNeverBeMarkedP = new ArrayList<Long>();
+		
+		// Constraint match handling
+		positiveConstraints.stream().forEach(pc -> {
+			Collection<NeoMatch> premiseMatches = pc.getPremise();
+			Collection<NeoMatch> conclusionMatches = pc.getConclusion();
+			Map<NeoMatch,String> matchToId = new HashMap<>();
 			
-			elementsP.forEach(eltP -> {
-				var creatingMatchesP = elementToCreatingMatches.getOrDefault(eltP, Collections.emptySet());
+			premiseMatches.stream().forEach(pm -> {
 
-				if (!creatingMatchesP.isEmpty()) {
-					//d2=>aux2
+				var elementsP = extractNodeIDs(pm.getPattern().getContextNodeLabels(), pm);
+				elementsP.addAll(extractRelIDs(pm.getPattern().getContextRelLabels(), pm));
+				var auxVariablesP = new ArrayList<String>();
+
+				elementsP.forEach(eltP -> {
+					var creatingMatchesP = elementToCreatingMatches.getOrDefault(eltP, Collections.emptySet());
 					var auxVarForEltP = "aux" + auxVariableCounter++;
 					auxVariablesP.add(auxVarForEltP);
 
-					//!aux2=>!d2
-					ilpProblem.addNegativeImplication(Stream.of(auxVarForEltP),
-							creatingMatchesP.stream().map(this::varNameFor),
-							registerConstraint("AUX_P" + p.getPattern().getName() + "_" + eltP));
-					
-					//--------------------------------------------
-										
-					//------------------------------------------------
+					if (!creatingMatchesP.isEmpty()) {
+						// (x1 v x2 v ...) => aux 
+						ilpProblem.addNegativeImplication(Stream.of(auxVarForEltP),
+								creatingMatchesP.stream().map(this::varNameFor),
+								registerConstraint("AUX_" + pm.getPattern().getName() + "_" + eltP));
+					} else {
+						// element is never marked
+						ilpProblem.fixVariable(auxVarForEltP, false);
+					}
+				});
+				
+				// Context for premise
+				var premiseVar = "p" + constraintCounter++;
+				if (!auxVariablesP.isEmpty()) {
+					// (aux1 ^ aux 2 ^ ... => p)
+					ilpProblem.addImplication(auxVariablesP.stream(), List.of(premiseVar).stream(), "PREMISE_CONSTR_" + pc.getName());
 				} else {
-					elementsThatCanNeverBeMarkedP.add(eltP);
+					// special case: premise is empty, therefore it always holds
+					ilpProblem.fixVariable(premiseVar, true);
 				}
+				matchToId.put(pm, premiseVar);
+			});
+				
+			conclusionMatches.forEach(cm -> {
+				var elementsC = extractNodeIDs(cm.getPattern().getContextNodeLabels(), cm);
+				elementsC.addAll(extractRelIDs(cm.getPattern().getContextRelLabels(), cm));
+				var auxVariablesC = new ArrayList<String>();
+
+				elementsC.forEach(eltC -> {
+					var creatingMatchesC = elementToCreatingMatches.getOrDefault(eltC, Collections.emptySet());
+					var auxVarForEltC = "aux" + auxVariableCounter++;
+					auxVariablesC.add(auxVarForEltC);
+					
+					if (!creatingMatchesC.isEmpty()) {
+						// aux => (x1 v x2 v ...)
+						ilpProblem.addImplication(Stream.of(auxVarForEltC),
+								creatingMatchesC.stream().map(this::varNameFor),
+								registerConstraint("AUX_" + cm.getPattern().getName() + "_" + eltC));
+
+					} else {
+						// element is never marked
+						ilpProblem.fixVariable(auxVarForEltC, false);
+					}
+				});
+				
+				// Context for conclusion
+				var conclusionVar = "c" + constraintCounter++;
+				if (!auxVariablesC.isEmpty()) {
+					// c => (aux1 ^ aux2 ^ ...)
+					ilpProblem.addImplication(List.of(conclusionVar).stream(), auxVariablesC.stream(), "CONCLUSION_CONSTR_" + pc.getName());
+				} else {
+					// special case: conclusion is empty, therefore it always holds
+					ilpProblem.fixVariable(conclusionVar, true);
+				}
+				 
+				matchToId.put(cm, conclusionVar);
 			});
 			
-			if (elementsThatCanNeverBeMarkedP.isEmpty()) {
-				
-				conclusion.forEach(c-> {
-					var elementsC = extractNodeIDs(c.getPattern().getContextNodeLabels(), c);
-					elementsC.addAll(extractRelIDs(c.getPattern().getContextRelLabels(), c));
-
-					var auxVariablesC = new ArrayList<String>();
-					var elementsThatCanNeverBeMarkedC = new ArrayList<Long>();
-					
-					elementsC.forEach(eltC -> {
-						var creatingMatchesC = elementToCreatingMatches.getOrDefault(eltC, Collections.emptySet());
-
-						if (!creatingMatchesC.isEmpty()) {
-							//c10=>aux2
-							var auxVarForEltC = "aux" + auxVariableCounter++;
-							auxVariablesC.add(auxVarForEltC);
-							
-							//!c10=> !aux2 ^ !aux3 ^...
-							ilpProblem.addNegativeImplication(
-									creatingMatchesC.stream().map(this::varNameFor),
-									Stream.of(auxVarForEltC),
-									registerConstraint("AUX_C" + c.getPattern().getName() + "_" + eltC));
-							
-//							//p9=>c10 v c11
-//							ilpProblem.addImplication(
-//									auxVariablesP.stream(),
-//									auxVariablesC.stream(),
-//									registerConstraint("AUX_P" + p.getPattern().getName() + "_" + auxVariablesP.size() + "AUX_C" + c.getPattern().getName() + "_" + eltC));
-
-							
-						} else {
-							elementsThatCanNeverBeMarkedC.add(eltC);
-						}
-						
-					});
-					
-					if (elementsThatCanNeverBeMarkedC.isEmpty()) {
-					    //p9=>c10 v c11
-						ilpProblem.addImplication( 
-								auxVariablesP.stream(),
-								auxVariablesC.stream(),
-								registerConstraint("AUX_P" + p.getPattern().getName() + "_" + auxVariablesP.size() + "AUX_C" + c.getPattern().getName() + "_" + auxVariablesC.size()));
-
-					}
-			});			
-
-			}
-    	});
-    }
+			// Implication constraint
+			premiseMatches.stream().forEach(pm -> {
+				List<String> relevantConclusions = new ArrayList<>();
+				conclusionMatches.stream().filter(cm -> cm.getElements().containsAll(pm.getElements())).forEach(cm -> {
+					relevantConclusions.add(matchToId.get(cm));
+				});
+				if (!relevantConclusions.isEmpty()) {
+					// p => c1 v c2 v ...
+					ilpProblem.addImplication(List.of(matchToId.get(pm)).stream(), relevantConclusions.stream(),
+							registerConstraint("IMPLICATION_CONSTR_" + pc.getName()));
+				} else {
+					// no matches for the conclusion, therefore the premise must not match
+					ilpProblem.fixVariable(matchToId.get(pm), false);
+				}
+			});
+		});
+		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
+	}
 
 	public Collection<Long> determineConsistentElements() throws Exception {
 		if (consistentElements == null) {
@@ -469,7 +484,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	public String getInfo() {
 		return ilpProblem.getProblemInformation();
 	}
-	
+
 	public boolean isConsistent() throws Exception {
 		if (inconsistentElements == null) {
 			logger.debug("Registering all matches...");
@@ -483,39 +498,38 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 		return inconsistentElements.isEmpty();
 	}
-	
+
 	protected abstract void removeInconsistentElements(Collection<Long> inconsistentElts);
-	
-	protected void removeInconsistentElements(Collection<Long> inconsistentElts, boolean src, boolean corr, boolean trg) {
+
+	protected void removeInconsistentElements(Collection<Long> inconsistentElts, boolean src, boolean corr,
+			boolean trg) {
 		Set<Long> relevantElements = new HashSet<Long>();
-		
+
 		if (src)
 			relevantElements.addAll(builder.getAllElementsOfModel(sourceModel));
 		if (corr)
 			relevantElements.addAll(builder.getAllCorrs(sourceModel, targetModel));
 		if (trg)
 			relevantElements.addAll(builder.getAllElementsOfModel(targetModel));
-				
+
 		matchContainer.ifPresent(mc -> {
 			var inconsistentEdges = mc.getRelRange().getIDs().stream()//
-					.map(x -> -1 * (Long)x)//
-					.filter(x -> relevantElements.contains(x) && (Long)x < 0)
-					.filter(x -> inconsistentElts.contains(x))//
+					.map(x -> -1 * (Long) x)//
+					.filter(x -> relevantElements.contains(x) && (Long) x < 0).filter(x -> inconsistentElts.contains(x))//
 					.collect(Collectors.toSet());
-			
+
 			var inconsistentNodes = mc.getNodeRange().getIDs().stream()//
-					.map(x -> (Long)x)//
-					.filter(x -> relevantElements.contains(x) && (Long)x > 0)
-					.filter(x -> inconsistentElts.contains(x))//
+					.map(x -> (Long) x)//
+					.filter(x -> relevantElements.contains(x) && (Long) x > 0).filter(x -> inconsistentElts.contains(x))//
 					.collect(Collectors.toSet());
-			
+
 			builder.deleteEdges(inconsistentEdges);
 			inconsistentElts.removeAll(inconsistentEdges);
 			builder.deleteNodes(inconsistentNodes);
 			inconsistentElts.removeAll(inconsistentNodes);
 		});
 	}
-	
+
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(//
 			MatchContainer<NeoMatch, NeoCoMatch> matchContainer, //
@@ -526,7 +540,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 		return matchContainer.getAllRulesToMatches();
 	}
-	
+
 	public void cleanup() {
 		try {
 			if (isConsistent()) {

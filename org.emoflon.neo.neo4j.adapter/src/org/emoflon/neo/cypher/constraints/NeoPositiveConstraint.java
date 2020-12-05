@@ -23,14 +23,11 @@ public class NeoPositiveConstraint extends NeoConstraint implements IPositiveCon
 		conclusionPattern = NeoPatternFactory.createNeoPattern(body.getConclusion(), builder);
 	}
 	
-	
-	@Override
 	public Collection<NeoMatch> getPremise() {
 		return premisePattern.determineMatches();
 		
 	}
 
-	@Override
 	public Collection<NeoMatch> getConclusion() {
 		return conclusionPattern.determineMatches();
 	}

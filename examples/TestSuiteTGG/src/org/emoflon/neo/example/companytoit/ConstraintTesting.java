@@ -4,7 +4,6 @@ import org.emoflon.neo.api.org.emoflon.neo.example.companytoit.API_C2IModelForTe
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import CompanyToIT.run.CompanyToIT_CC_Run;
 import CompanyToIT.run.CompanyToIT_CO_Run;
 
 public class ConstraintTesting extends ENeoTest{
@@ -17,88 +16,69 @@ public class ConstraintTesting extends ENeoTest{
 		exportTriple(api.getModel_ConsistentSource1(), //
 				api.getModel_ConsistentTarget1(), //
 				api.getRule_ConsistentTriple1().rule());
-		testForConsistency(new CompanyToIT_CO_Run("ConsistentSource1", "ConsistentTarget1").runCheckOnly(), 24);
+		testForConsistency(new CompanyToIT_CO_Run("ConsistentSource1", "ConsistentTarget1").runCheckOnly(), 40);
 	}
 		
-	@Test
-	public void testConsistentTriple1_CC() throws Exception {
-		exportTriple(api.getModel_ConsistentSource1(), //
-				api.getModel_ConsistentTarget1());
-		testForConsistency(new CompanyToIT_CC_Run("ConsistentSource1", "ConsistentTarget1").runCorrCreation(),
-				24);
-	}
+//	@Test
+//	public void testConsistentTriple1_CC() throws Exception {
+//		exportTriple(api.getModel_ConsistentSource1(), //
+//				api.getModel_ConsistentTarget1());
+//		testForConsistency(new CompanyToIT_CC_Run("ConsistentSource1", "ConsistentTarget1").runCorrCreation(),
+//				40);
+//	}
 		
 	//co for inconsistent triple1
 	@Test
-	public void testInConsistentTriple1_CO() throws Exception {
-		exportTriple(api.getModel_ConsistentSource1(), //
-				api.getModel_InConsistentTarget1(), //
-				api.getRule_InConsistentTriple1().rule());
-		testForInconsistency(new CompanyToIT_CO_Run("ConsistentSource1", "InConsistentTarget1").runCheckOnly(),
-				4, 16);
-	}
-			
-	//co for inconsistent triple2
-	@Test
-	public void testInConsistentTriple2_CO() throws Exception {
-		exportTriple(api.getModel_InConsistentSource1(), //
-				api.getModel_ConsistentTarget1(), //
-				api.getRule_InConsistentTriple1().rule());
-		testForInconsistency(new CompanyToIT_CO_Run("InConsistentSource1", "ConsistentTarget1").runCheckOnly(),
-				4, 16);
+	public void testInconsistentTriple1_CO() throws Exception {
+		exportTriple(api.getModel_InconsistentSource1(), //
+				api.getModel_InconsistentTarget1(), //
+				api.getRule_InconsistentTriple1().rule());
+		testForInconsistency(new CompanyToIT_CO_Run("InconsistentSource1", "InconsistentTarget1").runCheckOnly(),
+				12, 20);
 	}
 	
-	//co-cc for consistent triple2
+//	@Test
+//	public void testInconsistentTriple1_CC() throws Exception {
+//		exportTriple(api.getModel_InconsistentSource1(), //
+//				api.getModel_InconsistentTarget1());
+//		testForInconsistency(new CompanyToIT_CC_Run("InconsistentSource1", "InconsistentTarget1").runCorrCreation(),
+//				4, 12);
+//	}
+	
+	//co for inconsistent triple2
 	@Test
-	public void testConsistentTriple2_CO() throws Exception {
-		exportTriple(api.getModel_ConsistentSource2(), //
-				api.getModel_ConsistentTarget2(), //
-				api.getRule_ConsistentTriple2().rule());
-		testForConsistency(new CompanyToIT_CO_Run("ConsistentSource2", "ConsistentTarget2").runCheckOnly(), 17);
+	public void testInconsistentTriple2_CO() throws Exception {
+		exportTriple(api.getModel_InconsistentSource2(), //
+				api.getModel_InconsistentTarget2(), //
+				api.getRule_InconsistentTriple2().rule());
+		testForInconsistency(new CompanyToIT_CO_Run("InconsistentSource2", "InconsistentTarget2").runCheckOnly(),
+				12, 25);
 	}
-		
-	@Test
-	public void testConsistentTriple2_CC() throws Exception {
-		exportTriple(api.getModel_ConsistentSource2(), //
-				api.getModel_ConsistentTarget2());
-		testForConsistency(new CompanyToIT_CC_Run("ConsistentSource2", "ConsistentTarget2").runCorrCreation(),
-				17);
-	}
-			
+	
+//	@Test
+//	public void testInconsistentTriple2_CC() throws Exception {
+//		exportTriple(api.getModel_InconsistentSource2(), //
+//				api.getModel_InconsistentTarget2());
+//		testForInconsistency(new CompanyToIT_CC_Run("InconsistentSource2", "InconsistentTarget2").runCorrCreation(),
+//				4, 12);
+//	}
+	
 	//co for inconsistent triple3
 	@Test
-	public void testInConsistentTriple3_CO() throws Exception {
-		exportTriple(api.getModel_ConsistentSource2(), //
-				api.getModel_InConsistentTarget2(), //
-				api.getRule_ConsistentTriple2().rule());
-		testForInconsistency(new CompanyToIT_CO_Run("ConsistentSource2", "InConsistentTarget2").runCheckOnly(),
-				4, 16);
+	public void testInconsistentTriple3_CO() throws Exception {
+		exportTriple(api.getModel_InconsistentSource3(), //
+				api.getModel_InconsistentTarget3(), //
+				api.getRule_InconsistentTriple3().rule());
+		testForInconsistency(new CompanyToIT_CO_Run("InconsistentSource3", "InconsistentTarget3").runCheckOnly(),
+				12, 25);
 	}
-		
-	//co-cc for consistent triple3
-		@Test
-		public void testConsistentTriple3_CO() throws Exception {
-			exportTriple(api.getModel_ConsistentSource3(), //
-					api.getModel_ConsistentTarget3(), //
-					api.getRule_ConsistentTriple2().rule());
-			testForConsistency(new CompanyToIT_CO_Run("ConsistentSource3", "ConsistentTarget3").runCheckOnly(), 17);
-		}
-			
-		@Test
-		public void testConsistentTriple3_CC() throws Exception {
-			exportTriple(api.getModel_ConsistentSource3(), //
-					api.getModel_ConsistentTarget3());
-			testForConsistency(new CompanyToIT_CC_Run("ConsistentSource3", "ConsistentTarget3").runCorrCreation(),
-					17);
-		}
-			
-		//co for inconsistent triple4
-		@Test
-		public void testInConsistentTriple4_CO() throws Exception {
-			exportTriple(api.getModel_InConsistentSource3(), //
-					api.getModel_ConsistentTarget3(), //
-					api.getRule_ConsistentTriple2().rule());
-			testForInconsistency(new CompanyToIT_CO_Run("InConsistentSource3", "ConsistentTarget3").runCheckOnly(),
-					4, 16);
-		}	
+	
+//	@Test
+//	public void testInconsistentTriple3_CC() throws Exception {
+//		exportTriple(api.getModel_InconsistentSource3(), //
+//				api.getModel_InconsistentTarget3());
+//		testForInconsistency(new CompanyToIT_CC_Run("InconsistentSource3", "InconsistentTarget3").runCorrCreation(),
+//				4, 12);
+//	}
+	
 }
