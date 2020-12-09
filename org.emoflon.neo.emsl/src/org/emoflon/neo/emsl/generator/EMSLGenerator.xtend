@@ -222,7 +222,7 @@ class EMSLGenerator extends AbstractGenerator {
 					this((EMSL_Spec) EMSLUtil.loadSpecification("«resource.URI»", platformResourceURIRoot, platformPluginURIRoot, neocoreURI), builder);
 				}
 			
-				public API_RulesForImporter(EMSL_Spec spec, NeoCoreBuilder builder) {
+				public «apiName»(EMSL_Spec spec, NeoCoreBuilder builder) {
 					this.spec = spec;
 					this.builder = builder;
 				}
