@@ -22,6 +22,12 @@ metamodel NeoCore {
 
 	EDataType : EClassifier 
 
+	EEnum : EDataType {
+		-eLiterals(0..*)->EEnumLiteral
+	}
+	
+	EEnumLiteral
+
 	EStructuralFeature : ETypedElement
 
 	ETypedElement : EObject

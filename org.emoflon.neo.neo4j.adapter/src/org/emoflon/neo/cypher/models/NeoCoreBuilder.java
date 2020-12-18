@@ -292,13 +292,13 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 				|| eclass.equals(EMSLPackage.eINSTANCE.getRule());
 	}
 
-	void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
+	public void executeActionAsCreateTransaction(Consumer<CypherCreator> action) {
 		var creator = new CypherCreator(maxTransactionSizeNodes, maxTransactionSizeEdges);
 		action.accept(creator);
 		creator.run(driver);
 	}
 
-	private Result executeActionAsMatchTransaction(Consumer<CypherNodeMatcher> action) {
+	public Result executeActionAsMatchTransaction(Consumer<CypherNodeMatcher> action) {
 		var matcher = new CypherNodeMatcher();
 		action.accept(matcher);
 		return matcher.run(driver);

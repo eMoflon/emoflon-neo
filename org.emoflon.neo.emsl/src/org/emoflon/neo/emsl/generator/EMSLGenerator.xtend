@@ -38,6 +38,7 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.Parameter
 
 /**
  * Generates code from your model files on save.
@@ -262,6 +263,10 @@ class EMSLGenerator extends AbstractGenerator {
 				public class «accessClassName» extends NeoPatternAccess<«dataClassName», «maskClassName»> {
 					«FOR node : patternBody.nodeBlocks»
 						public final String _«node.name» = "«node.name»";
+					«ENDFOR»
+					
+					«FOR param : extractParameters(p)»
+						public final String _param__«param.name» = "«param.name»";
 					«ENDFOR»
 					
 					@Override
@@ -535,6 +540,10 @@ class EMSLGenerator extends AbstractGenerator {
 						public final String _«node.name» = "«node.name»";
 					«ENDFOR»
 					
+					«FOR param : extractParameters(rule)»
+						public final String _param__«param.name» = "«param.name»";
+					«ENDFOR»
+					
 					@Override
 					public NeoRule rule(){
 						var r = (Rule) spec.getEntities().get(«index»);
@@ -601,6 +610,48 @@ class EMSLGenerator extends AbstractGenerator {
 			e.printStackTrace
 			'''//FIXME Unable to generate API: «e.toString»  */ '''
 		}
+	}
+	
+	private dispatch def extractParameters(Rule rule){
+		val paramsFromNodes = rule.nodeBlocks.flatMap[
+						it.properties
+					].map[
+						it.value
+					].filter(Parameter)
+					
+		val paramsFromEdges = rule.nodeBlocks.flatMap[
+			it.relations
+		].flatMap[
+			it.properties
+		].map[
+			it.value
+		].filter(Parameter)
+		
+		val paramsFromAttributeExps = rule.attributeConstraints.flatMap[
+			it.values
+		].map[
+			it.value
+		].filter(Parameter)
+		
+		return (paramsFromNodes + paramsFromEdges + paramsFromAttributeExps).toSet
+	}
+	
+	private dispatch def extractParameters(Pattern p){
+		val paramsFromNodes = p.body.nodeBlocks.flatMap[
+						it.properties
+					].map[
+						it.value
+					].filter(Parameter)
+					
+		val paramsFromEdges = p.body.nodeBlocks.flatMap[
+			it.relations
+		].flatMap[
+			it.properties
+		].map[
+			it.value
+		].filter(Parameter)
+		
+		return (paramsFromNodes + paramsFromEdges).toSet
 	}
 
 	dispatch def generateAccess(Model m, int index) {

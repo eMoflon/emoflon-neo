@@ -22,7 +22,7 @@ import org.neo4j.driver.Record;
 public class NeoMatch implements IMatch {
 	protected NeoPattern pattern;
 	private Record record; 
-	private Map<String, Object> parameters = new HashMap<>();
+	protected Map<String, Object> parameters = new HashMap<>();
 	
 	/**
 	 * @param pattern the corresponding pattern to the match
