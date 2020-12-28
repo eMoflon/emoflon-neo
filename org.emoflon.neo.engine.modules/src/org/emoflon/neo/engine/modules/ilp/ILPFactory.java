@@ -12,7 +12,7 @@ import org.emoflon.neo.engine.ilp.MOEAProblem;
  */
 public final class ILPFactory {
 	
-	public static final SupportedILPSolver exactSolver = SupportedILPSolver.Gurobi;
+	public static final SupportedILPSolver exactSolver = SupportedILPSolver.Sat4J;
 	public static final SupportedILPSolver heuristicSolver = SupportedILPSolver.MOEA;
 	
 	/**

@@ -1334,4 +1334,388 @@ public class API_C2IModelForTesting {
 			return this;
 		}
 	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.12
+	public Model getModel_InconsistentSource4(){
+		return (Model) spec.getEntities().get(12);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.13
+	public Model getModel_InconsistentTarget4(){
+		return (Model) spec.getEntities().get(13);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/companytoit/C2IModelForTesting.msl#//@entities.14
+	public InconsistentTriple4Access getRule_InconsistentTriple4() {
+		return new InconsistentTriple4Access();
+	}
+	
+	public class InconsistentTriple4Access extends NeoRuleCoAccess<InconsistentTriple4Data, InconsistentTriple4CoData, InconsistentTriple4Mask> {
+		public final String _a1 = "a1";
+		public final String _a2 = "a2";
+		public final String _router = "router";
+		public final String _c = "c";
+		public final String _l1 = "l1";
+		public final String _it = "it";
+		public final String _e1 = "e1";
+		public final String _router2 = "router2";
+		
+		@Override
+		public NeoRule rule(){
+			var r = (Rule) spec.getEntities().get(14);
+			return NeoRuleFactory.createNeoRule(r, builder);
+		}
+		
+		@Override
+		public Stream<InconsistentTriple4Data> data(Collection<NeoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InconsistentTriple4Data(d));
+		}
+			
+		@Override
+		public Stream<InconsistentTriple4CoData> codata(Collection<NeoCoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InconsistentTriple4CoData(d));
+		}
+		
+		@Override
+		public InconsistentTriple4Mask mask() {
+			return new InconsistentTriple4Mask();
+		}
+	}
+	
+	public class InconsistentTriple4Data extends NeoData {
+		public final A1Node _a1;
+		public final A2Node _a2;
+		public final RouterNode _router;
+		public final CNode _c;
+		public final L1Node _l1;
+		public final ItNode _it;
+		public final E1Node _e1;
+		public final Router2Node _router2;
+		
+		public InconsistentTriple4Data(Record data) {
+			var _a1 = data.get("a1");
+			this._a1 = new A1Node(_a1);
+			var _a2 = data.get("a2");
+			this._a2 = new A2Node(_a2);
+			var _router = data.get("router");
+			this._router = new RouterNode(_router);
+			var _c = data.get("c");
+			this._c = new CNode(_c);
+			var _l1 = data.get("l1");
+			this._l1 = new L1Node(_l1);
+			var _it = data.get("it");
+			this._it = new ItNode(_it);
+			var _e1 = data.get("e1");
+			this._e1 = new E1Node(_e1);
+			var _router2 = data.get("router2");
+			this._router2 = new Router2Node(_router2);
+		}
+		
+		
+		public class A1Node {
+			public String _name;
+			
+			public A1Node(Value _a1) {
+				if(!_a1.get("name").isNull())
+					this._name = _a1.get("name").asString();
+			}
+		}
+		
+		public class A2Node {
+			public String _name;
+			
+			public A2Node(Value _a2) {
+				if(!_a2.get("name").isNull())
+					this._name = _a2.get("name").asString();
+			}
+		}
+		
+		public class RouterNode {
+			public String _name;
+			
+			public RouterNode(Value _router) {
+				if(!_router.get("name").isNull())
+					this._name = _router.get("name").asString();
+			}
+		}
+		
+		public class CNode {
+			public String _name;
+			
+			public CNode(Value _c) {
+				if(!_c.get("name").isNull())
+					this._name = _c.get("name").asString();
+			}
+		}
+		
+		public class L1Node {
+			public String _name;
+			
+			public L1Node(Value _l1) {
+				if(!_l1.get("name").isNull())
+					this._name = _l1.get("name").asString();
+			}
+		}
+		
+		public class ItNode {
+			public String _name;
+			
+			public ItNode(Value _it) {
+				if(!_it.get("name").isNull())
+					this._name = _it.get("name").asString();
+			}
+		}
+		
+		public class E1Node {
+			public String _name;
+			
+			public E1Node(Value _e1) {
+				if(!_e1.get("name").isNull())
+					this._name = _e1.get("name").asString();
+			}
+		}
+		
+		public class Router2Node {
+			public String _name;
+			
+			public Router2Node(Value _router2) {
+				if(!_router2.get("name").isNull())
+					this._name = _router2.get("name").asString();
+			}
+		}
+		
+	}
+	
+	public class InconsistentTriple4CoData extends NeoData {
+		public final A1Node _a1;
+		public final A1_corr_0_routerRel _a1_corr_0_router;
+		public final A2Node _a2;
+		public final A2_corr_0_router2Rel _a2_corr_0_router2;
+		public final RouterNode _router;
+		public final CNode _c;
+		public final C_corr_0_itRel _c_corr_0_it;
+		public final L1Node _l1;
+		public final ItNode _it;
+		public final E1Node _e1;
+		public final E1_corr_0_l1Rel _e1_corr_0_l1;
+		public final Router2Node _router2;
+	
+		public InconsistentTriple4CoData(Record data) {
+			var _a1 = data.get("a1");
+			this._a1 = new A1Node(_a1);
+			var _a1_corr_0_router = data.get("a1_corr_0_router");
+			this._a1_corr_0_router = new A1_corr_0_routerRel(_a1_corr_0_router);
+			var _a2 = data.get("a2");
+			this._a2 = new A2Node(_a2);
+			var _a2_corr_0_router2 = data.get("a2_corr_0_router2");
+			this._a2_corr_0_router2 = new A2_corr_0_router2Rel(_a2_corr_0_router2);
+			var _router = data.get("router");
+			this._router = new RouterNode(_router);
+			var _c = data.get("c");
+			this._c = new CNode(_c);
+			var _c_corr_0_it = data.get("c_corr_0_it");
+			this._c_corr_0_it = new C_corr_0_itRel(_c_corr_0_it);
+			var _l1 = data.get("l1");
+			this._l1 = new L1Node(_l1);
+			var _it = data.get("it");
+			this._it = new ItNode(_it);
+			var _e1 = data.get("e1");
+			this._e1 = new E1Node(_e1);
+			var _e1_corr_0_l1 = data.get("e1_corr_0_l1");
+			this._e1_corr_0_l1 = new E1_corr_0_l1Rel(_e1_corr_0_l1);
+			var _router2 = data.get("router2");
+			this._router2 = new Router2Node(_router2);
+		}
+		
+	
+		public class A1Node {
+			public String _name;
+			
+			public A1Node(Value _a1) {
+				if(!_a1.get("name").isNull())
+					this._name = _a1.get("name").asString();
+			}
+		}
+		
+		public class A1_corr_0_routerRel {
+			public String __type_;
+		
+			public A1_corr_0_routerRel(Value _a1_corr_0_router) {
+				if(!_a1_corr_0_router.get("_type_").isNull())
+					this.__type_ = _a1_corr_0_router.get("_type_").asString();
+			}
+		}
+		public class A2Node {
+			public String _name;
+			
+			public A2Node(Value _a2) {
+				if(!_a2.get("name").isNull())
+					this._name = _a2.get("name").asString();
+			}
+		}
+		
+		public class A2_corr_0_router2Rel {
+			public String __type_;
+		
+			public A2_corr_0_router2Rel(Value _a2_corr_0_router2) {
+				if(!_a2_corr_0_router2.get("_type_").isNull())
+					this.__type_ = _a2_corr_0_router2.get("_type_").asString();
+			}
+		}
+		public class RouterNode {
+			public String _name;
+			
+			public RouterNode(Value _router) {
+				if(!_router.get("name").isNull())
+					this._name = _router.get("name").asString();
+			}
+		}
+		
+		public class CNode {
+			public String _name;
+			
+			public CNode(Value _c) {
+				if(!_c.get("name").isNull())
+					this._name = _c.get("name").asString();
+			}
+		}
+		
+		public class C_corr_0_itRel {
+			public String __type_;
+		
+			public C_corr_0_itRel(Value _c_corr_0_it) {
+				if(!_c_corr_0_it.get("_type_").isNull())
+					this.__type_ = _c_corr_0_it.get("_type_").asString();
+			}
+		}
+		public class L1Node {
+			public String _name;
+			
+			public L1Node(Value _l1) {
+				if(!_l1.get("name").isNull())
+					this._name = _l1.get("name").asString();
+			}
+		}
+		
+		public class ItNode {
+			public String _name;
+			
+			public ItNode(Value _it) {
+				if(!_it.get("name").isNull())
+					this._name = _it.get("name").asString();
+			}
+		}
+		
+		public class E1Node {
+			public String _name;
+			
+			public E1Node(Value _e1) {
+				if(!_e1.get("name").isNull())
+					this._name = _e1.get("name").asString();
+			}
+		}
+		
+		public class E1_corr_0_l1Rel {
+			public String __type_;
+		
+			public E1_corr_0_l1Rel(Value _e1_corr_0_l1) {
+				if(!_e1_corr_0_l1.get("_type_").isNull())
+					this.__type_ = _e1_corr_0_l1.get("_type_").asString();
+			}
+		}
+		public class Router2Node {
+			public String _name;
+			
+			public Router2Node(Value _router2) {
+				if(!_router2.get("name").isNull())
+					this._name = _router2.get("name").asString();
+			}
+		}
+		
+	}
+	
+	public class InconsistentTriple4Mask extends NeoMask {
+		public InconsistentTriple4Mask setA1(Long value) {
+			nodeMask.put("a1", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setA1Name(String value) {
+			attributeMask.put("a1.name", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setA1_corr_0_router_type_(String value) {
+			attributeMask.put("a1_corr_0_router._type_", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setA2(Long value) {
+			nodeMask.put("a2", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setA2Name(String value) {
+			attributeMask.put("a2.name", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setA2_corr_0_router2_type_(String value) {
+			attributeMask.put("a2_corr_0_router2._type_", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setRouter(Long value) {
+			nodeMask.put("router", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setRouterName(String value) {
+			attributeMask.put("router.name", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setC(Long value) {
+			nodeMask.put("c", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setCName(String value) {
+			attributeMask.put("c.name", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setC_corr_0_it_type_(String value) {
+			attributeMask.put("c_corr_0_it._type_", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setL1(Long value) {
+			nodeMask.put("l1", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setL1Name(String value) {
+			attributeMask.put("l1.name", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setIt(Long value) {
+			nodeMask.put("it", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setItName(String value) {
+			attributeMask.put("it.name", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setE1(Long value) {
+			nodeMask.put("e1", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setE1Name(String value) {
+			attributeMask.put("e1.name", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setE1_corr_0_l1_type_(String value) {
+			attributeMask.put("e1_corr_0_l1._type_", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setRouter2(Long value) {
+			nodeMask.put("router2", value);
+			return this;
+		}
+		public InconsistentTriple4Mask setRouter2Name(String value) {
+			attributeMask.put("router2.name", value);
+			return this;
+		}
+	}
 }

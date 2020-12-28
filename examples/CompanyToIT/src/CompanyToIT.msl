@@ -28,6 +28,7 @@ tripleGrammar CompanyToIT {
 		NetworkHas2Laptops
 		No2Network
 		No2Ceo
+		No2Admins
 	}
 }
 
@@ -226,4 +227,16 @@ pattern No2CeoConstraint{
 }
 
 constraint No2Ceo = forbid No2CeoConstraint
+
+pattern CompanyHas2AdminsConstraint{
+	c:Company{
+		-admin-> a1
+		-admin-> a2
+	}
+	
+	a1:Admin
+	a2:Admin
+}
+
+constraint No2Admins = forbid CompanyHas2AdminsConstraint
 //edit-ends

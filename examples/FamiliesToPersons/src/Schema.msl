@@ -72,48 +72,36 @@ pattern PremisePattern{
 	}
 }
 
-pattern ConclusionPattern-> PremisePattern[fm1->fm1, fm2->fm2]{
-	fr: FamilyRegister{
-		-families->f
-	}
-	
+pattern ConclusionPattern-> PremisePattern[fm2->fm2]{
 	f: Family{
 		-sons-> fm2
 	}
-	
-	fm1: FamilyMember
+
 	fm2: FamilyMember
 }
 
 constraint FatherSonMale = if PremisePattern then ConclusionPattern
 
-pattern FatherIsFamilyMember{
+pattern FamilyMember{
 	fr: FamilyRegister{
 		-families->f
 	}
 	
-	f: Family{
-		-father-> fm
-	}
-	
-	fm: FamilyMember
+	f: Family
 }
 
-pattern MotherIsFamilyMember-> FatherIsFamilyMember[f->f, fm->fm, fr->fr]{
-	fr: FamilyRegister{
-		-families->f
-	}
-	
+pattern MotherFatherFamilyMember-> FamilyMember[f->f]{
 	f: Family{
+		-mother-> fm1		
 		-father-> fm
-		-mother-> fm1
 	}
 	
 	fm: FamilyMember
+	
 	fm1: FamilyMember
 }
 
-constraint FatherMotherFamilyMember = if FatherIsFamilyMember then MotherIsFamilyMember
+constraint FatherMotherFamilyMember = if FamilyMember then MotherFatherFamilyMember
 
 pattern No2FatherConstraint{
 	fr: FamilyRegister{

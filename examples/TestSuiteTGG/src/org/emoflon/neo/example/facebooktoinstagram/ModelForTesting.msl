@@ -2,9 +2,8 @@ import "platform:/resource/FacebookToInstagramFASE/src/Facebook.msl"
 import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
 
 //Consistent Source - Constraint and rules
-model ConsistentSource {
+model ConsistentSource -> InConsistentSource2 {
 	fb: FacebookLanguage.Network{
-		.description : "Network"
 		-friendships-> fr
 		-users-> f1
 		-users->f2
@@ -16,25 +15,21 @@ model ConsistentSource {
 	}
 	
 	f1: FacebookLanguage.User{
-		.name : "Monica"
 	}
 	
 	f2: FacebookLanguage.User{
-		.name : "Rachel"
     }
 }
 
 //Consistent Target - Constraint and rules
-model ConsistentTarget {
+model ConsistentTarget -> InConsistentTarget1{
    	in : InstagramLanguage.Network {
-		.description : "Network"
 		 -users-> i1
 		 -users-> i2
 	}
 	
 	i1 : InstagramLanguage.User{
 		.name : "Monica"
-		-follows-> i2
 	}
 	
 	i2 : InstagramLanguage.User{
@@ -80,14 +75,10 @@ rule ConsistentTriple{
 }
 
 //InConsistent Target - Violating Rule application
-model InConsistentTarget1 {
-   	in : InstagramLanguage.Network {
-		.description : "Network"
-		 -users-> i1
-		 -users-> i2
-	}
-	
-	i1 : InstagramLanguage.User{
+model InConsistentSource1 -> ConsistentSource
+
+model InConsistentTarget1 -> InConsistentTarget2{
+   	i1 : InstagramLanguage.User{
 		.name : "Monica"
 		-follows-> i2
 	}
@@ -97,8 +88,10 @@ model InConsistentTarget1 {
 	}
 }
 
+rule InConsistentTriple1 -> ConsistentTriple
+
 //Inconsistent Source - Violating Positive constraint
-model InConsistentSource1 {
+model InConsistentSource2 {
 	fb: FacebookLanguage.Network{
 		.description : "Network"
 		-users-> f1
@@ -114,19 +107,30 @@ model InConsistentSource1 {
     }
 }
 
-//Inconsistent source - Violating Negative constraint
-model InConsistentSource2 {
-	fb: FacebookLanguage.Network{
+model InConsistentTarget2{
+	in : InstagramLanguage.Network {
 		.description : "Network"
-		-friendships-> fr1
+		 -users-> i1
+		 -users-> i2
+	}
+	
+	i1 : InstagramLanguage.User{
+		.name : "Monica"
+	}
+	
+	i2 : InstagramLanguage.User{
+		.name : "Rachel"
+	}
+}
+
+rule InConsistentTriple2 -> ConsistentTriple
+
+//Inconsistent source - Violating Negative constraint
+model InConsistentSource3 -> ConsistentSource{
+	fb: FacebookLanguage.Network{
 		-friendships->fr2
 		-users-> f1
 		-users->f2
-	}
-	
-	fr1: Friendship{
-		-friends-> f1
-		-friends-> f2
 	}
 	
 	fr2: Friendship{
@@ -142,3 +146,7 @@ model InConsistentSource2 {
 		.name : "Rachel"
     }
 }
+
+model InConsistentTarget3 -> ConsistentTarget
+
+rule InConsistentTriple3 -> ConsistentTriple

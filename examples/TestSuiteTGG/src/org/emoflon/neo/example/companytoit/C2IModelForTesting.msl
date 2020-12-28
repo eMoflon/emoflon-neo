@@ -163,3 +163,44 @@ model InconsistentTarget3 -> InconsistentTarget1{
 rule InconsistentTriple3 -> InconsistentTriple1 {
 	//nothing to change here
 }
+
+model InconsistentSource4 -> InconsistentSource1{
+	c:Company{
+		-admin->a2
+	}
+	
+	a2: Admin{
+		.name : "Kai"
+		-ceo->InconsistentSource1.ceo1
+	}
+}
+
+model InconsistentTarget4 -> InconsistentTarget1{
+	it:IT{
+		-router->router2
+		-network->network2
+	}
+	
+	router2: Router{
+		.name : "Kai"
+		-network-> network2
+	}
+	
+	network2:Network{
+		.name: "Kai"
+	}
+	
+}
+
+rule InconsistentTriple4 -> InconsistentTriple1{
+	a2: Admin{
+		.name : "Kai"
+		++ -corr-> router2{
+			._type_ := "AdminToRouter"
+	}
+	}
+	
+	router2: Router{
+		.name : "Kai"
+	}
+}

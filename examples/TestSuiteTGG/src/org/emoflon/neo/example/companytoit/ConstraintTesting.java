@@ -81,4 +81,13 @@ public class ConstraintTesting extends ENeoTest{
 //				4, 12);
 //	}
 	
+	//co for inconsistent triple4
+		@Test
+		public void testInconsistentTriple4_CO() throws Exception {
+			exportTriple(api.getModel_InconsistentSource4(), //
+					api.getModel_InconsistentTarget4(), //
+					api.getRule_InconsistentTriple4().rule());
+			testForInconsistency(new CompanyToIT_CO_Run("InconsistentSource4", "InconsistentTarget4").runCheckOnly(),
+					12, 32);
+		}
 }

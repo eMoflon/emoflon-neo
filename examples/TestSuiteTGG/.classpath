@@ -8,6 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/MOEAFramework-2.13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/surbh/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/MOEAFramework-2.13.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

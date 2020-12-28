@@ -346,17 +346,911 @@ public class API_ModelForTesting {
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.3
-	public Model getModel_InConsistentTarget1(){
+	public Model getModel_InConsistentSource1(){
 		return (Model) spec.getEntities().get(3);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.4
-	public Model getModel_InConsistentSource1(){
+	public Model getModel_InConsistentTarget1(){
 		return (Model) spec.getEntities().get(4);
 	}
 	
 	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.5
+	public InConsistentTriple1Access getRule_InConsistentTriple1() {
+		return new InConsistentTriple1Access();
+	}
+	
+	public class InConsistentTriple1Access extends NeoRuleCoAccess<InConsistentTriple1Data, InConsistentTriple1CoData, InConsistentTriple1Mask> {
+		public final String _in = "in";
+		public final String _i1 = "i1";
+		public final String _i2 = "i2";
+		public final String _f1 = "f1";
+		public final String _fb = "fb";
+		public final String _f2 = "f2";
+		
+		@Override
+		public NeoRule rule(){
+			var r = (Rule) spec.getEntities().get(5);
+			return NeoRuleFactory.createNeoRule(r, builder);
+		}
+		
+		@Override
+		public Stream<InConsistentTriple1Data> data(Collection<NeoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple1Data(d));
+		}
+			
+		@Override
+		public Stream<InConsistentTriple1CoData> codata(Collection<NeoCoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple1CoData(d));
+		}
+		
+		@Override
+		public InConsistentTriple1Mask mask() {
+			return new InConsistentTriple1Mask();
+		}
+	}
+	
+	public class InConsistentTriple1Data extends NeoData {
+		public final InNode _in;
+		public final I1Node _i1;
+		public final I2Node _i2;
+		public final F1Node _f1;
+		public final FbNode _fb;
+		public final F2Node _f2;
+		
+		public InConsistentTriple1Data(Record data) {
+			var _in = data.get("in");
+			this._in = new InNode(_in);
+			var _i1 = data.get("i1");
+			this._i1 = new I1Node(_i1);
+			var _i2 = data.get("i2");
+			this._i2 = new I2Node(_i2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _fb = data.get("fb");
+			this._fb = new FbNode(_fb);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+		}
+		
+		
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
+			}
+		}
+		
+		public class I1Node {
+			public String _name;
+			
+			public I1Node(Value _i1) {
+				if(!_i1.get("name").isNull())
+					this._name = _i1.get("name").asString();
+			}
+		}
+		
+		public class I2Node {
+			public String _name;
+			
+			public I2Node(Value _i2) {
+				if(!_i2.get("name").isNull())
+					this._name = _i2.get("name").asString();
+			}
+		}
+		
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class FbNode {
+			public String _description;
+			
+			public FbNode(Value _fb) {
+				if(!_fb.get("description").isNull())
+					this._description = _fb.get("description").asString();
+			}
+		}
+		
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+	}
+	
+	public class InConsistentTriple1CoData extends NeoData {
+		public final InNode _in;
+		public final I1Node _i1;
+		public final I2Node _i2;
+		public final F1Node _f1;
+		public final F1_corr_0_i1Rel _f1_corr_0_i1;
+		public final FbNode _fb;
+		public final Fb_corr_0_inRel _fb_corr_0_in;
+		public final F2Node _f2;
+		public final F2_corr_0_i2Rel _f2_corr_0_i2;
+	
+		public InConsistentTriple1CoData(Record data) {
+			var _in = data.get("in");
+			this._in = new InNode(_in);
+			var _i1 = data.get("i1");
+			this._i1 = new I1Node(_i1);
+			var _i2 = data.get("i2");
+			this._i2 = new I2Node(_i2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f1_corr_0_i1 = data.get("f1_corr_0_i1");
+			this._f1_corr_0_i1 = new F1_corr_0_i1Rel(_f1_corr_0_i1);
+			var _fb = data.get("fb");
+			this._fb = new FbNode(_fb);
+			var _fb_corr_0_in = data.get("fb_corr_0_in");
+			this._fb_corr_0_in = new Fb_corr_0_inRel(_fb_corr_0_in);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+			var _f2_corr_0_i2 = data.get("f2_corr_0_i2");
+			this._f2_corr_0_i2 = new F2_corr_0_i2Rel(_f2_corr_0_i2);
+		}
+		
+	
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
+			}
+		}
+		
+		public class I1Node {
+			public String _name;
+			
+			public I1Node(Value _i1) {
+				if(!_i1.get("name").isNull())
+					this._name = _i1.get("name").asString();
+			}
+		}
+		
+		public class I2Node {
+			public String _name;
+			
+			public I2Node(Value _i2) {
+				if(!_i2.get("name").isNull())
+					this._name = _i2.get("name").asString();
+			}
+		}
+		
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class F1_corr_0_i1Rel {
+			public String __type_;
+		
+			public F1_corr_0_i1Rel(Value _f1_corr_0_i1) {
+				if(!_f1_corr_0_i1.get("_type_").isNull())
+					this.__type_ = _f1_corr_0_i1.get("_type_").asString();
+			}
+		}
+		public class FbNode {
+			public String _description;
+			
+			public FbNode(Value _fb) {
+				if(!_fb.get("description").isNull())
+					this._description = _fb.get("description").asString();
+			}
+		}
+		
+		public class Fb_corr_0_inRel {
+			public String __type_;
+		
+			public Fb_corr_0_inRel(Value _fb_corr_0_in) {
+				if(!_fb_corr_0_in.get("_type_").isNull())
+					this.__type_ = _fb_corr_0_in.get("_type_").asString();
+			}
+		}
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+		public class F2_corr_0_i2Rel {
+			public String __type_;
+		
+			public F2_corr_0_i2Rel(Value _f2_corr_0_i2) {
+				if(!_f2_corr_0_i2.get("_type_").isNull())
+					this.__type_ = _f2_corr_0_i2.get("_type_").asString();
+			}
+		}
+	}
+	
+	public class InConsistentTriple1Mask extends NeoMask {
+		public InConsistentTriple1Mask setIn(Long value) {
+			nodeMask.put("in", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setInDescription(String value) {
+			attributeMask.put("in.description", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setI1(Long value) {
+			nodeMask.put("i1", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setI1Name(String value) {
+			attributeMask.put("i1.name", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setI2(Long value) {
+			nodeMask.put("i2", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setI2Name(String value) {
+			attributeMask.put("i2.name", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setF1(Long value) {
+			nodeMask.put("f1", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setF1Name(String value) {
+			attributeMask.put("f1.name", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setF1_corr_0_i1_type_(String value) {
+			attributeMask.put("f1_corr_0_i1._type_", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setFb(Long value) {
+			nodeMask.put("fb", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setFbDescription(String value) {
+			attributeMask.put("fb.description", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setFb_corr_0_in_type_(String value) {
+			attributeMask.put("fb_corr_0_in._type_", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setF2(Long value) {
+			nodeMask.put("f2", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setF2Name(String value) {
+			attributeMask.put("f2.name", value);
+			return this;
+		}
+		public InConsistentTriple1Mask setF2_corr_0_i2_type_(String value) {
+			attributeMask.put("f2_corr_0_i2._type_", value);
+			return this;
+		}
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.6
 	public Model getModel_InConsistentSource2(){
-		return (Model) spec.getEntities().get(5);
+		return (Model) spec.getEntities().get(6);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.7
+	public Model getModel_InConsistentTarget2(){
+		return (Model) spec.getEntities().get(7);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.8
+	public InConsistentTriple2Access getRule_InConsistentTriple2() {
+		return new InConsistentTriple2Access();
+	}
+	
+	public class InConsistentTriple2Access extends NeoRuleCoAccess<InConsistentTriple2Data, InConsistentTriple2CoData, InConsistentTriple2Mask> {
+		public final String _in = "in";
+		public final String _i1 = "i1";
+		public final String _i2 = "i2";
+		public final String _f1 = "f1";
+		public final String _fb = "fb";
+		public final String _f2 = "f2";
+		
+		@Override
+		public NeoRule rule(){
+			var r = (Rule) spec.getEntities().get(8);
+			return NeoRuleFactory.createNeoRule(r, builder);
+		}
+		
+		@Override
+		public Stream<InConsistentTriple2Data> data(Collection<NeoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple2Data(d));
+		}
+			
+		@Override
+		public Stream<InConsistentTriple2CoData> codata(Collection<NeoCoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple2CoData(d));
+		}
+		
+		@Override
+		public InConsistentTriple2Mask mask() {
+			return new InConsistentTriple2Mask();
+		}
+	}
+	
+	public class InConsistentTriple2Data extends NeoData {
+		public final InNode _in;
+		public final I1Node _i1;
+		public final I2Node _i2;
+		public final F1Node _f1;
+		public final FbNode _fb;
+		public final F2Node _f2;
+		
+		public InConsistentTriple2Data(Record data) {
+			var _in = data.get("in");
+			this._in = new InNode(_in);
+			var _i1 = data.get("i1");
+			this._i1 = new I1Node(_i1);
+			var _i2 = data.get("i2");
+			this._i2 = new I2Node(_i2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _fb = data.get("fb");
+			this._fb = new FbNode(_fb);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+		}
+		
+		
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
+			}
+		}
+		
+		public class I1Node {
+			public String _name;
+			
+			public I1Node(Value _i1) {
+				if(!_i1.get("name").isNull())
+					this._name = _i1.get("name").asString();
+			}
+		}
+		
+		public class I2Node {
+			public String _name;
+			
+			public I2Node(Value _i2) {
+				if(!_i2.get("name").isNull())
+					this._name = _i2.get("name").asString();
+			}
+		}
+		
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class FbNode {
+			public String _description;
+			
+			public FbNode(Value _fb) {
+				if(!_fb.get("description").isNull())
+					this._description = _fb.get("description").asString();
+			}
+		}
+		
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+	}
+	
+	public class InConsistentTriple2CoData extends NeoData {
+		public final InNode _in;
+		public final I1Node _i1;
+		public final I2Node _i2;
+		public final F1Node _f1;
+		public final F1_corr_0_i1Rel _f1_corr_0_i1;
+		public final FbNode _fb;
+		public final Fb_corr_0_inRel _fb_corr_0_in;
+		public final F2Node _f2;
+		public final F2_corr_0_i2Rel _f2_corr_0_i2;
+	
+		public InConsistentTriple2CoData(Record data) {
+			var _in = data.get("in");
+			this._in = new InNode(_in);
+			var _i1 = data.get("i1");
+			this._i1 = new I1Node(_i1);
+			var _i2 = data.get("i2");
+			this._i2 = new I2Node(_i2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f1_corr_0_i1 = data.get("f1_corr_0_i1");
+			this._f1_corr_0_i1 = new F1_corr_0_i1Rel(_f1_corr_0_i1);
+			var _fb = data.get("fb");
+			this._fb = new FbNode(_fb);
+			var _fb_corr_0_in = data.get("fb_corr_0_in");
+			this._fb_corr_0_in = new Fb_corr_0_inRel(_fb_corr_0_in);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+			var _f2_corr_0_i2 = data.get("f2_corr_0_i2");
+			this._f2_corr_0_i2 = new F2_corr_0_i2Rel(_f2_corr_0_i2);
+		}
+		
+	
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
+			}
+		}
+		
+		public class I1Node {
+			public String _name;
+			
+			public I1Node(Value _i1) {
+				if(!_i1.get("name").isNull())
+					this._name = _i1.get("name").asString();
+			}
+		}
+		
+		public class I2Node {
+			public String _name;
+			
+			public I2Node(Value _i2) {
+				if(!_i2.get("name").isNull())
+					this._name = _i2.get("name").asString();
+			}
+		}
+		
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class F1_corr_0_i1Rel {
+			public String __type_;
+		
+			public F1_corr_0_i1Rel(Value _f1_corr_0_i1) {
+				if(!_f1_corr_0_i1.get("_type_").isNull())
+					this.__type_ = _f1_corr_0_i1.get("_type_").asString();
+			}
+		}
+		public class FbNode {
+			public String _description;
+			
+			public FbNode(Value _fb) {
+				if(!_fb.get("description").isNull())
+					this._description = _fb.get("description").asString();
+			}
+		}
+		
+		public class Fb_corr_0_inRel {
+			public String __type_;
+		
+			public Fb_corr_0_inRel(Value _fb_corr_0_in) {
+				if(!_fb_corr_0_in.get("_type_").isNull())
+					this.__type_ = _fb_corr_0_in.get("_type_").asString();
+			}
+		}
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+		public class F2_corr_0_i2Rel {
+			public String __type_;
+		
+			public F2_corr_0_i2Rel(Value _f2_corr_0_i2) {
+				if(!_f2_corr_0_i2.get("_type_").isNull())
+					this.__type_ = _f2_corr_0_i2.get("_type_").asString();
+			}
+		}
+	}
+	
+	public class InConsistentTriple2Mask extends NeoMask {
+		public InConsistentTriple2Mask setIn(Long value) {
+			nodeMask.put("in", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setInDescription(String value) {
+			attributeMask.put("in.description", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setI1(Long value) {
+			nodeMask.put("i1", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setI1Name(String value) {
+			attributeMask.put("i1.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setI2(Long value) {
+			nodeMask.put("i2", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setI2Name(String value) {
+			attributeMask.put("i2.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF1(Long value) {
+			nodeMask.put("f1", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF1Name(String value) {
+			attributeMask.put("f1.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF1_corr_0_i1_type_(String value) {
+			attributeMask.put("f1_corr_0_i1._type_", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setFb(Long value) {
+			nodeMask.put("fb", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setFbDescription(String value) {
+			attributeMask.put("fb.description", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setFb_corr_0_in_type_(String value) {
+			attributeMask.put("fb_corr_0_in._type_", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF2(Long value) {
+			nodeMask.put("f2", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF2Name(String value) {
+			attributeMask.put("f2.name", value);
+			return this;
+		}
+		public InConsistentTriple2Mask setF2_corr_0_i2_type_(String value) {
+			attributeMask.put("f2_corr_0_i2._type_", value);
+			return this;
+		}
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.9
+	public Model getModel_InConsistentSource3(){
+		return (Model) spec.getEntities().get(9);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.10
+	public Model getModel_InConsistentTarget3(){
+		return (Model) spec.getEntities().get(10);
+	}
+	
+	//:~> platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/facebooktoinstagram/ModelForTesting.msl#//@entities.11
+	public InConsistentTriple3Access getRule_InConsistentTriple3() {
+		return new InConsistentTriple3Access();
+	}
+	
+	public class InConsistentTriple3Access extends NeoRuleCoAccess<InConsistentTriple3Data, InConsistentTriple3CoData, InConsistentTriple3Mask> {
+		public final String _in = "in";
+		public final String _i1 = "i1";
+		public final String _i2 = "i2";
+		public final String _f1 = "f1";
+		public final String _fb = "fb";
+		public final String _f2 = "f2";
+		
+		@Override
+		public NeoRule rule(){
+			var r = (Rule) spec.getEntities().get(11);
+			return NeoRuleFactory.createNeoRule(r, builder);
+		}
+		
+		@Override
+		public Stream<InConsistentTriple3Data> data(Collection<NeoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple3Data(d));
+		}
+			
+		@Override
+		public Stream<InConsistentTriple3CoData> codata(Collection<NeoCoMatch> matches) {
+			var data = NeoMatch.getData(matches);
+			return data.stream().map(d -> new InConsistentTriple3CoData(d));
+		}
+		
+		@Override
+		public InConsistentTriple3Mask mask() {
+			return new InConsistentTriple3Mask();
+		}
+	}
+	
+	public class InConsistentTriple3Data extends NeoData {
+		public final InNode _in;
+		public final I1Node _i1;
+		public final I2Node _i2;
+		public final F1Node _f1;
+		public final FbNode _fb;
+		public final F2Node _f2;
+		
+		public InConsistentTriple3Data(Record data) {
+			var _in = data.get("in");
+			this._in = new InNode(_in);
+			var _i1 = data.get("i1");
+			this._i1 = new I1Node(_i1);
+			var _i2 = data.get("i2");
+			this._i2 = new I2Node(_i2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _fb = data.get("fb");
+			this._fb = new FbNode(_fb);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+		}
+		
+		
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
+			}
+		}
+		
+		public class I1Node {
+			public String _name;
+			
+			public I1Node(Value _i1) {
+				if(!_i1.get("name").isNull())
+					this._name = _i1.get("name").asString();
+			}
+		}
+		
+		public class I2Node {
+			public String _name;
+			
+			public I2Node(Value _i2) {
+				if(!_i2.get("name").isNull())
+					this._name = _i2.get("name").asString();
+			}
+		}
+		
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class FbNode {
+			public String _description;
+			
+			public FbNode(Value _fb) {
+				if(!_fb.get("description").isNull())
+					this._description = _fb.get("description").asString();
+			}
+		}
+		
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+	}
+	
+	public class InConsistentTriple3CoData extends NeoData {
+		public final InNode _in;
+		public final I1Node _i1;
+		public final I2Node _i2;
+		public final F1Node _f1;
+		public final F1_corr_0_i1Rel _f1_corr_0_i1;
+		public final FbNode _fb;
+		public final Fb_corr_0_inRel _fb_corr_0_in;
+		public final F2Node _f2;
+		public final F2_corr_0_i2Rel _f2_corr_0_i2;
+	
+		public InConsistentTriple3CoData(Record data) {
+			var _in = data.get("in");
+			this._in = new InNode(_in);
+			var _i1 = data.get("i1");
+			this._i1 = new I1Node(_i1);
+			var _i2 = data.get("i2");
+			this._i2 = new I2Node(_i2);
+			var _f1 = data.get("f1");
+			this._f1 = new F1Node(_f1);
+			var _f1_corr_0_i1 = data.get("f1_corr_0_i1");
+			this._f1_corr_0_i1 = new F1_corr_0_i1Rel(_f1_corr_0_i1);
+			var _fb = data.get("fb");
+			this._fb = new FbNode(_fb);
+			var _fb_corr_0_in = data.get("fb_corr_0_in");
+			this._fb_corr_0_in = new Fb_corr_0_inRel(_fb_corr_0_in);
+			var _f2 = data.get("f2");
+			this._f2 = new F2Node(_f2);
+			var _f2_corr_0_i2 = data.get("f2_corr_0_i2");
+			this._f2_corr_0_i2 = new F2_corr_0_i2Rel(_f2_corr_0_i2);
+		}
+		
+	
+		public class InNode {
+			public String _description;
+			
+			public InNode(Value _in) {
+				if(!_in.get("description").isNull())
+					this._description = _in.get("description").asString();
+			}
+		}
+		
+		public class I1Node {
+			public String _name;
+			
+			public I1Node(Value _i1) {
+				if(!_i1.get("name").isNull())
+					this._name = _i1.get("name").asString();
+			}
+		}
+		
+		public class I2Node {
+			public String _name;
+			
+			public I2Node(Value _i2) {
+				if(!_i2.get("name").isNull())
+					this._name = _i2.get("name").asString();
+			}
+		}
+		
+		public class F1Node {
+			public String _name;
+			
+			public F1Node(Value _f1) {
+				if(!_f1.get("name").isNull())
+					this._name = _f1.get("name").asString();
+			}
+		}
+		
+		public class F1_corr_0_i1Rel {
+			public String __type_;
+		
+			public F1_corr_0_i1Rel(Value _f1_corr_0_i1) {
+				if(!_f1_corr_0_i1.get("_type_").isNull())
+					this.__type_ = _f1_corr_0_i1.get("_type_").asString();
+			}
+		}
+		public class FbNode {
+			public String _description;
+			
+			public FbNode(Value _fb) {
+				if(!_fb.get("description").isNull())
+					this._description = _fb.get("description").asString();
+			}
+		}
+		
+		public class Fb_corr_0_inRel {
+			public String __type_;
+		
+			public Fb_corr_0_inRel(Value _fb_corr_0_in) {
+				if(!_fb_corr_0_in.get("_type_").isNull())
+					this.__type_ = _fb_corr_0_in.get("_type_").asString();
+			}
+		}
+		public class F2Node {
+			public String _name;
+			
+			public F2Node(Value _f2) {
+				if(!_f2.get("name").isNull())
+					this._name = _f2.get("name").asString();
+			}
+		}
+		
+		public class F2_corr_0_i2Rel {
+			public String __type_;
+		
+			public F2_corr_0_i2Rel(Value _f2_corr_0_i2) {
+				if(!_f2_corr_0_i2.get("_type_").isNull())
+					this.__type_ = _f2_corr_0_i2.get("_type_").asString();
+			}
+		}
+	}
+	
+	public class InConsistentTriple3Mask extends NeoMask {
+		public InConsistentTriple3Mask setIn(Long value) {
+			nodeMask.put("in", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setInDescription(String value) {
+			attributeMask.put("in.description", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setI1(Long value) {
+			nodeMask.put("i1", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setI1Name(String value) {
+			attributeMask.put("i1.name", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setI2(Long value) {
+			nodeMask.put("i2", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setI2Name(String value) {
+			attributeMask.put("i2.name", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setF1(Long value) {
+			nodeMask.put("f1", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setF1Name(String value) {
+			attributeMask.put("f1.name", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setF1_corr_0_i1_type_(String value) {
+			attributeMask.put("f1_corr_0_i1._type_", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setFb(Long value) {
+			nodeMask.put("fb", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setFbDescription(String value) {
+			attributeMask.put("fb.description", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setFb_corr_0_in_type_(String value) {
+			attributeMask.put("fb_corr_0_in._type_", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setF2(Long value) {
+			nodeMask.put("f2", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setF2Name(String value) {
+			attributeMask.put("f2.name", value);
+			return this;
+		}
+		public InConsistentTriple3Mask setF2_corr_0_i2_type_(String value) {
+			attributeMask.put("f2_corr_0_i2._type_", value);
+			return this;
+		}
 	}
 }

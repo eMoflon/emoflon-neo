@@ -309,7 +309,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		});
 	}
 
-	// Positive constraint - edit Surbhi
+	// Positive constraint
 	protected void handlePositiveConstraints() {
 		long tic = System.currentTimeMillis();
 		logger.info("Checking for positive constraint...");
