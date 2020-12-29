@@ -8,15 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/MOEAFramework-2.13.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/commons-codec-1.8.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/commons-math3-3.4.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/gurobi.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/jcommon-1.0.20.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/jfreechart-1.0.15.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/JMetal-4.3.jar"/>
-	<classpathentry kind="lib" path="C:/Users/admin/eclipse-workspace-eneo/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/rsyntaxtextarea.jar"/>
+	<classpathentry kind="lib" path="C:/Users/surbh/git/emoflon-neo/org.emoflon.neo.engine.modules/lib/MOEAFramework-2.13.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

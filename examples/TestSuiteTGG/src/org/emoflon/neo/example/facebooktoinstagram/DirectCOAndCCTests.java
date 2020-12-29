@@ -32,7 +32,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 	public void testInconsistentTriple1_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc1(), //
 				api.getModel_ConsistentTrg1());
-		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc1", "ConsistentTrg1", solver).runCheckOnly(),
+		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc1", "InconsistentTrg1", solver).runCheckOnly(),
 				4, 4);
 	}
 
@@ -59,7 +59,7 @@ public class DirectCOAndCCTests extends ENeoTest {
 	public void testInconsistentTriple2_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc2(), //
 				api.getModel_ConsistentTrg2());
-		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc2", "ConsistentTrg2", solver).runCheckOnly(),
+		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc2", "InconsistentTrg2", solver).runCheckOnly(),
 				4, 10);
 	}
 
@@ -85,7 +85,8 @@ public class DirectCOAndCCTests extends ENeoTest {
 	@Ignore("TGG is not suitable for OPT strategies in this form")
 	public void testInconsistentTriple3_CO() throws Exception {
 		exportTriple(api.getModel_ConsistentSrc3(), //
-				api.getModel_ConsistentTrg3());
+				api.getModel_ConsistentTrg3(),
+				api.getRule_CreateCorrs3().rule());
 		testForInconsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSrc3", "ConsistentTrg3", solver).runCheckOnly(),
 				6, 21);
 	}

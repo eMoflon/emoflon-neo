@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.apache.commons.lang,
  JavaToDocSLE,
  JavaToDocSLE,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ org.apache.commons.lang3
 Export-Package: JavaToDocSLE,
  JavaToDocSLE.run,
  metamodels,

@@ -38,6 +38,8 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
+import org.emoflon.neo.emsl.eMSL.impl.TripleGrammarImpl
+import java.util.stream.Collectors
 
 /**
  * Generates code from your model files on save.
@@ -52,7 +54,7 @@ class EMSLGenerator extends AbstractGenerator {
 	List<String> derivedGTFiles = new ArrayList
 	boolean cleanedUp
 
-	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {				
+	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		if(resource.contents.isEmpty) return
 
 		val apiPath = getAPIPath(resource)
@@ -67,7 +69,7 @@ class EMSLGenerator extends AbstractGenerator {
 		fsa.generateFile(API_ROOT + "API_Common.java", generateCommon())
 		fsa.generateFile(API_ROOT + apiPath + "/" + apiFile + ".java",
 			generateAPIFor(apiFile, apiPath, emslSpec, resource))
-			
+
 		cleanedUp = true
 	}
 
@@ -122,9 +124,9 @@ class EMSLGenerator extends AbstractGenerator {
 		cleanedUp = false
 		derivedGTFiles.clear
 	}
-	
-	private def void createRefreshJob(List<IFile> generatedFiles){
-		if(!generatedFiles.isEmpty)
+
+	private def void createRefreshJob(List<IFile> generatedFiles) {
+		if (!generatedFiles.isEmpty)
 			new RefreshFilesJob(generatedFiles).schedule()
 	}
 
@@ -161,8 +163,8 @@ class EMSLGenerator extends AbstractGenerator {
 		val path = segments.take(segments.length - 1)
 		path.join("/") + "/"
 	}
-	
-	private def getNeoCoreURIInstalled(){
+
+	private def getNeoCoreURIInstalled() {
 		val plugin = Platform.getBundle("org.emoflon.neo.neocore");
 		val fileURL = FileLocator.resolve(plugin.getEntry("/")).toString
 		val fileURI = new URI(fileURL.replace(" ", "%20")).normalize
@@ -177,6 +179,7 @@ class EMSLGenerator extends AbstractGenerator {
 			package org.emoflon.neo.api«subPackagePath(apiPath)»;
 			
 			import org.emoflon.neo.cypher.common.*;
+			import org.emoflon.neo.cypher.constraints.*;
 			import org.emoflon.neo.cypher.factories.*;
 			import org.emoflon.neo.cypher.models.*;
 			import org.emoflon.neo.cypher.patterns.*;
@@ -423,6 +426,11 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(GraphGrammar gg, int index) {
 		if(gg.abstract) return ""
 		try {
+			val ruleMethods = gg.rules.stream.map["getRule_" + namingConvention(it.name) + "().rule()"].collect(
+				Collectors.toSet)
+			val constraintMethods = gg.constraints.stream.map["getConstraint_" + namingConvention(it.name) + "().constraint()"].collect(
+				Collectors.toSet)
+				
 			'''
 				public Collection<NeoRule> getAllRulesFor«namingConvention(gg.name)»() {
 					Collection<NeoRule> rules = new HashSet<>();
@@ -433,6 +441,14 @@ class EMSLGenerator extends AbstractGenerator {
 						«ENDFOR»
 					«ENDFOR»
 					return rules;
+				}
+				
+				public Collection<NeoConstraint> getAllConstraintsFor«namingConvention(gg.name)»() {
+					Collection<NeoConstraint> constraints = new HashSet<>();
+					«FOR access : constraintMethods»
+						constraints.add(«access»);
+					«ENDFOR»
+					return constraints;
 				}
 				
 				public Collection<Rule> getAllEMSLRulesFor«namingConvention(gg.name)»(){
@@ -470,12 +486,25 @@ class EMSLGenerator extends AbstractGenerator {
 					var rules = new HashSet<TripleRule>();
 					var rs = spec.eResource().getResourceSet();
 					«FOR tr : tgg.rules»
-					{
-						var uri = "«EcoreUtil.getURI(tr)»";
-						rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
-					}
+						{
+							var uri = "«EcoreUtil.getURI(tr)»";
+							rules.add((TripleRule) rs.getEObject(URI.createURI(uri), true));
+						}
 					«ENDFOR»
 					return rules;
+				}
+				
+				public Collection<IConstraint> getConstraintsOf«rootName»(){
+					var constraints = new HashSet<IConstraint>();
+					var rs = spec.eResource().getResourceSet();
+					«FOR c : tgg.constraints»
+						{
+							var uri = "«EcoreUtil.getURI(c)»";
+							var c = (Constraint) rs.getEObject(URI.createURI(uri), true);
+							constraints.add(NeoConstraintFactory.createNeoConstraint(c, builder));
+						}
+					«ENDFOR»
+					return constraints;
 				}
 			'''
 		} catch (Exception e) {

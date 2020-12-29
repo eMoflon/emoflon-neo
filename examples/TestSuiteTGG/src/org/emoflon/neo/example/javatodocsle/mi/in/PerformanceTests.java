@@ -3,73 +3,86 @@ package org.emoflon.neo.example.javatodocsle.mi.in;
 import static run.JavaToDocSLE_GEN_Run.SRC_MODEL_NAME;
 import static run.JavaToDocSLE_GEN_Run.TRG_MODEL_NAME;
 
-import java.util.function.Consumer;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.API_JavaToDocSLE;
-import org.emoflon.neo.api.org.emoflon.neo.example.javatodocsle.mi.in.API_ConflictGenerator;
-import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.Ignore;
-import JavaToDocSLE.run.JavaToDocSLE_MI_Run;
-import org.junit.jupiter.api.Test;
+
+import JavaToDocSLE.run.JavaToDocSLE_BWD_OPT_Run;
+import JavaToDocSLE.run.JavaToDocSLE_CC_Run;
+import JavaToDocSLE.run.JavaToDocSLE_CO_Run;
+import JavaToDocSLE.run.JavaToDocSLE_FWD_OPT_Run;
+
+import org.junit.jupiter.api.Test;;
 
 public class PerformanceTests extends ENeoTest {
-
-	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator, int nrOfConflictsEach) throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
-		API_ConflictGenerator api = new API_ConflictGenerator(builder);
-		
-		var testGenApp = new JavaToDocSLE_GEN_TEST(configurator);
-		var testMIApp = new JavaToDocSLE_MI_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var createDeleteConflict = api.getRule_CreateDeleteConflict().rule();
-		var moveDeleteConflict = api.getRule_MoveDeleteConflict().rule();
-		//var moveMoveConflict = api.getRule_MoveMoveConflict().rule();
-		
-		// Step 1. Run GEN to produce a triple
-		testGenApp.run();
-
-		// Step 2. Create conflicts by modifying the triple 
-		for (int i=0; i< nrOfConflictsEach; i++) {
-			createDeleteConflict.apply();
-			moveDeleteConflict.apply();
-			//moveMoveConflict.apply();
-		}
-		
-		// Step 3. Run model integration
-		testMIApp.run();
-
-	}
 	
-	public void runTestForFixedSize(int nrOfApplications, int nrOfConflicts) throws Exception {
-		runTest((scheduler) -> {
+	public void runTestForFixedSize(int nrOfApplications, int nrOfIterations) throws Exception {
+		
+		Logger.getRootLogger().setLevel(Level.INFO);
+		var testCOApp = new JavaToDocSLE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCCApp = new JavaToDocSLE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testFWD_OPTApp = new JavaToDocSLE_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testBWD_OPTApp = new JavaToDocSLE_BWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		
+		var testGenApp = new JavaToDocSLE_GEN_TEST((scheduler) -> {
 			scheduler.setMax(API_JavaToDocSLE.JavaToDocSLE__ClazzToDocRule, 10 * nrOfApplications)
 			.setMax(API_JavaToDocSLE.JavaToDocSLE__SubClazzToSubDocRule, 10 * nrOfApplications)
 			.setMax(API_JavaToDocSLE.JavaToDocSLE__MethodToEntryRule, 40 * nrOfApplications)
 			.setMax(API_JavaToDocSLE.JavaToDocSLE__FieldToEntryRule, 40 * nrOfApplications)
-			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddParameterRule, 40 * nrOfApplications)
-			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryRule, 1)
-			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryEntryRule, 40 * nrOfApplications)
-			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
-		}, nrOfConflicts/2);
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddParameterRule, 40 * nrOfApplications);
+//			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryRule, 1)
+//			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryEntryRule, 40 * nrOfApplications)
+//			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
+		});
+		
+		// Step 2. Run ops
+//		for (int j=0; j<nrOfIterations; j++) {
+//			testGenApp.run();
+//			Logger.getRootLogger().setLevel(Level.INFO);
+//			logger.info("CO, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+//			testCOApp.run();
+//			Logger.getRootLogger().setLevel(Level.OFF);
+//			clearDB();
+//		}
+//		
+//		for (int j=0; j<nrOfIterations; j++) {
+//			testGenApp.run();
+//			builder.deleteAllCorrs();
+//			Logger.getRootLogger().setLevel(Level.INFO);
+//			logger.info("CC, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+//			testCCApp.run();
+//			Logger.getRootLogger().setLevel(Level.OFF);
+//			clearDB();
+//		}
+		for (int j=0; j<nrOfIterations; j++) {
+			testGenApp.run();
+			builder.deleteAllCorrs();
+			builder.clearModel(TRG_MODEL_NAME);
+			Logger.getRootLogger().setLevel(Level.INFO);
+			logger.info("FWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+			testFWD_OPTApp.run();
+			Logger.getRootLogger().setLevel(Level.OFF);
+			clearDB();
+		}
+		
+//		for (int j=0; j<nrOfIterations; j++) {
+//			testGenApp.run();
+//			builder.deleteAllCorrs();
+//			builder.clearModel(SRC_MODEL_NAME);
+//			Logger.getRootLogger().setLevel(Level.INFO);
+//			logger.info("BWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+//			testBWD_OPTApp.run();
+//			Logger.getRootLogger().setLevel(Level.OFF);
+//			clearDB();
+//		}
 	}
 	
 	@Test
 	public void testPerformance() throws Exception {
-		for (int i=1; i<=2; i++) {
-			for (int j=0; j<7; j++) {
-				logger.info("Iteration: " + j + ". Start new configuration: " + i * 1000 + " elements, 100 conflicts...");
-				runTestForFixedSize(i, 100);
-				clearDB();
-			}
-		}
-		for (int i=1; i<=2;i++) {
-			for (int j=0; j<7; j++) {
-				logger.info("Iteration: " + j + ". Start new configuration: 5000 elements, " + i * 20 + " conflicts...");
-				runTestForFixedSize(5, i * 20);
-				clearDB();
-			}
+		for (int i : new int[]{1,2,5,10,20,50}) {
+			Logger.getRootLogger().setLevel(Level.OFF);
+			runTestForFixedSize(i, 5);
 		}
 	}
 }

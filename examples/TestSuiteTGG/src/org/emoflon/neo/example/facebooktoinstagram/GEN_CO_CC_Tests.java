@@ -32,8 +32,8 @@ import Transformations.run.FacebookToInstagramFASE_GEN_Run;
 public class GEN_CO_CC_Tests extends ENeoTest {
 
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {
-		var testCOApp = new FacebookToInstagramFASE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME, solver);
-		var testCCApp = new FacebookToInstagramFASE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME, solver);
+		var testCOApp = new FacebookToInstagramFASE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCCApp = new FacebookToInstagramFASE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		var testGenApp = new FacebookToInstagram_GEN_TEST(configurator);
 
 		// Step 1. Run GEN to produce a triple
@@ -61,8 +61,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	@Test
 	public void testOnlyAxioms() throws Exception {
 		runTest((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 1)
-					.setMax(API_Transformations.FacebookToInstagramFASE__UserToUser, 1);
+			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 1);
 		});
 	}
 

@@ -23,6 +23,13 @@ tripleGrammar CompanyToIT {
 		EmployeeToPCRule
 		EmployeeToLaptopRule
 	}
+	
+	constraints {
+		NetworkHas2Laptops
+		No2Network
+		No2Ceo
+		No2Admins
+	}
 }
 
 tripleRule CompanyToITRule : CompanyToIT {
@@ -174,3 +181,62 @@ tripleRule EmployeeToLaptopRule : CompanyToIT -> EmployeeToDevice {
 		++ employee <-:EmployeeToLaptop-> computer
 	}
 }
+
+//Surbhi-edit
+pattern PremisePattern{
+	it : IT {
+		-network-> network
+	}
+	
+	network : Network 
+	
+} 
+
+pattern ConclusionPattern-> PremisePattern[network->network]{
+	network : Network {
+		-laptop->l1
+		-laptop->l2
+	}
+	
+	l1 : Laptop
+	l2 : Laptop
+}
+
+constraint NetworkHas2Laptops = if PremisePattern then ConclusionPattern
+
+pattern No2NetworkConstraint{
+	rout: Router{
+		-network->net1
+		-network->net
+	}
+	
+	net: Network
+	net1: Network
+}
+
+constraint No2Network = forbid No2NetworkConstraint
+
+pattern No2CeoConstraint{
+	admin: Admin{
+		-ceo->c1
+		-ceo->c2
+	}
+	
+	c1: CEO
+	c2: CEO
+}
+
+constraint No2Ceo = forbid No2CeoConstraint
+
+pattern CompanyHas2AdminsConstraint{
+	c:Company{
+		-admin-> a1
+		-admin-> a2
+	}
+	
+	a1:Admin
+	a2:Admin
+}
+
+constraint No2Admins = forbid CompanyHas2AdminsConstraint
+//edit-ends

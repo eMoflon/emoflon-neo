@@ -36,7 +36,7 @@ abstract class ILPOperation implements Operation {
 	
 	override String additionalFields(String tggName) {
 		if (isExact)
-			return additionalFields(tggName, "Gurobi")
+			return additionalFields(tggName, "Sat4J")
 		else
 			return additionalFields(tggName, "MOEA")
 	}

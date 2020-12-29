@@ -1,0 +1,135 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
+
+model javaGeometry {
+	
+	parallelogramJ : Clazz {
+		.name : "Parallelogram"
+		-subTypes-> diamondJ
+		-fields-> pAJ
+		-fields-> pBJ
+	}
+	
+	pAJ : Field { 
+		.name : "Parallelogram Side A"
+	}
+	
+	pBJ : Field { 
+		.name : "Parallelogram Side B"
+	}
+	
+	rectangleJ : Clazz {
+		.name : "Rectangle"
+		-methods-> rAreaJ
+		-fields-> rAJ
+		-fields-> rBJ
+	}
+	
+	rAJ : Field { 
+		.name : "Rectangle Side A"
+	}
+	
+	rBJ : Field { 
+		.name : "Rectangle Side B"
+	}
+	
+	rAreaJ : Method { 
+		.name : "Rectangle Area"
+	}
+	
+	diamondJ : Clazz {
+		.name : "Diamond"
+		-methods-> dExtentJ
+	}
+	 
+	dExtentJ : Method { 
+		.name : "Diamond Extent"
+	}
+	
+	squareJ : Clazz {
+		.name : "Square"
+		-methods-> sAreaJ
+		-methods-> sExtentJ
+		-fields-> sAJ
+	}
+	
+	sAreaJ : Method { 
+		.name : "Square Area"
+	}
+	
+	sAJ : Field {
+		.name : "Square Side A"
+	}
+	
+	sExtentJ : Method {
+		.name : "Square Extent"
+	}
+}
+
+model docGeometry {
+	
+	parallelogramD : Doc {
+		.name : "Parallelogram"
+		-hrefs-> diamondD
+		-entries-> pAD
+		-entries-> pBD
+	}
+	
+	pAD : Entry { 
+		.name : "Parallelogram Side A"
+	}
+	
+	pBD : Entry { 
+		.name : "Parallelogram Side B"
+	}
+	
+	rectangleD : Doc {
+		.name : "Rectangle"
+		-entries-> rAreaD
+		-entries-> rAD
+		-entries-> rBD
+	}
+	
+	rAD : Entry { 
+		.name : "Rectangle Side A"
+	}
+	
+	rBD : Entry { 
+		.name : "Rectangle Side A"
+	}
+	
+	rAreaD : Entry { 
+		.name : "Rectangle Area"
+	}
+	
+	diamondD : Doc {
+		.name : "Diamond"
+		-entries-> dExtentD
+	}
+	 
+	dExtentD : Entry { 
+		.name : "Diamond Extent"
+	}
+	
+	squareD : Doc {
+		.name : "Square"
+		-entries-> sAreaD
+	}
+	
+	sAreaD : Entry { 
+		.name : "Square Area"
+	}
+}
+
+// 1,2,3
+model javaGeometry1 -> javaGeometry {
+	sAJ : Field {
+		._de_ : true
+	}
+	
+	parallelogramJ : Clazz {
+		-subTypes-> squareJ {
+			~_de_ : true
+		}
+	}
+}

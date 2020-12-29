@@ -27,6 +27,12 @@ tripleGrammar FacebookToInstagramFASE {
 		RequestFriendship
 		AcceptFriendship
 	}
+	
+	constraints {
+		noDoubleFriendship
+		noDoubleFollowership
+		EnforceFriendship
+	}
 }
 
 tripleRule NetworkToNetwork : FacebookToInstagramFASE {
@@ -72,7 +78,7 @@ tripleRule UserToUser : FacebookToInstagramFASE {
 		fn <-:NetworkToNetwork-> in 
 		++ fu <-:FbUserToInUser-> iu
 	}
-}
+} 
 
 tripleRule RequestFriendship : FacebookToInstagramFASE {
 	source {
@@ -148,7 +154,7 @@ tripleRule AcceptFriendship : FacebookToInstagramFASE {
 		fu1 <-:FbUserToInUser-> iu1
 		fu2 <-:FbUserToInUser-> iu2
 	}
-} forbid src(noDoubleFriendshipFacebook)
+} forbid src(noDoubleFriendshipFacebook) 
 
 pattern noDoubleFriendshipFacebook {
 	fn:FacebookLanguage.Network {
@@ -181,7 +187,29 @@ pattern noDoubleFollowershipInstagramConstraint {
 	 
 constraint noDoubleFollowership = forbid noDoubleFollowershipInstagramConstraint
 
-pattern bidirectionalFollowership {
+//Surbhi-edit
+
+pattern ConclusionPattern-> PremisePattern[fu1->fu1, fu2->fu2] {
+ 	fu1 : FacebookLanguage.User
+ 	
+ 	fu2 : FacebookLanguage.User
+ 	
+ 	fr : Friendship{
+ 		-friends-> fu1
+ 		-friends-> fu2
+ 	}
+ 		
+}
+
+pattern PremisePattern {
+	fu1 : FacebookLanguage.User{
+		-corr->iu1
+	}
+ 	
+ 	fu2 : FacebookLanguage.User{
+ 		-corr->iu2
+ 	}
+ 	
 	iu1 : InstagramLanguage.User {
 		-follows-> iu2
 	}
@@ -189,33 +217,10 @@ pattern bidirectionalFollowership {
 	iu2 : InstagramLanguage.User {
 		-follows-> iu1
 	}
+			
 }
 
-pattern facebookFriendship {
-	fu1 : FacebookLanguage.User {
-		-corr-> iu1	
-	}
-	
-	fu2 : FacebookLanguage.User {
-		-corr-> iu2
-	}
-	
-	friendship : Friendship {
-		-friends-> fu1
-		-friends-> fu2
-	}
-	
-	iu1 : InstagramLanguage.User {
-		-follows-> iu2
-	}
-	
-	iu2 : InstagramLanguage.User {
-		-follows-> iu1
-	}
-}
-
-constraint enforceFriendship = if bidirectionalFollowership then facebookFriendship
-
-
+constraint EnforceFriendship = if PremisePattern then ConclusionPattern
+//edit-ends
 
 

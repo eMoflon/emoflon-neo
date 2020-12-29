@@ -1,0 +1,206 @@
+import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+
+model InconsistentSource1{
+	c: Company{
+		.name : "Fraunhofer"
+		-ceo-> ceo1
+		-admin-> a1
+		-employee-> e1
+	}
+	
+	e1: Employee{
+		.name : "Mario"
+	}	
+	
+	ceo1: CEO {
+		-employee-> e1
+		.name : "Fraunhofer"
+	}
+	
+	a1 : Admin {
+		-ceo-> ceo1
+		.name : "Friedhelm"
+	}
+}
+
+model InconsistentTarget1{
+	it : IT {
+		-network-> network
+		-router-> router
+		.name : "Fraunhofer"
+	}
+	
+	network : Network {
+		.name : "Friedhelm"
+		-laptop->l1
+	}
+	
+	router : Router {
+		.name : "Friedhelm"
+		-network->network
+	}
+	
+	l1 : Laptop{
+		.name : "Laptop1"
+	}
+}
+
+rule InconsistentTriple1{
+	c: Company{
+		.name : "Fraunhofer"
+		++ -corr-> it{
+			._type_ := "CompanyToIT"
+		}
+	}
+	
+	a1: Admin {
+		.name : "Friedhelm"
+		++ -corr-> router{
+			._type_ := "AdminToRouter"
+		}
+	}
+	
+	e1: Employee{
+		.name : "Mario"
+		++ -corr-> l1{
+			._type_ := "EmployeeToLaptop"
+		}
+	}
+
+	it : IT {
+		.name : "Fraunhofer"
+	}
+	
+	router : Router{
+		.name : "Friedhelm"
+	}
+	
+	l1 : Laptop{
+		.name : "Laptop1"
+	}
+}
+
+model ConsistentSource1 -> InconsistentSource1 {
+	c: Company {
+		-employee-> e2
+	}
+	
+	ceo1: CEO {
+		-employee-> e2
+	}
+	
+	e2: Employee{
+		.name : "Michael"
+	}
+}
+
+model ConsistentTarget1 -> InconsistentTarget1 {
+	network : Network {
+		-laptop->l2
+	}
+	
+	l2 : Laptop{
+		.name : "Laptop2"
+	}
+}
+
+rule ConsistentTriple1 -> InconsistentTriple1 {
+	e2: Employee{
+		.name : "Michael"
+		++ -corr-> l2{
+			._type_ := "EmployeeToLaptop"
+		}
+	}
+	
+	l2 : Laptop{
+		.name : "Laptop2"
+	}
+}
+
+model InconsistentSource2 -> InconsistentSource1 {
+	c: Company{
+		-ceo->ceo2
+	}
+	
+	a1: Admin {
+		-ceo->ceo2
+	}
+	
+	ceo2: CEO{
+		.name : "Rene"
+		-employee->e1
+	}
+}
+
+model InconsistentTarget2 -> InconsistentTarget1 {
+	//nothing to change here
+}
+
+rule InconsistentTriple2 -> InconsistentTriple1{
+	//nothing to change here
+}
+
+model InconsistentSource3 -> InconsistentSource1{
+	//nothing to change
+}
+
+model InconsistentTarget3 -> InconsistentTarget1{
+	it: IT{
+		-network->network2
+	}
+	
+	router: Router {
+		-network->network2
+	}
+	
+	network2:Network {
+		.name : "Friedhelm"
+		-laptop->l1
+	}
+}
+
+rule InconsistentTriple3 -> InconsistentTriple1 {
+	//nothing to change here
+}
+
+model InconsistentSource4 -> InconsistentSource1{
+	c:Company{
+		-admin->a2
+	}
+	
+	a2: Admin{
+		.name : "Kai"
+		-ceo->InconsistentSource1.ceo1
+	}
+}
+
+model InconsistentTarget4 -> InconsistentTarget1{
+	it:IT{
+		-router->router2
+		-network->network2
+	}
+	
+	router2: Router{
+		.name : "Kai"
+		-network-> network2
+	}
+	
+	network2:Network{
+		.name: "Kai"
+	}
+	
+}
+
+rule InconsistentTriple4 -> InconsistentTriple1{
+	a2: Admin{
+		.name : "Kai"
+		++ -corr-> router2{
+			._type_ := "AdminToRouter"
+	}
+	}
+	
+	router2: Router{
+		.name : "Kai"
+	}
+}
