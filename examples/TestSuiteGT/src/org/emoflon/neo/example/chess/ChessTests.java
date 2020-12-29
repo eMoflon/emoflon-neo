@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
-import org.emoflon.neo.api.API_ChessBoard;
-import org.emoflon.neo.api.API_ChessPatterns;
-import org.emoflon.neo.api.API_FigureMoves;
+import org.emoflon.neo.api.chess.API_ChessBoard;
+import org.emoflon.neo.api.chess.API_ChessPatterns;
+import org.emoflon.neo.api.chess.API_FigureMoves;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;

@@ -68,14 +68,12 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 		// source and target model
 		if (iteration == 1) {
 			return matchContainer.getAllRulesToMatches().entrySet().stream()//
-					.filter(r -> !r.getKey().isUserDefined())
 					.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
 		}
 		
 		// axioms
 		if (iteration == 2) {
 			return matchContainer.getAllRulesToMatches().entrySet().stream()//
-					.filter(r -> r.getKey().isUserDefined())
 					.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
 		}
 		
@@ -83,7 +81,7 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 		return matchContainer.streamAllRules()//
 				.filter(r -> !analyser.hasRelevantContext(r.getName(), SRC, CORR, TRG)
 						|| latestRelIDs.getIDs().size() > 0 || latestNodeIDs.getIDs().size() > 0)
-				.filter(r -> r.isUserDefined()).collect(Collectors.toMap(Functions.identity(), //
+				.collect(Collectors.toMap(Functions.identity(), //
 						r -> new Schedule(-1, latestNodeIDs, latestRelIDs, r, nodeSampler, relSampler)));
 	}
 }

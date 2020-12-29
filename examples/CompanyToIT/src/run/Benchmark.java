@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_BWD;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_FWD;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
-import org.emoflon.neo.api.metamodels.API_Company;
+import org.emoflon.neo.api.companytoit.metamodels.API_Company;
+import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_BWD;
+import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_FWD;
+import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
@@ -26,10 +26,9 @@ import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.updatepolicies.TwoPhaseUpdatePolicyForGEN;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-
-import CompanyToIT.run.CompanyToIT_BWD_Run;
-import CompanyToIT.run.CompanyToIT_FWD_Run;
-import CompanyToIT.run.CompanyToIT_GEN_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_GEN_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_FWD_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_BWD_Run;
 
 public class Benchmark {
 	private static final Logger logger = Logger.getLogger(Benchmark.class);

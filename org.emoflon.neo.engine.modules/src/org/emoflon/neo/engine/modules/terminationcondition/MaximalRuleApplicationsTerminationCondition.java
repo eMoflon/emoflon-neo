@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.cypher.rules.NeoRule;
-import org.emoflon.neo.emsl.compiler.TGGCompiler;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ITerminationCondition;
@@ -24,17 +23,8 @@ public class MaximalRuleApplicationsTerminationCondition implements ITermination
 		nameToRule = new HashMap<>();
 		allRules.forEach(r -> {
 			nameToRule.put(r.getName(), r);
-			if (isNotUserDefinedRule(r))
-				maxRuleApps.put(r, -1);
-			else
-				maxRuleApps.put(r, defaultMaxApps);
+			maxRuleApps.put(r, defaultMaxApps);
 		});
-	}
-
-	private boolean isNotUserDefinedRule(NeoRule r) {
-		return r.getName().equals(TGGCompiler.CREATE_SRC_MODEL_RULE)
-				|| r.getName().equals(TGGCompiler.CREATE_TRG_MODEL_RULE);
-//		return r.getName().equals(TGGCompiler.CREATE_MODELS_RULE);
 	}
 
 	@Override

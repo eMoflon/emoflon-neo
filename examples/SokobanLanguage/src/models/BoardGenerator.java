@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.models.API_SokobanSimple;
+import org.emoflon.neo.api.sokobanlanguage.API_Common;
+import org.emoflon.neo.api.sokobanlanguage.models.API_SokobanSimple;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.eMSL.EMSLFactory;
 import org.emoflon.neo.emsl.eMSL.Metamodel;

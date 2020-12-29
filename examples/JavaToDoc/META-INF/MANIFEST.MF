@@ -29,12 +29,11 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.apache.commons.lang,
  JavaToDoc,
  JavaToDoc,
- org.apache.commons.lang
-Export-Package: JavaToDoc.run,
- org.emoflon.neo.api,
- org.emoflon.neo.api.JavaToDoc,
- org.emoflon.neo.api.metamodels,
- org.emoflon.neo.api.models,
+ org.apache.commons.lang,
+ org.emoflon.neo.neocore
+Export-Package: org.emoflon.neo.api.javatodoc,
+ org.emoflon.neo.api.javatodoc.run,
+ org.emoflon.neo.api.javatodoc.tgg,
  run
 Automatic-Module-Name: JavaToDoc
 Bundle-ActivationPolicy: lazy

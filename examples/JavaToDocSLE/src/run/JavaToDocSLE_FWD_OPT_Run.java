@@ -9,13 +9,14 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_JavaToDocSLE;
-import org.emoflon.neo.api.JavaToDocSLE.API_JavaToDocSLE_FWD_OPT;
-import org.emoflon.neo.api.JavaToDocSLE.API_JavaToDocSLE_GEN;
+import org.emoflon.neo.api.javatodocsle.API_Common;
+import org.emoflon.neo.api.javatodocsle.API_JavaToDocSLE;
+import org.emoflon.neo.api.javatodocsle.tgg.API_JavaToDocSLE_FWD_OPT;
+import org.emoflon.neo.api.javatodocsle.tgg.API_JavaToDocSLE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.FWD_OPTReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -25,7 +26,6 @@ import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminat
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-import org.emoflon.neo.engine.modules.analysis.*;
 
 public class JavaToDocSLE_FWD_OPT_Run {
 	private static final Logger logger = Logger.getLogger(JavaToDocSLE_FWD_OPT_Run.class);

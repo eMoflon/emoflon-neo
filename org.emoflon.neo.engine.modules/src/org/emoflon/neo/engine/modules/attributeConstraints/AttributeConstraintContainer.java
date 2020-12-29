@@ -15,7 +15,7 @@ import org.emoflon.neo.emsl.eMSL.Parameter;
 import org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary.AddPrefix;
 import org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary.AddSuffix;
 import org.emoflon.neo.engine.modules.attributeConstraints.standardLibrary.Concat;
-import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.Record;
 
 public class AttributeConstraintContainer {
 	private Map<String, Supplier<NeoAttributeConstraint>> creators;

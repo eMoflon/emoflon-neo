@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.emoflon.neo.api.models.API_Simple3x3Field;
-import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
-import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
+import org.emoflon.neo.api.sokobanlanguage.models.API_Simple3x3Field;
+import org.emoflon.neo.api.sokobanlanguage.models.API_SokobanSimpleTestField;
+import org.emoflon.neo.api.sokobanlanguage.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;

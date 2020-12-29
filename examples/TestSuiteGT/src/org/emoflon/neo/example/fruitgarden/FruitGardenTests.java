@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.emoflon.neo.api.org.eneo.fruitgarden.API_FruitGardenLanguage;
-import org.emoflon.neo.api.org.eneo.fruitgarden.API_PatternsAndRules;
+import org.emoflon.neo.api.fruitgardenlanguage.org.eneo.fruitgarden.API_FruitGardenLanguage;
+import org.emoflon.neo.api.fruitgardenlanguage.org.eneo.fruitgarden.API_PatternsAndRules;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

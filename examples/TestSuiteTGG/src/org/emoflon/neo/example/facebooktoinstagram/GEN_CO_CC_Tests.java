@@ -1,15 +1,16 @@
 package org.emoflon.neo.example.facebooktoinstagram;
 
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_GEN;
+import org.emoflon.neo.api.facebooktoinstagramfase.API_Transformations;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CC_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CO_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.tgg.API_FacebookToInstagramFASE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -25,9 +26,8 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import Transformations.run.FacebookToInstagramFASE_CC_Run;
-import Transformations.run.FacebookToInstagramFASE_CO_Run;
-import Transformations.run.FacebookToInstagramFASE_GEN_Run;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 

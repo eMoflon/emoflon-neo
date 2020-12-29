@@ -1,8 +1,10 @@
 metamodel OCLGrammar {
 	OCLString {
+		
 	}
 	
 	Expression : OCLString {
+		
 		<>-callee(0..1)->Collection
 		<>-call(0..1)->MethodCall
 	}
@@ -14,6 +16,7 @@ metamodel OCLGrammar {
 	}
 	
 	Parameter {
+		
 	}
 	
 	Collection : OCLString, Parameter {
@@ -23,29 +26,36 @@ metamodel OCLGrammar {
 	}
 	
 	Literal : Parameter {
+		
 	}
 	
 	StringLiteral : Literal {
 		.literal : EString
+		
 	}
 	
 	NumberRange : Literal {
 		.lowerBound : EInt
 		.upperBound : EInt
+		
 	}
 	
 	NumberLiteral : Literal {
 		.value : EInt
+		
 	}
 	
 	DoubleLiteral : NumberLiteral {
 		.fractional : EInt
+		
 	}
 	
 	NullLiteral : Literal {
+		
 	}
 	
 	InvalidLiteral : Literal {
+		
 	}
 	
 	enum MethodType {
@@ -62,13 +72,12 @@ metamodel OCLGrammar {
 }
 
 model Call {
-	o1 : Expression {
-		-callee -> o2
-	}
-	
-	o2 : Collection {
+	o1 : Collection {
 		.type : SEQUENCE
-
-	}
 	
+	}
+	o0 : Expression {
+	
+		-callee -> o1
+	}
 }

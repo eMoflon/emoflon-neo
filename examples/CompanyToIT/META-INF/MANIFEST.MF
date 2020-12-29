@@ -29,17 +29,15 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.victory.adapter;bundle-version="1.0.0",
  org.emoflon.victory.ui;bundle-version="1.0.0",
  org.apache.commons.lang,
+ CompanyToIT,
+ CompanyToIT,
  org.apache.commons.lang,
- CompanyToIT;bundle-version="1.0.0",
- CompanyToIT;bundle-version="1.0.0"
-Export-Package: CompanyToIT,
- CompanyToIT.run,
- metamodels,
+ org.emoflon.neo.neocore
+Export-Package: metamodels,
  models,
- org.emoflon.neo.api,
- org.emoflon.neo.api.CompanyToIT,
- org.emoflon.neo.api.metamodels,
- org.emoflon.neo.api.models,
+ org.emoflon.neo.api.companytoit,
+ org.emoflon.neo.api.companytoit.run,
+ org.emoflon.neo.api.companytoit.tgg,
  run
 Automatic-Module-Name: CompanyToIT
 Bundle-ActivationPolicy: lazy

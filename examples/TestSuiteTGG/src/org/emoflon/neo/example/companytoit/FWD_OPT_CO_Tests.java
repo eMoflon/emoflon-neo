@@ -2,14 +2,13 @@ package org.emoflon.neo.example.companytoit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForTesting;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_FWD_OPT_Run;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForTesting;
 import org.emoflon.neo.emsl.eMSL.Metamodel;
 import org.emoflon.neo.emsl.eMSL.Model;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
-
-import CompanyToIT.run.CompanyToIT_CO_Run;
-import CompanyToIT.run.CompanyToIT_FWD_OPT_Run;
 
 public class FWD_OPT_CO_Tests extends ENeoTest {
 

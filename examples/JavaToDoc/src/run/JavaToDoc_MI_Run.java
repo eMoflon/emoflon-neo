@@ -9,13 +9,14 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_JavaToDoc;
-import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_MI;
-import org.emoflon.neo.api.JavaToDoc.API_JavaToDoc_GEN;
+import org.emoflon.neo.api.javatodoc.API_Common;
+import org.emoflon.neo.api.javatodoc.API_JavaToDoc;
+import org.emoflon.neo.api.javatodoc.tgg.API_JavaToDoc_GEN;
+import org.emoflon.neo.api.javatodoc.tgg.API_JavaToDoc_MI;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.MIReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -25,7 +26,6 @@ import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminat
 import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-import org.emoflon.neo.engine.modules.analysis.*;
 
 public class JavaToDoc_MI_Run {
 	private static final Logger logger = Logger.getLogger(JavaToDoc_MI_Run.class);

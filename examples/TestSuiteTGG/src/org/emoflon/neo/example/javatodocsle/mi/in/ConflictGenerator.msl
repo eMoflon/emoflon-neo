@@ -2,12 +2,7 @@ import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
 import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
 
 rule MoveMoveConflict {
-	
-	srcM : Model 
-	trgM : Model
-	
 	clazz:Clazz {
-		-elementOf->srcM
 		-corr->doc
 		-subTypes->subClazz {
 			~_de_ := true
@@ -15,49 +10,44 @@ rule MoveMoveConflict {
 	}
 	
 	otherClazz:Clazz {
-		-elementOf->srcM
+		.enamespace : clazz::enamespace
 		++-subTypes->subClazz {
 			~_cr_ := true
 		}
 	}
 	
 	subClazz:Clazz {
-		-elementOf->srcM
+		.enamespace : clazz::enamespace
 		-corr->subDoc
 	}
 	
 	doc:Doc {
-		-elementOf->trgM
 		-hrefs->subDoc {
 			~_de_ := true
 		}
 	}
 	
 	otherDoc:Doc {
-		-elementOf->trgM
+		.enamespace : doc::enamespace
 		++-hrefs->subDoc {
 			~_cr_ := true
 		}
 	}
 	
 	subDoc:Doc{
-		-elementOf->trgM
+		.enamespace : doc::enamespace
 	}
 }
 
 rule CreateDeleteConflict {
 	
-	srcM : Model 
-	trgM : Model
-	
 	clazz:Clazz {
-		-elementOf->srcM
 		-corr->doc
 		-subTypes->subClazz
 	}
 	
 	subClazz:Clazz {
-		-elementOf->srcM
+		.enamespace : clazz::enamespace
 		-corr->subDoc
 		++-methods->method {
 			~_cr_ := true
@@ -65,13 +55,12 @@ rule CreateDeleteConflict {
 	}
 	
 	++method:Method{
-		++-elementOf->srcM
+		.enamespace := clazz::enamespace
 		.name := "Test2"
 		._cr_ := true
 	}
 	
 	doc:Doc{
-		-elementOf->trgM
 		-hrefs->subDoc {
 			~_de_ := true
 		}
@@ -81,7 +70,7 @@ rule CreateDeleteConflict {
 	}
 	
 	subDoc:Doc{
-		-elementOf->trgM
+		.enamespace : doc::enamespace
 		~_de_ := true
 		-entries->entry{
 			~_de_ := true
@@ -89,17 +78,13 @@ rule CreateDeleteConflict {
 	}
 	
 	entry:Entry{
-		-elementOf->trgM
+		.enamespace : doc::enamespace
 	}
 }			
 
 rule MoveDeleteConflict {
 	
-	srcM : Model 
-	trgM : Model
-	
 	clazz:Clazz {
-		-elementOf->srcM
 		-corr->doc
 		-subTypes->subClazz {
 			~_de_ := true
@@ -107,26 +92,25 @@ rule MoveDeleteConflict {
 	}
 	
 	otherClazz:Clazz {
-		-elementOf->srcM
+		.enamespace : clazz::enamespace
 		++-subTypes->subClazz {
 			~_cr_ := true
 		}
 	}
 	
 	subClazz:Clazz {
-		-elementOf->srcM
+		.enamespace : clazz::enamespace
 		-corr->subDoc
 	}
 	
 	doc:Doc {
-		-elementOf->trgM
 		-hrefs->subDoc {
 			~_de_ := true
 		}
 	}
 	
 	subDoc:Doc{
-		-elementOf->trgM
+		.enamespace : doc::enamespace
 		._de_ := true
 	}
 }

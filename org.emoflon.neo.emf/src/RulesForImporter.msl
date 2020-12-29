@@ -1,0 +1,104 @@
+rule CreateMetamodel {
+	neoCore:MetaModel {
+		.ename : "NeoCore"
+	}
+	
+	++ mm:MetaModel {
+		++ -conformsTo->neoCore
+		.ename := <name>
+	}
+}
+
+rule CreateEClass {
+	++ eclass:EClass {
+		.ename := <name>
+		.enamespace := <namespace>
+	}
+}
+
+rule CreateInheritance {
+	superClass:EClass
+	
+	subClass:EClass {
+		++ -eSuperType->superClass
+	}
+}
+
+pattern ECoreTypes {
+	eref:EClass {
+		.ename : "EReference"
+		.enamespace : "NeoCore"
+	}
+	
+	eclass:EClass {
+		.ename : "Model"
+		.enamespace : "NeoCore"
+	}
+	
+	eob:EClass {
+		.ename : "EObject"
+		.enamespace : "NeoCore"
+	}
+}
+
+rule CreateRelation {
+	src:EClass {
+		++ -eReferences->r
+	}
+	
+	++ r:EReference {
+		.ename := <refName>
+		++ -eReferenceType->trg
+	}
+	
+	trg:EClass
+}
+
+rule CreateModel {
+	++ m:Model {
+		.ename := <modelName>
+	}
+}
+
+rule TypeModel {
+	m:Model {
+		.ename : <modelName>
+		++ -conformsTo->mm
+	}
+	
+	mm:MetaModel {
+		.ename : <metamodelName>
+	}
+}
+
+rule CreateAttribute {
+	cls:EClass {
+		++ -eAttributes->eAttr
+	}
+	
+	++ eAttr:EAttribute {
+		.ename := <attrName>
+		++ -eAttributeType->type
+	}
+	
+	type:EDataType {
+		.ename : <typeName>
+	}
+}
+
+rule CreateEnum {
+	++ en:EEnum {
+		.ename := <name>
+		.enamespace := <namespace>
+	}
+}
+
+rule CreateEEnumLiteral {
+	en:EEnum {
+		++ -eLiterals->lit
+	}
+	
+	++ lit:EEnumLiteral {
+		.ename := <name>
+	}
+}

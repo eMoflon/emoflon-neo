@@ -3,22 +3,23 @@
  */
 package run;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_BWD_OPT;
-import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.engine.modules.NeoGenerator;
-
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.emoflon.neo.api.facebooktoinstagramfase.API_Common;
+import org.emoflon.neo.api.facebooktoinstagramfase.API_Transformations;
+import org.emoflon.neo.api.facebooktoinstagramfase.tgg.API_FacebookToInstagramFASE_BWD_OPT;
+import org.emoflon.neo.api.facebooktoinstagramfase.tgg.API_FacebookToInstagramFASE_GEN;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_GEN;
+import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.BWD_OPTReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -28,7 +29,6 @@ import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminat
 import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 
 @SuppressWarnings("unused")
 public class FacebookToInstagramFASE_BWD_OPT_Run {

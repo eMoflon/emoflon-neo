@@ -6,11 +6,13 @@ import java.util.HashMap
 import org.apache.commons.io.FileUtils
 import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EAttribute
 import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EEnum
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.resource.ResourceSet
+import org.emoflon.neo.emsl.util.EMSLUtil
 
 /**
  * Transforms EMF to EMSL
@@ -18,42 +20,39 @@ import org.eclipse.emf.ecore.resource.ResourceSet
  */
 class EMFImporter {
 	
-	HashMap<String , EEnum> metaModelEnum = new HashMap()
+	HashMap<String , EEnum> metaModelEnum = new HashMap()	
+		
+	def String escapeKeyWords(String s){
+		EMSLUtil.escapeKeyWords(s)
+	}
 		
 	def String generateEMSLSpecification(ResourceSet rs) {
 		'''
 			«FOR r : rs.resources»
-				«FOR o : r.contents.filter[o | o instanceof EPackage] SEPARATOR "\n"»
-					«var p = o as EPackage»
-					metamodel «p.name» {
-						«FOR c : p.EClassifiers.filter[c | c instanceof EClass] SEPARATOR "\n"»
-							«var eclass = c as EClass»
-							«var esupClass = ""»
-							«FOR esuper: eclass.getESuperTypes()»«var esupname = esuper.name»«{esupClass = esupClass+esupname+", ";""}»«ENDFOR»
-							«c.name» «IF esupClass != ""»: «esupClass.substring(0,esupClass.length-2)» «ENDIF»{
+				«FOR p : r.contents.filter(EPackage) SEPARATOR "\n"»
+					metamodel «p.name.escapeKeyWords» {
+						«FOR eclass : p.EClassifiers.filter(EClass) SEPARATOR "\n"»
+							«eclass.name.escapeKeyWords» «IF !eclass.ESuperTypes.empty»: «eclass.ESuperTypes.map[it.name].join(", ")» «ENDIF»{
 								«FOR attr : eclass.EAttributes»
-									.«attr.name» : «attr.EType.name»
+									.«attr.name.escapeKeyWords» : «attr.EType.name.escapeKeyWords»
 								«ENDFOR»
-								«IF !eclass.EAttributes.isEmpty && !eclass.EReferences.isEmpty»
 								
-								«ENDIF»
 								«FOR ref : eclass.EReferences»
 									«IF ref.isContainment»
-										<>-«ref.name»(«ref.lowerBound»..«IF ref.upperBound==-1»*«ELSE»«ref.upperBound»«ENDIF»)->«ref.EType.name»
+										<>-«ref.name.escapeKeyWords»(«ref.lowerBound»..«IF ref.upperBound==-1»*«ELSE»«ref.upperBound»«ENDIF»)->«ref.EType.name.escapeKeyWords»
 									«ELSE»		
-										-«ref.name»(«ref.lowerBound»..«IF ref.upperBound==-1»*«ELSE»«ref.upperBound»«ENDIF»)->«ref.EType.name»
+										-«ref.name.escapeKeyWords»(«ref.lowerBound»..«IF ref.upperBound==-1»*«ELSE»«ref.upperBound»«ENDIF»)->«ref.EType.name.escapeKeyWords»
 									«ENDIF»
 								«ENDFOR»
 							}
-							«ENDFOR»
+						«ENDFOR»
 						
-						«FOR n : p.EClassifiers.filter[n | n instanceof EEnum] SEPARATOR "\n"»
-						enum «n.name» {
-							«var enumliterals = n as EEnum»
-							«FOR literals : enumliterals.ELiterals»«{metaModelEnum.put(enumliterals.name,enumliterals);""}»
-							«literals.name»
-							«ENDFOR»
-						}
+						«FOR eenum : p.EClassifiers.filter(EEnum) SEPARATOR "\n"»
+							enum «registerEnum(eenum).escapeKeyWords» {
+								«FOR literal : eenum.ELiterals»
+									«literal.name.escapeKeyWords»
+								«ENDFOR»
+							}
 						«ENDFOR»
 					}
 				«ENDFOR»
@@ -61,66 +60,56 @@ class EMFImporter {
 		'''
 	}
 	
-	def String generateEMSLModel(ResourceSet rs) {
-		var HashMap<EObject, String> objCreate = new HashMap()
+	def String registerEnum(EEnum eenum) {
+		metaModelEnum.put(eenum.name, eenum)
+		eenum.name
+	}
+	
+	def String generateEMSLModels(ResourceSet rs) {
+		var HashMap<EObject, String> objIDs = createObjectIDs(rs)
 		'''
 			«generateEMSLSpecification(rs)»
 			
 			«FOR r : rs.resources»
-				«FOR o : r.contents.filter[o | o instanceof EObject && !(o instanceof EPackage)] SEPARATOR "\n"»
-					«var p = o as EObject»
+				«FOR rootOfModel : r.contents.filter[o | o instanceof EObject && !(o instanceof EPackage)] SEPARATOR "\n"»
 					model «extractModelName(r.URI)» {
-						«{objCreate = storeObjectsCreated(p as EObject);""}»
-						«objCreate.get(p)» : «p.eClass.name» {
-							«FOR attr : p.eClass.EAllAttributes»
-								«IF attr.EType instanceof EEnum»«var attEnum = attr.EType as EEnum»
-								.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(p.eGet(attr).toString).name»
-								«ELSEIF p.eGet(attr)!== null»
-								.«attr.name» : «IF attr.EType.name=="EString" || attr.EType.name=="EChar"»"«p.eGet(attr)»"«ELSE»«p.eGet(attr)»«ENDIF»
+						«FOR modelElt : rootOfModel.eAllContents.toIterable + #{rootOfModel}»
+							«objIDs.get(modelElt)» : «modelElt.eClass.name.escapeKeyWords» {
+								«FOR attr : modelElt.eClass.EAllAttributes»
+								«IF attr.EType instanceof EEnum»
+									.«attr?.name.escapeKeyWords» : «getUserDefinedValue(attr, modelElt)»
+								«ELSEIF modelElt.eGet(attr) !== null»
+									.«attr?.name.escapeKeyWords» : «getBuiltInValue(attr, modelElt)»
 								«ENDIF»
 							«ENDFOR»
-							«IF !p.eClass.EAttributes.isEmpty && !p.eClass.EReferences.isEmpty»
 							
-							«ENDIF»
-							«FOR ref : p.eClass.EAllReferences»
-								«IF p.eGet(ref)!== null && p.eGet(ref) instanceof EList»
-									«FOR reference : (p.eGet(ref) as EList<EObject>)»
-										-«ref.name» -> «objCreate.get(reference)»
+								«FOR ref : modelElt.eClass.EAllReferences»
+								«IF modelElt.eGet(ref) !== null && modelElt.eGet(ref) instanceof EList»
+									«FOR reference : (modelElt.eGet(ref) as EList<EObject>)»
+										-«ref.name.escapeKeyWords» -> «objIDs.get(reference)»
 									«ENDFOR»
-								«ELSEIF p.eGet(ref)!== null»
-									-«ref.name» -> «objCreate.get(p.eGet(ref))»
+								«ELSEIF modelElt.eGet(ref) !== null»
+									-«ref.name.escapeKeyWords» -> «objIDs.get(modelElt.eGet(ref))»
 								«ENDIF»
 							«ENDFOR»
-						}
-						
-						«FOR c: p.eAllContents.toIterable»
-							«objCreate.get(c)» : «c.eClass.name» {
-								«FOR attr : c.eClass.EAllAttributes»
-									«IF attr.EType instanceof EEnum»«var attEnum = attr.EType as EEnum»
-									.«attr.name» : «metaModelEnum.get(attEnum.name).getEEnumLiteralByLiteral(c.eGet(attr).toString).name»
-									«ELSEIF c.eGet(attr)!== null»
-									.«attr.name» : «IF attr.EType.name=="EString" || attr.EType.name=="EChar"»"«c.eGet(attr)»"«ELSE»«c.eGet(attr)»«ENDIF»
-									«ENDIF»
-								«ENDFOR»
-								«IF !c.eClass.EAttributes.isEmpty && !c.eClass.EReferences.isEmpty»
-
-								«ENDIF»
-								«FOR ref : c.eClass.EAllReferences»
-									«IF c.eGet(ref)!== null && c.eGet(ref) instanceof EList»
-										«FOR reference : (c.eGet(ref) as EList<EObject>)»
-											-«ref.name» -> «objCreate.get(reference)»
-										«ENDFOR»
-									«ELSEIF c.eGet(ref)!== null»
-										-«ref.name» -> «objCreate.get(c.eGet(ref))»
-									«ENDIF»
-								«ENDFOR»
 							}
-							
 						«ENDFOR»
 					}
 				«ENDFOR»				
 			«ENDFOR»
 		'''
+	}
+	
+	def getBuiltInValue(EAttribute attr, EObject modelElt) {
+		val value = modelElt.eGet(attr)
+		if(attr.EType.name.escapeKeyWords=="EString" || attr.EType.name.escapeKeyWords=="EChar")
+			'''"«value»"'''
+		else 
+			value
+	}
+	
+	def getUserDefinedValue(EAttribute attr, EObject modelElt) {
+		metaModelEnum.get(attr.EType.name)?.getEEnumLiteralByLiteral(modelElt.eGet(attr)?.toString)?.name.escapeKeyWords
 	}
 	
 	def saveEMSLSpecification(ResourceSet rs, File f) {
@@ -133,14 +122,13 @@ class EMFImporter {
 		return modelname;
 	}
 	
-	def HashMap<EObject, String> storeObjectsCreated(EObject p) {
-		var HashMap<EObject, String> objects = new HashMap()
-		var objectCount = 1
-		objects.put(p,"o"+objectCount++)
-		for(c: p.eAllContents.toIterable) {
-			objects.put(c,"o"+objectCount++)
-		}
-		return objects
+	def HashMap<EObject, String> createObjectIDs(ResourceSet rs) {
+		val HashMap<EObject, String> objIDs = new HashMap()
+		rs.allContents.filter(EObject).forEach[
+			objIDs.put(it, "o" + objIDs.size)
+		]
+		
+		return objIDs
 	}
 
 }

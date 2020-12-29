@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.emoflon.neo.api.API_RiverCrossing;
+import org.emoflon.neo.api.rivercrossing.API_RiverCrossing;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.engine.api.rules.IRule;

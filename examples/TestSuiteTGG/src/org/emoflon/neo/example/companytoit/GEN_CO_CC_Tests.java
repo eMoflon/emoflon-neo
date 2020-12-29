@@ -1,15 +1,18 @@
 package org.emoflon.neo.example.companytoit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
-import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+import static org.emoflon.neo.api.companytoit.run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.companytoit.run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.API_CompanyToIT;
-import org.emoflon.neo.api.CompanyToIT.API_CompanyToIT_GEN;
+import org.emoflon.neo.api.companytoit.API_CompanyToIT;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CC_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_GEN_Run;
+import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -25,9 +28,6 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import CompanyToIT.run.CompanyToIT_CC_Run;
-import CompanyToIT.run.CompanyToIT_CO_Run;
-import CompanyToIT.run.CompanyToIT_GEN_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 

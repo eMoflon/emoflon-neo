@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.JavaToDocSLE.API_JavaToDocSLE_GEN;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_GEN_Run;
+import org.emoflon.neo.api.javatodocsle.tgg.API_JavaToDocSLE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -18,8 +19,6 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.engine.modules.updatepolicies.AllMatchesUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.RandomUUIDGenerator;
-
-import JavaToDocSLE.run.JavaToDocSLE_GEN_Run;
 
 class JavaToDocSLE_GEN_TEST extends JavaToDocSLE_GEN_Run {
 	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;

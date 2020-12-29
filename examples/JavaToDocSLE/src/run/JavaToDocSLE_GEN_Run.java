@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_JavaToDocSLE;
-import org.emoflon.neo.api.JavaToDocSLE.API_JavaToDocSLE_GEN;
-import org.emoflon.neo.api.metamodels.API_SimpleJavaSLE;
+import org.emoflon.neo.api.javatodocsle.API_Common;
+import org.emoflon.neo.api.javatodocsle.API_JavaToDocSLE;
+import org.emoflon.neo.api.javatodocsle.metamodels.API_SimpleJavaSLE;
+import org.emoflon.neo.api.javatodocsle.tgg.API_JavaToDocSLE_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;

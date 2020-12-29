@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.emoflon.neo.emsl.compiler.TGGCompiler;
 import org.emoflon.neo.emsl.eMSL.TripleRule;
 import org.emoflon.neo.emsl.refinement.EMSLFlattener;
 import org.emoflon.neo.emsl.util.FlattenerException;
@@ -36,18 +35,8 @@ public class TripleRuleAnalyser {
 		var tripleRule = toTripleRule(ruleName);
 		if (tripleRule.isPresent()) {
 			return hasRelevantContext(tripleRule.get(), SRC, CORR, TRG);
-		} else {
-			// Triple rule does not exist, so it must have been added by the compiler
-			switch (ruleName) {
-			case TGGCompiler.CREATE_SRC_MODEL_RULE:
-				return SRC;
-			case TGGCompiler.CREATE_TRG_MODEL_RULE:
-				return TRG;
-//			case TGGCompiler.CREATE_MODELS_RULE:
-//				return SRC || CORR || TRG;
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + ruleName);
-			}
+		} else {			
+			throw new IllegalArgumentException("Unexpected value: " + ruleName);
 		}
 	}
 
@@ -102,8 +91,7 @@ public class TripleRuleAnalyser {
 			return tripleRule.get().getSrcNodeBlocks().stream()//
 					.anyMatch(nb -> nb.getName().equals(nodeName));
 		} else {
-			return ruleName.equals(TGGCompiler.CREATE_SRC_MODEL_RULE);
-//			return ruleName.equals(TGGCompiler.CREATE_MODELS_RULE);
+			throw new IllegalStateException("Can't find triple rule for " + ruleName);
 		}
 	}
 }

@@ -1,11 +1,12 @@
 metamodel EmptyClassMetamodel {
 	TestClass {
+		
 	}
 	
 }
 
 model EmptyClass {
-	o1 : TestClass {
-	}
+	o0 : TestClass {
 	
+	}
 }

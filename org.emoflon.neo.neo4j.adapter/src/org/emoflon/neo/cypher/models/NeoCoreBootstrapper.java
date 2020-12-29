@@ -32,13 +32,12 @@ import static org.emoflon.neo.neocore.util.NeoCoreConstants.ETYPED_ELEMENT;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.ISCOMPOSITION_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.ISCONTAINMENT_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.METAMODEL;
-import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_EL_OF;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.MODEL;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
-import static org.emoflon.neo.neocore.util.NeoCoreConstants._DE_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._CR_PROP;
+import static org.emoflon.neo.neocore.util.NeoCoreConstants._DE_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._EX_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._TR_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants._TYPE_PROP;
@@ -84,9 +83,6 @@ public class NeoCoreBootstrapper {
 
 	public static final List<NeoProp> erefProps = List.of(new NeoProp(NAME_PROP, EREFERENCE), neocoreNamespaceProp);
 	public static final List<String> erefLabels = LABELS_FOR_AN_ECLASS;
-
-	private static final List<NeoProp> eleofProps = List.of(new NeoProp(NAME_PROP, META_EL_OF));
-	private static final List<String> eleofLabels = LABELS_FOR_AN_EREFERENCE;
 
 	private static final List<NeoProp> conformtoProps = List.of(new NeoProp(NAME_PROP, CONFORMS_TO_PROP));
 	private static final List<String> conformtoLabels = LABELS_FOR_AN_EREFERENCE;
@@ -199,54 +195,53 @@ public class NeoCoreBootstrapper {
 	public void bootstrapNeoCore(NeoCoreBuilder builder) {
 		builder.executeActionAsCreateTransaction((cb) -> {
 			var neocore = cb.createNode(neoCoreProps, neoCoreLabels);
-			var eclass = cb.createNodeWithCont(eclassProps, eclassLabels, neocore);
-			var mmodel = cb.createNodeWithContAndType(mmodelProps, mmodelLabels, eclass, neocore);
-			var model = cb.createNodeWithContAndType(modelProps, modelLabels, eclass, neocore);
-			var eobject = cb.createNodeWithContAndType(eobjectProps, eobjectLabels, eclass, neocore);
-			var eref = cb.createNodeWithContAndType(erefProps, erefLabels, eclass, neocore);
-			var eleof = cb.createNodeWithContAndType(eleofProps, eleofLabels, eref, neocore);
-			var conformto = cb.createNodeWithContAndType(conformtoProps, conformtoLabels, eref, neocore);
-			var erefs = cb.createNodeWithContAndType(erefsProps, erefsLabels, eref, neocore);
-			var eRefType = cb.createNodeWithContAndType(eRefTypeProps, eRefTypeLabels, eref, neocore);
-			var eattr = cb.createNodeWithContAndType(eattrProps, eattrLabels, eclass, neocore);
-			var name = cb.createNodeWithContAndType(nameProps, nameLabels, eattr, neocore);
-			var _type_ = cb.createNodeWithContAndType(_type_Props, _type_Labels, eattr, neocore);
-			var _tr_ = cb.createNodeWithContAndType(_tr_Props, _tr_Labels, eattr, neocore);
-			var _de_ = cb.createNodeWithContAndType(_de_Props, _de_Labels, eattr, neocore);
-			var _cr_ = cb.createNodeWithContAndType(_cr_Props, _cr_Labels, eattr, neocore);
-			var _ex_ = cb.createNodeWithContAndType(_ex_Props, _ex_Labels, eattr, neocore);
-			var isComposition = cb.createNodeWithContAndType(isCompositionProps, isCompositionLabels, eattr, neocore);
-			var isContainment = cb.createNodeWithContAndType(isContainmentProps, isContainmentLabels, eattr, neocore);
-			var eDataType = cb.createNodeWithContAndType(eDataTypeProps, eDataTypeLabels, eclass, neocore);
-			var eAttrEle = cb.createNodeWithContAndType(eAttrEleProps, eAttrEleLabels, eclass, neocore);
-			var eString = cb.createNodeWithContAndType(eStringProps, eStringLabels, eDataType, neocore);
+			var eclass = cb.createNode(eclassProps, eclassLabels);
+			var mmodel = cb.createNodeWithType(mmodelProps, mmodelLabels, eclass);
+			var model = cb.createNodeWithType(modelProps, modelLabels, eclass);
+			var eobject = cb.createNodeWithType(eobjectProps, eobjectLabels, eclass);
+			var eref = cb.createNodeWithType(erefProps, erefLabels, eclass);
+			var conformto = cb.createNodeWithType(conformtoProps, conformtoLabels, eref);
+			var erefs = cb.createNodeWithType(erefsProps, erefsLabels, eref);
+			var eRefType = cb.createNodeWithType(eRefTypeProps, eRefTypeLabels, eref);
+			var eattr = cb.createNodeWithType(eattrProps, eattrLabels, eclass);
+			var name = cb.createNodeWithType(nameProps, nameLabels, eattr);
+			var _type_ = cb.createNodeWithType(_type_Props, _type_Labels, eattr);
+			var _tr_ = cb.createNodeWithType(_tr_Props, _tr_Labels, eattr);
+			var _de_ = cb.createNodeWithType(_de_Props, _de_Labels, eattr);
+			var _cr_ = cb.createNodeWithType(_cr_Props, _cr_Labels, eattr);
+			var _ex_ = cb.createNodeWithType(_ex_Props, _ex_Labels, eattr);
+			var isComposition = cb.createNodeWithType(isCompositionProps, isCompositionLabels, eattr);
+			var isContainment = cb.createNodeWithType(isContainmentProps, isContainmentLabels, eattr);
+			var eDataType = cb.createNodeWithType(eDataTypeProps, eDataTypeLabels, eclass);
+			var eAttrEle = cb.createNodeWithType(eAttrEleProps, eAttrEleLabels, eclass);
+			var eString = cb.createNodeWithType(eStringProps, eStringLabels, eDataType);
 			@SuppressWarnings("unused")
-			var eint = cb.createNodeWithContAndType(eintProps, eintLabels, eDataType, neocore);
+			var eint = cb.createNodeWithType(eintProps, eintLabels, eDataType);
 			@SuppressWarnings("unused")
-			var echar = cb.createNodeWithContAndType(echarProps, echarLabels, eDataType, neocore);
+			var echar = cb.createNodeWithType(echarProps, echarLabels, eDataType);
 			@SuppressWarnings("unused")
-			var elong = cb.createNodeWithContAndType(elongProps, elongLabels, eDataType, neocore);
+			var elong = cb.createNodeWithType(elongProps, elongLabels, eDataType);
 			@SuppressWarnings("unused")
-			var efloat = cb.createNodeWithContAndType(efloatProps, efloatLabels, eDataType, neocore);
+			var efloat = cb.createNodeWithType(efloatProps, efloatLabels, eDataType);
 			@SuppressWarnings("unused")
-			var edate = cb.createNodeWithContAndType(edateProps, edateLabels, eDataType, neocore);
+			var edate = cb.createNodeWithType(edateProps, edateLabels, eDataType);
 			@SuppressWarnings("unused")
-			var edouble = cb.createNodeWithContAndType(edoubleProps, edoubleLabels, eDataType, neocore);
-			var eAttrType = cb.createNodeWithContAndType(eAttrTypeProps, eAttrTypeLabels, eref, neocore);
-			var eSupType = cb.createNodeWithContAndType(eSupTypeProps, eSupTypeLabels, eref, neocore);
-			var eclassifier = cb.createNodeWithContAndType(eclassifierProps, eclassifierLabels, eclass, neocore);
-			var eTypedele = cb.createNodeWithContAndType(eTypedeleProps, eTypedeleLabels, eclass, neocore);
-			var metaType = cb.createNodeWithContAndType(metaTypeProps, metaTypeLabels, eref, neocore);
-			var eAttributes = cb.createNodeWithContAndType(eAttributesProps, eAttributesLabels, eref, neocore);
-			var eStruct = cb.createNodeWithContAndType(eStructProps, eStructLabels, eclass, neocore);
-			var abstractattr = cb.createNodeWithContAndType(abstractattrProps, abstractattrLabels, eattr, neocore);
-			var enamespaceattr = cb.createNodeWithContAndType(enamespaceProps, enamespaceLabels, eattr, neocore);
-			var eBoolean = cb.createNodeWithContAndType(eBooleanProps, eBooleanLabels, eDataType, neocore);
-			var eenum = cb.createNodeWithContAndType(eenumProps, eenumLabels, eclass, neocore);
-			var eenumLiteral = cb.createNodeWithContAndType(eenumLiteralProps, eenumLabels, eclass, neocore);
-			var eLiterals = cb.createNodeWithContAndType(eLiteralsProps, eLiteralsLabels, eref, neocore);
-			var corr = cb.createNodeWithContAndType(corrProps, corrLabels, eref, neocore);
-			var econtainer = cb.createNodeWithContAndType(econtainerProps, econtainerLabels, eref, neocore);
+			var edouble = cb.createNodeWithType(edoubleProps, edoubleLabels, eDataType);
+			var eAttrType = cb.createNodeWithType(eAttrTypeProps, eAttrTypeLabels, eref);
+			var eSupType = cb.createNodeWithType(eSupTypeProps, eSupTypeLabels, eref);
+			var eclassifier = cb.createNodeWithType(eclassifierProps, eclassifierLabels, eclass);
+			var eTypedele = cb.createNodeWithType(eTypedeleProps, eTypedeleLabels, eclass);
+			var metaType = cb.createNodeWithType(metaTypeProps, metaTypeLabels, eref);
+			var eAttributes = cb.createNodeWithType(eAttributesProps, eAttributesLabels, eref);
+			var eStruct = cb.createNodeWithType(eStructProps, eStructLabels, eclass);
+			var abstractattr = cb.createNodeWithType(abstractattrProps, abstractattrLabels, eattr);
+			var enamespaceattr = cb.createNodeWithType(enamespaceProps, enamespaceLabels, eattr);
+			var eBoolean = cb.createNodeWithType(eBooleanProps, eBooleanLabels, eDataType);
+			var eenum = cb.createNodeWithType(eenumProps, eenumLabels, eclass);
+			var eenumLiteral = cb.createNodeWithType(eenumLiteralProps, eenumLabels, eclass);
+			var eLiterals = cb.createNodeWithType(eLiteralsProps, eLiteralsLabels, eref);
+			var corr = cb.createNodeWithType(corrProps, corrLabels, eref);
+			var econtainer = cb.createNodeWithType(econtainerProps, econtainerLabels, eref);
 
 			cb.createEdge(CONFORMS_TO_PROP, neocore, neocore);
 			cb.createEdge(META_TYPE, neocore, mmodel);
@@ -288,8 +283,6 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EATTRIBUTE_TYPE, enamespaceattr, eString);
 			cb.createEdge(EREFERENCES, model, conformto);
 			cb.createEdge(EREFERENCE_TYPE, conformto, mmodel);
-			cb.createEdge(EREFERENCES, eobject, eleof);
-			cb.createEdge(EREFERENCE_TYPE, eleof, model);
 			cb.createEdge(EREFERENCES, eenum, eLiterals);
 			cb.createEdge(EREFERENCE_TYPE, eLiterals, eenumLiteral);
 			cb.createEdge(ESUPER_TYPE, eclass, eAttrEle);

@@ -9,9 +9,9 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.log4j,
  org.apache.commons.lang,
  org.emoflon.neo.engine.modules,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ org.emoflon.neo.neocore
 Automatic-Module-Name: PacMan
-Export-Package: .,
- org.emoflon.neo.api
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13
+Export-Package: org.emoflon.neo.api.pacman

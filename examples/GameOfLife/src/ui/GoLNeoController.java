@@ -2,9 +2,9 @@ package ui;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.spec.API_GameOfLifeBuilder;
-import org.emoflon.neo.api.spec.API_GameOfLifeRules;
+import org.emoflon.neo.api.gameoflife.API_Common;
+import org.emoflon.neo.api.gameoflife.spec.API_GameOfLifeBuilder;
+import org.emoflon.neo.api.gameoflife.spec.API_GameOfLifeRules;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
 public class GoLNeoController implements IController {

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.emoflon.neo.api.API_SheRememberedCaterpillars;
+import org.emoflon.neo.api.sherememberedcaterpillars.API_SheRememberedCaterpillars;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

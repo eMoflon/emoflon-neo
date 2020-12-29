@@ -1,23 +1,26 @@
 package org.emoflon.neo.example.familiestopersons;
 
+import static org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_GEN_Run.TRG_MODEL_NAME;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static Schema.run.FamiliesToPersons_GEN_Run.TRG_MODEL_NAME;
-import static Schema.run.FamiliesToPersons_GEN_Run.SRC_MODEL_NAME;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.API_DaughterOfExistingFamilyToFemale;
-import org.emoflon.neo.api.API_DaughterToFemale;
-import org.emoflon.neo.api.API_Families2Persons;
-import org.emoflon.neo.api.API_FatherOfExistingFamilyToMale;
-import org.emoflon.neo.api.API_FatherToMale;
-import org.emoflon.neo.api.API_MotherOfExistingFamilyToFemale;
-import org.emoflon.neo.api.API_MotherToFemale;
-import org.emoflon.neo.api.API_SonOfExistingFamilyToMale;
-import org.emoflon.neo.api.API_SonToMale;
-import org.emoflon.neo.api.Schema.API_FamiliesToPersons_GEN;
+import org.emoflon.neo.api.familiestopersons.API_DaughterOfExistingFamilyToFemale;
+import org.emoflon.neo.api.familiestopersons.API_DaughterToFemale;
+import org.emoflon.neo.api.familiestopersons.API_Families2Persons;
+import org.emoflon.neo.api.familiestopersons.API_FatherOfExistingFamilyToMale;
+import org.emoflon.neo.api.familiestopersons.API_FatherToMale;
+import org.emoflon.neo.api.familiestopersons.API_MotherOfExistingFamilyToFemale;
+import org.emoflon.neo.api.familiestopersons.API_MotherToFemale;
+import org.emoflon.neo.api.familiestopersons.API_SonOfExistingFamilyToMale;
+import org.emoflon.neo.api.familiestopersons.API_SonToMale;
+import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_CC_Run;
+import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_CO_Run;
+import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_GEN_Run;
+import org.emoflon.neo.api.familiestopersons.tgg.API_FamiliesToPersons_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.cleanup.NoOpCleanup;
@@ -32,10 +35,6 @@ import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGener
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
-
-import Schema.run.FamiliesToPersons_CC_Run;
-import Schema.run.FamiliesToPersons_CO_Run;
-import Schema.run.FamiliesToPersons_GEN_Run;
 
 public class GEN_CO_CC_Tests extends ENeoTest {
 	private void runTest(Consumer<MaximalRuleApplicationsTerminationCondition> configurator) throws Exception {

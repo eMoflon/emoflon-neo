@@ -53,8 +53,7 @@ public class NeoRuleAdapter implements org.emoflon.victory.ui.api.Rule {
 	}
 
 	private boolean acceptEdge(NeoRuleEdgeAdapter edge) {
-		return !edge.getLabel().equals(NeoCoreConstants.META_EL_OF) &&
-				!edge.getLabel().equals(NeoCoreConstants.CONFORMS_TO_PROP);
+		return !edge.getLabel().equals(NeoCoreConstants.CONFORMS_TO_PROP);
 	}
 
 	private void createNodes(Rule opRule) {

@@ -145,7 +145,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/EmptyClass.msl"),
 				Charset.defaultCharset());
-		compareStrings(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModels(rs));
 	}
 	
 	/*
@@ -161,7 +161,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/OCLExpression.msl"),
 				Charset.defaultCharset());
-		compareStrings(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModels(rs));
 	}
 	
 	/*
@@ -177,7 +177,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Block.msl"),
 				Charset.defaultCharset());
-		compareStrings(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModels(rs));
 	}
 	
 	/*
@@ -193,7 +193,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Game.msl"),
 				Charset.defaultCharset());
-		compareStrings(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModels(rs));
 	}
 	
 	/*
@@ -209,7 +209,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Expression.msl"),
 				Charset.defaultCharset());
-		compareStrings(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModels(rs));
 	}
 	
 	/*
@@ -225,7 +225,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Platform.msl"),
 				Charset.defaultCharset());
-		compareStrings(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModels(rs));
 	}
 	
 	/*
@@ -241,7 +241,7 @@ class TestEMFImporter {
 
 		String expected = FileUtils.readFileToString(new File("./resources/expected/model/Call.msl"),
 				Charset.defaultCharset());
-		compareStrings(expected, importer.generateEMSLModel(rs));
+		compareStrings(expected, importer.generateEMSLModels(rs));
 	}
 }
 

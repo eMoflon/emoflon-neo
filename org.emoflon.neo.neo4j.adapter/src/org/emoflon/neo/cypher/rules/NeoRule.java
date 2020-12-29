@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,14 +18,13 @@ import org.emoflon.neo.cypher.common.NeoRelation;
 import org.emoflon.neo.cypher.models.IBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.patterns.NeoPattern;
-import org.emoflon.neo.emsl.compiler.TGGCompiler;
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock;
 import org.emoflon.neo.emsl.eMSL.Rule;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.patterns.IMask;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.Schedule;
-import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.Record;
 
 import com.google.common.collect.Streams;
 
@@ -143,12 +143,11 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 		extractCoMatches(result, comatches);
 	}
 
-	private void extractCoMatches(StatementResult result, Collection<NeoCoMatch> comatches) {
+	private void extractCoMatches(List<Record> result, Collection<NeoCoMatch> comatches) {
 		if (result == null) {
 			throw new NeoDatabaseException();
 		} else {
-			while (result.hasNext()) {
-				var record = result.next();
+			for (var record : result) {
 				comatches.add(new NeoCoMatch(postcondition, record));
 			}
 		}
@@ -247,11 +246,5 @@ public class NeoRule implements IRule<NeoMatch, NeoCoMatch> {
 	@Override
 	public Collection<String> getCreatedRelLabels() {
 		return greenRels.keySet();
-	}
-
-	@Override
-	public boolean isUserDefined() {
-		return !(emslRule.getName().equals(TGGCompiler.CREATE_SRC_MODEL_RULE)
-				|| emslRule.getName().equals(TGGCompiler.CREATE_TRG_MODEL_RULE));
 	}
 }

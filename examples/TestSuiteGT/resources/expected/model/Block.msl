@@ -4,6 +4,7 @@ metamodel BasicTypesMetamodel {
 		.isVisible : EBoolean
 		.type : EChar
 		.longNum : ELong
+		
 	}
 	
 	Port {
@@ -11,16 +12,17 @@ metamodel BasicTypesMetamodel {
 		.created : EDate
 		.bandwidth : EDouble
 		.floatNum : EFloat
+		
 	}
 	
 }
 
 model Block {
-	o1 : Block {
-				.name : "testString"
-				.isVisible : true
-				.type : "A"
-				.longNum : 123545665
-	}
+	o0 : Block {
+		.name : "testString"
+		.isVisible : true
+		.type : "A"
+		.longNum : 123545665
 	
+	}
 }

@@ -1,0 +1,148 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+rule SubSubOppositeConflict {
+	package:Package {
+		-corr->folder
+		++-subPackages->subPackage {
+			~_cr_ := true
+		}
+	}
+	
+	subPackage:Package {
+		.enamespace : package::enamespace
+		-corr->subFolder
+	}
+	
+	folder:Folder {
+		++-docs->doc{
+			~_cr_ := true
+		}
+	}
+	
+	subFolder:Folder{
+		.enamespace : folder::enamespace
+		++-subFolders->folder {
+			~_cr_ := true
+		}
+	}
+	
+	++doc:Doc{
+		.enamespace := folder::enamespace
+		~_cr_ := true
+		.name := folder::name
+	}
+} 
+//when SubSubOppositeConflictNAC
+
+constraint SubSubOppositeConflictNAC = PackageSubOfSubPackageNAC && PackageSubOfSubPackageNAC && FolderSubOfSubFolderNAC && SubFolderSubOfFolderNAC
+
+constraint PackageSubOfSubPackageNAC = forbid PackageSubOfSubPackage
+constraint SubPackageSubOfPackageNAC = forbid SubPackageSubOfPackage
+constraint FolderSubOfSubFolderNAC = forbid FolderSubOfSubFolder
+constraint SubFolderSubOfFolderNAC = forbid SubFolderSubOfFolder
+
+pattern SubPackageSubOfPackage {
+	package:Package {
+		-subPackages->subPackage 
+	}
+		subPackage:Package
+}
+
+pattern PackageSubOfSubPackage {
+	subPackage:Package {
+		-subPackages->package
+	}
+		package:Package
+}
+
+pattern SubFolderSubOfFolder {
+	folder:Folder {
+		-subFolders->subFolder
+	}
+		subFolder:Folder
+}
+
+pattern FolderSubOfSubFolder {
+	subFolder:Folder {
+		-subFolders->folder
+	}
+		folder:Folder
+}
+
+rule CreateDeleteConflict {
+	
+	package:Package {
+		-corr->folder
+		-subPackages->subPackage 
+	}
+	
+	subPackage:Package {
+		.enamespace : package::enamespace
+		-corr->subFolder
+		++-clazzes->class {
+			~_cr_ := true
+		}
+	}
+	
+	++class:Clazz{
+		.enamespace := package::enamespace
+		.name := "NewClass"
+		~_cr_ := true
+	}
+	
+	folder:Folder {
+		-subFolders->subFolder {
+			~_de_ := true
+		}
+		++-docs->doc {
+			~_cr_ := true
+		}
+	}
+	
+	subFolder:Folder{
+		.enamespace : folder::enamespace
+		~_de_ := true
+		-docs->doc{
+			~_de_ := true
+		}
+	}
+	
+	doc:Doc{
+		.enamespace : folder::enamespace
+	}
+}			
+
+rule MoveDeleteConflict {
+	
+	package:Package {
+		-corr->folder
+		-subPackages->subPackage {
+			~_de_ := true
+		}
+	}
+	
+	otherPackage:Package {
+		.enamespace : package::enamespace
+		++-subPackages->subPackage {
+			~_cr_ := true
+		}
+	}
+	
+	subPackage:Package {
+		.enamespace : package::enamespace
+		-corr->subFolder
+	}
+	
+	folder:Folder {
+		-subFolders->subFolder {
+			~_de_ := true
+		}
+	}
+	
+	subFolder:Folder{
+		.enamespace : folder::enamespace
+		~_de_ := true
+	}
+}
+

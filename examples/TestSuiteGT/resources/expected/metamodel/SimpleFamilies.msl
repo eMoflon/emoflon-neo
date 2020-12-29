@@ -1,5 +1,6 @@
 metamodel SimpleFamilies {
 	FamilyRegister {
+		
 		<>-families(0..5)->Family
 	}
 	
@@ -14,6 +15,7 @@ metamodel SimpleFamilies {
 	
 	FamilyMember {
 		.name : EString
+		
 	}
 	
 }

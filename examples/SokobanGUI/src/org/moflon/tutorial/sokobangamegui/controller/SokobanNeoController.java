@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.metamodels.API_SokobanLanguage;
-import org.emoflon.neo.api.models.API_SokobanSimpleTestField;
-import org.emoflon.neo.api.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
-import org.emoflon.neo.api.rules.API_SokobanPatternsRulesConstraints;
+import org.emoflon.neo.api.sokobangui.API_Common;
+import org.emoflon.neo.api.sokobangui.org.moflon.tutorial.sokobangamegui.patterns.API_SokobanGUIPatterns;
+import org.emoflon.neo.api.sokobanlanguage.metamodels.API_SokobanLanguage;
+import org.emoflon.neo.api.sokobanlanguage.models.API_SokobanSimpleTestField;
+import org.emoflon.neo.api.sokobanlanguage.rules.API_SokobanPatternsRulesConstraints;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
 import org.emoflon.neo.emsl.util.FlattenerException;

@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.metamodels.API_SokobanLanguage;
+import org.emoflon.neo.api.sokobanlanguage.metamodels.API_SokobanLanguage;
+import org.emoflon.neo.api.testsuitegt.API_Common;
 import org.emoflon.neo.emf.EMFExporter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -45,6 +45,4 @@ public interface IRule<M extends IMatch, CM extends ICoMatch> extends IPattern<M
 	default Map<String, Boolean> isStillApplicable(Collection<M> matches) {
 		return isStillValid(matches);
 	}
-	
-	boolean isUserDefined();
 }

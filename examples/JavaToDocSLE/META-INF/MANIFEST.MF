@@ -30,15 +30,12 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  JavaToDocSLE,
  JavaToDocSLE,
  org.apache.commons.lang,
- org.apache.commons.lang3
-Export-Package: JavaToDocSLE,
- JavaToDocSLE.run,
- metamodels,
+ org.emoflon.neo.neocore
+Export-Package: metamodels,
  models,
- org.emoflon.neo.api,
- org.emoflon.neo.api.JavaToDocSLE,
- org.emoflon.neo.api.metamodels,
- org.emoflon.neo.api.models,
+ org.emoflon.neo.api.javatodocsle,
+ org.emoflon.neo.api.javatodocsle.run,
+ org.emoflon.neo.api.javatodocsle.tgg,
  run
 Automatic-Module-Name: JavaToDocSLE
 Bundle-ActivationPolicy: lazy

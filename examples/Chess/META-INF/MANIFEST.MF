@@ -12,7 +12,6 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0",
  org.apache.commons.lang,
  org.emoflon.neo.engine.modules,
  org.apache.commons.lang,
- org.apache.commons.lang3
-Export-Package: .,
- org.emoflon.neo.api
+ org.emoflon.neo.neocore
 Bundle-ActivationPolicy: lazy
+Export-Package: org.emoflon.neo.api.chess

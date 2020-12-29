@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.rules.API_SokobanTGGs;
-import org.emoflon.neo.api.rules.SokobanTGGs.API_SokobanImportExport_GEN;
+import org.emoflon.neo.api.sokobanlanguage.rules.API_SokobanTGGs;
+import org.emoflon.neo.api.sokobanlanguage.rules.tgg.API_SokobanImportExport_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -26,7 +26,7 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
  * 
  * @author anthonyanjorin
  */
-public class SokobanImportExport_GEN_Run extends rules.SokobanTGGs.run.SokobanImportExport_GEN_Run {
+public class SokobanImportExport_GEN_Run extends org.emoflon.neo.api.sokobanlanguage.rules.run.SokobanImportExport_GEN_Run {
 
 	public SokobanImportExport_GEN_Run() {
 		super(SRC_MODEL_NAME, TRG_MODEL_NAME);

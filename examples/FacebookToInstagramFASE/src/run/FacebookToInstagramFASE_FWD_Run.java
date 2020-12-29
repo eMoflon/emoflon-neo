@@ -3,17 +3,18 @@
  */
 package run;
 
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
+
+import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramFASE_FWD;
+import org.emoflon.neo.api.facebooktoinstagramfase.API_Common;
+import org.emoflon.neo.api.facebooktoinstagramfase.API_Transformations;
+import org.emoflon.neo.api.facebooktoinstagramfase.tgg.API_FacebookToInstagramFASE_FWD;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
-
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
-
 import org.emoflon.neo.engine.modules.cleanup.RemoveTranslateAttributes;
 import org.emoflon.neo.engine.modules.matchreprocessors.ParanoidNeoReprocessor;
 import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
@@ -23,7 +24,6 @@ import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminat
 import org.emoflon.neo.engine.modules.updatepolicies.AnySingleMatchUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class FacebookToInstagramFASE_FWD_Run {

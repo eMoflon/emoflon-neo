@@ -71,5 +71,4 @@ public final class MOEAWrapper extends ILPSolver{
 		
 		return ilpProblem.createILPSolution(varAssignment, solution.violatesConstraints(), solution.getObjective(0));
 	}
-
 }

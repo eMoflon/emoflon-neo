@@ -3,7 +3,7 @@ package org.emoflon.neo.example.typing;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.typing.API_TypingTest;
+import org.emoflon.neo.api.testsuitegt.org.emoflon.neo.example.typing.API_TypingTest;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;

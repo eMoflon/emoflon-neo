@@ -1,3 +1,5 @@
+@Data_API
+
 import "platform:/resource/GameOfLife/src/spec/GameOfLifeRules.msl"
 
 rule createTopLeftCorner {

@@ -5,11 +5,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Common;
-import org.emoflon.neo.api.API_Facebook;
-import org.emoflon.neo.api.API_Instagram;
-import org.emoflon.neo.api.API_Transformations;
-import org.emoflon.neo.api.Transformations.API_FacebookToInstagramGrammar_GEN;
+import org.emoflon.neo.api.facebooktoinstagram.API_Common;
+import org.emoflon.neo.api.facebooktoinstagram.API_Facebook;
+import org.emoflon.neo.api.facebooktoinstagram.API_Instagram;
+import org.emoflon.neo.api.facebooktoinstagram.API_Transformations;
+import org.emoflon.neo.api.facebooktoinstagram.tgg.API_FacebookToInstagramGrammar_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.generator.INodeSampler;
