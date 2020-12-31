@@ -266,7 +266,7 @@ class EMSLGenerator extends AbstractGenerator {
 					«ENDFOR»
 					
 					«FOR param : extractParameters(p)»
-						public final String _param__«param.name» = "«param.name»";
+						public final String _param__«param» = "«param»";
 					«ENDFOR»
 					
 					@Override
@@ -541,7 +541,7 @@ class EMSLGenerator extends AbstractGenerator {
 					«ENDFOR»
 					
 					«FOR param : extractParameters(rule)»
-						public final String _param__«param.name» = "«param.name»";
+						public final String _param__«param» = "«param»";
 					«ENDFOR»
 					
 					@Override
@@ -633,7 +633,7 @@ class EMSLGenerator extends AbstractGenerator {
 			it.value
 		].filter(Parameter)
 		
-		return (paramsFromNodes + paramsFromEdges + paramsFromAttributeExps).toSet
+		return (paramsFromNodes + paramsFromEdges + paramsFromAttributeExps).map[name].toSet
 	}
 	
 	private dispatch def extractParameters(Pattern p){
@@ -651,7 +651,7 @@ class EMSLGenerator extends AbstractGenerator {
 			it.value
 		].filter(Parameter)
 		
-		return (paramsFromNodes + paramsFromEdges).toSet
+		return (paramsFromNodes + paramsFromEdges).map[name].toSet
 	}
 
 	dispatch def generateAccess(Model m, int index) {
