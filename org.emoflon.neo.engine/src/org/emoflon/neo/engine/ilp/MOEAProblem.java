@@ -3,28 +3,37 @@ package org.emoflon.neo.engine.ilp;
 import org.moeaframework.core.Problem;
 import org.moeaframework.core.Solution;
 import org.moeaframework.core.variable.EncodingUtils;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class MOEAProblem extends BinaryILPProblem implements Problem {
 
+	private Collection<ILPObjective> objectives = new HashSet<>();
+	
 	@Override
 	public void evaluate(Solution solution) {
 		
 		boolean[] x = EncodingUtils.getBinary(solution.getVariable(0));
 		
 		// Objective Function
-		double ofv = 0;
-		ILPLinearExpression le = getObjective().getLinearExpression();
+		int i = 0;
+		objective = new ILPObjective(new ILPLinearExpression(), Objective.maximize); // Dummy objective, has to be improved
 		
-		for (String v : getVariables()) {
-			ofv += le.getCoefficient(getVariableId(v)) * (x[getVariableId(v)-1] ? 1 : 0);
+		for (ILPObjective o : objectives) {
+			double ofv = 0;
+			ILPLinearExpression le = o.getLinearExpression();
+			
+			for (String v : getVariables()) {
+				ofv += le.getCoefficient(getVariableId(v)) * (x[getVariableId(v)-1] ? 1 : 0);
+			}
+			
+			if (o.getObjectiveOperation().equals(Objective.minimize))
+				solution.setObjective(i++, ofv);
+			else if (o.getObjectiveOperation().equals(Objective.maximize))
+				solution.setObjective(i++, -ofv);
+			else 
+				throw new IllegalArgumentException("Unsupported objective: " + o.getObjectiveOperation().toString());
 		}
-		
-		if (objective.getObjectiveOperation().equals(Objective.minimize))
-			solution.setObjective(0, ofv);
-		else if (objective.getObjectiveOperation().equals(Objective.maximize))
-			solution.setObjective(0, -ofv);
-		else 
-			throw new IllegalArgumentException("Unsupported objective: " + objective.getObjectiveOperation().toString());
 		
 		// Constraints
 		int constraintCounter = 0;
@@ -50,7 +59,7 @@ public class MOEAProblem extends BinaryILPProblem implements Problem {
 
 	@Override
 	public Solution newSolution() {
-		Solution solution = new Solution(1,1,getNumberOfConstraints());
+		Solution solution = new Solution(getNumberOfVariables(),objectives.size(),getNumberOfConstraints());
 		solution.setVariable(0, EncodingUtils.newBinary(getVariables().size()));
 		return solution;
 	}
@@ -63,5 +72,13 @@ public class MOEAProblem extends BinaryILPProblem implements Problem {
 	@Override
 	public String getName() {
 		return "MOEA Problem";
+	}
+	
+	public Collection<ILPObjective> getObjectives() {
+		return objectives;
+	}
+	
+	public void addObjective(ILPObjective o) {
+		objectives.add(o);
 	}
 }

@@ -1,11 +1,11 @@
 package org.emoflon.neo.example.familiestopersons;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.familiestopersons.API_F2PModelForTesting;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.familiestopersons.API_F2PModelForTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import Schema.run.FamiliesToPersons_CC_Run;
-import Schema.run.FamiliesToPersons_CO_Run;
+import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_CC_Run;
+import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_CO_Run;
 
 public class ConstraintTest extends ENeoTest{
 	

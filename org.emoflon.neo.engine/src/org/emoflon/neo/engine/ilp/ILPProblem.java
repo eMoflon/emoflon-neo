@@ -694,7 +694,7 @@ public class ILPProblem implements Problem {
 		 * @param objectiveOperation The objective: Either minimize or maximize the
 		 *                           objective
 		 */
-		ILPObjective(final ILPLinearExpression linearExpression, final Objective objectiveOperation) {
+		public ILPObjective(final ILPLinearExpression linearExpression, final Objective objectiveOperation) {
 			switch (objectiveOperation) {
 			case maximize:
 			case minimize:

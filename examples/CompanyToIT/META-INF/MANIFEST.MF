@@ -36,6 +36,8 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
 Export-Package: metamodels,
  models,
  org.emoflon.neo.api.companytoit,
+ org.emoflon.neo.api.companytoit.metamodels,
+ org.emoflon.neo.api.companytoit.models,
  org.emoflon.neo.api.companytoit.run,
  org.emoflon.neo.api.companytoit.tgg,
  run

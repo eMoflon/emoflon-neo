@@ -7,6 +7,7 @@ import java.net.URI
 import java.util.ArrayList
 import java.util.List
 import java.util.function.Predicate
+import java.util.stream.Collectors
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
@@ -31,6 +32,7 @@ import org.emoflon.neo.emsl.eMSL.MetamodelNodeBlock
 import org.emoflon.neo.emsl.eMSL.Model
 import org.emoflon.neo.emsl.eMSL.ModelNodeBlock
 import org.emoflon.neo.emsl.eMSL.ModelRelationStatement
+import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.Pattern
 import org.emoflon.neo.emsl.eMSL.Rule
 import org.emoflon.neo.emsl.eMSL.TripleGrammar
@@ -38,8 +40,6 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.eMSL.impl.TripleGrammarImpl
-import java.util.stream.Collectors
 import org.emoflon.neo.emsl.eMSL.Parameter
 
 /**
@@ -269,7 +269,7 @@ class EMSLGenerator extends AbstractGenerator {
 					«ENDFOR»
 					
 					«FOR param : extractParameters(p)»
-						public final String _param__«param.name» = "«param.name»";
+						public final String _param__«param» = "«param»";
 					«ENDFOR»
 					
 					@Override
@@ -570,7 +570,7 @@ class EMSLGenerator extends AbstractGenerator {
 					«ENDFOR»
 					
 					«FOR param : extractParameters(rule)»
-						public final String _param__«param.name» = "«param.name»";
+						public final String _param__«param» = "«param»";
 					«ENDFOR»
 					
 					@Override
@@ -662,7 +662,7 @@ class EMSLGenerator extends AbstractGenerator {
 			it.value
 		].filter(Parameter)
 		
-		return (paramsFromNodes + paramsFromEdges + paramsFromAttributeExps).toSet
+		return (paramsFromNodes + paramsFromEdges + paramsFromAttributeExps).map[name].toSet
 	}
 	
 	private dispatch def extractParameters(Pattern p){
@@ -680,7 +680,7 @@ class EMSLGenerator extends AbstractGenerator {
 			it.value
 		].filter(Parameter)
 		
-		return (paramsFromNodes + paramsFromEdges).toSet
+		return (paramsFromNodes + paramsFromEdges).map[name].toSet
 	}
 
 	dispatch def generateAccess(Model m, int index) {

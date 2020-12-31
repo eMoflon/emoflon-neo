@@ -13,10 +13,10 @@ import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicatio
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
 
-import JavaToDocSLE.run.JavaToDocSLE_BWD_OPT_Run;
-import JavaToDocSLE.run.JavaToDocSLE_CC_Run;
-import JavaToDocSLE.run.JavaToDocSLE_CO_Run;
-import JavaToDocSLE.run.JavaToDocSLE_FWD_OPT_Run;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_BWD_OPT_Run;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CC_Run;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_FWD_OPT_Run;
 
 import org.junit.jupiter.api.Test;;
 

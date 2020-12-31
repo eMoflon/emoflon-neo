@@ -1,17 +1,17 @@
 package org.emoflon.neo.example.facebooktoinstagram;
 
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
-import static Transformations.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_Transformations;
+import org.emoflon.neo.api.facebooktoinstagramfase.API_Transformations;
 import org.emoflon.neo.example.ENeoTest;
 
-import Transformations.run.FacebookToInstagramFASE_BWD_OPT_Run;
-import Transformations.run.FacebookToInstagramFASE_CC_Run;
-import Transformations.run.FacebookToInstagramFASE_CO_Run;
-import Transformations.run.FacebookToInstagramFASE_FWD_OPT_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_BWD_OPT_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CC_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CO_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_FWD_OPT_Run;
 
 import org.junit.jupiter.api.Test;;
 

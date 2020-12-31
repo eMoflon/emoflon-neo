@@ -1,11 +1,11 @@
 package org.emoflon.neo.example.facebooktoinstagram;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.facebooktoinstagram.API_ModelForTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import Schema.run.FamiliesToPersons_CC_Run;
-import Transformations.run.FacebookToInstagramFASE_CO_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CC_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CO_Run;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.facebooktoinstagram.API_ModelForTesting;
 
 
 public class ConstraintTest extends ENeoTest{
@@ -27,7 +27,7 @@ public class ConstraintTest extends ENeoTest{
 	public void testConsistentTriple_CC() throws Exception {
 		exportTriple(api.getModel_ConsistentSource(), //
 				api.getModel_ConsistentTarget());
-		testForConsistency(new FamiliesToPersons_CC_Run("ConsistentSource", "ConsistentTarget").runCorrCreation(),
+		testForConsistency(new FacebookToInstagramFASE_CC_Run("ConsistentSource", "ConsistentTarget").runCorrCreation(),
 				9);
 	}
 	

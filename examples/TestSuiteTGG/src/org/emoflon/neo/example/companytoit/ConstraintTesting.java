@@ -1,10 +1,10 @@
 package org.emoflon.neo.example.companytoit;
 
-import org.emoflon.neo.api.org.emoflon.neo.example.companytoit.API_C2IModelForTesting;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.companytoit.API_C2IModelForTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import CompanyToIT.run.CompanyToIT_CO_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
 
 public class ConstraintTesting extends ENeoTest{
 

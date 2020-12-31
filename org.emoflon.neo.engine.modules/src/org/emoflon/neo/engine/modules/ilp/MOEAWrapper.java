@@ -1,6 +1,8 @@
 package org.emoflon.neo.engine.modules.ilp;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.emoflon.neo.engine.ilp.ILPProblem;
@@ -21,7 +23,7 @@ public final class MOEAWrapper extends ILPSolver{
 	 * @param onlyBinaryVariables This setting defines the variable range of
 	 *                            variables registered at Gurobi
 	 */
-	MOEAWrapper(final ILPProblem ilpProblem) {
+	public MOEAWrapper(final ILPProblem ilpProblem) {
 		super(ilpProblem);
 		//this.problem = (MOEAProblem)ilpProblem;
 	}
@@ -47,28 +49,32 @@ public final class MOEAWrapper extends ILPSolver{
 	@Override
 	public ILPSolution solveILP() throws Exception {
 		
+		throw new UnsupportedOperationException("For multi-objective optimization, there might be multiple solutions! Use 'solve()' instead!");
+	}
+	
+	public Collection<ILPSolution> solve() throws Exception {
+		
+		Collection<ILPSolution> solutions = new HashSet<>();
+		
 		NondominatedPopulation result = new Executor()
 				.withAlgorithm("NSGAII")
 				.withProblem(ilpProblem)
 				.withMaxEvaluations(100000)
 				.run();
 		
-		Map<Integer,Integer> varAssignment = new HashMap<>();
-		
-		Solution solution = result.get(0); // for one Objective, this is the only solution
-		boolean[] vA = EncodingUtils.getBinary(solution.getVariable(0));
-		
-		for (int i=0; i<vA.length; i++) {
-			varAssignment.put(i+1, vA[i] ? 1 : 0);
+		for (int i = 0; i<result.size(); i++) {
+			Map<Integer,Integer> varAssignment = new HashMap<>();
+			
+			Solution solution = result.get(i);
+			boolean[] vA = EncodingUtils.getBinary(solution.getVariable(0));
+			
+			for (int j=0; j<vA.length; j++) {
+				varAssignment.put(j+1, vA[j] ? 1 : 0);
+			}
+			
+			solutions.add(ilpProblem.createILPSolution(varAssignment, solution.violatesConstraints(), solution.getObjective(0)));
 		}
-//		for (Solution solution : result) {
-//			if (!solution.violatesConstraints()) {
-//					System.out.format("%10.3f %10.3f%n",
-//					solution.getObjective(0),
-//					solution.getObjective(1));
-//				}
-//			}
 		
-		return ilpProblem.createILPSolution(varAssignment, solution.violatesConstraints(), solution.getObjective(0));
+		return solutions;
 	}
 }

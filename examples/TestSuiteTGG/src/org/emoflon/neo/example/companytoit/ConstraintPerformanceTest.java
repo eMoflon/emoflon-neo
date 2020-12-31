@@ -5,13 +5,13 @@ import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.API_CompanyToIT;
+import org.emoflon.neo.api.companytoit.API_CompanyToIT;
 import org.emoflon.neo.example.ENeoTest;
 
-import CompanyToIT.run.CompanyToIT_BWD_OPT_Run;
-import CompanyToIT.run.CompanyToIT_CC_Run;
-import CompanyToIT.run.CompanyToIT_CO_Run;
-import CompanyToIT.run.CompanyToIT_FWD_OPT_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_BWD_OPT_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CC_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
+import org.emoflon.neo.api.companytoit.run.CompanyToIT_FWD_OPT_Run;
 
 import org.junit.jupiter.api.Test;;
 
