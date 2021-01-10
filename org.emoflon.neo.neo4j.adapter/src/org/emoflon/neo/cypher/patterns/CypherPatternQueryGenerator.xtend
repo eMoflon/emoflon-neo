@@ -178,7 +178,7 @@ class CypherPatternQueryGenerator {
 					«ENDFOR»
 			«ELSE»
 				MATCH
-					(__)
+					(__:NeoCore__MetaModel {ename:"NeoCore"})
 			«ENDIF»
 		'''
 	}
