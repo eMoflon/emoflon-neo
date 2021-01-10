@@ -143,7 +143,7 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	@Override
 	public Collection<NeoMatch> determineMatches(Schedule schedule, IMask mask) {
 		// Handle empty pattern
-		if(getContextNodeLabels().isEmpty())
+		if(getContextNodeLabels().isEmpty() && allSubPatterns.isEmpty())
 			return List.of(new SyntheticNeoMatch(this));
 		
 		// Handle non-empty pattern
