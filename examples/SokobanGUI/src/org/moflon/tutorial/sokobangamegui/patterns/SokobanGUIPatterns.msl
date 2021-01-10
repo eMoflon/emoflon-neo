@@ -23,11 +23,7 @@ pattern occupied {
 pattern emptyFields -> fields when forbid occupied
 
 pattern occupiedFields -> fields, occupied {
-	fig:Figure {
-		-metaType->type
-	}
-	
-	type:EClass
+	fig:Figure
 } 
 
 pattern figureTypes {
@@ -103,15 +99,21 @@ pattern otherFigureOnField {
 }
 
 rule createSokoban -> createFigure {
-	++ fig:Sokoban
+	++ fig:Sokoban {
+		.ename := "Sokoban"
+	}
 } when forbid otherFigureOnField
 
 rule createBlock -> createFigure {
-	++ fig:Block
+	++ fig:Block {
+		.ename := "Block"
+	}
 } when forbid otherFigureOnField
 
 rule createBoulder -> createFigure {
-	++ fig:Boulder
+	++ fig:Boulder {
+		.ename := "Boulder"
+	}
 } when forbid otherFigureOnField
 
 abstract rule chooseField {

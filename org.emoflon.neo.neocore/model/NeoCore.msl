@@ -41,7 +41,6 @@ metamodel NeoCore {
 		._de_ : EBoolean
 		._cr_ : EBoolean
 		._ex_ : EBoolean
-		-metaType(1..1)-> EObject
 		-corr(0..*)->EObject {
 			._type_:EString
 		}	

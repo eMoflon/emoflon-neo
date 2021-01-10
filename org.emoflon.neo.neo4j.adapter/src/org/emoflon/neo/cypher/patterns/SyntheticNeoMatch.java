@@ -10,8 +10,8 @@ public class SyntheticNeoMatch extends NeoMatch {
 		super(other);
 	}
 
-	public SyntheticNeoMatch() {
-		super(null, null);
+	public SyntheticNeoMatch(NeoPattern pattern) {
+		super(pattern, null);
 		elements = new HashMap<>();
 	}
 

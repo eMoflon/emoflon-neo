@@ -39,6 +39,8 @@ import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
 import org.emoflon.neo.emsl.eMSL.Parameter
+import org.emoflon.neo.neocore.util.PreProcessorUtil
+import org.emoflon.neo.neocore.util.NeoCoreConstants
 
 /**
  * Generates code from your model files on save.
@@ -442,7 +444,11 @@ class EMSLGenerator extends AbstractGenerator {
 	}
 
 	def allProperties(MetamodelNodeBlock nb) {
-		EMSLUtil.thisAndAllSuperTypes(nb).flatMap[it.properties]
+		val props = EMSLUtil.thisAndAllSuperTypes(nb).flatMap[it.properties]
+		if(!props.exists[it.name == NeoCoreConstants.NAME_PROP])
+			props + #{PreProcessorUtil.instance.ename}
+		else
+			props
 	}
 
 	dispatch def generateAccess(GraphGrammar gg, int index) {

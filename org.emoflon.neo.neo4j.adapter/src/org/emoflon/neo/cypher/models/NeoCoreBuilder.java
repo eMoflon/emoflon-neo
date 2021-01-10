@@ -29,7 +29,6 @@ import static org.emoflon.neo.neocore.util.NeoCoreConstants.EOBJECT;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCES;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.EREFERENCE_TYPE;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.ESUPER_TYPE;
-import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
 
@@ -602,7 +601,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 		mmNodes.put(metamodel, mmNode);
 
 		cb.createEdge(CONFORMS_TO_PROP, mmNode, neocore);
-		cb.createEdge(META_TYPE, mmNode, mmodel);
+//		cb.createEdge(META_TYPE, mmNode, mmodel);
 
 		metamodel.getNodeBlocks().forEach(nb -> {
 			var nbNode = cb.createNodeWithType(//
@@ -633,12 +632,12 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			var mmNode = cb.matchNode(List.of(new NeoProp(NAME_PROP, mm.getName())),
 					NeoCoreBootstrapper.LABELS_FOR_A_METAMODEL);
 
-			var typeOfNode = cb.matchNodeWithContainer(//
-					List.of(new NeoProp(NAME_PROP, nb.getType().getName()), new NeoProp(NAMESPACE_PROP, mm.getName())), //
-					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, mm.getName());
+//			var typeOfNode = cb.matchNodeWithContainer(//
+//					List.of(new NeoProp(NAME_PROP, nb.getType().getName()), new NeoProp(NAMESPACE_PROP, mm.getName())), //
+//					NeoCoreBootstrapper.LABELS_FOR_AN_ECLASS, mm.getName());
 
 			cb.createEdge(CONFORMS_TO_PROP, mNode, mmNode);
-			cb.createEdge(META_TYPE, mNode, nodeCommandForModel);
+//			cb.createEdge(META_TYPE, mNode, nodeCommandForModel);
 
 			// Handle attributes of model
 			List<NeoProp> props = new ArrayList<>();
@@ -652,7 +651,7 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 			var allLabels = new ArrayList<String>();
 			allLabels.addAll(computeLabelsFromType(nb.getType()));
 
-			var nbNode = cb.createNodeWithType(props, allLabels, typeOfNode);
+			var nbNode = cb.createNode(props, allLabels);
 
 			blockToCommand.put(nb, nbNode);
 		});

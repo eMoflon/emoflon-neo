@@ -1,7 +1,6 @@
 package org.emoflon.neo.neocore.util;
 
 public class NeoCoreConstants {
-	public static final String META_TYPE = "metaType";
 	public static final String CORR = "corr";
 	public static final String ECONTAINER = "eContainer";
 

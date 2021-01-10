@@ -32,7 +32,6 @@ import static org.emoflon.neo.neocore.util.NeoCoreConstants.ETYPED_ELEMENT;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.ISCOMPOSITION_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.ISCONTAINMENT_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.METAMODEL;
-import static org.emoflon.neo.neocore.util.NeoCoreConstants.META_TYPE;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.MODEL;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAMESPACE_PROP;
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP;
@@ -159,9 +158,6 @@ public class NeoCoreBootstrapper {
 	private static final List<NeoProp> eTypedeleProps = List.of(new NeoProp(NAME_PROP, ETYPED_ELEMENT), neocoreNamespaceProp);
 	private static final List<String> eTypedeleLabels = LABELS_FOR_AN_ECLASS;
 
-	private static final List<NeoProp> metaTypeProps = List.of(new NeoProp(NAME_PROP, META_TYPE));
-	private static final List<String> metaTypeLabels = LABELS_FOR_AN_EREFERENCE;
-
 	private static final List<NeoProp> corrProps = List.of(new NeoProp(NAME_PROP, CORR));
 	private static final List<String> corrLabels = LABELS_FOR_AN_EREFERENCE;
 
@@ -231,7 +227,7 @@ public class NeoCoreBootstrapper {
 			var eSupType = cb.createNodeWithType(eSupTypeProps, eSupTypeLabels, eref);
 			var eclassifier = cb.createNodeWithType(eclassifierProps, eclassifierLabels, eclass);
 			var eTypedele = cb.createNodeWithType(eTypedeleProps, eTypedeleLabels, eclass);
-			var metaType = cb.createNodeWithType(metaTypeProps, metaTypeLabels, eref);
+//			var metaType = cb.createNodeWithType(metaTypeProps, metaTypeLabels, eref);
 			var eAttributes = cb.createNodeWithType(eAttributesProps, eAttributesLabels, eref);
 			var eStruct = cb.createNodeWithType(eStructProps, eStructLabels, eclass);
 			var abstractattr = cb.createNodeWithType(abstractattrProps, abstractattrLabels, eattr);
@@ -244,8 +240,8 @@ public class NeoCoreBootstrapper {
 			var econtainer = cb.createNodeWithType(econtainerProps, econtainerLabels, eref);
 
 			cb.createEdge(CONFORMS_TO_PROP, neocore, neocore);
-			cb.createEdge(META_TYPE, neocore, mmodel);
-			cb.createEdge(META_TYPE, eclass, eclass);
+//			cb.createEdge(META_TYPE, neocore, mmodel);
+//			cb.createEdge(META_TYPE, eclass, eclass);
 			cb.createEdge(EREFERENCES, eclass, erefs);
 			cb.createEdge(EREFERENCE_TYPE, erefs, eref);
 			cb.createEdge(EREFERENCES, eref, eRefType);
@@ -273,8 +269,8 @@ public class NeoCoreBootstrapper {
 			cb.createEdge(EATTRIBUTE_TYPE, isContainment, eBoolean);
 			cb.createEdge(EREFERENCES, eattr, eAttrType);
 			cb.createEdge(EREFERENCE_TYPE, eAttrType, eDataType);
-			cb.createEdge(EREFERENCES, eobject, metaType);
-			cb.createEdge(EREFERENCE_TYPE, metaType, eobject);
+//			cb.createEdge(EREFERENCES, eobject, metaType);
+//			cb.createEdge(EREFERENCE_TYPE, metaType, eobject);
 			cb.createEdge(EREFERENCES, eAttrEle, eAttributes);
 			cb.createEdge(EREFERENCE_TYPE, eAttributes, eattr);
 			cb.createEdge(EATTRIBUTES, eclass, abstractattr);
