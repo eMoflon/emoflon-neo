@@ -4,7 +4,6 @@ import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
 //consistent source target triple ---1
 model ConsistentSource1 -> InConsistentSource1{
 	f: Family{
-		.name : "Edison"
 		-sons-> fm2
 	}
 	
@@ -19,13 +18,13 @@ model ConsistentTarget1 -> InConsistentTarget1{
 	}
 	
 	p2 : Male{
-		.name : "John"
+		.name : "Edison, John"
 	}
 }
 
 rule ConsistentTriple1 -> InConsistentTriple1{
 	p2 : Male{
-		.name : "John"
+		.name : "Edison, John"
 	}
 	
 	fm2: FamilyMember{
@@ -58,23 +57,24 @@ model InConsistentTarget1{
 	}
 	
 	p1 : Male{
-		.name : "Robert"
+		.name : "Edison, Robert"
 	}
 }
 
 
 rule InConsistentTriple1{
 	pr: PersonRegister{
-		++ -corr->fr {
-			._type_ := "FamiliesToPersons"
-		}
+		
 	}
 	
 	p1 : Male{
-		.name : "Robert"
+		.name : "Edison, Robert"
 	}
 	
 	fr: FamilyRegister{
+		++ -corr->pr {
+			._type_ := "FamiliesToPersons"
+		}
 	}
 	
 	fm1: FamilyMember{
@@ -89,7 +89,6 @@ rule InConsistentTriple1{
 
 model ConsistentSource2 -> InConsistentSource1{
 	f: Family{
-		.name : "Edison"
 		-mother-> fm2
 	}
 	
@@ -104,7 +103,7 @@ model ConsistentTarget2 -> InConsistentTarget1{
 	}
 	
 	p2: Female{
-		.name : "Martha"
+		.name : "Edison, Martha"
 	}
 }
 
@@ -117,14 +116,13 @@ rule ConsistentTriple2 -> InConsistentTriple1{
 	}
 	
 	p2: Female{
-		.name : "Martha"
+		.name : "Edison, Martha"
 	}
 }
 
 //inconsistent source, target, triple ---2
 model InConsistentSource2 -> InConsistentSource1{
 	f: Family{
-		.name : "Edison"
 		-father->fm2
 	}
 	
@@ -139,7 +137,7 @@ model InConsistentTarget2 -> InConsistentTarget1{
 	}
 		
 	p2: Male{
-		.name : "Keith"		
+		.name : "Edison, Keith"		
 	}
 }
 
@@ -152,7 +150,7 @@ rule InConsistentTriple2 -> InConsistentTriple1{
 	}
 	
 	p2: Male{
-		.name : "Keith"		
+		.name : "Edison, Keith"		
 	}
 }
 
@@ -184,11 +182,11 @@ model InConsistentTarget3{
 	}
 	
 	p1: Female{
-		.name : "Martha"		
+		.name : "Edison, Martha"		
 	}
 	
 	p2: Female{
-		.name : "Vanessa"		
+		.name : "Edison, Vanessa"		
 	}
 }
 
@@ -217,11 +215,11 @@ rule InConsistentTriple3{
 	}
 	
 	p1: Female{
-		.name : "Martha"		
+		.name : "Edison, Martha"		
 	}
 	
 	p2: Female{
-		.name : "Vanessa"		
+		.name : "Edison, Vanessa"		
 	}
 }
 

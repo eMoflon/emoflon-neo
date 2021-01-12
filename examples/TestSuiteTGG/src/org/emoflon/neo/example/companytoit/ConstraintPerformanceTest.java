@@ -12,7 +12,7 @@ import org.emoflon.neo.api.companytoit.run.CompanyToIT_BWD_OPT_Run;
 import org.emoflon.neo.api.companytoit.run.CompanyToIT_CC_Run;
 import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
 import org.emoflon.neo.api.companytoit.run.CompanyToIT_FWD_OPT_Run;
-
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;;
 
 public class ConstraintPerformanceTest extends ENeoTest{
@@ -74,7 +74,7 @@ public void runTestForFixedSize(int nrOfApplications, int nrOfIterations) throws
 		}
 	}
 	
-	@Test
+	@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
 	public void testPerformance() throws Exception {
 		for (int i : new int[]{10, 20, 50, 100, 150, 200}) {
 			Logger.getRootLogger().setLevel(Level.INFO);

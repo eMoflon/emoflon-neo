@@ -54,14 +54,14 @@ rule ConsistentTriple{
 	f1: FacebookLanguage.User{
 		.name : "Monica"
 		++ -corr->i1{
-			._type_ := "UserToUser"
+			._type_ := "FbUserToInUser"
 		}
 	}
 	
 	f2: FacebookLanguage.User{
 		.name : "Rachel"
 		++ -corr->i2{
-			._type_ := "UserToUser"
+			._type_ := "FbUserToInUser"
 		}
 	}
 	

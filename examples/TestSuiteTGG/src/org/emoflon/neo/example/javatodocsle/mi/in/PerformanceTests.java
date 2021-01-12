@@ -83,7 +83,7 @@ public class PerformanceTests extends ENeoTest {
 //		}
 	}
 	
-	@Test
+	@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
 	public void testPerformance() throws Exception {
 		for (int i : new int[]{1,2,5,10,20,50}) {
 			Logger.getRootLogger().setLevel(Level.OFF);

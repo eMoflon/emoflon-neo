@@ -47,7 +47,7 @@ public class PerformanceTests extends ENeoTest {
 
 	}
 
-	@Ignore
+	@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
 			scheduler.setMax(API_JavaToDoc.JavaToDoc__RootToRootRule, 100)

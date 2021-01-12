@@ -171,8 +171,10 @@ model InconsistentSource4 -> InconsistentSource1{
 	
 	a2: Admin{
 		.name : "Kai"
-		-ceo->InconsistentSource1.ceo1
+		-ceo->ceo1
 	}
+	
+	ceo1 : CEO 
 }
 
 model InconsistentTarget4 -> InconsistentTarget1{
