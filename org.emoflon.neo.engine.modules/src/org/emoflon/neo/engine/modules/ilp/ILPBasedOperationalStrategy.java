@@ -272,9 +272,15 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 	protected void handleConstraintViolations() {
 		long tic = System.currentTimeMillis();
 		logger.info("Checking for constraint violations...");
-		var violations = negativeConstraints.stream().flatMap(nc -> nc.getViolations().stream());
-		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
-
+		//var violations = negativeConstraints.stream().flatMap(nc -> nc.getViolations().stream());
+		Collection<NeoMatch> violations = new HashSet<>();
+		
+		for (NeoNegativeConstraint nc : negativeConstraints) {
+			for (NeoMatch v : nc.getViolations()) {
+				violations.add(v);
+			}
+		}
+		
 		violations.forEach(v -> {
 			var elements = extractNodeIDs(v.getPattern().getContextNodeLabels(), v);
 			elements.addAll(extractRelIDs(v.getPattern().getContextRelLabels(), v));
@@ -307,6 +313,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 						auxVariables.size() - 1);
 			}
 		});
+		
+		logger.info("Completed in " + (System.currentTimeMillis() - tic) / 1000.0 + "s");
 	}
 
 	// Positive constraint
