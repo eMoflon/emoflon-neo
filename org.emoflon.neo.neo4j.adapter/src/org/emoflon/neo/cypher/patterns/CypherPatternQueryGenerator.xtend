@@ -26,6 +26,9 @@ class CypherPatternQueryGenerator {
 				«FOR node : pattern.nodes SEPARATOR ", "»
 					id(«node.name») AS «node.name»
 				«ENDFOR»
+				«IF pattern.elements.isEmpty»
+					TRUE
+				«ENDIF»
 				
 				// All relations (excluding paths)
 				«FOR rel : pattern.relations.filter[!it.isPath] BEFORE "," SEPARATOR ", "»
@@ -103,6 +106,9 @@ class CypherPatternQueryGenerator {
 				«FOR name : pattern.elements SEPARATOR ", "»
 					«name»
 				«ENDFOR»
+				«IF pattern.elements.isEmpty»
+					__
+				«ENDIF»
 				«IF passOnMatchParameter»
 					,«matchParameter»
 				«ENDIF»
@@ -170,6 +176,9 @@ class CypherPatternQueryGenerator {
 					«FOR rel : pattern.relations BEFORE "," SEPARATOR ", "»
 						«matchRelation(rel, withMatchParams)»
 					«ENDFOR»
+			«ELSE»
+				MATCH
+					(__:NeoCore__MetaModel {ename:"NeoCore"})
 			«ENDIF»
 		'''
 	}

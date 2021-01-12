@@ -2,6 +2,7 @@ package org.emoflon.neo.cypher.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,8 @@ import org.emoflon.neo.engine.api.patterns.IMask;
 import org.emoflon.neo.engine.api.patterns.IPattern;
 import org.emoflon.neo.engine.generator.Schedule;
 import org.neo4j.driver.Record;
+import org.neo4j.driver.Value;
+import org.neo4j.driver.internal.InternalRecord;
 
 public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	private static Logger logger = Logger.getLogger(NeoPattern.class);
@@ -139,6 +142,11 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 
 	@Override
 	public Collection<NeoMatch> determineMatches(Schedule schedule, IMask mask) {
+		// Handle empty pattern
+		if(getContextNodeLabels().isEmpty() && allSubPatterns.isEmpty())
+			return List.of(new SyntheticNeoMatch(this));
+		
+		// Handle non-empty pattern
 		var cypherQuery = getQuery(schedule, mask);
 
 		var parameters = new HashMap<String, Object>();
@@ -202,6 +210,11 @@ public class NeoPattern extends NeoBasicPattern implements IPattern<NeoMatch> {
 	}
 
 	public Collection<Record> getData(Collection<? extends NeoMatch> matches, IMask mask) {
+		// Handle an empty pattern
+		if(getContextNodeLabels().isEmpty())
+			return List.of(new InternalRecord(Collections.emptyList(), new Value[0]));
+		
+		// Non-empty pattern
 		var cypherQuery = getDataQuery();
 
 		var params = matches.stream()//

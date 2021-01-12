@@ -2,6 +2,7 @@ package org.emoflon.neo.example.sokoban;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -223,7 +224,7 @@ public class SokobanRules extends ENeoTest {
 	}
 	
 	@Test
-	public void testRemoveSokoobanWithDangelingEdgesDPO() {
+	public void testRemoveSokobanWithDanglingEdgesDPO() {
 		IRule<NeoMatch, NeoCoMatch> rule = entities.getRule_RemoveSokobanWithDanglingEdges().rule();
 		var matches = rule.determineMatches();
 		assertEquals(1, matches.size());
@@ -233,10 +234,9 @@ public class SokobanRules extends ENeoTest {
 		var match = matches.iterator().next();
 		
 		try {
-			rule.apply(match);
-			assertTrue(false);
+			assertFalse(rule.apply(match).isEmpty());
 		} catch (Exception e) {
-			assertTrue(true);
+			fail();
 		}
 		
 	}

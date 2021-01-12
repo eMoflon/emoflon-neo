@@ -6,7 +6,6 @@ import java.util.List
 import java.util.Map
 import org.neo4j.driver.Driver
 import org.neo4j.driver.Session
-import org.emoflon.neo.neocore.util.NeoCoreConstants
 
 class CypherCreator extends CypherBuilder {
 	// Use to split into chunks
@@ -39,7 +38,6 @@ class CypherCreator extends CypherBuilder {
 
 	def createNodeWithType(List< NeoProp> props, List<String> labels,  NodeCommand type) {
 		val nc = createNode(props, labels)
-		createEdge(NeoCoreConstants.META_TYPE, nc, type)
 		return nc
 	}
 

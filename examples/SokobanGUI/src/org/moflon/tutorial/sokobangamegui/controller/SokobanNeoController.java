@@ -357,7 +357,8 @@ public class SokobanNeoController implements IController {
 					d._board_fields_0_field._row, //
 					d._board_fields_0_field._col, //
 					d._field._endPos, //
-					Optional.of(d._type._ename))));
+					Optional.of(d._fig._ename)
+					)));
 		});
 	}
 
@@ -400,7 +401,7 @@ public class SokobanNeoController implements IController {
 			fields.stream().filter(fld -> fld.getCol() == fData._board_fields_0_field._col
 					&& fld.getRow() == fData._board_fields_0_field._row).forEach(fld -> {
 						fld.setIsEndPos(fData._field._endPos);
-						fld.setFigureName(Optional.of(fData._type._ename));
+						fld.setFigureName(Optional.of(fData._fig._ename));
 					});
 		});
 	}

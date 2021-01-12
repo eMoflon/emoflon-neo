@@ -19,8 +19,7 @@ class CypherRuleQueryGenerator {
 			
 			«matchAllElements(rule.getPrecondition(), true)»
 			
-			WHERE
-				«bindElementsUsingMatch(rule)»
+			«bindElementsUsingMatch(rule)»
 			
 			«IF !rule.deletedElts.isEmpty»
 				«IF rule.SPOSemantics»DETACH «ENDIF»DELETE
@@ -77,12 +76,11 @@ class CypherRuleQueryGenerator {
 
 	private def static bindElementsUsingMatch(NeoRule rule) {
 		'''
-			«IF rule.contextNodeLabels.isEmpty»
-				TRUE
-			«ELSE»
-				«FOR element : rule.contextNodeLabels + rule.contextRelLabels SEPARATOR " AND "»
-					id(«element») = «matchParameter».«element»
-				«ENDFOR»
+			«IF !rule.contextNodeLabels.isEmpty»
+				WHERE
+					«FOR element : rule.contextNodeLabels + rule.contextRelLabels SEPARATOR " AND "»
+						id(«element») = «matchParameter».«element»
+					«ENDFOR»
 			«ENDIF»
 		'''
 	}

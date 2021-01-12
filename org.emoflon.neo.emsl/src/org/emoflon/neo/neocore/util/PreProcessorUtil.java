@@ -50,7 +50,6 @@ public class PreProcessorUtil {
 	private MetamodelRelationStatement eReferenceType;
 	private MetamodelRelationStatement eAttributes;
 	private MetamodelRelationStatement eAttributeType;
-	private MetamodelRelationStatement metaType;
 	private MetamodelRelationStatement corr;
 	private MetamodelRelationStatement conformsTo;
 
@@ -177,7 +176,6 @@ public class PreProcessorUtil {
 			eObject.getProperties().add(_de_());
 			eObject.getProperties().add(_cr_());
 			eObject.getProperties().add(_ex_());
-			eObject.getRelations().add(metaType());
 			eObject.getRelations().add(corr());
 		}
 
@@ -358,19 +356,6 @@ public class PreProcessorUtil {
 		}
 
 		return eAttributeType;
-	}
-
-	public MetamodelRelationStatement metaType() {
-		if (metaType == null) {
-			metaType = EMSLFactory.eINSTANCE.createMetamodelRelationStatement();
-			metaType.setKind(RelationKind.REFERENCE);
-			metaType.setName(NeoCoreConstants.META_TYPE);
-			metaType.setLower("1");
-			metaType.setUpper("1");
-			metaType.setTarget(eObject());
-		}
-
-		return metaType;
 	}
 
 	public MetamodelRelationStatement corr() {

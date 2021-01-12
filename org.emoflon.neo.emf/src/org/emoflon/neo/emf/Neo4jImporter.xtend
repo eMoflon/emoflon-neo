@@ -7,6 +7,7 @@ import java.util.HashSet
 import java.util.List
 import java.util.Map
 import java.util.Set
+import org.apache.log4j.Logger
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
 import org.eclipse.emf.common.util.URI
@@ -29,10 +30,8 @@ import org.emoflon.neo.cypher.patterns.NeoMatch
 import org.emoflon.neo.cypher.patterns.SyntheticNeoMatch
 import org.emoflon.neo.cypher.rules.NeoCoMatch
 import org.emoflon.neo.emsl.eMSL.EMSL_Spec
-import org.emoflon.neo.neocore.util.NeoCoreConstants
 
 import static org.emoflon.neo.neocore.util.NeoCoreConstants.NAME_PROP
-import org.apache.log4j.Logger
 
 class Neo4jImporter {
 	static final Logger logger = Logger.getLogger(Neo4jImporter)
@@ -114,9 +113,7 @@ class Neo4jImporter {
 			].filter(
 				EObject
 			).forEach[
-				val trg = cb.matchNode(computePropertiesForType(it.eClass), List.of("NeoCore__EClass"))
 				val src = cb.createNode(computePropertiesForObject(it), computeLabelsForObjectOfType(it.eClass))
-				cb.createEdge(NeoCoreConstants.META_TYPE, src, trg)
 				objToCommand.put(it, src)
 			]
 			
@@ -231,7 +228,7 @@ class Neo4jImporter {
 				eClassToID.containsKey(src) &&
 				eClassToID.containsKey(ref.EReferenceType)
 			].map[ref|
-				val match = new SyntheticNeoMatch()
+				val match = new SyntheticNeoMatch(handle.pattern)
 				match.addParameter(handle._param__refName, ref.name)
 				match.setElement(
 					eClassToID.get(src), handle._src
@@ -253,7 +250,7 @@ class Neo4jImporter {
 		
 		val matches = eClassToID.keySet.flatMap[sub|
 			sub.ESuperTypes.map[sup |
-				val match = new SyntheticNeoMatch()
+				val match = new SyntheticNeoMatch(handle.pattern)
 				match.setElement(
 					eClassToID.get(sub), handle._subClass
 				).setElement(

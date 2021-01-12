@@ -34,35 +34,10 @@ pattern MatchT1 {
 	t1:T1.T
 }
 
-constraint TestTyping = forbid MultipleInstancesOfSameType
-pattern MultipleInstancesOfSameType {
-	eclass:EClass {
-		.ename : "T"
-	}
-	
-	o1:EObject {
-		-metaType->eclass
-	}
-	
-	o2:EObject {
-		-metaType->eclass
-	}
-}
-
-constraint CorrectTyping = if EveryObject then HasAType
-
 pattern EveryObject {
 	o:EObject {
 		.ename != "EClass"
 	}
-}
-
-pattern HasAType {
-	o:EObject {
-		-metaType->eClass
-	}
-	
-	eClass:EClass
 }
 
 
