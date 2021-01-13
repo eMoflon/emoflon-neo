@@ -46,14 +46,6 @@ tripleGrammar FamiliesToPersons {
 //Surbhi-edit
 
 pattern PremisePattern{
-	pr: PersonRegister{
-		-persons-> person1
-		-persons-> person2
-		-corr->fr
-	}
-	
-	person1 : Male
-	person2 : Male
 	
 	fr: FamilyRegister{
 		-families->f
@@ -63,13 +55,7 @@ pattern PremisePattern{
 		-father->fm1
 	}
 	
-	fm1: FamilyMember{
-		-corr->person1
-	}
-	
-	fm2: FamilyMember{
-		-corr->person2
-	}
+	fm1: FamilyMember
 }
 
 pattern ConclusionPattern-> PremisePattern[fm2->fm2]{

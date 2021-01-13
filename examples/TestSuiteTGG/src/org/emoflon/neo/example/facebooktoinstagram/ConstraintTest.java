@@ -19,7 +19,7 @@ public class ConstraintTest extends ENeoTest{
 				api.getModel_ConsistentTarget(), //
 				api.getRule_ConsistentTriple().rule());
 
-		testForConsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSource", "ConsistentTarget").runCheckOnly(), 9);
+		testForConsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSource", "ConsistentTarget").runCheckOnly(), 19);
 	}
 	
 	
@@ -28,19 +28,7 @@ public class ConstraintTest extends ENeoTest{
 		exportTriple(api.getModel_ConsistentSource(), //
 				api.getModel_ConsistentTarget());
 		testForConsistency(new FacebookToInstagramFASE_CC_Run("ConsistentSource", "ConsistentTarget").runCorrCreation(),
-				9);
-	}
-	
-
-	//co for inconsistent triple1
-	@Test
-	public void testInConsistentTriple1_CO() throws Exception {
-		exportTriple(api.getModel_InConsistentSource1(), //
-				api.getModel_InConsistentTarget1(), //
-				api.getRule_InConsistentTriple1().rule());
-
-		testForInconsistency(new FacebookToInstagramFASE_CO_Run("InConsistentSource1", "InConsistentTarget1").runCheckOnly(),
-				9, 20);
+				19);
 	}
 			
 	//co for inconsistent triple2
@@ -51,7 +39,18 @@ public class ConstraintTest extends ENeoTest{
 				api.getRule_InConsistentTriple2().rule());
 
 		testForInconsistency(new FacebookToInstagramFASE_CO_Run("InConsistentSource2", "InConsistentTarget2").runCheckOnly(),
-				9, 14);
+				14, 4);
+	}
+	
+	//cc for inconsistent triple2
+	@Test
+	public void testInConsistentTriple2_CC() throws Exception {
+		exportTriple(api.getModel_InConsistentSource2(), //
+				api.getModel_InConsistentTarget2(), //
+				api.getRule_InConsistentTriple2().rule());
+
+		testForInconsistency(new FacebookToInstagramFASE_CC_Run("InConsistentSource2", "InConsistentTarget2").runCorrCreation(),
+				14, 7);
 	}
 	
 	//co for inconsistent triple3
@@ -62,7 +61,18 @@ public class ConstraintTest extends ENeoTest{
 				api.getRule_InConsistentTriple3().rule());
 
 		testForInconsistency(new FacebookToInstagramFASE_CO_Run("InConsistentSource3", "InConsistentTarget3").runCheckOnly(),
-				9, 24);
+				19, 4);
+	}
+	
+	//cc for inconsistent triple3
+	@Test
+	public void testInConsistentTriple3_CC() throws Exception {
+		exportTriple(api.getModel_InConsistentSource3(), //
+				api.getModel_InConsistentTarget3(), //
+				api.getRule_InConsistentTriple3().rule());
+
+		testForInconsistency(new FacebookToInstagramFASE_CC_Run("InConsistentSource3", "InConsistentTarget3").runCorrCreation(),
+				19, 7);
 	}
 	
 }

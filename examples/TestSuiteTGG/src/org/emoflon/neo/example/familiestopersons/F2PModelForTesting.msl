@@ -2,35 +2,20 @@ import "platform:/resource/FamiliesToPersons/src/Metamodels.msl"
 
 
 //consistent source target triple ---1
-model ConsistentSource1 -> InConsistentSource1{
-	f: Family{
-		-sons-> fm2
-	}
-	
-	fm2: FamilyMember{
-		.name : "John"
-	}
+model ConsistentSource1 {
+	fr: FamilyRegister
 }
 
-model ConsistentTarget1 -> InConsistentTarget1{
-	pr: PersonRegister{
-		-persons-> p2
-	}
-	
-	p2 : Male{
-		.name : "Edison, John"
-	}
+model ConsistentTarget1 {
+	pr: PersonRegister
 }
 
-rule ConsistentTriple1 -> InConsistentTriple1{
-	p2 : Male{
-		.name : "Edison, John"
-	}
+rule ConsistentTriple1 {
+	pr: PersonRegister
 	
-	fm2: FamilyMember{
-		.name : "John"
-		++ -corr->p2{
-			._type_ := "FamilyMemberToPerson"
+	fr: FamilyRegister{
+		++ -corr->pr {
+			._type_ := "FamiliesToPersons"
 		}
 	}
 }
@@ -90,20 +75,30 @@ rule InConsistentTriple1{
 model ConsistentSource2 -> InConsistentSource1{
 	f: Family{
 		-mother-> fm2
+		-sons-> fm3
 	}
 	
 	fm2: FamilyMember{
 		.name : "Martha"
+	}
+	
+	fm3: FamilyMember{
+		.name : "John"
 	}
 }
 
 model ConsistentTarget2 -> InConsistentTarget1{
 	pr: PersonRegister{
 		-persons->p2
+		-persons->p3
 	}
 	
 	p2: Female{
 		.name : "Edison, Martha"
+	}
+	
+	p3: Male{
+		.name : "Edison, John"
 	}
 }
 
@@ -117,6 +112,17 @@ rule ConsistentTriple2 -> InConsistentTriple1{
 	
 	p2: Female{
 		.name : "Edison, Martha"
+	}
+	
+	fm3: FamilyMember{
+		.name : "John"
+		++ -corr->p3{
+			._type_ := "FamilyMemberToPerson"
+		}
+	}
+	
+	p3: Male{
+		.name : "Edison, John"
 	}
 }
 

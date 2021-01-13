@@ -362,38 +362,47 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 				}
 				matchToId.put(pm, premiseVar);
 			});
-				
+			
+			// Context for conclusion
 			conclusionMatches.forEach(cm -> {
+				
+				var conclusionVar = "c" + constraintCounter++;
+				
 				var elementsC = extractNodeIDs(cm.getPattern().getContextNodeLabels(), cm);
 				elementsC.addAll(extractRelIDs(cm.getPattern().getContextRelLabels(), cm));
-				var auxVariablesC = new ArrayList<String>();
+				//var auxVariablesC = new ArrayList<String>();
 
 				elementsC.forEach(eltC -> {
 					var creatingMatchesC = elementToCreatingMatches.getOrDefault(eltC, Collections.emptySet());
-					var auxVarForEltC = "aux" + auxVariableCounter++;
-					auxVariablesC.add(auxVarForEltC);
+					//var auxVarForEltC = "aux" + auxVariableCounter++;
+					//auxVariablesC.add(auxVarForEltC);
 					
 					if (!creatingMatchesC.isEmpty()) {
-						// aux => (x1 v x2 v ...)
-						ilpProblem.addImplication(Stream.of(auxVarForEltC),
+						// c => (x1 v x2 v ...)
+						ilpProblem.addImplication(Stream.of(conclusionVar),
 								creatingMatchesC.stream().map(this::varNameFor),
-								registerConstraint("AUX_" + cm.getPattern().getName() + "_" + eltC));
+								registerConstraint("CONCLUSION_CONSTR_" + cm.getPattern().getName() + "_" + eltC));
 
 					} else {
 						// element is never marked
-						ilpProblem.fixVariable(auxVarForEltC, false);
+						ilpProblem.fixVariable(conclusionVar, false);
 					}
 				});
 				
-				// Context for conclusion
-				var conclusionVar = "c" + constraintCounter++;
-				if (!auxVariablesC.isEmpty()) {
-					// c => (aux1 ^ aux2 ^ ...)
-					ilpProblem.addImplication(List.of(conclusionVar).stream(), auxVariablesC.stream(), "CONCLUSION_CONSTR_" + pc.getName());
-				} else {
-					// special case: conclusion is empty, therefore it always holds
-					ilpProblem.fixVariable(conclusionVar, true);
-				}
+				
+				
+				
+//				// c => (aux1 ^ aux2 ^ ...)
+//				for (String v : auxVariablesC) {
+//					ilpProblem.addN
+//				}
+//				if (!auxVariablesC.isEmpty()) {
+//					
+//					ilpProblem.addImplication(List.of(conclusionVar).stream(), auxVariablesC.stream(), "CONCLUSION_CONSTR_" + pc.getName());
+//				} else {
+//					// special case: conclusion is empty, therefore it always holds
+//					ilpProblem.fixVariable(conclusionVar, true);
+//				}
 				 
 				matchToId.put(cm, conclusionVar);
 			});
