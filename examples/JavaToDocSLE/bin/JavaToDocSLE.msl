@@ -23,16 +23,18 @@ tripleGrammar JavaToDocSLE {
 		MethodToEntryRule
 		AddParameterRule
 		FieldToEntryRule
-//		AddGlossaryRule
-//		LinkGlossaryEntryRule
-//		AddGlossaryEntryRule
+		AddGlossaryRule
+		LinkGlossaryEntryRule
+		AddGlossaryEntryRule
 	}
 	
-//	constraints{
+	constraints{
+//		NoDoubleEntryDirect
+//		NoDoubleEntryTransitive
 //		NoTwoGlossaries
 //		NoDoubleGlossaryLink
 //		NoTripleInheritance
-//	}
+	}
 }
 
 tripleRule ClazzToDocRule : JavaToDocSLE {
@@ -152,62 +154,103 @@ tripleRule FieldToEntryRule : JavaToDocSLE {
 	}
 }
 
-//tripleRule AddGlossaryRule : JavaToDocSLE {
-//	source {
-//		
-//	}	
+tripleRule AddGlossaryRule : JavaToDocSLE {
+	source {
+		
+	}	
+	
+	target {
+		++ g : Glossary  {
+			.name := <glossaryName>
+		}
+	} 
+	
+	correspondence {
+		
+	}
+}
+
+tripleRule LinkGlossaryEntryRule : JavaToDocSLE {
+	
+	source {
+		
+	}	
+	
+	target {
+		e : Entry  {
+			++ -gEntries-> ge
+		}
+		
+		ge : GlossaryEntry {
+			
+		}
+	}
+	
+	correspondence {
+		
+	}
+}
+
+tripleRule AddGlossaryEntryRule : JavaToDocSLE {
+	source {
+		
+	}	
+	
+	target {
+		g : Glossary  {
+			++ -gEntries-> ge
+		}
+		
+		++ ge : GlossaryEntry {
+			.name := <glossaryEntryName>
+		}
+	}
+	
+	correspondence {
+		
+	}
+}
+
+//pattern DoubleEntry {
+//	d1 : Doc {
+//		-entries->e1
+//	}
 //	
-//	target {
-//		++ g : Glossary  {
-//			.name := <glossaryName>
-//		}
-//	} 
+//	e1 : Entry {
+//		.name : <entryName>
+//	}
 //	
-//	correspondence {
-//		
+//	d2 : Doc {
+//		-entries->e2
+//	}
+//	
+//	e2 : Entry {
+//		.name : <entryName>
 //	}
 //}
 //
-//tripleRule LinkGlossaryEntryRule : JavaToDocSLE {
-//	
-//	source {
-//		
-//	}	
-//	
-//	target {
-//		e : Entry  {
-//			++ -gEntries-> ge
-//		}
-//		
-//		ge : GlossaryEntry {
-//			
-//		}
+//pattern DoubleEntryDirect -> DoubleEntry {
+//	d1 : Doc {
+//		-hrefs->d2
 //	}
 //	
-//	correspondence {
-//		
-//	}
+//	d2 : Doc
 //}
 //
-//tripleRule AddGlossaryEntryRule : JavaToDocSLE {
-//	source {
-//		
-//	}	
-//	
-//	target {
-//		g : Glossary  {
-//			++ -gEntries-> ge
-//		}
-//		
-//		++ ge : GlossaryEntry {
-//			.name := <glossaryEntryName>
-//		}
+//pattern DoubleEntryTransitive -> DoubleEntry {
+//	d1 : Doc {
+//		-hrefs->d3
 //	}
 //	
-//	correspondence {
-//		
+//	d3 : Doc {
+//		-hrefs->d2
 //	}
+//	
+//	d2 : Doc
 //}
+//
+//constraint NoDoubleEntryDirect = forbid DoubleEntryDirect
+//constraint NoDoubleEntryTransitive = forbid DoubleEntryTransitive
 
 //pattern TwoGlossaries {
 //	g1 : Glossary

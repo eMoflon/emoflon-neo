@@ -17,7 +17,6 @@ public class MOEAProblem extends BinaryILPProblem implements Problem {
 		
 		// Objective Function
 		int i = 0;
-		objective = new ILPObjective(new ILPLinearExpression(), Objective.maximize); // Dummy objective, has to be improved
 		
 		for (ILPObjective o : objectives) {
 			double ofv = 0;
@@ -80,5 +79,6 @@ public class MOEAProblem extends BinaryILPProblem implements Problem {
 	
 	public void addObjective(ILPObjective o) {
 		objectives.add(o);
+		objective = o; // Intended for single objective optimization, needs to be improved
 	}
 }

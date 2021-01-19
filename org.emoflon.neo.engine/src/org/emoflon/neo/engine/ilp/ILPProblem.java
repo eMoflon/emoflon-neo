@@ -198,7 +198,7 @@ public class ILPProblem implements Problem {
 	 * @return The ID of the variable. If the variable is not yet contained, it will
 	 *         be registered with a new ID
 	 */
-	int getVariableId(final String variable) {
+	public int getVariableId(final String variable) {
 		if (!this.variables.containsKey(variable))
 			return this.createNewVariable(variable);
 		return this.variables.get(variable);

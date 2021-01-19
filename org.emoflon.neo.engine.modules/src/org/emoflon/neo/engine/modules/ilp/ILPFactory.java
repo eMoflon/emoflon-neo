@@ -12,8 +12,9 @@ import org.emoflon.neo.engine.ilp.MOEAProblem;
  */
 public final class ILPFactory {
 	
-	public static final SupportedILPSolver exactSolver = SupportedILPSolver.Sat4J;
+	public static final SupportedILPSolver exactSolver = SupportedILPSolver.Gurobi;
 	public static final SupportedILPSolver heuristicSolver = SupportedILPSolver.MOEA;
+	private static final int maxEvaluationsHeuristic  = 1000000;
 	
 	/**
 	 * Private constructor. Should never be used as this class should only be used
@@ -39,7 +40,7 @@ public final class ILPFactory {
 		case Sat4J:
 			return new Sat4JWrapper(ilpProblem);
 		case MOEA:
-			return new MOEAWrapper(ilpProblem);
+			return new MOEAWrapper(ilpProblem, maxEvaluationsHeuristic);
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -83,11 +84,17 @@ public final class ILPFactory {
 	 *
 	 * @return The created problem
 	 */
-	public static BinaryILPProblem createBinaryILPProblem(boolean isExact) {
-		if (isExact)
+	public static BinaryILPProblem createBinaryILPProblem(SupportedILPSolver solver) {
+		switch (solver) {
+		case Gurobi:
 			return new BinaryILPProblem();
-		else
+		case Sat4J:
+			return new BinaryILPProblem();
+		case MOEA:
 			return new MOEAProblem();
+		default:
+			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
+		}
 	}
 
 	/**
@@ -108,6 +115,10 @@ public final class ILPFactory {
 		/**
 		 * Not an ILP solver, but some external framework for evolutionary algorithms
 		 */
-		MOEA
+		MOEA;
+		
+		public String toString() {
+			return this.toString();
+		}
 	}
 }

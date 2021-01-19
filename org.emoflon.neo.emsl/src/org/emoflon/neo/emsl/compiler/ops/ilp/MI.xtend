@@ -74,6 +74,7 @@ class MI extends ILPOperation {
 	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
+			var api = new API_«packageName»(builder);
 			var genAPI = new API_«tggName»_GEN(builder);
 			var miAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
@@ -83,7 +84,7 @@ class MI extends ILPOperation {
 					builder, //
 					genRules, //
 					miAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
-					getNegativeConstraints(builder), //
+					api.getConstraintsOf«tggName.toFirstUpper»(), //
 					srcModelName, //
 					trgModelName//
 			);
@@ -108,10 +109,6 @@ class MI extends ILPOperation {
 			public ModelIntegrationOperationalStrategy runModelIntegration() throws Exception {
 				run();
 				return modelIntegration;
-			}
-			
-			protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-				return Collections.emptyList();
 			}
 		'''
 	}

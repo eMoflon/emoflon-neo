@@ -3,13 +3,12 @@ package org.emoflon.neo.emsl.compiler.ops.ilp
 import java.util.Collection
 import java.util.Collections
 import java.util.Map
+import org.emoflon.neo.emsl.compiler.Operation
+import org.emoflon.neo.emsl.compiler.ParameterData
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
 import org.emoflon.neo.emsl.eMSL.Parameter
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
-import java.util.Collections
-import org.emoflon.neo.emsl.compiler.ParameterData
-import org.emoflon.neo.emsl.compiler.Operation
 
 abstract class ILPOperation implements Operation {
 
@@ -39,7 +38,7 @@ abstract class ILPOperation implements Operation {
 	
 	override String additionalFields(String tggName) {
 		if (isExact)
-			return additionalFields(tggName, "Sat4J")
+			return additionalFields(tggName, "Gurobi")
 		else
 			return additionalFields(tggName, "MOEA")
 	}

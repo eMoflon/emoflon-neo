@@ -1,0 +1,1208 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"		
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"		
+		
+model moflonJava0 {		
+c0:Clazz {		
+	.name : "c0"	
+		
+		
+		
+		
+		
+		
+		
+	-methods-> m24 {	
+		
+	}	
+	-fields-> f42 {	
+		
+	}	
+	-fields-> f35 {	
+		
+	}	
+}		
+		
+c1:Clazz {		
+	.name : "c1"	
+	._cr_ : true	
+	-subTypes-> c2 {	
+		
+	}	
+	-methods-> m23 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-fields-> f33 {	
+		
+	}	
+		
+		
+		
+}		
+		
+c2:Clazz {		
+	.name : "c2"	
+		
+	-subTypes-> c3 {	
+		
+	}	
+		
+		
+		
+	-methods-> m26 {	
+		
+	}	
+		
+		
+		
+	-fields-> f30 {	
+		
+	}	
+}		
+		
+c3:Clazz {		
+	.name : "c3"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-fields-> f36 {	
+		
+	}	
+		
+		
+		
+}		
+		
+c4:Clazz {		
+	.name : "c4"	
+		
+	-subTypes-> c5 {	
+		
+	}	
+	-methods-> m15 {	
+		
+	}	
+	-methods-> m25 {	
+		
+	}	
+		
+		
+		
+	-fields-> f31 {	
+		
+	}	
+}		
+		
+c5:Clazz {		
+	.name : "c5"	
+		
+		
+		
+		
+	-methods-> m24 {	
+		
+	}	
+	-methods-> m28 {	
+		
+	}	
+	-fields-> f42 {	
+		
+	}	
+	-fields-> f47 {	
+		~_cr_ : true
+	}	
+}		
+		
+c6:Clazz {		
+	.name : "c6"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-fields-> f30 {	
+		
+	}	
+}		
+		
+c7:Clazz {		
+	.name : "c7"	
+		
+	-subTypes-> c8 {	
+		
+	}	
+		
+		
+		
+	-methods-> m22 {	
+		
+	}	
+	-fields-> f36 {	
+		
+	}	
+		
+		
+		
+}		
+		
+c8:Clazz {		
+	.name : "c8"	
+	._cr_ : true	
+	-subTypes-> c9 {	
+		~_cr_ : true
+	}	
+	-methods-> m15 {	
+		
+	}	
+	-methods-> m28 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-fields-> f34 {	
+		
+	}	
+}		
+		
+c9:Clazz {		
+	.name : "c9"	
+		
+		
+		
+		
+		
+		
+		
+	-methods-> m23 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m10:Method {		
+	.name : "m10"	
+		
+		
+		
+		
+	-parameters-> p58 {	
+		~_de_ : true
+	}	
+	-parameters-> p84 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m11:Method {		
+	.name : "m11"	
+	._cr_ : true	
+	-parameters-> p64 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p82 {	
+		
+	}	
+	-parameters-> p57 {	
+		
+	}	
+	-parameters-> p54 {	
+		
+	}	
+}		
+		
+m12:Method {		
+	.name : "m12"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p77 {	
+		~_cr_ : true
+	}	
+	-parameters-> p76 {	
+		~_cr_ : true
+	}	
+}		
+		
+m13:Method {		
+	.name : "m13"	
+		
+		
+		
+		
+	-parameters-> p53 {	
+		~_cr_ : true
+	}	
+	-parameters-> p86 {	
+		~_de_ : true
+	}	
+	-parameters-> p86 {	
+		
+	}	
+	-parameters-> p69 {	
+		
+	}	
+}		
+		
+m14:Method {		
+	.name : "m14"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+	-parameters-> p92 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p85 {	
+		
+	}	
+}		
+		
+m15:Method {		
+	.name : "m15"	
+		
+	-parameters-> p68 {	
+		~_cr_ : true
+	}	
+	-parameters-> p70 {	
+		~_cr_ : true
+	}	
+	-parameters-> p58 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p88 {	
+		~_cr_ : true
+	}	
+}		
+		
+m16:Method {		
+	.name : "m16"	
+		
+	-parameters-> p70 {	
+		
+	}	
+	-parameters-> p65 {	
+		~_de_ : true
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p58 {	
+		~_de_ : true
+	}	
+}		
+		
+m17:Method {		
+	.name : "m17"	
+	._cr_ : true	
+		
+		
+		
+	-parameters-> p95 {	
+		
+	}	
+	-parameters-> p81 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p72 {	
+		
+	}	
+}		
+		
+m18:Method {		
+	.name : "m18"	
+		
+	-parameters-> p64 {	
+		~_de_ : true
+	}	
+	-parameters-> p76 {	
+		~_cr_ : true
+	}	
+	-parameters-> p59 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p95 {	
+		~_de_ : true
+	}	
+}		
+		
+m19:Method {		
+	.name : "m19"	
+	._cr_ : true	
+	-parameters-> p75 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+m20:Method {		
+	.name : "m20"	
+		
+		
+		
+		
+	-parameters-> p85 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p93 {	
+		
+	}	
+}		
+		
+m21:Method {		
+	.name : "m21"	
+		
+	-parameters-> p50 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-parameters-> p99 {	
+		
+	}	
+	-parameters-> p68 {	
+		
+	}	
+	-parameters-> p97 {	
+		
+	}	
+}		
+		
+m22:Method {		
+	.name : "m22"	
+		
+	-parameters-> p90 {	
+		
+	}	
+	-parameters-> p73 {	
+		
+	}	
+	-parameters-> p76 {	
+		
+	}	
+	-parameters-> p68 {	
+		
+	}	
+		
+		
+		
+}		
+		
+m23:Method {		
+	.name : "m23"	
+		
+	-parameters-> p55 {	
+		
+	}	
+	-parameters-> p84 {	
+		
+	}	
+	-parameters-> p56 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m24:Method {		
+	.name : "m24"	
+	._de_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p77 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+}		
+		
+m25:Method {		
+	.name : "m25"	
+		
+	-parameters-> p52 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p79 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m26:Method {		
+	.name : "m26"	
+	._de_ : true	
+	-parameters-> p91 {	
+		
+	}	
+	-parameters-> p82 {	
+		
+	}	
+	-parameters-> p82 {	
+		~_de_ : true
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m27:Method {		
+	.name : "m27"	
+	._de_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p84 {	
+		~_de_ : true
+	}	
+}		
+		
+m28:Method {		
+	.name : "m28"	
+		
+		
+		
+		
+	-parameters-> p55 {	
+		
+	}	
+	-parameters-> p95 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-parameters-> p91 {	
+		~_cr_ : true
+	}	
+}		
+		
+m29:Method {		
+	.name : "m29"	
+		
+		
+		
+		
+	-parameters-> p88 {	
+		
+	}	
+	-parameters-> p64 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-parameters-> p78 {	
+		
+	}	
+}		
+		
+f30:Field {		
+	.name : "f30"	
+		
+}		
+		
+f31:Field {		
+	.name : "f31"	
+	._cr_ : true	
+}		
+		
+f32:Field {		
+	.name : "f32"	
+	._de_ : true	
+}		
+		
+f33:Field {		
+	.name : "f33"	
+	._de_ : true	
+}		
+		
+f34:Field {		
+	.name : "f34"	
+	._cr_ : true	
+}		
+		
+f35:Field {		
+	.name : "f35"	
+		
+}		
+		
+f36:Field {		
+	.name : "f36"	
+	._cr_ : true	
+}		
+		
+f37:Field {		
+	.name : "f37"	
+	._de_ : true	
+}		
+		
+f38:Field {		
+	.name : "f38"	
+		
+}		
+		
+f39:Field {		
+	.name : "f39"	
+		
+}		
+		
+f40:Field {		
+	.name : "f40"	
+	._cr_ : true	
+}		
+		
+f41:Field {		
+	.name : "f41"	
+		
+}		
+		
+f42:Field {		
+	.name : "f42"	
+		
+}		
+		
+f43:Field {		
+	.name : "f43"	
+		
+}		
+		
+f44:Field {		
+	.name : "f44"	
+		
+}		
+		
+f45:Field {		
+	.name : "f45"	
+		
+}		
+		
+f46:Field {		
+	.name : "f46"	
+		
+}		
+		
+f47:Field {		
+	.name : "f47"	
+		
+}		
+		
+f48:Field {		
+	.name : "f48"	
+	._cr_ : true	
+}		
+		
+f49:Field {		
+	.name : "f49"	
+	._cr_ : true	
+}		
+		
+p50:Parameter {		
+	.name : "p50"	
+		
+}		
+		
+p51:Parameter {		
+	.name : "p51"	
+		
+}		
+		
+p52:Parameter {		
+	.name : "p52"	
+		
+}		
+		
+p53:Parameter {		
+	.name : "p53"	
+		
+}		
+		
+p54:Parameter {		
+	.name : "p54"	
+		
+}		
+		
+p55:Parameter {		
+	.name : "p55"	
+		
+}		
+		
+p56:Parameter {		
+	.name : "p56"	
+	._de_ : true	
+}		
+		
+p57:Parameter {		
+	.name : "p57"	
+		
+}		
+		
+p58:Parameter {		
+	.name : "p58"	
+		
+}		
+		
+p59:Parameter {		
+	.name : "p59"	
+		
+}		
+		
+p60:Parameter {		
+	.name : "p60"	
+	._de_ : true	
+}		
+		
+p61:Parameter {		
+	.name : "p61"	
+		
+}		
+		
+p62:Parameter {		
+	.name : "p62"	
+		
+}		
+		
+p63:Parameter {		
+	.name : "p63"	
+		
+}		
+		
+p64:Parameter {		
+	.name : "p64"	
+	._de_ : true	
+}		
+		
+p65:Parameter {		
+	.name : "p65"	
+		
+}		
+		
+p66:Parameter {		
+	.name : "p66"	
+		
+}		
+		
+p67:Parameter {		
+	.name : "p67"	
+		
+}		
+		
+p68:Parameter {		
+	.name : "p68"	
+		
+}		
+		
+p69:Parameter {		
+	.name : "p69"	
+		
+}		
+		
+p70:Parameter {		
+	.name : "p70"	
+		
+}		
+		
+p71:Parameter {		
+	.name : "p71"	
+		
+}		
+		
+p72:Parameter {		
+	.name : "p72"	
+		
+}		
+		
+p73:Parameter {		
+	.name : "p73"	
+		
+}		
+		
+p74:Parameter {		
+	.name : "p74"	
+		
+}		
+		
+p75:Parameter {		
+	.name : "p75"	
+	._de_ : true	
+}		
+		
+p76:Parameter {		
+	.name : "p76"	
+	._de_ : true	
+}		
+		
+p77:Parameter {		
+	.name : "p77"	
+		
+}		
+		
+p78:Parameter {		
+	.name : "p78"	
+		
+}		
+		
+p79:Parameter {		
+	.name : "p79"	
+		
+}		
+		
+p80:Parameter {		
+	.name : "p80"	
+		
+}		
+		
+p81:Parameter {		
+	.name : "p81"	
+	._de_ : true	
+}		
+		
+p82:Parameter {		
+	.name : "p82"	
+		
+}		
+		
+p83:Parameter {		
+	.name : "p83"	
+		
+}		
+		
+p84:Parameter {		
+	.name : "p84"	
+		
+}		
+		
+p85:Parameter {		
+	.name : "p85"	
+		
+}		
+		
+p86:Parameter {		
+	.name : "p86"	
+	._de_ : true	
+}		
+		
+p87:Parameter {		
+	.name : "p87"	
+		
+}		
+		
+p88:Parameter {		
+	.name : "p88"	
+	._de_ : true	
+}		
+		
+p89:Parameter {		
+	.name : "p89"	
+		
+}		
+		
+p90:Parameter {		
+	.name : "p90"	
+		
+}		
+		
+p91:Parameter {		
+	.name : "p91"	
+		
+}		
+		
+p92:Parameter {		
+	.name : "p92"	
+		
+}		
+		
+p93:Parameter {		
+	.name : "p93"	
+	._de_ : true	
+}		
+		
+p94:Parameter {		
+	.name : "p94"	
+		
+}		
+		
+p95:Parameter {		
+	.name : "p95"	
+		
+}		
+		
+p96:Parameter {		
+	.name : "p96"	
+	._de_ : true	
+}		
+		
+p97:Parameter {		
+	.name : "p97"	
+		
+}		
+		
+p98:Parameter {		
+	.name : "p98"	
+		
+}		
+		
+p99:Parameter {		
+	.name : "p99"	
+		
+}		
+		
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

@@ -3,6 +3,7 @@ package org.emoflon.neo.example.companytoit;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.companytoit.API_C2IModelForTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
+
 import org.emoflon.neo.api.companytoit.run.CompanyToIT_CC_Run;
 import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
 
@@ -13,10 +14,11 @@ public class ConstraintTesting extends ENeoTest{
 	//co-cc for consistent triple1
 	@Test
 	public void testConsistentTriple1_CO() throws Exception {
+		
 		exportTriple(api.getModel_ConsistentSource1(), //
 				api.getModel_ConsistentTarget1(), //
 				api.getRule_ConsistentTriple1().rule());
-		testForConsistency(new CompanyToIT_CO_Run("ConsistentSource1", "ConsistentTarget1").runCheckOnly(), 40);
+		testForConsistency(new CompanyToIT_CO_Run("ConsistentSource1", "ConsistentTarget1").runCheckOnly(), 26);
 	}
 		
 	@Test

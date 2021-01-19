@@ -31,9 +31,4 @@ public class ForwardTransformationOperationalStrategy extends ILPBasedOperationa
 	protected void removeInconsistentElements(Collection<Long> inconsistentElts) {
 		removeInconsistentElements(inconsistentElts, false, true, true);
 	}
-
-	@Override
-	protected boolean isExact() {
-		return true;
-	}
 }

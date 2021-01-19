@@ -56,9 +56,4 @@ public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy im
 	protected void removeInconsistentElements(Collection<Long> inconsistentElts) {
 		removeInconsistentElements(inconsistentElts, false, false, false);
 	}
-	
-	@Override
-	protected boolean isExact() {
-		return true;
-	}
 }

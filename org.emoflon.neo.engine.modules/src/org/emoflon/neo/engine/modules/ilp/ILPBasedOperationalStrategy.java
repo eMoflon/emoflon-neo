@@ -106,7 +106,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		constraintCounter = 0;
 		variableCounter = 0;
 		auxVariableCounter = 0;
-		ilpProblem = ILPFactory.createBinaryILPProblem(isExact());
+		ilpProblem = ILPFactory.createBinaryILPProblem(solver);
 
 		logger.debug("Defining exclusions...");
 		defineILPExclusions();
@@ -125,8 +125,6 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 		logger.debug("Created ILP problem.");
 	}
-
-	protected abstract boolean isExact();
 
 	protected void registerMatches(Stream<? extends NeoMatch> matches) {
 		matches.forEach(m -> {

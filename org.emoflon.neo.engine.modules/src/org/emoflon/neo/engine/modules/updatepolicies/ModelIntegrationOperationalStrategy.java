@@ -189,9 +189,4 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 		}
 		return filteredRulesToMatches;
 	}
-
-	@Override
-	protected boolean isExact() {
-		return false;
-	}
 }

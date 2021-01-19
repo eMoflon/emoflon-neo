@@ -31,9 +31,4 @@ public class CorrCreationOperationalStrategy extends ILPBasedOperationalStrategy
 	protected void removeInconsistentElements(Collection<Long> inconsistentElts) {
 		removeInconsistentElements(inconsistentElts, false, true, false);
 	}
-	
-	@Override
-	protected boolean isExact() {
-		return true;
-	}
 }

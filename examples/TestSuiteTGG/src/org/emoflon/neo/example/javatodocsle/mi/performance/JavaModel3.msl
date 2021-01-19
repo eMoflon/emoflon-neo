@@ -1,0 +1,1209 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"		
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"		
+import "platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodocsle/mi/performance/JavaModel2.msl"
+		
+model moflonJava3 -> moflonJava2 {		
+c300:Clazz {		
+	.name : "c300"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-fields-> f332 {	
+		~_de_ : true
+	}	
+}		
+		
+c301:Clazz {		
+	.name : "c301"	
+		
+		
+		
+		
+		
+		
+		
+	-methods-> m328 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+c302:Clazz {		
+	.name : "c302"	
+	._de_ : true	
+	-subTypes-> c303 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-fields-> f349 {	
+		
+	}	
+		
+		
+		
+}		
+		
+c303:Clazz {		
+	.name : "c303"	
+		
+	-subTypes-> c304 {	
+		~_de_ : true
+	}	
+		
+		
+		
+		
+		
+		
+	-fields-> f340 {	
+		
+	}	
+		
+		
+		
+}		
+		
+c304:Clazz {		
+	.name : "c304"	
+	._cr_ : true	
+	-subTypes-> c305 {	
+		~_de_ : true
+	}	
+	-methods-> m313 {	
+		
+	}	
+	-methods-> m327 {	
+		
+	}	
+	-fields-> f349 {	
+		
+	}	
+		
+		
+		
+}		
+		
+c305:Clazz {		
+	.name : "c305"	
+		
+		
+		
+		
+		
+		
+		
+	-methods-> m322 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+c306:Clazz {		
+	.name : "c306"	
+		
+		
+		
+		
+	-methods-> m310 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+c307:Clazz {		
+	.name : "c307"	
+	._de_ : true	
+	-subTypes-> c308 {	
+		
+	}	
+	-methods-> m328 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-fields-> f346 {	
+		~_de_ : true
+	}	
+		
+		
+		
+}		
+		
+c308:Clazz {		
+	.name : "c308"	
+		
+		
+		
+		
+	-methods-> m315 {	
+		~_de_ : true
+	}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+c309:Clazz {		
+	.name : "c309"	
+		
+		
+		
+		
+		
+		
+		
+	-methods-> m323 {	
+		
+	}	
+	-fields-> f348 {	
+		
+	}	
+		
+		
+		
+}		
+		
+m310:Method {		
+	.name : "m310"	
+		
+	-parameters-> p397 {	
+		
+	}	
+	-parameters-> p397 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p350 {	
+		~_cr_ : true
+	}	
+}		
+		
+m311:Method {		
+	.name : "m311"	
+	._de_ : true	
+	-parameters-> p356 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-parameters-> p397 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-parameters-> p357 {	
+		
+	}	
+}		
+		
+m312:Method {		
+	.name : "m312"	
+		
+	-parameters-> p357 {	
+		~_de_ : true
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p394 {	
+		
+	}	
+	-parameters-> p397 {	
+		
+	}	
+}		
+		
+m313:Method {		
+	.name : "m313"	
+	._de_ : true	
+	-parameters-> p380 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p379 {	
+		~_cr_ : true
+	}	
+}		
+		
+m314:Method {		
+	.name : "m314"	
+	._cr_ : true	
+		
+		
+		
+	-parameters-> p350 {	
+		
+	}	
+	-parameters-> p387 {	
+		
+	}	
+	-parameters-> p394 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+}		
+		
+m315:Method {		
+	.name : "m315"	
+		
+	-parameters-> p373 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p374 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m316:Method {		
+	.name : "m316"	
+		
+		
+		
+		
+	-parameters-> p392 {	
+		
+	}	
+	-parameters-> p399 {	
+		
+	}	
+	-parameters-> p351 {	
+		~_cr_ : true
+	}	
+	-parameters-> p362 {	
+		
+	}	
+}		
+		
+m317:Method {		
+	.name : "m317"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p377 {	
+		
+	}	
+}		
+		
+m318:Method {		
+	.name : "m318"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+m319:Method {		
+	.name : "m319"	
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p376 {	
+		~_cr_ : true
+	}	
+	-parameters-> p362 {	
+		~_cr_ : true
+	}	
+	-parameters-> p387 {	
+		
+	}	
+}		
+		
+m320:Method {		
+	.name : "m320"	
+		
+	-parameters-> p353 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-parameters-> p350 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-parameters-> p350 {	
+		~_cr_ : true
+	}	
+}		
+		
+m321:Method {		
+	.name : "m321"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p350 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+}		
+		
+m322:Method {		
+	.name : "m322"	
+	._de_ : true	
+	-parameters-> p391 {	
+		~_de_ : true
+	}	
+	-parameters-> p359 {	
+		
+	}	
+	-parameters-> p368 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m323:Method {		
+	.name : "m323"	
+		
+	-parameters-> p390 {	
+		~_cr_ : true
+	}	
+	-parameters-> p351 {	
+		
+	}	
+	-parameters-> p368 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p391 {	
+		~_cr_ : true
+	}	
+}		
+		
+m324:Method {		
+	.name : "m324"	
+		
+		
+		
+		
+	-parameters-> p364 {	
+		
+	}	
+	-parameters-> p383 {	
+		
+	}	
+	-parameters-> p376 {	
+		~_cr_ : true
+	}	
+	-parameters-> p383 {	
+		
+	}	
+}		
+		
+m325:Method {		
+	.name : "m325"	
+		
+	-parameters-> p375 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p378 {	
+		
+	}	
+		
+		
+		
+}		
+		
+m326:Method {		
+	.name : "m326"	
+		
+	-parameters-> p394 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-parameters-> p366 {	
+		
+	}	
+	-parameters-> p399 {	
+		
+	}	
+	-parameters-> p385 {	
+		
+	}	
+}		
+		
+m327:Method {		
+	.name : "m327"	
+	._cr_ : true	
+		
+		
+		
+	-parameters-> p355 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-parameters-> p381 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+}		
+		
+m328:Method {		
+	.name : "m328"	
+		
+	-parameters-> p351 {	
+		
+	}	
+	-parameters-> p384 {	
+		
+	}	
+	-parameters-> p367 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p352 {	
+		~_de_ : true
+	}	
+}		
+		
+m329:Method {		
+	.name : "m329"	
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p352 {	
+		
+	}	
+	-parameters-> p381 {	
+		
+	}	
+	-parameters-> p367 {	
+		
+	}	
+}		
+		
+f330:Field {		
+	.name : "f330"	
+		
+}		
+		
+f331:Field {		
+	.name : "f331"	
+		
+}		
+		
+f332:Field {		
+	.name : "f332"	
+	._cr_ : true	
+}		
+		
+f333:Field {		
+	.name : "f333"	
+	._de_ : true	
+}		
+		
+f334:Field {		
+	.name : "f334"	
+	._cr_ : true	
+}		
+		
+f335:Field {		
+	.name : "f335"	
+	._cr_ : true	
+}		
+		
+f336:Field {		
+	.name : "f336"	
+	._de_ : true	
+}		
+		
+f337:Field {		
+	.name : "f337"	
+		
+}		
+		
+f338:Field {		
+	.name : "f338"	
+		
+}		
+		
+f339:Field {		
+	.name : "f339"	
+	._de_ : true	
+}		
+		
+f340:Field {		
+	.name : "f340"	
+	._cr_ : true	
+}		
+		
+f341:Field {		
+	.name : "f341"	
+	._de_ : true	
+}		
+		
+f342:Field {		
+	.name : "f342"	
+	._cr_ : true	
+}		
+		
+f343:Field {		
+	.name : "f343"	
+		
+}		
+		
+f344:Field {		
+	.name : "f344"	
+	._cr_ : true	
+}		
+		
+f345:Field {		
+	.name : "f345"	
+		
+}		
+		
+f346:Field {		
+	.name : "f346"	
+	._cr_ : true	
+}		
+		
+f347:Field {		
+	.name : "f347"	
+	._de_ : true	
+}		
+		
+f348:Field {		
+	.name : "f348"	
+	._cr_ : true	
+}		
+		
+f349:Field {		
+	.name : "f349"	
+		
+}		
+		
+p350:Parameter {		
+	.name : "p350"	
+		
+}		
+		
+p351:Parameter {		
+	.name : "p351"	
+		
+}		
+		
+p352:Parameter {		
+	.name : "p352"	
+		
+}		
+		
+p353:Parameter {		
+	.name : "p353"	
+	._de_ : true	
+}		
+		
+p354:Parameter {		
+	.name : "p354"	
+		
+}		
+		
+p355:Parameter {		
+	.name : "p355"	
+		
+}		
+		
+p356:Parameter {		
+	.name : "p356"	
+	._de_ : true	
+}		
+		
+p357:Parameter {		
+	.name : "p357"	
+	._de_ : true	
+}		
+		
+p358:Parameter {		
+	.name : "p358"	
+		
+}		
+		
+p359:Parameter {		
+	.name : "p359"	
+		
+}		
+		
+p360:Parameter {		
+	.name : "p360"	
+		
+}		
+		
+p361:Parameter {		
+	.name : "p361"	
+		
+}		
+		
+p362:Parameter {		
+	.name : "p362"	
+		
+}		
+		
+p363:Parameter {		
+	.name : "p363"	
+		
+}		
+		
+p364:Parameter {		
+	.name : "p364"	
+		
+}		
+		
+p365:Parameter {		
+	.name : "p365"	
+		
+}		
+		
+p366:Parameter {		
+	.name : "p366"	
+		
+}		
+		
+p367:Parameter {		
+	.name : "p367"	
+	._de_ : true	
+}		
+		
+p368:Parameter {		
+	.name : "p368"	
+		
+}		
+		
+p369:Parameter {		
+	.name : "p369"	
+	._de_ : true	
+}		
+		
+p370:Parameter {		
+	.name : "p370"	
+		
+}		
+		
+p371:Parameter {		
+	.name : "p371"	
+		
+}		
+		
+p372:Parameter {		
+	.name : "p372"	
+		
+}		
+		
+p373:Parameter {		
+	.name : "p373"	
+		
+}		
+		
+p374:Parameter {		
+	.name : "p374"	
+		
+}		
+		
+p375:Parameter {		
+	.name : "p375"	
+		
+}		
+		
+p376:Parameter {		
+	.name : "p376"	
+		
+}		
+		
+p377:Parameter {		
+	.name : "p377"	
+		
+}		
+		
+p378:Parameter {		
+	.name : "p378"	
+		
+}		
+		
+p379:Parameter {		
+	.name : "p379"	
+		
+}		
+		
+p380:Parameter {		
+	.name : "p380"	
+	._de_ : true	
+}		
+		
+p381:Parameter {		
+	.name : "p381"	
+		
+}		
+		
+p382:Parameter {		
+	.name : "p382"	
+		
+}		
+		
+p383:Parameter {		
+	.name : "p383"	
+		
+}		
+		
+p384:Parameter {		
+	.name : "p384"	
+		
+}		
+		
+p385:Parameter {		
+	.name : "p385"	
+		
+}		
+		
+p386:Parameter {		
+	.name : "p386"	
+		
+}		
+		
+p387:Parameter {		
+	.name : "p387"	
+		
+}		
+		
+p388:Parameter {		
+	.name : "p388"	
+		
+}		
+		
+p389:Parameter {		
+	.name : "p389"	
+		
+}		
+		
+p390:Parameter {		
+	.name : "p390"	
+		
+}		
+		
+p391:Parameter {		
+	.name : "p391"	
+		
+}		
+		
+p392:Parameter {		
+	.name : "p392"	
+		
+}		
+		
+p393:Parameter {		
+	.name : "p393"	
+		
+}		
+		
+p394:Parameter {		
+	.name : "p394"	
+		
+}		
+		
+p395:Parameter {		
+	.name : "p395"	
+	._de_ : true	
+}		
+		
+p396:Parameter {		
+	.name : "p396"	
+		
+}		
+		
+p397:Parameter {		
+	.name : "p397"	
+		
+}		
+		
+p398:Parameter {		
+	.name : "p398"	
+	._de_ : true	
+}		
+		
+p399:Parameter {		
+	.name : "p399"	
+		
+}		
+		
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

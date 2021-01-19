@@ -80,7 +80,7 @@ public class MOEATest {
 			setObjective(p, beta[i], Objective.maximize); 
 			setObjective(p, gamma[i], Objective.minimize); 
 			
-			Collection<ILPSolution> solutions = (new MOEAWrapper(p)).solve();
+			Collection<ILPSolution> solutions = (new MOEAWrapper(p, 1000000)).solve();
 			
 			for (ILPSolution s : solutions) {
 				printSolutionInformation(p, s, i);

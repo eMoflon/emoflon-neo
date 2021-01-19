@@ -20,4 +20,6 @@ public class DirectMITests extends ENeoTest {
 		new JavaToDocSLE_MI_Run("moflonJava", "moflonDoc").run();
 		testForConsistency(new JavaToDocSLE_CO_Run("moflonJava", "moflonDoc", solver).runCheckOnly(), 34);
 	}
+	
+	
 }

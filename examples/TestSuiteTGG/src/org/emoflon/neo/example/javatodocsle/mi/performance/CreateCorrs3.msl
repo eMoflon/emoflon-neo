@@ -1,0 +1,1208 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"		
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"		
+		
+rule createClazzToDoc3 {		
+c300:Clazz {		
+	.name : "c300"	
+		
+		
+		
+}		
+		
+d300:Doc {		
+	.name : "d300"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c301:Clazz {		
+	.name : "c301"	
+	++-corr->d301 {	
+		._type_ := "ClazzToDoc"
+	}	
+}		
+		
+d301:Doc {		
+	.name : "d301"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c302:Clazz {		
+	.name : "c302"	
+	++-corr->d302 {	
+		._type_ := "ClazzToDoc"
+	}	
+}		
+		
+d302:Doc {		
+	.name : "d302"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c303:Clazz {		
+	.name : "c303"	
+		
+		
+		
+}		
+		
+d303:Doc {		
+	.name : "d303"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c304:Clazz {		
+	.name : "c304"	
+		
+		
+		
+}		
+		
+d304:Doc {		
+	.name : "d304"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c305:Clazz {		
+	.name : "c305"	
+	++-corr->d305 {	
+		._type_ := "ClazzToDoc"
+	}	
+}		
+		
+d305:Doc {		
+	.name : "d305"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c306:Clazz {		
+	.name : "c306"	
+	++-corr->d306 {	
+		._type_ := "ClazzToDoc"
+	}	
+}		
+		
+d306:Doc {		
+	.name : "d306"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c307:Clazz {		
+	.name : "c307"	
+	++-corr->d307 {	
+		._type_ := "ClazzToDoc"
+	}	
+}		
+		
+d307:Doc {		
+	.name : "d307"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c308:Clazz {		
+	.name : "c308"	
+	++-corr->d308 {	
+		._type_ := "ClazzToDoc"
+	}	
+}		
+		
+d308:Doc {		
+	.name : "d308"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+c309:Clazz {		
+	.name : "c309"	
+	++-corr->d309 {	
+		._type_ := "ClazzToDoc"
+	}	
+}		
+		
+d309:Doc {		
+	.name : "d309"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+rule createMethodToEntry3 {		
+m310:Method { .name : "m310"		
+	++-corr->e310 { ._type_ := "MethodToEntry" }	
+}		
+e310:Entry {		
+	.name : "m310"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+p350:Parameter { .name : "p350"		
+		
+}		
+		
+		
+m311:Method { .name : "m311"		
+	++-corr->e311 { ._type_ := "MethodToEntry" }	
+}		
+e311:Entry {		
+	.name : "m311"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+p357:Parameter { .name : "p357"		
+	++-corr-> e311 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+m312:Method { .name : "m312"		
+	++-corr->e312 { ._type_ := "MethodToEntry" }	
+}		
+e312:Entry {		
+	.name : "m312"	
+}		
+		
+		
+		
+		
+		
+		
+p394:Parameter { .name : "p394"		
+	++-corr-> e312 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+		
+		
+		
+m313:Method { .name : "m313"		
+	++-corr->e313 { ._type_ := "MethodToEntry" }	
+}		
+e313:Entry {		
+	.name : "m313"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+p379:Parameter { .name : "p379"		
+		
+}		
+		
+		
+m314:Method { .name : "m314"		
+		
+}		
+e314:Entry {		
+	.name : "m314"	
+}		
+		
+		
+		
+p387:Parameter { .name : "p387"		
+	++-corr-> e314 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+m315:Method { .name : "m315"		
+	++-corr->e315 { ._type_ := "MethodToEntry" }	
+}		
+e315:Entry {		
+	.name : "m315"	
+}		
+		
+		
+		
+p374:Parameter { .name : "p374"		
+		
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+m316:Method { .name : "m316"		
+		
+}		
+e316:Entry {		
+	.name : "m316"	
+}		
+p392:Parameter { .name : "p392"		
+	++-corr-> e316 { ._type_ := "ParamToEntry" }	
+}		
+p399:Parameter { .name : "p399"		
+	++-corr-> e316 { ._type_ := "ParamToEntry" }	
+}		
+p351:Parameter { .name : "p351"		
+		
+}		
+p362:Parameter { .name : "p362"		
+		
+}		
+		
+		
+m317:Method { .name : "m317"		
+		
+}		
+e317:Entry {		
+	.name : "m317"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+p377:Parameter { .name : "p377"		
+	++-corr-> e317 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+m318:Method { .name : "m318"		
+	++-corr->e318 { ._type_ := "MethodToEntry" }	
+}		
+e318:Entry {		
+	.name : "m318"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+m319:Method { .name : "m319"		
+	++-corr->e319 { ._type_ := "MethodToEntry" }	
+}		
+e319:Entry {		
+	.name : "m319"	
+}		
+		
+		
+		
+p376:Parameter { .name : "p376"		
+		
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+m320:Method { .name : "m320"		
+	++-corr->e320 { ._type_ := "MethodToEntry" }	
+}		
+e320:Entry {		
+	.name : "m320"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+m321:Method { .name : "m321"		
+	++-corr->e321 { ._type_ := "MethodToEntry" }	
+}		
+e321:Entry {		
+	.name : "m321"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+m322:Method { .name : "m322"		
+	++-corr->e322 { ._type_ := "MethodToEntry" }	
+}		
+e322:Entry {		
+	.name : "m322"	
+}		
+p359:Parameter { .name : "p359"		
+	++-corr-> e322 { ._type_ := "ParamToEntry" }	
+}		
+p368:Parameter { .name : "p368"		
+		
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+m323:Method { .name : "m323"		
+	++-corr->e323 { ._type_ := "MethodToEntry" }	
+}		
+e323:Entry {		
+	.name : "m323"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+m324:Method { .name : "m324"		
+	++-corr->e324 { ._type_ := "MethodToEntry" }	
+}		
+e324:Entry {		
+	.name : "m324"	
+}		
+p364:Parameter { .name : "p364"		
+	++-corr-> e324 { ._type_ := "ParamToEntry" }	
+}		
+p383:Parameter { .name : "p383"		
+	++-corr-> e324 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+m325:Method { .name : "m325"		
+	++-corr->e325 { ._type_ := "MethodToEntry" }	
+}		
+e325:Entry {		
+	.name : "m325"	
+}		
+		
+		
+		
+		
+		
+		
+p378:Parameter { .name : "p378"		
+	++-corr-> e325 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+		
+		
+		
+m326:Method { .name : "m326"		
+	++-corr->e326 { ._type_ := "MethodToEntry" }	
+}		
+e326:Entry {		
+	.name : "m326"	
+}		
+		
+		
+		
+p366:Parameter { .name : "p366"		
+		
+}		
+		
+		
+		
+p385:Parameter { .name : "p385"		
+	++-corr-> e326 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+m327:Method { .name : "m327"		
+		
+}		
+e327:Entry {		
+	.name : "m327"	
+}		
+p355:Parameter { .name : "p355"		
+	++-corr-> e327 { ._type_ := "ParamToEntry" }	
+}		
+		
+		
+		
+p381:Parameter { .name : "p381"		
+		
+}		
+		
+		
+		
+		
+		
+m328:Method { .name : "m328"		
+		
+}		
+e328:Entry {		
+	.name : "m328"	
+}		
+p384:Parameter { .name : "p384"		
+	++-corr-> e328 { ._type_ := "ParamToEntry" }	
+}		
+p367:Parameter { .name : "p367"		
+		
+}		
+		
+		
+		
+p352:Parameter { .name : "p352"		
+		
+}		
+		
+		
+m329:Method { .name : "m329"		
+	++-corr->e329 { ._type_ := "MethodToEntry" }	
+}		
+e329:Entry {		
+	.name : "m329"	
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+rule createFieldToEntry3 {		
+f330:Field {		
+	.name : "f330"	
+	++-corr->e330 { ._type_ := "FieldToEntry"}	
+}		
+		
+f331:Field {		
+	.name : "f331"	
+	++-corr->e331 { ._type_ := "FieldToEntry"}	
+}		
+		
+f332:Field {		
+	.name : "f332"	
+		
+}		
+		
+f333:Field {		
+	.name : "f333"	
+		
+}		
+		
+f334:Field {		
+	.name : "f334"	
+		
+}		
+		
+f335:Field {		
+	.name : "f335"	
+		
+}		
+		
+f336:Field {		
+	.name : "f336"	
+	++-corr->e336 { ._type_ := "FieldToEntry"}	
+}		
+		
+f337:Field {		
+	.name : "f337"	
+	++-corr->e337 { ._type_ := "FieldToEntry"}	
+}		
+		
+f338:Field {		
+	.name : "f338"	
+	++-corr->e338 { ._type_ := "FieldToEntry"}	
+}		
+		
+f339:Field {		
+	.name : "f339"	
+		
+}		
+		
+f340:Field {		
+	.name : "f340"	
+		
+}		
+		
+f341:Field {		
+	.name : "f341"	
+		
+}		
+		
+f342:Field {		
+	.name : "f342"	
+		
+}		
+		
+f343:Field {		
+	.name : "f343"	
+	++-corr->e343 { ._type_ := "FieldToEntry"}	
+}		
+		
+f344:Field {		
+	.name : "f344"	
+		
+}		
+		
+f345:Field {		
+	.name : "f345"	
+	++-corr->e345 { ._type_ := "FieldToEntry"}	
+}		
+		
+f346:Field {		
+	.name : "f346"	
+		
+}		
+		
+f347:Field {		
+	.name : "f347"	
+		
+}		
+		
+f348:Field {		
+	.name : "f348"	
+		
+}		
+		
+f349:Field {		
+	.name : "f349"	
+	++-corr->e349 { ._type_ := "FieldToEntry"}	
+}		
+		
+e330:Entry {		
+	.name : "f330"	
+	._de_ : true	
+}		
+		
+e331:Entry {		
+	.name : "f331"	
+		
+}		
+		
+e332:Entry {		
+	.name : "f332"	
+	._de_ : true	
+}		
+		
+e333:Entry {		
+	.name : "f333"	
+	._cr_ : true	
+}		
+		
+e334:Entry {		
+	.name : "f334"	
+		
+}		
+		
+e335:Entry {		
+	.name : "f335"	
+	._de_ : true	
+}		
+		
+e336:Entry {		
+	.name : "f336"	
+		
+}		
+		
+e337:Entry {		
+	.name : "f337"	
+		
+}		
+		
+e338:Entry {		
+	.name : "f338"	
+		
+}		
+		
+e339:Entry {		
+	.name : "f339"	
+	._cr_ : true	
+}		
+		
+e340:Entry {		
+	.name : "f340"	
+		
+}		
+		
+e341:Entry {		
+	.name : "f341"	
+	._cr_ : true	
+}		
+		
+e342:Entry {		
+	.name : "f342"	
+		
+}		
+		
+e343:Entry {		
+	.name : "f343"	
+		
+}		
+		
+e344:Entry {		
+	.name : "f344"	
+		
+}		
+		
+e345:Entry {		
+	.name : "f345"	
+		
+}		
+		
+e346:Entry {		
+	.name : "f346"	
+		
+}		
+		
+e347:Entry {		
+	.name : "f347"	
+	._cr_ : true	
+}		
+		
+e348:Entry {		
+	.name : "f348"	
+	._cr_ : true	
+}		
+		
+e349:Entry {		
+	.name : "f349"	
+		
+}		
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

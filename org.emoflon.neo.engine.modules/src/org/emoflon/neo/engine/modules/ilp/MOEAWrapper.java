@@ -8,6 +8,7 @@ import java.util.Map;
 import org.emoflon.neo.engine.ilp.ILPProblem;
 import org.emoflon.neo.engine.ilp.ILPProblem.ILPSolution;
 import org.emoflon.neo.engine.ilp.ILPSolver;
+import org.emoflon.neo.engine.ilp.MOEAProblem;
 import org.moeaframework.Executor;
 import org.moeaframework.core.NondominatedPopulation;
 import org.moeaframework.core.Solution;
@@ -15,7 +16,7 @@ import org.moeaframework.core.variable.EncodingUtils;
 
 public final class MOEAWrapper extends ILPSolver{
 	
-	//MOEAProblem problem;
+	private int maxEvaluations;
 	
 	/**
 	 * Creates a new Gurobi ILP solver
@@ -23,33 +24,35 @@ public final class MOEAWrapper extends ILPSolver{
 	 * @param onlyBinaryVariables This setting defines the variable range of
 	 *                            variables registered at Gurobi
 	 */
-	public MOEAWrapper(final ILPProblem ilpProblem) {
+	public MOEAWrapper(final ILPProblem ilpProblem, int maxEvaluations) {
 		super(ilpProblem);
-		//this.problem = (MOEAProblem)ilpProblem;
+		this.maxEvaluations = maxEvaluations;
 	}
-	
-//	protected MOEAWrapper(ILPProblem problem) {
-//		super(problem);
-//		this.problem = (MOEAProblem)problem;
-		
-		// create the optimization problem and evolutionary algorithm
-		//moeaProblem = new MOEAProblem(ilpProblem);
-		
-//		properties = new Properties();
-//		properties.setProperty("swap.rate", "0.7");
-//		properties.setProperty("insertion.rate", "0.9");
-//		properties.setProperty("pmx.rate", "0.4");
-//		
-//		algorithm = AlgorithmFactory.getInstance().getAlgorithm(
-//				"GA", properties, problem);
-		
-		//this.onlyBinaryVariables = onlyBinaryVariables;
-//	}
 
 	@Override
 	public ILPSolution solveILP() throws Exception {
 		
-		throw new UnsupportedOperationException("For multi-objective optimization, there might be multiple solutions! Use 'solve()' instead!");
+		assert (ilpProblem instanceof MOEAProblem); //otherwise this wrapper doesn't make sense
+		((MOEAProblem)ilpProblem).addObjective(ilpProblem.getObjective());
+		
+//		NondominatedPopulation result = new Executor()
+//				.withAlgorithm("NSGAII")
+//				.withProblem(ilpProblem)
+//				.withMaxEvaluations(maxEvaluations*10)
+//				.run();
+//		
+//		Solution solution = result.get(0);
+		Solution solution = SimulatedAnnealing.solve((MOEAProblem)ilpProblem);
+		boolean[] vA = EncodingUtils.getBinary(solution.getVariable(0));
+		Map<Integer,Integer> varAssignment = new HashMap<>();
+		
+		for (int j=0; j<vA.length; j++) {
+			varAssignment.put(j+1, vA[j] ? 1 : 0);
+		}
+		
+		ILPSolver.logger.debug("Gurobi found solution: " + solution.getObjective(0) + " - Feasible: " + !solution.violatesConstraints());
+		
+		return ilpProblem.createILPSolution(varAssignment, !solution.violatesConstraints(), solution.getObjective(0));
 	}
 	
 	public Collection<ILPSolution> solve() throws Exception {
@@ -59,7 +62,7 @@ public final class MOEAWrapper extends ILPSolver{
 		NondominatedPopulation result = new Executor()
 				.withAlgorithm("NSGAII")
 				.withProblem(ilpProblem)
-				.withMaxEvaluations(2000000)
+				.withMaxEvaluations(maxEvaluations)
 				.run();
 		
 		for (int i = 0; i<result.size(); i++) {
