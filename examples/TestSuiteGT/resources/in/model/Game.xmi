@@ -3,7 +3,7 @@
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:SheRememberedCaterpillars="platform:/resource/TestSuite/resources/in/metamodel/SheRememberedCaterpillars.ecore">
+    xmlns:SheRememberedCaterpillars="platform:/resource/TestSuiteGT/resources/in/metamodel/SheRememberedCaterpillars.ecore">
   <characters
       name="Mario"
       standsOn="//@objects.0"/>

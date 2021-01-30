@@ -66,27 +66,32 @@ public class MOEATest {
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 1, 0}
 	};
 	
+	int[] config = {123, 124, 125, 134, 135, 145, 234, 235, 245, 345};
+	
 	@Test
 	public void testMultipleObjectives() throws Exception {
-		
-		for (int i=7; i<8; i++) {
+		for (int j=0; j<30; j++) {
+			Logger.getRootLogger().info("### Start of test run " + j + " ###");
+			for (int i=0; i<10; i++) {
 				
-			MOEAProblem p = new MOEAProblem();	
-			setConstraints(p);		
-			disableVariables(p,i);
-			
-			setObjective(p, norm[i], Objective.maximize); 
-			setObjective(p, alpha[i], Objective.minimize); 
-			setObjective(p, beta[i], Objective.maximize); 
-			setObjective(p, gamma[i], Objective.minimize); 
-			
-			Collection<ILPSolution> solutions = (new MOEAWrapper(p, 1000000)).solve();
-			
-			for (ILPSolution s : solutions) {
-				printSolutionInformation(p, s, i);
+				Logger.getRootLogger().info("Determine solutions for config: " + config[i]);
+				MOEAProblem p = new MOEAProblem();	
+				setConstraints(p);		
+				disableVariables(p,i);
+				
+				setObjective(p, norm[i], Objective.maximize); 
+				setObjective(p, alpha[i], Objective.minimize); 
+				setObjective(p, beta[i], Objective.maximize); 
+				setObjective(p, gamma[i], Objective.minimize); 
+				
+				Collection<ILPSolution> solutions = (new MOEAWrapper(p, p.getVariables().size() * 25000)).solve();
+				
+				Logger.getRootLogger().info("Number of solutions: " + solutions.size());
+				for (ILPSolution s : solutions) {
+					printSolutionInformation(p, s, i);
+				}
 			}
 		}
-		
 	}
 
 	private void setObjective(MOEAProblem p, int[] coefficients, Objective obj) {

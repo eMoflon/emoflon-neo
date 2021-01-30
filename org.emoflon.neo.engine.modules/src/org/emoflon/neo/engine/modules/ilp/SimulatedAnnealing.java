@@ -14,7 +14,7 @@ public class SimulatedAnnealing {
 	}
 	
 	//Scheme which is currently used
-	private static final Scheme scheme = Scheme.LINEAR;
+	private static final Scheme scheme = Scheme.GEOMETRIC;
 	
 	/**
 	  * computation of parameter T
@@ -23,15 +23,13 @@ public class SimulatedAnnealing {
 	  * @param scheme: cooling scheme
 	  * @return: new value of T
 	  */
-	 private static double cool(double T0, double t, Scheme scheme, int maxEvaluations) {
+	 private static double cool(double T0, double T, Scheme scheme, double scale) {
 		 switch (scheme) {
 		 case GEOMETRIC: 
-			 return Math.pow(0.999, t) * T0;
+			 return T *= 0.98;
 		 case LINEAR:
 			 // decrease T linearly, but return at least 0
-			 return Math.max(T0 * (maxEvaluations - t) / maxEvaluations, 0);
-		 case QUADRATIC:
-			 return T0 / Math.pow((t + 1),2);
+			 return T - T0 / (100 * scale * scale);
 	     default:
 	    	 return T0;
 		 }
@@ -46,16 +44,18 @@ public class SimulatedAnnealing {
 	 public static Solution solve(MOEAProblem p) {
 		 
 		 double T0 = 0;
+		 double factor = 0;
 		 
 		 for (String v : p.getVariables())
-			 T0 += Math.abs(p.getObjective().getLinearExpression().getCoefficient(p.getVariableId(v)));
+			 T0 += p.getObjective().getLinearExpression().getCoefficient(p.getVariableId(v)) < 0 ? 0 : 
+				 p.getObjective().getLinearExpression().getCoefficient(p.getVariableId(v));
 
 		 double T = T0;
-		 int t = 1;
 		 Random rnd = new Random();
-		 int cc = (int)Math.sqrt(p.getVariables().size());
-		 int cb = p.getVariables().size();
-		 int maxEvaluations = 200 * p.getVariables().size();
+		 double scale = Math.sqrt(p.getVariables().size());
+		 int cc = 3; //(int)Math.pow(scale,0.5);
+		 int cb = 10; //(int)Math.pow(scale,1);5
+		 int maxEvaluations = 100 * p.getVariables().size();
 				 
 		 Solution currentSolution = p.newSolution();
 		 Solution bestSolution = p.newSolution();
@@ -66,28 +66,45 @@ public class SimulatedAnnealing {
 		 for (int i=0; i<bv.getNumberOfBits(); i++)
 			 bv.set(i, false);
 		 
-		 bestSolution.setVariable(0, bv);
+		 bestSolution.setVariable(0, bv.copy());
 		 p.evaluate(bestSolution);
-		 double bestValue = bestSolution.getObjective(0) + (bestSolution.violatesConstraints() ? T0 : 0);
+		 factor = 0;
+		 for (double c : bestSolution.getConstraints()) {
+			 factor += c;
+		 }
+		 double bestValue = bestSolution.getObjective(0) + factor * T0; //(bestSolution.violatesConstraints() ? T0 : 0);
 		 
-		 currentSolution.setVariable(0, bv);
+		 currentSolution.setVariable(0, bv.copy());
 		 p.evaluate(currentSolution);
-		 double currentValue = currentSolution.getObjective(0) + (currentSolution.violatesConstraints() ? T0 : 0);
+		 factor = 0;
+		 for (double c : currentSolution.getConstraints()) {
+			 factor += c;
+		 }
+		 double currentValue = currentSolution.getObjective(0) + factor * T0; //(currentSolution.violatesConstraints() ? T0 : 0);
 		 
 		 double neighbourValue;
-		 
-		 int nb = 0, nc = 0;
+
+		 int nb = 0, nc = 0, nrOfRestarts = 0, tb = 0;
 		 
 		 for (int i=0; i<maxEvaluations; i++) {
 			 
 			 bv = (BinaryVariable)currentSolution.getVariable(0).copy();
 			 
 	// Pertubation
-			 int index = rnd.nextInt(bv.getNumberOfBits());
-			 bv.set(index, !bv.get(index));
+			 double rand = rnd.nextDouble();
+			 int nrOfFlips = -(int)(Math.log(1-rand) /Math.log(2));
+			 
+			 for (int j=0; j<nrOfFlips; j++) {
+				 int index = rnd.nextInt(bv.getNumberOfBits());
+				 bv.set(index, !bv.get(index));
+			 }
 			 neighbourSolution.setVariable(0, bv);
 			 p.evaluate(neighbourSolution);
-			 neighbourValue = neighbourSolution.getObjective(0) + (neighbourSolution.violatesConstraints() ? T0 : 0); 
+			 factor = 0;
+			 for (double c : neighbourSolution.getConstraints()) {
+				 factor += c;
+			 }
+			 neighbourValue = neighbourSolution.getObjective(0) + factor * T0; //(neighbourSolution.violatesConstraints() ? T0 : 0); 
 			 
 	// Accept solution with a certain probability		 
 			 if (neighbourValue < bestValue) {
@@ -110,19 +127,25 @@ public class SimulatedAnnealing {
 					 currentValue = neighbourValue;
 				 }
 			 }
-			 
+	// Restart		 
 			 if (nb > cb || nc > cc) {
 				 currentSolution = bestSolution.copy();
 				 currentValue = bestValue;
 				 nb = nc = 0;
+				 nrOfRestarts ++;
 			 }
 
 	// Cooling
-			 T = cool(T0,t,scheme,maxEvaluations);
-			 t++;
+			 T = cool(T0,T,scheme,scale);
+			 
+			 if (T < 1) {
+				 // Re-Heating
+				 T = T0;
+			 }
 			 nb++;	 
 		 }
 		 
+		 Logger.getRootLogger().info("Number of restarts: " + nrOfRestarts);
 		 return bestSolution;
 	 }
 }

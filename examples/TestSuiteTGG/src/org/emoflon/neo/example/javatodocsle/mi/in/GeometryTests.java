@@ -3,14 +3,16 @@ package org.emoflon.neo.example.javatodocsle.mi.in;
 import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodocsle.mi.in.API_Geometry;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodocsle.mi.performance.*;
-
+import org.emoflon.neo.emf.handlers.EMFConverterHandler;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.core.commands.ExecutionEvent;
 //import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
 //import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_MI_Run;
+import org.eclipse.core.commands.ExecutionException;
 
 
 public class GeometryTests extends ENeoTest {
@@ -41,13 +43,15 @@ public class GeometryTests extends ENeoTest {
 			logger.info("### Performance Test:  " + (n+1) + " Models ###");
 			logger.info("###################################");
 			Logger.getRootLogger().setLevel(Level.INFO);
-			logger.info("### Single test run with Gurobi ###");
-			testPerformance(n, SupportedILPSolver.Gurobi);
+//			logger.info("### Single test run with Gurobi ###");
+//			testPerformance(n, SupportedILPSolver.Gurobi);
+			//testAllOnce(SupportedILPSolver.Gurobi);
 			
 			Logger.getRootLogger().setLevel(Level.INFO);
 			for (int i=0; i<nrOfIterations; i++) {
 				logger.info("### Iteration " + i + " with Simulated Annealing ###");
 				testPerformance(n, SupportedILPSolver.MOEA);
+				//testAllOnce(SupportedILPSolver.MOEA);
 			}
 		}
 	}

@@ -52,3 +52,4 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  JavaToDoc,
  JavaToDocSLE,
  TestSuiteGT
+Import-Package: org.eclipse.core.commands

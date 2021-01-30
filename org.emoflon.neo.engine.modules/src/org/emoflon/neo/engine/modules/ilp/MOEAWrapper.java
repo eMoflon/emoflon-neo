@@ -35,14 +35,21 @@ public final class MOEAWrapper extends ILPSolver{
 		assert (ilpProblem instanceof MOEAProblem); //otherwise this wrapper doesn't make sense
 		((MOEAProblem)ilpProblem).addObjective(ilpProblem.getObjective());
 		
+		// Genetic Algorihtm
 //		NondominatedPopulation result = new Executor()
-//				.withAlgorithm("NSGAII")
+//				.withAlgorithm("GA")
 //				.withProblem(ilpProblem)
-//				.withMaxEvaluations(maxEvaluations*10)
+//				.withMaxEvaluations(100 * ilpProblem.getVariables().size())
 //				.run();
 //		
 //		Solution solution = result.get(0);
+		
+		// Simulated Annealing
 		Solution solution = SimulatedAnnealing.solve((MOEAProblem)ilpProblem);
+		
+		// Random Sampling
+//		Solution solution = RandomSampling.solve((MOEAProblem)ilpProblem);
+		
 		boolean[] vA = EncodingUtils.getBinary(solution.getVariable(0));
 		Map<Integer,Integer> varAssignment = new HashMap<>();
 		
@@ -50,7 +57,7 @@ public final class MOEAWrapper extends ILPSolver{
 			varAssignment.put(j+1, vA[j] ? 1 : 0);
 		}
 		
-		ILPSolver.logger.debug("Gurobi found solution: " + solution.getObjective(0) + " - Feasible: " + !solution.violatesConstraints());
+		ILPSolver.logger.info("MOEA-Framework found solution: " + solution.getObjective(0) + " - Feasible: " + !solution.violatesConstraints());
 		
 		return ilpProblem.createILPSolution(varAssignment, !solution.violatesConstraints(), solution.getObjective(0));
 	}
