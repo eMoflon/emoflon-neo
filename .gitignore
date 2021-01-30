@@ -53,3 +53,5 @@ examples/SokobanLanguage/tgg-gen/
 examples/GameOfLife/src-gen/
 examples/FacebookToInstagramFASE/src-gen/
 examples/FacebookToInstagramFASE/tgg-gen/
+*._trace
+org.emoflon.neo.neocore/xtend-gen/org/emoflon/neo/neocore/ENeoUtil.java

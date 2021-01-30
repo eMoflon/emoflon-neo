@@ -93,9 +93,10 @@ public class NeoMatch implements IMatch {
 
 	@Override
 	public Map<String, Object> convertToMap() {
-		var map = new HashMap<String, Object>(record.keys().size());
+		var map = new HashMap<String, Object>();
 		map.putAll(parameters);
-		map.putAll(record.asMap());
+		if(record != null)
+			map.putAll(record.asMap());
 		map.put(getIdParameter(), hashCode());
 		return map;
 	}
