@@ -1,18 +1,12 @@
 package org.emoflon.neo.example.javatodocsle.mi.in;
 
-import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodocsle.mi.in.API_Geometry;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodocsle.mi.performance.*;
-import org.emoflon.neo.emf.handlers.EMFConverterHandler;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.example.ENeoTest;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.core.commands.ExecutionEvent;
-//import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
-//import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_MI_Run;
-import org.eclipse.core.commands.ExecutionException;
 
 
 public class GeometryTests extends ENeoTest {
@@ -36,7 +30,7 @@ public class GeometryTests extends ENeoTest {
 	
 	private static final int nrOfIterations = 30;
 	
-	@Test
+	@Ignore("Performance Tests are not part of the test suite.")
 	public void testAll() throws Exception {
 		for (int n=0; n<5; n++) {
 			logger.info("###################################");

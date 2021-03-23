@@ -12,6 +12,8 @@ import org.emoflon.neo.engine.modules.ilp.MOEAWrapper;
 import org.junit.jupiter.api.Test;
 
 public class MOEATest {
+
+	public static final int NR_OF_TEST_RUNS = 1; //increase for statistical tests
 	
 	// Create Coefficients
 	int[][] norm = {
@@ -70,7 +72,7 @@ public class MOEATest {
 	
 	@Test
 	public void testMultipleObjectives() throws Exception {
-		for (int j=0; j<30; j++) {
+		for (int j=0; j<NR_OF_TEST_RUNS; j++) {
 			Logger.getRootLogger().info("### Start of test run " + j + " ###");
 			for (int i=0; i<10; i++) {
 				
@@ -84,7 +86,7 @@ public class MOEATest {
 				setObjective(p, beta[i], Objective.maximize); 
 				setObjective(p, gamma[i], Objective.minimize); 
 				
-				Collection<ILPSolution> solutions = (new MOEAWrapper(p, p.getVariables().size() * 25000)).solve();
+				Collection<ILPSolution> solutions = (new MOEAWrapper(p, p.getVariables().size() * 1000)).solve();
 				
 				Logger.getRootLogger().info("Number of solutions: " + solutions.size());
 				for (ILPSolution s : solutions) {

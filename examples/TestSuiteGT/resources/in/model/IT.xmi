@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ITLanguage:IT
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:ITLanguage="platform:/resource/TestSuiteGT/resources/in/metamodel/ITLanguage.ecore"
+    name="ES">
+  <router network="#//@network.0" name="Ingo"/>
+  <network name="ES">
+    <laptop name="Tony"/>
+  </network>
+</ITLanguage:IT>

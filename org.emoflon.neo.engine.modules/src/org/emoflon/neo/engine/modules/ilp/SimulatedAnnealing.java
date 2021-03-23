@@ -14,7 +14,8 @@ public class SimulatedAnnealing {
 	}
 	
 	//Scheme which is currently used
-	private static final Scheme scheme = Scheme.GEOMETRIC;
+	private static final Scheme scheme = Scheme.LINEAR;
+	private static int maxEvaluations;
 	
 	/**
 	  * computation of parameter T
@@ -23,13 +24,13 @@ public class SimulatedAnnealing {
 	  * @param scheme: cooling scheme
 	  * @return: new value of T
 	  */
-	 private static double cool(double T0, double T, Scheme scheme, double scale) {
+	 private static double cool(double T0, double T, Scheme scheme) {
 		 switch (scheme) {
 		 case GEOMETRIC: 
 			 return T *= 0.98;
 		 case LINEAR:
 			 // decrease T linearly, but return at least 0
-			 return T - T0 / (100 * scale * scale);
+			 return T - T0 / maxEvaluations;
 	     default:
 	    	 return T0;
 		 }
@@ -52,10 +53,9 @@ public class SimulatedAnnealing {
 
 		 double T = T0;
 		 Random rnd = new Random();
-		 double scale = Math.sqrt(p.getVariables().size());
 		 int cc = 3; //(int)Math.pow(scale,0.5);
 		 int cb = 10; //(int)Math.pow(scale,1);5
-		 int maxEvaluations = 100 * p.getVariables().size();
+		 maxEvaluations = 1 * p.getVariables().size();
 				 
 		 Solution currentSolution = p.newSolution();
 		 Solution bestSolution = p.newSolution();
@@ -84,7 +84,7 @@ public class SimulatedAnnealing {
 		 
 		 double neighbourValue;
 
-		 int nb = 0, nc = 0, nrOfRestarts = 0, tb = 0;
+		 int nb = 0, nc = 0, nrOfRestarts = 0;
 		 
 		 for (int i=0; i<maxEvaluations; i++) {
 			 
@@ -136,7 +136,7 @@ public class SimulatedAnnealing {
 			 }
 
 	// Cooling
-			 T = cool(T0,T,scheme,scale);
+			 T = cool(T0,T,scheme);
 			 
 			 if (T < 1) {
 				 // Re-Heating

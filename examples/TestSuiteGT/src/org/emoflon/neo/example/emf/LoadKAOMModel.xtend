@@ -15,29 +15,31 @@ class LoadKAOMModel {
 	def static void main(String[] args) {
 		// Register factories for ecore and kaom
 		register("ecore", new EcoreResourceFactoryImpl())
-		register("kaom", new XMIResourceFactoryImpl())
+		register("xmi", new XMIResourceFactoryImpl())
 
 		// Obtain resource set for loading
 		val rs = ENeoUtil.createEMSLStandaloneResourceSet(".")
 
-		// Load dependency for kaom metamodel
-		rs.loadMetaModel("./models/annotations.ecore")
+		// Load dependency for Company and IT metamodel
+		rs.loadMetaModel("./resources/in/metamodel/CompanyLanguage.ecore")
+		rs.loadMetaModel("./resources/in/metamodel/ITLanguage.ecore")
 
-		// Load kaom metamodel
-		rs.loadMetaModel("./models/kaom.ecore")
-
-		// Load kaom model
-		val aad1Resource = rs.loadModel("./models/aad1.kaom")
+		// Load Company and IT model
+		val companyResource = rs.loadModel("./resources/in/model/Company.xmi")
+		val itResource = rs.loadModel("./resources/in/model/IT.xmi")
 
 		// Ensure contents are non-trivial
-		println(aad1Resource.contents)
-		val rootEntity = aad1Resource.contents.get(0)
+		println(companyResource.contents)
+		println(itResource.contents)
+		val companyRootEntity = companyResource.contents.get(0)
+		val itRootEntity = companyResource.contents.get(0)
 		// Do something with rootEntity...
-		println(rootEntity.eContents.toList)
+		println(companyRootEntity.eContents.toList)
+		println(itRootEntity.eContents.toList)
 
 		// Push into Neo4j
 		val importer = new Neo4jImporter()
-		importer.importEMFModels(rs, "bolt://localhost:7687", "neo4j", "admin")
+		importer.importEMFModels(rs, "bolt://localhost:7687", "neo4j", "test")
 	}
 
 	static def void register(String ext, Object factory) {
