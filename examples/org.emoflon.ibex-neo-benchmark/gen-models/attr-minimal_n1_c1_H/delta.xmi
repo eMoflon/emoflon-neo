@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<org.emoflon.delta:DeltaContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.emoflon.delta="platform:/plugin/org.emoflon.delta/model/Delta.ecore">
+  <deltas>
+    <attributeDeltas newValue="ACED0005740016415454525F434F4E464C4943545F547970655F305F61">
+      <attribute href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//NamedElement/name"/>
+      <object href="src.xmi#//@rootPackages.0/@types.0"/>
+    </attributeDeltas>
+    <attributeDeltas newValue="ACED0005740016415454525F434F4E464C4943545F547970655F305F62">
+      <attribute href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//NamedElement/name"/>
+      <object href="trg.xmi#//@folders.0/@docs.0"/>
+    </attributeDeltas>
+    <structuralDelta/>
+  </deltas>
+</org.emoflon.delta:DeltaContainer>

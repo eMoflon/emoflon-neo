@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ibex-neo-benchmark
+Bundle-SymbolicName: org.emoflon.ibex-neo-benchmark
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.emoflon.ibex.neo.benchmark
+Require-Bundle: ExtTypeModel,
+ ExtDocModel,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore.xmi,
+ ExtType2Doc_ConcSync,
+ ExtType2Doc_LookAhead,
+ ExtType2Doc_ShortCut,
+ org.emoflon.neo.engine.modules.ilp

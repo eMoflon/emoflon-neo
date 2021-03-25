@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ExtTypeModel:Project xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ExtTypeModel="platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore">
+  <rootPackages name="Package">
+    <types name="Type_0" extendedBy="//@rootPackages.0/@types.1 //@rootPackages.0/@types.5 //@rootPackages.0/@types.9">
+      <methods name="Method_0_0">
+        <params name="Param_0_0_0"/>
+        <params name="Param_0_0_1"/>
+        <docs comment="JavaDoc_0_0_0"/>
+      </methods>
+      <methods name="Method_0_1">
+        <params name="Param_0_1_0"/>
+        <params name="Param_0_1_1"/>
+        <docs comment="JavaDoc_0_1_0"/>
+      </methods>
+      <methods name="Method_0_2">
+        <params name="Param_0_2_0"/>
+        <params name="Param_0_2_1"/>
+        <docs comment="JavaDoc_0_2_0"/>
+      </methods>
+      <fields name="Field_0_0"/>
+      <fields name="Field_0_1"/>
+      <fields name="Field_0_2"/>
+    </types>
+    <types name="Type_0_0" extendedBy="//@rootPackages.0/@types.2 //@rootPackages.0/@types.3 //@rootPackages.0/@types.4" inheritsFrom="//@rootPackages.0/@types.0">
+      <methods name="Method_0_0_0">
+        <params name="Param_0_0_0_0"/>
+        <params name="Param_0_0_0_1"/>
+        <docs comment="JavaDoc_0_0_0_0"/>
+      </methods>
+      <methods name="Method_0_0_1">
+        <params name="Param_0_0_1_0"/>
+        <params name="Param_0_0_1_1"/>
+        <docs comment="JavaDoc_0_0_1_0"/>
+      </methods>
+      <methods name="Method_0_0_2">
+        <params name="Param_0_0_2_0"/>
+        <params name="Param_0_0_2_1"/>
+        <docs comment="JavaDoc_0_0_2_0"/>
+      </methods>
+      <fields name="Field_0_0_0"/>
+      <fields name="Field_0_0_1"/>
+      <fields name="Field_0_0_2"/>
+    </types>
+    <types name="Type_0_0_0" inheritsFrom="//@rootPackages.0/@types.1">
+      <methods name="Method_0_0_0_0">
+        <params name="Param_0_0_0_0_0"/>
+        <params name="Param_0_0_0_0_1"/>
+        <docs comment="JavaDoc_0_0_0_0_0"/>
+      </methods>
+      <methods name="Method_0_0_0_1">
+        <params name="Param_0_0_0_1_0"/>
+        <params name="Param_0_0_0_1_1"/>
+        <docs comment="JavaDoc_0_0_0_1_0"/>
+      </methods>
+      <methods name="Method_0_0_0_2">
+        <params name="Param_0_0_0_2_0"/>
+        <params name="Param_0_0_0_2_1"/>
+        <docs comment="JavaDoc_0_0_0_2_0"/>
+      </methods>
+      <fields name="Field_0_0_0_0"/>
+      <fields name="Field_0_0_0_1"/>
+      <fields name="Field_0_0_0_2"/>
+    </types>
+    <types name="Type_0_0_1" inheritsFrom="//@rootPackages.0/@types.1">
+      <methods name="Method_0_0_1_0">
+        <params name="Param_0_0_1_0_0"/>
+        <params name="Param_0_0_1_0_1"/>
+        <docs comment="JavaDoc_0_0_1_0_0"/>
+      </methods>
+      <methods name="Method_0_0_1_1">
+        <params name="Param_0_0_1_1_0"/>
+        <params name="Param_0_0_1_1_1"/>
+        <docs comment="JavaDoc_0_0_1_1_0"/>
+      </methods>
+      <methods name="Method_0_0_1_2">
+        <params name="Param_0_0_1_2_0"/>
+        <params name="Param_0_0_1_2_1"/>
+        <docs comment="JavaDoc_0_0_1_2_0"/>
+      </methods>
+      <fields name="Field_0_0_1_0"/>
+      <fields name="Field_0_0_1_1"/>
+      <fields name="Field_0_0_1_2"/>
+    </types>
+    <types name="Type_0_0_2" inheritsFrom="//@rootPackages.0/@types.1">
+      <methods name="Method_0_0_2_0">
+        <params name="Param_0_0_2_0_0"/>
+        <params name="Param_0_0_2_0_1"/>
+        <docs comment="JavaDoc_0_0_2_0_0"/>
+      </methods>
+      <methods name="Method_0_0_2_1">
+        <params name="Param_0_0_2_1_0"/>
+        <params name="Param_0_0_2_1_1"/>
+        <docs comment="JavaDoc_0_0_2_1_0"/>
+      </methods>
+      <methods name="Method_0_0_2_2">
+        <params name="Param_0_0_2_2_0"/>
+        <params name="Param_0_0_2_2_1"/>
+        <docs comment="JavaDoc_0_0_2_2_0"/>
+      </methods>
+      <fields name="Field_0_0_2_0"/>
+      <fields name="Field_0_0_2_1"/>
+      <fields name="Field_0_0_2_2"/>
+    </types>
+    <types name="Type_0_1" extendedBy="//@rootPackages.0/@types.6 //@rootPackages.0/@types.7 //@rootPackages.0/@types.8" inheritsFrom="//@rootPackages.0/@types.0">
+      <methods name="Method_0_1_0">
+        <params name="Param_0_1_0_0"/>
+        <params name="Param_0_1_0_1"/>
+        <docs comment="JavaDoc_0_1_0_0"/>
+      </methods>
+      <methods name="Method_0_1_1">
+        <params name="Param_0_1_1_0"/>
+        <params name="Param_0_1_1_1"/>
+        <docs comment="JavaDoc_0_1_1_0"/>
+      </methods>
+      <methods name="Method_0_1_2">
+        <params name="Param_0_1_2_0"/>
+        <params name="Param_0_1_2_1"/>
+        <docs comment="JavaDoc_0_1_2_0"/>
+      </methods>
+      <fields name="Field_0_1_0"/>
+      <fields name="Field_0_1_1"/>
+      <fields name="Field_0_1_2"/>
+    </types>
+    <types name="Type_0_1_0" inheritsFrom="//@rootPackages.0/@types.5">
+      <methods name="Method_0_1_0_0">
+        <params name="Param_0_1_0_0_0"/>
+        <params name="Param_0_1_0_0_1"/>
+        <docs comment="JavaDoc_0_1_0_0_0"/>
+      </methods>
+      <methods name="Method_0_1_0_1">
+        <params name="Param_0_1_0_1_0"/>
+        <params name="Param_0_1_0_1_1"/>
+        <docs comment="JavaDoc_0_1_0_1_0"/>
+      </methods>
+      <methods name="Method_0_1_0_2">
+        <params name="Param_0_1_0_2_0"/>
+        <params name="Param_0_1_0_2_1"/>
+        <docs comment="JavaDoc_0_1_0_2_0"/>
+      </methods>
+      <fields name="Field_0_1_0_0"/>
+      <fields name="Field_0_1_0_1"/>
+      <fields name="Field_0_1_0_2"/>
+    </types>
+    <types name="Type_0_1_1" inheritsFrom="//@rootPackages.0/@types.5">
+      <methods name="Method_0_1_1_0">
+        <params name="Param_0_1_1_0_0"/>
+        <params name="Param_0_1_1_0_1"/>
+        <docs comment="JavaDoc_0_1_1_0_0"/>
+      </methods>
+      <methods name="Method_0_1_1_1">
+        <params name="Param_0_1_1_1_0"/>
+        <params name="Param_0_1_1_1_1"/>
+        <docs comment="JavaDoc_0_1_1_1_0"/>
+      </methods>
+      <methods name="Method_0_1_1_2">
+        <params name="Param_0_1_1_2_0"/>
+        <params name="Param_0_1_1_2_1"/>
+        <docs comment="JavaDoc_0_1_1_2_0"/>
+      </methods>
+      <fields name="Field_0_1_1_0"/>
+      <fields name="Field_0_1_1_1"/>
+      <fields name="Field_0_1_1_2"/>
+    </types>
+    <types name="Type_0_1_2" inheritsFrom="//@rootPackages.0/@types.5">
+      <methods name="Method_0_1_2_0">
+        <params name="Param_0_1_2_0_0"/>
+        <params name="Param_0_1_2_0_1"/>
+        <docs comment="JavaDoc_0_1_2_0_0"/>
+      </methods>
+      <methods name="Method_0_1_2_1">
+        <params name="Param_0_1_2_1_0"/>
+        <params name="Param_0_1_2_1_1"/>
+        <docs comment="JavaDoc_0_1_2_1_0"/>
+      </methods>
+      <methods name="Method_0_1_2_2">
+        <params name="Param_0_1_2_2_0"/>
+        <params name="Param_0_1_2_2_1"/>
+        <docs comment="JavaDoc_0_1_2_2_0"/>
+      </methods>
+      <fields name="Field_0_1_2_0"/>
+      <fields name="Field_0_1_2_1"/>
+      <fields name="Field_0_1_2_2"/>
+    </types>
+    <types name="Type_0_2" extendedBy="//@rootPackages.0/@types.10 //@rootPackages.0/@types.11 //@rootPackages.0/@types.12" inheritsFrom="//@rootPackages.0/@types.0">
+      <methods name="Method_0_2_0">
+        <params name="Param_0_2_0_0"/>
+        <params name="Param_0_2_0_1"/>
+        <docs comment="JavaDoc_0_2_0_0"/>
+      </methods>
+      <methods name="Method_0_2_1">
+        <params name="Param_0_2_1_0"/>
+        <params name="Param_0_2_1_1"/>
+        <docs comment="JavaDoc_0_2_1_0"/>
+      </methods>
+      <methods name="Method_0_2_2">
+        <params name="Param_0_2_2_0"/>
+        <params name="Param_0_2_2_1"/>
+        <docs comment="JavaDoc_0_2_2_0"/>
+      </methods>
+      <fields name="Field_0_2_0"/>
+      <fields name="Field_0_2_1"/>
+      <fields name="Field_0_2_2"/>
+    </types>
+    <types name="Type_0_2_0" inheritsFrom="//@rootPackages.0/@types.9">
+      <methods name="Method_0_2_0_0">
+        <params name="Param_0_2_0_0_0"/>
+        <params name="Param_0_2_0_0_1"/>
+        <docs comment="JavaDoc_0_2_0_0_0"/>
+      </methods>
+      <methods name="Method_0_2_0_1">
+        <params name="Param_0_2_0_1_0"/>
+        <params name="Param_0_2_0_1_1"/>
+        <docs comment="JavaDoc_0_2_0_1_0"/>
+      </methods>
+      <methods name="Method_0_2_0_2">
+        <params name="Param_0_2_0_2_0"/>
+        <params name="Param_0_2_0_2_1"/>
+        <docs comment="JavaDoc_0_2_0_2_0"/>
+      </methods>
+      <fields name="Field_0_2_0_0"/>
+      <fields name="Field_0_2_0_1"/>
+      <fields name="Field_0_2_0_2"/>
+    </types>
+    <types name="Type_0_2_1" inheritsFrom="//@rootPackages.0/@types.9">
+      <methods name="Method_0_2_1_0">
+        <params name="Param_0_2_1_0_0"/>
+        <params name="Param_0_2_1_0_1"/>
+        <docs comment="JavaDoc_0_2_1_0_0"/>
+      </methods>
+      <methods name="Method_0_2_1_1">
+        <params name="Param_0_2_1_1_0"/>
+        <params name="Param_0_2_1_1_1"/>
+        <docs comment="JavaDoc_0_2_1_1_0"/>
+      </methods>
+      <methods name="Method_0_2_1_2">
+        <params name="Param_0_2_1_2_0"/>
+        <params name="Param_0_2_1_2_1"/>
+        <docs comment="JavaDoc_0_2_1_2_0"/>
+      </methods>
+      <fields name="Field_0_2_1_0"/>
+      <fields name="Field_0_2_1_1"/>
+      <fields name="Field_0_2_1_2"/>
+    </types>
+    <types name="Type_0_2_2" inheritsFrom="//@rootPackages.0/@types.9">
+      <methods name="Method_0_2_2_0">
+        <params name="Param_0_2_2_0_0"/>
+        <params name="Param_0_2_2_0_1"/>
+        <docs comment="JavaDoc_0_2_2_0_0"/>
+      </methods>
+      <methods name="Method_0_2_2_1">
+        <params name="Param_0_2_2_1_0"/>
+        <params name="Param_0_2_2_1_1"/>
+        <docs comment="JavaDoc_0_2_2_1_0"/>
+      </methods>
+      <methods name="Method_0_2_2_2">
+        <params name="Param_0_2_2_2_0"/>
+        <params name="Param_0_2_2_2_1"/>
+        <docs comment="JavaDoc_0_2_2_2_0"/>
+      </methods>
+      <fields name="Field_0_2_2_0"/>
+      <fields name="Field_0_2_2_1"/>
+      <fields name="Field_0_2_2_2"/>
+    </types>
+    <types name="Type_1" extendedBy="//@rootPackages.0/@types.14 //@rootPackages.0/@types.18 //@rootPackages.0/@types.22">
+      <methods name="Method_1_0">
+        <params name="Param_1_0_0"/>
+        <params name="Param_1_0_1"/>
+        <docs comment="JavaDoc_1_0_0"/>
+      </methods>
+      <methods name="Method_1_1">
+        <params name="Param_1_1_0"/>
+        <params name="Param_1_1_1"/>
+        <docs comment="JavaDoc_1_1_0"/>
+      </methods>
+      <methods name="Method_1_2">
+        <params name="Param_1_2_0"/>
+        <params name="Param_1_2_1"/>
+        <docs comment="JavaDoc_1_2_0"/>
+      </methods>
+      <fields name="Field_1_0"/>
+      <fields name="Field_1_1"/>
+      <fields name="Field_1_2"/>
+    </types>
+    <types name="Type_1_0" extendedBy="//@rootPackages.0/@types.15 //@rootPackages.0/@types.16 //@rootPackages.0/@types.17" inheritsFrom="//@rootPackages.0/@types.13">
+      <methods name="Method_1_0_0">
+        <params name="Param_1_0_0_0"/>
+        <params name="Param_1_0_0_1"/>
+        <docs comment="JavaDoc_1_0_0_0"/>
+      </methods>
+      <methods name="Method_1_0_1">
+        <params name="Param_1_0_1_0"/>
+        <params name="Param_1_0_1_1"/>
+        <docs comment="JavaDoc_1_0_1_0"/>
+      </methods>
+      <methods name="Method_1_0_2">
+        <params name="Param_1_0_2_0"/>
+        <params name="Param_1_0_2_1"/>
+        <docs comment="JavaDoc_1_0_2_0"/>
+      </methods>
+      <fields name="Field_1_0_0"/>
+      <fields name="Field_1_0_1"/>
+      <fields name="Field_1_0_2"/>
+    </types>
+    <types name="Type_1_0_0" inheritsFrom="//@rootPackages.0/@types.14">
+      <methods name="Method_1_0_0_0">
+        <params name="Param_1_0_0_0_0"/>
+        <params name="Param_1_0_0_0_1"/>
+        <docs comment="JavaDoc_1_0_0_0_0"/>
+      </methods>
+      <methods name="Method_1_0_0_1">
+        <params name="Param_1_0_0_1_0"/>
+        <params name="Param_1_0_0_1_1"/>
+        <docs comment="JavaDoc_1_0_0_1_0"/>
+      </methods>
+      <methods name="Method_1_0_0_2">
+        <params name="Param_1_0_0_2_0"/>
+        <params name="Param_1_0_0_2_1"/>
+        <docs comment="JavaDoc_1_0_0_2_0"/>
+      </methods>
+      <fields name="Field_1_0_0_0"/>
+      <fields name="Field_1_0_0_1"/>
+      <fields name="Field_1_0_0_2"/>
+    </types>
+    <types name="Type_1_0_1" inheritsFrom="//@rootPackages.0/@types.14">
+      <methods name="Method_1_0_1_0">
+        <params name="Param_1_0_1_0_0"/>
+        <params name="Param_1_0_1_0_1"/>
+        <docs comment="JavaDoc_1_0_1_0_0"/>
+      </methods>
+      <methods name="Method_1_0_1_1">
+        <params name="Param_1_0_1_1_0"/>
+        <params name="Param_1_0_1_1_1"/>
+        <docs comment="JavaDoc_1_0_1_1_0"/>
+      </methods>
+      <methods name="Method_1_0_1_2">
+        <params name="Param_1_0_1_2_0"/>
+        <params name="Param_1_0_1_2_1"/>
+        <docs comment="JavaDoc_1_0_1_2_0"/>
+      </methods>
+      <fields name="Field_1_0_1_0"/>
+      <fields name="Field_1_0_1_1"/>
+      <fields name="Field_1_0_1_2"/>
+    </types>
+    <types name="Type_1_0_2" inheritsFrom="//@rootPackages.0/@types.14">
+      <methods name="Method_1_0_2_0">
+        <params name="Param_1_0_2_0_0"/>
+        <params name="Param_1_0_2_0_1"/>
+        <docs comment="JavaDoc_1_0_2_0_0"/>
+      </methods>
+      <methods name="Method_1_0_2_1">
+        <params name="Param_1_0_2_1_0"/>
+        <params name="Param_1_0_2_1_1"/>
+        <docs comment="JavaDoc_1_0_2_1_0"/>
+      </methods>
+      <methods name="Method_1_0_2_2">
+        <params name="Param_1_0_2_2_0"/>
+        <params name="Param_1_0_2_2_1"/>
+        <docs comment="JavaDoc_1_0_2_2_0"/>
+      </methods>
+      <fields name="Field_1_0_2_0"/>
+      <fields name="Field_1_0_2_1"/>
+      <fields name="Field_1_0_2_2"/>
+    </types>
+    <types name="Type_1_1" extendedBy="//@rootPackages.0/@types.19 //@rootPackages.0/@types.20 //@rootPackages.0/@types.21" inheritsFrom="//@rootPackages.0/@types.13">
+      <methods name="Method_1_1_0">
+        <params name="Param_1_1_0_0"/>
+        <params name="Param_1_1_0_1"/>
+        <docs comment="JavaDoc_1_1_0_0"/>
+      </methods>
+      <methods name="Method_1_1_1">
+        <params name="Param_1_1_1_0"/>
+        <params name="Param_1_1_1_1"/>
+        <docs comment="JavaDoc_1_1_1_0"/>
+      </methods>
+      <methods name="Method_1_1_2">
+        <params name="Param_1_1_2_0"/>
+        <params name="Param_1_1_2_1"/>
+        <docs comment="JavaDoc_1_1_2_0"/>
+      </methods>
+      <fields name="Field_1_1_0"/>
+      <fields name="Field_1_1_1"/>
+      <fields name="Field_1_1_2"/>
+    </types>
+    <types name="Type_1_1_0" inheritsFrom="//@rootPackages.0/@types.18">
+      <methods name="Method_1_1_0_0">
+        <params name="Param_1_1_0_0_0"/>
+        <params name="Param_1_1_0_0_1"/>
+        <docs comment="JavaDoc_1_1_0_0_0"/>
+      </methods>
+      <methods name="Method_1_1_0_1">
+        <params name="Param_1_1_0_1_0"/>
+        <params name="Param_1_1_0_1_1"/>
+        <docs comment="JavaDoc_1_1_0_1_0"/>
+      </methods>
+      <methods name="Method_1_1_0_2">
+        <params name="Param_1_1_0_2_0"/>
+        <params name="Param_1_1_0_2_1"/>
+        <docs comment="JavaDoc_1_1_0_2_0"/>
+      </methods>
+      <fields name="Field_1_1_0_0"/>
+      <fields name="Field_1_1_0_1"/>
+      <fields name="Field_1_1_0_2"/>
+    </types>
+    <types name="Type_1_1_1" inheritsFrom="//@rootPackages.0/@types.18">
+      <methods name="Method_1_1_1_0">
+        <params name="Param_1_1_1_0_0"/>
+        <params name="Param_1_1_1_0_1"/>
+        <docs comment="JavaDoc_1_1_1_0_0"/>
+      </methods>
+      <methods name="Method_1_1_1_1">
+        <params name="Param_1_1_1_1_0"/>
+        <params name="Param_1_1_1_1_1"/>
+        <docs comment="JavaDoc_1_1_1_1_0"/>
+      </methods>
+      <methods name="Method_1_1_1_2">
+        <params name="Param_1_1_1_2_0"/>
+        <params name="Param_1_1_1_2_1"/>
+        <docs comment="JavaDoc_1_1_1_2_0"/>
+      </methods>
+      <fields name="Field_1_1_1_0"/>
+      <fields name="Field_1_1_1_1"/>
+      <fields name="Field_1_1_1_2"/>
+    </types>
+    <types name="Type_1_1_2" inheritsFrom="//@rootPackages.0/@types.18">
+      <methods name="Method_1_1_2_0">
+        <params name="Param_1_1_2_0_0"/>
+        <params name="Param_1_1_2_0_1"/>
+        <docs comment="JavaDoc_1_1_2_0_0"/>
+      </methods>
+      <methods name="Method_1_1_2_1">
+        <params name="Param_1_1_2_1_0"/>
+        <params name="Param_1_1_2_1_1"/>
+        <docs comment="JavaDoc_1_1_2_1_0"/>
+      </methods>
+      <methods name="Method_1_1_2_2">
+        <params name="Param_1_1_2_2_0"/>
+        <params name="Param_1_1_2_2_1"/>
+        <docs comment="JavaDoc_1_1_2_2_0"/>
+      </methods>
+      <fields name="Field_1_1_2_0"/>
+      <fields name="Field_1_1_2_1"/>
+      <fields name="Field_1_1_2_2"/>
+    </types>
+    <types name="Type_1_2" extendedBy="//@rootPackages.0/@types.23 //@rootPackages.0/@types.24 //@rootPackages.0/@types.25" inheritsFrom="//@rootPackages.0/@types.13">
+      <methods name="Method_1_2_0">
+        <params name="Param_1_2_0_0"/>
+        <params name="Param_1_2_0_1"/>
+        <docs comment="JavaDoc_1_2_0_0"/>
+      </methods>
+      <methods name="Method_1_2_1">
+        <params name="Param_1_2_1_0"/>
+        <params name="Param_1_2_1_1"/>
+        <docs comment="JavaDoc_1_2_1_0"/>
+      </methods>
+      <methods name="Method_1_2_2">
+        <params name="Param_1_2_2_0"/>
+        <params name="Param_1_2_2_1"/>
+        <docs comment="JavaDoc_1_2_2_0"/>
+      </methods>
+      <fields name="Field_1_2_0"/>
+      <fields name="Field_1_2_1"/>
+      <fields name="Field_1_2_2"/>
+    </types>
+    <types name="Type_1_2_0" inheritsFrom="//@rootPackages.0/@types.22">
+      <methods name="Method_1_2_0_0">
+        <params name="Param_1_2_0_0_0"/>
+        <params name="Param_1_2_0_0_1"/>
+        <docs comment="JavaDoc_1_2_0_0_0"/>
+      </methods>
+      <methods name="Method_1_2_0_1">
+        <params name="Param_1_2_0_1_0"/>
+        <params name="Param_1_2_0_1_1"/>
+        <docs comment="JavaDoc_1_2_0_1_0"/>
+      </methods>
+      <methods name="Method_1_2_0_2">
+        <params name="Param_1_2_0_2_0"/>
+        <params name="Param_1_2_0_2_1"/>
+        <docs comment="JavaDoc_1_2_0_2_0"/>
+      </methods>
+      <fields name="Field_1_2_0_0"/>
+      <fields name="Field_1_2_0_1"/>
+      <fields name="Field_1_2_0_2"/>
+    </types>
+    <types name="Type_1_2_1" inheritsFrom="//@rootPackages.0/@types.22">
+      <methods name="Method_1_2_1_0">
+        <params name="Param_1_2_1_0_0"/>
+        <params name="Param_1_2_1_0_1"/>
+        <docs comment="JavaDoc_1_2_1_0_0"/>
+      </methods>
+      <methods name="Method_1_2_1_1">
+        <params name="Param_1_2_1_1_0"/>
+        <params name="Param_1_2_1_1_1"/>
+        <docs comment="JavaDoc_1_2_1_1_0"/>
+      </methods>
+      <methods name="Method_1_2_1_2">
+        <params name="Param_1_2_1_2_0"/>
+        <params name="Param_1_2_1_2_1"/>
+        <docs comment="JavaDoc_1_2_1_2_0"/>
+      </methods>
+      <fields name="Field_1_2_1_0"/>
+      <fields name="Field_1_2_1_1"/>
+      <fields name="Field_1_2_1_2"/>
+    </types>
+    <types name="Type_1_2_2" inheritsFrom="//@rootPackages.0/@types.22">
+      <methods name="Method_1_2_2_0">
+        <params name="Param_1_2_2_0_0"/>
+        <params name="Param_1_2_2_0_1"/>
+        <docs comment="JavaDoc_1_2_2_0_0"/>
+      </methods>
+      <methods name="Method_1_2_2_1">
+        <params name="Param_1_2_2_1_0"/>
+        <params name="Param_1_2_2_1_1"/>
+        <docs comment="JavaDoc_1_2_2_1_0"/>
+      </methods>
+      <methods name="Method_1_2_2_2">
+        <params name="Param_1_2_2_2_0"/>
+        <params name="Param_1_2_2_2_1"/>
+        <docs comment="JavaDoc_1_2_2_2_0"/>
+      </methods>
+      <fields name="Field_1_2_2_0"/>
+      <fields name="Field_1_2_2_1"/>
+      <fields name="Field_1_2_2_2"/>
+    </types>
+  </rootPackages>
+</ExtTypeModel:Project>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ExtType2Doc_ConcSync="platform:/resource/ExtType2Doc_ConcSync/model/ExtType2Doc_ConcSync.ecore">
+  <ExtType2Doc_ConcSync:Project2DocCont__Marker>
+    <CREATE__SRC__pr href="src.xmi#/"/>
+    <CREATE__TRG__dc href="trg.xmi#/"/>
+    <CREATE__CORR__pr2dc href="corr.xmi#/0"/>
+  </ExtType2Doc_ConcSync:Project2DocCont__Marker>
+  <ExtType2Doc_ConcSync:Glossary__Marker>
+    <CONTEXT__TRG__dc href="trg.xmi#/"/>
+    <CREATE__TRG__g href="trg.xmi#//@glossary"/>
+  </ExtType2Doc_ConcSync:Glossary__Marker>
+  <ExtType2Doc_ConcSync:Package2Folder__Marker>
+    <CREATE__SRC__p href="src.xmi#//@rootPackages.0"/>
+    <CONTEXT__SRC__pr href="src.xmi#/"/>
+    <CONTEXT__TRG__dc href="trg.xmi#/"/>
+    <CREATE__TRG__f href="trg.xmi#//@folders.0"/>
+    <CREATE__CORR__p2f href="corr.xmi#/1"/>
+    <CONTEXT__CORR__pr2dc href="corr.xmi#/0"/>
+  </ExtType2Doc_ConcSync:Package2Folder__Marker>
+  <ExtType2Doc_ConcSync:GlossaryEntry__Marker>
+    <CONTEXT__TRG__g href="trg.xmi#//@glossary"/>
+    <CREATE__TRG__ge href="trg.xmi#//@glossary/@entries.0"/>
+  </ExtType2Doc_ConcSync:GlossaryEntry__Marker>
+  <ExtType2Doc_ConcSync:Type2Doc__Marker>
+    <CONTEXT__SRC__p href="src.xmi#//@rootPackages.0"/>
+    <CREATE__SRC__t href="src.xmi#//@rootPackages.0/@types.0"/>
+    <CREATE__TRG__d href="trg.xmi#//@folders.0/@docs.0"/>
+    <CONTEXT__TRG__f href="trg.xmi#//@folders.0"/>
+    <CONTEXT__CORR__p2f href="corr.xmi#/1"/>
+    <CREATE__CORR__t2d href="corr.xmi#/2"/>
+  </ExtType2Doc_ConcSync:Type2Doc__Marker>
+  <ExtType2Doc_ConcSync:Method2Entry__Marker>
+    <CREATE__SRC__m href="src.xmi#//@rootPackages.0/@types.0/@methods.0"/>
+    <CONTEXT__SRC__t href="src.xmi#//@rootPackages.0/@types.0"/>
+    <CONTEXT__TRG__d href="trg.xmi#//@folders.0/@docs.0"/>
+    <CREATE__TRG__e href="trg.xmi#//@folders.0/@docs.0/@entries.0"/>
+    <CREATE__CORR__m2e href="corr.xmi#/3"/>
+    <CONTEXT__CORR__t2d href="corr.xmi#/2"/>
+  </ExtType2Doc_ConcSync:Method2Entry__Marker>
+  <ExtType2Doc_ConcSync:Param2Entry__Marker>
+    <CONTEXT__SRC__m href="src.xmi#//@rootPackages.0/@types.0/@methods.0"/>
+    <CREATE__SRC__p href="src.xmi#//@rootPackages.0/@types.0/@methods.0/@params.0"/>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.0/@entries.0"/>
+    <CONTEXT__CORR__m2e href="corr.xmi#/3"/>
+    <CREATE__CORR__p2e href="corr.xmi#/4"/>
+  </ExtType2Doc_ConcSync:Param2Entry__Marker>
+  <ExtType2Doc_ConcSync:JDoc2Annotation__Marker>
+    <CREATE__SRC__j href="src.xmi#//@rootPackages.0/@types.0/@methods.0/@docs.0"/>
+    <CONTEXT__SRC__m href="src.xmi#//@rootPackages.0/@types.0/@methods.0"/>
+    <CREATE__TRG__a href="trg.xmi#//@folders.0/@docs.0/@entries.0/@annotations.0"/>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.0/@entries.0"/>
+    <CREATE__CORR__j2a href="corr.xmi#/5"/>
+    <CONTEXT__CORR__m2e href="corr.xmi#/3"/>
+  </ExtType2Doc_ConcSync:JDoc2Annotation__Marker>
+  <ExtType2Doc_ConcSync:GlossaryLink__Marker>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.0/@entries.0"/>
+    <CONTEXT__TRG__ge href="trg.xmi#//@glossary/@entries.0"/>
+  </ExtType2Doc_ConcSync:GlossaryLink__Marker>
+  <ExtType2Doc_ConcSync:Field2Entry__Marker>
+    <CREATE__SRC__f href="src.xmi#//@rootPackages.0/@types.0/@fields.0"/>
+    <CONTEXT__SRC__t href="src.xmi#//@rootPackages.0/@types.0"/>
+    <CONTEXT__TRG__d href="trg.xmi#//@folders.0/@docs.0"/>
+    <CREATE__TRG__e href="trg.xmi#//@folders.0/@docs.0/@entries.1"/>
+    <CREATE__CORR__f2e href="corr.xmi#/6"/>
+    <CONTEXT__CORR__t2d href="corr.xmi#/2"/>
+  </ExtType2Doc_ConcSync:Field2Entry__Marker>
+  <ExtType2Doc_ConcSync:GlossaryLink__Marker>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.0/@entries.1"/>
+    <CONTEXT__TRG__ge href="trg.xmi#//@glossary/@entries.0"/>
+  </ExtType2Doc_ConcSync:GlossaryLink__Marker>
+  <ExtType2Doc_ConcSync:ExtendingType2Doc__Marker>
+    <CREATE__SRC__nt href="src.xmi#//@rootPackages.0/@types.1"/>
+    <CONTEXT__SRC__p href="src.xmi#//@rootPackages.0"/>
+    <CONTEXT__SRC__t href="src.xmi#//@rootPackages.0/@types.0"/>
+    <CONTEXT__TRG__d href="trg.xmi#//@folders.0/@docs.0"/>
+    <CONTEXT__TRG__f href="trg.xmi#//@folders.0"/>
+    <CREATE__TRG__nd href="trg.xmi#//@folders.0/@docs.1"/>
+    <CREATE__CORR__nt2nd href="corr.xmi#/7"/>
+    <CONTEXT__CORR__p2f href="corr.xmi#/1"/>
+    <CONTEXT__CORR__t2d href="corr.xmi#/2"/>
+  </ExtType2Doc_ConcSync:ExtendingType2Doc__Marker>
+  <ExtType2Doc_ConcSync:Method2Entry__Marker>
+    <CREATE__SRC__m href="src.xmi#//@rootPackages.0/@types.1/@methods.0"/>
+    <CONTEXT__SRC__t href="src.xmi#//@rootPackages.0/@types.1"/>
+    <CONTEXT__TRG__d href="trg.xmi#//@folders.0/@docs.1"/>
+    <CREATE__TRG__e href="trg.xmi#//@folders.0/@docs.1/@entries.0"/>
+    <CREATE__CORR__m2e href="corr.xmi#/8"/>
+    <CONTEXT__CORR__t2d href="corr.xmi#/7"/>
+  </ExtType2Doc_ConcSync:Method2Entry__Marker>
+  <ExtType2Doc_ConcSync:Param2Entry__Marker>
+    <CONTEXT__SRC__m href="src.xmi#//@rootPackages.0/@types.1/@methods.0"/>
+    <CREATE__SRC__p href="src.xmi#//@rootPackages.0/@types.1/@methods.0/@params.0"/>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.1/@entries.0"/>
+    <CONTEXT__CORR__m2e href="corr.xmi#/8"/>
+    <CREATE__CORR__p2e href="corr.xmi#/9"/>
+  </ExtType2Doc_ConcSync:Param2Entry__Marker>
+  <ExtType2Doc_ConcSync:JDoc2Annotation__Marker>
+    <CREATE__SRC__j href="src.xmi#//@rootPackages.0/@types.1/@methods.0/@docs.0"/>
+    <CONTEXT__SRC__m href="src.xmi#//@rootPackages.0/@types.1/@methods.0"/>
+    <CREATE__TRG__a href="trg.xmi#//@folders.0/@docs.1/@entries.0/@annotations.0"/>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.1/@entries.0"/>
+    <CREATE__CORR__j2a href="corr.xmi#/10"/>
+    <CONTEXT__CORR__m2e href="corr.xmi#/8"/>
+  </ExtType2Doc_ConcSync:JDoc2Annotation__Marker>
+  <ExtType2Doc_ConcSync:GlossaryLink__Marker>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.1/@entries.0"/>
+    <CONTEXT__TRG__ge href="trg.xmi#//@glossary/@entries.0"/>
+  </ExtType2Doc_ConcSync:GlossaryLink__Marker>
+  <ExtType2Doc_ConcSync:Field2Entry__Marker>
+    <CREATE__SRC__f href="src.xmi#//@rootPackages.0/@types.1/@fields.0"/>
+    <CONTEXT__SRC__t href="src.xmi#//@rootPackages.0/@types.1"/>
+    <CONTEXT__TRG__d href="trg.xmi#//@folders.0/@docs.1"/>
+    <CREATE__TRG__e href="trg.xmi#//@folders.0/@docs.1/@entries.1"/>
+    <CREATE__CORR__f2e href="corr.xmi#/11"/>
+    <CONTEXT__CORR__t2d href="corr.xmi#/7"/>
+  </ExtType2Doc_ConcSync:Field2Entry__Marker>
+  <ExtType2Doc_ConcSync:GlossaryLink__Marker>
+    <CONTEXT__TRG__e href="trg.xmi#//@folders.0/@docs.1/@entries.1"/>
+    <CONTEXT__TRG__ge href="trg.xmi#//@glossary/@entries.0"/>
+  </ExtType2Doc_ConcSync:GlossaryLink__Marker>
+</xmi:XMI>
