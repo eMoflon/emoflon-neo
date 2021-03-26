@@ -4,8 +4,7 @@ A Neo4j-based implementation of eMoflon
 [![codebeat badge](https://codebeat.co/badges/3c0e1804-9cfb-4551-ac76-6456a2e06c6d)](https://codebeat.co/projects/github-com-emoflon-emoflon-neo-master)
 
 # Steps required to run the development workspace:
-- Download the latest Eclipse IDE for *Java and DSL* Developers from https://www.eclipse.org/downloads/packages/  (make sure you choose the correct Eclipse package: *Java and DSL*!)
-- Start Eclipse and install PlantUML (Select Help -> Install new Software). Use http://hallvard.github.io/plantuml/ as the download site.
+- Install eNeo and all dependencies as explained here: https://github.com/eMoflon/emoflon-neo-updatesite
 - To display PlantUML in the perspective of your choice (we recommend Java), select Window -> Show view -> other -> PlantUML
 - Import all dev workspace projects via -> Import -> Team -> Team-Project, using this URL to access the relevant project set file: https://github.com/eMoflon/emoflon-neo/raw/master/projectSetDev.psf
 - Check the text-file encoding of your workspace. Make sure it is set to UTF-8 (Window->Preference->General->Workspace).
