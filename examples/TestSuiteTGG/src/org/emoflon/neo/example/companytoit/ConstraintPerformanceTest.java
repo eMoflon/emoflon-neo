@@ -1,34 +1,33 @@
 package org.emoflon.neo.example.companytoit;
 
-import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
-import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+import static run.CompanyToIT_Constrained_GEN_Run.SRC_MODEL_NAME;
+import static run.CompanyToIT_Constrained_GEN_Run.TRG_MODEL_NAME;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.companytoit.API_CompanyToIT;
+import org.emoflon.neo.api.companytoit_constrained.API_CompanyToIT_Constrained;
 import org.emoflon.neo.example.ENeoTest;
 
-import org.emoflon.neo.api.companytoit.run.CompanyToIT_BWD_OPT_Run;
-import org.emoflon.neo.api.companytoit.run.CompanyToIT_CC_Run;
-import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
-import org.emoflon.neo.api.companytoit.run.CompanyToIT_FWD_OPT_Run;
+import org.emoflon.neo.api.companytoit_constrained.run.CompanyToIT_Constrained_BWD_OPT_Run;
+import org.emoflon.neo.api.companytoit_constrained.run.CompanyToIT_Constrained_CC_Run;
+import org.emoflon.neo.api.companytoit_constrained.run.CompanyToIT_Constrained_CO_Run;
+import org.emoflon.neo.api.companytoit_constrained.run.CompanyToIT_Constrained_FWD_OPT_Run;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;;
 
 public class ConstraintPerformanceTest extends ENeoTest{
 public void runTestForFixedSize(int nrOfApplications, int nrOfIterations) throws Exception {
 		
 		Logger.getRootLogger().setLevel(Level.INFO);
-		var testCOApp = new CompanyToIT_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testCCApp = new CompanyToIT_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testFWD_OPTApp = new CompanyToIT_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testBWD_OPTApp = new CompanyToIT_BWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCOApp = new CompanyToIT_Constrained_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCCApp = new CompanyToIT_Constrained_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testFWD_OPTApp = new CompanyToIT_Constrained_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testBWD_OPTApp = new CompanyToIT_Constrained_BWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		
 		var testGenApp = new CompanyToIT_GEN_TEST((scheduler) -> {
-			scheduler.setMax(API_CompanyToIT.CompanyToIT__CompanyToITRule, 10 * nrOfApplications)
-			.setMax(API_CompanyToIT.CompanyToIT__AdminToRouterRule, 10 * nrOfApplications)
-			.setMax(API_CompanyToIT.CompanyToIT__EmployeeToPCRule, 40 * nrOfApplications)
-			.setMax(API_CompanyToIT.CompanyToIT__EmployeeToLaptopRule, 40 * nrOfApplications);
+			scheduler.setMax(API_CompanyToIT_Constrained.CompanyToIT_Constrained__CompanyToITRule, 10 * nrOfApplications)
+			.setMax(API_CompanyToIT_Constrained.CompanyToIT_Constrained__AdminToRouterRule, 10 * nrOfApplications)
+			.setMax(API_CompanyToIT_Constrained.CompanyToIT_Constrained__EmployeeToPCRule, 40 * nrOfApplications)
+			.setMax(API_CompanyToIT_Constrained.CompanyToIT_Constrained__EmployeeToLaptopRule, 40 * nrOfApplications);
 		});
 		
 		// Step 2. Run ops

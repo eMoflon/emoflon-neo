@@ -1,7 +1,7 @@
-import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
-import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/IT.msl"
 
-tripleGrammar CompanyToIT {
+tripleGrammar CompanyToIT_Constrained {
 	source {
 		Company
 	}
@@ -23,9 +23,16 @@ tripleGrammar CompanyToIT {
 		EmployeeToPCRule
 		EmployeeToLaptopRule
 	}
+	
+	constraints {
+		NetworkHas2Laptops
+		No2Network
+		No2Ceo
+		No2Admins
+	}
 }
 
-tripleRule CompanyToITRule : CompanyToIT {
+tripleRule CompanyToITRule : CompanyToIT_Constrained {
 	source {
 		++ ceo : CEO {
 			.name := <ceoName>
@@ -53,7 +60,7 @@ pattern companyNameIsTaken {
 	}
 }
 
-tripleRule AdminToRouterRule : CompanyToIT {
+tripleRule AdminToRouterRule : CompanyToIT_Constrained {
 	source {
 		company : Company {
 			-ceo-> ceo
@@ -98,7 +105,7 @@ pattern AlreadyHasAnAdmin {
 	ceo:CEO
 }
 
-abstract tripleRule EmployeeToDevice : CompanyToIT {
+abstract tripleRule EmployeeToDevice : CompanyToIT_Constrained {
 	source {
 		admin : Admin {
 			-ceo-> ceo
@@ -135,7 +142,7 @@ abstract tripleRule EmployeeToDevice : CompanyToIT {
 	}
 }
 
-tripleRule EmployeeToPCRule : CompanyToIT -> EmployeeToDevice {
+tripleRule EmployeeToPCRule : CompanyToIT_Constrained -> EmployeeToDevice {
 	source {
 		++ employee : Employee
 	}
@@ -155,7 +162,7 @@ tripleRule EmployeeToPCRule : CompanyToIT -> EmployeeToDevice {
 	}
 }
 
-tripleRule EmployeeToLaptopRule : CompanyToIT -> EmployeeToDevice {
+tripleRule EmployeeToLaptopRule : CompanyToIT_Constrained -> EmployeeToDevice {
 	source {
 		++ employee : Employee
 	}
@@ -174,3 +181,62 @@ tripleRule EmployeeToLaptopRule : CompanyToIT -> EmployeeToDevice {
 		++ employee <-:EmployeeToLaptop-> computer
 	}
 }
+
+//Surbhi-edit
+pattern PremisePattern{
+	it : IT {
+		-network-> network
+	}
+	
+	network : Network 
+	
+} 
+
+pattern ConclusionPattern-> PremisePattern[network->network]{
+	network : Network {
+		-laptop->l1
+		-laptop->l2
+	}
+	
+	l1 : Laptop
+	l2 : Laptop
+}
+
+constraint NetworkHas2Laptops = if PremisePattern then ConclusionPattern
+
+pattern No2NetworkConstraint{
+	rout: Router{
+		-network->net1
+		-network->net
+	}
+	
+	net: Network
+	net1: Network
+}
+
+constraint No2Network = forbid No2NetworkConstraint
+
+pattern No2CeoConstraint{
+	admin: Admin{
+		-ceo->c1
+		-ceo->c2
+	}
+	
+	c1: CEO
+	c2: CEO
+}
+
+constraint No2Ceo = forbid No2CeoConstraint
+
+pattern CompanyHas2AdminsConstraint{
+	c:Company{
+		-admin-> a1
+		-admin-> a2
+	}
+	
+	a1:Admin
+	a2:Admin
+}
+
+constraint No2Admins = forbid CompanyHas2AdminsConstraint
+//edit-ends

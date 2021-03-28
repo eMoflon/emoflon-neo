@@ -1,5 +1,5 @@
-import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
-import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/IT.msl"
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/Company.msl"
 
 model InconsistentSource1{
 	c: Company{
