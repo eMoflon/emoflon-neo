@@ -1,0 +1,12 @@
+metamodel InstagramLanguage {
+	Network {
+		.description : EString
+		<+>-users(0..*)-> User
+	}
+	
+	User {
+		.name : EString
+		-follows(0..*)-> User
+	}
+ 	
+}

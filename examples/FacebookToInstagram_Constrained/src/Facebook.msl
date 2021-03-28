@@ -1,0 +1,19 @@
+metamodel FacebookLanguage {
+	Network {
+		.description : EString
+		<+>-friendships(0..*)-> Friendship
+		<+>-users(0..*)-> User
+	}
+	
+	Friendship {
+		.startFrom : EDate
+		-friends(0..*)-> User
+	}
+	
+	User {
+		.name : EString
+		-spouse(0..1)-> User
+		-siblings(0..*)-> User
+		-parents(0..*)-> User
+	}
+}

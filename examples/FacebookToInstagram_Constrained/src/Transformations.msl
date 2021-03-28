@@ -1,7 +1,7 @@
-import "platform:/resource/FacebookToInstagramFASE/src/Facebook.msl"
-import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
+import "platform:/resource/FacebookToInstagram_Constrained/src/Facebook.msl"
+import "platform:/resource/FacebookToInstagram_Constrained/src/Instagram.msl"
 
-tripleGrammar FacebookToInstagramFASE {
+tripleGrammar FacebookToInstagram_Constrained {
 	source {
 		FacebookLanguage
 	}
@@ -31,10 +31,11 @@ tripleGrammar FacebookToInstagramFASE {
 	constraints {
 		noDoubleFriendship
 		noDoubleFollowership
+		EnforceFriendship
 	}
 }
 
-tripleRule NetworkToNetwork : FacebookToInstagramFASE {
+tripleRule NetworkToNetwork : FacebookToInstagram_Constrained {
 	source {
 		++ fl : Network {
 			.description := <networkDesc>
@@ -52,7 +53,7 @@ tripleRule NetworkToNetwork : FacebookToInstagramFASE {
 	}
 }
 
-tripleRule UserToUser : FacebookToInstagramFASE {
+tripleRule UserToUser : FacebookToInstagram_Constrained {
 	source {
 		++ fu : User {
 			.name := <n>
@@ -79,7 +80,7 @@ tripleRule UserToUser : FacebookToInstagramFASE {
 	}
 } 
 
-tripleRule RequestFriendship : FacebookToInstagramFASE {
+tripleRule RequestFriendship : FacebookToInstagram_Constrained {
 	source {
 		fu1 : User
 		fu2 : User
@@ -119,7 +120,7 @@ pattern NoDoubleFollows {
 
 pattern NoOppositeFollows -> NoDoubleFollows[iu1 -> iu2, iu2 -> iu1]
 
-tripleRule AcceptFriendship : FacebookToInstagramFASE {
+tripleRule AcceptFriendship : FacebookToInstagram_Constrained {
 	source {
 		fu1 : User
 		fu2 : User
@@ -185,5 +186,41 @@ pattern noDoubleFollowershipInstagramConstraint {
 }
 	 
 constraint noDoubleFollowership = forbid noDoubleFollowershipInstagramConstraint
+
+//Surbhi-edit
+
+pattern ConclusionPattern-> PremisePattern[fu1->fu1, fu2->fu2] {
+ 	fu1 : FacebookLanguage.User
+ 	
+ 	fu2 : FacebookLanguage.User
+ 	
+ 	fr : Friendship{
+ 		-friends-> fu1
+ 		-friends-> fu2
+ 	}
+ 		
+}
+
+pattern PremisePattern {
+	fu1 : FacebookLanguage.User{
+		-corr->iu1
+	}
+ 	
+ 	fu2 : FacebookLanguage.User{
+ 		-corr->iu2
+ 	}
+ 	
+	iu1 : InstagramLanguage.User {
+		-follows-> iu2
+	}
+	
+	iu2 : InstagramLanguage.User {
+		-follows-> iu1
+	}
+			
+}
+
+constraint EnforceFriendship = if PremisePattern then ConclusionPattern
+//edit-ends
 
 

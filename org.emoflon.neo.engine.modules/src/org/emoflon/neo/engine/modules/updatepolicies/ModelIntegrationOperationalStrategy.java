@@ -25,8 +25,8 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	private Collection<Long> existingElements;
 	private Collection<Long> createdElements;
 
-	private static final double alpha = -10; // delete-delta
-	private static final double beta = 10; // create-delta
+	private static final double alpha = -5; // delete-delta
+	private static final double beta = 5; // create-delta
 	private static final double gamma = -1; // added elements
 
 	public ModelIntegrationOperationalStrategy(//

@@ -1,0 +1,17 @@
+import "platform:/resource/FamiliesToPersons_Constrained/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/Schema.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/FamilyMember2Person.msl"
+
+tripleRule SonToMale : FamiliesToPersons_Constrained -> FamilyMember2Person {
+	source { 
+		++ f : Family {
+			++ -sons->fm	
+		}
+	
+		++ fm : FamilyMember
+	}
+
+	target {
+		++ p : Male
+	}
+}

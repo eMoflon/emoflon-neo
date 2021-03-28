@@ -122,7 +122,7 @@ class MI extends ILPOperation {
 	}
 	
 	override boolean isExact() {
-		false
+		true
 	}
 
 	override getDeltaCondition(Action action, int ruleID, Map<Domain,ArrayList<String>> greenElements, String element) {

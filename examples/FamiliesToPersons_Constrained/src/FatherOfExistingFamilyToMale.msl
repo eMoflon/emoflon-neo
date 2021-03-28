@@ -1,0 +1,15 @@
+import "platform:/resource/FamiliesToPersons_Constrained/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/Schema.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/ExistingFamily2Person.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/FatherToMale.msl"
+
+tripleRule FatherOfExistingFamilyToMale : FamiliesToPersons_Constrained -> ExistingFamily2Person, FatherToMale	
+forbid src(existingFather)
+
+pattern existingFather {
+	f : Family {
+		-father->existingFather
+	}
+	
+	existingFather : FamilyMember
+}
