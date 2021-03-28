@@ -1,0 +1,239 @@
+import "platform:/resource/ExtType2Doc_LookAhead/src/metamodels/ExtTypeModel.msl"
+import "platform:/resource/ExtType2Doc_LookAhead/src/metamodels/ExtDocModel.msl"
+
+tripleGrammar ExtType2Doc_LookAhead {
+	source {
+		ExtTypeModel
+	}
+	
+	target {
+		ExtDocModel
+	}
+	
+	correspondence {
+		Project <- Project2DocContainer -> DocContainer
+		Package <- Package2Folder -> Folder
+		Type <- Type2Doc -> Doc
+		Method <- Method2Entry -> Entry
+		Parameter <- Param2Entry -> Entry
+		Field <- Field2Entry -> Entry
+		JavaDoc <- JDoc2Annotation -> Annotation
+	}
+	
+	rules {
+		ExtendingType2Doc
+		Field2Entry
+		ImplementingType2Doc
+		Method2Entry
+		Package2Folder
+		Param2Entry
+		Project2DocCont
+		Type2Doc
+	}
+	
+	constraints {
+		
+	}
+}
+
+tripleRule ExtendingType2Doc : ExtType2Doc_LookAhead {
+	source { 
+	p:Package {
+		-types->t
+		++-types->nt
+	}
+	t:Type {
+		.interface : false
+		++-extendedBy->nt
+	}
+	
+	++nt:Type {
+		.name := <name>
+	}
+}
+
+target {
+	f:Folder {
+		-docs->d
+		++-docs->nd
+	}
+	d:Doc {
+		++-subDocs->nd
+	}
+	
+	++nd:Doc {
+		.name := <name>
+	}
+}
+
+correspondence {
+	p <- :Package2Folder -> f
+	t <- :Type2Doc -> d
+	++nt <-:Type2Doc -> nd
+}
+}
+
+tripleRule Field2Entry : ExtType2Doc_LookAhead {
+
+source { 
+	t:Type {
+		++-fields->f
+	}
+	
+	++f:Field {
+		.name := <name>
+	}
+}
+
+target {
+	d:Doc {
+		++-entries->e
+	}
+	
+	++e:Entry {
+		.type:="FIELD"
+		.name := <name>
+	}
+}
+
+correspondence {
+	t <-:Type2Doc -> d
+	++ f<-:Field2Entry->e 
+}
+}
+
+tripleRule ImplementingType2Doc : ExtType2Doc_LookAhead {
+	source { 
+	it:Type {
+		.interface : true
+		++-extendedBy->t
+	}
+	t:Type
+}
+
+target {
+	id:Doc {
+		++-subDocs->d
+	}
+	d:Doc
+}
+
+correspondence {
+	it <-:Type2Doc -> id
+	t <-:Type2Doc -> d
+}
+}
+
+tripleRule Method2Entry : ExtType2Doc_LookAhead {
+	source { 
+	t:Type {
+		++-methods->m
+	}
+	
+	++m:Method {
+		.name := <name>
+	}
+}
+
+target {
+	d:Doc {
+		++-entries->e
+	}
+	
+	++e:Entry {
+		.type:="METHOD"
+		.name := <name>
+	}
+}
+
+correspondence {
+	t <-:Type2Doc ->d
+	
+	++m<-:Method2Entry->e
+}
+}
+
+tripleRule Package2Folder : ExtType2Doc_LookAhead {
+	source { 
+	pr:Project {
+		++-rootPackages->p
+	}
+	
+	++p:Package {
+		.name := <name>
+	}
+}
+
+target {
+	dc:DocContainer {
+		++-folders->f
+	}
+	
+	++f:Folder {
+		.name := <name>
+	}
+}
+
+correspondence {
+	pr <-:Project2DocContainer->dc 
+	++p <-:Package2Folder -> f
+}	
+}
+
+tripleRule Param2Entry : ExtType2Doc_LookAhead {
+	source { 
+	m:Method {
+		++-params->p
+	}
+	
+	++p:Parameter
+}
+
+target {
+	e:Entry
+}
+
+correspondence {
+	m <-:Method2Entry->e 
+	
+	++ p<-:Param2Entry->e 
+}
+}
+
+tripleRule Project2DocCont : ExtType2Doc_LookAhead {
+	source { 
+	++pr:Project
+}
+
+target {
+	++dc:DocContainer
+}
+
+correspondence {
+	++pr<-:Project2DocContainer ->dc
+}
+}
+
+tripleRule Type2Doc : ExtType2Doc_LookAhead {
+	source { 
+	p:Package {
+		++-types->t
+	}
+	
+	++t:Type
+}
+
+target {
+	f:Folder {
+		++-docs->d
+	}
+	
+	++d:Doc
+}
+
+correspondence {
+	p <-:Package2Folder ->f
+	++t<-:Type2Doc -> d
+}
+}
+

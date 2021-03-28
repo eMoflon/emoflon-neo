@@ -1,0 +1,6 @@
+import "platform:/resource/ExtType2Doc_LookAhead/src/metamodels/ExtTypeModel.msl"
+import "platform:/resource/ExtType2Doc_LookAhead/src/metamodels/ExtDocModel.msl"
+
+model test {
+	
+}
