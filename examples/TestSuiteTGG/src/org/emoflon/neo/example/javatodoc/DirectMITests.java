@@ -1,10 +1,12 @@
 package org.emoflon.neo.example.javatodoc;
 
-import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
-import org.emoflon.neo.api.javatodoc.run.JavaToDoc_MI_Run;
-import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.mi.in.API_DCC;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.API_DCC;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
+
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
+import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_MI_Run;
+
 
 public class DirectMITests extends ENeoTest {
 
@@ -12,28 +14,12 @@ public class DirectMITests extends ENeoTest {
 	
 	@Test
 	public void testDCC_Chain() throws Exception {
-		exportTriple(api.getModel_MoflonJavaChain(), //
-				api.getModel_MoflonDocChain(), //
+		exportTriple(api.getModel_MoflonJava(), //
+				api.getModel_MoflonDoc(), //
 				api.getRule_CreateCorrs().rule());
-		new JavaToDoc_MI_Run("moflonJavaChain", "moflonDocChain").run();
-		testForConsistency(new JavaToDoc_CO_Run("moflonJavaChain", "moflonDocChain", solver).runCheckOnly(), 56);
-	}
-
-	@Test
-	public void testDCC_MultiDel() throws Exception {
-		exportTriple(api.getModel_MoflonJavaMultiDel(), //
-				api.getModel_MoflonDocMultiDel(), //
-				api.getRule_CreateCorrs().rule());
-		new JavaToDoc_MI_Run("moflonJavaMultiDel", "moflonDocMultiDel").run();
-		testForConsistency(new JavaToDoc_CO_Run("moflonJavaMultiDel", "moflonDocMultiDel", solver).runCheckOnly(), 11);
+		new JavaToDocSLE_MI_Run("moflonJava", "moflonDoc").run();
+		testForConsistency(new JavaToDocSLE_CO_Run("moflonJava", "moflonDoc", solver).runCheckOnly(), 34);
 	}
 	
-	@Test
-	public void testDCC_Simple() throws Exception {
-		exportTriple(api.getModel_MoflonJavaSimple(), //
-				api.getModel_MoflonDocSimple(), //
-				api.getRule_CreateCorrs().rule());
-		new JavaToDoc_MI_Run("moflonJavaSimple", "moflonDocSimple").run();
-		testForConsistency(new JavaToDoc_CO_Run("moflonJavaSimple", "moflonDocSimple", solver).runCheckOnly(), 56);
-	}
+	
 }

@@ -1,0 +1,21 @@
+metamodel SimpleDocSLE {
+	Doc {
+		.name : EString
+		<+>-hrefs(0..*)-> Doc
+		<+>-entries(0..*)-> Entry
+	}
+	
+	Entry {
+		.name : EString
+		<+>-gEntries(0..*)-> GlossaryEntry
+	}
+	
+	GlossaryEntry {
+		.name : EString
+	}
+	
+	Glossary {
+		.name : EString
+		<+>-gEntries(0..*)-> GlossaryEntry
+	}
+}

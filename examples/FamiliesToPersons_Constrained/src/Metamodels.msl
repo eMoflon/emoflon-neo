@@ -1,0 +1,32 @@
+metamodel Families {
+	FamilyRegister {
+		<>-families(0..*)->Family
+	}
+	
+	Family {
+		.name : EString
+		<>-father(0..1)->FamilyMember
+		<>-mother(0..1)->FamilyMember
+		<>-daughters(0..*)->FamilyMember
+		<>-sons(0..*)->FamilyMember
+	}
+	
+	FamilyMember {
+		.name : EString
+	}
+}
+
+metamodel Persons {
+	PersonRegister {
+		<>-persons(0..*)->Person
+	}
+	
+	abstract Person {
+		.name : EString
+		.birthday : EDate
+	}
+	
+	Male : Person
+	
+	Female : Person
+}

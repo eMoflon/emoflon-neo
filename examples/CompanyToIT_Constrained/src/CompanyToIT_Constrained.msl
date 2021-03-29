@@ -1,0 +1,240 @@
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/IT.msl"
+
+tripleGrammar CompanyToIT_Constrained {
+	source {
+		Company
+	}
+	
+	target {
+		IT
+	}
+	
+	correspondence {
+		Company <- CompanyToIT -> IT
+		Admin <- AdminToRouter -> Router
+		Employee <- EmployeeToPC -> PC
+		Employee <- EmployeeToLaptop -> Laptop
+	}
+	
+	rules {
+		CompanyToITRule
+		AdminToRouterRule
+		EmployeeToPCRule
+		EmployeeToLaptopRule
+	}
+	
+	constraints {
+		NetworkHas2Laptops
+		No2Network
+		No2Ceo
+		No2Admins
+	}
+}
+
+tripleRule CompanyToITRule : CompanyToIT_Constrained {
+	source {
+		++ ceo : CEO {
+			.name := <ceoName>
+		}
+		++ company : Company {
+			.name := <companyName>
+			++ -ceo-> ceo
+		}
+	}
+	
+	target {
+		++ it : IT {
+			.name := <companyName>
+		}
+	}
+	
+	correspondence {
+		++ company <-:CompanyToIT-> it
+	}
+} forbid src(companyNameIsTaken)
+
+pattern companyNameIsTaken {
+	company : Company {
+		.name : <companyName>
+	}
+}
+
+tripleRule AdminToRouterRule : CompanyToIT_Constrained {
+	source {
+		company : Company {
+			-ceo-> ceo
+			++ -admin-> admin
+		}
+		ceo : CEO
+		++ admin : Admin {
+			.name := <adminName>
+			++ -ceo-> ceo
+		}
+	} 
+
+	target {
+		++ router : Router {
+			.name := <adminName>
+			++ -network-> network
+		}
+		it : IT {
+			++ -network-> network
+			++ -router-> router
+		}
+		++ network : Network {
+			.name := <adminName>
+		}
+	}
+
+	correspondence {
+		++ admin <-:AdminToRouter-> router
+		company <-:CompanyToIT-> it
+	}
+} forbid src(AlreadyHasAnAdmin)
+
+pattern AlreadyHasAnAdmin {
+	company:Company {
+		-admin->other
+	}
+	
+	other:Admin {
+		-ceo->ceo
+	}
+	
+	ceo:CEO
+}
+
+abstract tripleRule EmployeeToDevice : CompanyToIT_Constrained {
+	source {
+		admin : Admin {
+			-ceo-> ceo
+		}
+		company : Company {
+			-admin-> admin
+			++ -employee-> employee
+			-ceo-> ceo
+		}
+		ceo : CEO {
+			++ -employee-> employee
+		}
+		++ employee : Employee {
+			.name := <employeeName>
+		}
+	}
+
+	target {
+		network : Network 
+		
+		it : IT {
+			-router-> router
+			-network-> network
+		}
+		
+		router : Router {
+			-network-> network
+		}
+	}
+
+	correspondence {
+		admin <-:AdminToRouter-> router
+		company <-:CompanyToIT-> it
+	}
+}
+
+tripleRule EmployeeToPCRule : CompanyToIT_Constrained -> EmployeeToDevice {
+	source {
+		++ employee : Employee
+	}
+	
+	target {
+		++ computer : PC {
+			.name := <pcName>
+		}
+		
+		network : Network {
+			++ -pc-> $computer
+		}
+	}
+	
+	correspondence {
+		++ employee <-:EmployeeToPC-> computer
+	}
+}
+
+tripleRule EmployeeToLaptopRule : CompanyToIT_Constrained -> EmployeeToDevice {
+	source {
+		++ employee : Employee
+	}
+	
+	target {
+		++ computer : Laptop {
+			.name := <laptopName>
+		}
+		
+		network : Network {
+			++ -laptop-> $computer
+		}
+	}
+	
+	correspondence {
+		++ employee <-:EmployeeToLaptop-> computer
+	}
+}
+
+pattern PremisePattern{
+	it : IT {
+		-network-> network
+	}
+	
+	network : Network 
+	
+} 
+
+pattern ConclusionPattern-> PremisePattern[network->network]{
+	network : Network {
+		-laptop->l1
+		-laptop->l2
+	}
+	
+	l1 : Laptop
+	l2 : Laptop
+}
+
+constraint NetworkHas2Laptops = if PremisePattern then ConclusionPattern
+
+pattern No2NetworkConstraint{
+	rout: Router{
+		-network->net1
+		-network->net
+	}
+	
+	net: Network
+	net1: Network
+}
+
+constraint No2Network = forbid No2NetworkConstraint
+
+pattern No2CeoConstraint{
+	admin: Admin{
+		-ceo->c1
+		-ceo->c2
+	}
+	
+	c1: CEO
+	c2: CEO
+}
+
+constraint No2Ceo = forbid No2CeoConstraint
+
+pattern CompanyHas2AdminsConstraint{
+	c:Company{
+		-admin-> a1
+		-admin-> a2
+	}
+	
+	a1:Admin
+	a2:Admin
+}
+
+constraint No2Admins = forbid CompanyHas2AdminsConstraint

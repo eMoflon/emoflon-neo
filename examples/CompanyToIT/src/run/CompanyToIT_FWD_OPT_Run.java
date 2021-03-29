@@ -53,6 +53,7 @@ public class CompanyToIT_FWD_OPT_Run {
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_CompanyToIT(builder);
 		var genAPI = new API_CompanyToIT_GEN(builder);
 		var fwd_optAPI = new API_CompanyToIT_FWD_OPT(builder);
 		var genRules = genAPI.getAllRulesForCompanyToIT_GEN();
@@ -64,7 +65,7 @@ public class CompanyToIT_FWD_OPT_Run {
 				builder, //
 				genRules, //
 				fwd_optAPI.getAllRulesForCompanyToIT_FWD_OPT(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfCompanyToIT(), //
 				srcModel, //
 				trgModel//
 		);
@@ -87,15 +88,5 @@ public class CompanyToIT_FWD_OPT_Run {
 		this.trgModel = trgModel;
 		run();
 		return forwardTransformation;
-	}
-
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		var companyAPI = new API_Company(builder);
-		var itAPI = new API_IT(builder);
-		return List.of(//
-				companyAPI.getConstraint_CEOOfMultipleCompanies(), //
-				companyAPI.getConstraint_MultipleAdmins(), //
-				itAPI.getConstraint_NoDifferentITThanRouter()//
-		);
 	}
 }

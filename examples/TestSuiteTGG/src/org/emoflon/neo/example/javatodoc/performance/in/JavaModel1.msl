@@ -1,0 +1,1209 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"		
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"		
+import "platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodoc/performance/in/JavaModel0.msl"
+		
+model moflonJava1 -> moflonJava0 {		
+c100:Clazz {		
+	.name : "c100"	
+		
+	-subTypes-> c101 {	
+		
+	}	
+	-methods-> m113 {	
+		
+	}	
+	-methods-> m127 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+c101:Clazz {		
+	.name : "c101"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-fields-> f148 {	
+		
+	}	
+	-fields-> f140 {	
+		~_cr_ : true
+	}	
+}		
+		
+c102:Clazz {		
+	.name : "c102"	
+		
+		
+		
+		
+	-methods-> m119 {	
+		
+	}	
+	-methods-> m116 {	
+		~_de_ : true
+	}	
+	-fields-> f145 {	
+		~_de_ : true
+	}	
+		
+		
+		
+}		
+		
+c103:Clazz {		
+	.name : "c103"	
+		
+	-subTypes-> c104 {	
+		
+	}	
+	-methods-> m116 {	
+		~_cr_ : true
+	}	
+	-methods-> m118 {	
+		
+	}	
+	-fields-> f142 {	
+		
+	}	
+	-fields-> f143 {	
+		
+	}	
+}		
+		
+c104:Clazz {		
+	.name : "c104"	
+		
+	-subTypes-> c105 {	
+		
+	}	
+		
+		
+		
+	-methods-> m128 {	
+		
+	}	
+	-fields-> f131 {	
+		
+	}	
+		
+		
+		
+}		
+		
+c105:Clazz {		
+	.name : "c105"	
+	._de_ : true	
+	-subTypes-> c106 {	
+		
+	}	
+	-methods-> m118 {	
+		
+	}	
+	-methods-> m118 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-fields-> f136 {	
+		
+	}	
+}		
+		
+c106:Clazz {		
+	.name : "c106"	
+		
+	-subTypes-> c107 {	
+		~_cr_ : true
+	}	
+	-methods-> m118 {	
+		~_de_ : true
+	}	
+	-methods-> m115 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-fields-> f141 {	
+		
+	}	
+}		
+		
+c107:Clazz {		
+	.name : "c107"	
+		
+	-subTypes-> c108 {	
+		~_cr_ : true
+	}	
+	-methods-> m124 {	
+		
+	}	
+	-methods-> m117 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-fields-> f134 {	
+		
+	}	
+}		
+		
+c108:Clazz {		
+	.name : "c108"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-fields-> f141 {	
+		~_de_ : true
+	}	
+	-fields-> f133 {	
+		
+	}	
+}		
+		
+c109:Clazz {		
+	.name : "c109"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-fields-> f149 {	
+		
+	}	
+}		
+		
+m110:Method {		
+	.name : "m110"	
+		
+	-parameters-> p189 {	
+		~_cr_ : true
+	}	
+	-parameters-> p171 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+m111:Method {		
+	.name : "m111"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+m112:Method {		
+	.name : "m112"	
+		
+	-parameters-> p157 {	
+		
+	}	
+	-parameters-> p155 {	
+		
+	}	
+	-parameters-> p158 {	
+		
+	}	
+	-parameters-> p169 {	
+		~_cr_ : true
+	}	
+	-parameters-> p173 {	
+		
+	}	
+}		
+		
+m113:Method {		
+	.name : "m113"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+m114:Method {		
+	.name : "m114"	
+	._cr_ : true	
+	-parameters-> p176 {	
+		
+	}	
+	-parameters-> p169 {	
+		~_de_ : true
+	}	
+	-parameters-> p150 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m115:Method {		
+	.name : "m115"	
+		
+		
+		
+		
+		
+		
+		
+	-parameters-> p174 {	
+		
+	}	
+	-parameters-> p162 {	
+		~_de_ : true
+	}	
+	-parameters-> p165 {	
+		
+	}	
+}		
+		
+m116:Method {		
+	.name : "m116"	
+		
+	-parameters-> p191 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p183 {	
+		
+	}	
+	-parameters-> p173 {	
+		
+	}	
+		
+		
+		
+}		
+		
+m117:Method {		
+	.name : "m117"	
+		
+	-parameters-> p181 {	
+		
+	}	
+	-parameters-> p185 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p171 {	
+		~_cr_ : true
+	}	
+}		
+		
+m118:Method {		
+	.name : "m118"	
+		
+		
+		
+		
+	-parameters-> p184 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p185 {	
+		
+	}	
+}		
+		
+m119:Method {		
+	.name : "m119"	
+		
+		
+		
+		
+	-parameters-> p190 {	
+		~_de_ : true
+	}	
+	-parameters-> p183 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+m120:Method {		
+	.name : "m120"	
+		
+		
+		
+		
+	-parameters-> p184 {	
+		
+	}	
+	-parameters-> p174 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p158 {	
+		
+	}	
+}		
+		
+m121:Method {		
+	.name : "m121"	
+		
+	-parameters-> p162 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p171 {	
+		~_de_ : true
+	}	
+	-parameters-> p187 {	
+		
+	}	
+		
+		
+		
+}		
+		
+m122:Method {		
+	.name : "m122"	
+		
+	-parameters-> p159 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+m123:Method {		
+	.name : "m123"	
+	._de_ : true	
+		
+		
+		
+		
+		
+		
+	-parameters-> p174 {	
+		~_de_ : true
+	}	
+		
+		
+		
+	-parameters-> p150 {	
+		
+	}	
+}		
+		
+m124:Method {		
+	.name : "m124"	
+		
+	-parameters-> p197 {	
+		~_de_ : true
+	}	
+	-parameters-> p156 {	
+		
+	}	
+	-parameters-> p160 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p160 {	
+		
+	}	
+}		
+		
+m125:Method {		
+	.name : "m125"	
+		
+		
+		
+		
+	-parameters-> p160 {	
+		
+	}	
+		
+		
+		
+	-parameters-> p181 {	
+		
+	}	
+	-parameters-> p178 {	
+		~_cr_ : true
+	}	
+}		
+		
+m126:Method {		
+	.name : "m126"	
+	._de_ : true	
+	-parameters-> p161 {	
+		
+	}	
+	-parameters-> p198 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p164 {	
+		
+	}	
+}		
+		
+m127:Method {		
+	.name : "m127"	
+		
+	-parameters-> p179 {	
+		~_cr_ : true
+	}	
+	-parameters-> p191 {	
+		
+	}	
+	-parameters-> p187 {	
+		
+	}	
+	-parameters-> p189 {	
+		
+	}	
+		
+		
+		
+}		
+		
+m128:Method {		
+	.name : "m128"	
+	._de_ : true	
+		
+		
+		
+	-parameters-> p157 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-parameters-> p157 {	
+		
+	}	
+}		
+		
+m129:Method {		
+	.name : "m129"	
+	._cr_ : true	
+		
+		
+		
+	-parameters-> p166 {	
+		
+	}	
+	-parameters-> p163 {	
+		~_cr_ : true
+	}	
+	-parameters-> p191 {	
+		
+	}	
+		
+		
+		
+}		
+		
+f130:Field {		
+	.name : "f130"	
+	._cr_ : true	
+}		
+		
+f131:Field {		
+	.name : "f131"	
+		
+}		
+		
+f132:Field {		
+	.name : "f132"	
+		
+}		
+		
+f133:Field {		
+	.name : "f133"	
+		
+}		
+		
+f134:Field {		
+	.name : "f134"	
+	._de_ : true	
+}		
+		
+f135:Field {		
+	.name : "f135"	
+	._cr_ : true	
+}		
+		
+f136:Field {		
+	.name : "f136"	
+		
+}		
+		
+f137:Field {		
+	.name : "f137"	
+		
+}		
+		
+f138:Field {		
+	.name : "f138"	
+		
+}		
+		
+f139:Field {		
+	.name : "f139"	
+	._cr_ : true	
+}		
+		
+f140:Field {		
+	.name : "f140"	
+	._cr_ : true	
+}		
+		
+f141:Field {		
+	.name : "f141"	
+		
+}		
+		
+f142:Field {		
+	.name : "f142"	
+	._de_ : true	
+}		
+		
+f143:Field {		
+	.name : "f143"	
+		
+}		
+		
+f144:Field {		
+	.name : "f144"	
+		
+}		
+		
+f145:Field {		
+	.name : "f145"	
+		
+}		
+		
+f146:Field {		
+	.name : "f146"	
+	._de_ : true	
+}		
+		
+f147:Field {		
+	.name : "f147"	
+		
+}		
+		
+f148:Field {		
+	.name : "f148"	
+		
+}		
+		
+f149:Field {		
+	.name : "f149"	
+		
+}		
+		
+p150:Parameter {		
+	.name : "p150"	
+	._de_ : true	
+}		
+		
+p151:Parameter {		
+	.name : "p151"	
+		
+}		
+		
+p152:Parameter {		
+	.name : "p152"	
+	._de_ : true	
+}		
+		
+p153:Parameter {		
+	.name : "p153"	
+		
+}		
+		
+p154:Parameter {		
+	.name : "p154"	
+		
+}		
+		
+p155:Parameter {		
+	.name : "p155"	
+		
+}		
+		
+p156:Parameter {		
+	.name : "p156"	
+		
+}		
+		
+p157:Parameter {		
+	.name : "p157"	
+	._de_ : true	
+}		
+		
+p158:Parameter {		
+	.name : "p158"	
+		
+}		
+		
+p159:Parameter {		
+	.name : "p159"	
+		
+}		
+		
+p160:Parameter {		
+	.name : "p160"	
+		
+}		
+		
+p161:Parameter {		
+	.name : "p161"	
+		
+}		
+		
+p162:Parameter {		
+	.name : "p162"	
+		
+}		
+		
+p163:Parameter {		
+	.name : "p163"	
+		
+}		
+		
+p164:Parameter {		
+	.name : "p164"	
+		
+}		
+		
+p165:Parameter {		
+	.name : "p165"	
+		
+}		
+		
+p166:Parameter {		
+	.name : "p166"	
+		
+}		
+		
+p167:Parameter {		
+	.name : "p167"	
+	._de_ : true	
+}		
+		
+p168:Parameter {		
+	.name : "p168"	
+		
+}		
+		
+p169:Parameter {		
+	.name : "p169"	
+	._de_ : true	
+}		
+		
+p170:Parameter {		
+	.name : "p170"	
+		
+}		
+		
+p171:Parameter {		
+	.name : "p171"	
+		
+}		
+		
+p172:Parameter {		
+	.name : "p172"	
+		
+}		
+		
+p173:Parameter {		
+	.name : "p173"	
+		
+}		
+		
+p174:Parameter {		
+	.name : "p174"	
+		
+}		
+		
+p175:Parameter {		
+	.name : "p175"	
+		
+}		
+		
+p176:Parameter {		
+	.name : "p176"	
+		
+}		
+		
+p177:Parameter {		
+	.name : "p177"	
+		
+}		
+		
+p178:Parameter {		
+	.name : "p178"	
+		
+}		
+		
+p179:Parameter {		
+	.name : "p179"	
+		
+}		
+		
+p180:Parameter {		
+	.name : "p180"	
+		
+}		
+		
+p181:Parameter {		
+	.name : "p181"	
+		
+}		
+		
+p182:Parameter {		
+	.name : "p182"	
+		
+}		
+		
+p183:Parameter {		
+	.name : "p183"	
+		
+}		
+		
+p184:Parameter {		
+	.name : "p184"	
+		
+}		
+		
+p185:Parameter {		
+	.name : "p185"	
+		
+}		
+		
+p186:Parameter {		
+	.name : "p186"	
+		
+}		
+		
+p187:Parameter {		
+	.name : "p187"	
+		
+}		
+		
+p188:Parameter {		
+	.name : "p188"	
+		
+}		
+		
+p189:Parameter {		
+	.name : "p189"	
+		
+}		
+		
+p190:Parameter {		
+	.name : "p190"	
+	._de_ : true	
+}		
+		
+p191:Parameter {		
+	.name : "p191"	
+		
+}		
+		
+p192:Parameter {		
+	.name : "p192"	
+		
+}		
+		
+p193:Parameter {		
+	.name : "p193"	
+	._de_ : true	
+}		
+		
+p194:Parameter {		
+	.name : "p194"	
+	._de_ : true	
+}		
+		
+p195:Parameter {		
+	.name : "p195"	
+	._de_ : true	
+}		
+		
+p196:Parameter {		
+	.name : "p196"	
+		
+}		
+		
+p197:Parameter {		
+	.name : "p197"	
+	._de_ : true	
+}		
+		
+p198:Parameter {		
+	.name : "p198"	
+		
+}		
+		
+p199:Parameter {		
+	.name : "p199"	
+		
+}		
+		
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

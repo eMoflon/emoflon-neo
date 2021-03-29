@@ -1,0 +1,40 @@
+import "platform:/resource/FamiliesToPersons_Constrained/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/Schema.msl"
+import "platform:/plugin/org.emoflon.neo.neocore/model/AttributeConstraintsLibrary.msl"
+
+abstract tripleRule FamilyMember2Person : FamiliesToPersons_Constrained {	
+	source { 
+		families : FamilyRegister {
+			++ -families->f
+		}
+		++ f : Family {
+			.name := <familyName>
+		}
+		++ fm : FamilyMember {
+			.name := <memberName>
+		}
+	}
+
+	target {
+		persons : PersonRegister {
+			++ -persons->p
+		}
+		++ p : Person {
+			.name := <personName>
+		}
+	}
+
+	correspondence {
+		families <- :FamiliesToPersons -> persons
+		++ fm <- :FamilyMemberToPerson -> p
+	}
+	
+	attributeConstraints {
+  		concat(
+			separator=", ",
+			left=<familyName>,
+			right=<memberName>,
+			combined=<personName>
+		)
+	}
+}

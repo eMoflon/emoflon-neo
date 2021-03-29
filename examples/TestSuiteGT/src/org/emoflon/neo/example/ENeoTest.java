@@ -31,7 +31,7 @@ public abstract class ENeoTest {
 	private static Scanner reader;
 	protected static final Logger logger = Logger.getLogger(ENeoTest.class);
 	protected static NeoCoreBuilder builder;
-	protected static SupportedILPSolver solver = SupportedILPSolver.Sat4J;
+	protected static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	@BeforeAll
 	public static void startDBConnection() throws Exception {

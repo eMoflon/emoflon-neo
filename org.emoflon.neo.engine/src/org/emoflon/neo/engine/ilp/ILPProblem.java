@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.moeaframework.core.Problem;
+import org.moeaframework.core.Solution;
+
 /**
  * This class is used to define ILPProblems that can be given to
  * {@link ILPSolver} to be solved. An instance can be obtained using the
@@ -21,52 +24,52 @@ import java.util.Set;
  * @author Robin Oppermann
  *
  */
-public class ILPProblem {
+public class ILPProblem implements Problem {
 
 	/**
 	 * Counter variable used for assigning IDs to variables
 	 */
-	private int variableCounter = 1;
+	protected int variableCounter = 1;
 
 	/**
 	 * Contains all variables that have been defined and the mapping to their names
 	 */
-	private final Map<String, Integer> variables = new HashMap<>();;
+	protected final Map<String, Integer> variables = new HashMap<>();
 	/**
 	 * Contains the mapping of variable names to variable IDs The additional map is
 	 * used for efficiency reasons
 	 */
-	private final Map<Integer, String> variableIDsToVariables = new HashMap<>();
+	protected final Map<Integer, String> variableIDsToVariables = new HashMap<>();
 	/**
 	 * Set of constraints that have been defined using addConstraint
 	 */
-	private final Set<ILPConstraint> constraints = new HashSet<>();
+	protected final Set<ILPConstraint> constraints = new HashSet<>();
 	/**
 	 * The objective function that has been defined using setObjective
 	 */
-	private ILPObjective objective = null;
+	protected ILPObjective objective = null;
 
 	/**
 	 * Contains pre-fixed variables the solver does not need to care about
 	 */
-	private final Map<Integer, Integer> fixedVariableValues = new HashMap<>();
+	protected final Map<Integer, Integer> fixedVariableValues = new HashMap<>();
 
 	/**
 	 * Contains the IDs of the unassigned variables
 	 */
-	private final Set<Integer> unfixedVariables = new HashSet<>();
+	protected final Set<Integer> unfixedVariables = new HashSet<>();
 
 	/**
 	 * Contains the IDs of the variables that have been fixed but have not yet been
 	 * removed from the constraints and objective
 	 */
-	private final Set<Integer> lazyFixedVariables = new HashSet<>();
+	protected final Set<Integer> lazyFixedVariables = new HashSet<>();
 
 	/**
 	 * Contains for each variable the list of constraints the variable is contained
 	 * in. This makes fixing variables very efficient, but costs memory
 	 */
-	private final Map<Integer, LinkedList<ILPConstraint>> variableIdsToContainingConstraints = new HashMap<>();
+	protected final Map<Integer, LinkedList<ILPConstraint>> variableIdsToContainingConstraints = new HashMap<>();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the
@@ -195,7 +198,7 @@ public class ILPProblem {
 	 * @return The ID of the variable. If the variable is not yet contained, it will
 	 *         be registered with a new ID
 	 */
-	int getVariableId(final String variable) {
+	public int getVariableId(final String variable) {
 		if (!this.variables.containsKey(variable))
 			return this.createNewVariable(variable);
 		return this.variables.get(variable);
@@ -283,6 +286,7 @@ public class ILPProblem {
 	void addConstraint(final ILPConstraint constraint) {
 		if (!constraint.isEmpty()) {
 			this.constraints.add(constraint);
+			
 		}
 	}
 
@@ -690,7 +694,7 @@ public class ILPProblem {
 		 * @param objectiveOperation The objective: Either minimize or maximize the
 		 *                           objective
 		 */
-		ILPObjective(final ILPLinearExpression linearExpression, final Objective objectiveOperation) {
+		public ILPObjective(final ILPLinearExpression linearExpression, final Objective objectiveOperation) {
 			switch (objectiveOperation) {
 			case maximize:
 			case minimize:
@@ -985,7 +989,7 @@ public class ILPProblem {
 		 * @param variableAllocations Mapping of variables to the found solutions
 		 * @param optimal             Whether the found solution is optimal
 		 */
-		private ILPSolution(final Map<Integer, Integer> variableAllocations, final boolean optimal, final double solutionValue) {
+		public ILPSolution(final Map<Integer, Integer> variableAllocations, final boolean optimal, final double solutionValue) {
 			super();
 			this.variableAllocations = variableAllocations;
 			this.optimal = optimal;
@@ -1092,5 +1096,40 @@ public class ILPProblem {
 				return false;
 			return true;
 		}
+	}
+
+	@Override
+	public Solution newSolution() {
+		throw new UnsupportedOperationException("Undefined for standard ILP!");
+	}
+	
+	@Override
+	public void close() {
+		throw new UnsupportedOperationException("Undefined for standard ILP!");
+	}
+
+	@Override
+	public void evaluate(Solution arg0) {
+		throw new UnsupportedOperationException("Undefined for standard ILP!");
+	}
+
+	@Override
+	public String getName() {
+		return "ILP Problem";
+	}
+
+	@Override
+	public int getNumberOfConstraints() {
+		return getConstraints().size();
+	}
+
+	@Override
+	public int getNumberOfObjectives() {
+		return 1;
+	}
+
+	@Override
+	public int getNumberOfVariables() {
+		return 1;
 	}
 }

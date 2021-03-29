@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompanyLanguage:Company
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:CompanyLanguage="platform:/resource/TestSuiteGT/resources/in/metamodel/CompanyLanguage.ecore"
+    name="ES">
+  <employee
+      name="Tony"/>
+  <employee
+      name="Marius"/>
+  <ceo employee="//@employee.0 //@employee.1"
+      name="Andy"/>
+  <admin ceo="//@ceo.0"
+      name="Ingo"/>
+</CompanyLanguage:Company>

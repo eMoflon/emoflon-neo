@@ -1,0 +1,120 @@
+import "platform:/resource/FamiliesToPersons_Constrained/src/Metamodels.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/Families2Persons.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/MotherToFemale.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/MotherOfExistingFamilyToFemale.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/DaughterOfExistingFamilyToFemale.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/DaughterToFemale.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/FatherOfExistingFamilyToMale.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/FatherToMale.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/SonOfExistingFamilyToMale.msl"
+import "platform:/resource/FamiliesToPersons_Constrained/src/SonToMale.msl"
+
+tripleGrammar FamiliesToPersons_Constrained {
+	source {
+		Families
+	}
+
+	target { 
+		Persons
+	} 
+
+	correspondence {
+		FamilyRegister <-FamiliesToPersons->PersonRegister
+		FamilyMember<-FamilyMemberToPerson->Person
+	}
+	
+	rules {
+		Families2Persons
+		MotherToFemale
+		MotherOfExistingFamilyToFemale
+		FatherToMale
+		FatherOfExistingFamilyToMale
+		DaughterToFemale
+		DaughterOfExistingFamilyToFemale
+		SonToMale
+		SonOfExistingFamilyToMale
+	}
+	
+	constraints {
+		FatherSonMale
+		FatherMotherFamilyMember
+		No2Father
+		No2Mother
+	}
+}
+
+pattern PremisePattern{
+	
+	fr: FamilyRegister{
+		-families->f
+	}
+	
+	f: Family{
+		-father->fm1
+	}
+	
+	fm1: FamilyMember
+}
+
+pattern ConclusionPattern-> PremisePattern[fm2->fm2]{
+	f: Family{
+		-sons-> fm2
+	}
+
+	fm2: FamilyMember
+}
+
+constraint FatherSonMale = if PremisePattern then ConclusionPattern
+
+pattern FamilyMember{
+	fr: FamilyRegister{
+		-families->f
+	}
+	
+	f: Family
+}
+
+pattern MotherFatherFamilyMember-> FamilyMember[f->f]{
+	f: Family{
+		-mother-> fm1		
+		-father-> fm
+	}
+	
+	fm: FamilyMember
+	
+	fm1: FamilyMember
+}
+
+constraint FatherMotherFamilyMember = if FamilyMember then MotherFatherFamilyMember
+
+pattern No2FatherConstraint{
+	fr: FamilyRegister{
+		-families->fm
+	}
+	
+	fm: Family{
+		-father->f1
+		-father->f2
+	}
+	
+	f1: FamilyMember
+	f2: FamilyMember
+}
+
+constraint No2Father = forbid No2FatherConstraint
+
+pattern No2MotherConstraint{
+	fr: FamilyRegister{
+		-families->fm
+	}
+	
+	fm: Family{
+		-mother->m1
+		-mother->m2
+	}
+	
+	m1: FamilyMember
+	m2: FamilyMember
+}
+
+constraint No2Mother = forbid No2MotherConstraint

@@ -1,0 +1,563 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"
+
+model javaGeometry {
+	
+	parallelogramJ : Clazz {
+		.name : "Parallelogram"
+		-subTypes-> diamondJ
+		-fields-> pAJ
+		-fields-> pBJ
+	}
+	
+	pAJ : Field { 
+		.name : "Side A"
+	}
+	
+	pBJ : Field { 
+		.name : "Side B"
+	}
+	
+	rectangleJ : Clazz {
+		.name : "Rectangle"
+		-methods-> rAreaJ
+		-fields-> rAJ
+		-fields-> rBJ
+	}
+	
+	rAJ : Field { 
+		.name : "Side A"
+	}
+	
+	rBJ : Field { 
+		.name : "Side B"
+	}
+	
+	rAreaJ : Method { 
+		.name : "Area"
+	}
+	
+	diamondJ : Clazz {
+		.name : "Diamond"
+		-methods-> dExtentJ
+	}
+	 
+	dExtentJ : Method { 
+		.name : "Extent"
+	}
+	
+	squareJ : Clazz {
+		.name : "Square"
+		-methods-> sAreaJ
+		-methods-> sExtentJ
+		-fields-> sAJ
+	}
+	
+	sAreaJ : Method { 
+		.name : "Area"
+	}
+	
+	sAJ : Field {
+		.name : "Side A"
+	}
+	
+	sExtentJ : Method {
+		.name : "Extent"
+	}
+}
+
+model docGeometry {
+	
+	parallelogramD : Doc {
+		.name : "Parallelogram"
+		-hrefs-> diamondD
+		-entries-> pAD
+		-entries-> pBD
+	}
+	
+	pAD : Entry { 
+		.name : "Side A"
+	}
+	
+	pBD : Entry { 
+		.name : "Side B"
+	}
+	
+	rectangleD : Doc {
+		.name : "Rectangle"
+		-entries-> rAreaD
+		-entries-> rAD
+		-entries-> rBD
+	}
+	
+	rAD : Entry { 
+		.name : "Side A"
+	}
+	
+	rBD : Entry { 
+		.name : "Side A"
+	}
+	
+	rAreaD : Entry { 
+		.name : "Area"
+	}
+	
+	diamondD : Doc {
+		.name : "Diamond"
+		-entries-> dExtentD
+	}
+	 
+	dExtentD : Entry { 
+		.name : "Extent"
+	}
+	
+	squareD : Doc {
+		.name : "Square"
+		-entries-> sAreaD
+		-entries-> sAD
+		-entries-> sExtentD
+	}
+	
+	sAreaD : Entry { 
+		.name : "Area"
+	}
+	
+	sAD : Entry {
+		.name : "Side A"
+	}
+	
+	sExtentD : Method {
+		.name : "Extent"
+	}
+}
+
+rule createCorrs {
+	
+	//JAva
+	parallelogramJ : Clazz {
+		.name : "Parallelogram"
+		++-corr->parallelogramD {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	pAJ : Field { 
+		.name : "Side A"
+		++-corr->pAD {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	pBJ : Field { 
+		.name : "Side B"
+		++-corr->pBD {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	rectangleJ : Clazz {
+		.name : "Rectangle"
+		++-corr->rectangleD {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	rAJ : Field { 
+		.name : "Side A"
+		++-corr->rAD {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	rBJ : Field { 
+		.name : "Side B"
+		++-corr->rBD {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	rAreaJ : Method { 
+		.name : "Area"
+		++-corr->rAreaD {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	diamondJ : Clazz {
+		.name : "Diamond"
+		++-corr->diamondD {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	 
+	dExtentJ : Method { 
+		.name : "Extent"
+		++-corr->dExtentD {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	squareJ : Clazz {
+		.name : "Square"
+		++-corr->squareD {
+			._type_ := "ClazzToDoc"
+		}
+	}
+	
+	sAreaJ : Method { 
+		.name : "Area"
+		++-corr->sAreaD {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	sAJ : Field {
+		.name : "Side A"
+		++-corr->sAD {
+			._type_ := "FieldToEntry"
+		}
+	}
+	
+	sExtentJ : Method {
+		.name : "Extent"
+		++-corr->sExtentD {
+			._type_ := "MethodToEntry"
+		}
+	}
+	
+	// Doc
+	
+	parallelogramD : Doc {
+		.name : "Parallelogram"
+	}
+	
+	pAD : Entry { 
+		.name : "Side A"
+	}
+	
+	pBD : Entry { 
+		.name : "Side B"
+	}
+	
+	rectangleD : Doc {
+		.name : "Rectangle"
+	}
+	
+	rAD : Entry { 
+		.name : "Side A"
+	}
+	
+	rBD : Entry { 
+		.name : "Side A"
+	}
+	
+	rAreaD : Entry { 
+		.name : "Area"
+	}
+	
+	diamondD : Doc {
+		.name : "Diamond"
+	}
+	 
+	dExtentD : Entry { 
+		.name : "Extent"
+	}
+	
+	squareD : Doc {
+		.name : "Square"
+	}
+	
+	sAreaD : Entry { 
+		.name : "Area"
+	}
+	
+	sAD : Entry {
+		.name : "Side A"
+	}
+	
+	sExtentD : Method {
+		.name : "Extent"
+	}
+}
+
+// 1
+model javaGeometry1 -> javaGeometry {
+	squareJ : Clazz {
+		-fields-> sAJ {
+			~_de_ : true
+		}
+	}
+	
+	sAJ : Field {
+		._de_ : true
+	}
+	
+	parallelogramJ : Clazz {
+		-subTypes-> squareJ {
+			~_cr_ : true
+		}
+	}
+}
+
+model docGeometry1 -> docGeometry {
+	squareD : Doc {
+		-entries-> sAD {
+			~_de_ : true
+		}
+	}
+	
+	sAD : Entry {
+		._de_ : true
+	}
+	
+	parallelogramD : Doc {
+		-hrefs-> squareD {
+			~_cr_ : true
+		}
+	}
+}
+
+// 2
+model javaGeometry2 -> javaGeometry {
+	sAJ : Field {
+		._de_ : true
+	}
+	
+	sExtentJ : Method {
+		._de_ : true
+	}
+	
+	diamondJ : Clazz {
+		-subTypes-> squareJ {
+			~_cr_ : true
+		}
+	}
+	
+	squareJ : Clazz {
+		-fields->sAJ {
+			~_de_ : true
+		}
+		-methods->sExtentJ {
+			~_de_ : true
+		}
+	}
+}
+
+model docGeometry2 -> docGeometry {
+	sAD : Entry {
+		._de_ : true
+	}
+	
+	sExtentD : Method {
+		._de_ : true
+	}
+	
+	diamondD : Doc {
+		-hrefs-> squareD {
+			~_cr_ : true
+		}
+	}
+	
+	squareD : Doc {
+		-entries->sAD {
+			~_de_ : true
+		}
+		-entries->sExtentD {
+			~_de_ : true
+		}
+	}
+}
+
+// 3
+model javaGeometry3 -> javaGeometry {
+	diamondJ : Clazz {
+		-fields-> dHJ{
+			~_cr_ : true
+		}
+		-methods-> dAreaJ{
+			~_cr_ : true
+		}
+	}
+	
+	dHJ : Field {
+		.name : "Height"
+		._cr_ : true
+	}
+	
+	dAreaJ : Method { 
+		.name : "Area"
+		._cr_ : true
+	}
+}
+
+model docGeometry3 -> docGeometry {
+	diamondD : Doc {
+		-entries-> dHD {
+			~_cr_ : true
+		}
+		-entries-> dAreaD{
+			~_cr_ : true
+		}
+	}
+	
+	dHD : Entry {
+		.name : "Height"
+		._cr_ : true
+	}
+	
+	dAreaD : Entry { 
+		.name : "Area"
+		._cr_ : true
+	}
+}
+
+// 4
+model javaGeometry4 -> javaGeometry {
+	parallelogramJ : Clazz {
+		-subTypes->rectangleJ {
+			~_cr_ : true
+		}
+		-fields-> pHJ {
+			~_cr_ : true
+		}
+	}
+	
+	pHJ : Field {
+		.name : "Height"
+		._cr_ : true
+	}
+	
+	rectangleJ : Clazz {
+		-fields->rAJ {
+			~_de_ : true
+		}
+		-fields->rBJ {
+			~_de_ : true
+		}
+	}
+	
+	rAJ : Field {
+		._de_ : true
+	}
+	
+	rBJ : Field {
+		._de_ : true
+	}
+}
+
+model docGeometry4 -> docGeometry {
+	parallelogramD : Doc {
+		-hrefs->rectangleD {
+			~_cr_ : true
+		}
+		-entries-> pHD {
+			~_cr_ : true
+		}
+	}
+	
+	pHD : Entry {
+		.name : "Height"
+		._cr_ : true
+	}
+	
+	rectangleD : Doc {
+		-entries->rAD {
+			~_de_ : true
+		}
+		-entries->rBD {
+			~_de_ : true
+		}
+	}
+	
+	rAD : Entry {
+		._de_ : true
+	}
+	
+	rBD : Entry {
+		._de_ : true
+	}
+}
+
+// 5
+model javaGeometry5 -> javaGeometry {
+	parallelogramJ : Clazz {
+		._de_ : true
+		-fields->pAJ {
+			~_de_ : true
+		}
+		-fields->pBJ {
+			~_de_ : true
+		}
+		-subTypes->diamondJ {
+			~_de_ : true
+		}
+	}
+	
+	pAJ : Field {
+		._de_ : true
+	}
+	
+	pBJ : Field {
+		._de_ : true
+	}
+	
+	diamondJ : Clazz {
+		-fields->dAJ {
+			~_cr_ : true
+		}
+	}
+	
+	dAJ : Field {
+		.name : "Side A"
+		._cr_ : true
+	}
+}
+
+model docGeometry5 -> docGeometry {
+	parallelogramD : Doc {
+		._de_ : true
+		-entries->pAD {
+			~_de_ : true
+		}
+		-entries->pBD {
+			~_de_ : true
+		}
+		-hrefs->diamondD {
+			~_de_ : true
+		}
+	}
+	
+	pAD : Entry {
+		._de_ : true
+	}
+	
+	pBD : Entry {
+		._de_ : true
+	}
+	
+	diamondD : Doc {
+		-entries->dAD {
+			~_cr_ : true
+		}
+	}
+	
+	dAD : Entry {
+		.name : "Side A"
+		._cr_ : true
+	}
+}
+
+// 1,3
+model javaGeometry13 -> javaGeometry1,javaGeometry3
+
+// 1,4
+model javaGeometry14 -> javaGeometry1,javaGeometry4
+
+// 2,4
+model javaGeometry24 -> javaGeometry2,javaGeometry4
+
+// 2,5
+model javaGeometry25 -> javaGeometry2,javaGeometry5
+
+// 3,5
+model javaGeometry35 -> javaGeometry3,javaGeometry5

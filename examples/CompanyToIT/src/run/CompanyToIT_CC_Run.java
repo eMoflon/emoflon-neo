@@ -53,6 +53,7 @@ public class CompanyToIT_CC_Run {
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_CompanyToIT(builder);
 		var genAPI = new API_CompanyToIT_GEN(builder);
 		var ccAPI = new API_CompanyToIT_CC(builder);
 		var genRules = genAPI.getAllRulesForCompanyToIT_GEN();
@@ -64,7 +65,7 @@ public class CompanyToIT_CC_Run {
 				builder, //
 				genRules, //
 				ccAPI.getAllRulesForCompanyToIT_CC(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfCompanyToIT(), //
 				srcModel, //
 				trgModel//
 		);
@@ -89,13 +90,13 @@ public class CompanyToIT_CC_Run {
 		return corrCreation;
 	}
 
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		var companyAPI = new API_Company(builder);
-		var itAPI = new API_IT(builder);
-		return List.of(//
-				companyAPI.getConstraint_CEOOfMultipleCompanies(), //
-				companyAPI.getConstraint_MultipleAdmins(), //
-				itAPI.getConstraint_NoDifferentITThanRouter()//
-		);
-	}
+//	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
+//		var companyAPI = new API_Company(builder);
+//		var itAPI = new API_IT(builder);
+//		return List.of(//
+//				companyAPI.getConstraint_CEOOfMultipleCompanies(), //
+//				companyAPI.getConstraint_MultipleAdmins(), //
+//				itAPI.getConstraint_NoDifferentITThanRouter()//
+//		);
+//	}
 }

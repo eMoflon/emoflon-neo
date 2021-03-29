@@ -47,6 +47,7 @@ class CC extends ILPOperation {
 	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
+			var api = new API_«packageName»(builder);
 			var genAPI = new API_«tggName»_GEN(builder);
 			var ccAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
@@ -56,7 +57,7 @@ class CC extends ILPOperation {
 					builder, //
 					genRules, //
 					ccAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
-					getNegativeConstraints(builder), //
+					api.getConstraintsOf«tggName.toFirstUpper»(), //
 					srcModelName, //
 					trgModelName//
 			);
@@ -77,14 +78,10 @@ class CC extends ILPOperation {
 	
 	override additionalMethods() {
 		'''
-
+		
 			public CorrCreationOperationalStrategy runCorrCreation() throws Exception {
 				run();
 				return corrCreation;
-			}
-
-			protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-				return Collections.emptyList();
 			}
 		'''
 	}

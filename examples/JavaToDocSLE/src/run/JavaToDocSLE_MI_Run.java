@@ -29,7 +29,7 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class JavaToDocSLE_MI_Run {
 	private static final Logger logger = Logger.getLogger(JavaToDocSLE_MI_Run.class);
-	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	private static final SupportedILPSolver solver = SupportedILPSolver.MOEA;
 
 	private String srcModel = SRC_MODEL_NAME;
 	private String trgModel = TRG_MODEL_NAME;

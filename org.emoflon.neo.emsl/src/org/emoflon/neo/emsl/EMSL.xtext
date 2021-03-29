@@ -229,6 +229,8 @@ Rule:
 GraphGrammar:
 	(abstract?='abstract')? 'grammar' name=QualifiedName '{'
 	rules+=[Rule|QualifiedName]+
+	
+	constraints+=[Constraint|QualifiedName]*
 	'}';
 
 /*-------------------------------------------------*/
@@ -268,6 +270,7 @@ TripleGrammar:
 	'target' '{' trgMetamodels+=[Metamodel|QualifiedName]* '}'
 	'correspondence' '{' correspondences+=CorrespondenceType* '}'
 	('rules' '{' rules+=[TripleRule|QualifiedName]* '}')?
+	('constraints' '{' constraints+=[Constraint|QualifiedName]* '}')?
 	'}'
 ;
 

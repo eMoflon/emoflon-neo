@@ -3,18 +3,15 @@ package run;
 import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
 import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.neo.api.companytoit.API_Common;
+import org.emoflon.neo.api.companytoit.API_CompanyToIT;
 import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_CO;
 import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_GEN;
-import org.emoflon.neo.api.companytoit.metamodels.API_Company;
-import org.emoflon.neo.api.companytoit.metamodels.API_IT;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.NoOpReprocessor;
@@ -51,13 +48,14 @@ public class CompanyToIT_CO_Run {
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
+		var api = new API_CompanyToIT(builder);
 		var genAPI = new API_CompanyToIT_GEN(builder);
 		var coAPI = new API_CompanyToIT_CO(builder);
 		checkOnly = new CheckOnlyOperationalStrategy(//
 				solver, //
 				genAPI.getAllRulesForCompanyToIT_GEN(), //
 				coAPI.getAllRulesForCompanyToIT_CO(), //
-				getNegativeConstraints(builder), //
+				api.getConstraintsOfCompanyToIT(), //
 				builder, //
 				srcModel, //
 				trgModel//
@@ -83,13 +81,13 @@ public class CompanyToIT_CO_Run {
 		return checkOnly;
 	}
 
-	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-		var companyAPI = new API_Company(builder);
-		var itAPI = new API_IT(builder);
-		return List.of(//
-				companyAPI.getConstraint_CEOOfMultipleCompanies(), //
-				companyAPI.getConstraint_MultipleAdmins(), //
-				itAPI.getConstraint_NoDifferentITThanRouter()//
-		);
-	}
+//	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
+//		var companyAPI = new API_Company(builder);
+//		var itAPI = new API_IT(builder);
+//		return List.of(//
+//				companyAPI.getConstraint_CEOOfMultipleCompanies(), //
+//				companyAPI.getConstraint_MultipleAdmins(), //
+//				itAPI.getConstraint_NoDifferentITThanRouter()//
+//		);
+//	}
 }

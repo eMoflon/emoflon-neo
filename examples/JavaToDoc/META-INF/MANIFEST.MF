@@ -32,6 +32,8 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.apache.commons.lang,
  org.emoflon.neo.neocore
 Export-Package: org.emoflon.neo.api.javatodoc,
+ org.emoflon.neo.api.javatodoc.metamodels,
+ org.emoflon.neo.api.javatodoc.models,
  org.emoflon.neo.api.javatodoc.run,
  org.emoflon.neo.api.javatodoc.tgg,
  run

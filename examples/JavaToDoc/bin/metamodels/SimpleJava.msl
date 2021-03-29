@@ -1,0 +1,12 @@
+metamodel SimpleJava {
+	Package {
+		.name : EString
+		<+>-clazzes(0..*)-> Clazz
+		<+>-subPackages(0..*)-> Package
+	}
+	
+	Clazz {
+		.name : EString
+	}
+}
+

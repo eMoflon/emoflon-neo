@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ASCII"?>
+<org.emoflon.delta:DeltaContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ExtDocModel="platform:/resource/ExtDocModel/model/ExtDocModel.ecore" xmlns:org.emoflon.delta="platform:/plugin/org.emoflon.delta/model/Delta.ecore">
+  <deltas>
+    <attributeDeltas newValue="ACED000574001644454C4554455F50524553455256455F547970655F30">
+      <attribute href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//NamedElement/name"/>
+      <object href="src.xmi#//@rootPackages.0/@types.0"/>
+    </attributeDeltas>
+    <attributeDeltas newValue="ACED000574001644454C4554455F50524553455256455F547970655F30">
+      <attribute href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//NamedElement/name"/>
+      <object href="trg.xmi#//@folders.0/@docs.0"/>
+    </attributeDeltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtDocModel:Entry" name="Method_0_new_method" type="METHOD"/>
+      <deletedObjects href="src.xmi#//@rootPackages.0/@types.1/@methods.0/@params.0"/>
+      <deletedObjects href="src.xmi#//@rootPackages.0/@types.1/@methods.0/@docs.0"/>
+      <deletedObjects href="src.xmi#//@rootPackages.0/@types.1/@methods.0"/>
+      <deletedObjects href="src.xmi#//@rootPackages.0/@types.1/@fields.0"/>
+      <deletedObjects href="src.xmi#//@rootPackages.0/@types.1"/>
+      <createdLinks trg="//@deltas.0/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtDocModel/model/ExtDocModel.ecore#//Doc/entries"/>
+        <src href="trg.xmi#//@folders.0/@docs.1"/>
+      </createdLinks>
+      <deletedLinks>
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Method/params"/>
+        <src href="src.xmi#//@rootPackages.0/@types.1/@methods.0"/>
+        <trg href="src.xmi#//@rootPackages.0/@types.1/@methods.0/@params.0"/>
+      </deletedLinks>
+      <deletedLinks>
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Method/docs"/>
+        <src href="src.xmi#//@rootPackages.0/@types.1/@methods.0"/>
+        <trg href="src.xmi#//@rootPackages.0/@types.1/@methods.0/@docs.0"/>
+      </deletedLinks>
+      <deletedLinks>
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Type/methods"/>
+        <src href="src.xmi#//@rootPackages.0/@types.1"/>
+        <trg href="src.xmi#//@rootPackages.0/@types.1/@methods.0"/>
+      </deletedLinks>
+      <deletedLinks>
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Type/fields"/>
+        <src href="src.xmi#//@rootPackages.0/@types.1"/>
+        <trg href="src.xmi#//@rootPackages.0/@types.1/@fields.0"/>
+      </deletedLinks>
+      <deletedLinks>
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/types"/>
+        <src href="src.xmi#//@rootPackages.0"/>
+        <trg href="src.xmi#//@rootPackages.0/@types.1"/>
+      </deletedLinks>
+    </structuralDelta>
+  </deltas>
+</org.emoflon.delta:DeltaContainer>

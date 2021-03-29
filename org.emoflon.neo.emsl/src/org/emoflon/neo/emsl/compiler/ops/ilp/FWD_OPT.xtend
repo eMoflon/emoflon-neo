@@ -43,6 +43,7 @@ class FWD_OPT extends ILPOperation {
 	override createGeneratorMethodBody(String tggName, String packageName) {
 		val fullOpName = '''«tggName»«nameExtension»'''
 		'''
+			var api = new API_«packageName»(builder);
 			var genAPI = new API_«tggName»_GEN(builder);
 			var fwd_optAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
@@ -52,7 +53,7 @@ class FWD_OPT extends ILPOperation {
 					builder, //
 					genRules, //
 					fwd_optAPI.getAllRulesFor«fullOpName.toFirstUpper»(), //
-					getNegativeConstraints(builder), //
+					api.getConstraintsOf«tggName.toFirstUpper»(), //
 					srcModelName, //
 					trgModelName//
 			);
@@ -77,10 +78,6 @@ class FWD_OPT extends ILPOperation {
 			public ForwardTransformationOperationalStrategy runForwardTransformation() throws Exception {
 				run();
 				return forwardTransformation;
-			}
-
-			protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
-				return Collections.emptyList();
 			}
 		'''
 	}

@@ -1,0 +1,126 @@
+import "platform:/resource/FacebookToInstagramFASE/src/Facebook.msl"
+import "platform:/resource/FacebookToInstagramFASE/src/Instagram.msl"
+
+//Consistent Source - Constraint and rules
+model ConsistentSource {
+	fb: FacebookLanguage.Network{
+		.description : "Network"
+		-friendships-> fr
+		-users-> f1
+		-users->f2
+	}
+	
+	fr: Friendship{
+		-friends-> f1
+		-friends-> f2
+	}
+	
+	f1: FacebookLanguage.User{
+		.name : "Monica"
+	}
+	
+	f2: FacebookLanguage.User{
+		.name : "Rachel"
+    }
+}
+
+//Consistent Target - Constraint and rules
+model ConsistentTarget -> InConsistentTarget2{
+   	in : InstagramLanguage.Network {
+		 -users-> i1
+		 -users-> i2
+	}
+	
+	i1 : InstagramLanguage.User{
+		.name : "Monica"
+	}
+	
+	i2 : InstagramLanguage.User{
+		.name : "Rachel"
+		-follows-> i1
+	}
+}
+
+//Consistent triple - Rules
+rule ConsistentTriple{
+	fb: FacebookLanguage.Network{
+		.description : "Network"
+			++ -corr-> in{
+			._type_ := "NetworkToNetwork"
+		}
+	}
+	
+	in : InstagramLanguage.Network {
+		.description : "Network"
+	}
+	
+	f1: FacebookLanguage.User{
+		.name : "Monica"
+		++ -corr->i1{
+			._type_ := "FbUserToInUser"
+		}
+	}
+	
+	f2: FacebookLanguage.User{
+		.name : "Rachel"
+		++ -corr->i2{
+			._type_ := "FbUserToInUser"
+		}
+	}
+	
+	i1 : InstagramLanguage.User{
+		.name : "Monica"
+	}
+	
+	i2 : InstagramLanguage.User{
+		.name : "Rachel"
+	}
+}
+
+//Inconsistent Source - Violating Positive Constraint
+model InConsistentSource2 -> ConsistentSource
+
+model InConsistentTarget2{
+	in : InstagramLanguage.Network {
+		.description : "Network"
+		 -users-> i1
+		 -users-> i2
+	}
+	
+	i1 : InstagramLanguage.User{
+		.name : "Monica"
+		-follows-> i2
+	}
+	
+	i2 : InstagramLanguage.User{
+		.name : "Rachel"
+    }
+}
+
+rule InConsistentTriple2 -> ConsistentTriple
+
+//Inconsistent source - Violating Negative constraint
+model InConsistentSource3 -> ConsistentSource{
+	fb: FacebookLanguage.Network{
+		-friendships->fr2
+		-users-> f1
+		-users->f2
+	}
+	
+	fr2: Friendship{
+		-friends-> f1
+		-friends-> f2
+	}
+	
+	f1: FacebookLanguage.User{
+		.name : "Monica"
+	}
+	
+	f2: FacebookLanguage.User{
+		.name : "Rachel"
+    }
+}
+
+model InConsistentTarget3 -> ConsistentTarget
+
+rule InConsistentTriple3 -> ConsistentTriple

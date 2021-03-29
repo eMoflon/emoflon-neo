@@ -1,14 +1,14 @@
 package org.emoflon.neo.emsl.compiler.ops.ilp
 
+import java.util.Collection
+import java.util.Collections
+import java.util.Map
+import org.emoflon.neo.emsl.compiler.Operation
+import org.emoflon.neo.emsl.compiler.ParameterData
 import org.emoflon.neo.emsl.eMSL.Action
 import org.emoflon.neo.emsl.eMSL.ConditionOperator
-import java.util.Map
 import org.emoflon.neo.emsl.eMSL.Parameter
-import java.util.Collection
 import org.emoflon.neo.emsl.eMSL.TripleRuleNAC
-import java.util.Collections
-import org.emoflon.neo.emsl.compiler.ParameterData
-import org.emoflon.neo.emsl.compiler.Operation
 
 abstract class ILPOperation implements Operation {
 
@@ -37,7 +37,10 @@ abstract class ILPOperation implements Operation {
 	}
 	
 	override String additionalFields(String tggName) {
-		return additionalFields(tggName, "Sat4J")
+		if (isExact)
+			return additionalFields(tggName, "Gurobi")
+		else
+			return additionalFields(tggName, "MOEA")
 	}
 	
 	def String additionalFields(String tggName, String solver)
@@ -57,6 +60,10 @@ abstract class ILPOperation implements Operation {
 		'''
 	}
 	
+	def boolean isExact() {
+		true
+	}
+
 	override additionalImports(String tggName, String packagePath) {
 		'''
 			import static «packagePath».run.«tggName»_GEN_Run.SRC_MODEL_NAME;

@@ -1,0 +1,1208 @@
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"		
+import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"		
+		
+model moflonDoc0 {		
+d0:Doc {		
+	.name : "d0"	
+		
+		
+		
+		
+		
+		
+		
+	-entries-> e24 {	
+		~_cr_ : true
+	}	
+	-entries-> e42 {	
+		
+	}	
+	-entries-> e35 {	
+		
+	}	
+}		
+		
+d1:Doc {		
+	.name : "d1"	
+	._cr_ : true	
+	-hrefs-> d2 {	
+		~_cr_ : true
+	}	
+	-entries-> e23 {	
+		
+	}	
+		
+		
+		
+	-entries-> e33 {	
+		
+	}	
+		
+		
+		
+}		
+		
+d2:Doc {		
+	.name : "d2"	
+		
+	-hrefs-> d3 {	
+		
+	}	
+		
+		
+		
+	-entries-> e26 {	
+		
+	}	
+		
+		
+		
+	-entries-> e30 {	
+		
+	}	
+}		
+		
+d3:Doc {		
+	.name : "d3"	
+	._de_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-entries-> e36 {	
+		
+	}	
+		
+		
+		
+}		
+		
+d4:Doc {		
+	.name : "d4"	
+	._de_ : true	
+	-hrefs-> d5 {	
+		~_cr_ : true
+	}	
+	-entries-> e15 {	
+		
+	}	
+	-entries-> e25 {	
+		~_cr_ : true
+	}	
+		
+		
+		
+	-entries-> e31 {	
+		
+	}	
+}		
+		
+d5:Doc {		
+	.name : "d5"	
+		
+		
+		
+		
+	-entries-> e24 {	
+		~_cr_ : true
+	}	
+	-entries-> e28 {	
+		
+	}	
+	-entries-> e42 {	
+		~_cr_ : true
+	}	
+	-entries-> e47 {	
+		
+	}	
+}		
+		
+d6:Doc {		
+	.name : "d6"	
+	._de_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-entries-> e30 {	
+		
+	}	
+}		
+		
+d7:Doc {		
+	.name : "d7"	
+	._cr_ : true	
+	-hrefs-> d8 {	
+		
+	}	
+		
+		
+		
+	-entries-> e22 {	
+		
+	}	
+	-entries-> e36 {	
+		
+	}	
+		
+		
+		
+}		
+		
+d8:Doc {		
+	.name : "d8"	
+		
+	-hrefs-> d9 {	
+		~_de_ : true
+	}	
+	-entries-> e15 {	
+		~_cr_ : true
+	}	
+	-entries-> e28 {	
+		
+	}	
+		
+		
+		
+	-entries-> e34 {	
+		
+	}	
+}		
+		
+d9:Doc {		
+	.name : "d9"	
+		
+		
+		
+		
+		
+		
+		
+	-entries-> e23 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+e10:Entry {		
+	.name : "m10"	
+		
+		
+		
+		
+	-gEntries-> ge58 {	
+		~_de_ : true
+	}	
+	-gEntries-> ge84 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+e11:Entry {		
+	.name : "m11"	
+	._cr_ : true	
+	-gEntries-> ge64 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge82 {	
+		
+	}	
+	-gEntries-> ge57 {	
+		
+	}	
+	-gEntries-> ge54 {	
+		~_cr_ : true
+	}	
+}		
+		
+e12:Entry {		
+	.name : "m12"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-gEntries-> ge77 {	
+		~_de_ : true
+	}	
+	-gEntries-> ge76 {	
+		
+	}	
+}		
+		
+e13:Entry {		
+	.name : "m13"	
+	._de_ : true	
+		
+		
+		
+	-gEntries-> ge53 {	
+		~_cr_ : true
+	}	
+	-gEntries-> ge86 {	
+		
+	}	
+	-gEntries-> ge86 {	
+		~_cr_ : true
+	}	
+	-gEntries-> ge69 {	
+		
+	}	
+}		
+		
+e14:Entry {		
+	.name : "m14"	
+	._cr_ : true	
+		
+		
+		
+		
+		
+		
+	-gEntries-> ge92 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge85 {	
+		
+	}	
+}		
+		
+e15:Entry {		
+	.name : "m15"	
+		
+	-gEntries-> ge68 {	
+		
+	}	
+	-gEntries-> ge70 {	
+		
+	}	
+	-gEntries-> ge58 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge88 {	
+		
+	}	
+}		
+		
+e16:Entry {		
+	.name : "m16"	
+		
+	-gEntries-> ge70 {	
+		
+	}	
+	-gEntries-> ge65 {	
+		~_de_ : true
+	}	
+		
+		
+		
+		
+		
+		
+	-gEntries-> ge58 {	
+		
+	}	
+}		
+		
+e17:Entry {		
+	.name : "m17"	
+		
+		
+		
+		
+	-gEntries-> ge95 {	
+		~_cr_ : true
+	}	
+	-gEntries-> ge81 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge72 {	
+		
+	}	
+}		
+		
+e18:Entry {		
+	.name : "m18"	
+		
+	-gEntries-> ge64 {	
+		
+	}	
+	-gEntries-> ge76 {	
+		
+	}	
+	-gEntries-> ge59 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge95 {	
+		
+	}	
+}		
+		
+e19:Entry {		
+	.name : "m19"	
+		
+	-gEntries-> ge75 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+}		
+		
+e20:Entry {		
+	.name : "m20"	
+		
+		
+		
+		
+	-gEntries-> ge85 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+	-gEntries-> ge93 {	
+		~_de_ : true
+	}	
+}		
+		
+e21:Entry {		
+	.name : "m21"	
+		
+	-gEntries-> ge50 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge99 {	
+		~_cr_ : true
+	}	
+	-gEntries-> ge68 {	
+		
+	}	
+	-gEntries-> ge97 {	
+		
+	}	
+}		
+		
+e22:Entry {		
+	.name : "m22"	
+	._cr_ : true	
+	-gEntries-> ge90 {	
+		
+	}	
+	-gEntries-> ge73 {	
+		
+	}	
+	-gEntries-> ge76 {	
+		~_de_ : true
+	}	
+	-gEntries-> ge68 {	
+		
+	}	
+		
+		
+		
+}		
+		
+e23:Entry {		
+	.name : "m23"	
+		
+	-gEntries-> ge55 {	
+		
+	}	
+	-gEntries-> ge84 {	
+		
+	}	
+	-gEntries-> ge56 {	
+		~_de_ : true
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+e24:Entry {		
+	.name : "m24"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-gEntries-> ge77 {	
+		~_de_ : true
+	}	
+		
+		
+		
+}		
+		
+e25:Entry {		
+	.name : "m25"	
+	._de_ : true	
+	-gEntries-> ge52 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge79 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+e26:Entry {		
+	.name : "m26"	
+		
+	-gEntries-> ge91 {	
+		
+	}	
+	-gEntries-> ge82 {	
+		
+	}	
+	-gEntries-> ge82 {	
+		
+	}	
+		
+		
+		
+		
+		
+		
+}		
+		
+e27:Entry {		
+	.name : "m27"	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	-gEntries-> ge84 {	
+		
+	}	
+}		
+		
+e28:Entry {		
+	.name : "m28"	
+		
+		
+		
+		
+	-gEntries-> ge55 {	
+		~_de_ : true
+	}	
+	-gEntries-> ge95 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge91 {	
+		~_cr_ : true
+	}	
+}		
+		
+e29:Entry {		
+	.name : "m29"	
+	._de_ : true	
+		
+		
+		
+	-gEntries-> ge88 {	
+		
+	}	
+	-gEntries-> ge64 {	
+		
+	}	
+		
+		
+		
+	-gEntries-> ge78 {	
+		~_cr_ : true
+	}	
+}		
+		
+e30:Entry {		
+	.name : "f30"	
+		
+}		
+		
+e31:Entry {		
+	.name : "f31"	
+		
+}		
+		
+e32:Entry {		
+	.name : "f32"	
+		
+}		
+		
+e33:Entry {		
+	.name : "f33"	
+		
+}		
+		
+e34:Entry {		
+	.name : "f34"	
+	._de_ : true	
+}		
+		
+e35:Entry {		
+	.name : "f35"	
+	._cr_ : true	
+}		
+		
+e36:Entry {		
+	.name : "f36"	
+		
+}		
+		
+e37:Entry {		
+	.name : "f37"	
+	._cr_ : true	
+}		
+		
+e38:Entry {		
+	.name : "f38"	
+		
+}		
+		
+e39:Entry {		
+	.name : "f39"	
+	._cr_ : true	
+}		
+		
+e40:Entry {		
+	.name : "f40"	
+	._cr_ : true	
+}		
+		
+e41:Entry {		
+	.name : "f41"	
+	._cr_ : true	
+}		
+		
+e42:Entry {		
+	.name : "f42"	
+	._de_ : true	
+}		
+		
+e43:Entry {		
+	.name : "f43"	
+	._de_ : true	
+}		
+		
+e44:Entry {		
+	.name : "f44"	
+	._cr_ : true	
+}		
+		
+e45:Entry {		
+	.name : "f45"	
+	._de_ : true	
+}		
+		
+e46:Entry {		
+	.name : "f46"	
+		
+}		
+		
+e47:Entry {		
+	.name : "f47"	
+		
+}		
+		
+e48:Entry {		
+	.name : "f48"	
+		
+}		
+		
+e49:Entry {		
+	.name : "f49"	
+		
+}		
+		
+ge50:GlossaryEntry {		
+	.name : "ge50"	
+		
+}		
+		
+ge51:GlossaryEntry {		
+	.name : "ge51"	
+		
+}		
+		
+ge52:GlossaryEntry {		
+	.name : "ge52"	
+		
+}		
+		
+ge53:GlossaryEntry {		
+	.name : "ge53"	
+	._de_ : true	
+}		
+		
+ge54:GlossaryEntry {		
+	.name : "ge54"	
+	._de_ : true	
+}		
+		
+ge55:GlossaryEntry {		
+	.name : "ge55"	
+		
+}		
+		
+ge56:GlossaryEntry {		
+	.name : "ge56"	
+	._de_ : true	
+}		
+		
+ge57:GlossaryEntry {		
+	.name : "ge57"	
+	._de_ : true	
+}		
+		
+ge58:GlossaryEntry {		
+	.name : "ge58"	
+		
+}		
+		
+ge59:GlossaryEntry {		
+	.name : "ge59"	
+		
+}		
+		
+ge60:GlossaryEntry {		
+	.name : "ge60"	
+		
+}		
+		
+ge61:GlossaryEntry {		
+	.name : "ge61"	
+		
+}		
+		
+ge62:GlossaryEntry {		
+	.name : "ge62"	
+		
+}		
+		
+ge63:GlossaryEntry {		
+	.name : "ge63"	
+		
+}		
+		
+ge64:GlossaryEntry {		
+	.name : "ge64"	
+		
+}		
+		
+ge65:GlossaryEntry {		
+	.name : "ge65"	
+		
+}		
+		
+ge66:GlossaryEntry {		
+	.name : "ge66"	
+	._de_ : true	
+}		
+		
+ge67:GlossaryEntry {		
+	.name : "ge67"	
+		
+}		
+		
+ge68:GlossaryEntry {		
+	.name : "ge68"	
+		
+}		
+		
+ge69:GlossaryEntry {		
+	.name : "ge69"	
+		
+}		
+		
+ge70:GlossaryEntry {		
+	.name : "ge70"	
+		
+}		
+		
+ge71:GlossaryEntry {		
+	.name : "ge71"	
+		
+}		
+		
+ge72:GlossaryEntry {		
+	.name : "ge72"	
+		
+}		
+		
+ge73:GlossaryEntry {		
+	.name : "ge73"	
+		
+}		
+		
+ge74:GlossaryEntry {		
+	.name : "ge74"	
+		
+}		
+		
+ge75:GlossaryEntry {		
+	.name : "ge75"	
+		
+}		
+		
+ge76:GlossaryEntry {		
+	.name : "ge76"	
+		
+}		
+		
+ge77:GlossaryEntry {		
+	.name : "ge77"	
+		
+}		
+		
+ge78:GlossaryEntry {		
+	.name : "ge78"	
+	._de_ : true	
+}		
+		
+ge79:GlossaryEntry {		
+	.name : "ge79"	
+		
+}		
+		
+ge80:GlossaryEntry {		
+	.name : "ge80"	
+		
+}		
+		
+ge81:GlossaryEntry {		
+	.name : "ge81"	
+		
+}		
+		
+ge82:GlossaryEntry {		
+	.name : "ge82"	
+		
+}		
+		
+ge83:GlossaryEntry {		
+	.name : "ge83"	
+		
+}		
+		
+ge84:GlossaryEntry {		
+	.name : "ge84"	
+		
+}		
+		
+ge85:GlossaryEntry {		
+	.name : "ge85"	
+		
+}		
+		
+ge86:GlossaryEntry {		
+	.name : "ge86"	
+		
+}		
+		
+ge87:GlossaryEntry {		
+	.name : "ge87"	
+		
+}		
+		
+ge88:GlossaryEntry {		
+	.name : "ge88"	
+	._de_ : true	
+}		
+		
+ge89:GlossaryEntry {		
+	.name : "ge89"	
+	._de_ : true	
+}		
+		
+ge90:GlossaryEntry {		
+	.name : "ge90"	
+	._de_ : true	
+}		
+		
+ge91:GlossaryEntry {		
+	.name : "ge91"	
+		
+}		
+		
+ge92:GlossaryEntry {		
+	.name : "ge92"	
+		
+}		
+		
+ge93:GlossaryEntry {		
+	.name : "ge93"	
+		
+}		
+		
+ge94:GlossaryEntry {		
+	.name : "ge94"	
+		
+}		
+		
+ge95:GlossaryEntry {		
+	.name : "ge95"	
+		
+}		
+		
+ge96:GlossaryEntry {		
+	.name : "ge96"	
+	._de_ : true	
+}		
+		
+ge97:GlossaryEntry {		
+	.name : "ge97"	
+	._de_ : true	
+}		
+		
+ge98:GlossaryEntry {		
+	.name : "ge98"	
+	._de_ : true	
+}		
+		
+ge99:GlossaryEntry {		
+	.name : "ge99"	
+	._de_ : true	
+}		
+		
+g:Glossary {		
+	.name : "g"	
+	-gEntries-> ge50 {	
+		
+	}	
+		
+		
+	-gEntries-> ge51 {	
+		
+	}	
+		
+		
+	-gEntries-> ge52 {	
+		
+	}	
+		
+		
+	-gEntries-> ge53 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge54 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge55 {	
+		
+	}	
+		
+		
+	-gEntries-> ge56 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge57 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge58 {	
+		
+	}	
+		
+		
+	-gEntries-> ge59 {	
+		
+	}	
+		
+		
+	-gEntries-> ge60 {	
+		
+	}	
+		
+		
+	-gEntries-> ge61 {	
+		
+	}	
+		
+		
+	-gEntries-> ge62 {	
+		
+	}	
+		
+		
+	-gEntries-> ge63 {	
+		
+	}	
+		
+		
+	-gEntries-> ge64 {	
+		
+	}	
+		
+		
+	-gEntries-> ge65 {	
+		
+	}	
+		
+		
+	-gEntries-> ge66 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge67 {	
+		
+	}	
+		
+		
+	-gEntries-> ge68 {	
+		
+	}	
+		
+		
+	-gEntries-> ge69 {	
+		
+	}	
+		
+		
+	-gEntries-> ge70 {	
+		
+	}	
+		
+		
+	-gEntries-> ge71 {	
+		
+	}	
+		
+		
+	-gEntries-> ge72 {	
+		
+	}	
+		
+		
+	-gEntries-> ge73 {	
+		
+	}	
+		
+		
+	-gEntries-> ge74 {	
+		
+	}	
+		
+		
+	-gEntries-> ge75 {	
+		
+	}	
+		
+		
+	-gEntries-> ge76 {	
+		
+	}	
+		
+		
+	-gEntries-> ge77 {	
+		
+	}	
+		
+		
+	-gEntries-> ge78 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge79 {	
+		
+	}	
+		
+		
+	-gEntries-> ge80 {	
+		
+	}	
+		
+		
+	-gEntries-> ge81 {	
+		
+	}	
+		
+		
+	-gEntries-> ge82 {	
+		
+	}	
+		
+		
+	-gEntries-> ge83 {	
+		
+	}	
+		
+		
+	-gEntries-> ge84 {	
+		
+	}	
+		
+		
+	-gEntries-> ge85 {	
+		
+	}	
+		
+		
+	-gEntries-> ge86 {	
+		
+	}	
+		
+		
+	-gEntries-> ge87 {	
+		
+	}	
+		
+		
+	-gEntries-> ge88 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge89 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge90 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge91 {	
+		
+	}	
+		
+		
+	-gEntries-> ge92 {	
+		
+	}	
+		
+		
+	-gEntries-> ge93 {	
+		
+	}	
+		
+		
+	-gEntries-> ge94 {	
+		
+	}	
+		
+		
+	-gEntries-> ge95 {	
+		
+	}	
+		
+		
+	-gEntries-> ge96 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge97 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge98 {	
+		~_de_ : true
+	}	
+		
+		
+	-gEntries-> ge99 {	
+		~_de_ : true
+	}	
+		
+		
+}		
+}		
