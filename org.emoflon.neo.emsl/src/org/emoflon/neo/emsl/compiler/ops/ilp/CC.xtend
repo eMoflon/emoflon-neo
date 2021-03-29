@@ -78,7 +78,6 @@ class CC extends ILPOperation {
 	
 	override additionalMethods() {
 		'''
-		
 			public CorrCreationOperationalStrategy runCorrCreation() throws Exception {
 				run();
 				return corrCreation;

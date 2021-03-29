@@ -40,9 +40,8 @@ import org.emoflon.neo.emsl.eMSL.TripleRule
 import org.emoflon.neo.emsl.refinement.EMSLFlattener
 import org.emoflon.neo.emsl.util.ClasspathUtil
 import org.emoflon.neo.emsl.util.EMSLUtil
-import org.emoflon.neo.emsl.eMSL.Parameter
-import org.emoflon.neo.neocore.util.PreProcessorUtil
 import org.emoflon.neo.neocore.util.NeoCoreConstants
+import org.emoflon.neo.neocore.util.PreProcessorUtil
 
 /**
  * Generates code from your model files on save.
@@ -457,8 +456,6 @@ class EMSLGenerator extends AbstractGenerator {
 	dispatch def generateAccess(GraphGrammar gg, int index) {
 		if(gg.abstract) return ""
 		try {
-			val ruleMethods = gg.rules.stream.map["getRule_" + namingConvention(it.name) + "().rule()"].collect(
-				Collectors.toSet)
 			val constraintMethods = gg.constraints.stream.map["getConstraint_" + namingConvention(it.name) + "().constraint()"].collect(
 				Collectors.toSet)
 				
