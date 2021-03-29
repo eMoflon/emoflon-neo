@@ -1,15 +1,15 @@
 package org.emoflon.neo.example.familiestopersons;
 
-import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.familiestopersons.API_F2PModelForTesting;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.familiestopersons.API_FamiliesToPersonsTriplesForConstraintTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
 import org.emoflon.neo.api.familiestopersons_constrained.run.FamiliesToPersons_Constrained_CC_Run;
 import org.emoflon.neo.api.familiestopersons_constrained.run.FamiliesToPersons_Constrained_CO_Run;
 
-public class ConstraintTest extends ENeoTest{
+public class Constraint_CO_CC_Tests extends ENeoTest{
 	
-	private API_F2PModelForTesting api = new API_F2PModelForTesting(builder);
+	private API_FamiliesToPersonsTriplesForConstraintTesting api = new API_FamiliesToPersonsTriplesForConstraintTesting(builder);
 	
 	    //co-cc for consistent triple1
 		@Test

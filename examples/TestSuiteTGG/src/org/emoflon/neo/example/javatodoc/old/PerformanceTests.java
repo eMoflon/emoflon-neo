@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.javatodoc;
+package org.emoflon.neo.example.javatodoc.old;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.emoflon.neo.api.javatodoc.run.JavaToDoc_GEN_Run.SRC_MODEL_NAME;
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.javatodoc.API_JavaToDoc;
 import org.emoflon.neo.api.javatodoc.run.JavaToDoc_CO_Run;
 import org.emoflon.neo.api.javatodoc.run.JavaToDoc_MI_Run;
-import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.mi.in.API_ConflictGenerator;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.old.API_ConflictGenerator;
 import org.emoflon.neo.engine.modules.terminationcondition.MaximalRuleApplicationsTerminationCondition;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;

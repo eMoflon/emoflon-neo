@@ -43,8 +43,6 @@ tripleGrammar FamiliesToPersons_Constrained {
 	}
 }
 
-//Surbhi-edit
-
 pattern PremisePattern{
 	
 	fr: FamilyRegister{
@@ -120,4 +118,3 @@ pattern No2MotherConstraint{
 }
 
 constraint No2Mother = forbid No2MotherConstraint
-//edit-ends

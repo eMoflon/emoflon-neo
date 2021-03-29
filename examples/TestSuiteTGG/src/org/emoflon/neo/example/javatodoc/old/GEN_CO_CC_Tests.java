@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.javatodoc;
+package org.emoflon.neo.example.javatodoc.old;
 
 import static org.emoflon.neo.api.javatodoc.run.JavaToDoc_GEN_Run.SRC_MODEL_NAME;
 import static org.emoflon.neo.api.javatodoc.run.JavaToDoc_GEN_Run.TRG_MODEL_NAME;

@@ -1,6 +1,6 @@
 import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"		
 import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"		
-import "platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodocsle/mi/performance/JavaModel3.msl"
+import "platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodoc/performance/in/JavaModel3.msl"
 		
 model moflonJava4 -> moflonJava3 {		
 c400:Clazz {		

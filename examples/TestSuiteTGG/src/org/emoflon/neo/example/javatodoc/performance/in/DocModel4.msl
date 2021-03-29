@@ -1,6 +1,6 @@
 import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleJavaSLE.msl"		
 import "platform:/resource/JavaToDocSLE/src/metamodels/SimpleDocSLE.msl"		
-import "platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodocsle/mi/performance/DocModel3.msl"
+import "platform:/resource/TestSuiteTGG/src/org/emoflon/neo/example/javatodoc/performance/in/DocModel3.msl"
 		
 model moflonDoc4 -> moflonDoc3 {		
 d400:Doc {		

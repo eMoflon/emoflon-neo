@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.javatodocsle;
+package org.emoflon.neo.example.javatodoc;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;

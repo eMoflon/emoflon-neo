@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.javatodocsle.mi.in;
+package org.emoflon.neo.example.javatodoc;
 
 import java.util.Collection;
 import org.apache.log4j.Logger;

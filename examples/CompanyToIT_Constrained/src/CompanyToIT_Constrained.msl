@@ -182,7 +182,6 @@ tripleRule EmployeeToLaptopRule : CompanyToIT_Constrained -> EmployeeToDevice {
 	}
 }
 
-//Surbhi-edit
 pattern PremisePattern{
 	it : IT {
 		-network-> network
@@ -239,4 +238,3 @@ pattern CompanyHas2AdminsConstraint{
 }
 
 constraint No2Admins = forbid CompanyHas2AdminsConstraint
-//edit-ends

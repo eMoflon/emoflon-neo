@@ -187,8 +187,6 @@ pattern noDoubleFollowershipInstagramConstraint {
 	 
 constraint noDoubleFollowership = forbid noDoubleFollowershipInstagramConstraint
 
-//Surbhi-edit
-
 pattern ConclusionPattern-> PremisePattern[fu1->fu1, fu2->fu2] {
  	fu1 : FacebookLanguage.User
  	
@@ -221,6 +219,3 @@ pattern PremisePattern {
 }
 
 constraint EnforceFriendship = if PremisePattern then ConclusionPattern
-//edit-ends
-
-

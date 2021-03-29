@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.javatodoc;
+package org.emoflon.neo.example.javatodoc.old;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

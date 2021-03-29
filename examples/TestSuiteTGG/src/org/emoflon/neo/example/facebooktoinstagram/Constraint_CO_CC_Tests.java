@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_CC_Run;
 import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_CO_Run;
-import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.facebooktoinstagram.API_ModelForTesting;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForConstraintTesting;
 
 
-public class ConstraintTest extends ENeoTest{
+public class Constraint_CO_CC_Tests extends ENeoTest{
 
-	private API_ModelForTesting api = new API_ModelForTesting(builder);
+	private API_FacebookToInstagramTriplesForConstraintTesting api = new API_FacebookToInstagramTriplesForConstraintTesting(builder);
 	
 	//co-cc for consistent triple
 	@Test

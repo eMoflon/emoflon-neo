@@ -1,4 +1,4 @@
-package org.emoflon.neo.example.javatodocsle.mi.in;
+package org.emoflon.neo.example.javatodoc.performance;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

@@ -1,15 +1,15 @@
 package org.emoflon.neo.example.companytoit;
 
-import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.companytoit.API_C2I_Constrained_ModelForTesting;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForConstraintTesting;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
 import org.emoflon.neo.api.companytoit_constrained.run.CompanyToIT_Constrained_CC_Run;
 import org.emoflon.neo.api.companytoit_constrained.run.CompanyToIT_Constrained_CO_Run;
 
-public class ConstraintTesting extends ENeoTest{
+public class Constraint_CO_CC_Tests extends ENeoTest{
 
-	private API_C2I_Constrained_ModelForTesting api = new API_C2I_Constrained_ModelForTesting(builder);
+	private API_CompanyToITTriplesForConstraintTesting api = new API_CompanyToITTriplesForConstraintTesting(builder);
 
 	//co-cc for consistent triple1
 	@Test

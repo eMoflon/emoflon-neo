@@ -1,6 +1,6 @@
-package org.emoflon.neo.example.javatodocsle.mi.in;
+package org.emoflon.neo.example.javatodoc;
 
-import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodocsle.mi.in.API_DCC;
+import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.javatodoc.API_DCC;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
