@@ -247,13 +247,18 @@ class Neo4jImporter {
 		val matches = eClassToID.keySet.flatMap [ sub |
 			sub.ESuperTypes.map [ sup |
 				val match = new SyntheticNeoMatch(handle.pattern)
-				match.setElement(
-					eClassToID.get(sub),
-					handle._subClass
-				).setElement(
-					eClassToID.get(sup),
-					handle._superClass
-				)
+				try {
+					match.setElement(
+						eClassToID.get(sub),
+						handle._subClass
+					).setElement(
+						eClassToID.get(sup),
+						handle._superClass
+					)
+				} catch(Exception e){
+					e.printStackTrace
+					match
+				}
 			]
 		].toList
 
