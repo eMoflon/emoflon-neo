@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ExtDocModel:DocContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ExtDocModel="platform:/resource/ExtDocModel/model/ExtDocModel.ecore">
+  <folders name="Package">
+    <docs name="Type_0" subDocs="//@folders.0/@docs.1">
+      <entries name="Method_0_0" glossaryEntries="//@glossary/@entries.0" type="METHOD">
+        <annotations value="JavaDoc_0_0_0"/>
+      </entries>
+      <entries name="Field_0_0" glossaryEntries="//@glossary/@entries.0"/>
+    </docs>
+    <docs name="Type_0_0" superDocs="//@folders.0/@docs.0">
+      <entries name="Method_0_0_0" glossaryEntries="//@glossary/@entries.0" type="METHOD">
+        <annotations value="JavaDoc_0_0_0_0"/>
+      </entries>
+      <entries name="Field_0_0_0" glossaryEntries="//@glossary/@entries.0"/>
+    </docs>
+  </folders>
+  <glossary>
+    <entries name="GlossaryEntry_0" entries="//@folders.0/@docs.0/@entries.0 //@folders.0/@docs.0/@entries.1 //@folders.0/@docs.1/@entries.0 //@folders.0/@docs.1/@entries.1"/>
+  </glossary>
+</ExtDocModel:DocContainer>
