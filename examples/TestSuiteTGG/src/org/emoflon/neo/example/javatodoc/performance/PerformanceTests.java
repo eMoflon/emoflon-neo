@@ -10,11 +10,9 @@ import org.emoflon.neo.api.javatodocsle.API_JavaToDocSLE;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-
-import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_BWD_OPT_Run;
+import org.junit.jupiter.api.Test;
 import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CC_Run;
 import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
-import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_FWD_OPT_Run;
 
 public class PerformanceTests extends ENeoTest {
 	
@@ -35,15 +33,127 @@ public class PerformanceTests extends ENeoTest {
 	private API_CreateCorrs4 api_c4 = new API_CreateCorrs4(builder);
 	private API_DocModel4 api_d4 = new API_DocModel4(builder);
 	
-	private static final int nrOfIterations = 30;
+	private static final int nrOfIterations = 5;
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 	
-	public void runTestForRandomModels(int nrOfApplications, int nrOfConflicts) throws Exception {
-		
+	public void runTestForRandomModelsCO(int nrOfApplications) throws Exception {
 		var testCOApp = new JavaToDocSLE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testGenApp = new JavaToDocSLE_GEN_TEST((scheduler) -> {
+			scheduler.setMax(API_JavaToDocSLE.JavaToDocSLE__ClazzToDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__SubClazzToSubDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__MethodToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__FieldToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddParameterRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryRule, 1)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
+		});
+		
+		for (int j=0; j<nrOfIterations; j++) {
+			try {
+				testGenApp.run();
+				Logger.getRootLogger().setLevel(Level.INFO);
+				logger.info("CO, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+				testCOApp.run();
+				Logger.getRootLogger().setLevel(Level.OFF);
+				clearDB();
+			}
+			catch (Exception e) {
+				logger.info("CO, Iteration: " + j + ", configuration: " + nrOfApplications * 1000 + " elements failed.");
+			}
+		}
+	}
+	
+	public void runTestForRandomModelsCC(int nrOfApplications) throws Exception {
 		var testCCApp = new JavaToDocSLE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testFWD_OPTApp = new JavaToDocSLE_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testBWD_OPTApp = new JavaToDocSLE_BWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testGenApp = new JavaToDocSLE_GEN_TEST((scheduler) -> {
+			scheduler.setMax(API_JavaToDocSLE.JavaToDocSLE__ClazzToDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__SubClazzToSubDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__MethodToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__FieldToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddParameterRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryRule, 1)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
+		});
+		
+		for (int j=0; j<nrOfIterations; j++) {
+			try {
+				testGenApp.run();
+				builder.deleteAllCorrs();
+				Logger.getRootLogger().setLevel(Level.INFO);
+				logger.info("CC, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+				testCCApp.run();
+				Logger.getRootLogger().setLevel(Level.OFF);
+				clearDB();
+			}
+			catch (Exception e) {
+				logger.info("CC, Iteration: " + j + ", configuration: " + nrOfApplications * 1000 + " elements failed.");
+			}
+		}
+	}
+	
+	public void runTestForRandomModelsFWD_OPT(int nrOfApplications) throws Exception {
+		var testFWD_OPTApp = new JavaToDocSLE_FWD_OPT_TEST(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testGenApp = new JavaToDocSLE_GEN_TEST((scheduler) -> {
+			scheduler.setMax(API_JavaToDocSLE.JavaToDocSLE__ClazzToDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__SubClazzToSubDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__MethodToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__FieldToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddParameterRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryRule, 1)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
+		});
+		
+		for (int j=0; j<nrOfIterations; j++) {
+			try {
+				testGenApp.run();
+				builder.deleteAllCorrs();
+				builder.clearModel(TRG_MODEL_NAME);
+				Logger.getRootLogger().setLevel(Level.INFO);
+				logger.info("FWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+				testFWD_OPTApp.run();
+				Logger.getRootLogger().setLevel(Level.OFF);
+				clearDB();
+			}
+			catch (Exception e) {
+				logger.info("FWD_OPT, Iteration: " + j + ", configuration: " + nrOfApplications * 1000 + " elements failed.");
+			}
+		}
+	}
+	
+	public void runTestForRandomModelsBWD_OPT(int nrOfApplications) throws Exception {
+		var testBWD_OPTApp = new JavaToDocSLE_BWD_OPT_TEST(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testGenApp = new JavaToDocSLE_GEN_TEST((scheduler) -> {
+			scheduler.setMax(API_JavaToDocSLE.JavaToDocSLE__ClazzToDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__SubClazzToSubDocRule, 10 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__MethodToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__FieldToEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddParameterRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryRule, 1)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__AddGlossaryEntryRule, 40 * nrOfApplications)
+			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
+		});
+		
+		for (int j=0; j<nrOfIterations; j++) {
+			try {
+				testGenApp.run();
+				builder.deleteAllCorrs();
+				builder.clearModel(SRC_MODEL_NAME);
+				Logger.getRootLogger().setLevel(Level.INFO);
+				logger.info("BWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+				testBWD_OPTApp.run();
+				Logger.getRootLogger().setLevel(Level.OFF);
+				clearDB();
+			}
+			catch (Exception e) {
+				logger.info("BWD_OPT, Iteration: " + j + ", configuration: " + nrOfApplications * 1000 + " elements failed.");
+			}
+		}
+	}
+	
+	public void runTestForRandomModelsMI(int nrOfApplications, int nrOfConflicts) throws Exception {
 		var testMIApp = new JavaToDocSLE_MI_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		
 		var testGenApp = new JavaToDocSLE_GEN_TEST((scheduler) -> {
@@ -57,66 +167,36 @@ public class PerformanceTests extends ENeoTest {
 			.setMax(API_JavaToDocSLE.JavaToDocSLE__LinkGlossaryEntryRule, 40 * nrOfApplications);
 		});
 		
-		// Step 2. Run ops
 		for (int j=0; j<nrOfIterations; j++) {
-			testGenApp.run();
-			Logger.getRootLogger().setLevel(Level.INFO);
-			logger.info("CO, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
-			testCOApp.run();
-			Logger.getRootLogger().setLevel(Level.OFF);
-			clearDB();
-		}
-		
-		for (int j=0; j<nrOfIterations; j++) {
-			testGenApp.run();
-			builder.deleteAllCorrs();
-			Logger.getRootLogger().setLevel(Level.INFO);
-			logger.info("CC, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
-			testCCApp.run();
-			Logger.getRootLogger().setLevel(Level.OFF);
-			clearDB();
-		}
-		for (int j=0; j<nrOfIterations; j++) {
-			testGenApp.run();
-			builder.deleteAllCorrs();
-			builder.clearModel(TRG_MODEL_NAME);
-			Logger.getRootLogger().setLevel(Level.INFO);
-			logger.info("FWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
-			testFWD_OPTApp.run();
-			Logger.getRootLogger().setLevel(Level.OFF);
-			clearDB();
-		}
-		for (int j=0; j<nrOfIterations; j++) {
-			testGenApp.run();
-			builder.deleteAllCorrs();
-			builder.clearModel(SRC_MODEL_NAME);
-			Logger.getRootLogger().setLevel(Level.INFO);
-			logger.info("BWD_OPT, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
-			testBWD_OPTApp.run();
-			Logger.getRootLogger().setLevel(Level.OFF);
-			clearDB();
-		}
-		
-		for (int j=0; j<nrOfIterations; j++) {
-			testGenApp.run();
-			for (int i=0; i < nrOfConflicts; i++) {
-				api.getRule_CreateDeleteConflict().rule().apply();
-				api.getRule_MoveMoveConflict().rule().apply();
-				api.getRule_MoveDeleteConflict().rule().apply();
+			try {
+				testGenApp.run();
+				for (int i=0; i < nrOfConflicts; i++) {
+					api.getRule_CreateDeleteConflict().rule().apply();
+					api.getRule_MoveMoveConflict().rule().apply();
+					api.getRule_MoveDeleteConflict().rule().apply();
+				}
+				Logger.getRootLogger().setLevel(Level.INFO);
+				logger.info("MI, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
+				testMIApp.run(solver);
+				Logger.getRootLogger().setLevel(Level.OFF);
+				clearDB();
 			}
-			Logger.getRootLogger().setLevel(Level.INFO);
-			logger.info("MI, Iteration: " + j + ". Start new configuration: " + nrOfApplications * 1000 + " elements...");
-			testMIApp.run(solver);
-			Logger.getRootLogger().setLevel(Level.OFF);
-			clearDB();
+			catch (Exception e) {
+				logger.info("MI, Iteration: " + j + ", configuration: " + nrOfApplications * 1000 + " elements failed.");
+			}
 		}
 	}
 	
-	@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
+	//@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
+	@Test
 	public void testPerformanceForRandomModels() throws Exception {
 		for (int i : new int[]{1,2,5,10,20,50}) {
 			Logger.getRootLogger().setLevel(Level.OFF);
-			runTestForRandomModels(i, i);
+			runTestForRandomModelsCO(i);
+			runTestForRandomModelsCC(i);
+			runTestForRandomModelsFWD_OPT(i);
+			runTestForRandomModelsBWD_OPT(i);
+			//runTestForRandomModelsMI(i,i);
 		}
 	}
 	
@@ -135,6 +215,7 @@ public class PerformanceTests extends ENeoTest {
 		}
 	}
 	
+	@Ignore("Performance Tests are not part of the test suite.")
 	public void runTestForFixedModels(int n, SupportedILPSolver s) throws Exception {
 			
 		// Export models

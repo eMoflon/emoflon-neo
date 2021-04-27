@@ -38,8 +38,8 @@ class CO extends ILPOperation {
 	
 	override additionalFields(String tggName, String solver) {
 		'''
-			private static SupportedILPSolver solver = SupportedILPSolver.«solver»;
-			private CheckOnlyOperationalStrategy checkOnly;
+			protected static SupportedILPSolver solver = SupportedILPSolver.«solver»;
+			protected CheckOnlyOperationalStrategy checkOnly;
 		'''
 	}
 	

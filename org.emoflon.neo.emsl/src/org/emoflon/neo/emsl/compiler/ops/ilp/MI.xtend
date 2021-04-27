@@ -66,8 +66,8 @@ class MI extends ILPOperation {
 
 	override additionalFields(String tggName, String solver) {
 		'''
-			private static SupportedILPSolver solver = SupportedILPSolver.«solver»;
-			private ModelIntegrationOperationalStrategy modelIntegration;
+			protected static SupportedILPSolver solver = SupportedILPSolver.«solver»;
+			protected ModelIntegrationOperationalStrategy modelIntegration;
 		'''
 	}
 

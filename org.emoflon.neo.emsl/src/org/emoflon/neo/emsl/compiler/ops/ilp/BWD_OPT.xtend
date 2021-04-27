@@ -35,8 +35,8 @@ class BWD_OPT extends ILPOperation {
 	
 	override additionalFields(String tggName, String solver) {
 		'''
-			private static SupportedILPSolver solver = SupportedILPSolver.«solver»;
-			private BackwardTransformationOperationalStrategy backwardTransformation;
+			protected static SupportedILPSolver solver = SupportedILPSolver.«solver»;
+			protected BackwardTransformationOperationalStrategy backwardTransformation;
 		'''
 	}
 	

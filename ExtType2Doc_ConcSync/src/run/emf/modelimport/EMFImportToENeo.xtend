@@ -26,9 +26,9 @@ class EMFImportToENeo {
 			loadMetamodel(rs, "./emf/metamodels/ExtTypeModel.ecore")
 			loadMetamodel(rs, "./emf/metamodels/ExtType2Doc_ConcSync.ecore")
 
-			loadModel(rs, "./emf/gen-models/attr-minimal_n1_c1_H/src.xmi", "src.xmi")
-			loadModel(rs, "./emf/gen-models/attr-minimal_n1_c1_H/trg.xmi", "trg.xmi")
-			loadModel(rs, "./emf/gen-models/attr-minimal_n1_c1_H/corr.xmi", "corr.xmi")
+			loadModel(rs, "./emf/gen-models/presDel-scaled_n64_c1_H/src.xmi", "src.xmi")
+			loadModel(rs, "./emf/gen-models/presDel-scaled_n64_c1_H/trg.xmi", "trg.xmi")
+			loadModel(rs, "./emf/gen-models/presDel-scaled_n64_c1_H/corr.xmi", "corr.xmi")
 
 			importer.importEMFModels(rs, boltURL, dbName, passw)
 
