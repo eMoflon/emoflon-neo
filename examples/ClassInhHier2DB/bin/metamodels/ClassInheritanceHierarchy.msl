@@ -1,0 +1,20 @@
+metamodel ClassInheritanceHierarchy {
+	ClassPackage {
+		.name : EString
+		<+>-classes(0..*)-> Clazz
+	}
+	
+	Clazz {
+		.name : EString
+		-package(1..1)-> ClassPackage
+		-subClass(0..*)-> Clazz
+		-superClass(1..1)-> Clazz
+		<+>-attributes(0..*)->Attribute
+	}
+	
+	Attribute {
+		.name : EString
+		.type : EString
+		-clazz(1..1)-> Clazz
+	}
+}

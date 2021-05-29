@@ -1,0 +1,200 @@
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT_Constrained/src/metamodels/IT.msl"
+
+grammar CompanyToIT_Constrained_BWD_OPT {
+	CompanyToITRule
+	AdminToRouterRule
+	EmployeeToPCRule
+	EmployeeToLaptopRule
+}
+	
+  rule CompanyToITRule {
+	++ceo:CEO {
+		.enamespace := <__srcModelName>
+		.name := <ceoName>
+	}
+	
+	++company:Company {
+		.enamespace := <__srcModelName>
+		++-ceo->ceo
+		++-corr->it
+		{
+			._type_ := "CompanyToIT"
+		}
+		.name := it::name
+	}
+
+	it:IT {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule AdminToRouterRule {
+	company:Company {
+		.enamespace : <__srcModelName>
+		-ceo->ceo
+		++-admin->admin
+		-corr->it
+		{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ceo:CEO {
+		.enamespace : <__srcModelName>
+	}
+	
+	++admin:Admin {
+		.enamespace := <__srcModelName>
+		++-ceo->ceo
+		++-corr->router
+		{
+			._type_ := "AdminToRouter"
+		}
+		.name := network::name
+	}
+
+	router:Router {
+		.enamespace : <__trgModelName>
+		-network->network
+		.name : network::name
+	}
+	
+	it:IT {
+		.enamespace : <__trgModelName>
+		-network->network
+		-router->router
+	}
+	
+	network:Network {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule EmployeeToPCRule {
+	admin:Admin {
+		.enamespace : <__srcModelName>
+		-ceo->ceo
+		-corr->router
+		{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	company:Company {
+		.enamespace : <__srcModelName>
+		-admin->admin
+		++-employee->employee
+		-ceo->ceo
+		-corr->it
+		{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ceo:CEO {
+		.enamespace : <__srcModelName>
+		++-employee->employee
+	}
+	
+	++employee:Employee {
+		.enamespace := <__srcModelName>
+		++-corr->computer
+		{
+			._type_ := "EmployeeToPC"
+		}
+		.name := <employeeName>
+	}
+
+	router:Router {
+		.enamespace : <__trgModelName>
+		-network->network
+	}
+	
+	computer:PC {
+		.enamespace : <__trgModelName>
+	}
+	
+	it:IT {
+		.enamespace : <__trgModelName>
+		-router->router
+		-network->network
+	}
+	
+	network:Network {
+		.enamespace : <__trgModelName>
+		-pc->computer
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule EmployeeToLaptopRule {
+	admin:Admin {
+		.enamespace : <__srcModelName>
+		-ceo->ceo
+		-corr->router
+		{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	company:Company {
+		.enamespace : <__srcModelName>
+		-admin->admin
+		++-employee->employee
+		-ceo->ceo
+		-corr->it
+		{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ceo:CEO {
+		.enamespace : <__srcModelName>
+		++-employee->employee
+	}
+	
+	++employee:Employee {
+		.enamespace := <__srcModelName>
+		++-corr->computer
+		{
+			._type_ := "EmployeeToLaptop"
+		}
+		.name := <employeeName>
+	}
+
+	router:Router {
+		.enamespace : <__trgModelName>
+		-network->network
+	}
+	
+	computer:Laptop {
+		.enamespace : <__trgModelName>
+	}
+	
+	it:IT {
+		.enamespace : <__trgModelName>
+		-router->router
+		-network->network
+	}
+	
+	network:Network {
+		.enamespace : <__trgModelName>
+		-laptop->computer
+	}
+	
+	attributeConstraints {
+	}
+} 
+

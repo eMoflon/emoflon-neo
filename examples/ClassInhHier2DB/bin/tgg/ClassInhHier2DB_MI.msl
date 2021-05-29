@@ -1,0 +1,1007 @@
+import "platform:/resource/ClassInhHier2DB/src/metamodels/ClassInheritanceHierarchy.msl"
+import "platform:/resource/ClassInhHier2DB/src/metamodels/Database.msl"
+
+grammar ClassInhHier2DB_MI {
+	
+	PackageToDatabaseRule
+	PackageToDatabaseRule_1
+	PackageToDatabaseRule_3
+	PackageToDatabaseRule_5
+	
+	ClassToTableRule
+	ClassToTableRule_1
+	ClassToTableRule_2
+	ClassToTableRule_3
+	ClassToTableRule_7
+	ClassToTableRule_16
+	ClassToTableRule_17
+	ClassToTableRule_25
+	
+	SubClassToTableRule
+	SubClassToTableRule_1
+	SubClassToTableRule_4
+	SubClassToTableRule_5
+	SubClassToTableRule_8
+	SubClassToTableRule_9
+	SubClassToTableRule_12
+	SubClassToTableRule_13
+	
+	AttributeToColumnRule
+	AttributeToColumnRule_1
+	AttributeToColumnRule_4
+	AttributeToColumnRule_5
+	AttributeToColumnRule_7
+	AttributeToColumnRule_8
+	AttributeToColumnRule_9
+	AttributeToColumnRule_25
+}
+	
+  rule PackageToDatabaseRule {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+		.name : db::title
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule PackageToDatabaseRule_1 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		++-corr->db
+		{
+			._type_ := "PackageToDatabase"
+		}
+		.name : db::title
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule PackageToDatabaseRule_3 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		++-corr->db
+		{
+			._type_ := "PackageToDatabase"
+		}
+		~_ex_ : true
+	}
+
+	++db:DB {
+		.enamespace := <__trgModelName>
+		.title := classpackage::name
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule PackageToDatabaseRule_5 {
+	++classpackage:ClassPackage {
+		.enamespace := <__srcModelName>
+		++-corr->db
+		{
+			._type_ := "PackageToDatabase"
+		}
+		.name := db::title
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule ClassToTableRule {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		-tables->table
+		{
+			~_ex_ : true
+		}
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		.heading : clazz::name
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule ClassToTableRule_1 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		-tables->table
+		{
+			~_ex_ : true
+		}
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		.heading : clazz::name
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule ClassToTableRule_2 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		++-tables->table
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		.heading : clazz::name
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule ClassToTableRule_3 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		++-tables->table
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		.heading : clazz::name
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule ClassToTableRule_7 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		++-tables->table
+	}
+	
+	++table:Table {
+		.enamespace := <__trgModelName>
+		.heading := clazz::name
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule ClassToTableRule_16 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		-tables->table
+		{
+			~_ex_ : true
+		}
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		.heading : clazz::name
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule ClassToTableRule_17 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-package->classpackage
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		-tables->table
+		{
+			~_ex_ : true
+		}
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		.heading : clazz::name
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule ClassToTableRule_25 {
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+		-corr->db
+		{
+			._type_ : "PackageToDatabase"
+		}
+	}
+	
+	++clazz:Clazz {
+		.enamespace := <__srcModelName>
+		++-package->classpackage
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		.name := table::heading
+	}
+
+	db:DB {
+		.enamespace : <__trgModelName>
+		-tables->table
+		{
+			~_ex_ : true
+		}
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule SubClassToTableRule {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		-superClass->clazz
+		{
+			~_ex_ : true
+		}
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule SubClassToTableRule_1 {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		-superClass->clazz
+		{
+			~_ex_ : true
+		}
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule SubClassToTableRule_4 {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-superClass->clazz
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule SubClassToTableRule_5 {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-superClass->clazz
+		-package->classpackage
+		{
+			~_ex_ : true
+		}
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule SubClassToTableRule_8 {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		-superClass->clazz
+		{
+			~_ex_ : true
+		}
+		++-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule SubClassToTableRule_9 {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		-superClass->clazz
+		{
+			~_ex_ : true
+		}
+		++-package->classpackage
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule SubClassToTableRule_12 {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-superClass->clazz
+		++-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule SubClassToTableRule_13 {
+	subClazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-superClass->clazz
+		++-package->classpackage
+		++-corr->table
+		{
+			._type_ := "ClazzToTable"
+		}
+		~_ex_ : true
+	}
+	
+	classpackage:ClassPackage {
+		.enamespace : <__srcModelName>
+	}
+	
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-package->classpackage
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+
+	table:Table {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule AttributeToColumnRule {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-attributes->attribute
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	attribute:Attribute {
+		.enamespace : <__srcModelName>
+		-corr->column
+		{
+			._type_ : "AttributeToColumn"
+		}
+		.name : column::name
+		~_ex_ : true
+	}
+
+	column:Column {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		-columns->column
+		{
+			~_ex_ : true
+		}
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule AttributeToColumnRule_1 {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-attributes->attribute
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	attribute:Attribute {
+		.enamespace : <__srcModelName>
+		++-corr->column
+		{
+			._type_ := "AttributeToColumn"
+		}
+		.name : column::name
+		~_ex_ : true
+	}
+
+	column:Column {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		-columns->column
+		{
+			~_ex_ : true
+		}
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule AttributeToColumnRule_4 {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-attributes->attribute
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	attribute:Attribute {
+		.enamespace : <__srcModelName>
+		-corr->column
+		{
+			._type_ : "AttributeToColumn"
+		}
+		.name : column::name
+		~_ex_ : true
+	}
+
+	column:Column {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		++-columns->column
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule AttributeToColumnRule_5 {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-attributes->attribute
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	attribute:Attribute {
+		.enamespace : <__srcModelName>
+		++-corr->column
+		{
+			._type_ := "AttributeToColumn"
+		}
+		.name : column::name
+		~_ex_ : true
+	}
+
+	column:Column {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		++-columns->column
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule AttributeToColumnRule_7 {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		-attributes->attribute
+		{
+			~_ex_ : true
+		}
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	attribute:Attribute {
+		.enamespace : <__srcModelName>
+		++-corr->column
+		{
+			._type_ := "AttributeToColumn"
+		}
+		~_ex_ : true
+	}
+
+	++column:Column {
+		.enamespace := <__trgModelName>
+		.name := attribute::name
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		++-columns->column
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule AttributeToColumnRule_8 {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-attributes->attribute
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	attribute:Attribute {
+		.enamespace : <__srcModelName>
+		-corr->column
+		{
+			._type_ : "AttributeToColumn"
+		}
+		.name : column::name
+		~_ex_ : true
+	}
+
+	column:Column {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		-columns->column
+		{
+			~_ex_ : true
+		}
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule AttributeToColumnRule_9 {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-attributes->attribute
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	attribute:Attribute {
+		.enamespace : <__srcModelName>
+		++-corr->column
+		{
+			._type_ := "AttributeToColumn"
+		}
+		.name : column::name
+		~_ex_ : true
+	}
+
+	column:Column {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		-columns->column
+		{
+			~_ex_ : true
+		}
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+  rule AttributeToColumnRule_25 {
+	clazz:Clazz {
+		.enamespace : <__srcModelName>
+		++-attributes->attribute
+		-corr->table
+		{
+			._type_ : "ClazzToTable"
+		}
+	}
+	
+	++attribute:Attribute {
+		.enamespace := <__srcModelName>
+		++-corr->column
+		{
+			._type_ := "AttributeToColumn"
+		}
+		.name := column::name
+	}
+
+	column:Column {
+		.enamespace : <__trgModelName>
+		~_ex_ : true
+	}
+	
+	table:Table {
+		.enamespace : <__trgModelName>
+		-columns->column
+		{
+			~_ex_ : true
+		}
+	}
+	
+	attributeConstraints {
+	}
+} 
+

@@ -1,0 +1,229 @@
+import "platform:/resource/CompanyToIT/src/metamodels/Company.msl"
+import "platform:/resource/CompanyToIT/src/metamodels/IT.msl"
+
+grammar CompanyToIT_GEN {
+	CompanyToITRule
+	AdminToRouterRule
+	EmployeeToPCRule
+	EmployeeToLaptopRule
+}
+	
+  rule CompanyToITRule {
+	++ceo:CEO {
+		.enamespace := <__srcModelName>
+		.name := <ceoName>
+	}
+	
+	++company:Company {
+		.enamespace := <__srcModelName>
+		++-ceo->ceo
+		++-corr->it
+		{
+			._type_ := "CompanyToIT"
+		}
+		.name := <companyName>
+	}
+
+	++it:IT {
+		.enamespace := <__trgModelName>
+		.name := <companyName>
+	}
+	
+	attributeConstraints {
+	}
+} when CompanyToITRuleNAC
+
+constraint CompanyToITRuleNAC = forbid CompanyToITRule_companyNameIsTaken
+
+	pattern CompanyToITRule_companyNameIsTaken {
+		company : Company {
+			.enamespace : <__srcModelName>
+			.name : <companyName>
+		}
+		
+	}
+
+  rule AdminToRouterRule {
+	company:Company {
+		.enamespace : <__srcModelName>
+		-ceo->ceo
+		++-admin->admin
+		-corr->it
+		{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ceo:CEO {
+		.enamespace : <__srcModelName>
+	}
+	
+	++admin:Admin {
+		.enamespace := <__srcModelName>
+		++-ceo->ceo
+		++-corr->router
+		{
+			._type_ := "AdminToRouter"
+		}
+		.name := <adminName>
+	}
+
+	++router:Router {
+		.enamespace := <__trgModelName>
+		++-network->network
+		.name := <adminName>
+	}
+	
+	it:IT {
+		.enamespace : <__trgModelName>
+		++-network->network
+		++-router->router
+	}
+	
+	++network:Network {
+		.enamespace := <__trgModelName>
+		.name := <adminName>
+	}
+	
+	attributeConstraints {
+	}
+} when AdminToRouterRuleNAC
+
+constraint AdminToRouterRuleNAC = forbid AdminToRouterRule_AlreadyHasAnAdmin
+
+	pattern AdminToRouterRule_AlreadyHasAnAdmin {
+		company : Company {
+			.enamespace : <__srcModelName>
+			-admin->other
+		}
+		other : Admin {
+			.enamespace : <__srcModelName>
+			-ceo->ceo
+		}
+		ceo : CEO {
+			.enamespace : <__srcModelName>
+		}
+		
+	}
+
+  rule EmployeeToPCRule {
+	admin:Admin {
+		.enamespace : <__srcModelName>
+		-ceo->ceo
+		-corr->router
+		{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	company:Company {
+		.enamespace : <__srcModelName>
+		-admin->admin
+		++-employee->employee
+		-ceo->ceo
+		-corr->it
+		{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ceo:CEO {
+		.enamespace : <__srcModelName>
+		++-employee->employee
+	}
+	
+	++employee:Employee {
+		.enamespace := <__srcModelName>
+		++-corr->computer
+		{
+			._type_ := "EmployeeToPC"
+		}
+		.name := <employeeName>
+	}
+
+	router:Router {
+		.enamespace : <__trgModelName>
+		-network->network
+	}
+	
+	++computer:PC {
+		.enamespace := <__trgModelName>
+		.name := <pcName>
+	}
+	
+	it:IT {
+		.enamespace : <__trgModelName>
+		-router->router
+		-network->network
+	}
+	
+	network:Network {
+		.enamespace : <__trgModelName>
+		++-pc->computer
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule EmployeeToLaptopRule {
+	admin:Admin {
+		.enamespace : <__srcModelName>
+		-ceo->ceo
+		-corr->router
+		{
+			._type_ : "AdminToRouter"
+		}
+	}
+	
+	company:Company {
+		.enamespace : <__srcModelName>
+		-admin->admin
+		++-employee->employee
+		-ceo->ceo
+		-corr->it
+		{
+			._type_ : "CompanyToIT"
+		}
+	}
+	
+	ceo:CEO {
+		.enamespace : <__srcModelName>
+		++-employee->employee
+	}
+	
+	++employee:Employee {
+		.enamespace := <__srcModelName>
+		++-corr->computer
+		{
+			._type_ := "EmployeeToLaptop"
+		}
+		.name := <employeeName>
+	}
+
+	router:Router {
+		.enamespace : <__trgModelName>
+		-network->network
+	}
+	
+	++computer:Laptop {
+		.enamespace := <__trgModelName>
+		.name := <laptopName>
+	}
+	
+	it:IT {
+		.enamespace : <__trgModelName>
+		-router->router
+		-network->network
+	}
+	
+	network:Network {
+		.enamespace : <__trgModelName>
+		++-laptop->computer
+	}
+	
+	attributeConstraints {
+	}
+} 
+

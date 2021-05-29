@@ -1,0 +1,121 @@
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleJava.msl"
+import "platform:/resource/JavaToDoc/src/metamodels/SimpleDoc.msl"
+
+grammar JavaToDoc_BWD {
+	ClazzToDocRule
+	RootToRootRule
+	SubToSubRule
+}
+	
+  rule ClazzToDocRule {
+	p:Package {
+		.enamespace : <__srcModelName>
+		++-clazzes->c
+		-corr->f
+		{
+			._type_ : "PackageToFolder"
+		}
+	}
+	
+	++c:Clazz {
+		.enamespace := <__srcModelName>
+		++-corr->doc
+		{
+			._type_ := "ClazzToDoc"
+		}
+		.name := doc::name
+	}
+
+	f:Folder {
+		.enamespace : <__trgModelName>
+		-docs->doc
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : true
+	}
+	
+	doc:Doc {
+		.enamespace : <__trgModelName>
+		~_tr_ : false
+		~_tr_ := true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule RootToRootRule {
+	++p:Package {
+		.enamespace := <__srcModelName>
+		++-corr->f
+		{
+			._type_ := "PackageToFolder"
+		}
+		.name := f::name
+	}
+
+	f:Folder {
+		.enamespace : <__trgModelName>
+		~_tr_ : false
+		~_tr_ := true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule SubToSubRule {
+	p:Package {
+		.enamespace : <__srcModelName>
+		++-subPackages->subP
+		-corr->f
+		{
+			._type_ : "PackageToFolder"
+		}
+	}
+	
+	++subP:Package {
+		.enamespace := <__srcModelName>
+		++-corr->subF
+		{
+			._type_ := "PackageToFolder"
+		}
+		.name := subF::name
+	}
+
+	f:Folder {
+		.enamespace : <__trgModelName>
+		-subFolders->subF
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : true
+	}
+	
+	subF:Folder {
+		.enamespace : <__trgModelName>
+		-docs->doc
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : false
+		~_tr_ := true
+	}
+	
+	doc:Doc {
+		.enamespace : <__trgModelName>
+		.name : subF::name
+		~_tr_ : false
+		~_tr_ := true
+	}
+	
+	attributeConstraints {
+	}
+} 
+
