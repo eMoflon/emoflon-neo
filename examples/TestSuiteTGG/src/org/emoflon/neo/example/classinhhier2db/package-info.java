@@ -1,0 +1,1 @@
+package org.emoflon.neo.example.classinhhier2db;
