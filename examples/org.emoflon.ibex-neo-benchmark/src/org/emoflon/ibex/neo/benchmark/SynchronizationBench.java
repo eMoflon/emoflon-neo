@@ -5,19 +5,20 @@ import java.io.IOException;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
+import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
 
 import delta.Delta;
 import delta.DeltaContainer;
 
-public abstract class SynchronizationBench<BP extends BenchParameters> extends IbexBench<SYNC, BP> {
+public abstract class SynchronizationBench<BP extends BenchParameters> extends NeoBench<ILPBasedOperationalStrategy, BP> {
 
-	public SynchronizationBench(String projectName) {
-		super(projectName);
+	public SynchronizationBench(String projectName, String projectPath) {
+		super(projectName, projectPath);
 	}
 
 	@Override
-	protected BenchEntry applyDeltaAndRun(SYNC opStrat, BP parameters, boolean saveTransformedModels) throws IOException, InvalidDeltaException {
+	protected BenchEntry applyDeltaAndRun(ILPBasedOperationalStrategy opStrat, BP parameters, boolean saveTransformedModels) throws IOException, InvalidDeltaException {
 		long tic = System.currentTimeMillis();
 		opStrat.run();
 		long toc = System.currentTimeMillis();

@@ -8,7 +8,7 @@ import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
 public class Test {
 
 	public static void main(String[] args) {
-		ExtType2Doc_ConcSync_Bench bench = new ExtType2Doc_ConcSync_Bench("org.emoflon.ibex-neo-benchmark");
+		ExtType2Doc_ConcSync_Bench bench = new ExtType2Doc_ConcSync_Bench("org.emoflon.ibex-neo-benchmark", "org.emoflon.ibex-neo-benchmark");
 
 		ExtType2Doc_ConcSync_Params params = new ExtType2Doc_ConcSync_Params( //
 				"presDel-scaled", // name
