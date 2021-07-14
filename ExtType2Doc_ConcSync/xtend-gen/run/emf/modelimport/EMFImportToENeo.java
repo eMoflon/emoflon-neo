@@ -26,7 +26,7 @@ public class EMFImportToENeo {
   
   public static void main(final String[] args) {
     try {
-      EMFImportToENeo.loadModelsAndMetamodels("./emf/gen-models/presDel-scaled_n64_c1_H/", "src.xmi", "trg.xmi", "corr.xmi");
+      EMFImportToENeo.loadModelsAndMetamodels("./emf/metamodels/", "./emf/gen-models/presDel-scaled_n64_c1_H/", "src.xmi", "trg.xmi", "corr.xmi");
       final ExtType2Doc_ConcSync_CO_Run app = new ExtType2Doc_ConcSync_CO_Run();
       final CheckOnlyOperationalStrategy result = app.runCheckOnly("src.xmi", "trg.xmi");
       Collection<Long> _determineInconsistentElements = result.determineInconsistentElements();
@@ -60,7 +60,7 @@ public class EMFImportToENeo {
     resource.setURI(URI.createURI(root.getNsURI()));
   }
   
-  public static void loadModelsAndMetamodels(final String modelPath, final String srcModel, final String trgModel, final String corrModel) {
+  public static void loadModelsAndMetamodels(final String metamodelPath, final String modelPath, final String srcModel, final String trgModel, final String corrModel) {
     final NeoCoreBuilder builder = API_Common.createBuilder();
     builder.clearDataBase();
     final Neo4jImporter importer = new Neo4jImporter();
@@ -68,9 +68,9 @@ public class EMFImportToENeo {
     final String dbName = "neo4j";
     final String passw = "test";
     final XtextResourceSet rs = EMFImportToENeo.createResourceSet();
-    EMFImportToENeo.loadMetamodel(rs, "./emf/metamodels/ExtDocModel.ecore");
-    EMFImportToENeo.loadMetamodel(rs, "./emf/metamodels/ExtTypeModel.ecore");
-    EMFImportToENeo.loadMetamodel(rs, "./emf/metamodels/ExtType2Doc_ConcSync.ecore");
+    EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtDocModel.ecore"));
+    EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtTypeModel.ecore"));
+    EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtType2Doc_ConcSync.ecore"));
     EMFImportToENeo.loadModel(rs, (modelPath + srcModel), srcModel);
     EMFImportToENeo.loadModel(rs, (modelPath + trgModel), trgModel);
     EMFImportToENeo.loadModel(rs, (modelPath + corrModel), corrModel);

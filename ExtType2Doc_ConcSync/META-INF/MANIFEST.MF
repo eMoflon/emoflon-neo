@@ -38,8 +38,10 @@ Export-Package: metamodels,
  org.emoflon.neo.api.exttype2doc_concsync,
  org.emoflon.neo.api.exttype2doc_concsync.metamodels,
  org.emoflon.neo.api.exttype2doc_concsync.models,
+ org.emoflon.neo.api.exttype2doc_concsync.run,
  org.emoflon.neo.api.exttype2doc_concsync.tgg,
- run
+ run,
+ run.emf.modelimport
 Automatic-Module-Name: ExtType2Doc_ConcSync
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13

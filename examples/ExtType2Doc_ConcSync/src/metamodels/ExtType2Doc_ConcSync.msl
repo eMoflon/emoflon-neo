@@ -1,0 +1,39 @@
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtDocModel.msl"
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtTypeModel.msl"
+
+metamodel ExtType2Doc_ConcSync {
+	Project2DocContainer {
+		-^source(0..1)->Project
+		-^target(0..1)->DocContainer
+	}
+	
+	Package2Folder {
+		-^source(0..1)->Package
+		-^target(0..1)->Folder
+	}
+	
+	Type2Doc {
+		-^source(0..1)->Type
+		-^target(0..1)->Doc
+	}
+	
+	Method2Entry {
+		-^source(0..1)->Method
+		-^target(0..1)->Entry
+	}
+	
+	Param2Entry {
+		-^source(0..1)->Parameter
+		-^target(0..1)->Entry
+	}
+	
+	Field2Entry {
+		-^source(0..1)->Field
+		-^target(0..1)->Entry
+	}
+	
+	JDoc2Annotation {		
+		-^source(0..1)->JavaDoc
+		-^target(0..1)->Annotation
+	}
+}

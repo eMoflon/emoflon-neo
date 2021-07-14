@@ -1,0 +1,237 @@
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtTypeModel.msl"
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtDocModel.msl"
+
+//rule BaseModel {
+//	// Source
+//	p : Package {
+//		-types->t0
+//		-types->t1
+//		-types->t2
+//		-types->t3
+//		-types->t4
+//		-corr->f
+//	}
+//	
+//	t0: Type {
+//		-extendedBy->t1	
+//		-corr->d0
+//	}
+//	
+//	t1 : Type {
+//		-extendedBy->t2
+//		-extendedBy->t3
+//		-extendedBy->t4
+//		-corr->d1
+//	}
+//	
+//	t2 : Type {
+//		-corr->d2
+//	}
+//	
+//	t3 : Type {
+//		-corr->d3
+//	}
+//	
+//	t4 : Type {
+//		-corr->d4
+//	}
+//	
+//	// Target
+//	f : Folder {
+//		-docs->d0
+//		-docs->d1
+//		-docs->d2
+//		-docs->d3
+//		-docs->d4
+//	}
+//	
+//	d0 : Doc {
+//		-subDocs->d1
+//	}
+//	
+//	d1 : Doc {
+//		-subDocs->d2
+//		-subDocs->d3
+//		-subDocs->d4
+//	}
+//	
+//	d2 : Doc
+//	
+//	d3 : Doc
+//	
+//	d4 : Doc
+//}
+
+rule AttributeConflict {
+	t1 : Type {
+		-corr->d1
+		.name := "A"
+		._cr_ := true
+	}
+	
+	d1 : Doc {
+		.name := "B"
+		._cr_ := true
+	}
+}
+
+rule MoveConflict {
+	t1 : Type {
+		-extendedBy->t2 {
+			~_de_ := true
+		}
+		-extendedBy->t3
+		-extendedBy->t4
+		-corr->d1
+	}
+	
+	t2 : Type {
+		++-extendedBy->t4 {
+			~_cr_ := true
+		}
+		-corr->d2
+	}
+	
+	t3 : Type {
+		-corr->d3
+	}
+	
+	t4 : Type {
+		-corr->d4
+	}
+	
+	d1 : Doc {
+		-subDocs->d2 {
+			~_de_ := true
+		}
+		-subDocs->d3
+		-subDocs->d4
+	}
+	
+	d2 : Doc {
+		++-subDocs->d3 {
+			~_cr_ := true
+		}
+	}
+	
+	d3 : Doc
+	
+	d4 : Doc
+}
+
+rule DeletePreserveConflict {
+	t1 : Type {
+		-extendedBy->t2 {
+			~_de_ := true	
+		}
+		-corr->d1
+	}
+	
+	t2 : Type {
+		._de_ := true
+		-extendedBy->t3 {
+			~_de_ := true	
+		}
+		-extendedBy->t4 {
+			~_de_ := true	
+		}
+		-corr->d2
+	}
+	
+	t3 : Type {
+		._de_ := true
+		-corr->d3
+	}
+	
+	t4 : Type {
+		._de_ := true
+		-corr->d4
+	}
+	
+	d1 : Doc {
+		-subDocs->d2
+	}
+	
+	d2 : Doc {
+		-subDocs->d3
+		-subDocs->d4
+	}
+	
+	d3 : Doc {
+		++-entries->e1 {
+			~_cr_ := true
+		}
+	}
+	
+	d4 : Doc
+	
+	++e1 : Entry {
+		._cr_ := true
+	}
+}
+
+rule UpperMultiplicityConflict {
+	m1 : Method {
+		-docs->j1
+		++-docs->j2 {
+			~_cr_ := true
+		}
+		-corr->e1
+	}
+	
+	j1 : JavaDoc {
+		-corr->a1
+	}
+	
+	++j2 : JavaDoc {
+		._cr_ := true
+		.comment := "j2"
+	}
+	
+	e1 : Entry {
+		-annotations->a1
+		++-annotations->a3 {
+			~_cr_ := true
+		}
+	}
+	
+	a1 : Annotation 
+	
+	a3 : Annotation {
+		._cr_ := true
+		.value := "j3"
+	}
+}
+
+rule LowerMultiplicityConflict {
+	m1 : Method {
+		-docs->j1
+		-docs->j2 {
+			~_de_ := true
+		}
+		-corr->e1
+	}
+	
+	j1 : JavaDoc {
+		-corr->a1
+	}
+	
+	j2 : JavaDoc {
+		._cr_ := true
+		.comment := "j2"
+		-corr->a2
+	}
+	
+	e1 : Entry {
+		-annotations->a1 {
+			~_de_ := true
+		}
+		-annotations->a2 
+	}
+	
+	a1 : Annotation {
+		._de_ := true
+	}
+	
+	a2 : Annotation 
+}

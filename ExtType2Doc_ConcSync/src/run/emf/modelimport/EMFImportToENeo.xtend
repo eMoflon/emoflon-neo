@@ -16,7 +16,7 @@ class EMFImportToENeo {
 	
 	def static void main(String[] args) {
 		try {
-			loadModelsAndMetamodels("./emf/gen-models/presDel-scaled_n64_c1_H/", "src.xmi", "trg.xmi", "corr.xmi")
+			loadModelsAndMetamodels("./emf/metamodels/", "./emf/gen-models/presDel-scaled_n64_c1_H/", "src.xmi", "trg.xmi", "corr.xmi")
 			val app = new ExtType2Doc_ConcSync_CO_Run()
 			val result = app.runCheckOnly("src.xmi", "trg.xmi")
 			logger.info("inconsistent elements: " + result.determineInconsistentElements)
@@ -41,7 +41,7 @@ class EMFImportToENeo {
 		resource.URI = URI.createURI(root.nsURI)
 	}
 	
-	static def loadModelsAndMetamodels(String modelPath, String srcModel, String trgModel, String corrModel) {
+	static def loadModelsAndMetamodels(String metamodelPath, String modelPath, String srcModel, String trgModel, String corrModel) {
 		
 		val builder = API_Common.createBuilder
 		builder.clearDataBase
@@ -54,9 +54,9 @@ class EMFImportToENeo {
 
 		val rs = createResourceSet()
 
-		loadMetamodel(rs, "./emf/metamodels/ExtDocModel.ecore")
-		loadMetamodel(rs, "./emf/metamodels/ExtTypeModel.ecore")
-		loadMetamodel(rs, "./emf/metamodels/ExtType2Doc_ConcSync.ecore")
+		loadMetamodel(rs, metamodelPath + "ExtDocModel.ecore")
+		loadMetamodel(rs, metamodelPath + "ExtTypeModel.ecore")
+		loadMetamodel(rs, metamodelPath + "ExtType2Doc_ConcSync.ecore")
 
 		loadModel(rs, modelPath + srcModel, srcModel)
 		loadModel(rs, modelPath + trgModel, trgModel)

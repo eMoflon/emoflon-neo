@@ -1,14 +1,26 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut;
 
-import java.io.IOException;
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.delta.validation.InvalidDeltaException;
-import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
 import org.emoflon.ibex.neo.benchmark.SynchronizationBench;
-import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
-import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
+import org.emoflon.neo.api.exttype2doc_shortcut.API_ExtType2Doc_ShortCut;
+import org.emoflon.neo.api.exttype2doc_shortcut.tgg.API_ExtType2Doc_ShortCut_GEN;
+import org.emoflon.neo.api.exttype2doc_shortcut.tgg.API_ExtType2Doc_ShortCut_MI;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.engine.api.constraints.IConstraint;
+import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.neo.engine.modules.matchreprocessors.MIReprocessor;
+import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
+import org.emoflon.neo.engine.modules.ruleschedulers.MIRuleScheduler;
+import org.emoflon.neo.engine.modules.startup.PrepareContextDeltaAttributes;
+import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc_ShortCut_Params> {
 
@@ -16,40 +28,56 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 		super(projectName, pathName);
 	}
 
-//	@Override
-//	protected SYNC initStub(TGGResourceHandler resourceHandler) throws IOException {
-//		Function<IbexOptions, IbexOptions> ibexOptions = options -> {
-//			options.resourceHandler(resourceHandler);
-//			options.ilpSolver(SupportedILPSolver.Sat4J);
-//			options.propagate.usePrecedenceGraph(true);
-//			options.repair.useShortcutRules(true);
-//			options.repair.advancedOverlapStrategies(false);
-//			options.repair.relaxedSCPatternMatching(true);
-//			options.repair.omitUnnecessaryContext(true);
-//			options.repair.disableInjectivity(true);
-//			return options;
-//		};
-//		return new SYNC_App(ibexOptions);
-//	}
-
 	@Override
-	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_ShortCut_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c, Resource p,
-			Resource d) {
-		return null;
-		//return new ExtType2Doc_ShortCut_MDGenerator(s, t, c, p, d);
+	protected void applyDelta(ExtType2Doc_ShortCut_Params parameters) {
+		
+		for (int i=0; i < parameters.num_of_conflicts; i *=3 /* as there are three conflicts per iteration*/) {
+			api.getRule_CreateDeleteConflict().rule().apply();
+			api.getRule_MoveMoveConflict().rule().apply();
+			api.getRule_MoveDeleteConflict().rule().apply();
+		}
+		
 	}
 
 	@Override
-	public ILPBasedOperationalStrategy initOpStrat() {
-		// TODO Auto-generated method stub
-		return null;
+	public ModelIntegrationOperationalStrategy initOpStrat(NeoCoreBuilder builder, SupportedILPSolver solver) {
+		var miAPI = new API_ExtType2Doc_ShortCut_MI(builder);
+		var genAPI = new API_ExtType2Doc_ShortCut_GEN(builder);
+		var genRules = genAPI.getAllRulesForExtType2Doc_ShortCut_GEN();
+		
+		return new ModelIntegrationOperationalStrategy(//
+				solver, //
+				builder, //
+				genRules, //
+				miAPI.getAllRulesForExtType2Doc_ShortCut_MI(), //
+				getNegativeConstraints(builder), //
+				filename_src, //
+				filename_trg//
+		);
 	}
 
 	@Override
-	protected BenchEntry applyDeltaAndRun(ILPBasedOperationalStrategy opStrat, ExtType2Doc_ShortCut_Params parameters,
-			boolean saveTransformedModels) throws IOException, InvalidDeltaException {
-		// TODO Auto-generated method stub
-		return null;
+	public NeoGenerator createGenerator(NeoCoreBuilder builder, SupportedILPSolver solver) {
+		var miAPI = new API_ExtType2Doc_ShortCut_MI(builder);
+		var tripleRules = new API_ExtType2Doc_ShortCut(builder).getTripleRulesOfExtType2Doc_ShortCut();
+		var analyser = new TripleRuleAnalyser(tripleRules);
+		var modelIntegration = initOpStrat(builder, solver);
+		
+		return new NeoGenerator(//
+				miAPI.getAllRulesForExtType2Doc_ShortCut_MI(), //
+				new PrepareContextDeltaAttributes(builder, filename_src, filename_trg), //
+				new NoMoreMatchesTerminationCondition(), //
+				new MIRuleScheduler(analyser), //
+				modelIntegration, //
+				new MIReprocessor(analyser), //
+				modelIntegration, //
+				new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator(filename_src, filename_trg), //
+				List.of(new LoremIpsumStringValueGenerator()));
+	}
+	
+	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
+		return Collections.emptyList();
 	}
 
 }

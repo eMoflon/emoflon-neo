@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ExtType2Doc_ShortCut
-Bundle-SymbolicName: ExtType2Doc_ShortCut
+Bundle-Name: ExtType2Doc_ConcSync
+Bundle-SymbolicName: ExtType2Doc_ConcSync
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.eclipse.xtext;bundle-version="2.16.0",
@@ -29,18 +29,19 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  org.emoflon.neo.victory.adapter;bundle-version="1.0.0",
  org.emoflon.victory.ui;bundle-version="1.0.0",
  org.apache.commons.lang,
- ExtType2Doc_ShortCut,
- ExtType2Doc_ShortCut,
+ ExtType2Doc_ConcSync,
+ ExtType2Doc_ConcSync,
  org.apache.commons.lang,
  org.emoflon.neo.neocore
 Export-Package: metamodels,
  models,
- org.emoflon.neo.api.exttype2doc_shortcut,
- org.emoflon.neo.api.exttype2doc_shortcut.metamodels,
- org.emoflon.neo.api.exttype2doc_shortcut.models,
- org.emoflon.neo.api.exttype2doc_shortcut.run,
+ org.emoflon.neo.api.exttype2doc_concsync,
+ org.emoflon.neo.api.exttype2doc_concsync.metamodels,
+ org.emoflon.neo.api.exttype2doc_concsync.models,
+ org.emoflon.neo.api.exttype2doc_concsync.run,
+ org.emoflon.neo.api.exttype2doc_concsync.tgg,
  run,
- tgg
-Automatic-Module-Name: ExtType2Doc_ShortCut
+ run.emf.modelimport
+Automatic-Module-Name: ExtType2Doc_ConcSync
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-13

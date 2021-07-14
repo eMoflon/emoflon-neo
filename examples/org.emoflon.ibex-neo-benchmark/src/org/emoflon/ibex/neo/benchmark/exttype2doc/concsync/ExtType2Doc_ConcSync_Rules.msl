@@ -1,0 +1,165 @@
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtDocModel.msl"
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtTypeModel.msl"
+
+rule AttributeConflict {
+	T1 : Type {
+		-corr->D1
+		.name := <typeName>
+		._cr_ := true
+	}
+	
+	D1 : Doc {
+		.name := <docName>
+		._cr_ := true
+	}
+}
+
+rule MoveConflict {
+	T1 : Type {
+		-corr->D1
+		-extendedBy->T2 {
+			~_de_ := true
+		}
+		
+		-extendedBy->T3
+		-extendedBy->T4
+	}
+	
+	T2 : Type {
+		-corr->D2
+	}
+	
+	T3 : Type {
+		-corr->D3
+	}
+	
+	T4 : Type {
+		-corr->D4
+		-extendedBy->T2 {
+			~_cr_ := true
+		}
+	}
+	
+	D1 : Doc {
+		-subDocs->D2 {
+			~_de_ := true
+		}
+		
+		-subDocs->D3
+		-subDocs->D4
+	}
+	D2 : Doc
+	D3 : Doc {
+		-subDocs->D2
+	}
+	D4 : Doc
+}
+
+rule DeletePreserveConflict {
+	T1 : Type {
+		-corr->D1
+		-extendedBy->T2 {
+			~_de_ := true
+		}
+	}
+	
+	T2 : Type {
+		-corr->D2
+		
+		-extendedBy->T3 {
+			~_de_ := true
+		}
+		-extendedBy->T4 {
+			~_de_ := true
+		}
+		
+		._de_ := true
+	}
+	
+	T3 : Type {
+		-corr->D3
+		._de_ := true
+	}
+	
+	T4 : Type {
+		-corr->D4
+		._de_ := true
+	}
+	
+	D1 : Doc {
+		-subDocs->D2 
+	}
+	D2 : Doc {
+		-subDocs->D3
+		-subDocs->D4
+	}
+	D3 : Doc {
+		-entries->E1 {
+			~_cr_ := true
+		}
+	}
+	D4 : Doc
+	
+	E1 : Entry {
+		._cr_ := true
+	}
+}
+
+rule MultiplicityConflictUpper {
+	M1 : Method {
+		-docs-> J1
+		-docs-> J2 {
+			~_cr_ := true
+		}
+		-corr-> E1
+	}
+	
+	J1 : JavaDoc {
+		-corr-> A1
+	}
+	J2 : JavaDoc {
+		._cr_ := true
+	}
+	
+	E1 : Entry {
+		-annotations->A1
+		-annotations->A3 {
+			~_cr_ := true
+		}
+	}
+	
+	A1 : Annotation 
+	A3 : Annotation {
+		._cr_ := true
+	}
+}
+
+rule MultiplicityConflictLower {
+	M1 : Method {
+		-docs-> J1
+		-docs-> J2 {
+			~_de_ := true
+		}
+		-corr-> E1
+	}
+	
+	J1 : JavaDoc {
+		-corr-> A1
+	}
+	J2 : JavaDoc {
+		._de_ := true
+		-corr-> A2
+	}
+	
+	E1 : Entry {
+		-annotations->A1 {
+			~_de_ := true
+		}
+		-annotations->A2 
+	}
+	
+	A1 : Annotation {
+		._de_ := true
+	}
+	A2 : Annotation 
+}

@@ -1,0 +1,108 @@
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtType2Doc_ConcSync.msl"
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtDocModel.msl"
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtTypeModel.msl"
+
+rule MigrateProject2DocContainer {
+	-- corr:Project2DocContainer {
+		-- -^source->src
+		-- -^target->trg
+	}
+	
+	src:Project {
+		++-corr->trg {
+			._type_ := "Project2DocContainer"
+		}
+	}
+	
+	trg:DocContainer
+}
+
+rule MigratePackage2Folder {
+	-- corr:Package2Folder {
+		-- -^source->src
+		-- -^target->trg
+	}
+	
+	src:Package {
+		++-corr->trg {
+			._type_ := "Package2Folder"
+		}
+	}
+	
+	trg:Folder
+}
+
+rule MigrateType2Doc {
+	-- corr:Type2Doc {
+		-- -^source->src
+		-- -^target->trg
+	}
+	
+	src:Type {
+		++-corr->trg {
+			._type_ := "Type2Doc"
+		}
+	}
+	
+	trg:Doc
+}
+
+rule MigrateMethod2Entry {
+	-- corr:Method2Entry {
+		-- -^source->src
+		-- -^target->trg
+	}
+	
+	src:Method {
+		++-corr->trg {
+			._type_ := "Method2Entry"
+		}
+	}
+	
+	trg:Entry
+}
+
+rule MigrateParam2Entry {
+	-- corr:Param2Entry {
+		-- -^source->src
+		-- -^target->trg
+	}
+	
+	src:Parameter {
+		++-corr->trg {
+			._type_ := "Param2Entry"
+		}
+	}
+	
+	trg:Entry
+}
+
+rule MigrateField2Entry {
+	-- corr:Field2Entry {
+		-- -^source->src
+		-- -^target->trg
+	}
+	
+	src:Field {
+		++-corr->trg {
+			._type_ := "Field2Entry"
+		}
+	}
+	
+	trg:Entry
+}
+
+rule MigrateJDoc2Annotation {
+	-- corr:JDoc2Annotation {
+		-- -^source->src
+		-- -^target->trg
+	}
+	
+	src:JavaDoc {
+		++-corr->trg {
+			._type_ := "JDoc2Annotation"
+		}
+	}
+	
+	trg:Annotation
+}

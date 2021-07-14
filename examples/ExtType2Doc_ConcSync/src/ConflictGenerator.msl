@@ -1,0 +1,117 @@
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtTypeModel.msl"
+import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtDocModel.msl"
+
+rule MoveMoveConflict {
+	type:Type {
+		-corr->doc
+		-extendedBy->subType {
+			~_de_ := true
+		}
+	}
+	
+	otherType:Type {
+		.enamespace : type::enamespace
+		++-extendedBy->subType {
+			~_cr_ := true
+		}
+	}
+	
+	subType:Type {
+		.enamespace : type::enamespace
+		-corr->subDoc
+	}
+	
+	doc:Doc {
+		-subDocs->subDoc {
+			~_de_ := true
+		}
+	}
+	
+	otherDoc:Doc {
+		.enamespace : doc::enamespace
+		++-subDocs->subDoc {
+			~_cr_ := true
+		}
+	}
+	
+	subDoc:Doc{
+		.enamespace : doc::enamespace
+	}
+}
+
+rule CreateDeleteConflict {
+	
+	type:Type {
+		-corr->doc
+		-extendedBy->subType
+	}
+	
+	subType:Type {
+		.enamespace : type::enamespace
+		-corr->subDoc
+		++-methods->method {
+			~_cr_ := true
+		}
+	}
+	
+	++method:Method{
+		.enamespace := type::enamespace
+		.name := "Test2"
+		._cr_ := true
+	}
+	
+	doc:Doc{
+		-subDocs->subDoc {
+			~_de_ := true
+		}
+		++-entries->entry {
+			~_cr_ := true
+		}
+	}
+	
+	subDoc:Doc{
+		.enamespace : doc::enamespace
+		~_de_ := true
+		-entries->entry{
+			~_de_ := true
+		}
+	}
+	
+	entry:Entry{
+		.enamespace : doc::enamespace
+	}
+}			
+
+rule MoveDeleteConflict {
+	
+	type:Type {
+		-corr->doc
+		-extendedBy->subType {
+			~_de_ := true
+		}
+	}
+	
+	otherType:Type {
+		.enamespace : type::enamespace
+		++-extendedBy->subType {
+			~_cr_ := true
+		}
+	}
+	
+	subType:Type {
+		.enamespace : type::enamespace
+		-corr->subDoc
+	}
+	
+	doc:Doc {
+		-subDocs->subDoc {
+			~_de_ := true
+		}
+	}
+	
+	subDoc:Doc{
+		.enamespace : doc::enamespace
+		._de_ := true
+	}
+}
+
