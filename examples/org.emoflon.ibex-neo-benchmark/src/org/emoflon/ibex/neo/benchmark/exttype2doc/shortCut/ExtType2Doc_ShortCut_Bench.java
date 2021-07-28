@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.emoflon.ibex.neo.benchmark.SynchronizationBench;
+import org.emoflon.neo.api.exttype2doc_shortcut.API_Common;
+import org.emoflon.neo.api.exttype2doc_shortcut.run.API_ConflictGenerator;
 import org.emoflon.neo.api.exttype2doc_shortcut.API_ExtType2Doc_ShortCut;
 import org.emoflon.neo.api.exttype2doc_shortcut.tgg.API_ExtType2Doc_ShortCut_GEN;
 import org.emoflon.neo.api.exttype2doc_shortcut.tgg.API_ExtType2Doc_ShortCut_MI;
@@ -23,18 +25,24 @@ import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGener
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc_ShortCut_Params> {
-
+	
+	protected API_ConflictGenerator api;
+	
 	public ExtType2Doc_ShortCut_Bench(String projectName, String pathName) {
 		super(projectName, pathName);
+		builder = API_Common.createBuilder();
+		api = new API_ConflictGenerator(builder);
 	}
 
 	@Override
 	protected void applyDelta(ExtType2Doc_ShortCut_Params parameters) {
 		
-		for (int i=0; i < parameters.num_of_conflicts; i *=3 /* as there are three conflicts per iteration*/) {
-			api.getRule_CreateDeleteConflict().rule().apply();
-			api.getRule_MoveMoveConflict().rule().apply();
-			api.getRule_MoveDeleteConflict().rule().apply();
+		for (int i=0; i < parameters.num_of_conflicts; i *=5 /* as there are five conflicts per iteration*/) {
+			api.getRule_CreatePackageRoot().rule().apply();
+			api.getRule_CreateTypeRoot().rule().apply();
+			api.getRule_MovePackage().rule().apply();
+			api.getRule_MoveTypeLeaf().rule().apply();
+			api.getRule_MoveTypeRoot().rule().apply();
 		}
 		
 	}

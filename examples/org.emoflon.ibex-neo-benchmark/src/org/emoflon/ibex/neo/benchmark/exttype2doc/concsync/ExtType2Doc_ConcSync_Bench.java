@@ -21,6 +21,8 @@ import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminat
 import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+import org.emoflon.neo.api.exttype2doc_concsync.API_Common;
+import org.emoflon.neo.api.exttype2doc_concsync.run.API_ConflictGenerator;
 
 public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_ConcSync_Params> {
 	
@@ -28,18 +30,23 @@ public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_Con
 	protected int conflict_solved_attr_counter = 0;
 	protected int conflict_solved_delPres_counter = 0;
 	protected int conflict_solved_move_counter = 0;
+	protected API_ConflictGenerator api;
 
 	public ExtType2Doc_ConcSync_Bench(String projectName, String projectPath) {
 		super(projectName, projectPath);
+		builder = API_Common.createBuilder();
+		api = new API_ConflictGenerator(builder);
 	}
 
 	@Override
 	protected void applyDelta(ExtType2Doc_ConcSync_Params parameters) {
 		
-		for (int i=0; i < parameters.num_of_conflicts; i *=3 /* as there are three conflicts per iteration*/) {
-			api.getRule_CreateDeleteConflict().rule().apply();
-			api.getRule_MoveMoveConflict().rule().apply();
-			api.getRule_MoveDeleteConflict().rule().apply();
+		for (int i=0; i < parameters.num_of_conflicts; i *=5 /* as there are five conflicts per iteration*/) {
+			api.getRule_AttributeConflict().rule().apply();
+			api.getRule_DeletePreserveConflict().rule().apply();
+			api.getRule_LowerMultiplicityConflict().rule().apply();
+			api.getRule_MoveConflict().rule().apply();
+			api.getRule_UpperMultiplicityConflict().rule().apply();
 		}
 		
 	}

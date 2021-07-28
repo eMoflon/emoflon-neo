@@ -7,11 +7,10 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
-import org.emoflon.neo.api.exttype2doc_concsync.API_Common;
-import org.emoflon.neo.api.exttype2doc_concsync.API_ConflictGenerator;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.ilp.*;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+//import org.emoflon.neo.api.org.emoflon.benchmark.org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.API_ConflictGenerator;
 
 import run.emf.modelimport.*;
 
@@ -38,8 +37,7 @@ public abstract class NeoBench<OpStrat extends ILPBasedOperationalStrategy, Benc
 	protected Resource delta;
 
 	protected int numOfElements = -1;
-	protected NeoCoreBuilder builder = API_Common.createBuilder();
-	protected API_ConflictGenerator api = new API_ConflictGenerator(builder);
+	protected NeoCoreBuilder builder;
 	protected SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	public NeoBench(String projectName, String projectPath) {
