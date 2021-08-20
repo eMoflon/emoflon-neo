@@ -1,0 +1,135 @@
+import "platform:/resource/ExtType2Doc_ShortCut/src/metamodels/ExtDocModel.msl"
+import "platform:/resource/ExtType2Doc_ShortCut/src/metamodels/ExtTypeModel.msl"
+
+rule MovePackage {
+	P0 : Package {
+		-subPackages-> P1
+		++-subPackages-> P2
+	}
+	
+	P1 : Package {
+		---subPackages-> P2
+		-superPackage-> P0
+	}
+	
+	P2 : Package {
+		---superPackage-> P1
+		++-superPackage-> P0
+	}
+}
+
+rule MoveTypeRoot_N2 {
+	P0 : Package {
+		-subPackages-> P1
+		++-types->T1
+		++-types->T2
+	}
+	
+	P1 : Package {
+		-subPackages-> P2
+		-superPackage->P0
+	}
+	
+	P2 : Package {
+		-superPackage-> P1
+		---types->T1
+		---types->T2
+	}
+	
+	T1 : Type {
+		-extendedBy->T2
+	}
+	
+	T2 : Type {
+		-inheritsFrom->T1
+	}
+} when forbid otherTypeInPackage
+
+pattern otherTypeInPackage {
+	P2 : Package {
+		-types-> T
+	}
+	
+	T : Type
+}
+
+rule MoveTypeLeaf {
+	P0 : Package {
+		-subPackages-> P1
+		++-types->T2
+	}
+	
+	P1 : Package {
+		-subPackages-> P2
+		-superPackage->P0
+	}
+	
+	P2 : Package {
+		-superPackage-> P1
+		-types->T1
+		---types->T2
+	}
+	
+	T1 : Type {
+		---extendedBy->T2
+	}
+	
+	T2 : Type {
+		---inheritsFrom->T1
+	}
+} when forbid otherTypeInheriting
+
+pattern otherTypeInheriting {
+	T2 : Type {
+		-extendedBy->T
+	}
+	
+	T : Type {
+		-inheritsFrom->T2
+	}
+}
+
+rule CreateTypeRoot {
+	P0 : Package {
+		++-types->T0
+		-types->T1
+	}
+	
+	++T0 : Type {
+		++-extendedBy->T1
+	}
+	
+	T1 : Type {
+		++-inheritsFrom->T0
+	}
+} when forbid otherTypeExtended
+
+pattern otherTypeExtended {
+	T1 : Type {
+		-inheritsFrom-> T
+	}
+	
+	T : Type {
+		-extendedBy->T1
+	}
+}
+
+rule CreatePackageRoot {
+	++P0 : Package {
+		++-subPackages->P1
+	}
+	
+	P1 : Package {
+		++-superPackage->P0
+	}	
+} when forbid otherSuperPackage
+
+pattern otherSuperPackage {
+	P1 : Package {
+		-superPackage-> P
+	}
+	
+	P : Package {
+		-subPackages->P1
+	}
+}

@@ -20,8 +20,6 @@ public abstract class IntegrationBench<BP extends BenchParameters> extends NeoBe
 		super(projectName, projectPath);
 	}
 	
-	//public abstract void run(SupportedILPSolver solver) throws Exception;
-	
 	public void run(SupportedILPSolver solver) {
 		try (var builder = API_Common.createBuilder()) {
 	
@@ -45,16 +43,12 @@ public abstract class IntegrationBench<BP extends BenchParameters> extends NeoBe
 		long toc = System.currentTimeMillis();
 		double init = (double) (toc - tic) / 1000;
 
-		//DeltaContainer deltaContainer = (DeltaContainer) delta.getContents().get(0);
 		applyDelta(parameters);
 
 		tic = System.currentTimeMillis();
 		run(solver);
 		toc = System.currentTimeMillis();
 		double resolve = (double) (toc - tic) / 1000;
-
-//		if (saveTransformedModels)
-//			saveModels();
 
 		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve);
 	}

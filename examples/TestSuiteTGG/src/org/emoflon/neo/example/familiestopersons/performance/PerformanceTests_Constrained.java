@@ -15,6 +15,7 @@ import org.emoflon.neo.api.familiestopersons_constrained.API_SonToMale;
 import org.emoflon.neo.api.familiestopersons_constrained.API_SonOfExistingFamilyToMale;
 import org.emoflon.neo.api.familiestopersons_constrained.API_Families2Persons;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.emoflon.neo.api.familiestopersons_constrained.run.FamiliesToPersons_Constrained_CC_Run;
 import org.emoflon.neo.api.familiestopersons_constrained.run.FamiliesToPersons_Constrained_CO_Run;
@@ -174,8 +175,8 @@ public class PerformanceTests_Constrained extends ENeoTest {
 //		}
 //	}
 	
-	//@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
-	@Test
+	@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
+	//@Test
 	public void testPerformanceForRandomModels() {
 		for (int i : new int[]{5,10,20,50}) {
 			Logger.getRootLogger().setLevel(Level.OFF);

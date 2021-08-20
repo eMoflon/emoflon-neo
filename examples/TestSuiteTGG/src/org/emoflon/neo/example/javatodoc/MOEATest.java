@@ -9,6 +9,7 @@ import org.emoflon.neo.engine.ilp.ILPProblem.ILPSolution;
 import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.ilp.MOEAProblem;
 import org.emoflon.neo.engine.modules.ilp.MOEAWrapper;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 public class MOEATest {
@@ -70,7 +71,7 @@ public class MOEATest {
 	
 	int[] config = {123, 124, 125, 134, 135, 145, 234, 235, 245, 345};
 	
-	@Test
+	@Ignore("Not part of the correctness test suite")
 	public void testMultipleObjectives() throws Exception {
 		for (int j=0; j<NR_OF_TEST_RUNS; j++) {
 			Logger.getRootLogger().info("### Start of test run " + j + " ###");

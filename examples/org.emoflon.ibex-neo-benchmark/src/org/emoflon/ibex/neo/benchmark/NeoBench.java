@@ -47,39 +47,30 @@ public abstract class NeoBench<OpStrat extends ILPBasedOperationalStrategy, Benc
 	
 	public abstract ILPBasedOperationalStrategy initOpStrat(NeoCoreBuilder builder, SupportedILPSolver solver);
 	
-	public BenchEntry genAndBench(BenchParams parameters/*, boolean saveTransformedModels*/) {
+	public BenchEntry genAndBench(BenchParams parameters) {
 		genAndStore(parameters);
 		return loadAndBench(parameters);
 	}
 
 	public void genAndStore(BenchParams parameters) {
-			//initResourceSet();
-			//initModels(projectName + "/" + genModelFolder + "/" + parameters.toString());
-
-			//ModelAndDeltaGenerator<?, ?, ?, ?, ?, BenchParams> mdGenerator = initModelAndDeltaGenerator(source, target, corr, protocol, delta);
-			//mdGenerator.gen(parameters);
 			
 			String modelPath = getModelPath(parameters);
 			String metamodelPath = projectPath + "/metamodels/";
 			
 			EMFImportToENeo.loadModelsAndMetamodels(metamodelPath, modelPath, filename_src, filename_trg, filename_corr);
-			//this.numOfElements = mdGenerator.getNumOfElements();
-
-			// TODO persist numOfElements!
 	}
 	
 	protected String getModelPath(BenchParams parameters) {
 		return projectPath + "/" + genModelFolder + "/" + parameters.name + "_n" + parameters.modelScale + "_c" + parameters.numOfChanges + "_H/";
 	}
 	
-	public BenchEntry loadAndBench(BenchParams parameters/*, boolean saveTransformedModels*/) {
+	public BenchEntry loadAndBench(BenchParams parameters) {
 		
 		try {
 			
 			ILPBasedOperationalStrategy opStrat = initOpStrat(builder, solver);
-			//loadModels(parameters);
 
-			return applyDeltaAndRun(opStrat, parameters, solver/*, saveTransformedModels*/);
+			return applyDeltaAndRun(opStrat, parameters, solver);
 		} catch (IOException | InvalidDeltaException e) {
 			e.printStackTrace();
 		}

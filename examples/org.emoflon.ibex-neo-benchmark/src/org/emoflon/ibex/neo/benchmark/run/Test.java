@@ -12,7 +12,7 @@ public class Test {
 
 		ExtType2Doc_ConcSync_Params params = new ExtType2Doc_ConcSync_Params( //
 				"presDel-scaled", // name
-				1, // model size
+				16, // model size
 				ScaleOrientation.HORIZONTAL, // scale orientation
 				1, // number of model changes
 				1.0 // conflict ratio
@@ -20,13 +20,6 @@ public class Test {
 
 		BenchEntry result = bench.genAndBench(params);
 		System.out.println(result);
-//		boolean gen = true;
-//		if (gen) {
-//			bench.genAndStore(params);
-//		} else {
-//			BenchEntry result2 = bench.loadAndBench(params);
-//			System.out.println(result2);
-//		}
 	}
 
 }
