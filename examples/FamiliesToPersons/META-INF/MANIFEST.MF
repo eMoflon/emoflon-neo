@@ -11,7 +11,8 @@ Require-Bundle: org.emoflon.neo.neo4j.adapter,
  org.eclipse.xtext;bundle-version="2.18.0",
  org.apache.commons.logging;bundle-version="1.2.0",
  org.apache.commons.lang,
- org.emoflon.neo.neocore
+ org.emoflon.neo.neocore,
+ org.emoflon.neo.emf
 Automatic-Module-Name: FamiliesToPersons
 Export-Package: org.emoflon.neo.api.familiestopersons,
  org.emoflon.neo.api.familiestopersons.run,

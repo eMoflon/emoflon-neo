@@ -1,0 +1,146 @@
+import "platform:/resource/ExtType2Doc_ShortCut/src/metamodels/ExtTypeModel.msl"
+import "platform:/resource/ExtType2Doc_ShortCut/src/metamodels/ExtDocModel.msl"
+
+rule MovePackage {
+	p0 : Package {
+		-subPackages->p1
+		++-subPackages->p2 {
+			~_cr_ := true
+		}
+	}
+	
+	p1 : Package {
+		-subPackages->p2 {
+			~_de_ := true
+		}
+	}
+	
+	p2 : Package
+}
+
+rule MoveTypeRoot {
+	p0 : Package {
+		-subPackages->p1
+		++-types->t1 {
+			~_cr_ := true
+		}
+		++-types->t2 {
+			~_cr_ := true
+		}
+	}
+	
+	p1 : Package {
+		-subPackages->p2
+	}
+	
+	p2 : Package { 
+		-types->t1 {
+			~_de_ := true
+		}
+		-types->t2 {
+			~_de_ := true
+		}
+	}
+	
+	t1 : Type 
+	
+	t2 : Type {
+		-inheritsFrom->t1
+	}
+} when forbid otherType
+
+pattern otherType {
+	p2 : Package { 
+		-types->t1
+		-types->t2
+		-types->t
+	}
+	
+	t : Type
+	
+	t1 : Type 
+	
+	t2 : Type {
+		-inheritsFrom->t1
+	}
+}
+
+rule MoveTypeLeaf {
+	p0 : Package {
+		-subPackages->p1
+		++-types->t2 {
+			~_cr_ := true
+		}
+	}
+	
+	p1 : Package {
+		-subPackages->p2
+	}
+	
+	p2 : Package { 
+		-types->t1
+		-types->t2 {
+			~_de_ := true
+		}
+	}
+	
+	t1 : Type 
+	
+	t2 : Type {
+		-inheritsFrom->t1 {
+			~_de_ := true
+		}
+	}
+} when forbid otherTypeInherits
+
+pattern otherTypeInherits {
+	
+	t : Type {
+		-inheritsFrom->t2
+	}
+	
+	t2 : Type 
+}
+
+rule CreateTypeRoot {
+	p0 : Package {
+		++-types->t0 {
+			~_cr_ := true
+		}
+		-types->t1
+	}
+	
+	t0 : Type 
+	
+	t1 : Type {
+		++-inheritsFrom->t0 {
+			~_cr_ := true
+		}
+	}
+} when forbid otherTypesIsExtended
+
+pattern otherTypesIsExtended {
+	t : Type 
+	
+	t1 : Type {
+		-inheritsFrom->t
+	}
+}
+
+rule CreatePackageRoot {
+	p1 : Package
+	
+	++p0 : Package {
+		++-subPackages->p1 {
+			~_cr_ := true
+		}
+	}
+} when forbid otherSubPackage
+
+pattern otherSubPackage {
+	p1 : Package
+	
+	p : Package {
+		-subPackages->p1
+	}
+}

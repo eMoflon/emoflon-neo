@@ -2,41 +2,57 @@ package org.emoflon.ibex.neo.benchmark;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.neo.api.org.emoflon.benchmark.API_Common;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
 
-import delta.Delta;
-import delta.DeltaContainer;
+public abstract class SynchronizationBench<BP extends BenchParameters> extends NeoBench<ILPBasedOperationalStrategy, BP> {
 
-public abstract class SynchronizationBench<BP extends BenchParameters> extends IbexBench<SYNC, BP> {
-
-	public SynchronizationBench(String projectName) {
-		super(projectName);
+	public SynchronizationBench(String projectName, String projectPath) {
+		super(projectName, projectPath);
 	}
 
 	@Override
-	protected BenchEntry applyDeltaAndRun(SYNC opStrat, BP parameters, boolean saveTransformedModels) throws IOException, InvalidDeltaException {
+	protected BenchEntry applyDeltaAndRun(ILPBasedOperationalStrategy opStrat, BP parameters, SupportedILPSolver solver/*, boolean saveTransformedModels*/) throws IOException, InvalidDeltaException {
 		long tic = System.currentTimeMillis();
-		opStrat.run();
 		long toc = System.currentTimeMillis();
 		double init = (double) (toc - tic) / 1000;
-		
-		DeltaContainer deltaContainer = (DeltaContainer) delta.getContents().get(0);
-		for (Delta delta : deltaContainer.getDeltas())
-			delta.apply();
-		
+
 		tic = System.currentTimeMillis();
-		opStrat.run();
 		toc = System.currentTimeMillis();
 		double resolve = (double) (toc - tic) / 1000;
-		
-		if (saveTransformedModels)
-			opStrat.saveModels();
-		opStrat.terminate();
 
 		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve);
 	}
+		
+		protected static final Logger logger = Logger.getLogger(IntegrationBench.class);
+		
+		public void run(SupportedILPSolver solver) {
+			try (var builder = API_Common.createBuilder()) {
+		
+				var generator = createGenerator(builder, solver);
+		
+				logger.info("Running generator...");
+				generator.generate();
+				logger.info("Generator terminated.");
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public abstract NeoGenerator createGenerator(NeoCoreBuilder builder, SupportedILPSolver solver);
 
+		abstract protected void applyDelta(BP parameters);
+		
+		@Override
+		public abstract ModelIntegrationOperationalStrategy initOpStrat(NeoCoreBuilder builder, SupportedILPSolver solver);
+	
 }

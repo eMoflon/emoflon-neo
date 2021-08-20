@@ -9,14 +9,17 @@ metamodel SimpleJavaSLE {
 	Method {
 		.name : EString
 		<+>-parameters(0..*)-> Parameter
+		//-type(1..1)-> Clazz
 	}
 	
 	Field {
 		.name : EString
+		//-type(1..1)-> Clazz
 	}
 	
 	Parameter {
 		.name : EString
+		//-type(1..1)-> Clazz
 	}
 }
 

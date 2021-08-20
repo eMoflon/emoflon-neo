@@ -35,8 +35,8 @@ class FWD_OPT extends ILPOperation {
 	
 	override additionalFields(String tggName, String solver) {
 		'''
-			private static SupportedILPSolver solver = SupportedILPSolver.«solver»;
-			private ForwardTransformationOperationalStrategy forwardTransformation;
+			protected static SupportedILPSolver solver = SupportedILPSolver.«solver»;
+			protected ForwardTransformationOperationalStrategy forwardTransformation;
 		'''
 	}
 	

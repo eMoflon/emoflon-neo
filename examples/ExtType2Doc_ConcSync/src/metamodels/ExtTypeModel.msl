@@ -1,0 +1,46 @@
+metamodel ExtTypeModel {
+	
+	abstract NamedElement {
+		.name : EString
+	}
+	
+	Parameter : NamedElement {
+		//-method(0..1)->Method
+	}
+	
+	JavaDoc {
+		.comment : EString
+		//-method(0..1)->Method
+	}
+	
+	Method : NamedElement {
+		-params(0..*)->Parameter
+		//-type(0..1)->Type
+		-docs(1..3)->JavaDoc
+	}
+	
+	Type : NamedElement {
+		.interface : EBoolean
+		-extendedBy(0..*)->Type
+		-inheritsFrom(0..*)->Type
+		-methods(0..*)->Method
+		-fields(0..*)->Field
+		//-package(0..1)->Package
+	}
+	
+	Field : NamedElement {
+		//-type(0..1)->Type
+	}
+	
+	Package : NamedElement {
+		-subPackages(0..*)->Package
+		-superPackage(0..1)->Package
+		-types(0..*)->Type
+		.fQname : EString
+		//-project(0..1)->Project
+	}
+	
+	Project {
+		-rootPackages(0..*)->Package
+	}
+}

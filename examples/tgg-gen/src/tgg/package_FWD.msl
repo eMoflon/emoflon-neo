@@ -1,0 +1,35 @@
+import "platform:/resource/ClassInhHier2DB/JavaKeywords/src/JavaKeywords.msl"
+
+grammar package_FWD {
+	static
+}
+	
+  rule static {
+	this:new {
+		.enamespace : <__srcModelName>
+		~_tr_ : false
+		~_tr_ := true
+	}
+	
+	try:switch {
+		.enamespace : <__srcModelName>
+		~_tr_ : false
+		~_tr_ := true
+	}
+	
+	interface:const {
+		.enamespace : <__srcModelName>
+		-throws->try
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : false
+		~_tr_ := true
+	}
+
+	
+	attributeConstraints {
+	}
+} 
+

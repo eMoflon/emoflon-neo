@@ -1,24 +1,28 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.concsync;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.neo.benchmark.IntegrationBench;
-import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
-import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.CorrPreservationConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePreserveConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.CRSHelper;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictResolver;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
-import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.tgg.run.exttype2doc_concsync.INTEGRATE_App;
-import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.neo.api.exttype2doc_concsync.API_ExtType2Doc_ConcSync;
+import org.emoflon.neo.api.exttype2doc_concsync.tgg.API_ExtType2Doc_ConcSync_GEN;
+import org.emoflon.neo.api.exttype2doc_concsync.tgg.API_ExtType2Doc_ConcSync_MI;
+import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.engine.api.constraints.IConstraint;
+import org.emoflon.neo.engine.modules.NeoGenerator;
+import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
+import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.neo.engine.modules.matchreprocessors.MIReprocessor;
+import org.emoflon.neo.engine.modules.monitors.HeartBeatAndReportMonitor;
+import org.emoflon.neo.engine.modules.ruleschedulers.MIRuleScheduler;
+import org.emoflon.neo.engine.modules.startup.PrepareContextDeltaAttributes;
+import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminationCondition;
+import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
+import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+import org.emoflon.neo.api.exttype2doc_concsync.API_Common;
+import org.emoflon.neo.api.exttype2doc_concsync.run.API_ConflictGenerator;
 
 public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_ConcSync_Params> {
 	
@@ -26,60 +30,65 @@ public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_Con
 	protected int conflict_solved_attr_counter = 0;
 	protected int conflict_solved_delPres_counter = 0;
 	protected int conflict_solved_move_counter = 0;
+	protected API_ConflictGenerator api;
 
-	public ExtType2Doc_ConcSync_Bench(String projectName) {
-		super(projectName);
-	}
-
-	private final IntegrationPattern pattern = new IntegrationPattern(Arrays.asList( //
-			FragmentProvider.APPLY_USER_DELTA //
-			, FragmentProvider.REPAIR //
-			, FragmentProvider.RESOLVE_CONFLICTS //
-			, FragmentProvider.REPAIR //
-			, FragmentProvider.RESOLVE_BROKEN_MATCHES //
-			, FragmentProvider.TRANSLATE //
-			, FragmentProvider.CLEAN_UP //
-	));
-
-	private final ConflictResolver crs = cc -> {
-		conflict_counter++;
-		CRSHelper.forEachResolve(cc, DeletePreserveConflict.class, s -> {
-			s.crs_mergeAndPreserve();
-			conflict_solved_delPres_counter++;
-		});
-		CRSHelper.forEachResolve(cc, CorrPreservationConflict.class, s -> {
-			s.crs_preferSource();
-			conflict_solved_move_counter++;
-		});
-		CRSHelper.forEachResolve(cc, AttributeConflict.class, s -> {
-			s.crs_preferSource();
-			conflict_solved_attr_counter++;
-		});
-	};
-
-	@Override
-	protected INTEGRATE initStub(TGGResourceHandler resourceHandler) throws IOException {
-		Function<IbexOptions, IbexOptions> ibexOptions = options -> {
-			options.resourceHandler(resourceHandler);
-			options.ilpSolver(SupportedILPSolver.Sat4J);
-			options.propagate.usePrecedenceGraph(true);
-			options.repair.useShortcutRules(true);
-			options.repair.advancedOverlapStrategies(false);
-			options.repair.relaxedSCPatternMatching(true);
-			options.repair.omitUnnecessaryContext(true);
-			options.repair.disableInjectivity(true);
-			options.integration.pattern(pattern);
-			options.integration.conflictSolver(crs);
-			return options;
-		};
-
-		return new INTEGRATE_App(ibexOptions);
+	public ExtType2Doc_ConcSync_Bench(String projectName, String projectPath) {
+		super(projectName, projectPath);
+		builder = API_Common.createBuilder();
+		api = new API_ConflictGenerator(builder);
 	}
 
 	@Override
-	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_ConcSync_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c, Resource p,
-			Resource d) {
-		return new ExtType2Doc_ConcSync_MDGenerator(s, t, c, p, d);
+	protected void applyDelta(ExtType2Doc_ConcSync_Params parameters) {
+		
+		for (int i=0; i < parameters.num_of_conflicts; i *=5 /* as there are five conflicts per iteration*/) {
+			api.getRule_AttributeConflict().rule().apply();
+			api.getRule_DeletePreserveConflict().rule().apply();
+			api.getRule_LowerMultiplicityConflict().rule().apply();
+			api.getRule_MoveConflict().rule().apply();
+			api.getRule_UpperMultiplicityConflict().rule().apply();
+		}
+		
 	}
 
+	@Override
+	public ModelIntegrationOperationalStrategy initOpStrat(NeoCoreBuilder builder, SupportedILPSolver solver) {
+		var miAPI = new API_ExtType2Doc_ConcSync_MI(builder);
+		var genAPI = new API_ExtType2Doc_ConcSync_GEN(builder);
+		var genRules = genAPI.getAllRulesForExtType2Doc_ConcSync_GEN();
+		
+		return new ModelIntegrationOperationalStrategy(//
+				solver, //
+				builder, //
+				genRules, //
+				miAPI.getAllRulesForExtType2Doc_ConcSync_MI(), //
+				getNegativeConstraints(builder), //
+				filename_src, //
+				filename_trg//
+		);
+	}
+
+	@Override
+	public NeoGenerator createGenerator(NeoCoreBuilder builder, SupportedILPSolver solver) {
+		var miAPI = new API_ExtType2Doc_ConcSync_MI(builder);
+		var tripleRules = new API_ExtType2Doc_ConcSync(builder).getTripleRulesOfExtType2Doc_ConcSync();
+		var analyser = new TripleRuleAnalyser(tripleRules);
+		var modelIntegration = initOpStrat(builder, solver);
+		
+		return new NeoGenerator(//
+				miAPI.getAllRulesForExtType2Doc_ConcSync_MI(), //
+				new PrepareContextDeltaAttributes(builder, filename_src, filename_trg), //
+				new NoMoreMatchesTerminationCondition(), //
+				new MIRuleScheduler(analyser), //
+				modelIntegration, //
+				new MIReprocessor(analyser), //
+				modelIntegration, //
+				new HeartBeatAndReportMonitor(), //
+				new ModelNameValueGenerator(filename_src, filename_trg), //
+				List.of(new LoremIpsumStringValueGenerator()));
+	}
+	
+	protected Collection<IConstraint> getNegativeConstraints(NeoCoreBuilder builder) {
+		return Collections.emptyList();
+	}
 }

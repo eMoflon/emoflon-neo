@@ -5,8 +5,8 @@ metamodel Families {
 	
 	Family {
 		.name : EString
-		<>-father(0..1)->FamilyMember
-		<>-mother(0..1)->FamilyMember
+		<>-father(0..*)->FamilyMember
+		<>-mother(0..*)->FamilyMember
 		<>-daughters(0..*)->FamilyMember
 		<>-sons(0..*)->FamilyMember
 	}

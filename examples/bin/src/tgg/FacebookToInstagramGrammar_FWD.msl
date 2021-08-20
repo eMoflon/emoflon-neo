@@ -1,0 +1,382 @@
+import "platform:/resource/FacebookToInstagram/src/Facebook.msl"
+import "platform:/resource/FacebookToInstagram/src/Instagram.msl"
+
+grammar FacebookToInstagramGrammar_FWD {
+	NetworkToNetworkIslandRule
+	UserToUserIslandRule
+	UserNetworkBridgeRule
+	RequestFriendship
+	AcceptFriendship
+	IgnoreInterNetworkFollowers
+	ParentsIgnoreRule
+	SpouseIgnoreRule
+	SiblingsIgnoreRule
+}
+	
+  rule NetworkToNetworkIslandRule {
+	fl:FacebookLanguage.Network {
+		.enamespace : <__srcModelName>
+		++-corr->il
+		{
+			._type_ := "NetworkToNetwork"
+		}
+		~_tr_ : false
+		~_tr_ := true
+	}
+
+	++il:InstagramLanguage.Network {
+		.enamespace := <__trgModelName>
+		.description := fl::description
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule UserToUserIslandRule {
+	flu:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		++-corr->ilu
+		{
+			._type_ := "FbUserToInUser"
+		}
+		~_tr_ : false
+		~_tr_ := true
+	}
+
+	++ilu:InstagramLanguage.User {
+		.enamespace := <__trgModelName>
+		.name := flu::name
+	}
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule UserNetworkBridgeRule {
+	f:FacebookLanguage.Network {
+		.enamespace : <__srcModelName>
+		-users->fu
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		-corr->i
+		{
+			._type_ : "NetworkToNetwork"
+		}
+		~_tr_ : true
+	}
+	
+	fu:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-corr->iu
+		{
+			._type_ : "FbUserToInUser"
+		}
+		~_tr_ : true
+	}
+
+	i:InstagramLanguage.Network {
+		.enamespace : <__trgModelName>
+		++-users->iu
+	}
+	
+	iu:InstagramLanguage.User {
+		.enamespace : <__trgModelName>
+	}
+	
+	attributeConstraints {
+	}
+} when UserNetworkBridgeRuleNAC
+
+constraint UserNetworkBridgeRuleNAC = UserNetworkBridgeRule_AlreadyInInstNetworkNAC && UserNetworkBridgeRule_AlreadyInAnInstNetworkNAC
+
+constraint UserNetworkBridgeRule_AlreadyInInstNetworkNAC = forbid UserNetworkBridgeRule_AlreadyInInstNetwork
+
+	pattern UserNetworkBridgeRule_AlreadyInInstNetwork {
+		i : InstagramLanguage.Network {
+			.enamespace : <__trgModelName>
+			-users->iu
+		}
+		iu : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+		}
+		
+	}
+constraint UserNetworkBridgeRule_AlreadyInAnInstNetworkNAC = forbid UserNetworkBridgeRule_AlreadyInAnInstNetwork
+
+	pattern UserNetworkBridgeRule_AlreadyInAnInstNetwork {
+		other : InstagramLanguage.Network {
+			.enamespace : <__trgModelName>
+			-users->iu
+		}
+		iu : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+		}
+		
+	}
+
+  rule RequestFriendship {
+
+	iu:InstagramLanguage.User {
+		.enamespace : <__trgModelName>
+	}
+	
+	in:InstagramLanguage.User {
+		.enamespace : <__trgModelName>
+		++-follows->iu
+	}
+	
+	attributeConstraints {
+	}
+} when RequestFriendshipNAC
+
+constraint RequestFriendshipNAC = RequestFriendship_NoDoubleFollowershipInstagramNAC && RequestFriendship_NoRedundantFollowershipInstagramNAC
+
+constraint RequestFriendship_NoDoubleFollowershipInstagramNAC = forbid RequestFriendship_NoDoubleFollowershipInstagram
+
+	pattern RequestFriendship_NoDoubleFollowershipInstagram {
+		in : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+			-follows->iu
+		}
+		iu : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+		}
+		
+	}
+constraint RequestFriendship_NoRedundantFollowershipInstagramNAC = forbid RequestFriendship_NoRedundantFollowershipInstagram
+
+	pattern RequestFriendship_NoRedundantFollowershipInstagram {
+		in : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+		}
+		iu : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+			-follows->in
+		}
+		
+	}
+
+  rule AcceptFriendship {
+	fn:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-corr->in
+		{
+			._type_ : "FbUserToInUser"
+		}
+		~_tr_ : true
+	}
+	
+	fri:Friendship {
+		.enamespace : <__srcModelName>
+		-friends->fn
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		-friends->fu
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : false
+		~_tr_ := true
+	}
+	
+	n:FacebookLanguage.Network {
+		.enamespace : <__srcModelName>
+		-friendships->fri
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		-users->fn
+		{
+			~_tr_ : true
+		}
+		-users->fu
+		{
+			~_tr_ : true
+		}
+		~_tr_ : true
+	}
+	
+	fu:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-corr->iu
+		{
+			._type_ : "FbUserToInUser"
+		}
+		~_tr_ : true
+	}
+
+	in:InstagramLanguage.User {
+		.enamespace : <__trgModelName>
+		++-follows->iu
+	}
+	
+	iu:InstagramLanguage.User {
+		.enamespace : <__trgModelName>
+		-follows->in
+	}
+	
+	attributeConstraints {
+	}
+} when AcceptFriendshipNAC
+
+constraint AcceptFriendshipNAC = forbid AcceptFriendship_NoDoubleFollowershipInstagram
+
+	pattern AcceptFriendship_NoDoubleFollowershipInstagram {
+		in : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+			-follows->iu
+		}
+		iu : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+		}
+		
+	}
+
+  rule IgnoreInterNetworkFollowers {
+	nu:FacebookLanguage.Network {
+		.enamespace : <__srcModelName>
+		-users->fu
+		{
+			~_tr_ : true
+		}
+		~_tr_ : true
+	}
+	
+	fn:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-corr->in
+		{
+			._type_ : "FbUserToInUser"
+		}
+		~_tr_ : true
+	}
+	
+	n:FacebookLanguage.Network {
+		.enamespace : <__srcModelName>
+		-users->fn
+		{
+			~_tr_ : true
+		}
+		~_tr_ : true
+	}
+	
+	fu:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-corr->iu
+		{
+			._type_ : "FbUserToInUser"
+		}
+		~_tr_ : true
+	}
+
+	in:InstagramLanguage.User {
+		.enamespace : <__trgModelName>
+		++-follows->iu
+	}
+	
+	iu:InstagramLanguage.User {
+		.enamespace : <__trgModelName>
+		-follows->in
+	}
+	
+	attributeConstraints {
+	}
+} when IgnoreInterNetworkFollowersNAC
+
+constraint IgnoreInterNetworkFollowersNAC = forbid IgnoreInterNetworkFollowers_NoDoubleFollowershipInstagram
+
+	pattern IgnoreInterNetworkFollowers_NoDoubleFollowershipInstagram {
+		in : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+			-follows->iu
+		}
+		iu : InstagramLanguage.User {
+			.enamespace : <__trgModelName>
+		}
+		
+	}
+
+  rule ParentsIgnoreRule {
+	fn:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		~_tr_ : true
+	}
+	
+	fu:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-parents->fn
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : true
+	}
+
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule SpouseIgnoreRule {
+	fu:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-spouse->fn
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : true
+	}
+	
+	fn:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-spouse->fu
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : true
+	}
+
+	
+	attributeConstraints {
+	}
+} 
+
+
+  rule SiblingsIgnoreRule {
+	fn:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-siblings->fu
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : true
+	}
+	
+	fu:FacebookLanguage.User {
+		.enamespace : <__srcModelName>
+		-siblings->fn
+		{
+			~_tr_ : false
+			~_tr_ := true
+		}
+		~_tr_ : true
+	}
+
+	
+	attributeConstraints {
+	}
+} 
+

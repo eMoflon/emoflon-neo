@@ -1,0 +1,52 @@
+metamodel ExtDocModel {
+	
+	abstract NamedElement {
+		.name : EString
+	}
+	
+	Folder : NamedElement {
+		-docs(1..*)->Doc
+		//-container(0..1)->DocContainer
+	}	
+	
+	Doc : NamedElement {
+		//-folder(0..1)->Folder
+		-entries(0..*)->Entry
+		-subDocs(0..*)->Doc
+		-superDocs(0..*)->Doc
+	}
+	
+	Entry : NamedElement {
+		//-doc(0..1)->Doc
+		-annotations(0..2)->Annotation
+		-glossaryEntries(0..*)->GlossaryEntry
+		.type : EString
+	}
+	
+	Annotation {
+		//-entry(0..1)->Entry
+		.value: EString
+	}
+	
+	Glossary {
+		-entries(0..*)->GlossaryEntry
+		//-container(0..1)->DocContainer
+	}
+	
+	GlossaryEntry : NamedElement {
+		//-glossary(0..1)->Glossary
+		-entries(0..*)->Entry
+	}
+	
+	DocContainer {
+		-folders(0..*)->Folder
+		-glossary(0..1)->Glossary
+		
+	}
+	
+	enum EntryType {
+		FIELD
+		METHOD
+	}
+}
+	

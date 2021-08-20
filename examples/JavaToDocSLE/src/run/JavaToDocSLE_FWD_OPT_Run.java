@@ -57,12 +57,17 @@ public class JavaToDocSLE_FWD_OPT_Run {
 		var genRules = genAPI.getAllRulesForJavaToDocSLE_GEN();
 		var tripleRules = new API_JavaToDocSLE(builder).getTripleRulesOfJavaToDocSLE();
 		var analyser = new TripleRuleAnalyser(tripleRules);
-		
+		var fwd_optRules = fwd_optAPI.getAllRulesForJavaToDocSLE_FWD_OPT();
+		// remove ignore rules
+		fwd_optRules.remove(fwd_optAPI.getRule_AddGlossaryRule().rule());
+		fwd_optRules.remove(fwd_optAPI.getRule_AddGlossaryEntryRule().rule());
+		fwd_optRules.remove(fwd_optAPI.getRule_LinkGlossaryEntryRule().rule());
+				
 		forwardTransformation = new CorrCreationOperationalStrategy(//
 				solver, //
 				builder, //
 				genRules, //
-				fwd_optAPI.getAllRulesForJavaToDocSLE_FWD_OPT(), //
+				fwd_optRules, //
 				getNegativeConstraints(builder), //
 				srcModel, //
 				trgModel//

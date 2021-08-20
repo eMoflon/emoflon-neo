@@ -1,0 +1,10 @@
+<Persons:PersonRegister xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Persons="platform:/resource/FamiliesToPersons/src/metamodels/Persons.ecore">
+  <persons xsi:type="Persons:Male" name="Homer Simpson" birthday="1968-03-05T01:00:00.000+0100"/>
+  <persons xsi:type="Persons:Female" name="Marge Simpson" birthday="1970-12-22T01:00:00.000+0100"/>
+  <persons xsi:type="Persons:Male" name="Bart Simpson" birthday="19788-06-06T01:00:00.000+0100"/>
+  <persons xsi:type="Persons:Female" name="Lisa Simpson" birthday="1990-10-01T01:00:00.000+0100"/>
+  <persons xsi:type="Persons:Female" name="Maggie Simpson" birthday="1995-02-05T01:00:00.000+0100"/>
+  <persons xsi:type="Persons:Male" name="Ned Flanders" birthday="1970-01-01T01:00:00.000+0100"/>
+  <persons xsi:type="Persons:Male" name="Rod Flanders" birthday="1990-02-22T01:00:00.000+0100"/>
+  <persons xsi:type="Persons:Male" name="Todd Flanders" birthday="1990-02-22T01:00:00.000+0100"/>
+</Persons:PersonRegister>

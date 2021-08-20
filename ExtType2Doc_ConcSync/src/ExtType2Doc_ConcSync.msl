@@ -49,9 +49,12 @@ tripleRule ExtendingType2Doc : ExtType2Doc_ConcSync {
 		
 		t:Type {
 			++-extendedBy->nt
+			//-package->p
 		}
 		
 		++nt:Type {
+			++-inheritsFrom->t
+			//++-package->p
 			.name := <name>
 		}
 	}
@@ -62,10 +65,13 @@ tripleRule ExtendingType2Doc : ExtType2Doc_ConcSync {
 			++-docs->nd
 		}
 		d:Doc {
+			//-folder->f
 			++-subDocs->nd
 		}
 		
 		++nd:Doc {
+			//++-folder->f
+			++-superDocs->d
 			.name := <name>
 		}
 	}
@@ -85,6 +91,7 @@ tripleRule Field2Entry : ExtType2Doc_ConcSync {
 		}
 		
 		++f:Field {
+			//++-type->t
 			.name := <name>
 		}
 	}
@@ -95,6 +102,7 @@ tripleRule Field2Entry : ExtType2Doc_ConcSync {
 		}
 		
 		++e:Entry {
+			//++-doc->d
 			.name := <name>
 			.type := "FIELD"
 		}
@@ -113,7 +121,9 @@ tripleRule Glossary : ExtType2Doc_ConcSync {
 			++-glossary->g
 		}
 		
-		++g:Glossary
+		++g:Glossary {
+			//++-container->dc
+		}
 	}
 }
 
@@ -124,7 +134,9 @@ tripleRule GlossaryEntry : ExtType2Doc_ConcSync{
 			++-entries->ge
 		}
 		
-		++ge:GlossaryEntry
+		++ge:GlossaryEntry {
+			//++-glossary->g
+		}
 	}
 }
 
@@ -134,7 +146,9 @@ tripleRule GlossaryLink : ExtType2Doc_ConcSync {
 		e:Entry {
 			++-glossaryEntries->ge
 		}
-		ge:GlossaryEntry
+		ge:GlossaryEntry {
+			++-entries->e
+		}
 	}
 }
 
@@ -146,6 +160,7 @@ tripleRule JDoc2Annotation : ExtType2Doc_ConcSync {
 		}
 		
 		++j:JavaDoc {
+			//++-method->m
 			.comment := <value>
 		}
 	}
@@ -156,6 +171,7 @@ tripleRule JDoc2Annotation : ExtType2Doc_ConcSync {
 		}
 		
 		++a:Annotation {
+			//++-entry->e
 			.value := <value>
 		}
 	}
@@ -174,6 +190,7 @@ tripleRule Method2Entry : ExtType2Doc_ConcSync {
 		}
 		
 		++m:Method {
+			//++-type->t
 			.name := <name>
 		}
 	}
@@ -184,6 +201,7 @@ tripleRule Method2Entry : ExtType2Doc_ConcSync {
 		}
 		
 		++e:Entry {
+			//++-doc->d
 			.name := <name>
 			.type:= "METHOD"
 		}
@@ -203,6 +221,7 @@ tripleRule Package2Folder : ExtType2Doc_ConcSync {
 		}
 		
 		++p:Package {
+			//++-project->pr
 			.name := <name>
 		}
 	}
@@ -213,6 +232,7 @@ tripleRule Package2Folder : ExtType2Doc_ConcSync {
 		}
 		
 		++f:Folder {
+			//++-container->dc
 			.name := <name>
 		}
 	}
@@ -230,7 +250,9 @@ source {
 		++-params->p
 	}
 	
-	++p:Parameter
+	++p:Parameter {
+		//++-method->m
+	}
 }
 
 target {
@@ -265,6 +287,7 @@ tripleRule Type2Doc : ExtType2Doc_ConcSync {
 		}
 		
 		++t:Type {
+			//++-package->p
 			.name := <name>
 		}
 	}
@@ -275,6 +298,7 @@ tripleRule Type2Doc : ExtType2Doc_ConcSync {
 		}
 		
 		++d:Doc {
+			//++-folder->f
 			.name := <name>
 		}
 	}
