@@ -41,7 +41,7 @@ public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_Con
 	@Override
 	protected void applyDelta(ExtType2Doc_ConcSync_Params parameters) {
 		
-		for (int i=0; i < parameters.num_of_conflicts; i *=5 /* as there are five conflicts per iteration*/) {
+		for (int i=0; i < parameters.num_of_conflicts; i +=5 /* as there are five conflicts per iteration*/) {
 			api.getRule_AttributeConflict().rule().apply();
 			api.getRule_DeletePreserveConflict().rule().apply();
 			api.getRule_LowerMultiplicityConflict().rule().apply();

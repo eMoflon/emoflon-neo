@@ -12,7 +12,7 @@ public class Test {
 
 		ExtType2Doc_ConcSync_Params params = new ExtType2Doc_ConcSync_Params( //
 				"presDel-scaled", // name
-				16, // model size
+				1, // model size
 				ScaleOrientation.HORIZONTAL, // scale orientation
 				1, // number of model changes
 				1.0 // conflict ratio
