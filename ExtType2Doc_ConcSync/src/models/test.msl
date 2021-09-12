@@ -1,6 +1,0 @@
-import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtTypeModel.msl"
-import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtDocModel.msl"
-
-model test {
-	
-}
