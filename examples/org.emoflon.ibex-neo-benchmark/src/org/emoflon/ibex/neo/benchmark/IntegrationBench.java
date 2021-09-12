@@ -39,11 +39,9 @@ public abstract class IntegrationBench<BP extends BenchParameters> extends NeoBe
 	@Override
 	protected BenchEntry applyDeltaAndRun(ILPBasedOperationalStrategy opStrat, BP parameters, SupportedILPSolver solver/*, boolean saveTransformedModels*/) throws IOException, InvalidDeltaException {
 		long tic = System.currentTimeMillis();
-		run(solver);
+		applyDelta(parameters);
 		long toc = System.currentTimeMillis();
 		double init = (double) (toc - tic) / 1000;
-
-		applyDelta(parameters);
 
 		tic = System.currentTimeMillis();
 		run(solver);

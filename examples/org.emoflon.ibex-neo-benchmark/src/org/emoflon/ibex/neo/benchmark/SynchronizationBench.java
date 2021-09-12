@@ -22,10 +22,12 @@ public abstract class SynchronizationBench<BP extends BenchParameters> extends N
 	@Override
 	protected BenchEntry applyDeltaAndRun(ILPBasedOperationalStrategy opStrat, BP parameters, SupportedILPSolver solver/*, boolean saveTransformedModels*/) throws IOException, InvalidDeltaException {
 		long tic = System.currentTimeMillis();
+		applyDelta(parameters);
 		long toc = System.currentTimeMillis();
 		double init = (double) (toc - tic) / 1000;
 
 		tic = System.currentTimeMillis();
+		run(solver);
 		toc = System.currentTimeMillis();
 		double resolve = (double) (toc - tic) / 1000;
 

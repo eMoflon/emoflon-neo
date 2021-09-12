@@ -169,7 +169,7 @@ rule DeletePreserveConflict {
 		._cr_ := true
 	}
 }
-
+ 
 rule UpperMultiplicityConflict {
 	m1 : Method {
 		-docs->j1
