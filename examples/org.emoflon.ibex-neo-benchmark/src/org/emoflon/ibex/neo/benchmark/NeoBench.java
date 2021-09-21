@@ -20,9 +20,9 @@ public abstract class NeoBench<OpStrat extends ILPBasedOperationalStrategy, Benc
 	protected final String projectPath;
 	protected final String genModelFolder = "gen-models";
 
-	protected final String filename_src = "/src.xmi";
-	protected final String filename_trg = "/trg.xmi";
-	protected final String filename_corr = "/corr.xmi";
+	protected final String filename_src = "src.xmi";
+	protected final String filename_trg = "trg.xmi";
+	protected final String filename_corr = "corr.xmi";
 	protected final String filename_protocol = "/protocol.xmi";
 	protected final String filename_delta = "/delta.xmi";
 
