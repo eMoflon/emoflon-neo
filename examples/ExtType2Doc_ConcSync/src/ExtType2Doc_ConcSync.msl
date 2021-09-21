@@ -48,7 +48,7 @@ tripleRule ExtendingType2Doc : ExtType2Doc_ConcSync {
 		}
 		
 		t:Type {
-			++-extendedBy->nt
+			//++-extendedBy->nt
 		}
 		
 		++nt:Type {
@@ -63,7 +63,7 @@ tripleRule ExtendingType2Doc : ExtType2Doc_ConcSync {
 			++-docs->nd
 		}
 		d:Doc {
-			++-subDocs->nd
+			//++-subDocs->nd
 		}
 		
 		++nd:Doc {
