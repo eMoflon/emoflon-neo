@@ -15,7 +15,8 @@ public class Test {
 				1, // model size
 				ScaleOrientation.HORIZONTAL, // scale orientation
 				1, // number of model changes
-				1.0 // conflict ratio
+				1.0, // conflict rati
+				""
 		);
 
 		BenchEntry result = bench.genAndBench(params);

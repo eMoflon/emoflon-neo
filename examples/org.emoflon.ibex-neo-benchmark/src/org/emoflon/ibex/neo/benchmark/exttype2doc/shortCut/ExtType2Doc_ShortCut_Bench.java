@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.emoflon.ibex.neo.benchmark.SynchronizationBench;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.ExtType2Doc_ConcSync_Bench;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.ExtType2Doc_ConcSync_Params;
+import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
+import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
 import org.emoflon.neo.api.exttype2doc_shortcut.API_Common;
 import org.emoflon.neo.api.exttype2doc_shortcut.run.API_ConflictGenerator;
 import org.emoflon.neo.api.exttype2doc_shortcut.API_ExtType2Doc_ShortCut;
@@ -37,7 +41,7 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 	@Override
 	protected void applyDelta(ExtType2Doc_ShortCut_Params parameters) {
 		
-		for (int i=0; i < parameters.num_of_conflicts; i *=5 /* as there are five conflicts per iteration*/) {
+		for (int i=0; i < parameters.num_of_conflicts; i +=5 /* as there are five conflicts per iteration*/) {
 			api.getRule_CreatePackageRoot().rule().apply();
 			api.getRule_CreateTypeRoot().rule().apply();
 			api.getRule_MovePackage().rule().apply();
@@ -88,4 +92,18 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 		return Collections.emptyList();
 	}
 
+	public static void main(String[] args) {
+		ExtType2Doc_ShortCut_Bench bench = new ExtType2Doc_ShortCut_Bench("../ExtType2Doc_ShortCut/emf/", "../ExtType2Doc_ShortCut/emf/");
+
+		ExtType2Doc_ShortCut_Params params = new ExtType2Doc_ShortCut_Params( //
+				args[0], // name
+				Integer.valueOf(args[1]), // model scale
+				ScaleOrientation.valueOf(args[2].contains("H") ? "HORIZONTAL" : "VERTICAL"), // scale orientation
+				Integer.valueOf(args[3]), // number of changes
+				args[4]
+		);
+
+		BenchEntry<ExtType2Doc_ShortCut_Params> result = bench.genAndBench(params);
+		System.out.println(result);
+	}
 }

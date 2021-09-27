@@ -25,8 +25,8 @@ tripleGrammar ExtType2Doc_ShortCut {
 		Field2Entry
 		Method2Entry
 		Package2Folder
-		Param2Entry
-		Project2DocCont
+		Param2Entry 
+		Project2DocCont 
 		SubPackage2Folder
 		Type2Doc
 	}
