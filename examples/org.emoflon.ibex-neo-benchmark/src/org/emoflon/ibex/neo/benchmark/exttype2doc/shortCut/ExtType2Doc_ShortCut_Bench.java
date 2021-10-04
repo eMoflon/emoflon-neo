@@ -37,18 +37,31 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 		builder = API_Common.createBuilder();
 		api = new API_ConflictGenerator(builder);
 	}
-
+	
 	@Override
 	protected void applyDelta(ExtType2Doc_ShortCut_Params parameters) {
 		
-		for (int i=0; i < parameters.num_of_conflicts; i +=5 /* as there are five conflicts per iteration*/) {
-			api.getRule_CreatePackageRoot().rule().apply();
-			api.getRule_CreateTypeRoot().rule().apply();
-			api.getRule_MovePackage().rule().apply();
-			api.getRule_MoveTypeLeaf().rule().apply();
-			api.getRule_MoveTypeRoot().rule().apply();
+		for (int i=0; i < parameters.num_of_conflicts; i+=10 /* as there are five conflicts per iteration*/) {
+			switch(parameters.delta) {
+			case "CREATE_ROOT":
+				api.getRule_CreatePackageRoot().rule().apply();
+				continue;
+			case "CREATE_TYPE_ROOT": 
+				api.getRule_CreateTypeRoot().rule().apply();
+				continue;
+			case "MOVE_PACKAGE":
+				api.getRule_MovePackage().rule().apply();
+				continue;
+			case "MOVE_TYPE_LEAF":
+				api.getRule_MoveTypeLeaf().rule().apply();
+				continue;
+			case "MOVE_TYPE_ROOT":
+				api.getRule_MoveTypeRoot().rule().apply();
+				continue;
+			default: 
+				throw new RuntimeException("Delta: " + parameters.delta + " is unknown");
+			}
 		}
-		
 	}
 
 	@Override
