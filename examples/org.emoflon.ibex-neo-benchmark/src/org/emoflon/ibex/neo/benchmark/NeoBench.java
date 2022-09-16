@@ -61,7 +61,7 @@ public abstract class NeoBench<OpStrat extends ILPBasedOperationalStrategy, Benc
 	}
 	
 	protected String getModelPath(BenchParams parameters) {
-		return projectPath + "/" + genModelFolder + "/" + parameters.name + "_n" + parameters.modelScale + "_c" + parameters.numOfChanges + "_H/";
+		return projectPath + "/" + genModelFolder + "/" + parameters.name + "_n" + parameters.modelScale + "_c" + parameters.numOfChanges + "_H" + (parameters.delta.isEmpty() ? "/" : "_" + (parameters.delta + "/"));
 	}
 	
 	public BenchEntry loadAndBench(BenchParams parameters) {

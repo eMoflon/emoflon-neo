@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="ASCII"?>
+<org.emoflon.delta:DeltaContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ExtTypeModel="platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore" xmlns:org.emoflon.delta="platform:/plugin/org.emoflon.delta/model/Delta.ecore">
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_6"/>
+      <createdLinks trg="//@deltas.0/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.0/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.0"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_4"/>
+      <createdLinks trg="//@deltas.1/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.1/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.1"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_7"/>
+      <createdLinks trg="//@deltas.2/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.2/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.2"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_3"/>
+      <createdLinks trg="//@deltas.3/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.3/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.3"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_1"/>
+      <createdLinks trg="//@deltas.4/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.4/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.4"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_0"/>
+      <createdLinks trg="//@deltas.5/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.5/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.5"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_9"/>
+      <createdLinks trg="//@deltas.6/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.6/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.6"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_2"/>
+      <createdLinks trg="//@deltas.7/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.7/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.7"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_8"/>
+      <createdLinks trg="//@deltas.8/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.8/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.8"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+  <deltas>
+    <structuralDelta>
+      <createdObjects xsi:type="ExtTypeModel:Package" name="NewRootPackage_5"/>
+      <createdLinks trg="//@deltas.9/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Project/rootPackages"/>
+        <src href="src.xmi#/"/>
+      </createdLinks>
+      <createdLinks src="//@deltas.9/@structuralDelta/@createdObjects.0">
+        <type href="../../../ExtTypeModel/model/ExtTypeModel.ecore#//Package/subPackages"/>
+        <trg href="src.xmi#//@rootPackages.9"/>
+      </createdLinks>
+    </structuralDelta>
+  </deltas>
+</org.emoflon.delta:DeltaContainer>
