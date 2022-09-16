@@ -15,11 +15,11 @@ grammar ClassInhHier2DB_CC {
 		{
 			._type_ := "PackageToDatabase"
 		}
-		.name : db::title
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
+		.title : classpackage::name
 	}
 	
 	attributeConstraints {
@@ -43,7 +43,6 @@ grammar ClassInhHier2DB_CC {
 		{
 			._type_ := "ClazzToTable"
 		}
-		.name : table::heading
 	}
 
 	db:DB {
@@ -53,6 +52,7 @@ grammar ClassInhHier2DB_CC {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 	}
 	
 	attributeConstraints {
@@ -109,11 +109,11 @@ grammar ClassInhHier2DB_CC {
 		{
 			._type_ := "AttributeToColumn"
 		}
-		.name : column::name
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 	}
 	
 	table:Table {

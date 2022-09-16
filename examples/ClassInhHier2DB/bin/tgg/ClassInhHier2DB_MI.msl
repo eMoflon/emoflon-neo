@@ -64,12 +64,12 @@ grammar ClassInhHier2DB_MI {
 			._type_ := "PackageToDatabase"
 		}
 		.name : db::title
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -83,7 +83,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "PackageToDatabase"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	++db:DB {
@@ -107,7 +107,7 @@ grammar ClassInhHier2DB_MI {
 
 	db:DB {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -168,27 +168,27 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-package->classpackage
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		++-corr->table
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
 		-tables->table
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
 		.heading : clazz::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -208,13 +208,13 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-package->classpackage
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		-corr->table
 		{
 			._type_ : "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	db:DB {
@@ -225,7 +225,7 @@ grammar ClassInhHier2DB_MI {
 	table:Table {
 		.enamespace : <__trgModelName>
 		.heading : clazz::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -245,13 +245,13 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-package->classpackage
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		++-corr->table
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	db:DB {
@@ -262,7 +262,7 @@ grammar ClassInhHier2DB_MI {
 	table:Table {
 		.enamespace : <__trgModelName>
 		.heading : clazz::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -282,13 +282,13 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-package->classpackage
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		++-corr->table
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	db:DB {
@@ -321,21 +321,21 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
 		-tables->table
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
 		.heading : clazz::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -358,21 +358,21 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
 		-tables->table
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
 		.heading : clazz::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -402,13 +402,13 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__trgModelName>
 		-tables->table
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	attributeConstraints {
@@ -460,17 +460,17 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-superClass->clazz
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		-package->classpackage
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		++-corr->table
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	classpackage:ClassPackage {
@@ -500,13 +500,13 @@ grammar ClassInhHier2DB_MI {
 		++-superClass->clazz
 		-package->classpackage
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		-corr->table
 		{
 			._type_ : "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	classpackage:ClassPackage {
@@ -536,13 +536,13 @@ grammar ClassInhHier2DB_MI {
 		++-superClass->clazz
 		-package->classpackage
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		++-corr->table
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	classpackage:ClassPackage {
@@ -571,14 +571,14 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-superClass->clazz
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		++-package->classpackage
 		-corr->table
 		{
 			._type_ : "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	classpackage:ClassPackage {
@@ -607,14 +607,14 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-superClass->clazz
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		++-package->classpackage
 		++-corr->table
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	classpackage:ClassPackage {
@@ -647,7 +647,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	classpackage:ClassPackage {
@@ -680,7 +680,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	classpackage:ClassPackage {
@@ -750,7 +750,7 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-attributes->attribute
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		-corr->table
 		{
@@ -765,19 +765,19 @@ grammar ClassInhHier2DB_MI {
 			._type_ := "AttributeToColumn"
 		}
 		.name : column::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
 		-columns->column
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
@@ -790,7 +790,7 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-attributes->attribute
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		-corr->table
 		{
@@ -805,12 +805,12 @@ grammar ClassInhHier2DB_MI {
 			._type_ : "AttributeToColumn"
 		}
 		.name : column::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	table:Table {
@@ -827,7 +827,7 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-attributes->attribute
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		-corr->table
 		{
@@ -842,12 +842,12 @@ grammar ClassInhHier2DB_MI {
 			._type_ := "AttributeToColumn"
 		}
 		.name : column::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	table:Table {
@@ -864,7 +864,7 @@ grammar ClassInhHier2DB_MI {
 		.enamespace : <__srcModelName>
 		-attributes->attribute
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 		-corr->table
 		{
@@ -878,7 +878,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "AttributeToColumn"
 		}
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	++column:Column {
@@ -912,19 +912,19 @@ grammar ClassInhHier2DB_MI {
 			._type_ : "AttributeToColumn"
 		}
 		.name : column::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
 		-columns->column
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
@@ -949,19 +949,19 @@ grammar ClassInhHier2DB_MI {
 			._type_ := "AttributeToColumn"
 		}
 		.name : column::name
-		~_ex_ : true
+		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
 		-columns->column
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
@@ -990,14 +990,14 @@ grammar ClassInhHier2DB_MI {
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		~_ex_ : true
+		~_cr_ : true
 	}
 	
 	table:Table {
 		.enamespace : <__trgModelName>
 		-columns->column
 		{
-			~_ex_ : true
+			~_cr_ : true
 		}
 	}
 	
