@@ -1,0 +1,123 @@
+import "platform:/resource/ClassInhHier2DB/src/metamodels/ClassInheritanceHierarchy.msl"
+import "platform:/resource/ClassInhHier2DB/src/metamodels/Database.msl"
+
+tripleGrammar ClassInhHier2DB {
+	source {
+		ClassInheritanceHierarchy
+	}
+	
+	target {
+		Database
+	}
+	
+	correspondence {
+		ClassPackage <- PackageToDatabase -> DB
+		Clazz <- ClazzToTable -> Table
+		Attribute <- AttributeToColumn -> Column
+	}
+	
+	rules {
+		PackageToDatabaseRule
+		ClassToTableRule
+		SubClassToTableRule
+		AttributeToColumnRule
+	}
+}
+
+tripleRule PackageToDatabaseRule : ClassInhHier2DB {
+	source {
+		++ classpackage : ClassPackage {
+			.name := <packageName>
+		}
+		
+	}
+	
+	target {
+		++ db : DB {
+			.title := <packageName>
+		}
+	}
+	
+	correspondence {
+		++ classpackage <-:PackageToDatabase-> db
+	}
+} forbid src(packageNameIsTaken)
+
+pattern packageNameIsTaken {
+	classpackage : ClassPackage {
+		.name : <packageName>
+	}
+}
+
+tripleRule ClassToTableRule : ClassInhHier2DB {
+  source {
+	classpackage:ClassPackage
+	++clazz:Clazz {
+		++ - package->classpackage
+		.name := <clazzname>	
+	}  
+  }
+
+  target {
+	db:DB {
+		++ - tables->table
+	}
+	++table:Table {
+		.heading := <clazzname>	
+	}
+  }
+
+  correspondence {
+	classpackage <-:PackageToDatabase-> db
+	++ clazz <-:ClazzToTable-> table
+  }
+
+}
+
+
+tripleRule SubClassToTableRule : ClassInhHier2DB {
+	source {
+		++subClazz:Clazz {
+			++ - superClass->clazz
+			++ - package->classpackage
+		}
+		classpackage:ClassPackage
+		clazz:Clazz {
+			- package->classpackage
+		} 
+	}
+	
+	target {
+		table:Table
+	}
+	
+	correspondence {
+		clazz <-:ClazzToTable-> table
+		++ subClazz <-:ClazzToTable-> table
+	}
+}
+
+tripleRule AttributeToColumnRule : ClassInhHier2DB {
+	source {
+		clazz:Clazz {
+			++ - attributes->attribute
+		}
+		++attribute:Attribute {
+			.name := <attributeName>
+		}
+	}
+	
+	target {
+		++column:Column {
+			.name := <attributeName>
+		}
+		table:Table {
+			++ - columns->column
+		}
+	}
+
+	correspondence {
+		clazz <-:ClazzToTable-> table
+		++ attribute <-:AttributeToColumn-> column
+	}
+}

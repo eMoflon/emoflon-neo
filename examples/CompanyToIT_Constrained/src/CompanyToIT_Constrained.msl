@@ -25,7 +25,7 @@ tripleGrammar CompanyToIT_Constrained {
 	}
 	
 	constraints {
-		NetworkHas2Laptops
+//		NetworkHas2Laptops
 //		No2Network
 //		No2Ceo
 //		No2Admins
@@ -182,27 +182,27 @@ tripleRule EmployeeToLaptopRule : CompanyToIT_Constrained -> EmployeeToDevice {
 	}
 }
 
-pattern PremisePattern{
-	it : IT {
-		-network-> network
-	}
-	
-	network : Network 
-	
-} 
-
-pattern ConclusionPattern-> PremisePattern[network->network]{
-	network : Network {
-		-laptop->l1
-		-laptop->l2
-	}
-	
-	l1 : Laptop
-	l2 : Laptop
-}
-
-constraint NetworkHas2Laptops = if PremisePattern then ConclusionPattern
-
+//pattern PremisePattern{
+//	it : IT {
+//		-network-> network
+//	}
+//	
+//	network : Network 
+//	
+//} 
+//
+//pattern ConclusionPattern-> PremisePattern[network->network]{
+//	network : Network {
+//		-laptop->l1
+//		-laptop->l2
+//	}
+//	
+//	l1 : Laptop
+//	l2 : Laptop
+//}
+//
+//constraint NetworkHas2Laptops = if PremisePattern then ConclusionPattern
+//
 //pattern No2NetworkConstraint{
 //	rout: Router{
 //		-network->net1
