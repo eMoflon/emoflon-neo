@@ -3,8 +3,8 @@ package org.emoflon.neo.example.facebooktoinstagram;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
-import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_CC_Run;
-import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_CO_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CC_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CO_Run;
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.facebooktoinstagram.API_FacebookToInstagramTriplesForConstraintTesting;
 
 
@@ -19,7 +19,7 @@ public class Constraint_CO_CC_Tests extends ENeoTest{
 				api.getModel_ConsistentTarget(), //
 				api.getRule_ConsistentTriple().rule());
 
-		testForConsistency(new FacebookToInstagram_Constrained_CO_Run("ConsistentSource", "ConsistentTarget").runCheckOnly(), 19);
+		testForConsistency(new FacebookToInstagramFASE_CO_Run("ConsistentSource", "ConsistentTarget").runCheckOnly(), 19);
 	}
 	
 	
@@ -27,7 +27,7 @@ public class Constraint_CO_CC_Tests extends ENeoTest{
 	public void testConsistentTriple_CC() throws Exception {
 		exportTriple(api.getModel_ConsistentSource(), //
 				api.getModel_ConsistentTarget());
-		testForConsistency(new FacebookToInstagram_Constrained_CC_Run("ConsistentSource", "ConsistentTarget").runCorrCreation(),
+		testForConsistency(new FacebookToInstagramFASE_CC_Run("ConsistentSource", "ConsistentTarget").runCorrCreation(),
 				19);
 	}
 			
@@ -38,7 +38,7 @@ public class Constraint_CO_CC_Tests extends ENeoTest{
 				api.getModel_InConsistentTarget2(), //
 				api.getRule_InConsistentTriple2().rule());
 
-		testForInconsistency(new FacebookToInstagram_Constrained_CO_Run("InConsistentSource2", "InConsistentTarget2").runCheckOnly(),
+		testForInconsistency(new FacebookToInstagramFASE_CO_Run("InConsistentSource2", "InConsistentTarget2").runCheckOnly(),
 				14, 4);
 	}
 	
@@ -49,7 +49,7 @@ public class Constraint_CO_CC_Tests extends ENeoTest{
 				api.getModel_InConsistentTarget2(), //
 				api.getRule_InConsistentTriple2().rule());
 
-		testForInconsistency(new FacebookToInstagram_Constrained_CC_Run("InConsistentSource2", "InConsistentTarget2").runCorrCreation(),
+		testForInconsistency(new FacebookToInstagramFASE_CC_Run("InConsistentSource2", "InConsistentTarget2").runCorrCreation(),
 				14, 7);
 	}
 	
@@ -60,7 +60,7 @@ public class Constraint_CO_CC_Tests extends ENeoTest{
 				api.getModel_InConsistentTarget3(), //
 				api.getRule_InConsistentTriple3().rule());
 
-		testForInconsistency(new FacebookToInstagram_Constrained_CO_Run("InConsistentSource3", "InConsistentTarget3").runCheckOnly(),
+		testForInconsistency(new FacebookToInstagramFASE_CO_Run("InConsistentSource3", "InConsistentTarget3").runCheckOnly(),
 				19, 4);
 	}
 	
@@ -71,7 +71,7 @@ public class Constraint_CO_CC_Tests extends ENeoTest{
 				api.getModel_InConsistentTarget3(), //
 				api.getRule_InConsistentTriple3().rule());
 
-		testForInconsistency(new FacebookToInstagram_Constrained_CC_Run("InConsistentSource3", "InConsistentTarget3").runCorrCreation(),
+		testForInconsistency(new FacebookToInstagramFASE_CC_Run("InConsistentSource3", "InConsistentTarget3").runCorrCreation(),
 				19, 7);
 	}
 	
