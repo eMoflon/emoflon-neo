@@ -72,7 +72,7 @@ public class EMFImportToENeo {
       final XtextResourceSet rs = EMFImportToENeo.createResourceSet();
       EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtDocModel.ecore"));
       EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtTypeModel.ecore"));
-      EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtType2Doc_ConcSync.ecore"));
+      EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtType2Doc_ShortCut.ecore"));
       EMFImportToENeo.loadModel(rs, (modelPath + srcModel), srcModel);
       EMFImportToENeo.loadModel(rs, (modelPath + trgModel), trgModel);
       EMFImportToENeo.loadModel(rs, (modelPath + corrModel), corrModel);

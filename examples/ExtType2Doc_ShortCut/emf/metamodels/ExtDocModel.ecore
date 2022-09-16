@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="ExtDocModel" nsURI="platform:/resource/ExtDocModel/model/ExtDocModel.ecore"
+    nsPrefix="ExtDocModel">
+  <eClassifiers xsi:type="ecore:EClass" name="NamedElement" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Folder" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="docs" lowerBound="1" upperBound="-1"
+        eType="#//Doc" containment="true" eOpposite="#//Doc/folder"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="container" eType="#//DocContainer"
+        eOpposite="#//DocContainer/folders"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Doc" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="folder" eType="#//Folder"
+        eOpposite="#//Folder/docs"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entries" upperBound="-1"
+        eType="#//Entry" containment="true" eOpposite="#//Entry/doc"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="subDocs" upperBound="-1"
+        eType="#//Doc" eOpposite="#//Doc/superDocs"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="superDocs" upperBound="-1"
+        eType="#//Doc" eOpposite="#//Doc/subDocs"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Entry" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="doc" eType="#//Doc" eOpposite="#//Doc/entries"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="annotations" upperBound="2"
+        eType="#//Annotation" containment="true" eOpposite="#//Annotation/entry"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="glossaryEntries" upperBound="-1"
+        eType="#//GlossaryEntry" eOpposite="#//GlossaryEntry/entries"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//EntryType"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Annotation">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entry" eType="#//Entry"
+        eOpposite="#//Entry/annotations"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Glossary">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entries" upperBound="-1"
+        eType="#//GlossaryEntry" containment="true" eOpposite="#//GlossaryEntry/glossary"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="container" eType="#//DocContainer"
+        eOpposite="#//DocContainer/glossary"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GlossaryEntry" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="glossary" eType="#//Glossary"
+        eOpposite="#//Glossary/entries"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entries" upperBound="-1"
+        eType="#//Entry" eOpposite="#//Entry/glossaryEntries"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EntryType">
+    <eLiterals name="FIELD"/>
+    <eLiterals name="METHOD"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DocContainer">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="folders" upperBound="-1"
+        eType="#//Folder" containment="true" eOpposite="#//Folder/container"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="glossary" eType="#//Glossary"
+        containment="true" eOpposite="#//Glossary/container"/>
+  </eClassifiers>
+</ecore:EPackage>

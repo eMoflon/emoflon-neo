@@ -893,9 +893,14 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	public Collection<Long> getExistingElements(String sourceModel, String targetModel) {
-		return getAllElementIDsInTriple(sourceModel, targetModel).stream()
-				.filter(e -> getElementsInDelta(sourceModel, targetModel, NeoCoreConstants._EX_PROP).contains(e))
-				.collect(Collectors.toSet());
+		Collection<Long> allElementIDs = getAllElementIDsInTriple(sourceModel, targetModel);
+		Collection<Long> allDeltaElements = getElementsInDelta(sourceModel, targetModel, NeoCoreConstants._EX_PROP);
+		allDeltaElements.retainAll(allElementIDs);
+		return allDeltaElements;
+		
+//		return getAllElementIDsInTriple(sourceModel, targetModel).stream()
+//				.filter(e -> getElementsInDelta(sourceModel, targetModel, NeoCoreConstants._EX_PROP).contains(e))
+//				.collect(Collectors.toSet());
 	}
 
 	public void setDeltaAttributes(Collection<Long> ids) {

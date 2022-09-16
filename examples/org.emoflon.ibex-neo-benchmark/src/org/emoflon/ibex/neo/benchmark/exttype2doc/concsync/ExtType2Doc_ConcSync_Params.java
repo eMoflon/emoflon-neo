@@ -18,8 +18,8 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 	public final int num_of_changes;
 	public final int num_of_conflicts;
 
-	public ExtType2Doc_ConcSync_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges, double conflictRatio) {
-		super(name, modelScale, scaleOrientation, numOfChanges);
+	public ExtType2Doc_ConcSync_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges, double conflictRatio, String delta) {
+		super(name, modelScale, scaleOrientation, numOfChanges, delta);
 
 		switch (scaleOrientation) {
 		case HORIZONTAL:
@@ -48,4 +48,25 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 		num_of_conflicts = (int) (num_of_changes * conflictRatio);
 	}
 
+	@Override
+	public String[] serializeInputParameters() {
+		return new String[] { //
+				name, //
+				String.valueOf(modelScale), //
+				scaleOrientation.toString(), //
+				String.valueOf(num_of_changes), //
+				delta.toString() //
+		};
+	}
+	
+	@Override
+	public String[] getInputParameterNames() {
+		return new String[] { //
+				"name", //
+				"model_scale", //
+				"scale_orientation", //
+				"num_of_changes", //
+				"delta_type" //
+		};
+	}
 }

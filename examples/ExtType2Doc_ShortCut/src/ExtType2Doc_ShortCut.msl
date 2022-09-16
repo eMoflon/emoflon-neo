@@ -25,8 +25,8 @@ tripleGrammar ExtType2Doc_ShortCut {
 		Field2Entry
 		Method2Entry
 		Package2Folder
-		Param2Entry
-		Project2DocCont
+		Param2Entry 
+		Project2DocCont 
 		SubPackage2Folder
 		Type2Doc
 	}
@@ -44,10 +44,10 @@ tripleRule ExtendingType2Doc : ExtType2Doc_ShortCut {
 	}
 	t:Type {
 		.interface : false
-		++-extendedBy->nt
 	}
 	
 	++nt:Type {
+		++-inheritsFrom->t
 		.name := <name>
 	}
 }
@@ -58,10 +58,11 @@ target {
 		++-docs->nd
 	}
 	d:Doc {
-		++-subDocs->nd
+		
 	}
 	
 	++nd:Doc {
+		++-superDocs->d
 		.name := <name>
 	}
 }
@@ -211,7 +212,7 @@ correspondence {
 }
 
 tripleRule Type2Doc : ExtType2Doc_ShortCut {
-	source { 
+	source {
 	p:Package {
 		++-types->t
 	}
