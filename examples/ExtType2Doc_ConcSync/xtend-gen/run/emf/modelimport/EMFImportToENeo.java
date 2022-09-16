@@ -23,9 +23,9 @@ import run.ExtType2Doc_ConcSync_CO_Run;
 @SuppressWarnings("all")
 public class EMFImportToENeo {
   private static final Logger logger = Logger.getLogger(EMFImportToENeo.class);
-  
+
   private static NeoCoreBuilder builder = API_Common.createBuilder();
-  
+
   public static void main(final String[] args) {
     try {
       EMFImportToENeo.loadModelsAndMetamodels("./emf/metamodels/", "./emf/gen-models/presDel-scaled_n64_c1_H/", "src.xmi", "trg.xmi", "corr.xmi");
@@ -45,23 +45,23 @@ public class EMFImportToENeo {
       }
     }
   }
-  
+
   private static XtextResourceSet createResourceSet() {
     return ENeoUtil.createEMSLStandaloneResourceSet(".");
   }
-  
+
   private static void loadModel(final ResourceSet rs, final String uri, final String label) {
     final Resource resource = rs.getResource(URI.createURI(uri), true);
     resource.setURI(URI.createURI(label));
   }
-  
+
   private static void loadMetamodel(final ResourceSet rs, final String uri) {
     Resource resource = rs.getResource(URI.createURI(uri), true);
     EObject _get = resource.getContents().get(0);
     final EPackage root = ((EPackage) _get);
     resource.setURI(URI.createURI(root.getNsURI()));
   }
-  
+
   public static void loadModelsAndMetamodels(final String metamodelPath, final String modelPath, final String srcModel, final String trgModel, final String corrModel) {
     try {
       EMFImportToENeo.builder.clearDataBase();

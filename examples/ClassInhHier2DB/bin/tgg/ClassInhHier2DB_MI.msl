@@ -43,12 +43,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "PackageToDatabase"
 		}
-		.name : db::title
 		~_ex_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
+		.title : classpackage::name
 		~_ex_ : true
 	}
 	
@@ -63,12 +63,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "PackageToDatabase"
 		}
-		.name : db::title
 		~_cr_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
+		.title : classpackage::name
 		~_cr_ : true
 	}
 	

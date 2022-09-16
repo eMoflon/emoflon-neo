@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.neo.api.classinhhier2db.API_ClassInhHier2DB;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.emoflon.neo.api.classinhhier2db.run.ClassInhHier2DB_CC_Run;
 import org.emoflon.neo.api.classinhhier2db.run.ClassInhHier2DB_CO_Run;
@@ -152,8 +153,8 @@ public class PerformanceTests extends ENeoTest {
 //		}
 //	}
 	
-	//@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
-	@Test
+	@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
+	//@Test
 	public void testPerformanceForRandomModels() throws Exception {
 		for (int i : new int[]{/*1,2,5,10,20,50*/100}) {
 			Logger.getRootLogger().setLevel(Level.OFF);
