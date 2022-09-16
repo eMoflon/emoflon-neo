@@ -126,10 +126,10 @@ public class PerformanceTests_Constrained extends ENeoTest {
 	@Ignore("Performance tests are not part of the test suite, enable it for testing performance")
 	//@Test
 	public void testPerformanceForRandomModels() {
-		for (int i : new int[]{5,10,20,50}) {
+		for (int i : new int[]{/*1,2,5,10,20,50*/100}) {
 			Logger.getRootLogger().setLevel(Level.OFF);
 			runTestForRandomModelsCO(i);
-			runTestForRandomModelsCC(i);
+			//runTestForRandomModelsCC(i);
 			runTestForRandomModelsFWD_OPT(i);
 			runTestForRandomModelsBWD_OPT(i);
 			//runTestForRandomModelsMI(i,i);

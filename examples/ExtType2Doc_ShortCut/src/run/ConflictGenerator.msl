@@ -110,16 +110,23 @@ rule CreateTypeRoot {
 		-types->t1
 	}
 	
-	t0 : Type 
+	++t0 : Type {
+		._cr_ := true
+		.enamespace := "src.xmi"
+	}
 	
 	t1 : Type {
 		++-inheritsFrom->t0 {
 			~_cr_ := true
 		}
 	}
-} when forbid otherTypesIsExtended
+} when correctnessTypes
 
-pattern otherTypesIsExtended {
+constraint noOtherTypeIsExtended = forbid otherTypeIsExtended
+constraint notAlreadyCreatedType = forbid alreadyCreatedType
+constraint correctnessTypes = noOtherTypeIsExtended && notAlreadyCreatedType
+
+pattern otherTypeIsExtended {
 	t : Type 
 	
 	t1 : Type {
@@ -127,20 +134,47 @@ pattern otherTypesIsExtended {
 	}
 }
 
+pattern alreadyCreatedType {
+	t1: Type {
+		._cr_ : true
+	}
+}
+
 rule CreatePackageRoot {
+	pr : Project {
+		-rootPackages-> p1 {
+			~_de_ := true
+		}
+		++-rootPackages-> p0 {
+			~_cr_ := true
+		}
+	}
+	
 	p1 : Package
 	
 	++p0 : Package {
+		.enamespace := "src.xmi"
+		._cr_ := true
 		++-subPackages->p1 {
 			~_cr_ := true
 		}
 	}
-} when forbid otherSubPackage
+} when correctnessPackage
+
+constraint noOtherSubPackage = forbid otherSubPackage 
+constraint notAlreadyCreatedPackage = forbid alreadyCreatedPackage
+constraint correctnessPackage = noOtherSubPackage && notAlreadyCreatedPackage
 
 pattern otherSubPackage {
 	p1 : Package
 	
 	p : Package {
 		-subPackages->p1
+	}
+}
+
+pattern alreadyCreatedPackage {
+	p1: Package {
+		._cr_ : true
 	}
 }

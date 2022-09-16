@@ -1,67 +1,6 @@
 import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtTypeModel.msl"
 import "platform:/resource/ExtType2Doc_ConcSync/src/metamodels/ExtDocModel.msl"
 
-//rule BaseModel {
-//	// Source
-//	p : Package {
-//		-types->t0
-//		-types->t1
-//		-types->t2
-//		-types->t3
-//		-types->t4
-//		-corr->f
-//	}
-//	
-//	t0: Type {
-//		-extendedBy->t1	
-//		-corr->d0
-//	}
-//	
-//	t1 : Type {
-//		-extendedBy->t2
-//		-extendedBy->t3
-//		-extendedBy->t4
-//		-corr->d1
-//	}
-//	
-//	t2 : Type {
-//		-corr->d2
-//	}
-//	
-//	t3 : Type {
-//		-corr->d3
-//	}
-//	
-//	t4 : Type {
-//		-corr->d4
-//	}
-//	
-//	// Target
-//	f : Folder {
-//		-docs->d0
-//		-docs->d1
-//		-docs->d2
-//		-docs->d3
-//		-docs->d4
-//	}
-//	
-//	d0 : Doc {
-//		-subDocs->d1
-//	}
-//	
-//	d1 : Doc {
-//		-subDocs->d2
-//		-subDocs->d3
-//		-subDocs->d4
-//	}
-//	
-//	d2 : Doc
-//	
-//	d3 : Doc
-//	
-//	d4 : Doc
-//}
-
 rule AttributeConflict {
 	t1 : Type {
 		-corr->d1
@@ -167,6 +106,7 @@ rule DeletePreserveConflict {
 	
 	++e1 : Entry {
 		._cr_ := true
+		.enamespace := "trg.xmi"
 	}
 }
  
@@ -186,6 +126,7 @@ rule UpperMultiplicityConflict {
 	++j2 : JavaDoc {
 		._cr_ := true
 		.comment := "j2"
+		.enamespace := "src.xmi"
 	}
 	
 	e1 : Entry {

@@ -47,8 +47,10 @@ public abstract class IntegrationBench<BP extends BenchParameters> extends NeoBe
 		run(solver);
 		toc = System.currentTimeMillis();
 		double resolve = (double) (toc - tic) / 1000;
+		
+		int ram = calcUsedRAM();
 
-		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve);
+		return new BenchEntry<>(parameters, numOfElements, init, resolve, ram, 1.0);
 	}
 
 	abstract protected void applyDelta(BP parameters);
@@ -56,4 +58,8 @@ public abstract class IntegrationBench<BP extends BenchParameters> extends NeoBe
 	@Override
 	public abstract ModelIntegrationOperationalStrategy initOpStrat(NeoCoreBuilder builder, SupportedILPSolver solver);
 
+	protected int calcUsedRAM() {
+		Runtime.getRuntime().gc();
+		return (int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024));
+	}
 }

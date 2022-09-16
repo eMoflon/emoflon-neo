@@ -23,7 +23,7 @@ metamodel ExtDocModel {
 		.type : EString
 	}
 	
-	Annotation {
+	Annotation { 
 		//-entry(0..1)->Entry
 		.value: EString
 	}

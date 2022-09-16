@@ -134,8 +134,8 @@ class MI extends ILPOperation {
 			return "~_ex_ : true"
 		// Optional Create Rule: Marked Element 
 		else if (!isGreenInRule(ruleID, greenElements, element))
-			//return "~_cr_ : true"
-			return "~_ex_ : true"
+			return "~_cr_ : true"
+			//return "~_ex_ : true"
 		// Optional Create Rule: Created Element
 		else
 			return ""
