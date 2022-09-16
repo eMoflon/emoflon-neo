@@ -30,8 +30,10 @@ public abstract class SynchronizationBench<BP extends BenchParameters> extends N
 		run(solver);
 		toc = System.currentTimeMillis();
 		double resolve = (double) (toc - tic) / 1000;
+		
+		int ram = calcUsedRAM();
 
-		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve);
+		return new BenchEntry<>(parameters, numOfElements, init, resolve, ram, 1.0);
 	}
 		
 		protected static final Logger logger = Logger.getLogger(IntegrationBench.class);
@@ -57,4 +59,8 @@ public abstract class SynchronizationBench<BP extends BenchParameters> extends N
 		@Override
 		public abstract ModelIntegrationOperationalStrategy initOpStrat(NeoCoreBuilder builder, SupportedILPSolver solver);
 	
+		protected int calcUsedRAM() {
+			Runtime.getRuntime().gc();
+			return (int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024));
+		}
 }

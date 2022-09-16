@@ -57,7 +57,7 @@ class EMFImportToENeo {
 
 		loadMetamodel(rs, metamodelPath + "ExtDocModel.ecore")
 		loadMetamodel(rs, metamodelPath + "ExtTypeModel.ecore")
-		loadMetamodel(rs, metamodelPath + "ExtType2Doc_ConcSync.ecore")
+		loadMetamodel(rs, metamodelPath + "ExtType2Doc_ShortCut.ecore")
 
 		loadModel(rs, modelPath + srcModel, srcModel)
 		loadModel(rs, modelPath + trgModel, trgModel)
