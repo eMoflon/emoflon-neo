@@ -1,7 +1,7 @@
 metamodel Company {
 	Company {
 		.name : EString
-		<+>-ceo(0..*)-> CEO
+		<+>-ceo(0..1)-> CEO
 		<+>-admin(0..*)-> Admin
 		<+>-employee(0..*)-> Employee
 	}
