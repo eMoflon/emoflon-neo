@@ -51,5 +51,6 @@ Require-Bundle: org.eclipse.emf.common;bundle-version="2.15.0",
  FamiliesToPersons,
  JavaToDoc,
  JavaToDocSLE,
+ ClassInhHier2DB,
  TestSuiteGT
 Import-Package: org.eclipse.core.commands

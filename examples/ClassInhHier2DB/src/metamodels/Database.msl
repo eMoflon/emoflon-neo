@@ -1,0 +1,16 @@
+metamodel Database {
+	DB {
+		.title : EString
+		<+>-tables(0..*)-> Table
+	}
+	
+	Table {
+		.heading : EString
+		<+>-columns(0..*)-> Column
+	}
+	
+	Column {
+		.name : EString
+	}
+}
+
