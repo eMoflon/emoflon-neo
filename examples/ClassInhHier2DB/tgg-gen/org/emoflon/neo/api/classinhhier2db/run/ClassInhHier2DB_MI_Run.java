@@ -72,6 +72,7 @@ public class ClassInhHier2DB_MI_Run {
 		var miAPI = new API_ClassInhHier2DB_MI(builder);
 		var genRules = genAPI.getAllRulesForClassInhHier2DB_GEN();
 		var analyser = new TripleRuleAnalyser(new API_ClassInhHier2DB(builder).getTripleRulesOfClassInhHier2DB());
+				
 		modelIntegration = new ModelIntegrationOperationalStrategy(//
 				solver, //
 				builder, //

@@ -1,7 +1,7 @@
 package org.emoflon.neo.example.companytoit;
 
-import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
-import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+import static run.ClassInhHier2DB_GEN_Run.SRC_MODEL_NAME;
+import static run.ClassInhHier2DB_GEN_Run.TRG_MODEL_NAME;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

@@ -15,11 +15,11 @@ grammar ClassInhHier2DB_CO {
 		{
 			._type_ : "PackageToDatabase"
 		}
-		.name : db::title
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
+		.title : classpackage::name
 	}
 	
 	attributeConstraints {
@@ -109,11 +109,11 @@ grammar ClassInhHier2DB_CO {
 		{
 			._type_ : "AttributeToColumn"
 		}
-		.name : column::name
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 	}
 	
 	table:Table {

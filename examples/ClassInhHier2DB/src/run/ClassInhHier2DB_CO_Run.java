@@ -1,16 +1,16 @@
 package run;
 
-import static run.CompanyToIT_GEN_Run.SRC_MODEL_NAME;
-import static run.CompanyToIT_GEN_Run.TRG_MODEL_NAME;
+import static run.ClassInhHier2DB_GEN_Run.SRC_MODEL_NAME;
+import static run.ClassInhHier2DB_GEN_Run.TRG_MODEL_NAME;
 
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.companytoit.API_Common;
-import org.emoflon.neo.api.companytoit.API_CompanyToIT;
-import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_CO;
-import org.emoflon.neo.api.companytoit.tgg.API_CompanyToIT_GEN;
+import org.emoflon.neo.api.classinhhier2db.API_Common;
+import org.emoflon.neo.api.classinhhier2db.API_ClassInhHier2DB;
+import org.emoflon.neo.api.classinhhier2db.tgg.API_ClassInhHier2DB_CO;
+import org.emoflon.neo.api.classinhhier2db.tgg.API_ClassInhHier2DB_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
@@ -23,8 +23,8 @@ import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrateg
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
-public class CompanyToIT_CO_Run {
-	private static final Logger logger = Logger.getLogger(CompanyToIT_CO_Run.class);
+public class ClassInhHier2DB_CO_Run {
+	private static final Logger logger = Logger.getLogger(ClassInhHier2DB_CO_Run.class);
 	private static final SupportedILPSolver solver = SupportedILPSolver.Gurobi;
 
 	private String srcModel = SRC_MODEL_NAME;
@@ -33,7 +33,7 @@ public class CompanyToIT_CO_Run {
 
 	public static void main(String[] pArgs) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
-		var app = new CompanyToIT_CO_Run();
+		var app = new ClassInhHier2DB_CO_Run();
 		app.run();
 	}
 
@@ -48,21 +48,21 @@ public class CompanyToIT_CO_Run {
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var api = new API_CompanyToIT(builder);
-		var genAPI = new API_CompanyToIT_GEN(builder);
-		var coAPI = new API_CompanyToIT_CO(builder);
+		var api = new API_ClassInhHier2DB(builder);
+		var genAPI = new API_ClassInhHier2DB_GEN(builder);
+		var coAPI = new API_ClassInhHier2DB_CO(builder);
 		checkOnly = new CheckOnlyOperationalStrategy(//
 				solver, //
-				genAPI.getAllRulesForCompanyToIT_GEN(), //
-				coAPI.getAllRulesForCompanyToIT_CO(), //
-				api.getConstraintsOfCompanyToIT(), //
+				genAPI.getAllRulesForClassInhHier2DB_GEN(), //
+				coAPI.getAllRulesForClassInhHier2DB_CO(), //
+				api.getConstraintsOfClassInhHier2DB(), //
 				builder, //
 				srcModel, //
 				trgModel//
 		);
 
 		return new NeoGenerator(//
-				coAPI.getAllRulesForCompanyToIT_CO(), //
+				coAPI.getAllRulesForClassInhHier2DB_CO(), //
 				new NoOpStartup(), //
 				new OneShotTerminationCondition(), //
 				new AllRulesAllMatchesScheduler(), //
