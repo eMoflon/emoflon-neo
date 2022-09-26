@@ -7,12 +7,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.emoflon.neo.emsl.ui.internal.EmslActivator;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 
-public class Neo4JPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class MIPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public Neo4JPreferencePage() {
+	public MIPreferencePage() {
 		super(GRID);
 		setPreferenceStore(EmslActivator.getInstance().getPreferenceStore());
-		setDescription("Preferences for communicating with your Neo4j database");
+		setDescription("Preferences for configuring the concurrent synchronization operation");
 	}
 
 	/**
@@ -22,11 +22,9 @@ public class Neo4JPreferencePage extends FieldEditorPreferencePage implements IW
 	 */
 	@Override
 	public void createFieldEditors() {
-		addField(new StringFieldEditor(EMSLUtil.P_URI, "&Connection URI:", getFieldEditorParent()));
-		addField(new StringFieldEditor(EMSLUtil.P_USER, "&User:", getFieldEditorParent()));
-		addField(new StringFieldEditor(EMSLUtil.P_PASSWORD, "&Password:", getFieldEditorParent()));
-		
-		
+		addField(new StringFieldEditor(EMSLUtil.P_ALPHA, "&Deletion weight (alpha):", getFieldEditorParent()));
+		addField(new StringFieldEditor(EMSLUtil.P_BETA, "&Creation weight (beta):", getFieldEditorParent()));
+		addField(new StringFieldEditor(EMSLUtil.P_GAMMA, "&Induced weight (gamma):", getFieldEditorParent()));
 	}
 
 	/*

@@ -62,7 +62,11 @@ class EMSLUtil {
 	public static final String P_URI = "ConnectionURIPreference"
 	public static final String P_USER = "UserPreference"
 	public static final String P_PASSWORD = "PasswordPreference"
-
+	
+	public static final String P_ALPHA = "AlphaPreference"
+	public static final String P_BETA = "BetaPreference"
+	public static final String P_GAMMA = "GammaPreference"
+	
 	public static final String RESERVED_PREFIX = "____"
 	public static final String PARAM_NAME_FOR_MATCH = "match";
 
