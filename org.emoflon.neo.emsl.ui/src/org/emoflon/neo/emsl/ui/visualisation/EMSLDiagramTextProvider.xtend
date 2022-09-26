@@ -930,7 +930,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 				«ENDFOR»
 			
 				«FOR corr : entityCopy.correspondences»
-				«labelForTripleRuleComponent(corr.source, false, true)» ...«IF corr.action !== null»[#SpringGreen]«ENDIF»«labelForTripleRuleComponent(corr.target, false, true)»: :«corr.type.name»
+				«labelForTripleRuleComponent(corr.source, false, true)» ...«IF corr.action !== null && corr.action.op === ActionOperator.CREATE»[#SpringGreen]«ELSEIF corr.action !== null && corr.action.op === ActionOperator.DELETE»[#red]«ENDIF»«labelForTripleRuleComponent(corr.target, false, true)»: :«corr.type.name»
 				«ENDFOR»
 			}
 			«IF entityCopy.nacs.size > 0»
@@ -944,10 +944,10 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	 */
 	def String visualiseTripleRuleNodeBlocks(TripleRule entity, ModelNodeBlock nb, String type) {
 		var sizeOfTypeList = 0
-		'''class «labelForTripleRuleComponent(nb, true, false)» «IF nb.action !== null»<<GREEN>>«ENDIF» <<«type»>>
+		'''class «labelForTripleRuleComponent(nb, true, false)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ELSEIF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» <<«type»>>
 			«FOR link : nb.relations»«{sizeOfTypeList = link.types.size - 1;""}»
 				class «labelForTripleRuleComponent(link.target, true, false)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF entity.srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
-				«labelForTripleRuleComponent(nb, false, true)» -«IF (link.action !== null)»[#SpringGreen]«ENDIF»-> «labelForTripleRuleComponent(link.target, false, true)»:"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
+				«labelForTripleRuleComponent(nb, false, true)» -«IF (link.action !== null && link.action.op == ActionOperator.CREATE)»[#SpringGreen]«ELSEIF (link.action !== null && link.action.op == ActionOperator.DELETE)»[#red]«ENDIF»-> «labelForTripleRuleComponent(link.target, false, true)»:"«FOR t : link.types»«IF (t.type as MetamodelRelationStatement).name !== null && t.type !== null»«(t.type as MetamodelRelationStatement).name»«ELSE»?«ENDIF»«IF sizeOfTypeList > 0» | «ENDIF»«{sizeOfTypeList = sizeOfTypeList - 1;""}»«ENDFOR»«IF (link.lower !== null && link.upper !== null)»(«link.lower»..«link.upper»)«ENDIF»"
 			«ENDFOR»
 			«FOR attr : nb.properties»
 				«labelForTripleRuleComponent(nb, false, true)» : «getName(attr)» «attr.op.toString» «printValue(attr.value)»
@@ -971,7 +971,7 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 		}
 		val nb = node	
 		'''
-			class «labelForTripleRuleComponent(nb, true, false)» «IF nb.action !== null && nb.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op == ActionOperator.DELETE»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»«IF rule.srcNodeBlocks.contains(nb)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+			class «labelForTripleRuleComponent(nb, true, false)» «IF nb.action !== null && nb.action.op.toString === '++'»<<GREEN>>«ENDIF»«IF nb.action !== null && nb.action.op.toString === '--'»<<RED>>«ENDIF» «IF mainSelection»<<Selection>>«ENDIF»«IF rule.srcNodeBlocks.contains(nb)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 			«FOR link : nb.relations»
 				class «labelForTripleRuleComponent(link.target, true, false)» «IF link.target.action !== null && link.target.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF link.target.action !== null && link.target.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entityCopy as TripleRule).srcNodeBlocks.contains(link.target)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
 				«IF link.action !== null»
@@ -994,8 +994,8 @@ class EMSLDiagramTextProvider implements DiagramTextProvider {
 	private def incomingRefHelperForTripleRules(TripleRule entity, ModelNodeBlock nb, ModelNodeBlock incoming, boolean mainSelection) {
 		'''«FOR incomingRef : incoming.relations»
 			«IF incomingRef.target == nb && mainSelection»
-				class «labelForTripleRuleComponent(incoming, true, false)» «IF incoming.action !== null && incoming.action.op == ActionOperator.CREATE»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op == ActionOperator.DELETE»<<RED>>«ENDIF»«IF (entity as TripleRule).srcNodeBlocks.contains(incoming)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
-				«labelForTripleRuleComponent(incoming, false, true)» -«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.CREATE»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op === ActionOperator.DELETE»[#red]«ENDIF»-> «labelForTripleRuleComponent(nb, false, true)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
+				class «labelForTripleRuleComponent(incoming, true, false)» «IF incoming.action !== null && incoming.action.op.toString === '++'»<<GREEN>>«ENDIF»«IF incoming.action !== null && incoming.action.op.toString === '--'»<<RED>>«ENDIF»«IF (entity as TripleRule).srcNodeBlocks.contains(incoming)»<<SRC>>«ELSE»<<TRG>>«ENDIF»
+				«labelForTripleRuleComponent(incoming, false, true)» -«IF incomingRef.action !== null && incomingRef.action.op.toString === '++'»[#SpringGreen]«ENDIF»«IF incomingRef.action !== null && incomingRef.action.op.toString === '--'»[#red]«ENDIF»-> «labelForTripleRuleComponent(nb, false, true)» : "«IF incomingRef.name !== null»«incomingRef.name»«ELSE»«incomingRef.types.get(0)?.type?.name?.toString»«ENDIF»«IF (incomingRef.lower !== null && incomingRef.upper !== null)»(«incomingRef.lower»..«incomingRef.upper»)«ENDIF»"
 			«ENDIF»
 		«ENDFOR»'''
 	}
