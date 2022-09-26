@@ -79,6 +79,7 @@ class MI extends ILPOperation {
 			var miAPI = new API_«fullOpName»(builder);
 			var genRules = genAPI.getAllRulesFor«tggName.toFirstUpper»_GEN();
 			var analyser = new TripleRuleAnalyser(new API_«packageName»(builder).getTripleRulesOf«tggName.toFirstUpper»());
+					
 			modelIntegration = new ModelIntegrationOperationalStrategy(//
 					solver, //
 					builder, //

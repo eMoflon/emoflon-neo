@@ -103,15 +103,39 @@ public class NeoCoreBuilder implements AutoCloseable, IBuilder {
 	}
 
 	private final Driver driver;
-
+	
+	// Weightings for concurrent synchronisation
+	private double alpha;
+	private double beta;
+	private double gamma;
+	
 	public NeoCoreBuilder(String uri, String user, String password) {
 		driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
+	}
+	
+	public NeoCoreBuilder(String uri, String user, String password, double alpha, double beta, double gamma) {
+		this(uri, user, password);
+		this.alpha = alpha;
+		this.beta = beta;
+		this.gamma = gamma;
 	}
 
 	public Driver getDriver() {
 		return driver;
 	}
+	
+	public double getAlpha() {
+		return alpha;
+	}
 
+	public double getBeta() {
+		return beta;
+	}
+
+	public double getGamma() {
+		return gamma;
+	}
+	
 	@Override
 	public List<Record> executeQuery(String cypherStatement) {
 		return executeQuery(cypherStatement, Collections.emptyMap());

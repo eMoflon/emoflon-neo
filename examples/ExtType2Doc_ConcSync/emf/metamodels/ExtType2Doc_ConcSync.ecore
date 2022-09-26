@@ -3,31 +3,31 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="ExtType2Doc_ConcSync" nsURI="platform:/resource/ExtType2Doc_ConcSync/model/ExtType2Doc_ConcSync.ecore"
     nsPrefix="ExtType2Doc_ConcSync">
   <eClassifiers xsi:type="ecore:EClass" name="Project2DocContainer">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore#//Project"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtDocModel/model/ExtDocModel.ecore#//DocContainer"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtTypeModel.ecore#//Project"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtDocModel.ecore#//DocContainer"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Package2Folder">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore#//Package"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtDocModel/model/ExtDocModel.ecore#//Folder"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtTypeModel.ecore#//Package"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtDocModel.ecore#//Folder"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Type2Doc">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore#//Type"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtDocModel/model/ExtDocModel.ecore#//Doc"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtTypeModel.ecore#//Type"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtDocModel.ecore#//Doc"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Method2Entry">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore#//Method"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtDocModel/model/ExtDocModel.ecore#//Entry"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtTypeModel.ecore#//Method"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtDocModel.ecore#//Entry"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Param2Entry">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore#//Parameter"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtDocModel/model/ExtDocModel.ecore#//Entry"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtTypeModel.ecore#//Parameter"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtDocModel.ecore#//Entry"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Field2Entry">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore#//Field"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtDocModel/model/ExtDocModel.ecore#//Entry"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtTypeModel.ecore#//Field"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtDocModel.ecore#//Entry"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="JDoc2Annotation">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtTypeModel/model/ExtTypeModel.ecore#//JavaDoc"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtDocModel/model/ExtDocModel.ecore#//Annotation"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtTypeModel.ecore#//JavaDoc"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/ExtType2Doc_ConcSync/emf/metamodels/ExtDocModel.ecore#//Annotation"/>
   </eClassifiers>
 </ecore:EPackage>

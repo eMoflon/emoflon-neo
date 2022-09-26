@@ -1,33 +1,33 @@
 package org.emoflon.neo.example.facebooktoinstagram;
 
-import static org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_GEN_Run.SRC_MODEL_NAME;
-import static org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_GEN_Run.TRG_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
+import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.TRG_MODEL_NAME;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.neo.api.facebooktoinstagram_constrained.API_Transformations;
+import org.emoflon.neo.api.facebooktoinstagramfase.API_Transformations;
 import org.emoflon.neo.example.ENeoTest;
 
-import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_BWD_OPT_Run;
-import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_CC_Run;
-import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_CO_Run;
-import org.emoflon.neo.api.facebooktoinstagram_constrained.run.FacebookToInstagram_Constrained_FWD_OPT_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_BWD_OPT_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CC_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_CO_Run;
+import org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_FWD_OPT_Run;
 import org.junit.Ignore;
 
 public class ConstraintPerformanceTest extends ENeoTest {
 public void runTestForFixedSize(int nrOfApplications, int nrOfIterations) throws Exception {
 		
 		Logger.getRootLogger().setLevel(Level.INFO);
-		var testCOApp = new FacebookToInstagram_Constrained_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testCCApp = new FacebookToInstagram_Constrained_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testFWD_OPTApp = new FacebookToInstagram_Constrained_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
-		var testBWD_OPTApp = new FacebookToInstagram_Constrained_BWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCOApp = new FacebookToInstagramFASE_CO_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testCCApp = new FacebookToInstagramFASE_CC_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testFWD_OPTApp = new FacebookToInstagramFASE_FWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		var testBWD_OPTApp = new FacebookToInstagramFASE_BWD_OPT_Run(SRC_MODEL_NAME, TRG_MODEL_NAME);
 		
 		var testGenApp = new FacebookToInstagram_GEN_TEST((scheduler) -> {
-			scheduler.setMax(API_Transformations.FacebookToInstagram_Constrained__NetworkToNetwork, 1 * nrOfApplications)
-			.setMax(API_Transformations.FacebookToInstagram_Constrained__UserToUser, 2 * nrOfApplications)
-			.setMax(API_Transformations.FacebookToInstagram_Constrained__RequestFriendship, 4 * nrOfApplications)
-			.setMax(API_Transformations.FacebookToInstagram_Constrained__AcceptFriendship, 4 * nrOfApplications);
+			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 1 * nrOfApplications)
+			.setMax(API_Transformations.FacebookToInstagramFASE__UserToUser, 2 * nrOfApplications)
+			.setMax(API_Transformations.FacebookToInstagramFASE__RequestFriendship, 4 * nrOfApplications)
+			.setMax(API_Transformations.FacebookToInstagramFASE__AcceptFriendship, 4 * nrOfApplications);
 		});
 		
 		// Step 2. Run ops

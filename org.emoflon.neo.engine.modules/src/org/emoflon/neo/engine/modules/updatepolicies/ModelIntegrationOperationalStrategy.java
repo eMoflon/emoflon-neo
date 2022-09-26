@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
 import org.emoflon.neo.cypher.rules.NeoCoMatch;
@@ -25,9 +24,9 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	private Collection<Long> existingElements;
 	private Collection<Long> createdElements;
 
-	private static final double alpha = -5; // delete-delta
-	private static final double beta = 5; // create-delta
-	private static final double gamma = -1; // added elements
+	private static double alpha; // delete-delta
+	private static double beta; // create-delta
+	private static double gamma; // added elements
 
 	public ModelIntegrationOperationalStrategy(//
 			SupportedILPSolver solver, //
@@ -39,6 +38,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			String targetModel//
 	) {
 		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
+		setWeightings(builder.getAlpha(), builder.getBeta(), builder.getGamma());
 	}
 
 	@Override
@@ -188,5 +188,11 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			}
 		}
 		return filteredRulesToMatches;
+	}
+	
+	public static void setWeightings(double alpha, double beta, double gamma) {
+		ModelIntegrationOperationalStrategy.alpha = alpha;
+		ModelIntegrationOperationalStrategy.beta = beta;
+		ModelIntegrationOperationalStrategy.gamma = gamma;
 	}
 }

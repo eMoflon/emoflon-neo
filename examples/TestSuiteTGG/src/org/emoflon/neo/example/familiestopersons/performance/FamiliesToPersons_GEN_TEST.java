@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.emoflon.neo.api.familiestopersons_constrained.run.FamiliesToPersons_Constrained_GEN_Run;
-import org.emoflon.neo.api.familiestopersons_constrained.tgg.API_FamiliesToPersons_Constrained_GEN;
+import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_GEN_Run;
+import org.emoflon.neo.api.familiestopersons.tgg.API_FamiliesToPersons_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.engine.generator.INodeSampler;
 import org.emoflon.neo.engine.modules.NeoGenerator;
@@ -20,7 +20,7 @@ import org.emoflon.neo.engine.modules.updatepolicies.AllMatchesUpdatePolicy;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.RandomUUIDGenerator;
 
-class FamiliesToPersons_GEN_TEST extends FamiliesToPersons_Constrained_GEN_Run {
+class FamiliesToPersons_GEN_TEST extends FamiliesToPersons_GEN_Run {
 	private Consumer<MaximalRuleApplicationsTerminationCondition> configurator;
 
 	public FamiliesToPersons_GEN_TEST(Consumer<MaximalRuleApplicationsTerminationCondition> configureScheduler) {
@@ -30,7 +30,7 @@ class FamiliesToPersons_GEN_TEST extends FamiliesToPersons_Constrained_GEN_Run {
 
 	@Override
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
-		var allRules = new API_FamiliesToPersons_Constrained_GEN(builder).getAllRulesForFamiliesToPersons_Constrained_GEN();
+		var allRules = new API_FamiliesToPersons_GEN(builder).getAllRulesForFamiliesToPersons_GEN();
 		var ruleScheduler = new MaximalRuleApplicationsTerminationCondition(allRules, 0);
 		configurator.accept(ruleScheduler);
 		

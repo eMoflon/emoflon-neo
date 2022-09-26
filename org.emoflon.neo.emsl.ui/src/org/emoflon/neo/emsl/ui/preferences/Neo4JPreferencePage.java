@@ -25,6 +25,8 @@ public class Neo4JPreferencePage extends FieldEditorPreferencePage implements IW
 		addField(new StringFieldEditor(EMSLUtil.P_URI, "&Connection URI:", getFieldEditorParent()));
 		addField(new StringFieldEditor(EMSLUtil.P_USER, "&User:", getFieldEditorParent()));
 		addField(new StringFieldEditor(EMSLUtil.P_PASSWORD, "&Password:", getFieldEditorParent()));
+		
+		
 	}
 
 	/*

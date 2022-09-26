@@ -29,13 +29,11 @@ tripleGrammar JavaToDocSLE {
 	}
 	
 	constraints{
-//		NoDoubleEntryDirect
-//		NoDoubleEntryTransitive
-		NoTwoGlossaries
-		NoDoubleGlossaryLink
-		NoTripleInheritance
-		NoEmptyDoc
-		SameHrefSameGlossaryEntry
+//		NoTwoGlossaries
+//		NoDoubleGlossaryLink
+//		NoTripleInheritance
+//		NoEmptyDoc
+//		SameHrefSameGlossaryEntry
 	}
 }
 
@@ -90,10 +88,8 @@ tripleRule MethodToEntryRule : JavaToDocSLE {
 		}
 		++ m : Method {
 			.name := <methodName>
-			//++ -type-> t
 		}
 		
-		//t : Clazz
 	}
 	
 	target {
@@ -102,15 +98,12 @@ tripleRule MethodToEntryRule : JavaToDocSLE {
 		}
 		++ e : Entry {
 			.name := <methodName>
-			//++ -href->r
 		}
 		
-		//r : Doc
 	}
 
 	correspondence {
 		c <-:ClazzToDoc-> d
-		//t <-:ClazzToDoc-> r
 		++ m <-:MethodToEntry-> e
 	}
 }
@@ -123,9 +116,7 @@ tripleRule AddParameterRule : JavaToDocSLE {
 		}
 		++ p : Parameter {
 			.name := <paramName>
-			//++ -type-> t
 		}
-		//t : Clazz
 	}
 	
 	target {
@@ -147,10 +138,8 @@ tripleRule FieldToEntryRule : JavaToDocSLE {
 		}
 		++ f : Field {
 			.name := <fieldName>
-			//++ -type-> t
 		}
 		
-		//t : Clazz
 	}
 	
 	target {
@@ -159,15 +148,12 @@ tripleRule FieldToEntryRule : JavaToDocSLE {
 		}
 		++ e : Entry  {
 			.name := <fieldName>
-			//++ -href->r
 		}
 		
-		//r : Doc
 	}
 
 	correspondence {
 		 c <-:ClazzToDoc-> d
-		 //t <-:ClazzToDoc-> r
 		 ++ f <-:FieldToEntry-> e
 	}
 }
@@ -229,79 +215,73 @@ tripleRule AddGlossaryEntryRule : JavaToDocSLE {
 	}
 }
 
-pattern TwoGlossaries {
-	g1 : Glossary
-	g2 : Glossary 
-}
-
-constraint NoTwoGlossaries = forbid TwoGlossaries
-
-pattern DoubleGlossaryLink {
-	ge : GlossaryEntry
-	
-	e : Entry {
-		-gEntries->ge
-		-gEntries->ge
-	}
-}
-
-constraint NoDoubleGlossaryLink = forbid DoubleGlossaryLink
-
-pattern TripleInheritance {
-	c1: Clazz {
-		-subTypes-> c2
-	}
-	
-	c2: Clazz {
-		-subTypes-> c3
-	}
-	
-	c3: Clazz 
-}
-
-constraint NoTripleInheritance = forbid TripleInheritance
-
-pattern ADoc {
-	d : Doc
-}
-
-pattern DocHasEntry {
-	d : Doc {
-		-entries-> e
-	}
-	
-	e : Entry
-}
-	
-constraint NoEmptyDoc = if ADoc then DocHasEntry
-
-pattern EntriesWithSameHref {
-	
-	d : Doc {
-		-entries->e1
-		-entries->e2	
-	}
-	
-	e1 : Entry {
-		//-href->r
-	}
-	e2 : Entry{
-		//-href->r
-	}
-	
-	//r : Doc
-}
-
-pattern EntriesWithSameGlossaryEntry -> EntriesWithSameHref {
-	e1 : Entry {
-		-gEntries-> ge
-	}
-	
-	e2 : Entry {
-		-gEntries-> ge
-	}
-	
-	ge: GlossaryEntry
-}
-
-constraint SameHrefSameGlossaryEntry = if EntriesWithSameHref then EntriesWithSameGlossaryEntry
+//pattern TwoGlossaries {
+//	g1 : Glossary
+//	g2 : Glossary 
+//}
+//
+//constraint NoTwoGlossaries = forbid TwoGlossaries
+//
+//pattern DoubleGlossaryLink {
+//	ge : GlossaryEntry
+//	
+//	e : Entry {
+//		-gEntries->ge
+//		-gEntries->ge
+//	}
+//}
+//
+//constraint NoDoubleGlossaryLink = forbid DoubleGlossaryLink
+//
+//pattern TripleInheritance {
+//	c1: Clazz {
+//		-subTypes-> c2
+//	}
+//	
+//	c2: Clazz {
+//		-subTypes-> c3
+//	}
+//	
+//	c3: Clazz 
+//}
+//
+//constraint NoTripleInheritance = forbid TripleInheritance
+//
+//pattern ADoc {
+//	d : Doc
+//}
+//
+//pattern DocHasEntry {
+//	d : Doc {
+//		-entries-> e
+//	}
+//	
+//	e : Entry
+//}
+//	
+//constraint NoEmptyDoc = if ADoc then DocHasEntry
+//
+//pattern EntriesWithSameHref {
+//	
+//	d : Doc {
+//		-entries->e1
+//		-entries->e2	
+//	}
+//	
+//	e1 : Entry 
+//	e2 : Entry
+//}
+//
+//pattern EntriesWithSameGlossaryEntry -> EntriesWithSameHref {
+//	e1 : Entry {
+//		-gEntries-> ge
+//	}
+//	
+//	e2 : Entry {
+//		-gEntries-> ge
+//	}
+//	
+//	ge: GlossaryEntry
+//}
+//
+//constraint SameHrefSameGlossaryEntry = if EntriesWithSameHref then EntriesWithSameGlossaryEntry
