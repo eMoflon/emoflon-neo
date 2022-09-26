@@ -163,8 +163,12 @@ Require-Bundle: org.emoflon.neo.engine;bundle-version="1.0.0",
  org.apache.log4j;bundle-version="1.2.15",
  org.sat4j.core;bundle-version="2.3.5";visibility:=reexport,
  org.sat4j.pb;bundle-version="2.3.5";visibility:=reexport,
- org.emoflon.neo.emsl
+ org.emoflon.neo.emsl,
+ org.eclipse.ui;bundle-version="3.201.0"
 Bundle-ClassPath: lib/gurobi.jar,
  lib/MOEAFramework-2.13.jar,
  .
 Bundle-RequiredExecutionEnvironment: JavaSE-13
+Import-Package: org.eclipse.jface.preference,
+ org.emoflon.neo.emsl.ui.internal,
+ org.eclipse.ui.plugin

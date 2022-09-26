@@ -147,6 +147,11 @@ class EMSLGenerator extends AbstractGenerator {
 		val uri = store.getString(EMSLUtil.P_URI);
 		val userName = store.getString(EMSLUtil.P_USER);
 		val password = store.getString(EMSLUtil.P_PASSWORD);
+		
+					//Initialize weightings according to preferences
+		val alpha = store.getDouble(EMSLUtil.P_ALPHA)
+		val beta = store.getDouble(EMSLUtil.P_BETA)
+		val gamma = store.getDouble(EMSLUtil.P_GAMMA)
 
 		'''
 			/** 
@@ -162,7 +167,7 @@ class EMSLGenerator extends AbstractGenerator {
 				public static final String PLATFORM_RESOURCE_URI = "../";
 			
 				public static NeoCoreBuilder createBuilder() {
-					return new NeoCoreBuilder("«uri»", "«userName»", "«password»");
+					return new NeoCoreBuilder("«uri»", "«userName»", "«password»", «alpha», «beta», «gamma»);
 				}
 			}
 		'''

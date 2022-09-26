@@ -116,6 +116,12 @@
         id="org.emoflon.neo.emsl.EMSL.neo4j"
         name="Neo4J Preferences">
   </page>
+    <page
+        category="org.emoflon.neo.emsl.EMSL"
+        class="org.emoflon.neo.emsl.ui.preferences.MIPreferencePage"
+        id="org.emoflon.neo.emsl.EMSL.mi"
+        name="Concurrent Synchronization Preferences">
+  </page>
 	</extension>
 	<extension
 			point="org.eclipse.ui.propertyPages">
