@@ -22,6 +22,7 @@ public class PacManPatterns extends ENeoTest {
 		expectSingleMatch(entities.getPattern_PacManOnField());
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void test_GhostOnField() {
 		assertThat(entities.getPattern_GhostOnField().pattern().countMatches(), is(2));

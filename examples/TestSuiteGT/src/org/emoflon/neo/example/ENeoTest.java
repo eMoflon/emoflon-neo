@@ -87,6 +87,7 @@ public abstract class ENeoTest {
 		logger.info("Database cleared.");
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void expectMatches(NeoPatternAccess<?, ?> p, Number no) {
 		assertThat(p.pattern().countMatches(), is(no));
 	}

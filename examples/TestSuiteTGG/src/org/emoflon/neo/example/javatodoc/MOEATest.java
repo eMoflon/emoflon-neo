@@ -10,7 +10,6 @@ import org.emoflon.neo.engine.ilp.ILPProblem.Objective;
 import org.emoflon.neo.engine.ilp.MOEAProblem;
 import org.emoflon.neo.engine.modules.ilp.MOEAWrapper;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 
 public class MOEATest {
 

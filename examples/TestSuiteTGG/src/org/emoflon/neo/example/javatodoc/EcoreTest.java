@@ -4,7 +4,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.emoflon.neo.emf.Neo4jImporter;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 
 public class EcoreTest {
 

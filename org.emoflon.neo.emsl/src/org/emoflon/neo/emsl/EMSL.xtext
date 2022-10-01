@@ -228,9 +228,12 @@ Rule:
 
 GraphGrammar:
 	(abstract?='abstract')? 'grammar' name=QualifiedName '{'
-	rules+=[Rule|QualifiedName]+
-	
-	constraints+=[Constraint|QualifiedName]*
+		('rules' '{'
+			rules+=[Rule|QualifiedName]*
+		'}')?
+		('constraints' '{'
+			constraints+=[Constraint|QualifiedName]*
+		'}')?
 	'}';
 
 /*-------------------------------------------------*/

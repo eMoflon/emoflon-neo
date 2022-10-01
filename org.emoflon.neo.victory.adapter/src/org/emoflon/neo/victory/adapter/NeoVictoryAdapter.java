@@ -48,6 +48,7 @@ public class NeoVictoryAdapter implements DataProvider, IUpdatePolicy<NeoMatch, 
 		return Collections.unmodifiableCollection(rules);
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public Map<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>> selectMatches(
 			MatchContainer<NeoMatch, NeoCoMatch> matches, IMonitor<NeoMatch, NeoCoMatch> pProgressMonitor) {

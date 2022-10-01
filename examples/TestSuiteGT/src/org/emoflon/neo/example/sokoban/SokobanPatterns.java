@@ -20,6 +20,7 @@ import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("deprecation")
 public class SokobanPatterns extends ENeoTest {
 
 	private API_SokobanPatternsRulesConstraints entities = new API_SokobanPatternsRulesConstraints(builder);

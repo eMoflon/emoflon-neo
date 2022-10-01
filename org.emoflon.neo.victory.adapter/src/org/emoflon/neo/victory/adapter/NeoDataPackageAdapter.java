@@ -31,6 +31,7 @@ public class NeoDataPackageAdapter implements DataPackage {
 		this.trgModel = trgModel;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public Collection<Match> getMatches() {
 		return matches.streamAllMatches()//

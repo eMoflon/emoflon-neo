@@ -2,12 +2,14 @@ import "platform:/resource/ClassInhHier2DB/src/metamodels/ClassInheritanceHierar
 import "platform:/resource/ClassInhHier2DB/src/metamodels/Database.msl"
 
 grammar ClassInhHier2DB_CO {
-	PackageToDatabaseRule
-	ClassToTableRule
-	SubClassToTableRule
-	AttributeToColumnRule
+	rules {
+		PackageToDatabaseRule
+		ClassToTableRule
+		SubClassToTableRule
+		AttributeToColumnRule
+	}
 }
-	
+
   rule PackageToDatabaseRule {
 	classpackage:ClassPackage {
 		.enamespace : <__srcModelName>
@@ -43,7 +45,6 @@ grammar ClassInhHier2DB_CO {
 		{
 			._type_ : "ClazzToTable"
 		}
-		.name : table::heading
 	}
 
 	db:DB {
@@ -53,6 +54,7 @@ grammar ClassInhHier2DB_CO {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 	}
 	
 	attributeConstraints {

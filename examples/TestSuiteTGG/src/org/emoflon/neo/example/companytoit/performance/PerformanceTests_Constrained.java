@@ -10,7 +10,6 @@ import org.emoflon.neo.api.companytoit.run.CompanyToIT_FWD_OPT_Run;
 
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 import org.emoflon.neo.api.companytoit.run.CompanyToIT_CC_Run;
 import org.emoflon.neo.api.companytoit.run.CompanyToIT_CO_Run;
 

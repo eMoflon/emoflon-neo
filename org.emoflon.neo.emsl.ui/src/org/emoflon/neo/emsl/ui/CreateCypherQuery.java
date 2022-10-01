@@ -31,7 +31,6 @@ import org.emoflon.neo.emsl.util.FlattenerException;
 import org.emoflon.neo.engine.api.patterns.IMask;
 import org.emoflon.neo.engine.generator.Schedule;
 
-@SuppressWarnings("restriction")
 public class CreateCypherQuery extends AbstractHandler {
 	private Optional<EObjectNode> eobNode = Optional.empty();
 	private static final Logger logger = Logger.getLogger(CreateCypherQuery.class);

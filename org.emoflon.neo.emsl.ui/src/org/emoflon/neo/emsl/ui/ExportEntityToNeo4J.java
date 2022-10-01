@@ -22,7 +22,6 @@ import org.emoflon.neo.emsl.ui.util.ENeoConsole;
 import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.emsl.util.FlattenerException;
 
-@SuppressWarnings("restriction")
 public class ExportEntityToNeo4J extends AbstractHandler {
 	private Optional<EObjectNode> eobNode = Optional.empty();
 	private NeoCoreBuilder builder;

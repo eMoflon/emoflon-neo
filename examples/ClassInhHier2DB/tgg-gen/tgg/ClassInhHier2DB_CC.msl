@@ -2,12 +2,14 @@ import "platform:/resource/ClassInhHier2DB/src/metamodels/ClassInheritanceHierar
 import "platform:/resource/ClassInhHier2DB/src/metamodels/Database.msl"
 
 grammar ClassInhHier2DB_CC {
-	PackageToDatabaseRule
-	ClassToTableRule
-	SubClassToTableRule
-	AttributeToColumnRule
+	rules {
+		PackageToDatabaseRule
+		ClassToTableRule
+		SubClassToTableRule
+		AttributeToColumnRule
+	}
 }
-	
+
   rule PackageToDatabaseRule {
 	classpackage:ClassPackage {
 		.enamespace : <__srcModelName>
@@ -15,11 +17,11 @@ grammar ClassInhHier2DB_CC {
 		{
 			._type_ := "PackageToDatabase"
 		}
-		.name : db::title
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
+		.title : classpackage::name
 	}
 	
 	attributeConstraints {
@@ -109,11 +111,11 @@ grammar ClassInhHier2DB_CC {
 		{
 			._type_ := "AttributeToColumn"
 		}
-		.name : column::name
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 	}
 	
 	table:Table {

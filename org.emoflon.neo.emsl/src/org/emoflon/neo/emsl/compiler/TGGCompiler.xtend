@@ -98,25 +98,27 @@ class TGGCompiler {
 			
 			grammar «tgg.name»«op.nameExtension» {
 				«ruleNameToGreenElements.clear»
-				«FOR rule : flattenedRules»
-					«IF (op.multi)»
-						«val greenElements = TGGCompilerValidations.getGreenElements(rule)»
-						«val validIDs = new ArrayList<Integer>()»
-						«ruleNameToGreenElements.put(rule.name, greenElements)»
+				rules {
+					«FOR rule : flattenedRules»
+						«IF (op.multi)»
+							«val greenElements = TGGCompilerValidations.getGreenElements(rule)»
+							«val validIDs = new ArrayList<Integer>()»
+							«ruleNameToGreenElements.put(rule.name, greenElements)»
 						
-						«FOR i : 0 ..< Math.pow(2,greenElements.get(Domain.SRC).size + greenElements.get(Domain.TRG).size + greenElements.get(Domain.CORR).size).intValue - 1 /*No off-by-one error, we don't want the GEN rule!*/»
-							«IF TGGCompilerValidations.isValidRule(op, rule, i, ruleNameToGreenElements.get(rule.name))»
-								«i > 0 ? rule.name + "_" + i : rule.name»
-								«{validIDs.add(i) ""}»
-							«ENDIF»
-						«ENDFOR»
-						«ruleNameToValidIDs.put(rule.name, validIDs)»
-					«ELSE»	
-						«rule.name»
-					«ENDIF»
-				«ENDFOR»
+							«FOR i : 0 ..< Math.pow(2,greenElements.get(Domain.SRC).size + greenElements.get(Domain.TRG).size + greenElements.get(Domain.CORR).size).intValue - 1 /*No off-by-one error, we don't want the GEN rule!*/»
+								«IF TGGCompilerValidations.isValidRule(op, rule, i, ruleNameToGreenElements.get(rule.name))»
+									«i > 0 ? rule.name + "_" + i : rule.name»
+									«{validIDs.add(i) ""}»
+								«ENDIF»
+							«ENDFOR»
+							«ruleNameToValidIDs.put(rule.name, validIDs)»
+						«ELSE»	
+							«rule.name»
+						«ENDIF»
+					«ENDFOR»
+				}
 			}
-				
+			
 			«FOR rule : flattenedRules SEPARATOR "\n"»
 				«IF (op.multi)»
 					«FOR i : ruleNameToValidIDs.get(rule.name)»

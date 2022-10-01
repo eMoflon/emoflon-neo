@@ -2,12 +2,14 @@ import "platform:/resource/ClassInhHier2DB/src/metamodels/ClassInheritanceHierar
 import "platform:/resource/ClassInhHier2DB/src/metamodels/Database.msl"
 
 grammar ClassInhHier2DB_BWD_OPT {
-	PackageToDatabaseRule
-	ClassToTableRule
-	SubClassToTableRule
-	AttributeToColumnRule
+	rules {
+		PackageToDatabaseRule
+		ClassToTableRule
+		SubClassToTableRule
+		AttributeToColumnRule
+	}
 }
-	
+
   rule PackageToDatabaseRule {
 	++classpackage:ClassPackage {
 		.enamespace := <__srcModelName>

@@ -8,7 +8,6 @@ import org.emoflon.neo.api.classinhhier2db.API_ClassInhHier2DB;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 import org.emoflon.neo.api.classinhhier2db.run.ClassInhHier2DB_CC_Run;
 import org.emoflon.neo.api.classinhhier2db.run.ClassInhHier2DB_CO_Run;
 import org.emoflon.neo.api.classinhhier2db.run.ClassInhHier2DB_FWD_OPT_Run;

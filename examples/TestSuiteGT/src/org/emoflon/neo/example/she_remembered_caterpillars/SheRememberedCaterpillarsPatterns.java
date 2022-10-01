@@ -39,6 +39,7 @@ public class SheRememberedCaterpillarsPatterns extends ENeoTest {
 		expectSingleMatch(entities.getPattern_StandingInFrontOfBridge());
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testColouredThingsOnPlatforms() {
 		assertThat(entities.getPattern_ColouredThingOnPlatform().pattern().countMatches(), is(2));

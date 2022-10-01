@@ -10,7 +10,6 @@ import org.emoflon.neo.api.javatodocsle.API_JavaToDocSLE;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CC_Run;
 import org.emoflon.neo.api.javatodocsle.run.JavaToDocSLE_CO_Run;
 

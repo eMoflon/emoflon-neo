@@ -16,7 +16,6 @@ import org.emoflon.neo.api.familiestopersons.API_SonOfExistingFamilyToMale;
 import org.emoflon.neo.api.familiestopersons.API_Families2Persons;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_CC_Run;
 import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_CO_Run;
 import org.emoflon.neo.api.familiestopersons.run.FamiliesToPersons_BWD_OPT_Run;

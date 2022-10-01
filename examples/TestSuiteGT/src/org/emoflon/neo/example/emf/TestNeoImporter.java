@@ -5,8 +5,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.neo.emf.Neo4jImporter;
-import org.emoflon.neo.emsl.ui.internal.EmslActivator;
-import org.emoflon.neo.emsl.util.EMSLUtil;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

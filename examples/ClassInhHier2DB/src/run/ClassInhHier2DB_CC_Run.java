@@ -3,7 +3,6 @@ package run;
 import static run.ClassInhHier2DB_GEN_Run.SRC_MODEL_NAME;
 import static run.ClassInhHier2DB_GEN_Run.TRG_MODEL_NAME;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -12,10 +11,7 @@ import org.emoflon.neo.api.classinhhier2db.API_Common;
 import org.emoflon.neo.api.classinhhier2db.API_ClassInhHier2DB;
 import org.emoflon.neo.api.classinhhier2db.tgg.API_ClassInhHier2DB_CC;
 import org.emoflon.neo.api.classinhhier2db.tgg.API_ClassInhHier2DB_GEN;
-import org.emoflon.neo.api.classinhhier2db.metamodels.API_ClassInheritanceHierarchy;
-import org.emoflon.neo.api.classinhhier2db.metamodels.API_Database;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.CCReprocessor;

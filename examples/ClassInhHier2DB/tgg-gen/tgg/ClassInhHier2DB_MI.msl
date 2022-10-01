@@ -2,40 +2,42 @@ import "platform:/resource/ClassInhHier2DB/src/metamodels/ClassInheritanceHierar
 import "platform:/resource/ClassInhHier2DB/src/metamodels/Database.msl"
 
 grammar ClassInhHier2DB_MI {
-	
-	PackageToDatabaseRule
-	PackageToDatabaseRule_1
-	PackageToDatabaseRule_3
-	PackageToDatabaseRule_5
-	
-	ClassToTableRule
-	ClassToTableRule_1
-	ClassToTableRule_2
-	ClassToTableRule_3
-	ClassToTableRule_7
-	ClassToTableRule_16
-	ClassToTableRule_17
-	ClassToTableRule_25
-	
-	SubClassToTableRule
-	SubClassToTableRule_1
-	SubClassToTableRule_4
-	SubClassToTableRule_5
-	SubClassToTableRule_8
-	SubClassToTableRule_9
-	SubClassToTableRule_12
-	SubClassToTableRule_13
-	
-	AttributeToColumnRule
-	AttributeToColumnRule_1
-	AttributeToColumnRule_4
-	AttributeToColumnRule_5
-	AttributeToColumnRule_7
-	AttributeToColumnRule_8
-	AttributeToColumnRule_9
-	AttributeToColumnRule_25
+	rules {
+		
+			PackageToDatabaseRule
+			PackageToDatabaseRule_1
+			PackageToDatabaseRule_3
+			PackageToDatabaseRule_5
+		
+			ClassToTableRule
+			ClassToTableRule_1
+			ClassToTableRule_2
+			ClassToTableRule_3
+			ClassToTableRule_7
+			ClassToTableRule_16
+			ClassToTableRule_17
+			ClassToTableRule_25
+		
+			SubClassToTableRule
+			SubClassToTableRule_1
+			SubClassToTableRule_4
+			SubClassToTableRule_5
+			SubClassToTableRule_8
+			SubClassToTableRule_9
+			SubClassToTableRule_12
+			SubClassToTableRule_13
+		
+			AttributeToColumnRule
+			AttributeToColumnRule_1
+			AttributeToColumnRule_4
+			AttributeToColumnRule_5
+			AttributeToColumnRule_7
+			AttributeToColumnRule_8
+			AttributeToColumnRule_9
+			AttributeToColumnRule_25
+	}
 }
-	
+
   rule PackageToDatabaseRule {
 	classpackage:ClassPackage {
 		.enamespace : <__srcModelName>
@@ -43,12 +45,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "PackageToDatabase"
 		}
+		.name : db::title
 		~_ex_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
-		.title : classpackage::name
 		~_ex_ : true
 	}
 	
@@ -63,12 +65,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "PackageToDatabase"
 		}
+		.name : db::title
 		~_cr_ : true
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
-		.title : classpackage::name
 		~_cr_ : true
 	}
 	
@@ -134,7 +136,6 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
-		.name : table::heading
 		~_ex_ : true
 	}
 
@@ -148,6 +149,7 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 		~_ex_ : true
 	}
 	
@@ -174,7 +176,6 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
-		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -188,6 +189,7 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -214,7 +216,6 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
-		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -225,6 +226,7 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -251,7 +253,6 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
-		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -262,6 +263,7 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -321,7 +323,6 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
-		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -335,6 +336,7 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -358,7 +360,6 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
-		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -372,6 +373,7 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
+		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -724,12 +726,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "AttributeToColumn"
 		}
+		.name : column::name
 		~_ex_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		.name : attribute::name
 		~_ex_ : true
 	}
 	
@@ -764,12 +766,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "AttributeToColumn"
 		}
+		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -804,12 +806,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "AttributeToColumn"
 		}
+		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -841,12 +843,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "AttributeToColumn"
 		}
+		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -911,12 +913,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "AttributeToColumn"
 		}
+		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -948,12 +950,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "AttributeToColumn"
 		}
+		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
-		.name : attribute::name
 		~_cr_ : true
 	}
 	

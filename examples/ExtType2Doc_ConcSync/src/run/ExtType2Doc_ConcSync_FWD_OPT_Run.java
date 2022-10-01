@@ -3,7 +3,6 @@ package run;
 import static run.ExtType2Doc_ConcSync_GEN_Run.SRC_MODEL_NAME;
 import static run.ExtType2Doc_ConcSync_GEN_Run.TRG_MODEL_NAME;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -12,10 +11,7 @@ import org.emoflon.neo.api.exttype2doc_concsync.API_Common;
 import org.emoflon.neo.api.exttype2doc_concsync.API_ExtType2Doc_ConcSync;
 import org.emoflon.neo.api.exttype2doc_concsync.tgg.API_ExtType2Doc_ConcSync_FWD_OPT;
 import org.emoflon.neo.api.exttype2doc_concsync.tgg.API_ExtType2Doc_ConcSync_GEN;
-import org.emoflon.neo.api.exttype2doc_concsync.metamodels.API_ExtDocModel;
-import org.emoflon.neo.api.exttype2doc_concsync.metamodels.API_ExtTypeModel;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.neo.engine.modules.matchreprocessors.FWD_OPTReprocessor;

@@ -16,6 +16,7 @@ import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.example.ENeoTest;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("deprecation")
 class ChessTests extends ENeoTest {
 
 	private API_FigureMoves figureMoves = new API_FigureMoves(builder);
