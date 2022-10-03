@@ -1,0 +1,23 @@
+import "platform:/resource/Liaison/src/RequirementsLanguage.msl"
+import "platform:/resource/Liaison/src/ArchitecturalLanguage.msl"
+
+model RequirementsCoverage_Source {
+	r1:Requirement {
+		.isFinal : false
+		.description : "This is a requirement"
+	}
+	
+	a1:ArchElt {
+		.id : 12345
+		-relevantFor->r1
+		//-corr->c {
+		//	._type_ : "LinkToComp"
+		//}
+	}
+}
+
+model RequirementsCoverage_Target {
+	c:Component {
+		.id : 12345
+	}
+}

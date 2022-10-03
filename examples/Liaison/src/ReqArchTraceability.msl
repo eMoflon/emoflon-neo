@@ -1,0 +1,137 @@
+import "platform:/resource/Liaison/src/RequirementsLanguage.msl"
+import "platform:/resource/Liaison/src/ArchitecturalLanguage.msl"
+
+tripleGrammar RequirementsCoverage {
+	source {
+		Requirements
+	}
+	
+	target {
+		Architecture
+	}
+	
+	correspondence {
+		ArchElt <- LinkToComp -> Component
+		ArchElt <- LinkToPort -> Port
+	}
+	
+	rules {
+		CreateReq
+		ConnectArchElt
+		CreateFinalReq
+		CreateComponent
+		CreateSubComponent
+		CreatePort
+	}
+}
+
+tripleRule CreateReq : RequirementsCoverage {
+	source {
+		++ r:Requirement {
+			.isFinal := false
+		}
+	}
+}
+
+tripleRule ConnectArchElt : RequirementsCoverage {
+	source {
+		r:Requirement
+		
+		ae:ArchElt {
+			++ -relevantFor->r
+		}
+	}
+}
+
+tripleRule CreateFinalReq : RequirementsCoverage {
+	source {
+		++ r : Requirement {
+			.isFinal := true
+		}
+		
+		aec:ArchElt {
+			++ -relevantFor->r
+		}
+		
+		aep:ArchElt {
+			++ -relevantFor->r
+		}
+	}
+	
+	target {
+		c:Component {
+			-ports->p
+		}
+		
+		p:Port
+	}
+	
+	correspondence {
+		aec <- :LinkToComp -> c
+		aep <- :LinkToPort -> p
+	}
+}
+
+tripleRule CreateComponent : RequirementsCoverage {
+	source {
+		++ ae:ArchElt {
+			.id := <id>
+		}
+	}
+	
+	target {
+		++ c:Component {
+			.id := <id>
+		}
+	}
+	
+	correspondence {
+		++ ae <- :LinkToComp -> c
+	}
+}
+
+tripleRule CreateSubComponent : RequirementsCoverage 
+{
+	source {
+		++ ae:ArchElt {
+			.id := <id>
+		}
+	}
+	
+	target {
+		sup:Component {
+			++ -subComponents->c
+		}
+		
+		++ c:Component {
+			.id := <id>
+		}
+	}
+	
+	correspondence {
+		++ ae <- :LinkToComp -> c
+	}
+}
+
+tripleRule CreatePort : RequirementsCoverage 
+{
+	source {
+		++ ae:ArchElt {
+			.id := <id>
+		}
+	}
+	
+	target {
+		c:Component {
+			++ -ports->p
+		}
+		
+		++ p:Port {
+			.id := <id>
+		}
+	}
+	
+	correspondence {
+		++ ae <- :LinkToPort -> p
+	}
+}

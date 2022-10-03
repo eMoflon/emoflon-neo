@@ -1,0 +1,11 @@
+metamodel Requirements {
+	Requirement {
+		.description: EString	
+		.isFinal: EBoolean	
+	}
+	
+	ArchElt {
+		.id: EInt
+		-relevantFor(0..*)->Requirement
+	}
+}

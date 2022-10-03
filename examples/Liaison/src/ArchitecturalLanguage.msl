@@ -1,0 +1,12 @@
+metamodel Architecture {
+	Component {
+		.id: EInt
+		
+		<+>-subComponents(0..*)->Component
+		-ports(0..*)->Port
+	}
+	
+	Port {
+		.id: EInt
+	}
+}
