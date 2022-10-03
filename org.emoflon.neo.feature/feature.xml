@@ -2,7 +2,7 @@
 <feature
       id="org.emoflon.neo.feature"
       label="eMoflon::Neo"
-      version="1.0.0.qualifier">
+      version="2.0.0.qualifier">
 
    <description url="https://github.com/eMoflon/emoflon-neo-updatesite">
       An implementation of eMoflon -- a tool for model management via
