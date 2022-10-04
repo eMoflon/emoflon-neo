@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.emoflon.neo.api.liaison.API_Common;
 import org.emoflon.neo.api.liaison.run.RequirementsCoverage_GEN_Run;
 import org.emoflon.neo.api.liaison.tgg.API_RequirementsCoverage_GEN;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
@@ -27,6 +28,9 @@ public class MyGEN extends RequirementsCoverage_GEN_Run {
 	public static void main(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		var app = new MyGEN(SRC_MODEL_NAME, TRG_MODEL_NAME);
+		
+		API_Common.createBuilder().clearDataBase();
+		
 		app.run();
 	}
 	
@@ -38,7 +42,7 @@ public class MyGEN extends RequirementsCoverage_GEN_Run {
 		var allRules = new API_RequirementsCoverage_GEN(builder).getAllRulesForRequirementsCoverage_GEN();
 		
 		// Restrict to one application per rule
-		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 1);
+		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 2);
 		
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
 			return INodeSampler.EMPTY;

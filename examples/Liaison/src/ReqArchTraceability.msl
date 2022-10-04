@@ -22,6 +22,7 @@ tripleGrammar RequirementsCoverage {
 		CreateComponent
 		CreateSubComponent
 		CreatePort
+		ConnectPorts
 	}
 }
 
@@ -133,5 +134,15 @@ tripleRule CreatePort : RequirementsCoverage
 	
 	correspondence {
 		++ ae <- :LinkToPort -> p
+	}
+}
+
+tripleRule ConnectPorts : RequirementsCoverage {
+	target {
+		from:Port {
+			++ -connectedTo->to
+		}
+	
+		to:Port
 	}
 }

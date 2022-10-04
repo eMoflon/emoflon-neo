@@ -2,22 +2,63 @@ import "platform:/resource/Liaison/src/RequirementsLanguage.msl"
 import "platform:/resource/Liaison/src/ArchitecturalLanguage.msl"
 
 model RequirementsCoverage_Source {
-	r1:Requirement {
+	r:Requirement {
 		.isFinal : false
 		.description : "This is a requirement"
 	}
 	
 	a1:ArchElt {
-		.id : 12345
-		-relevantFor->r1
-		//-corr->c {
-		//	._type_ : "LinkToComp"
-		//}
+		.id : 1
+		-relevantFor->r
+	}
+	
+	a2:ArchElt {
+		.id : 2
+	}
+	
+	a3:ArchElt {
+		.id : 3
 	}
 }
 
 model RequirementsCoverage_Target {
 	c:Component {
-		.id : 12345
+		.id : 1
+		-ports->p1
+		-ports->p2
+	}
+	
+	p1:Port {
+		.id : 2
+		-connectedTo->p2
+	}
+	
+	p2:Port {
+		.id : 3
 	}
 }
+
+rule CreateCorr1 {
+	a:ArchElt {
+		++ -corr->c {
+			._type_ := "LinkToComp"
+		}
+	}
+	
+	c:Component {
+		.id : a::id
+	}
+}
+
+rule CreateCorr2 {
+	a:ArchElt {
+		++ -corr->p {
+			._type_ := "LinkToPort"
+		}
+	}
+	
+	p:Port {
+		.id : a::id
+	}
+}
+
