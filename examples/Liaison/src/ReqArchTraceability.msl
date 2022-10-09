@@ -125,6 +125,7 @@ tripleRule CreatePort : RequirementsCoverage
 	
 	target {
 		c:Component {
+			.id != <id>
 			++ -ports->p
 		}
 		
