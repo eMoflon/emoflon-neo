@@ -101,6 +101,7 @@ tripleRule CreateSubComponent : RequirementsCoverage
 	
 	target {
 		sup:Component {
+			.id != <id>
 			++ -subComponents->c
 		}
 		
