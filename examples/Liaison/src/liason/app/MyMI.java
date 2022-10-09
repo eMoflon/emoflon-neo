@@ -14,9 +14,6 @@ import org.emoflon.neo.api.liaison.run.RequirementsCoverage_MI_Run;
 import org.emoflon.neo.api.liaison.tgg.API_RequirementsCoverage_GEN;
 import org.emoflon.neo.api.liaison.tgg.API_RequirementsCoverage_MI;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
-import org.emoflon.neo.cypher.patterns.NeoMatch;
-import org.emoflon.neo.cypher.rules.NeoCoMatch;
-import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.modules.NeoGenerator;
 import org.emoflon.neo.engine.modules.analysis.TripleRuleAnalyser;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
@@ -43,8 +40,8 @@ public class MyMI extends RequirementsCoverage_MI_Run {
 		try (var builder = API_Common.createBuilder()) {
 			var delta = new API_Delta(builder);
 			builder.clearDataBase();
-			builder.exportEMSLEntityToNeo4j(delta.getModel_RequirementsCoverage_Source());
 			builder.exportEMSLEntityToNeo4j(delta.getModel_RequirementsCoverage_Target());
+			builder.exportEMSLEntityToNeo4j(delta.getModel_RequirementsCoverage_Source());
 			
 			app.run();
 		}
