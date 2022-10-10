@@ -535,7 +535,7 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 			var inconsistentNodes = mc.getNodeRange().getIDs().stream()//
 					.map(x -> (Long) x)//
-					.filter(x -> relevantElements.contains(x) && (Long) x > 0).filter(x -> inconsistentElts.contains(x))//
+					.filter(x -> relevantElements.contains(x) && (Long) x >= 0).filter(x -> inconsistentElts.contains(x))//
 					.collect(Collectors.toSet());
 
 			builder.deleteEdges(inconsistentEdges);
