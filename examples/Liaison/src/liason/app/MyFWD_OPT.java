@@ -44,9 +44,9 @@ public class MyFWD_OPT extends RequirementsCoverage_FWD_OPT_Run {
 			var data = new API_Data(builder);
 			builder.clearDataBase();
 			builder.exportEMSLEntityToNeo4j(data.getModel_RequirementsCoverage_Source());
-
-			app.run();
 		}
+		
+		app.run();
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
