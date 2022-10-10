@@ -34,7 +34,9 @@ model RequirementsCoverage_Source {
 model RequirementsCoverage_Target {
 	c:Component {
 		.id : 1
-		-ports->p1
+		-ports->p1 {
+			~_de_: true
+		}
 		-ports->p2 {
 			~_cr_: true
 		}
@@ -43,9 +45,6 @@ model RequirementsCoverage_Target {
 	p1:Port {
 		.id : 2
 		._de_ : true
-		-connectedTo->p2 {
-			~_de_: true
-		}
 	}
 	
 	p2:Port {

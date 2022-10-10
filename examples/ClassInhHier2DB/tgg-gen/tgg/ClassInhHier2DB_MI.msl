@@ -136,6 +136,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
+		.name : table::heading
 		~_ex_ : true
 	}
 
@@ -149,7 +150,6 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
-		.heading : clazz::name
 		~_ex_ : true
 	}
 	
@@ -176,6 +176,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
+		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -189,7 +190,6 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
-		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -216,6 +216,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
+		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -226,7 +227,6 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
-		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -253,6 +253,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
+		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -263,7 +264,6 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
-		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -323,6 +323,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "ClazzToTable"
 		}
+		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -336,7 +337,6 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
-		.heading : clazz::name
 		~_cr_ : true
 	}
 	
@@ -360,6 +360,7 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "ClazzToTable"
 		}
+		.name : table::heading
 		~_cr_ : true
 	}
 
@@ -373,7 +374,6 @@ grammar ClassInhHier2DB_MI {
 	
 	table:Table {
 		.enamespace : <__trgModelName>
-		.heading : clazz::name
 		~_cr_ : true
 	}
 	

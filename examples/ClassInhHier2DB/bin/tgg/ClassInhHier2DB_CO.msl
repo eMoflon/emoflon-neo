@@ -111,11 +111,11 @@ grammar ClassInhHier2DB_CO {
 		{
 			._type_ : "AttributeToColumn"
 		}
-		.name : column::name
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 	}
 	
 	table:Table {
