@@ -44,9 +44,9 @@ public class MyBWD_OPT extends RequirementsCoverage_BWD_OPT_Run {
 			var data = new API_Data(builder);
 			builder.clearDataBase();
 			builder.exportEMSLEntityToNeo4j(data.getModel_RequirementsCoverage_Target());
-
-			app.run();
 		}
+		
+		app.run();
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {

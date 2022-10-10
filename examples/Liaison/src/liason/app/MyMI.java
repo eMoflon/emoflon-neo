@@ -25,6 +25,7 @@ import org.emoflon.neo.engine.modules.terminationcondition.NoMoreMatchesTerminat
 import org.emoflon.neo.engine.modules.updatepolicies.ModelIntegrationOperationalStrategy;
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
+import org.emoflon.neo.engine.modules.valueGenerators.RandomIntegerGenerator;
 
 public class MyMI extends RequirementsCoverage_MI_Run {
 	
@@ -42,9 +43,9 @@ public class MyMI extends RequirementsCoverage_MI_Run {
 			builder.clearDataBase();
 			builder.exportEMSLEntityToNeo4j(delta.getModel_RequirementsCoverage_Target());
 			builder.exportEMSLEntityToNeo4j(delta.getModel_RequirementsCoverage_Source());
-			
-			app.run();
 		}
+		
+		app.run();
 	}
 	
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
@@ -74,6 +75,6 @@ public class MyMI extends RequirementsCoverage_MI_Run {
 				modelIntegration, //
 				new HeartBeatAndReportMonitor(), //
 				new ModelNameValueGenerator(srcModelName, trgModelName), //
-				List.of(new LoremIpsumStringValueGenerator()));
+				List.of(new LoremIpsumStringValueGenerator(), new RandomIntegerGenerator()));
 	}
 }

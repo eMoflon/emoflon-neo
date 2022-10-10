@@ -29,9 +29,9 @@ public class MyCO extends RequirementsCoverage_CO_Run {
 			var createCorr1 = data.getRule_CreateCorr1().rule();
 			createCorr1.applyAll(createCorr1.determineMatches());
 			var createCorr2 = data.getRule_CreateCorr2().rule();
-			createCorr2.applyAll(createCorr2.determineMatches());
-			
-			app.run();
+			createCorr2.applyAll(createCorr2.determineMatches());			
 		}
+		
+		app.run();
 	}
 }
