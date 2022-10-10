@@ -367,6 +367,9 @@ class TGGCompiler {
 				else
 					'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, domain)» «paramValue.get»'''
 		} else
-			'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, domain)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
+				if (op.multi)
+					'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, ruleID, ruleNameToGreenElements.get(rule.name), blockName)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
+				else
+					'''.«propertyStatement.type.name» «op.getConditionOperator(propertyStatement.op, domain)» «TGGCompilerUtils.handleValue(propertyStatement.value)»'''
 	}
 }
