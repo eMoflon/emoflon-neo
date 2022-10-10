@@ -32,7 +32,7 @@ import org.emoflon.neo.engine.modules.updatepolicies.CorrCreationOperationalStra
 
 @SuppressWarnings("unused")
 public class ClassInhHier2DB_CC_Run {
-	protected static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	protected static SupportedILPSolver solver = SupportedILPSolver.Sat4J;
 	protected CorrCreationOperationalStrategy corrCreation;
 	protected static final Logger logger = Logger.getLogger(ClassInhHier2DB_CC_Run.class);
 	protected String srcModelName;

@@ -1,6 +1,7 @@
 package run.emf.modelimport;
 
 import java.util.Collection;
+import java.util.Collections;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -8,8 +9,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.resource.XtextResourceSet;
+import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.emoflon.neo.api.exttype2doc_concsync.API_Common;
+import org.emoflon.neo.api.exttype2doc_concsync.run.emf.modelimport.API_IbexToENeo;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
+import org.emoflon.neo.cypher.rules.NeoRule;
+import org.emoflon.neo.emf.Neo4jImporter;
 import org.emoflon.neo.engine.modules.updatepolicies.CheckOnlyOperationalStrategy;
 import org.emoflon.neo.neocore.ENeoUtil;
 import run.ExtType2Doc_ConcSync_CO_Run;
@@ -18,7 +24,7 @@ import run.ExtType2Doc_ConcSync_CO_Run;
 public class EMFImportToENeo {
   private static final Logger logger = Logger.getLogger(EMFImportToENeo.class);
 
-  private static NeoCoreBuilder builder /* Skipped initializer because of errors */;
+  private static NeoCoreBuilder builder = API_Common.createBuilder();
 
   public static void main(final String[] args) {
     try {
@@ -57,23 +63,35 @@ public class EMFImportToENeo {
   }
 
   public static void loadModelsAndMetamodels(final String metamodelPath, final String modelPath, final String srcModel, final String trgModel, final String corrModel) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nAPI_IbexToENeo cannot be resolved."
-      + "\nrule_MigrateProject2DocContainer cannot be resolved"
-      + "\nrule cannot be resolved"
-      + "\nrule_MigratePackage2Folder cannot be resolved"
-      + "\nrule cannot be resolved"
-      + "\nrule_MigrateType2Doc cannot be resolved"
-      + "\nrule cannot be resolved"
-      + "\nrule_MigrateMethod2Entry cannot be resolved"
-      + "\nrule cannot be resolved"
-      + "\nrule_MigrateParam2Entry cannot be resolved"
-      + "\nrule cannot be resolved"
-      + "\nrule_MigrateField2Entry cannot be resolved"
-      + "\nrule cannot be resolved"
-      + "\nrule_MigrateJDoc2Annotation cannot be resolved"
-      + "\nrule cannot be resolved"
-      + "\napplyAll cannot be resolved"
-      + "\ndetermineMatches cannot be resolved");
+    try {
+      EMFImportToENeo.builder.clearDataBase();
+      final Neo4jImporter importer = new Neo4jImporter();
+      final String boltURL = "bolt://localhost:7687";
+      final String dbName = "neo4j";
+      final String passw = "test";
+      final XtextResourceSet rs = EMFImportToENeo.createResourceSet();
+      EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtDocModel.ecore"));
+      EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtTypeModel.ecore"));
+      EMFImportToENeo.loadMetamodel(rs, (metamodelPath + "ExtType2Doc_ShortCut.ecore"));
+      EMFImportToENeo.loadModel(rs, (modelPath + srcModel), srcModel);
+      EMFImportToENeo.loadModel(rs, (modelPath + trgModel), trgModel);
+      EMFImportToENeo.loadModel(rs, (modelPath + corrModel), corrModel);
+      importer.importEMFModels(rs, boltURL, dbName, passw);
+      final API_IbexToENeo ruleAPI = new API_IbexToENeo(EMFImportToENeo.builder);
+      NeoRule _rule = ruleAPI.getRule_MigrateProject2DocContainer().rule();
+      NeoRule _rule_1 = ruleAPI.getRule_MigratePackage2Folder().rule();
+      NeoRule _rule_2 = ruleAPI.getRule_MigrateType2Doc().rule();
+      NeoRule _rule_3 = ruleAPI.getRule_MigrateMethod2Entry().rule();
+      NeoRule _rule_4 = ruleAPI.getRule_MigrateParam2Entry().rule();
+      NeoRule _rule_5 = ruleAPI.getRule_MigrateField2Entry().rule();
+      NeoRule _rule_6 = ruleAPI.getRule_MigrateJDoc2Annotation().rule();
+      for (final NeoRule rule : Collections.<NeoRule>unmodifiableSet(CollectionLiterals.<NeoRule>newHashSet(_rule, _rule_1, _rule_2, _rule_3, _rule_4, _rule_5, _rule_6))) {
+        rule.applyAll(rule.determineMatches());
+      }
+      EMFImportToENeo.logger.info("Migrated all corrs");
+      EMFImportToENeo.builder.close();
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
 }
