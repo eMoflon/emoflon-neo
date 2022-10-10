@@ -72,7 +72,7 @@ public class MyFWD_OPT extends RequirementsCoverage_FWD_OPT_Run {
 				new NoMoreMatchesTerminationCondition() {
 					@Override
 					public boolean isReached(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-						return super.isReached(matchContainer) || matchContainer.getNumberOfRuleApplications() > 1;
+						return super.isReached(matchContainer) || matchContainer.getNumberOfRuleApplications() > 10;
 					}
 				}, //
 				new FWD_OPTRuleScheduler(analyser), //

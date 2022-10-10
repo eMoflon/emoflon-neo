@@ -94,6 +94,8 @@ tripleRule CreateComponent : RequirementsCoverage {
 tripleRule CreateSubComponent : RequirementsCoverage 
 {
 	source {
+		sae:ArchElt
+		
 		++ ae:ArchElt {
 			.id := <id>
 		}
@@ -101,7 +103,6 @@ tripleRule CreateSubComponent : RequirementsCoverage
 	
 	target {
 		sup:Component {
-			.id != <id>
 			++ -subComponents->c
 		}
 		
@@ -111,6 +112,7 @@ tripleRule CreateSubComponent : RequirementsCoverage
 	}
 	
 	correspondence {
+		sae <- :LinkToComp -> sup
 		++ ae <- :LinkToComp -> c
 	}
 }
@@ -118,6 +120,8 @@ tripleRule CreateSubComponent : RequirementsCoverage
 tripleRule CreatePort : RequirementsCoverage 
 {
 	source {
+		cae: ArchElt
+		
 		++ ae:ArchElt {
 			.id := <id>
 		}
@@ -125,7 +129,6 @@ tripleRule CreatePort : RequirementsCoverage
 	
 	target {
 		c:Component {
-			.id != <id>
 			++ -ports->p
 		}
 		
@@ -135,6 +138,7 @@ tripleRule CreatePort : RequirementsCoverage
 	}
 	
 	correspondence {
+		cae <- :LinkToComp -> c
 		++ ae <- :LinkToPort -> p
 	}
 }

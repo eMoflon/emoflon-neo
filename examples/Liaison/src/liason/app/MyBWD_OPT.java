@@ -72,7 +72,7 @@ public class MyBWD_OPT extends RequirementsCoverage_BWD_OPT_Run {
 				new NoMoreMatchesTerminationCondition() {
 					@Override
 					public boolean isReached(MatchContainer<NeoMatch, NeoCoMatch> matchContainer) {
-						return super.isReached(matchContainer) || matchContainer.getNumberOfRuleApplications() > 1;
+						return super.isReached(matchContainer) || matchContainer.getNumberOfRuleApplications() > 10;
 					}
 				},
 				new BWD_OPTRuleScheduler(analyser), //
