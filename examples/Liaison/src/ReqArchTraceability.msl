@@ -101,6 +101,7 @@ tripleRule CreateSubComponent : RequirementsCoverage
 	
 	target {
 		sup:Component {
+			.id != <id>
 			++ -subComponents->c
 		}
 		
@@ -124,6 +125,7 @@ tripleRule CreatePort : RequirementsCoverage
 	
 	target {
 		c:Component {
+			.id != <id>
 			++ -ports->p
 		}
 		
