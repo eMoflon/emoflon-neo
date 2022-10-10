@@ -32,7 +32,7 @@ import org.emoflon.neo.engine.modules.ruleschedulers.FWD_OPTRuleScheduler;
 
 @SuppressWarnings("unused")
 public class ClassInhHier2DB_FWD_OPT_Run {
-	protected static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	protected static SupportedILPSolver solver = SupportedILPSolver.Sat4J;
 	protected ForwardTransformationOperationalStrategy forwardTransformation;
 	protected static final Logger logger = Logger.getLogger(ClassInhHier2DB_FWD_OPT_Run.class);
 	protected String srcModelName;

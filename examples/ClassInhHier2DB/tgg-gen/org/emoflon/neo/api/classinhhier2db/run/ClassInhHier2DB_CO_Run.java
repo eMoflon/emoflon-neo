@@ -33,7 +33,7 @@ import org.emoflon.neo.engine.modules.matchreprocessors.COReprocessor;
 
 @SuppressWarnings("unused")
 public class ClassInhHier2DB_CO_Run {
-	protected static SupportedILPSolver solver = SupportedILPSolver.Gurobi;
+	protected static SupportedILPSolver solver = SupportedILPSolver.Sat4J;
 	protected CheckOnlyOperationalStrategy checkOnly;
 	protected static final Logger logger = Logger.getLogger(ClassInhHier2DB_CO_Run.class);
 	protected String srcModelName;
