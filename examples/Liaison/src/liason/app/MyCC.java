@@ -25,9 +25,9 @@ public class MyCC extends RequirementsCoverage_CC_Run {
 			var data = new API_Data(builder);
 			builder.clearDataBase();
 			builder.exportEMSLEntityToNeo4j(data.getModel_RequirementsCoverage_Source());
-			builder.exportEMSLEntityToNeo4j(data.getModel_RequirementsCoverage_Target());
-			
-			app.run();
+			builder.exportEMSLEntityToNeo4j(data.getModel_RequirementsCoverage_Target());	
 		}
+		
+		app.run();
 	}
 }
