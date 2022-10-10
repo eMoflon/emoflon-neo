@@ -24,6 +24,7 @@ import org.emoflon.neo.engine.modules.updatepolicies.RandomSingleMatchUpdatePoli
 import org.emoflon.neo.engine.modules.valueGenerators.LoremIpsumStringValueGenerator;
 import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.emoflon.neo.api.facebooktoinstagramfase.run.FacebookToInstagramFASE_GEN_Run.SRC_MODEL_NAME;
@@ -76,6 +77,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	}
 
 	@Test
+	@Disabled("Only works with Gurobi")
 	public void test10OfEach() throws Exception {
 		runTest((scheduler) -> {
 			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 10)
@@ -86,6 +88,7 @@ public class GEN_CO_CC_Tests extends ENeoTest {
 	}
 
 	@Test
+	@Disabled("Only works for Gurobi")
 	public void tryLotsOfUsers() throws Exception {
 		runTest((scheduler) -> {
 			scheduler.setMax(API_Transformations.FacebookToInstagramFASE__NetworkToNetwork, 1)

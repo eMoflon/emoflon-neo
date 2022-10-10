@@ -2,6 +2,7 @@ package org.emoflon.neo.example.companytoit;
 
 import org.emoflon.neo.api.testsuitetgg.org.emoflon.neo.example.companytoit.API_CompanyToITTriplesForConstraintTesting;
 import org.emoflon.neo.example.ENeoTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.emoflon.neo.api.companytoit_constrained.run.CompanyToIT_Constrained_CC_Run;
@@ -13,6 +14,7 @@ public class Constraint_CO_CC_Tests extends ENeoTest{
 
 	//co-cc for consistent triple1
 	@Test
+	@Disabled("Only works with Gurobi")
 	public void testConsistentTriple1_CO() throws Exception {
 		
 		exportTriple(api.getModel_ConsistentSource1(), //
