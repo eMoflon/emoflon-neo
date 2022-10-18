@@ -41,7 +41,7 @@ public class MyGEN extends RequirementsCoverage_GEN_Run {
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {
 		var allRules = new API_RequirementsCoverage_GEN(builder).getAllRulesForRequirementsCoverage_GEN();
 		
-		// Restrict to one application per rule
+		// Restrict applications per rule
 		var maxRuleApps = new MaximalRuleApplicationsTerminationCondition(allRules, 2);
 		
 		INodeSampler sampler = (String type, String ruleName, String nodeName) -> {
