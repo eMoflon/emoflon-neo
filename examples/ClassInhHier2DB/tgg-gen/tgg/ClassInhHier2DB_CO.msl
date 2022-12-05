@@ -17,11 +17,11 @@ grammar ClassInhHier2DB_CO {
 		{
 			._type_ : "PackageToDatabase"
 		}
+		.name : db::title
 	}
 
 	db:DB {
 		.enamespace : <__trgModelName>
-		.title : classpackage::name
 	}
 	
 	attributeConstraints {

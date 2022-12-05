@@ -726,12 +726,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "AttributeToColumn"
 		}
-		.name : column::name
 		~_ex_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 		~_ex_ : true
 	}
 	
@@ -766,12 +766,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "AttributeToColumn"
 		}
-		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -806,12 +806,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "AttributeToColumn"
 		}
-		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -843,12 +843,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "AttributeToColumn"
 		}
-		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -913,12 +913,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ : "AttributeToColumn"
 		}
-		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 		~_cr_ : true
 	}
 	
@@ -950,12 +950,12 @@ grammar ClassInhHier2DB_MI {
 		{
 			._type_ := "AttributeToColumn"
 		}
-		.name : column::name
 		~_cr_ : true
 	}
 
 	column:Column {
 		.enamespace : <__trgModelName>
+		.name : attribute::name
 		~_cr_ : true
 	}
 	

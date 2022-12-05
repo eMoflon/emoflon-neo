@@ -194,7 +194,7 @@ public class SokobanNeoController implements IController {
 			if (comatch.isPresent())
 				return;
 		}
-
+		
 		{
 			var mask = api2.getRule_MoveSokobanUpWithCondition().mask();
 			mask.setB_fields_1_toCol(field.getCol());
@@ -257,7 +257,7 @@ public class SokobanNeoController implements IController {
 			if (comatch.isPresent())
 				return;
 		}
-
+		
 		// All movement failed, so try to select the figure on the field
 		api1.getRule_SelectFigure().apply(//
 				api1.getRule_SelectFigure().mask()//
@@ -315,7 +315,7 @@ public class SokobanNeoController implements IController {
 			;
 
 		logger.info("Finished board creation.");
-
+		
 		extractFields();
 
 		logger.info("Finished extracting fields.");

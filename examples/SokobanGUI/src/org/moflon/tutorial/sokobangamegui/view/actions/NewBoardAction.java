@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
+import org.moflon.tutorial.sokobangamegui.controller.IController;
+import org.moflon.tutorial.sokobangamegui.controller.SokobanNeoController;
 import org.moflon.tutorial.sokobangamegui.view.View;
 
 /**
@@ -61,8 +63,11 @@ public class NewBoardAction implements ActionListener {
 			return;
 		}
 		
-		// /* Create new board with entered size */
-		view.getController().newBoard(width, height);	
+		/* Create new board with entered size */
+		// Quick and dirty solution due to time constraints
+		IController controller = view.getController();
+		view.dispose();
+		controller = new SokobanNeoController(width, height);
 	}
 
 }

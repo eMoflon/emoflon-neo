@@ -511,9 +511,6 @@ rule pushBlockLeft -> pushBlock, moveSokobanLeft {
 	}
 } when forbid occupiedNext
 
-
-	
-	
 rule forTestOnlyMoveSokobanDownAndNewNodes -> moveSokoban {
 	from : Field {
 		-bottom-> $to
