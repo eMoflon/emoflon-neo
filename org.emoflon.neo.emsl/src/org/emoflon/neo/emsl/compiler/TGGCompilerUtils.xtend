@@ -35,7 +35,7 @@ class TGGCompilerUtils {
 
 		if(value instanceof PrimitiveBoolean) return '''«value.^true»'''
 
-		if(value instanceof EnumValue) return '''"«value.literal.name»"'''
+		if(value instanceof EnumValue) return '''«value.literal.name»'''
 
 		if (value instanceof AttributeExpression) {
 			// node::<target>
