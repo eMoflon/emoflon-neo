@@ -175,6 +175,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 		var filteredRulesToMatches = new HashMap<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>>();
 		var allRulesToMatches =  super.selectMatches(matchContainer, progressMonitor);
 		determineCreateDeltaElements();
+		Collection<Long> createDeltaElementsWithPositiveIds = createDeltaElements.stream().map(e -> Math.abs(e)).toList();
 		
 		for (IRule<NeoMatch,NeoCoMatch> r : allRulesToMatches.keySet()) {
 			// No CO rule
@@ -183,7 +184,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			else {
 				filteredRulesToMatches.put(r, new HashSet<NeoMatch>());
 				for (NeoMatch m : allRulesToMatches.get(r)) 
-					if (m.getElements().stream().filter(e -> createDeltaElements.contains(e)).findAny().isPresent())
+					if (m.getElements().stream().filter(e -> createDeltaElementsWithPositiveIds.contains(e)).findAny().isPresent())
 						filteredRulesToMatches.get(r).add(m);
 			}
 		}
