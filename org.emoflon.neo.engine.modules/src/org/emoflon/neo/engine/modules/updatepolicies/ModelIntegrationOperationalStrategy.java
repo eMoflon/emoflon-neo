@@ -192,7 +192,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 		var filteredRulesToMatches = new HashMap<IRule<NeoMatch, NeoCoMatch>, Collection<NeoMatch>>();
 		var allRulesToMatches =  super.selectMatches(matchContainer, progressMonitor);
 		determineCreateDeltaElements();
-		Collection<Long> createDeltaElementsWithPositiveIds = createDeltaElements.stream().map(e -> Math.abs(e)).toList();
+		Collection<Long> createDeltaElementsWithPositiveIds = createDeltaElements.stream().map(e -> Math.abs(e)).collect(Collectors.toList());
 		
 		for (IRule<NeoMatch,NeoCoMatch> r : allRulesToMatches.keySet()) {
 			// No CO rule
