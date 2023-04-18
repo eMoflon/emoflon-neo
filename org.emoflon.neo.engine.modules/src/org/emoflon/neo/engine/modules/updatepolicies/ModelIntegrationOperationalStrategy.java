@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.patterns.NeoMatch;
@@ -23,6 +24,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	private Collection<Long> deleteDeltaElements;
 	private Collection<Long> existingElements;
 	private Collection<Long> createdElements;
+	private HashMap<String, NeoRule> opRuleNameToGenRule;
 
 	private static double alpha; // delete-delta
 	private static double beta; // create-delta
@@ -39,6 +41,21 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	) {
 		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
 		setWeightings(builder.getAlpha(), builder.getBeta(), builder.getGamma());
+		opRuleNameToGenRule = new HashMap<>();
+		
+		for (NeoRule opRule : opRules) {
+			// Check whether it is a CO rule
+			NeoRule genRule = (NeoRule)(super.genRules.get(opRule.getName()));
+			
+			if (genRule == null) {
+				// Other operational rule
+				int splitIndex  = opRule.getName().lastIndexOf("_");
+				String genRuleName = opRule.getName().substring(0, splitIndex);
+				genRule = (NeoRule)(super.genRules.get(genRuleName));
+			}
+			
+			opRuleNameToGenRule.put(opRule.getName(), genRule);
+		}
 	}
 
 	@Override
@@ -98,13 +115,13 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 		}
 	}
 
-	private String getGenRuleName(NeoMatch m) {
-		return genRules.keySet().stream().filter(n -> m.getPattern().getName().startsWith(n)).findFirst().get();
+	private NeoRule getGenRule(NeoMatch m) {
+		return opRuleNameToGenRule.get(m.getPattern().getName());	
 	}
-
+	
 	@Override
 	protected Set<Long> getContextElts(NeoMatch m) {
-		var genRule = genRules.get(getGenRuleName(m));
+		var genRule = getGenRule(m);
 		var ids = extractNodeIDs(genRule.getContextNodeLabels(), m);
 		ids.addAll(extractRelIDs(genRule.getContextRelLabels(), m));
 		return ids;
@@ -112,7 +129,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 
 	@Override
 	protected Set<Long> getCreatedAndMarkedElts(NeoMatch m) {
-		var genRule = genRules.get(getGenRuleName(m));
+		var genRule = getGenRule(m);
 		var ids = extractNodeIDs(genRule.getCreatedNodeLabels(), m);
 		ids.addAll(extractRelIDs(genRule.getCreatedRelLabels(), m));
 		return ids;

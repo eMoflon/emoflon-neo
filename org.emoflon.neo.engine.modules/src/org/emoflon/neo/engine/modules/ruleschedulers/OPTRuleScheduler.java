@@ -66,13 +66,13 @@ public class OPTRuleScheduler implements IRuleScheduler<NeoMatch, NeoCoMatch> {
 		};
 		
 		// source and target model
-		if (iteration == 1) {
-			return matchContainer.getAllRulesToMatches().entrySet().stream()//
-					.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
-		}
+//		if (iteration == 1) {
+//			return matchContainer.getAllRulesToMatches().entrySet().stream()//
+//					.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
+//		}
 		
 		// axioms
-		if (iteration == 2) {
+		if (iteration == 1) {
 			return matchContainer.getAllRulesToMatches().entrySet().stream()//
 					.collect(Collectors.toMap(Entry::getKey, entry -> Schedule.unlimited()));
 		}
