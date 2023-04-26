@@ -5,6 +5,7 @@ import org.emoflon.neo.cypher.models.NeoCoreBuilder;
 import org.emoflon.neo.cypher.rules.NeoRule;
 import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
+import org.emoflon.neo.engine.generator.modules.IInconsistencyReporter;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
 
@@ -20,6 +21,19 @@ public class ForwardTransformationOperationalStrategy extends ILPBasedOperationa
 			String targetModel//
 	) {
 		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
+	}
+	
+	public ForwardTransformationOperationalStrategy(//
+			SupportedILPSolver solver, //
+			NeoCoreBuilder builder, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			IInconsistencyReporter inconsistencyReporter, //
+			String sourceModel, //
+			String targetModel//
+	) {
+		super(solver, genRules, opRules, negativeConstraints, inconsistencyReporter, builder, sourceModel, targetModel);
 	}
 
 	@Override
