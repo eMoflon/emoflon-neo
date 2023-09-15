@@ -52,13 +52,13 @@ public class TripleRuleFlattener extends RuleFlattener {
 
 			// --------------- Source ------------------ //
 			// 1. step: collect nodes with edges
-			var<String, ArrayList<ModelNodeBlock>> collectedSrcNodeBlocks = collectNodes(entity, refinements,
+			Map<String, List<ModelNodeBlock>> collectedSrcNodeBlocks = collectNodes(entity, refinements,
 					alreadyRefinedEntityNames, true);
 			entity.getSrcNodeBlocks().forEach(nb -> {
 				if (collectedSrcNodeBlocks.keySet().contains(nb.getName())) {
 					collectedSrcNodeBlocks.get(nb.getName()).add(nb);
 				} else {
-					var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
+					List<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
 					tmp.add(nb);
 					collectedSrcNodeBlocks.put(nb.getName(), tmp);
 				}
@@ -72,13 +72,13 @@ public class TripleRuleFlattener extends RuleFlattener {
 
 			// --------------- Target ------------------ //
 			// 1. step: collect nodes with edges
-			var<String, ArrayList<ModelNodeBlock>> collectedTrgNodeBlocks = collectNodes(entity, refinements,
+			Map<String, List<ModelNodeBlock>> collectedTrgNodeBlocks = collectNodes(entity, refinements,
 					alreadyRefinedEntityNames, false);
 			entity.getTrgNodeBlocks().forEach(nb -> {
 				if (collectedTrgNodeBlocks.keySet().contains(nb.getName())) {
 					collectedTrgNodeBlocks.get(nb.getName()).add(nb);
 				} else {
-					var<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
+					List<ModelNodeBlock> tmp = new ArrayList<ModelNodeBlock>();
 					tmp.add(nb);
 					collectedTrgNodeBlocks.put(nb.getName(), tmp);
 				}
@@ -302,7 +302,7 @@ public class TripleRuleFlattener extends RuleFlattener {
 
 					// add nodeBlock to list according to its name
 					if (!nodeBlocks.containsKey(newNb.getName())) {
-						var<ModelNodeBlock> newList = new ArrayList<ModelNodeBlock>();
+						List<ModelNodeBlock> newList = new ArrayList<ModelNodeBlock>();
 						newList.add(newNb);
 						nodeBlocks.put(newNb.getName(), newList);
 					} else {
