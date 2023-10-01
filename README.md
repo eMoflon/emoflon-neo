@@ -18,3 +18,4 @@ A Neo4j-based implementation of eMoflon
 - Start a runtime Eclipse workspace (choose any project and click "Run As/Eclipse Application")
 - In your runtime workspace import projectSetRuntime.psf or use the direct URL https://github.com/eMoflon/emoflon-neo/raw/master/projectSetRuntime.psf
 - Set up the connection to Neo4j via -> Window -> Preferences -> eMoflon::Neo -> Neo4J Preferences by entering the copied Connection URI and User and the assigned Password.
+- If you need to dump models stored in Neo4j back to eMSL, you can use https://github.com/dwolters/emsl-model-dumper
