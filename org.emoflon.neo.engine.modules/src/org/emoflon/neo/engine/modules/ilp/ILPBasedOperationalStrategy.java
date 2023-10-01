@@ -23,6 +23,7 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.patterns.IMatch;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
+import org.emoflon.neo.engine.generator.modules.IInconsistencyReporter;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.generator.modules.IUpdatePolicy;
 import org.emoflon.neo.engine.ilp.BinaryILPProblem;
@@ -59,9 +60,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 
 	protected String sourceModel;
 	protected String targetModel;
+	
+	protected IInconsistencyReporter inconsistencyReporter;
 
 	protected SupportedILPSolver solver;
-
+	
 	public ILPBasedOperationalStrategy(//
 			SupportedILPSolver solver, //
 			Collection<NeoRule> genRules, //
@@ -69,7 +72,20 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 			Collection<IConstraint> negativeConstraints, //
 			NeoCoreBuilder builder, //
 			String sourceModel, //
-			String targetModel//
+			String targetModel //
+	) {
+		this(solver, genRules, opRules, negativeConstraints, null, builder, sourceModel, targetModel);
+	}
+
+	public ILPBasedOperationalStrategy(//
+			SupportedILPSolver solver, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			IInconsistencyReporter inconsistencyReporter, //
+			NeoCoreBuilder builder, //
+			String sourceModel, //
+			String targetModel //
 	) {
 		this.sourceModel = sourceModel;
 		this.targetModel = targetModel;
@@ -81,6 +97,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 		elementToDependentMatches = new HashMap<>();
 
 		this.solver = solver;
+		
+		this.inconsistencyReporter = inconsistencyReporter;
 
 		this.genRules = new HashMap<>();
 		genRules.forEach(tr -> this.genRules.put(tr.getName(), tr));
@@ -565,6 +583,11 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 				var inconsistentElements = determineInconsistentElements();
 				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
 				logger.debug("Inconsistent element IDs: " + inconsistentElements);
+				if (inconsistencyReporter != null) {
+					Collection<Long> inconsistentNodeIds = inconsistentElements.stream().filter(x -> x >= 0).toList();
+					Collection<Long> inconsistentRelationshipIds = inconsistentElements.stream().filter(x -> x < 0).map(x -> x*-1).toList();
+					inconsistencyReporter.reportInconsistencies(inconsistentNodeIds, inconsistentRelationshipIds);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -12,6 +12,7 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
+import org.emoflon.neo.engine.generator.modules.IInconsistencyReporter;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
@@ -24,11 +25,24 @@ public class CheckOnlyOperationalStrategy extends ILPBasedOperationalStrategy im
 			Collection<NeoRule> genRules, //
 			Collection<NeoRule> opRules, //
 			Collection<IConstraint> negativeConstraints, //
+			IInconsistencyReporter inconsistencyReporter,
 			NeoCoreBuilder builder, //
 			String sourceModel, //
 			String targetModel//
 	) {
-		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
+		super(solver, genRules, opRules, negativeConstraints, inconsistencyReporter, builder, sourceModel, targetModel);
+	}
+	
+	public CheckOnlyOperationalStrategy(//
+			SupportedILPSolver solver, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			NeoCoreBuilder builder, //
+			String sourceModel, //
+			String targetModel//
+	) {
+		super(solver, genRules, opRules, negativeConstraints, null, builder, sourceModel, targetModel);
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import org.emoflon.neo.engine.api.constraints.IConstraint;
 import org.emoflon.neo.engine.api.rules.IRule;
 import org.emoflon.neo.engine.generator.MatchContainer;
 import org.emoflon.neo.engine.generator.modules.ICleanupModule;
+import org.emoflon.neo.engine.generator.modules.IInconsistencyReporter;
 import org.emoflon.neo.engine.generator.modules.IMonitor;
 import org.emoflon.neo.engine.modules.ilp.ILPBasedOperationalStrategy;
 import org.emoflon.neo.engine.modules.ilp.ILPFactory.SupportedILPSolver;
@@ -29,7 +30,7 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 	private static double alpha; // delete-delta
 	private static double beta; // create-delta
 	private static double gamma; // added elements
-
+	
 	public ModelIntegrationOperationalStrategy(//
 			SupportedILPSolver solver, //
 			NeoCoreBuilder builder, //
@@ -39,7 +40,20 @@ public class ModelIntegrationOperationalStrategy extends ILPBasedOperationalStra
 			String sourceModel, //
 			String targetModel//
 	) {
-		super(solver, genRules, opRules, negativeConstraints, builder, sourceModel, targetModel);
+		this(solver, builder, genRules, opRules, negativeConstraints, null, sourceModel, targetModel);
+	}
+
+	public ModelIntegrationOperationalStrategy(//
+			SupportedILPSolver solver, //
+			NeoCoreBuilder builder, //
+			Collection<NeoRule> genRules, //
+			Collection<NeoRule> opRules, //
+			Collection<IConstraint> negativeConstraints, //
+			IInconsistencyReporter inconsistencyReporter, //
+			String sourceModel, //
+			String targetModel//
+	) {
+		super(solver, genRules, opRules, negativeConstraints, inconsistencyReporter, builder, sourceModel, targetModel);
 		setWeightings(builder.getAlpha(), builder.getBeta(), builder.getGamma());
 		opRuleNameToGenRule = new HashMap<>();
 		
