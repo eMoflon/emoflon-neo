@@ -1,0 +1,25 @@
+metamodel relational_ {
+	Named {
+		.name : EString
+		
+	}
+	
+	Table : Named {
+		
+		<>-col(0..*)->Column
+		-key(0..*)->Column
+	}
+	
+	Column : Named {
+		
+		-owner(1..1)->Table
+		-keyOf(0..1)->Table
+		-type(1..1)->Type
+	}
+	
+	Type : Named {
+		
+	}
+	
+}
+

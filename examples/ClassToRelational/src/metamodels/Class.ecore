@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore">
+  <ecore:EPackage name="class_" nsURI="Class" nsPrefix="class_">
+    <eClassifiers xsi:type="ecore:EClass" name="NamedElt" abstract="true">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" ordered="false" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="" />
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Classifier" abstract="true" eSuperTypes="#//NamedElt"/>
+    <eClassifiers xsi:type="ecore:EClass" name="DataType" eSuperTypes="#//Classifier"/>
+    <eClassifiers xsi:type="ecore:EClass" name="Class" eSuperTypes="#//Classifier">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="attr" upperBound="-1" eType="#//Attribute" containment="true" eOpposite="#//Attribute/owner"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Attribute" eSuperTypes="#//NamedElt">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="multiValued" ordered="false" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false" />
+      <eStructuralFeatures xsi:type="ecore:EReference" name="type" ordered="false" lowerBound="1" eType="#//Classifier"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="owner" ordered="false" lowerBound="1" eType="#//Class" eOpposite="#//Class/attr"/>
+    </eClassifiers>
+  </ecore:EPackage>
+</xmi:XMI>

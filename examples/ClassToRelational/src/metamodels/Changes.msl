@@ -1,0 +1,189 @@
+metamodel Changes {
+	ModelChangeSet {
+		
+		<>-changes(0..*)->ModelChange
+	}
+	
+	ModelChange {
+		
+		-changeSet(0..1)->ModelChangeSet
+	}
+	
+	ElementaryChange : ModelChange {
+		
+		-affectedElement(1..1)->EObject
+		-feature(1..1)->EStructuralFeature
+	}
+	
+	ChangeTransaction : ModelChange {
+		
+		<>-sourceChange(1..1)->ModelChange
+		<>-nestedChanges(0..*)->ModelChange
+	}
+	
+	CompositionChange : ElementaryChange {
+		
+	}
+	
+	AssociationChange : ElementaryChange {
+		
+	}
+	
+	AttributeChange : ElementaryChange {
+		
+	}
+	
+	AssociationCollectionDeletion : AssociationChange {
+		
+		-deletedElement(1..1)->EObject
+	}
+	
+	CompositionCollectionDeletion : CompositionChange {
+		
+		-deletedElement(0..1)->EObject
+	}
+	
+	AttributeCollectionDeletion : AttributeChange {
+		.deletedValue : EString
+		
+	}
+	
+	AssociationCollectionInsertion : AssociationChange {
+		
+		-addedElement(1..1)->EObject
+	}
+	
+	CompositionCollectionInsertion : CompositionChange {
+		
+		<>-addedElement(1..1)->EObject
+	}
+	
+	AttributeCollectionInsertion : AttributeChange {
+		.addedValue : EString
+		
+	}
+	
+	AssociationCollectionReset : AssociationChange {
+		
+	}
+	
+	CompositionCollectionReset : CompositionChange {
+		
+	}
+	
+	AttributeCollectionReset : AttributeChange {
+		
+	}
+	
+	AssociationListDeletion : AssociationChange {
+		.index : EInt
+		
+		-deletedElement(0..1)->EObject
+	}
+	
+	CompositionListDeletion : CompositionChange {
+		.index : EInt
+		
+		-deletedElement(0..1)->EObject
+	}
+	
+	AttributeListDeletion : AttributeChange {
+		.deletedValue : EString
+		.index : EInt
+		
+	}
+	
+	AssociationListInsertion : AssociationChange {
+		.index : EInt
+		
+		-addedElement(1..1)->EObject
+	}
+	
+	CompositionListInsertion : CompositionChange {
+		.index : EInt
+		
+		<>-addedElement(1..1)->EObject
+	}
+	
+	AttributeListInsertion : AttributeChange {
+		.addedValue : EString
+		.index : EInt
+		
+	}
+	
+	AttributePropertyChange : AttributeChange {
+		.newValue : EString
+		.oldValue : EString
+		
+	}
+	
+	AssociationPropertyChange : AssociationChange {
+		
+		-newValue(0..1)->EObject
+		-oldValue(0..1)->EObject
+	}
+	
+	CompositionPropertyChange : CompositionChange {
+		
+		<>-newValue(0..1)->EObject
+		-oldValue(0..1)->EObject
+	}
+	
+	CompositionMoveIntoProperty : CompositionChange {
+		
+		-newValue(1..1)->EObject
+		-oldValue(0..1)->EObject
+		<>-origin(0..1)->ElementaryChange
+	}
+	
+	CompositionMoveToList : CompositionChange {
+		.index : EInt
+		
+		-movedElement(1..1)->EObject
+		<>-origin(1..1)->ElementaryChange
+	}
+	
+	CompositionMoveToCollection {
+		
+		-movedElement(1..1)->EObject
+		<>-origin(1..1)->ElementaryChange
+	}
+	
+	OperationCall : ModelChange {
+		
+		-operation(1..1)->EObject
+		-targetElement(0..1)->EObject
+		<>-arguments(0..*)->OperationArgument
+	}
+	
+	OperationArgument {
+		.name : EString
+		
+	}
+	
+	ValueArgument : OperationArgument {
+		.value : EString
+		
+	}
+	
+	ReferenceArgument : OperationArgument {
+		
+		-value(1..1)->EObject
+	}
+	
+	AddToRoot : ElementaryChange {
+		
+		<>-newObject(0..1)->EObject
+	}
+	
+	DeleteFromRoot : ElementaryChange {
+		
+		-deletedElement(0..1)->EObject
+	}
+	
+	ReferenceSetNull : ElementaryChange {
+		
+	}
+	
+}
+

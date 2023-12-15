@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="Changes" nsURI="http://nmf.codeplex.com/changes" nsPrefix="changes">
+  <eClassifiers xsi:type="ecore:EClass" name="ModelChangeSet">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="changes" upperBound="-1"
+        eType="#//ModelChange" containment="true" eOpposite="#//ModelChange/changeSet"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ModelChange" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="changeSet" eType="#//ModelChangeSet"
+        eOpposite="#//ModelChangeSet/changes"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ElementaryChange" abstract="true" eSuperTypes="#//ModelChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="affectedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="feature" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EStructuralFeature"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ChangeTransaction" eSuperTypes="#//ModelChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceChange" lowerBound="1"
+        eType="#//ModelChange" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nestedChanges" upperBound="-1"
+        eType="#//ModelChange" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionChange" abstract="true" eSuperTypes="#//ElementaryChange"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationChange" abstract="true" eSuperTypes="#//ElementaryChange"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributeChange" abstract="true" eSuperTypes="#//ElementaryChange"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationCollectionDeletion" eSuperTypes="#//AssociationChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionCollectionDeletion" eSuperTypes="#//CompositionChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedElement" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributeCollectionDeletion" eSuperTypes="#//AttributeChange">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deletedValue" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationCollectionInsertion" eSuperTypes="#//AssociationChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionCollectionInsertion" eSuperTypes="#//CompositionChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributeCollectionInsertion" eSuperTypes="#//AttributeChange">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="addedValue" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationCollectionReset" eSuperTypes="#//AssociationChange"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionCollectionReset" eSuperTypes="#//CompositionChange"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributeCollectionReset" eSuperTypes="#//AttributeChange"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationListDeletion" eSuperTypes="#//AssociationChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedElement" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionListDeletion" eSuperTypes="#//CompositionChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedElement" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributeListDeletion" eSuperTypes="#//AttributeChange">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deletedValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationListInsertion" eSuperTypes="#//AssociationChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionListInsertion" eSuperTypes="#//CompositionChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributeListInsertion" eSuperTypes="#//AttributeChange">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="addedValue" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributePropertyChange" eSuperTypes="#//AttributeChange">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="newValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oldValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationPropertyChange" eSuperTypes="#//AssociationChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="newValue" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="oldValue" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionPropertyChange" eSuperTypes="#//CompositionChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="newValue" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="oldValue" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionMoveIntoProperty" eSuperTypes="#//CompositionChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="newValue" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="oldValue" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="origin" eType="#//ElementaryChange"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionMoveToList" eSuperTypes="#//CompositionChange">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="movedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="origin" lowerBound="1"
+        eType="#//ElementaryChange" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompositionMoveToCollection">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="movedElement" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="origin" lowerBound="1"
+        eType="#//ElementaryChange" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OperationCall" eSuperTypes="#//ModelChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operation" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EOperation"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetElement" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" upperBound="-1"
+        eType="#//OperationArgument" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OperationArgument" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ValueArgument" eSuperTypes="#//OperationArgument">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ReferenceArgument" eSuperTypes="#//OperationArgument">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" lowerBound="1" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AddToRoot" eSuperTypes="#//ElementaryChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="newObject" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeleteFromRoot" eSuperTypes="#//ElementaryChange">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedElement" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ReferenceSetNull" eSuperTypes="#//ElementaryChange"/>
+</ecore:EPackage>

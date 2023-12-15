@@ -1,0 +1,28 @@
+metamodel class_ {
+	NamedElt {
+		.name : EString
+		
+	}
+	
+	Classifier : NamedElt {
+		
+	}
+	
+	DataType : Classifier {
+		
+	}
+	
+	Class : Classifier {
+		
+		<>-attr(0..*)->Attribute
+	}
+	
+	Attribute : NamedElt {
+		.multiValued : EBoolean
+		
+		-type(1..1)->Classifier
+		-owner(1..1)->Class
+	}
+	
+}
+

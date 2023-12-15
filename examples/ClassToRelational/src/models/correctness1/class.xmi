@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:class_="Class" 
+xsi:schemaLocation="Class ../../metamodels/Class.ecore">
+  <class_:Class name="Family">
+    <attr name="name" type="/2"/>
+    <attr name="members" multiValued="true" type="/1"/>
+  </class_:Class>
+  <class_:Class name="Person">
+    <attr name="firstName" type="/2"/>
+    <attr name="closestFriend" type="/1"/>
+    <attr name="emailAddresses" multiValued="true" type="/2"/>
+  </class_:Class>
+  <class_:DataType name="String"/>
+  <class_:DataType name="Integer"/>
+</xmi:XMI>
