@@ -23,7 +23,8 @@ def static void main(String[] args) {
       builder.exportEMSLEntityToNeo4j(apiCorrectess1Class.model_Correctness1_class)
       
       val fwd = new ClassToRelational_FWD_OPT_Run_App("correctness1_class", "correctness1_relational")
-   	  fwd.run
+   	  var result = fwd.runForwardTransformation()
+   	  print(result.determineInconsistentElements())
    }
  }
 }

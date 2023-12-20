@@ -1,0 +1,13 @@
+attributeConstraint firstToLowerCase(
+	word : EString,
+	lowerCase : EString
+){
+	B B,
+	B F
+		
+	gen:
+	
+	B F,
+	F F,
+	F B
+}
