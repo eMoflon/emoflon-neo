@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ASCII"?>
+<changes:ModelChangeSet xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:changes="http://nmf.codeplex.com/changes" xmlns:class_="Class">
+  <changes xsi:type="changes:AddToRoot">
+    <affectedElement href="../../models/correctness11/class.xmi#/1"/>
+    <newObject xsi:type="class_:Attribute" name="marries" multiValued="true">
+      <type xsi:type="class_:Class" href="../../models/correctness11/class.xmi#/1"/>
+    </newObject>
+  </changes>
+</changes:ModelChangeSet>

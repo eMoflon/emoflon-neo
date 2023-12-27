@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:relational_="Relational">
+  <relational_:Table name="Family" key="/0/@col.0">
+    <col name="objectId" keyOf="/0" type="/2"/>
+    <col name="name" type="/1"/>
+  </relational_:Table>
+  <relational_:Type name="String"/>
+  <relational_:Type name="Integer"/>
+  <relational_:Table name="Family_members">
+    <col name="familyId" type="/2"/>
+    <col name="membersId" type="/2"/>
+  </relational_:Table>
+</xmi:XMI>

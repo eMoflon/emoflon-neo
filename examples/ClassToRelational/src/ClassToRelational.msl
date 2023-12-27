@@ -321,7 +321,7 @@ tripleRule ClassAttributeToTable : ClassToRelational {
 		}
 		
 		++ column : Column {
-			.name := <attrName>
+			.name := <attrIdName>
 			++-owner->table
 			++-type->integer
 		}
@@ -353,6 +353,12 @@ tripleRule ClassAttributeToTable : ClassToRelational {
 			word=<lower>,
 			suffix="Id",
 			result=<idName>
+		)
+		
+		addSuffix(
+			word=<attrName>,
+			suffix="Id",
+			result=<attrIdName>
 		)
 	}
 }

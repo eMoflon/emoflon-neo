@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<changes:ModelChangeSet xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:changes="http://nmf.codeplex.com/changes">
+  <changes xsi:type="changes:DeleteFromRoot">
+    <deletedElement href="../../models/correctness13/class.xmi#/1"/>
+  </changes>
+</changes:ModelChangeSet>

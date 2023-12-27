@@ -1,6 +1,6 @@
 import "platform:/resource/ClassToRelational/src/metamodels/Class.msl"
 
-model correctness1_class {
+model class {
 	o1 : Attribute {
 		.name : "name"
 		.multiValued : false

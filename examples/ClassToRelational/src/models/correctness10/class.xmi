@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:class_="Class" xsi:schemaLocation="Class ../../metamodels/Class.ecore">
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:class_="Class">
   <class_:Class name="Family">
     <attr name="name" type="/2"/>
     <attr name="members" multiValued="true" type="/1"/>
