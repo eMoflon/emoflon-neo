@@ -21,7 +21,7 @@ import org.emoflon.neo.engine.modules.valueGenerators.ModelNameValueGenerator;
 
 public class ClassToRelational_FWD_OPT_Run_App extends ClassToRelational_FWD_OPT_Run {
 	public ClassToRelational_FWD_OPT_Run_App(String srcModelName, String trgModelName) {
-		super(srcModelName, trgModelName, SupportedILPSolver.Gurobi);
+		super(srcModelName, trgModelName, SupportedILPSolver.Sat4J);
 	}
 
 	public NeoGenerator createGenerator(NeoCoreBuilder builder) {

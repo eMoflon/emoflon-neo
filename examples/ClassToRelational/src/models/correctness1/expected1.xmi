@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" 
-xmlns:relational_="Relational"
-xsi:schemaLocation="Relational ../../metamodels/Relational.ecore">
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:relational_="Relational" xsi:schemaLocation="Relational ../../metamodels/Relational.ecore">
   <relational_:Table name="Family" key="/0/@col.0">
     <col name="objectId" keyOf="/0" type="/3"/>
     <col name="name" type="/2"/>

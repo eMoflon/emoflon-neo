@@ -1,6 +1,6 @@
 import "platform:/resource/ClassToRelational/src/metamodels/Class.msl"
 
-model class {
+model class2 {
 	o1 : Attribute {
 		.name : "name"
 		.multiValued : false
