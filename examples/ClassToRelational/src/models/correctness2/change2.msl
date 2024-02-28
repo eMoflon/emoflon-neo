@@ -1,0 +1,91 @@
+import "platform:/resource/ClassToRelational/src/metamodels/Class.msl"
+
+model class2 {
+	o1 : Attribute {
+		.name : "name"
+		.multiValued : false
+	
+		-type -> o7
+		-owner -> o0 {
+			~_de_ : true
+		}
+		-owner -> o9 {
+			~_cr_ : true
+		}
+		
+	}
+	o2 : Attribute {
+		.name : "members"
+		.multiValued : true
+	
+		-type -> o3
+		-owner -> o0 {
+			~_de_ : true
+		}
+		-owner -> o9 {
+			~_cr_ : true
+		}
+	}
+	o0 : Class {
+		.name : "Family"
+		._de_ : true
+	
+		-attr -> o1 {
+			~_de_ : true
+		}
+		-attr -> o2 {
+			~_de_ : true
+		}
+	}
+
+	o4 : Attribute {
+		.name : "firstName"
+		.multiValued : false
+	
+		-type -> o7
+		-owner -> o3
+	}
+	o5 : Attribute {
+		.name : "closestFriend"
+		.multiValued : false
+	
+		-type -> o3
+		-owner -> o3
+	}
+	o6 : Attribute {
+		.name : "emailAddresses"
+		.multiValued : true
+	
+		-type -> o7
+		-owner -> o3
+	}
+	o3 : Class {
+		.name : "Person"
+	
+		-attr -> o4
+		-attr -> o5
+		-attr -> o6
+	}
+
+	o7 : DataType {
+		.name : "String"
+	
+	}
+
+	o8 : DataType {
+		.name : "Integer"
+	
+	}
+	
+	o9 : Class {
+		.name : " "
+		._cr_ : true
+		
+		-attr -> o1 {
+			~_cr_ : true
+		}
+		-attr -> o2 {
+			~_cr_ : true
+		}
+	}
+}
