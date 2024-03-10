@@ -1,0 +1,464 @@
+import "platform:/resource/ClassToRelational/src/metamodels/Class.msl"
+import "platform:/resource/ClassToRelational/src/metamodels/Relational.msl"
+import "platform:/plugin/org.emoflon.neo.neocore/model/AttributeConstraintsLibrary.msl"
+import "platform:/resource/ClassToRelational/src/AttributeConstraints.msl"
+
+// Grammar Declaration 2
+tripleGrammar ClassToRelational {
+	
+	// Source Model 2
+	source {
+		class_
+	}
+	
+	// Target Model 2
+	target {
+		relational_
+	}
+	
+	// Corr Model 16 
+	correspondence {
+		Class <- ClassToTable -> Table
+		DataType <- DateTypeToType -> Type
+		Attribute <- AttributeToColumn -> Column
+		Attribute <- AttributeToTable -> Table
+		Class <- ClassToType -> Type
+	}
+	
+	// Rule List 9
+	rules {
+		ClassToTable
+
+		DataTypeToType
+
+		PrimitiveAttributeToColumn
+		ClassAttributeToColumn
+		ClassAttributeToColumnNonInjective
+
+		PrimitiveAttributeToTable
+		ClassAttributeToTable
+		ClassAttributeToTableNonInjective
+	}
+}
+
+// Rule declaration 3
+tripleRule ClassToTable : ClassToRelational {
+	
+	// Source graph 1
+	source {
+		// Node addition 3
+		++ class : Class {
+			// Attribute value assignment 3
+			.name := <className>
+		}
+		
+		// Context node 2
+		integerType : DataType {
+			// Attribute value comparison 3
+			.name : "Integer"
+		}
+	}
+	
+	// Target graph 1
+	target {
+		// Node addition 3
+		++ table : Table {
+			// Attribute value assignment 3
+			.name := <className>
+			// Edge addition 3
+			++-col->objectId
+			// Edge addition 3
+			++-key->objectId
+		}
+		// Node addition 3
+		++ objectId : Column {
+			// Attribute value assignment 3
+			.name := "objectId"
+			// Edge addition 3
+			++-owner->table
+			// Edge addition 3
+			++-type->integer
+			// Edge addition 3
+			++-keyOf->table
+		}
+		
+		// Context node 2
+		integer : Type {
+			// Attribute value comparison 3
+			.name : "Integer"
+		}
+	}
+	
+	// Correspondence graph 1
+	correspondence {
+		// Corr addition 4
+		++ class <-:ClassToTable-> table
+		// Context corr 3
+		integerType <-:DateTypeToType-> integer
+	}
+} 
+
+// Rule declaration 3
+tripleRule DataTypeToType : ClassToRelational {
+	// Source graph 1
+	source {
+		// Node addition 3
+		++ dataType : DataType {
+			// Attribute value assignment 3
+			.name := <typeName>
+		}
+	}
+	// Target graph 1
+	target {
+		// Node addition 3
+		++ type : Type {
+			// Attribute value assignment 3
+			.name := <typeName>
+		}
+	}
+	
+	// Correspondence graph 1
+	correspondence { 
+		// Corr addition 4
+		++ dataType <-:DateTypeToType-> type
+	}
+}
+
+tripleRule PrimitiveAttributeToColumn : ClassToRelational {
+	source {
+		class : Class {
+			++-attr->attribute
+		}
+		
+		++ attribute : Attribute {
+			.name := <attrName>
+			.multiValued := false
+			++-owner->class
+			++-type->attrType
+		}
+		
+		attrType : DataType
+	}
+	
+	target { 
+		table : Table {
+			++-col-> column
+		}
+		
+		++ column : Column {
+			.name := <attrName>
+			++-type->colType
+			++-owner->table
+		}
+		
+		colType : Type
+	}
+	
+	correspondence {
+		class <- :ClassToTable->table
+		attrType <-:DateTypeToType->colType
+		++attribute <-:AttributeToColumn->column
+	}
+}
+
+tripleRule ClassAttributeToColumn : ClassToRelational {
+	source {
+		class : Class {
+			++-attr->attribute
+		}
+		
+		++ attribute : Attribute {
+			.name := <attrName>
+			.multiValued := false
+			++-owner->class
+			++-type->attrType
+		}
+		
+		attrType : Class
+	}
+	
+	target { 
+		table : Table {
+			++-col-> column
+		}
+		
+		++ column : Column {
+			.name := <colName>
+			++-type->integer
+			++-owner->table
+		}
+		
+		integer : Type {
+			.name : "Integer"
+		}
+	}
+	
+	correspondence {
+		class <- :ClassToTable->table
+		++attribute <-:AttributeToColumn->column
+	}
+	
+	attributeConstraints {
+		addSuffix(
+			word=<attrName>,
+			suffix="Id",
+			result=<colName>
+		)
+	}
+}
+
+tripleRule ClassAttributeToColumnNonInjective : ClassToRelational {
+	source {
+		class : Class {
+			++-attr->attribute
+		}
+		
+		++ attribute : Attribute {
+			.name := <attrName>
+			.multiValued := false
+			++-owner->class
+			++-type->class
+		}		
+	}
+	
+	target { 
+		table : Table {
+			++-col-> column
+		}
+		
+		++ column : Column {
+			.name := <colName>
+			++-type->integer
+			++-owner->table
+		}
+		
+		integer : Type {
+			.name : "Integer"
+		}
+	}
+	
+	correspondence {
+		class <- :ClassToTable->table
+		++attribute <-:AttributeToColumn->column
+	}
+	
+	attributeConstraints {
+		addSuffix(
+			word=<attrName>,
+			suffix="Id",
+			result=<colName>
+		)
+	}
+}
+
+
+tripleRule PrimitiveAttributeToTable : ClassToRelational {
+	source {
+		class : Class {
+			.name : <className>
+			++-attr->attribute
+		}
+		
+		++ attribute : Attribute {
+			.name := <attrName>
+			.multiValued := true
+			++-owner->class
+			++-type->attrType
+		}
+		
+		attrType : DataType
+	}
+	
+	target { 	
+		++ table : Table {
+			.name := <tableName>
+			++-col->column
+			++-col->id
+		}
+		
+		++ id : Column {
+			.name := <idName>
+			++-type->integer
+			++-owner->table
+		}
+		
+		++ column : Column {
+			.name := <attrName>
+			++-owner->table
+			++-type->colType
+		}
+		
+		colType : Type
+		
+		integer : Type {
+			.name : "Integer"
+		}
+	}
+	
+	correspondence {
+		++attribute <-:AttributeToTable->table
+		attrType <-:DateTypeToType->colType
+		
+	}
+	
+	attributeConstraints {
+		concat(
+			separator="_",
+			left=<className>,
+			right=<attrName>,
+			combined=<tableName>
+		)
+		
+		firstToLowerCase(
+			word=<className>,
+			lowerCase=<lower>
+		)
+		
+		addSuffix(
+			word=<lower>,
+			suffix="Id",
+			result=<idName>
+		)
+	}
+}
+
+tripleRule ClassAttributeToTable : ClassToRelational {
+	source {
+		class : Class {
+			.name : <className>
+			++-attr->attribute
+		}
+		
+		++ attribute : Attribute {
+			.name := <attrName>
+			.multiValued := true
+			++-owner->class
+			++-type->attrType
+		}
+		
+		attrType : Class
+		
+		integerType : DataType {
+			.name : "Integer"
+		}
+	}
+	
+	target { 	
+		++ table : Table {
+			.name := <tableName>
+			++-col->column
+			++-col->id
+		}
+		
+		++ id : Column {
+			.name := <idName>
+			++-type->integer
+			++-owner->table
+		}
+		
+		++ column : Column {
+			.name := <attrIdName>
+			++-owner->table
+			++-type->integer
+		}
+		
+		integer : Type {
+			.name : "Integer"
+		}
+	}
+	
+	correspondence {
+		++attribute <-:AttributeToTable->table
+		integerType <-:DateTypeToType-> integer
+	}
+	
+	attributeConstraints {
+		concat(
+			separator="_",
+			left=<className>,
+			right=<attrName>,
+			combined=<tableName>
+		)
+		
+		firstToLowerCase(
+			word=<className>,
+			lowerCase=<lower>
+		)
+		
+		addSuffix(
+			word=<lower>,
+			suffix="Id",
+			result=<idName>
+		)
+		
+		addSuffix(
+			word=<attrName>,
+			suffix="Id",
+			result=<attrIdName>
+		)
+	}
+}
+
+tripleRule ClassAttributeToTableNonInjective : ClassToRelational {
+	source {
+		class : Class {
+			.name : <className>
+			++-attr->attribute
+		}
+		
+		++ attribute : Attribute {
+			.name := <attrName>
+			.multiValued := true
+			++-owner->class
+			++-type->class
+		}
+	}
+	
+	target { 	
+		++ table : Table {
+			.name := <tableName>
+			++-col->column
+			++-col->id
+		}
+		
+		++ id : Column {
+			.name := <idName>
+			++-type->integer
+			++-owner->table
+		}
+		
+		++ column : Column {
+			.name := <attrName>
+			++-owner->table
+			++-type->integer
+		}
+		
+		integer : Type {
+			.name : "Integer"
+		}
+	}
+	
+	correspondence {
+		++attribute <-:AttributeToTable->table
+	}
+	
+	attributeConstraints {
+		concat(
+			separator="_",
+			left=<className>,
+			right=<attrName>,
+			combined=<tableName>
+		)
+		
+		firstToLowerCase(
+			word=<className>,
+			lowerCase=<lower>
+		)
+		
+		addSuffix(
+			word=<lower>,
+			suffix="Id",
+			result=<idName>
+		)
+	}
+}
