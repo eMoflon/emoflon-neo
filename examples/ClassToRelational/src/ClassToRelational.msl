@@ -1,427 +1,681 @@
+// Setup 2
 import "platform:/resource/ClassToRelational/src/metamodels/Class.msl"
+// Setup 2
 import "platform:/resource/ClassToRelational/src/metamodels/Relational.msl"
+// Setup 2
 import "platform:/plugin/org.emoflon.neo.neocore/model/AttributeConstraintsLibrary.msl"
+// Setup 2
 import "platform:/resource/ClassToRelational/src/AttributeConstraints.msl"
 
+// Setup 2
 tripleGrammar ClassToRelational {
+	// Setup 1
 	source {
+		// Setup 1
 		class_
 	}
 	
+	// Setup 1
 	target {
+		// Setup 1
 		relational_
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 3
 		Class <- ClassToTable -> Table
+		// Tracing 3
 		DataType <- DateTypeToType -> Type
+		// Tracing 3
 		Attribute <- AttributeToColumn -> Column
+		// Tracing 3
 		Attribute <- AttributeToTable -> Table
+		// Tracing 3
 		Class <- ClassToType -> Type
 	}
 	
+	// Setup 1
 	rules {
+		// Setup 1
 		ClassToTable
-
+		// Setup 1
 		DataTypeToType
 
+		// Setup 1
 		PrimitiveAttributeToColumn
+		// Setup 1		
 		ClassAttributeToColumn
+		// Setup 1		
 		ClassAttributeToColumnNonInjective
 
+		// Setup 1
 		PrimitiveAttributeToTable
+		// Setup 1		
 		ClassAttributeToTable
+		// Setup 1		
 		ClassAttributeToTableNonInjective
 	}
 }
 
+// Setup 3
 tripleRule ClassToTable : ClassToRelational {
+	// Setup 1
 	source {
+		// Transformation 3
 		++ class : Class {
+			// Transformation 2
 			.name := <className>
 		}
 		
+		// Model Traversal 2
 		integerType : DataType {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	target {
+		// Transformation 3
 		++ table : Table {
+			// Model Traversal 2
 			.name := <className>
+			// Transformation 3
 			++-col->objectId
+			// Transformation 3
 			++-key->objectId
 		}
+		// Transformation 3
 		++ objectId : Column {
+			// Model Traversal 2
 			.name := "objectId"
+			// Transformation 3
 			++-owner->table
+			// Transformation 3
 			++-type->integer
+			// Transformation 3
 			++-keyOf->table
 		}
 		
+		// Model Traversal 2
 		integer : Type {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 4
 		++ class <-:ClassToTable-> table
+		// Tracing 3
 		integerType <-:DateTypeToType-> integer
 	}
 } 
 
+// Setup 3
 tripleRule DataTypeToType : ClassToRelational {
+	// Setup 1
 	source {
+		// Transformation 3
 		++ dataType : DataType {
+			// Transformation 2
 			.name := <typeName>
 		}
 	}
 	
+	// Setup 1
 	target {
+		// Transformation 3
 		++ type : Type {
+			// Transformation 2
 			.name := <typeName>
 		}
 	}
 	
-	correspondence { 
+	// Setup 1
+	correspondence {
+		// Tracing 4 
 		++ dataType <-:DateTypeToType-> type
 	}
 }
 
+// Setup 3
 tripleRule PrimitiveAttributeToColumn : ClassToRelational {
+	// Setup 1
 	source {
+		// Model Traversal 2
 		class : Class {
+			// Transformation 3
 			++-attr->attribute
 		}
 		
+		// Transformation 3
 		++ attribute : Attribute {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 2
 			.multiValued := false
+			// Transformation 3
 			++-owner->class
+			// Transformation 3
 			++-type->attrType
 		}
 		
+		// Model Traversal 2
 		attrType : DataType
 	}
 	
+	// Setup 1
 	target { 
+		// Model Traversal 2
 		table : Table {
+			// Transformation 3
 			++-col-> column
 		}
 		
+		// Transformation 3
 		++ column : Column {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 2
 			++-type->colType
+			// Transformation 2
 			++-owner->table
 		}
 		
+		// Model Traversal 2
 		colType : Type
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 3
 		class <- :ClassToTable->table
+		// Tracing 3
 		attrType <-:DateTypeToType->colType
+		// Tracing 4
 		++attribute <-:AttributeToColumn->column
 	}
 }
 
+// Setup 3
 tripleRule ClassAttributeToColumn : ClassToRelational {
+	// Setup 1
 	source {
+		// Model Traversal 2
 		class : Class {
+			// Transformation 3
 			++-attr->attribute
 		}
 		
+		// Transformation 3
 		++ attribute : Attribute {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 2
 			.multiValued := false
+			// Transformation 3
 			++-owner->class
+			// Transformation 3
 			++-type->attrType
 		}
 		
+		// Model Traversal 2
 		attrType : Class
 	}
 	
+	// Setup 1
 	target { 
+		// Model Traversal 2
 		table : Table {
+			// Transformation 3
 			++-col-> column
 		}
 		
+		// Transformation 3
 		++ column : Column {
+			// Transformation 2
 			.name := <colName>
+			// Transformation 3
 			++-type->integer
+			// Transformation 3
 			++-owner->table
 		}
 		
+		// Model Traversal 2
 		integer : Type {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 3
 		class <- :ClassToTable->table
+		// Tracing 4
 		++attribute <-:AttributeToColumn->column
 	}
 	
+	// Setup 1
 	attributeConstraints {
+		// Tracing 1
 		addSuffix(
+			// Tracing 2
 			word=<attrName>,
+			// Tracing 2
 			suffix="Id",
+			// Tracing 2
 			result=<colName>
 		)
 	}
 }
 
+// Setup 3
 tripleRule ClassAttributeToColumnNonInjective : ClassToRelational {
+	// Setup 1
 	source {
+		// Model Traversal 2
 		class : Class {
+			// Transformation 3
 			++-attr->attribute
 		}
 		
+		// Transformation 3
 		++ attribute : Attribute {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 2
 			.multiValued := false
+			// Transformation 3
 			++-owner->class
+			// Transformation 3
 			++-type->class
 		}		
 	}
 	
+	// Setup 1
 	target { 
+		// Model Traversal 2
 		table : Table {
+			// Transformation 3
 			++-col-> column
 		}
 		
+		// Transformation 3
 		++ column : Column {
+			// Transformation 2
 			.name := <colName>
+			// Transformation 3
 			++-type->integer
+			// Transformation 3
 			++-owner->table
 		}
 		
+		// Model Traversal 2
 		integer : Type {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 3
 		class <- :ClassToTable->table
+		// Tracing 4
 		++attribute <-:AttributeToColumn->column
 	}
 	
+	// Setup 1
 	attributeConstraints {
+		// Tracing 1
 		addSuffix(
+			// Tracing 2
 			word=<attrName>,
+			// Tracing 2
 			suffix="Id",
+			// Tracing 2
 			result=<colName>
 		)
 	}
 }
 
-
+// Setup 3
 tripleRule PrimitiveAttributeToTable : ClassToRelational {
+	// Setup 1
 	source {
+		// Model Traversal 2
 		class : Class {
+			// Model Traversal 2
 			.name : <className>
 			++-attr->attribute
 		}
 		
+		// Transformation 3
 		++ attribute : Attribute {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 2
 			.multiValued := true
+			// Transformation 3
 			++-owner->class
+			// Transformation 3
 			++-type->attrType
 		}
 		
+		// Model Traversal 2
 		attrType : DataType
 	}
 	
-	target { 	
+	// Setup 1
+	target {
+		// Transformation 3
 		++ table : Table {
+			// Transformation 2
 			.name := <tableName>
+			// Transformation 3
 			++-col->column
+			// Transformation 3
 			++-col->id
 		}
 		
+		// Transformation 3
 		++ id : Column {
+			// Transformation 2
 			.name := <idName>
+			// Transformation 3
 			++-type->integer
+			// Transformation 3
 			++-owner->table
 		}
 		
+		// Transformation 3
 		++ column : Column {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 3
 			++-owner->table
+			// Transformation 3
 			++-type->colType
 		}
 		
+		// Model Traversal 2
 		colType : Type
 		
+		// Model Traversal 2
 		integer : Type {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 4
 		++attribute <-:AttributeToTable->table
+		// Tracing 3
 		attrType <-:DateTypeToType->colType
 		
 	}
 	
+	// Setup 1
 	attributeConstraints {
+		// Tracing 1
 		concat(
+			// Tracing 2
 			separator="_",
+			// Tracing 2
 			left=<className>,
+			// Tracing 2
 			right=<attrName>,
+			// Tracing 2
 			combined=<tableName>
 		)
 		
+		// Tracing 1
 		firstToLowerCase(
+			// Tracing 2
 			word=<className>,
+			// Tracing 2
 			lowerCase=<lower>
 		)
 		
+		// Tracing 1
 		addSuffix(
+			// Tracing 2
 			word=<lower>,
+			// Tracing 2
 			suffix="Id",
+			// Tracing 2
 			result=<idName>
 		)
 	}
 }
 
+// Setup 3
 tripleRule ClassAttributeToTable : ClassToRelational {
+	// Setup 1
 	source {
+		// Model Traversal 2
 		class : Class {
+			// Model Traversal 2
 			.name : <className>
 			++-attr->attribute
 		}
 		
+		// Transformation 3
 		++ attribute : Attribute {
 			.name := <attrName>
+			// Transformation 2
 			.multiValued := true
+			// Transformation 3
 			++-owner->class
+			// Transformation 3
 			++-type->attrType
 		}
 		
+		// Model Traversal 2
 		attrType : Class
 		
+		// Model Traversal 2
 		integerType : DataType {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	target { 	
+		// Transformation 3
 		++ table : Table {
+			// Transformation 2
 			.name := <tableName>
+			// Transformation 3
 			++-col->column
+			// Transformation 3
 			++-col->id
 		}
 		
+		// Transformation 3
 		++ id : Column {
+			// Transformation 2
 			.name := <idName>
+			// Transformation 3
 			++-type->integer
+			// Transformation 3
 			++-owner->table
 		}
 		
+		// Transformation 3
 		++ column : Column {
+			// Transformation 2
 			.name := <attrIdName>
+			// Transformation 3
 			++-owner->table
+			// Transformation 3
 			++-type->integer
 		}
 		
+		// Model Traversal 2
 		integer : Type {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 4
 		++attribute <-:AttributeToTable->table
+		// Tracing 3
 		integerType <-:DateTypeToType-> integer
 	}
 	
+	// Setup 1
 	attributeConstraints {
+		// Tracing 1
 		concat(
+			// Tracing 2
 			separator="_",
+			// Tracing 2
 			left=<className>,
+			// Tracing 2
 			right=<attrName>,
+			// Tracing 2
 			combined=<tableName>
 		)
 		
+		// Tracing 1
 		firstToLowerCase(
+			// Tracing 2
 			word=<className>,
+			// Tracing 2
 			lowerCase=<lower>
 		)
 		
+		// Tracing 1
 		addSuffix(
+			// Tracing 2
 			word=<lower>,
+			// Tracing 2
 			suffix="Id",
+			// Tracing 2
 			result=<idName>
 		)
 		
+		// Tracing 1
 		addSuffix(
+			// Tracing 2
 			word=<attrName>,
+			// Tracing 2
 			suffix="Id",
+			// Tracing 2
 			result=<attrIdName>
 		)
 	}
 }
 
+// Setup 3
 tripleRule ClassAttributeToTableNonInjective : ClassToRelational {
+	// Setup 1
 	source {
+		// Model Traversal 2
 		class : Class {
+			// Model Traversal 2
 			.name : <className>
 			++-attr->attribute
 		}
 		
+		// Transformation 3
 		++ attribute : Attribute {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 2
 			.multiValued := true
+			// Transformation 3
 			++-owner->class
+			// Transformation 3
 			++-type->class
 		}
 	}
 	
+	// Setup 1
 	target { 	
+		// Transformation 3
 		++ table : Table {
+			// Transformation 2
 			.name := <tableName>
+			// Transformation 3
 			++-col->column
+			// Transformation 3
 			++-col->id
 		}
 		
+		// Transformation 3
 		++ id : Column {
+			// Transformation 2
 			.name := <idName>
+			// Transformation 3
 			++-type->integer
+			// Transformation 3
 			++-owner->table
 		}
 		
+		// Transformation 3
 		++ column : Column {
+			// Transformation 2
 			.name := <attrName>
+			// Transformation 3
 			++-owner->table
+			// Transformation 3
 			++-type->integer
 		}
 		
+		// Model Traversal 2
 		integer : Type {
+			// Model Traversal 2
 			.name : "Integer"
 		}
 	}
 	
+	// Setup 1
 	correspondence {
+		// Tracing 4
 		++attribute <-:AttributeToTable->table
 	}
 	
+	// Setup 1
 	attributeConstraints {
+		// Tracing 1
 		concat(
+			// Tracing 2
 			separator="_",
+			// Tracing 2
 			left=<className>,
+			// Tracing 2
 			right=<attrName>,
+			// Tracing 2
 			combined=<tableName>
 		)
 		
+		// Tracing 1
 		firstToLowerCase(
+			// Tracing 2
 			word=<className>,
+			// Tracing 2
 			lowerCase=<lower>
 		)
 		
+		// Tracing 1
 		addSuffix(
+			// Tracing 2
 			word=<lower>,
+			// Tracing 2
 			suffix="Id",
+			// Tracing 2
 			result=<idName>
 		)
 	}

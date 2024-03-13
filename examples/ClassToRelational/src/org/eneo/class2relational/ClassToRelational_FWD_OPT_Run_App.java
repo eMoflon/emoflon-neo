@@ -1,3 +1,5 @@
+// All boiler plate, setup
+
 package org.eneo.class2relational;
 
 import java.util.List;
