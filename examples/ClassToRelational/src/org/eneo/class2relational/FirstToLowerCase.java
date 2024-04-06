@@ -6,7 +6,7 @@ import org.emoflon.neo.engine.modules.attributeConstraints.NeoAttributeConstrain
 //Setup 2
 import org.emoflon.neo.engine.modules.attributeConstraints.NeoAttributeConstraintVariable;
 
-//Setup 4
+//Setup 4 (Nils 5)
 public class FirstToLowerCase extends NeoAttributeConstraint {
 
 	/**
@@ -14,16 +14,16 @@ public class FirstToLowerCase extends NeoAttributeConstraint {
 	 * 
 	 */
 	@Override
-	// Setup 2
+	// Setup 2 (Nils 3)
 	public void solve() {
 		// Setup 5
 		if (variables.size() != 2)
 			// Setup 4
 			throw new RuntimeException("The CSP -ToLowerCase- needs exactly two variables");
 
-		// Setup 3
+		// Setup 3 (Nils 5)
 		NeoAttributeConstraintVariable word = variables.get(0);
-		// Setup 3
+		// Setup 3 (Nils 5)
 		NeoAttributeConstraintVariable lowerCase = variables.get(1);
 
 		// Setup 5
@@ -42,8 +42,9 @@ public class FirstToLowerCase extends NeoAttributeConstraint {
 			lowerCase.bindToValue(firstToLower(word.getValue().toString()));
 			// Setup 2
 			setSatisfied(true);
+		// Setup 1 (Nils)
 		} else {
-			// Setup 5
+			// Setup 5 (Nils 6)
 			throw new UnsupportedOperationException(
 					"This case in the constraint has not been implemented yet: " + bindingStates);
 		}
@@ -51,7 +52,7 @@ public class FirstToLowerCase extends NeoAttributeConstraint {
 
 	// Setup 5
 	private String firstToLower(String s) {
-		// Transformation 6
+		// Transformation 6 (Nils 11)
 		return s.toLowerCase().charAt(0) + s.substring(1, s.length());
 	}
 }
