@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Export-Package: .,
  org.emoflon.neo.emf,
  org.emoflon.neo.emf.handlers
-Require-Bundle: org.apache.commons.io;bundle-version="2.2.0";visibility:=reexport,
+Require-Bundle: org.apache.commons.commons-io;bundle-version="2.2.0";visibility:=reexport,
  com.google.guava;visibility:=reexport,
  org.eclipse.emf.ecore.xmi;bundle-version="2.15.0",
  org.emoflon.neo.emsl;bundle-version="1.0.0",
