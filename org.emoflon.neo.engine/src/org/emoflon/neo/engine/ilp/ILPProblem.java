@@ -1040,7 +1040,7 @@ public class ILPProblem implements Problem {
 			StringBuilder s = new StringBuilder();
 			s.append("Solution value: " + this.solutionValue + "\n");
 			for (int variableId : this.variableAllocations.keySet()) {
-				s.append("(" + this.getVariable(variableId) + "," + this.variableAllocations.get(variableId) + ")\n");
+				s.append("(" + ILPProblem.this.getVariable(variableId) + "," + this.variableAllocations.get(variableId) + ")\n");
 			}
 			return s.toString();
 		}

@@ -79,14 +79,6 @@ final class GurobiWrapper extends ILPSolver {
 	public ILPSolution solveILP() throws GRBException {
 		ILPSolver.logger.debug(this.ilpProblem.getProblemInformation());
 		
-//  Temporarily commented out due to performance tests
-//		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
-//		currentTimeout = GurobiWrapper.MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
-//		if (currentTimeout < 0) {
-//			currentTimeout = GurobiWrapper.MAX_TIMEOUT;
-//		}
-//		currentTimeout = Math.min(currentTimeout, GurobiWrapper.MAX_TIMEOUT);
-		
 		long currentTimeout = GurobiWrapper.MAX_TIMEOUT / 2;
 		this.prepareModel();
 		this.solveModel(currentTimeout);

@@ -3,6 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/MOEAFramework-2.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gurobi.jar"/>
+	<classpathentry kind="lib" path="lib/ortools-java-9.12.4544.jar" sourcepath="lib/ortools-java-9.12.4544-sources.jar"/>
+	<classpathentry kind="lib" path="lib/ortools-java-9.12.4544-sources.jar"/>
+	<classpathentry kind="lib" path="lib/com.sun.jna_5.13.0.jar"/>
+	<classpathentry kind="lib" path="lib/ortools-darwin-x86-64-9.12.4544.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>

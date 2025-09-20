@@ -584,8 +584,8 @@ public abstract class ILPBasedOperationalStrategy implements IUpdatePolicy<NeoMa
 				logger.info(inconsistentElements.size() + " elements of your triple are inconsistent!");
 				logger.debug("Inconsistent element IDs: " + inconsistentElements);
 				if (inconsistencyReporter != null) {
-					Collection<Long> inconsistentNodeIds = inconsistentElements.stream().filter(x -> x >= 0).toList();
-					Collection<Long> inconsistentRelationshipIds = inconsistentElements.stream().filter(x -> x < 0).map(x -> x*-1).toList();
+					Collection<Long> inconsistentNodeIds = inconsistentElements.stream().filter(x -> x >= 0).collect(Collectors.toList());
+					Collection<Long> inconsistentRelationshipIds = inconsistentElements.stream().filter(x -> x < 0).map(x -> x*-1).collect(Collectors.toList());
 					inconsistencyReporter.reportInconsistencies(inconsistentNodeIds, inconsistentRelationshipIds);
 				}
 			}

@@ -29,7 +29,7 @@ public final class ILPFactory {
 	 * restricted to (0,1).
 	 *
 	 * @param solver
-	 *            Specifies the solver to use Currently Gurobi and SAT4J are
+	 *            Specifies the solver to use
 	 *            supported.
 	 * @return The created solver
 	 */
@@ -41,6 +41,8 @@ public final class ILPFactory {
 			return new Sat4JWrapper(ilpProblem);
 		case MOEA:
 			return new MOEAWrapper(ilpProblem, maxEvaluationsHeuristic);
+		case Google_OR:
+			return new GoogleORWrapper(ilpProblem);
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -50,7 +52,7 @@ public final class ILPFactory {
 	 * Creates an ILP Solver.
 	 *
 	 * @param solver
-	 *            Specifies the solver to use. Currently only Gurobi is supported.
+	 *            Specifies the solver to use.
 	 * @return The created solver.
 	 */
 	public static ILPSolver createILPSolver(final ILPProblem ilpProblem, final SupportedILPSolver solver) {
@@ -64,6 +66,8 @@ public final class ILPFactory {
 			throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
 		case MOEA:
 			throw new UnsupportedOperationException("MOEA does not support arbitrary ILP");
+		case Google_OR:
+			throw new UnsupportedOperationException("TODO");
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -92,6 +96,8 @@ public final class ILPFactory {
 			return new BinaryILPProblem();
 		case MOEA:
 			return new MOEAProblem();
+		case Google_OR:
+			return new BinaryILPProblem();
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -115,7 +121,11 @@ public final class ILPFactory {
 		/**
 		 * Not an ILP solver, but some external framework for evolutionary algorithms
 		 */
-		MOEA;
+		MOEA,
+		/**
+		 * Use Google OR tools
+		 */
+		Google_OR;
 		
 		public String toString() {
 			return this.toString();
