@@ -63,17 +63,17 @@ final class GoogleORWrapper extends ILPSolver {
 		
 		for (int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			MPVariable var = this.id2var.get(variableId);
-			ILPSolver.logger.info(var.name() + "=>" +  var.solutionValue());
+//			ILPSolver.logger.info(var.name() + "=>" +  var.solutionValue());
 			solutionVariables.put(variableId, (int) Math.rint(var.solutionValue()));
 		}
 
-		ILPSolver.logger.info("Google OR found solution: " + optimum + " - Optimal: " + optimal);
+//		ILPSolver.logger.info("Google OR found solution: " + optimum + " - Optimal: " + optimal);
 
 		ILPSolution solution = this.ilpProblem.createILPSolution(solutionVariables, optimal, optimum);
-		ILPSolver.logger.info(solutionVariables);
-		ILPSolver.logger.info(solution.getSolutionInformation());
-		ILPSolver.logger.info(solver.exportModelAsLpFormat());
-		ILPSolver.logger.info(solution);
+//		ILPSolver.logger.info(solutionVariables);
+//		ILPSolver.logger.info(solution.getSolutionInformation());
+//		ILPSolver.logger.info(solver.exportModelAsLpFormat());
+//		ILPSolver.logger.info(solution);
 		return solution;
 	}
 
