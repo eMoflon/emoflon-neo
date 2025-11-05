@@ -85,7 +85,7 @@ class EMSLGenerator extends AbstractGenerator {
 
 	def getAPIName(Resource resource) {
 		val segments = resource.URI.trimFileExtension.segmentsList
-		return segments.last
+		return segments.lastOrNull
 	}
 
 	def getAPIFileName(Resource resource) {
