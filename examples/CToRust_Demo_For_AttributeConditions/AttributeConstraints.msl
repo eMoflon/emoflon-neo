@@ -1,0 +1,14 @@
+import "platform:/resource/CToRust/C_function.msl"
+import "platform:/resource/CToRust/Rust_function.msl"
+
+attributeConstraint cEnumToRustEnum(
+	cEnum : EString,
+	rustEnum : EString
+){
+	B B,
+	B F,
+	F B
+		
+	gen:
+	F F
+}

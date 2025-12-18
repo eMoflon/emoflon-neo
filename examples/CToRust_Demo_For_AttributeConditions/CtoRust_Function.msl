@@ -1,0 +1,48 @@
+import "platform:/resource/CToRust/C_function.msl"
+import "platform:/resource/CToRust/Rust_function.msl"
+import "platform:/plugin/org.emoflon.neo.neocore/model/AttributeConstraintsLibrary.msl"
+import "platform:/resource/CToRust/AttributeConstraints.msl"
+
+tripleGrammar CtoRust {
+	source {
+		C_Function
+	}
+	
+	target {
+		Rust_Function
+	}
+	
+	correspondence {
+		PrimitiveType <-CTypeToRustType-> Rust_Function.Type
+	}
+	
+	rules {
+		TypeToTypeRule
+	}
+}
+
+tripleRule TypeToTypeRule : CtoRust {
+ 	source {
+		++ C_return_type : PrimitiveType {
+			.type := <c_prim>
+		}
+	}
+	
+	target {
+		++ Rust_return_type : Type {
+			.prim := <rust_prim>
+		}
+	}
+	
+	correspondence {
+		++ C_return_type <-:CTypeToRustType-> Rust_return_type		
+	}
+	
+	attributeConstraints {
+		cEnumToRustEnum(
+			cEnum=<c_prim>,
+			rustEnum=<rust_prim>
+		)
+	}
+}
+

@@ -1,0 +1,65 @@
+metamodel C_Function {
+    
+    Type {
+    }
+    
+    Parameter {
+        .name: EString
+        -type(1..1)-> Type
+    }
+
+    Signature {
+        .declarator: EString
+        -typeSpecifier(1..1)-> Type
+        <+>-parameterList(0..*)-> Parameter
+    }
+
+    enum PRIMITIVE {
+        char
+        signed_char
+        unsigned_char
+        short
+        unsigned_short
+        int
+        unsigned
+        long
+        unsigned_long
+        long_long
+        unsigned_long_long
+        float
+        double
+        long_double
+        size_t
+        void
+        bool
+    }
+	
+	PrimitiveType : Type {
+		.type : PRIMITIVE
+	}
+	
+	UserDefinedAlias : Type {
+		.name: EString
+		-aliasedType(1..1)-> Type
+	}
+	
+	Struct : Type {
+		.name: EString
+		-types(0..*)-> Type
+	}
+	
+	Union : Type {
+		.name: EString
+		-types(0..*)-> Type
+	}
+	
+	Enum : Type {
+		.name: EString
+		<+>-members(0..*)-> EnumMember
+	}
+	
+	EnumMember {
+		.name: EString
+	}
+    
+}

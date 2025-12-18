@@ -1,0 +1,26 @@
+import "platform:/resource/CToRust/C_function.msl"
+import "platform:/resource/CToRust/Rust_function.msl"
+
+model CtoRust_Source {
+	t1 : PrimitiveType {
+		.type : char
+	}
+	
+	t2 : PrimitiveType {
+		.type : signed_char
+	}
+}
+
+model CtoRust_Target {
+	t1: Rust_Function.Type {
+		.prim : u8
+	}
+	
+	t2: Rust_Function.Type {
+		.prim : u8
+	}
+	
+	t3: Rust_Function.Type {
+		.prim : i8
+	}
+}

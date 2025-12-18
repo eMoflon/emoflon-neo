@@ -1,0 +1,58 @@
+metamodel Rust_Function {
+    
+    Type {
+        .prim: PRIMITIVE
+    }
+    
+    Parameter {
+        .name: EString
+        -type(1..1)-> Type
+    }
+
+    Signature {
+        .name: EString
+        -ReturnType(1..1)-> Type
+        <+>-FunctionParameters(0..*)-> Parameter
+    }
+
+    enum PRIMITIVE {
+        char
+	    i8
+	    u8
+	    i16
+	    u16
+	    i32
+	    u32
+	    i64
+	    u64
+	    f32
+	    f64
+	    bool
+	    usize
+    }
+	
+	TypeAlias : Type {
+		.name: EString
+		-aliasedType(1..1)-> Type
+	}
+	
+	Struct : Type {
+		.name: EString
+		-types(0..*)-> Type
+	}
+	
+	Union : Type {
+		.name: EString
+		-types(0..*)-> Type
+	}
+	
+	Enum : Type {
+		.name: EString
+		<+>-members(0..*)-> EnumMember
+	}
+	
+	EnumMember {
+		.name: EString
+	}
+    
+}
