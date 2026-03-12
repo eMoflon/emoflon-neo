@@ -18,10 +18,10 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.core.runtime;bundle-version="3.15.100",
  org.eclipse.core.resources;bundle-version="3.13.200";visibility:=reexport,
  org.eclipse.jdt.core;bundle-version="3.16.0",
- org.apache.commons.io;bundle-version="2.2.0",
+ org.apache.commons.commons-io;bundle-version="2.2.0",
  org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.jdt.ui;bundle-version="3.18.0",
- org.apache.commons.lang;bundle-version="2.6.0"
+ org.apache.commons.lang3;bundle-version="2.6.0"
 Export-Package: .,
  net.sf.javabdd,
  org.emoflon.neo.emsl,
