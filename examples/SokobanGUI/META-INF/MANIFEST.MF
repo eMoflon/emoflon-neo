@@ -16,11 +16,10 @@ Require-Bundle: org.apache.log4j,
  org.emoflon.neo.neo4j.adapter,
  org.eclipse.core.resources;bundle-version="3.13.400",
  org.eclipse.xtext,
- org.apache.commons.logging,
- org.apache.commons.lang,
  org.emoflon.neo.engine.modules,
- org.apache.commons.lang,
- org.emoflon.neo.neocore
+ org.emoflon.neo.neocore,
+ org.apache.commons.commons-logging,
+ org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-13
 Automatic-Module-Name: SokobanGUI
 Bundle-Vendor: eMoflon::IBeX Developers
