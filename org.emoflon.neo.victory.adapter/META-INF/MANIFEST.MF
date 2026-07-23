@@ -12,7 +12,7 @@ Require-Bundle: org.emoflon.victory.ui;bundle-version="1.0.0";visibility:=reexpo
  org.emoflon.neo.emsl,
  org.eclipse.jdt.annotation;bundle-version="2.2.300",
  org.emoflon.neo.engine.modules,
- org.apache.commons.lang;bundle-version="2.6.0",
+ org.apache.commons.lang3;bundle-version="2.6.0",
  org.emoflon.neo.neo4j.adapter;bundle-version="1.0.0"
 Automatic-Module-Name: org.emoflon.neo.victory.adapter
 Bundle-RequiredExecutionEnvironment: JavaSE-13

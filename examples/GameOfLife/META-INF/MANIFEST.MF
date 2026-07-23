@@ -8,11 +8,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-13
 Require-Bundle: org.emoflon.neo.neo4j.adapter,
  org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.xtext;bundle-version="2.18.0",
- org.apache.commons.logging;bundle-version="1.2.0",
- org.apache.commons.lang,
  org.emoflon.neo.engine.modules,
- org.apache.commons.lang,
- org.emoflon.neo.neocore
+ org.emoflon.neo.neocore,
+ org.apache.commons.commons-logging,
+ org.apache.commons.lang3
 Automatic-Module-Name: GameOfLife
 Export-Package: spec,
  ui

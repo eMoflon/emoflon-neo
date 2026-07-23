@@ -8,9 +8,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.emoflon.neo.neo4j.adapter,
  org.emoflon.neo.engine.modules,
  org.eclipse.xtext,
- org.apache.commons.logging,
+ org.apache.commons.commons-logging,
  org.apache.log4j,
- org.apache.commons.lang,
+ org.apache.commons.lang3,
  org.emoflon.neo.neocore
 Automatic-Module-Name: org.emoflon.neo.neocore
 Bundle-ActivationPolicy: lazy
